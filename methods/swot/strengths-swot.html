@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stärken-Analyse | SWOT | Manuel Weiss</title>
+    <link rel="stylesheet" href="css/swot-smart-styles.css">
+    <link rel="stylesheet" href="css/strengths-styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-background">
+            <div class="sparkling-stars"></div>
+        </div>
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 25%"></div>
+                        </div>
+                        <span class="progress-text">Schritt 1 von 4</span>
+                    </div>
+                    
+                    <h1 class="hero-title">
+                        <span class="title-icon">💪</span>
+                        Stärken-Analyse
+                    </h1>
+                    <p class="hero-subtitle">
+                        Identifiziere deine inneren Ressourcen und Fähigkeiten
+                    </p>
+                    <p class="hero-description">
+                        Deine Stärken sind deine wichtigsten Ressourcen. Sie geben dir einen 
+                        Wettbewerbsvorteil und sind die Grundlage für deinen Erfolg. Analysiere 
+                        systematisch, was du besonders gut kannst.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <section class="main-content">
+        <div class="container">
+            <div class="content-grid">
+                <!-- Form Section -->
+                <div class="form-section">
+                    <div class="form-container">
+                        <h2>Deine Stärken identifizieren</h2>
+                        <p class="form-description">
+                            Beantworte die folgenden Fragen ehrlich und detailliert. 
+                            Denke an konkrete Situationen, in denen du diese Stärken gezeigt hast.
+                        </p>
+
+                        <form id="strengths-form" class="swot-form">
+                            <!-- Frage 1: Fähigkeiten und Talente -->
+                            <div class="question-group">
+                                <h3>1. Fähigkeiten und Talente</h3>
+                                <p class="question-text">
+                                    Welche Fähigkeiten und Talente besitzt du? Was kannst du besonders gut?
+                                </p>
+                                <div class="denkanstoesse">
+                                    <h4>💡 Denkanstöße:</h4>
+                                    <ul>
+                                        <li>Fachliche Kompetenzen und Expertise</li>
+                                        <li>Soft Skills wie Kommunikation, Führung, Kreativität</li>
+                                        <li>Technische Fähigkeiten und Tools</li>
+                                        <li>Sprachkenntnisse und interkulturelle Kompetenz</li>
+                                        <li>Problemlösungsfähigkeiten</li>
+                                    </ul>
+                                </div>
+                                <textarea 
+                                    name="skills" 
+                                    placeholder="Beschreibe deine wichtigsten Fähigkeiten und Talente..."
+                                    rows="4"
+                                    required></textarea>
+                            </div>
+
+                            <!-- Frage 2: Persönliche Stärken -->
+                            <div class="question-group">
+                                <h3>2. Persönliche Stärken</h3>
+                                <p class="question-text">
+                                    Welche persönlichen Eigenschaften und Charakterstärken zeichnen dich aus?
+                                </p>
+                                <div class="denkanstoesse">
+                                    <h4>💡 Denkanstöße:</h4>
+                                    <ul>
+                                        <li>Positive Charaktereigenschaften</li>
+                                        <li>Emotionale Stärken und Resilienz</li>
+                                        <li>Soziale Kompetenzen</li>
+                                        <li>Arbeitsweise und -ethik</li>
+                                        <li>Lernfähigkeit und Neugier</li>
+                                    </ul>
+                                </div>
+                                <textarea 
+                                    name="personal_strengths" 
+                                    placeholder="Welche persönlichen Stärken machen dich einzigartig?"
+                                    rows="4"
+                                    required></textarea>
+                            </div>
+
+                            <!-- Frage 3: Erfahrungen und Erfolge -->
+                            <div class="question-group">
+                                <h3>3. Erfahrungen und Erfolge</h3>
+                                <p class="question-text">
+                                    Welche Erfahrungen und Erfolge haben dich geprägt? Was hast du bereits erreicht?
+                                </p>
+                                <div class="denkanstoesse">
+                                    <h4>💡 Denkanstöße:</h4>
+                                    <ul>
+                                        <li>Berufliche Erfolge und Projekte</li>
+                                        <li>Auszeichnungen und Anerkennungen</li>
+                                        <li>Herausforderungen, die du gemeistert hast</li>
+                                        <li>Lernerfahrungen und Weiterbildungen</li>
+                                        <li>Positive Rückmeldungen von anderen</li>
+                                    </ul>
+                                </div>
+                                <textarea 
+                                    name="experiences" 
+                                    placeholder="Erzähle von deinen wichtigsten Erfahrungen und Erfolgen..."
+                                    rows="4"
+                                    required></textarea>
+                            </div>
+
+                            <!-- Frage 4: Ressourcen und Netzwerk -->
+                            <div class="question-group">
+                                <h3>4. Ressourcen und Netzwerk</h3>
+                                <p class="question-text">
+                                    Welche Ressourcen stehen dir zur Verfügung? Wer unterstützt dich?
+                                </p>
+                                <div class="denkanstoesse">
+                                    <h4>💡 Denkanstöße:</h4>
+                                    <ul>
+                                        <li>Finanzielle Ressourcen und Investitionen</li>
+                                        <li>Mentoren und Vorbilder</li>
+                                        <li>Netzwerk und Kontakte</li>
+                                        <li>Zugang zu Informationen und Tools</li>
+                                        <li>Zeit und Energie</li>
+                                    </ul>
+                                </div>
+                                <textarea 
+                                    name="resources" 
+                                    placeholder="Welche Ressourcen und Unterstützung hast du?"
+                                    rows="4"
+                                    required></textarea>
+                            </div>
+
+                            <!-- Frage 5: Wettbewerbsvorteile -->
+                            <div class="question-group">
+                                <h3>5. Wettbewerbsvorteile</h3>
+                                <p class="question-text">
+                                    Was macht dich einzigartig? Welche Vorteile hast du gegenüber anderen?
+                                </p>
+                                <div class="denkanstoesse">
+                                    <h4>💡 Denkanstöße:</h4>
+                                    <ul>
+                                        <li>Einzigartige Kombination von Fähigkeiten</li>
+                                        <li>Spezielle Kenntnisse oder Erfahrungen</li>
+                                        <li>Geografische oder zeitliche Vorteile</li>
+                                        <li>Zugang zu exklusiven Ressourcen</li>
+                                        <li>Reputation und Vertrauen</li>
+                                    </ul>
+                                </div>
+                                <textarea 
+                                    name="competitive_advantages" 
+                                    placeholder="Was sind deine besonderen Wettbewerbsvorteile?"
+                                    rows="4"
+                                    required></textarea>
+                            </div>
+
+                            <!-- Frage 6: Zukünftige Potenziale -->
+                            <div class="question-group">
+                                <h3>6. Zukünftige Potenziale</h3>
+                                <p class="question-text">
+                                    Welche Stärken möchtest du weiterentwickeln? Wo siehst du Potenzial?
+                                </p>
+                                <div class="denkanstoesse">
+                                    <h4>💡 Denkanstöße:</h4>
+                                    <ul>
+                                        <li>Bereiche für Weiterentwicklung</li>
+                                        <li>Neue Fähigkeiten, die du erlernen möchtest</li>
+                                        <li>Versteckte Talente, die du entdecken möchtest</li>
+                                        <li>Möglichkeiten für Wachstum</li>
+                                        <li>Ziele für die Stärkenentwicklung</li>
+                                    </ul>
+                                </div>
+                                <textarea 
+                                    name="future_potential" 
+                                    placeholder="Welche Stärken möchtest du weiterentwickeln?"
+                                    rows="4"
+                                    required></textarea>
+                            </div>
+
+                            <!-- Navigation Buttons -->
+                            <div class="form-navigation">
+                                <button type="button" class="btn-secondary" onclick="history.back()">
+                                    <i class="fas fa-arrow-left"></i> Zurück
+                                </button>
+                                <button type="submit" class="btn-primary">
+                                    Weiter zu Schwächen <i class="fas fa-arrow-right"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="sidebar">
+                    <div class="sidebar-content">
+                        <h3>💡 Tipps für deine Stärken-Analyse</h3>
+                        
+                        <div class="tip-section">
+                            <h4>Selbstreflexion</h4>
+                            <ul>
+                                <li>Sei ehrlich, aber nicht zu bescheiden</li>
+                                <li>Denke an konkrete Beispiele</li>
+                                <li>Frage andere nach ihrer Einschätzung</li>
+                                <li>Berücksichtige auch "kleine" Stärken</li>
+                            </ul>
+                        </div>
+
+                        <div class="tip-section">
+                            <h4>Stärken-Kategorien</h4>
+                            <ul>
+                                <li><strong>Fachliche Stärken:</strong> Expertise, Wissen</li>
+                                <li><strong>Persönliche Stärken:</strong> Charakter, Werte</li>
+                                <li><strong>Soziale Stärken:</strong> Kommunikation, Teamwork</li>
+                                <li><strong>Methodische Stärken:</strong> Organisation, Planung</li>
+                            </ul>
+                        </div>
+
+                        <div class="tip-section">
+                            <h4>Nützliche Tools</h4>
+                            <ul>
+                                <li><a href="../ikigai/index-ikigai.html">Ikigai-Methode</a></li>
+                                <li><a href="../raisec/index-raisec.html">RAISEC-Test</a></li>
+                                <li><a href="../wheel-of-life/index-wheel-of-life.html">Wheel of Life</a></li>
+                                <li>360°-Feedback einholen</li>
+                            </ul>
+                        </div>
+
+                        <div class="tip-section">
+                            <h4>Ressourcen</h4>
+                            <ul>
+                                <li>Stärken-Tests online</li>
+                                <li>Feedback von Kollegen</li>
+                                <li>Selbstreflexionsübungen</li>
+                                <li>Coaching-Sitzungen</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="js/swot-workflow.js"></script>
+    <script>
+        // Form handling
+        document.getElementById('strengths-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Collect form data
+            const formData = new FormData(this);
+            const strengthsData = {};
+            
+            for (let [key, value] of formData.entries()) {
+                strengthsData[key] = value;
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('swot-strengths', JSON.stringify(strengthsData));
+            
+            // Navigate to next step
+            window.location.href = 'weaknesses-swot.html';
+        });
+        
+        // Load saved data
+        window.addEventListener('load', function() {
+            const savedData = localStorage.getItem('swot-strengths');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                Object.keys(data).forEach(key => {
+                    const field = document.querySelector(`[name="${key}"]`);
+                    if (field) {
+                        field.value = data[key];
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

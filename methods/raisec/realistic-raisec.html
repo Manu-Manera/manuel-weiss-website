@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Realistisch (R) - RAISEC | Manuel Weiss</title>
+    <link rel="stylesheet" href="css/raisec-smart-styles.css">
+    <link rel="stylesheet" href="css/realistic-styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Progress Bar -->
+    <div class="progress-container">
+        <div class="progress-bar">
+            <div class="progress-fill" style="width: 16.67%"></div>
+        </div>
+        <div class="progress-text">Schritt 1 von 6 - Realistisch</div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-background">
+            <div class="sparkling-stars"></div>
+        </div>
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1 class="hero-title">
+                        <span class="title-icon">🔧</span>
+                        Realistisch (R)
+                    </h1>
+                    <p class="hero-subtitle">
+                        Praktisch-technisch orientiert, handwerklich begabt
+                    </p>
+                    <p class="hero-description">
+                        Du löst gerne konkrete Probleme, arbeitest praktisch und technisch. 
+                        Handwerkliche Tätigkeiten und technische Herausforderungen motivieren dich.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <section class="main-content">
+        <div class="container">
+            <div class="content-grid">
+                <!-- Fragen Section -->
+                <div class="questions-section">
+                    <h2 class="section-title">Deine realistischen Interessen</h2>
+                    <p class="section-subtitle">Beantworte die folgenden Fragen ehrlich und detailliert</p>
+                    
+                    <form class="questions-form" id="realistic-form">
+                        <!-- Frage 1 -->
+                        <div class="question-card">
+                            <h3 class="question-title">1. Technische Fähigkeiten und Handwerk</h3>
+                            <p class="question-description">
+                                Wie sehr interessierst du dich für technische Arbeiten und handwerkliche Tätigkeiten?
+                            </p>
+                            <div class="question-hints">
+                                <h4>Denkanstöße:</h4>
+                                <ul>
+                                    <li>Reparierst du gerne Dinge selbst?</li>
+                                    <li>Arbeitest du gerne mit Werkzeugen?</li>
+                                    <li>Interessierst du dich für technische Zusammenhänge?</li>
+                                    <li>Machst du gerne praktische Experimente?</li>
+                                </ul>
+                            </div>
+                            <div class="answer-section">
+                                <textarea 
+                                    name="technical_skills" 
+                                    placeholder="Beschreibe deine technischen Interessen und Fähigkeiten..."
+                                    rows="4"
+                                    required></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Frage 2 -->
+                        <div class="question-card">
+                            <h3 class="question-title">2. Praktische Problemlösung</h3>
+                            <p class="question-description">
+                                Wie gehst du an praktische Probleme heran und löst sie?
+                            </p>
+                            <div class="question-hints">
+                                <h4>Denkanstöße:</h4>
+                                <ul>
+                                    <li>Analysierst du Probleme systematisch?</li>
+                                    <li>Probierst du gerne verschiedene Lösungsansätze aus?</li>
+                                    <li>Arbeitest du gerne mit konkreten Ergebnissen?</li>
+                                    <li>Schätzt du praktische Erfahrung über theoretisches Wissen?</li>
+                                </ul>
+                            </div>
+                            <div class="answer-section">
+                                <textarea 
+                                    name="problem_solving" 
+                                    placeholder="Beschreibe deine Herangehensweise an praktische Probleme..."
+                                    rows="4"
+                                    required></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Frage 3 -->
+                        <div class="question-card">
+                            <h3 class="question-title">3. Berufliche Präferenzen</h3>
+                            <p class="question-description">
+                                Welche beruflichen Tätigkeiten sprechen dich am meisten an?
+                            </p>
+                            <div class="question-hints">
+                                <h4>Denkanstöße:</h4>
+                                <ul>
+                                    <li>Technische Berufe (Ingenieur, Techniker, Mechaniker)</li>
+                                    <li>Handwerkliche Berufe (Handwerker, Künstler, Handwerker)</li>
+                                    <li>Praktische Berufe (Landwirt, Gärtner, Tierarzt)</li>
+                                    <li>Technische Berufe (IT, Elektronik, Maschinenbau)</li>
+                                </ul>
+                            </div>
+                            <div class="answer-section">
+                                <textarea 
+                                    name="career_preferences" 
+                                    placeholder="Beschreibe deine beruflichen Interessen und Präferenzen..."
+                                    rows="4"
+                                    required></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Frage 4 -->
+                        <div class="question-card">
+                            <h3 class="question-title">4. Arbeitsumgebung</h3>
+                            <p class="question-description">
+                                In welcher Arbeitsumgebung fühlst du dich am wohlsten?
+                            </p>
+                            <div class="question-hints">
+                                <h4>Denkanstöße:</h4>
+                                <ul>
+                                    <li>Arbeitest du gerne draußen oder drinnen?</li>
+                                    <li>Präferierst du Einzelarbeit oder Teamarbeit?</li>
+                                    <li>Magst du strukturierte oder flexible Arbeitszeiten?</li>
+                                    <li>Arbeitest du gerne mit Maschinen oder Werkzeugen?</li>
+                                </ul>
+                            </div>
+                            <div class="answer-section">
+                                <textarea 
+                                    name="work_environment" 
+                                    placeholder="Beschreibe deine ideale Arbeitsumgebung..."
+                                    rows="4"
+                                    required></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Frage 5 -->
+                        <div class="question-card">
+                            <h3 class="question-title">5. Lernstil und Entwicklung</h3>
+                            <p class="question-description">
+                                Wie lernst du am besten neue Fähigkeiten?
+                            </p>
+                            <div class="question-hints">
+                                <h4>Denkanstöße:</h4>
+                                <ul>
+                                    <li>Lernst du gerne durch praktische Übungen?</li>
+                                    <li>Präferierst du Learning-by-Doing?</li>
+                                    <li>Interessierst du dich für technische Weiterbildungen?</li>
+                                    <li>Magst du konkrete, messbare Ergebnisse?</li>
+                                </ul>
+                            </div>
+                            <div class="answer-section">
+                                <textarea 
+                                    name="learning_style" 
+                                    placeholder="Beschreibe deinen bevorzugten Lernstil..."
+                                    rows="4"
+                                    required></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Frage 6 -->
+                        <div class="question-card">
+                            <h3 class="question-title">6. Werte und Motivation</h3>
+                            <p class="question-description">
+                                Was motiviert dich in deiner beruflichen Tätigkeit?
+                            </p>
+                            <div class="question-hints">
+                                <h4>Denkanstöße:</h4>
+                                <ul>
+                                    <li>Ist es dir wichtig, etwas Konkretes zu schaffen?</li>
+                                    <li>Motiviert dich die Lösung praktischer Probleme?</li>
+                                    <li>Schätzt du handwerkliche Qualität und Präzision?</li>
+                                    <li>Ist dir Unabhängigkeit und Selbstständigkeit wichtig?</li>
+                                </ul>
+                            </div>
+                            <div class="answer-section">
+                                <textarea 
+                                    name="values_motivation" 
+                                    placeholder="Beschreibe deine Werte und Motivation..."
+                                    rows="4"
+                                    required></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Navigation Buttons -->
+                        <div class="navigation-buttons">
+                            <a href="index-raisec.html" class="btn-secondary">Zurück zur Übersicht</a>
+                            <button type="submit" class="btn-primary">Weiter zu Investigativ</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="sidebar">
+                    <div class="sidebar-card">
+                        <h3>💡 Tipps für realistische Typen</h3>
+                        <ul>
+                            <li>Nutze deine praktischen Fähigkeiten</li>
+                            <li>Suche nach technischen Herausforderungen</li>
+                            <li>Entwickle deine handwerklichen Skills</li>
+                            <li>Netzwerke mit anderen Technikern</li>
+                        </ul>
+                    </div>
+
+                    <div class="sidebar-card">
+                        <h3>🔗 Verwandte Methoden</h3>
+                        <ul>
+                            <li><a href="../ikigai/index-ikigai.html">Ikigai</a></li>
+                            <li><a href="../swot/index-swot.html">SWOT</a></li>
+                            <li><a href="../wheel-of-life/index-wheel-of-life.html">Wheel of Life</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="sidebar-card">
+                        <h3>📚 Empfohlene Ressourcen</h3>
+                        <ul>
+                            <li>Technische Zeitschriften</li>
+                            <li>Handwerkliche Kurse</li>
+                            <li>Technische Weiterbildungen</li>
+                            <li>Praktische Projekte</li>
+                        </ul>
+                    </div>
+
+                    <div class="sidebar-card">
+                        <h3>🎯 Berufsfelder</h3>
+                        <ul>
+                            <li>Ingenieurwesen</li>
+                            <li>Handwerk</li>
+                            <li>Technik</li>
+                            <li>Landwirtschaft</li>
+                            <li>Maschinenbau</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>RAISEC - Realistisch</h3>
+                    <p>Praktisch-technisch orientierte Berufsinteressen</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Navigation</h3>
+                    <ul>
+                        <li><a href="index-raisec.html">Übersicht</a></li>
+                        <li><a href="investigative-raisec.html">Investigativ</a></li>
+                        <li><a href="artistic-raisec.html">Künstlerisch</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/raisec-workflow.js"></script>
+    <script>
+        // Form handling
+        document.getElementById('realistic-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Save form data
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            
+            // Save to localStorage
+            localStorage.setItem('raisec-realistic', JSON.stringify(data));
+            
+            // Navigate to next step
+            window.location.href = 'investigative-raisec.html';
+        });
+        
+        // Load saved data
+        const savedData = localStorage.getItem('raisec-realistic');
+        if (savedData) {
+            const data = JSON.parse(savedData);
+            Object.keys(data).forEach(key => {
+                const field = document.querySelector(`[name="${key}"]`);
+                if (field) {
+                    field.value = data[key];
+                }
+            });
+        }
+    </script>
+</body>
+</html>

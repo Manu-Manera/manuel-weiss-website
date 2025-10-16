@@ -1,0 +1,339 @@
+/* RAISEC Hexagon Diagram Styles */
+
+.raisec-hexagon {
+    position: relative;
+    width: 400px;
+    height: 400px;
+    margin: 0 auto;
+}
+
+.hexagon-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 120px;
+    height: 120px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    z-index: 10;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    animation: pulse 2s infinite;
+}
+
+.center-text {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 0.2rem;
+}
+
+.center-subtitle {
+    font-size: 0.8rem;
+    opacity: 0.8;
+}
+
+.hexagon-sector {
+    position: absolute;
+    width: 0;
+    height: 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 5;
+}
+
+.hexagon-sector:hover {
+    transform: scale(1.1);
+    z-index: 15;
+}
+
+.hexagon-sector::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: inherit;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+}
+
+.hexagon-sector:hover::before {
+    opacity: 1;
+}
+
+.sector-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: white;
+    font-weight: 600;
+    z-index: 6;
+    pointer-events: none;
+}
+
+.sector-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.3rem;
+}
+
+.sector-title {
+    font-size: 0.9rem;
+    margin-bottom: 0.2rem;
+}
+
+.sector-subtitle {
+    font-size: 0.7rem;
+    opacity: 0.8;
+}
+
+/* Realistisch (Orange) - Top */
+.hexagon-sector.realistic {
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 100px solid transparent;
+    border-right: 100px solid transparent;
+    border-bottom: 80px solid #FF9800;
+    width: 200px;
+    height: 80px;
+}
+
+/* Investigativ (Blau) - Top Right */
+.hexagon-sector.investigative {
+    top: 20%;
+    right: 0;
+    border-top: 100px solid transparent;
+    border-bottom: 100px solid transparent;
+    border-left: 80px solid #2196F3;
+    width: 80px;
+    height: 200px;
+}
+
+/* Künstlerisch (Lila) - Bottom Right */
+.hexagon-sector.artistic {
+    bottom: 0;
+    right: 0;
+    border-left: 100px solid transparent;
+    border-right: 100px solid transparent;
+    border-top: 80px solid #9C27B0;
+    width: 200px;
+    height: 80px;
+}
+
+/* Sozial (Grün) - Bottom Left */
+.hexagon-sector.social {
+    bottom: 0;
+    left: 0;
+    border-left: 100px solid transparent;
+    border-right: 100px solid transparent;
+    border-top: 80px solid #4CAF50;
+    width: 200px;
+    height: 80px;
+}
+
+/* Unternehmerisch (Rot) - Top Left */
+.hexagon-sector.enterprising {
+    top: 20%;
+    left: 0;
+    border-top: 100px solid transparent;
+    border-bottom: 100px solid transparent;
+    border-right: 80px solid #F44336;
+    width: 80px;
+    height: 200px;
+}
+
+/* Konventionell (Grau) - Center */
+.hexagon-sector.conventional {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 120px;
+    height: 120px;
+    background: #607D8B;
+    border-radius: 50%;
+    z-index: 1;
+}
+
+/* Animationen */
+@keyframes pulse {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); }
+    50% { transform: translate(-50%, -50%) scale(1.05); }
+}
+
+@keyframes rotate {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+.hexagon-sector {
+    animation: rotate 20s linear infinite;
+}
+
+.hexagon-sector:hover {
+    animation-play-state: paused;
+}
+
+/* Responsive Hexagon */
+@media (max-width: 768px) {
+    .raisec-hexagon {
+        width: 300px;
+        height: 300px;
+    }
+    
+    .hexagon-center {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .center-text {
+        font-size: 1rem;
+    }
+    
+    .center-subtitle {
+        font-size: 0.7rem;
+    }
+    
+    .sector-icon {
+        font-size: 1.2rem;
+    }
+    
+    .sector-title {
+        font-size: 0.8rem;
+    }
+    
+    .sector-subtitle {
+        font-size: 0.6rem;
+    }
+    
+    /* Anpassung der Sektoren für kleinere Größe */
+    .hexagon-sector.realistic {
+        border-left: 75px solid transparent;
+        border-right: 75px solid transparent;
+        border-bottom: 60px solid #FF9800;
+        width: 150px;
+        height: 60px;
+    }
+    
+    .hexagon-sector.investigative {
+        border-top: 75px solid transparent;
+        border-bottom: 75px solid transparent;
+        border-left: 60px solid #2196F3;
+        width: 60px;
+        height: 150px;
+    }
+    
+    .hexagon-sector.artistic {
+        border-left: 75px solid transparent;
+        border-right: 75px solid transparent;
+        border-top: 60px solid #9C27B0;
+        width: 150px;
+        height: 60px;
+    }
+    
+    .hexagon-sector.social {
+        border-left: 75px solid transparent;
+        border-right: 75px solid transparent;
+        border-top: 60px solid #4CAF50;
+        width: 150px;
+        height: 60px;
+    }
+    
+    .hexagon-sector.enterprising {
+        border-top: 75px solid transparent;
+        border-bottom: 75px solid transparent;
+        border-right: 60px solid #F44336;
+        width: 60px;
+        height: 150px;
+    }
+    
+    .hexagon-sector.conventional {
+        width: 80px;
+        height: 80px;
+    }
+}
+
+@media (max-width: 480px) {
+    .raisec-hexagon {
+        width: 250px;
+        height: 250px;
+    }
+    
+    .hexagon-center {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .center-text {
+        font-size: 0.8rem;
+    }
+    
+    .center-subtitle {
+        font-size: 0.6rem;
+    }
+    
+    .sector-icon {
+        font-size: 1rem;
+    }
+    
+    .sector-title {
+        font-size: 0.7rem;
+    }
+    
+    .sector-subtitle {
+        font-size: 0.5rem;
+    }
+    
+    /* Weitere Anpassung für sehr kleine Bildschirme */
+    .hexagon-sector.realistic {
+        border-left: 60px solid transparent;
+        border-right: 60px solid transparent;
+        border-bottom: 50px solid #FF9800;
+        width: 120px;
+        height: 50px;
+    }
+    
+    .hexagon-sector.investigative {
+        border-top: 60px solid transparent;
+        border-bottom: 60px solid transparent;
+        border-left: 50px solid #2196F3;
+        width: 50px;
+        height: 120px;
+    }
+    
+    .hexagon-sector.artistic {
+        border-left: 60px solid transparent;
+        border-right: 60px solid transparent;
+        border-top: 50px solid #9C27B0;
+        width: 120px;
+        height: 50px;
+    }
+    
+    .hexagon-sector.social {
+        border-left: 60px solid transparent;
+        border-right: 60px solid transparent;
+        border-top: 50px solid #4CAF50;
+        width: 120px;
+        height: 50px;
+    }
+    
+    .hexagon-sector.enterprising {
+        border-top: 60px solid transparent;
+        border-bottom: 60px solid transparent;
+        border-right: 50px solid #F44336;
+        width: 50px;
+        height: 120px;
+    }
+    
+    .hexagon-sector.conventional {
+        width: 60px;
+        height: 60px;
+    }
+}
