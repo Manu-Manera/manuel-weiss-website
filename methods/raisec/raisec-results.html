@@ -162,6 +162,232 @@
 
     <script src="js/raisec-workflow.js"></script>
     <script>
+        // Load and process RAISEC data
+        document.addEventListener('DOMContentLoaded', function() {
+            loadRAISECResults();
+        });
+
+        function loadRAISECResults() {
+            // Load data from all RAISEC types
+            const realisticData = JSON.parse(localStorage.getItem('raisec-realistic') || '{}');
+            const investigativeData = JSON.parse(localStorage.getItem('raisec-investigative') || '{}');
+            const artisticData = JSON.parse(localStorage.getItem('raisec-artistic') || '{}');
+            const socialData = JSON.parse(localStorage.getItem('raisec-social') || '{}');
+            const enterprisingData = JSON.parse(localStorage.getItem('raisec-enterprising') || '{}');
+            const conventionalData = JSON.parse(localStorage.getItem('raisec-conventional') || '{}');
+
+            // Calculate scores for each type
+            const scores = {
+                'R': calculateTypeScore(realisticData),
+                'I': calculateTypeScore(investigativeData),
+                'A': calculateTypeScore(artisticData),
+                'S': calculateTypeScore(socialData),
+                'E': calculateTypeScore(enterprisingData),
+                'C': calculateTypeScore(conventionalData)
+            };
+
+            // Find main type
+            const mainType = findMainType(scores);
+            
+            // Update UI with real data
+            updateMainType(mainType, scores[mainType]);
+            updateDetailedEvaluation(scores);
+            updateCareerRecommendations(mainType, scores);
+            updatePersonalityInterpretation(mainType, scores);
+            updateDevelopmentRecommendations(mainType, scores);
+        }
+
+        function calculateTypeScore(data) {
+            if (!data || Object.keys(data).length === 0) return 0;
+            
+            // Calculate average from all slider values
+            const sliderValues = Object.values(data).filter(value => 
+                typeof value === 'string' && !isNaN(parseInt(value)) && parseInt(value) >= 1 && parseInt(value) <= 10
+            );
+            
+            if (sliderValues.length === 0) return 0;
+            
+            const sum = sliderValues.reduce((acc, val) => acc + parseInt(val), 0);
+            return Math.round((sum / sliderValues.length) * 10) / 10;
+        }
+
+        function findMainType(scores) {
+            return Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
+        }
+
+        function updateMainType(type, score) {
+            const typeMap = {
+                'R': { name: 'Realistisch', icon: '🔧', description: 'Praktisch-technisch orientiert, handwerklich begabt' },
+                'I': { name: 'Investigativ', icon: '🔬', description: 'Forschend-analytisch, wissenschaftlich interessiert' },
+                'A': { name: 'Künstlerisch', icon: '🎨', description: 'Kreativ-künstlerisch, expressiv' },
+                'S': { name: 'Sozial', icon: '👥', description: 'Menschen-orientiert, helfend' },
+                'E': { name: 'Unternehmerisch', icon: '💼', description: 'Führungs-orientiert, überzeugend' },
+                'C': { name: 'Konventionell', icon: '📊', description: 'Strukturiert, regelbasiert' }
+            };
+
+            const typeInfo = typeMap[type];
+            document.getElementById('mainType').innerHTML = `
+                <div class="type-icon">${typeInfo.icon}</div>
+                <div class="type-name">${typeInfo.name} (${type})</div>
+                <div class="type-score">${score}/10</div>
+                <div class="type-description">${typeInfo.description}</div>
+            `;
+        }
+
+        function updateDetailedEvaluation(scores) {
+            const evaluationContent = document.getElementById('detailedEvaluation');
+            let html = '<div class="scores-grid">';
+            
+            Object.entries(scores).forEach(([type, score]) => {
+                const typeMap = {
+                    'R': 'Realistisch', 'I': 'Investigativ', 'A': 'Künstlerisch',
+                    'S': 'Sozial', 'E': 'Unternehmerisch', 'C': 'Konventionell'
+                };
+                
+                html += `
+                    <div class="score-item">
+                        <div class="score-label">${typeMap[type]}</div>
+                        <div class="score-bar">
+                            <div class="score-fill" style="width: ${(score/10)*100}%"></div>
+                        </div>
+                        <div class="score-value">${score}/10</div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            evaluationContent.innerHTML = html;
+        }
+
+        function updateCareerRecommendations(mainType, scores) {
+            const careerFields = document.getElementById('careerFields');
+            const recommendations = getCareerRecommendations(mainType, scores);
+            
+            let html = '<div class="career-grid">';
+            recommendations.forEach(career => {
+                html += `
+                    <div class="career-field">
+                        <div class="field-icon">💼</div>
+                        <div class="field-name">${career.name}</div>
+                        <div class="field-match">${career.match}</div>
+                        <div class="field-score">${career.score}/10</div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            
+            careerFields.innerHTML = html;
+        }
+
+        function getCareerRecommendations(mainType, scores) {
+            const careers = careerDatabase[mainType] || [];
+            const topCareers = careers.slice(0, 10);
+            
+            return topCareers.map((career, index) => ({
+                name: career,
+                match: index < 3 ? 'Sehr gut' : 'Gut',
+                score: Math.round(scores[mainType] * (0.9 + Math.random() * 0.2))
+            }));
+        }
+
+        function updatePersonalityInterpretation(mainType, scores) {
+            const interpretationContent = document.getElementById('interpretationContent');
+            const interpretations = {
+                'R': {
+                    title: 'Dein realistischer Typ',
+                    strengths: ['Praktische Problemlösung', 'Handwerkliche Fähigkeiten', 'Technisches Verständnis'],
+                    development: ['Kreativität entwickeln', 'Soziale Kompetenzen stärken', 'Führungsqualitäten aufbauen']
+                },
+                'I': {
+                    title: 'Dein investigativer Typ',
+                    strengths: ['Analytisches Denken', 'Forschungsdrang', 'Wissenschaftliche Methodik'],
+                    development: ['Praktische Anwendung', 'Kommunikationsfähigkeiten', 'Teamarbeit']
+                },
+                'A': {
+                    title: 'Dein künstlerischer Typ',
+                    strengths: ['Kreativität', 'Ästhetisches Empfinden', 'Innovation'],
+                    development: ['Strukturierte Arbeitsweise', 'Geschäftssinn', 'Technische Fähigkeiten']
+                },
+                'S': {
+                    title: 'Dein sozialer Typ',
+                    strengths: ['Empathie', 'Kommunikationsfähigkeit', 'Teamarbeit'],
+                    development: ['Analytisches Denken', 'Führungsqualitäten', 'Technische Kompetenzen']
+                },
+                'E': {
+                    title: 'Dein unternehmerischer Typ',
+                    strengths: ['Führungsqualitäten', 'Überzeugungskraft', 'Initiative'],
+                    development: ['Empathie entwickeln', 'Analytische Fähigkeiten', 'Kreativität fördern']
+                },
+                'C': {
+                    title: 'Dein konventioneller Typ',
+                    strengths: ['Organisation', 'Präzision', 'Zuverlässigkeit'],
+                    development: ['Kreativität entwickeln', 'Führungsqualitäten', 'Soziale Kompetenzen']
+                }
+            };
+
+            const interpretation = interpretations[mainType];
+            interpretationContent.innerHTML = `
+                <h3>${interpretation.title}</h3>
+                <div class="interpretation-section">
+                    <h4>Deine Stärken:</h4>
+                    <ul>
+                        ${interpretation.strengths.map(strength => `<li>${strength}</li>`).join('')}
+                    </ul>
+                </div>
+                <div class="interpretation-section">
+                    <h4>Entwicklungsmöglichkeiten:</h4>
+                    <ul>
+                        ${interpretation.development.map(dev => `<li>${dev}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+        }
+
+        function updateDevelopmentRecommendations(mainType, scores) {
+            const recommendationsList = document.getElementById('recommendationsList');
+            const recommendations = {
+                'R': [
+                    'Besuche handwerkliche Kurse und Workshops',
+                    'Engagiere dich in technischen Projekten',
+                    'Netzwerke mit anderen Technikern und Handwerkern',
+                    'Entwickle deine praktischen Fähigkeiten weiter'
+                ],
+                'I': [
+                    'Besuche wissenschaftliche Konferenzen und Seminare',
+                    'Engagiere dich in Forschungsprojekten',
+                    'Lese Fachliteratur und wissenschaftliche Artikel',
+                    'Entwickle deine analytischen Fähigkeiten'
+                ],
+                'A': [
+                    'Besuche Kunstausstellungen und Museen',
+                    'Engagiere dich in kreativen Projekten',
+                    'Experimentiere mit verschiedenen künstlerischen Medien',
+                    'Entwickle deine künstlerischen Fähigkeiten'
+                ],
+                'S': [
+                    'Engagiere dich in sozialen Projekten',
+                    'Besuche Kommunikations- und Führungskurse',
+                    'Arbeite in Teams und Gruppenprojekten',
+                    'Entwickle deine sozialen Kompetenzen'
+                ],
+                'E': [
+                    'Besuche Führungskurse und Management-Seminare',
+                    'Engagiere dich in unternehmerischen Projekten',
+                    'Netzwerke mit anderen Führungskräften',
+                    'Entwickle deine Führungsqualitäten'
+                ],
+                'C': [
+                    'Besuche Organisations- und Management-Kurse',
+                    'Arbeite an strukturierten Projekten',
+                    'Entwickle deine organisatorischen Fähigkeiten',
+                    'Lerne neue Systeme und Prozesse kennen'
+                ]
+            };
+
+            const recs = recommendations[mainType] || [];
+            recommendationsList.innerHTML = recs.map(rec => `<li>${rec}</li>`).join('');
+        }
+
         // Comprehensive Career Database (200+ professions)
         const careerDatabase = {
             'R': [
