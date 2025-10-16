@@ -518,125 +518,127 @@
             }
         }
         
-        // EXECUTIVE COVER PAGE: Hochglanz-Manager-Broschüre
+        // MODERNE COVER PAGE: Clean Design mit Pastellfarben
         function createIkigaiCoverPage(doc) {
-            // Premium Executive Header mit Gold-Akzenten
-            doc.setFillColor(15, 23, 42); // Dunkelblau
-            doc.rect(0, 0, 210, 60, 'F');
+            // Moderner Pastell-Header
+            doc.setFillColor(240, 248, 255); // Helles Blau
+            doc.rect(0, 0, 210, 50, 'F');
             
-            // Gold-Akzent-Linie
-            doc.setFillColor(255, 215, 0); // Gold
-            doc.rect(0, 58, 210, 2, 'F');
+            // Pastell-Akzent-Linie
+            doc.setFillColor(255, 182, 193); // Pastell-Pink
+            doc.rect(0, 48, 210, 2, 'F');
             
-            // Executive Titel
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(36);
+            // Moderner Titel
+            doc.setTextColor(60, 60, 60);
+            doc.setFontSize(32);
             doc.setFont('helvetica', 'bold');
-            doc.text('IKIGAI', 20, 35);
+            doc.text('IKIGAI', 20, 30);
             
-            // Gold-Untertitel
-            doc.setTextColor(255, 215, 0);
-            doc.setFontSize(18);
-            doc.setFont('helvetica', 'bold');
-            doc.text('Executive Leadership Framework', 20, 50);
+            // Pastell-Untertitel
+            doc.setTextColor(100, 100, 100);
+            doc.setFontSize(16);
+            doc.setFont('helvetica', 'normal');
+            doc.text('Executive Leadership Framework', 20, 42);
             
-            // Premium Ikigai-Diagramm
+            // Modernes Glas-Diagramm
             drawExecutiveIkigaiDiagram(doc, 105, 120);
             
-            // Executive Beschreibung in Premium-Box
-            doc.setFillColor(248, 250, 252);
-            doc.rect(20, 180, 170, 70, 'F');
-            doc.setDrawColor(15, 23, 42);
-            doc.setLineWidth(3);
-            doc.rect(20, 180, 170, 70, 'S');
+            // Moderne Beschreibung in Clean-Box
+            doc.setFillColor(255, 255, 255);
+            doc.rect(15, 180, 180, 75, 'F');
+            doc.setDrawColor(200, 200, 200);
+            doc.setLineWidth(1);
+            doc.rect(15, 180, 180, 75, 'S');
             
-            // Gold-Akzent oben
-            doc.setFillColor(255, 215, 0);
-            doc.rect(20, 180, 170, 4, 'F');
+            // Pastell-Akzent oben
+            doc.setFillColor(144, 238, 144); // Pastell-Grün
+            doc.rect(15, 180, 180, 3, 'F');
             
-            doc.setTextColor(15, 23, 42);
-            doc.setFontSize(16);
+            doc.setTextColor(60, 60, 60);
+            doc.setFontSize(14);
             doc.setFont('helvetica', 'bold');
-            doc.text('Strategic Purpose Alignment', 30, 195);
+            doc.text('Strategic Purpose Alignment', 25, 195);
             
-            doc.setFontSize(11);
+            doc.setFontSize(10);
             doc.setFont('helvetica', 'normal');
             
-            const executiveDescription = `Ikigai ist ein japanisches Führungsprinzip, das strategische Ausrichtung mit persönlicher Erfüllung verbindet. 
-Es definiert den optimalen Schnittpunkt zwischen:
+            const executiveDescription = `Ikigai ist ein japanisches Führungsprinzip, das strategische Ausrichtung mit persönlicher Erfüllung verbindet. Es definiert den optimalen Schnittpunkt zwischen:
 
 • PASSION - Ihre Führungsleidenschaft und Vision
 • MISSION - Ihr strategischer Beitrag zur Organisation  
 • VOCATION - Ihre Kernkompetenzen und Expertise
 • PROFESSION - Ihr beruflicher Erfolg und Impact
 
-Für Executive Leaders bedeutet Ikigai die perfekte Balance zwischen strategischer Führung 
-und persönlicher Erfüllung - der Schlüssel zu nachhaltigem Führungserfolg.`;
+Für Executive Leaders bedeutet Ikigai die perfekte Balance zwischen strategischer Führung und persönlicher Erfüllung - der Schlüssel zu nachhaltigem Führungserfolg.`;
             
-            const lines = doc.splitTextToSize(executiveDescription, 150);
-            doc.text(lines, 30, 205);
+            const lines = doc.splitTextToSize(executiveDescription, 160);
+            doc.text(lines, 25, 205);
             
-            // Executive Footer
-            doc.setFillColor(15, 23, 42);
+            // Moderner Footer
+            doc.setFillColor(248, 250, 252);
             doc.rect(0, 270, 210, 20, 'F');
             
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(10);
+            doc.setTextColor(100, 100, 100);
+            doc.setFontSize(9);
             doc.setFont('helvetica', 'normal');
             doc.text(`Executive Report - ${new Date().toLocaleDateString('de-DE')}`, 20, 280);
             doc.text('Manuel Weiss Leadership Consulting', 20, 285);
         }
         
-        // Executive Ikigai-Diagramm mit Premium Design
+        // Modernes Glas-Diagramm mit Pastellfarben
         function drawExecutiveIkigaiDiagram(doc, centerX, centerY) {
-            const radius = 40;
+            const radius = 45;
             
-            // Executive Farbpalette - Business-Professionell
+            // Pastellfarben für modernen Look
             const circles = [
-                {x: centerX - 30, y: centerY - 30, color: [220, 38, 127], label: 'PASSION\nLeadership Vision'},
-                {x: centerX + 30, y: centerY - 30, color: [16, 185, 129], label: 'MISSION\nStrategic Impact'},
-                {x: centerX - 30, y: centerY + 30, color: [59, 130, 246], label: 'VOCATION\nCore Expertise'},
-                {x: centerX + 30, y: centerY + 30, color: [168, 85, 247], label: 'PROFESSION\nExecutive Success'}
+                {x: centerX - 35, y: centerY - 35, color: [255, 182, 193], label: 'PASSION', sublabel: 'Leadership Vision'},
+                {x: centerX + 35, y: centerY - 35, color: [144, 238, 144], label: 'MISSION', sublabel: 'Strategic Impact'},
+                {x: centerX - 35, y: centerY + 35, color: [173, 216, 230], label: 'VOCATION', sublabel: 'Core Expertise'},
+                {x: centerX + 35, y: centerY + 35, color: [221, 160, 221], label: 'PROFESSION', sublabel: 'Executive Success'}
             ];
             
-            // Premium Kreise mit Business-Design
+            // Glas-Effekt Kreise
             circles.forEach(circle => {
                 // Schatten für Tiefe
-                doc.setFillColor(100, 100, 100);
-                doc.circle(circle.x + 3, circle.y + 3, radius, 'F');
+                doc.setFillColor(200, 200, 200, 0.3);
+                doc.circle(circle.x + 2, circle.y + 2, radius, 'F');
                 
-                // Hauptkreis mit Business-Farben
-                doc.setFillColor(circle.color[0], circle.color[1], circle.color[2]);
+                // Hauptkreis mit Pastellfarben (halbtransparent)
+                doc.setFillColor(circle.color[0], circle.color[1], circle.color[2], 0.7);
                 doc.circle(circle.x, circle.y, radius, 'F');
                 
-                // Gold-Border für Premium-Look
-                doc.setDrawColor(255, 215, 0);
+                // Glas-Border
+                doc.setDrawColor(255, 255, 255);
                 doc.setLineWidth(2);
                 doc.circle(circle.x, circle.y, radius, 'S');
                 
-                // Executive Text
-                doc.setTextColor(255, 255, 255);
-                doc.setFontSize(8);
+                // Text mit besserer Positionierung
+                doc.setTextColor(60, 60, 60);
+                doc.setFontSize(10);
                 doc.setFont('helvetica', 'bold');
-                doc.text(circle.label, circle.x - 20, circle.y - 5);
+                doc.text(circle.label, circle.x - 15, circle.y - 8);
+                
+                doc.setFontSize(7);
+                doc.setFont('helvetica', 'normal');
+                doc.text(circle.sublabel, circle.x - 18, circle.y + 5);
             });
             
-            // Executive Zentrum - Premium Design
-            doc.setFillColor(15, 23, 42); // Dunkelblau
-            doc.circle(centerX, centerY, 25, 'F');
+            // Modernes Zentrum
+            doc.setFillColor(240, 248, 255, 0.8);
+            doc.circle(centerX, centerY, 30, 'F');
             
-            // Gold-Border um Zentrum
-            doc.setDrawColor(255, 215, 0);
-            doc.setLineWidth(4);
-            doc.circle(centerX, centerY, 25, 'S');
+            // Glas-Border um Zentrum
+            doc.setDrawColor(255, 255, 255);
+            doc.setLineWidth(3);
+            doc.circle(centerX, centerY, 30, 'S');
             
-            // Executive Zentrum-Text
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(14);
+            // Zentrum-Text
+            doc.setTextColor(60, 60, 60);
+            doc.setFontSize(12);
             doc.setFont('helvetica', 'bold');
-            doc.text('IKIGAI', centerX - 12, centerY - 2);
+            doc.text('IKIGAI', centerX - 10, centerY - 3);
             
-            doc.setFontSize(8);
+            doc.setFontSize(7);
             doc.setFont('helvetica', 'normal');
             doc.text('Executive', centerX - 8, centerY + 8);
         }
@@ -692,43 +694,39 @@ Schnittpunkt, der dir Erfüllung, Sinn und Erfolg bringt.`;
             doc.text(lines, 20, yPos);
         }
         
-        // EXECUTIVE STEP-SEITEN: Business-Fokussierte Leadership-Entwicklung
+        // MODERNE STEP-SEITEN: Clean Design mit besserer Text-Positionierung
         function createStepPage(doc, step, stepData) {
-            // Executive Header mit Premium Design
-            doc.setFillColor(15, 23, 42); // Dunkelblau
-            doc.rect(0, 0, 210, 35, 'F');
+            // Moderner Pastell-Header
+            doc.setFillColor(240, 248, 255); // Helles Blau
+            doc.rect(0, 0, 210, 30, 'F');
             
-            // Gold-Akzent-Linie
-            doc.setFillColor(255, 215, 0);
-            doc.rect(0, 33, 210, 2, 'F');
+            // Pastell-Akzent-Linie
+            doc.setFillColor(255, 182, 193); // Pastell-Pink
+            doc.rect(0, 28, 210, 2, 'F');
             
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(20);
+            doc.setTextColor(60, 60, 60);
+            doc.setFontSize(16);
             doc.setFont('helvetica', 'bold');
-            doc.text(`Executive Module ${step}: ${getExecutiveStepTitle(step)}`, 20, 25);
+            doc.text(`Module ${step}: ${getExecutiveStepTitle(step)}`, 20, 20);
             
-            let yPos = 50;
+            let yPos = 40;
             
-            // Executive Step-Beschreibung
-            doc.setFillColor(248, 250, 252);
-            doc.rect(15, yPos - 5, 180, 18, 'F');
-            doc.setDrawColor(15, 23, 42);
-            doc.setLineWidth(2);
-            doc.rect(15, yPos - 5, 180, 18, 'S');
+            // Moderne Step-Beschreibung
+            doc.setFillColor(255, 255, 255);
+            doc.rect(15, yPos - 5, 180, 15, 'F');
+            doc.setDrawColor(200, 200, 200);
+            doc.setLineWidth(1);
+            doc.rect(15, yPos - 5, 180, 15, 'S');
             
-            // Gold-Akzent oben
-            doc.setFillColor(255, 215, 0);
-            doc.rect(15, yPos - 5, 180, 3, 'F');
+            // Pastell-Akzent oben
+            doc.setFillColor(144, 238, 144); // Pastell-Grün
+            doc.rect(15, yPos - 5, 180, 2, 'F');
             
-            doc.setTextColor(15, 23, 42);
-            doc.setFontSize(12);
-            doc.setFont('helvetica', 'bold');
-            doc.text(`Strategic Leadership Assessment`, 25, yPos + 8);
-            
+            doc.setTextColor(60, 60, 60);
             doc.setFontSize(10);
             doc.setFont('helvetica', 'normal');
-            doc.text(`Complete the following executive questions to define your leadership Ikigai:`, 25, yPos + 15);
-            yPos += 30;
+            doc.text(`Complete the following executive questions to define your leadership Ikigai:`, 20, yPos + 5);
+            yPos += 20;
             
             // Alle Fragen für diesen Step
             const stepQuestions = getStepQuestions(step);
@@ -741,17 +739,21 @@ Schnittpunkt, der dir Erfüllung, Sinn und Erfolg bringt.`;
                 const question = questionData.question;
                 const answer = stepData[questionData.key];
                 
-                // Moderne Frage-Box
-                doc.setFillColor(240, 248, 255);
+                // Moderne Frage-Box mit Pastellfarben
+                doc.setFillColor(255, 255, 255);
                 doc.rect(15, yPos - 3, 180, 12, 'F');
-                doc.setDrawColor(102, 126, 234);
+                doc.setDrawColor(200, 200, 200);
                 doc.setLineWidth(1);
                 doc.rect(15, yPos - 3, 180, 12, 'S');
                 
+                // Pastell-Akzent oben
+                doc.setFillColor(173, 216, 230); // Pastell-Blau
+                doc.rect(15, yPos - 3, 180, 2, 'F');
+                
                 // Frage
                 doc.setFont('helvetica', 'bold');
-                doc.setTextColor(102, 126, 234);
-                doc.setFontSize(12);
+                doc.setTextColor(60, 60, 60);
+                doc.setFontSize(10);
                 doc.text(`${index + 1}. ${question}`, 20, yPos + 5);
                 yPos += 15;
                 
@@ -766,14 +768,19 @@ Schnittpunkt, der dir Erfüllung, Sinn und Erfolg bringt.`;
                     doc.text(lines, 25, yPos);
                     yPos += lines.length * 5 + 15;
                 } else {
-                    // Leere Zeilen zum Ausfüllen
-                    doc.setTextColor(150, 150, 150);
+                    // DURCHGEHENDE LINIEN über gesamte Breite
+                    doc.setDrawColor(200, 200, 200);
+                    doc.setLineWidth(0.8);
                     for (let i = 0; i < 3; i++) {
-                        doc.text('_________________________________________________', 25, yPos);
-                        yPos += 6;
+                        doc.line(20, yPos + (i * 4), 190, yPos + (i * 4));
                     }
-                    doc.setTextColor(50, 50, 50);
-                    yPos += 5;
+                    
+                    // "Ausfüllen" Text
+                    doc.setTextColor(180, 180, 180);
+                    doc.setFontSize(7);
+                    doc.setFont('helvetica', 'italic');
+                    doc.text('Hier handschriftlich ausfüllen', 20, yPos + 12);
+                    yPos += 15;
                 }
                 
                 yPos += 10;
@@ -790,15 +797,22 @@ Schnittpunkt, der dir Erfüllung, Sinn und Erfolg bringt.`;
                 yPos = 20;
             }
             
-            // Tipps-Header
-            doc.setFillColor(46, 204, 113);
+            // Moderne Tipps-Header mit Pastellfarben
+            doc.setFillColor(240, 248, 255); // Helles Blau
             doc.rect(15, yPos - 5, 180, 12, 'F');
+            doc.setDrawColor(200, 200, 200);
+            doc.setLineWidth(1);
+            doc.rect(15, yPos - 5, 180, 12, 'S');
             
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(12);
+            // Pastell-Akzent oben
+            doc.setFillColor(255, 182, 193); // Pastell-Pink
+            doc.rect(15, yPos - 5, 180, 2, 'F');
+            
+            doc.setTextColor(60, 60, 60);
+            doc.setFontSize(10);
             doc.setFont('helvetica', 'bold');
-            doc.text('💡 Hilfreiche Tipps & Ressourcen', 20, yPos + 3);
-            yPos += 20;
+            doc.text('💡 Executive Resources & Tools', 20, yPos + 3);
+            yPos += 15;
             
             // Tipps basierend auf Step
             const tips = getStepTips(step);
