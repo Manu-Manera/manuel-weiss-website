@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Konventionell (C) - RAISEC | Manuel Weiss</title>
+    <title>RAISEC Konventionell - Persönlichkeitsentwicklung</title>
     <link rel="stylesheet" href="css/raisec-smart-styles.css">
     <link rel="stylesheet" href="css/conventional-styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <!-- Progress Bar -->
@@ -20,24 +21,16 @@
 
     <!-- Hero Section -->
     <section class="hero-section">
-        <div class="hero-background">
-            <div class="sparkling-stars"></div>
-        </div>
+        <div class="hero-background"></div>
+        <div class="sparkling-stars"></div>
         <div class="container">
             <div class="hero-content">
-                <div class="hero-text">
-                    <h1 class="hero-title">
-                        <span class="title-icon">📊</span>
-                        Konventionell (C)
-                    </h1>
-                    <p class="hero-subtitle">
-                        Praktisch-technisch orientiert, handwerklich begabt
-                    </p>
-                    <p class="hero-description">
-                        Du löst gerne konkrete Probleme, arbeitest praktisch und technisch. 
-                        Handwerkliche Tätigkeiten und technische Herausforderungen motivieren dich.
-                    </p>
-                </div>
+                <h1 class="hero-title">Konventionell (C)</h1>
+                <p class="hero-subtitle">Strukturiert, regelbasiert, arbeitet gerne mit Daten und Systemen</p>
+                <p class="hero-description">
+                    Du bist ein konventioneller Typ, der gerne strukturiert arbeitet. 
+                    Organisation, Präzision und Zuverlässigkeit sind deine Stärken.
+                </p>
             </div>
         </div>
     </section>
@@ -54,38 +47,38 @@
                     <form class="questions-form" id="conventional-form">
                         <!-- Frage 1 -->
                         <div class="question-card">
-                            <h3 class="question-title">1. Technische Fähigkeiten und Handwerk</h3>
+                            <h3 class="question-title">1. Organisatorische Fähigkeiten</h3>
                             <p class="question-description">
-                                Wie sehr interessierst du dich für technische Arbeiten und handwerkliche Tätigkeiten?
+                                Wie gerne organisierst du Dinge und arbeitest strukturiert?
                             </p>
                             <div class="question-hints">
                                 <h4>Denkanstöße:</h4>
                                 <div class="hints-sliders">
                                     <div class="hint-slider">
-                                        <label>Reparierst du gerne Dinge selbst?</label>
+                                        <label>Organisierst du gerne deine Arbeitsabläufe?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="repair_things_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="organize_workflows_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
                                     <div class="hint-slider">
-                                        <label>Arbeitest du gerne mit Werkzeugen?</label>
+                                        <label>Erstellst du gerne Listen und Pläne?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="work_tools_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="create_lists_plans_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
                                     <div class="hint-slider">
-                                        <label>Interessierst du dich für technische Zusammenhänge?</label>
+                                        <label>Strukturierst du gerne Informationen und Daten?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="technical_understanding_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="structure_information_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
                                     <div class="hint-slider">
-                                        <label>Machst du gerne praktische Experimente?</label>
+                                        <label>Kannst du gut Prioritäten setzen?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="practical_experiments_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="set_priorities_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
@@ -93,11 +86,11 @@
                             </div>
                             <div class="answer-section">
                                 <div class="slider-container">
-                                    <label for="technical_skills_slider">Wie wichtig sind dir technische Fähigkeiten insgesamt? (1-10)</label>
+                                    <label for="organizational_skills_slider">Wie wichtig sind dir organisatorische Fähigkeiten insgesamt? (1-10)</label>
                                     <div class="slider-wrapper">
                                         <input type="range" 
-                                               id="technical_skills_slider" 
-                                               name="technical_skills_slider" 
+                                               id="organizational_skills_slider" 
+                                               name="organizational_skills_slider" 
                                                min="1" 
                                                max="10" 
                                                value="5" 
@@ -106,8 +99,8 @@
                                     </div>
                                 </div>
                                 <textarea 
-                                    name="technical_skills" 
-                                    placeholder="Beschreibe deine technischen Interessen und Fähigkeiten..."
+                                    name="organizational_skills" 
+                                    placeholder="Beschreibe deine organisatorischen Fähigkeiten und wie du strukturiert arbeitest..."
                                     rows="4"
                                     required></textarea>
                             </div>
@@ -115,38 +108,38 @@
 
                         <!-- Frage 2 -->
                         <div class="question-card">
-                            <h3 class="question-title">2. Praktische Problemlösung</h3>
+                            <h3 class="question-title">2. Genauigkeit und Präzision</h3>
                             <p class="question-description">
-                                Wie gehst du an praktische Probleme heran und löst sie?
+                                Wie wichtig ist dir Genauigkeit und fehlerfreie Arbeit?
                             </p>
                             <div class="question-hints">
                                 <h4>Denkanstöße:</h4>
                                 <div class="hints-sliders">
                                     <div class="hint-slider">
-                                        <label>Analysierst du Probleme systematisch?</label>
+                                        <label>Arbeitest du gerne sehr genau und präzise?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="analyze_systematically_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="work_precisely_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
                                     <div class="hint-slider">
-                                        <label>Probierst du gerne verschiedene Lösungsansätze aus?</label>
+                                        <label>Ist es dir wichtig, Fehler zu vermeiden?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="try_different_approaches_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="avoid_errors_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
                                     <div class="hint-slider">
-                                        <label>Arbeitest du gerne mit konkreten Ergebnissen?</label>
+                                        <label>Kontrollierst du gerne deine Arbeit mehrfach?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="work_concrete_results_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="double_check_work_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
                                     <div class="hint-slider">
-                                        <label>Schätzt du praktische Erfahrung über theoretisches Wissen?</label>
+                                        <label>Magst du detaillierte und sorgfältige Arbeit?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="value_practical_experience_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="detailed_careful_work_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
@@ -154,11 +147,11 @@
                             </div>
                             <div class="answer-section">
                                 <div class="slider-container">
-                                    <label for="problem_solving_slider">Wie wichtig ist dir praktische Problemlösung? (1-10)</label>
+                                    <label for="accuracy_slider">Wie wichtig ist dir Genauigkeit insgesamt? (1-10)</label>
                                     <div class="slider-wrapper">
                                         <input type="range" 
-                                               id="problem_solving_slider" 
-                                               name="problem_solving_slider" 
+                                               id="accuracy_slider" 
+                                               name="accuracy_slider" 
                                                min="1" 
                                                max="10" 
                                                value="5" 
@@ -167,8 +160,8 @@
                                     </div>
                                 </div>
                                 <textarea 
-                                    name="problem_solving" 
-                                    placeholder="Beschreibe deine Herangehensweise an praktische Probleme..."
+                                    name="accuracy" 
+                                    placeholder="Beschreibe deine Genauigkeit und wie du fehlerfreie Arbeit leistest..."
                                     rows="4"
                                     required></textarea>
                             </div>
@@ -176,38 +169,38 @@
 
                         <!-- Frage 3 -->
                         <div class="question-card">
-                            <h3 class="question-title">3. Berufliche Präferenzen</h3>
+                            <h3 class="question-title">3. Systematisches Arbeiten</h3>
                             <p class="question-description">
-                                Welche beruflichen Tätigkeiten sprechen dich am meisten an?
+                                Wie gerne arbeitest du nach festen Regeln und Systemen?
                             </p>
                             <div class="question-hints">
                                 <h4>Denkanstöße:</h4>
                                 <div class="hints-sliders">
                                     <div class="hint-slider">
-                                        <label>Handwerkliche Berufe (Handwerker, Künstler, Kunsthandwerker)</label>
+                                        <label>Arbeitest du gerne nach festen Regeln?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="craft_professions_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="work_by_rules_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
                                     <div class="hint-slider">
-                                        <label>Praktische Berufe (Landwirt, Gärtner, Tierarzt)</label>
+                                        <label>Folgst du gerne etablierten Verfahren?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="practical_professions_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="follow_procedures_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
                                     <div class="hint-slider">
-                                        <label>IT-Berufe (Programmierer, Systemadministrator, Netzwerktechniker)</label>
+                                        <label>Magst du strukturierte Arbeitsabläufe?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="it_professions_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="structured_processes_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
                                     <div class="hint-slider">
-                                        <label>Maschinenbau (Ingenieur, Techniker, Mechaniker)</label>
+                                        <label>Arbeitest du gerne mit Checklisten?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="mechanical_engineering_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="work_with_checklists_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
@@ -215,11 +208,11 @@
                             </div>
                             <div class="answer-section">
                                 <div class="slider-container">
-                                    <label for="career_preferences_slider">Wie wichtig sind dir berufliche Tätigkeiten? (1-10)</label>
+                                    <label for="systematic_work_slider">Wie wichtig ist dir systematisches Arbeiten insgesamt? (1-10)</label>
                                     <div class="slider-wrapper">
                                         <input type="range" 
-                                               id="career_preferences_slider" 
-                                               name="career_preferences_slider" 
+                                               id="systematic_work_slider" 
+                                               name="systematic_work_slider" 
                                                min="1" 
                                                max="10" 
                                                value="5" 
@@ -228,8 +221,8 @@
                                     </div>
                                 </div>
                                 <textarea 
-                                    name="career_preferences" 
-                                    placeholder="Beschreibe deine beruflichen Interessen und Präferenzen..."
+                                    name="systematic_work" 
+                                    placeholder="Beschreibe dein systematisches Arbeiten und wie du Regeln befolgst..."
                                     rows="4"
                                     required></textarea>
                             </div>
@@ -237,38 +230,38 @@
 
                         <!-- Frage 4 -->
                         <div class="question-card">
-                            <h3 class="question-title">4. Arbeitsumgebung</h3>
+                            <h3 class="question-title">4. Zuverlässigkeit</h3>
                             <p class="question-description">
-                                In welcher Arbeitsumgebung fühlst du dich am wohlsten?
+                                Wie wichtig ist dir Zuverlässigkeit und Pünktlichkeit?
                             </p>
                             <div class="question-hints">
                                 <h4>Denkanstöße:</h4>
                                 <div class="hints-sliders">
                                     <div class="hint-slider">
-                                        <label>Arbeitest du gerne draußen oder drinnen?</label>
+                                        <label>Bist du immer pünktlich und zuverlässig?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="work_outside_inside_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="punctual_reliable_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
                                     <div class="hint-slider">
-                                        <label>Präferierst du Einzelarbeit oder Teamarbeit?</label>
+                                        <label>Hältst du gerne deine Versprechen ein?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="individual_team_work_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="keep_promises_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
                                     <div class="hint-slider">
-                                        <label>Magst du strukturierte oder flexible Arbeitszeiten?</label>
+                                        <label>Erfüllst du gerne deine Verpflichtungen?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="structured_flexible_hours_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="fulfill_obligations_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
                                     <div class="hint-slider">
-                                        <label>Arbeitest du gerne mit Maschinen oder Werkzeugen?</label>
+                                        <label>Ist es dir wichtig, als vertrauenswürdig zu gelten?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="work_machines_tools_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="be_trustworthy_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
@@ -276,11 +269,11 @@
                             </div>
                             <div class="answer-section">
                                 <div class="slider-container">
-                                    <label for="work_environment_slider">Wie wichtig ist dir die Arbeitsumgebung? (1-10)</label>
+                                    <label for="reliability_slider">Wie wichtig ist dir Zuverlässigkeit insgesamt? (1-10)</label>
                                     <div class="slider-wrapper">
                                         <input type="range" 
-                                               id="work_environment_slider" 
-                                               name="work_environment_slider" 
+                                               id="reliability_slider" 
+                                               name="reliability_slider" 
                                                min="1" 
                                                max="10" 
                                                value="5" 
@@ -289,8 +282,8 @@
                                     </div>
                                 </div>
                                 <textarea 
-                                    name="work_environment" 
-                                    placeholder="Beschreibe deine ideale Arbeitsumgebung..."
+                                    name="reliability" 
+                                    placeholder="Beschreibe deine Zuverlässigkeit und wie du Verpflichtungen erfüllst..."
                                     rows="4"
                                     required></textarea>
                             </div>
@@ -298,38 +291,38 @@
 
                         <!-- Frage 5 -->
                         <div class="question-card">
-                            <h3 class="question-title">5. Lernstil und Entwicklung</h3>
+                            <h3 class="question-title">5. Datenverarbeitung</h3>
                             <p class="question-description">
-                                Wie lernst du am besten neue Fähigkeiten?
+                                Wie gerne arbeitest du mit Zahlen, Daten und Tabellen?
                             </p>
                             <div class="question-hints">
                                 <h4>Denkanstöße:</h4>
                                 <div class="hints-sliders">
                                     <div class="hint-slider">
-                                        <label>Lernst du gerne durch praktische Übungen?</label>
+                                        <label>Arbeitest du gerne mit Excel und Tabellen?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="learn_practical_exercises_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="work_excel_tables_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
                                     <div class="hint-slider">
-                                        <label>Präferierst du Learning-by-Doing?</label>
+                                        <label>Analysierst du gerne Zahlen und Statistiken?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="learning_by_doing_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="analyze_numbers_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
                                     <div class="hint-slider">
-                                        <label>Interessierst du dich für technische Weiterbildungen?</label>
+                                        <label>Erstellst du gerne Berichte und Dokumentationen?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="technical_training_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="create_reports_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
                                     <div class="hint-slider">
-                                        <label>Magst du konkrete, messbare Ergebnisse?</label>
+                                        <label>Arbeitest du gerne mit Datenbanken?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="concrete_measurable_results_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="work_databases_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
@@ -337,11 +330,11 @@
                             </div>
                             <div class="answer-section">
                                 <div class="slider-container">
-                                    <label for="learning_style_slider">Wie wichtig ist dir praktisches Lernen? (1-10)</label>
+                                    <label for="data_processing_slider">Wie wichtig ist dir Datenverarbeitung insgesamt? (1-10)</label>
                                     <div class="slider-wrapper">
                                         <input type="range" 
-                                               id="learning_style_slider" 
-                                               name="learning_style_slider" 
+                                               id="data_processing_slider" 
+                                               name="data_processing_slider" 
                                                min="1" 
                                                max="10" 
                                                value="5" 
@@ -350,8 +343,8 @@
                                     </div>
                                 </div>
                                 <textarea 
-                                    name="learning_style" 
-                                    placeholder="Beschreibe deinen bevorzugten Lernstil..."
+                                    name="data_processing" 
+                                    placeholder="Beschreibe deine Datenverarbeitungsfähigkeiten und wie du mit Zahlen arbeitest..."
                                     rows="4"
                                     required></textarea>
                             </div>
@@ -359,38 +352,38 @@
 
                         <!-- Frage 6 -->
                         <div class="question-card">
-                            <h3 class="question-title">6. Werte und Motivation</h3>
+                            <h3 class="question-title">6. Ordnung und Struktur</h3>
                             <p class="question-description">
-                                Was motiviert dich in deiner beruflichen Tätigkeit?
+                                Wie wichtig ist dir Ordnung und eine strukturierte Umgebung?
                             </p>
                             <div class="question-hints">
                                 <h4>Denkanstöße:</h4>
                                 <div class="hints-sliders">
                                     <div class="hint-slider">
-                                        <label>Ist es dir wichtig, etwas Konkretes zu schaffen?</label>
+                                        <label>Hältst du gerne Ordnung in deiner Umgebung?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="create_something_concrete_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="keep_order_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
                                     <div class="hint-slider">
-                                        <label>Motiviert dich die Lösung praktischer Probleme?</label>
+                                        <label>Organisierst du gerne deine Arbeitsmaterialien?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="solve_practical_problems_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="organize_materials_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
                                     <div class="hint-slider">
-                                        <label>Schätzt du handwerkliche Qualität und Präzision?</label>
+                                        <label>Magst du klare Strukturen und Hierarchien?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="craft_quality_precision_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="clear_structures_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
                                     <div class="hint-slider">
-                                        <label>Ist dir Unabhängigkeit und Selbstständigkeit wichtig?</label>
+                                        <label>Arbeitest du gerne in aufgeräumten Räumen?</label>
                                         <div class="slider-wrapper">
-                                            <input type="range" name="independence_autonomy_slider" min="1" max="10" value="5" class="hint-slider-input">
+                                            <input type="range" name="tidy_workspaces_slider" min="1" max="10" value="5" class="hint-slider-input">
                                             <span class="slider-value">5</span>
                                         </div>
                                     </div>
@@ -398,11 +391,11 @@
                             </div>
                             <div class="answer-section">
                                 <div class="slider-container">
-                                    <label for="values_motivation_slider">Wie wichtig sind dir deine Werte? (1-10)</label>
+                                    <label for="order_structure_slider">Wie wichtig ist dir Ordnung und Struktur insgesamt? (1-10)</label>
                                     <div class="slider-wrapper">
                                         <input type="range" 
-                                               id="values_motivation_slider" 
-                                               name="values_motivation_slider" 
+                                               id="order_structure_slider" 
+                                               name="order_structure_slider" 
                                                min="1" 
                                                max="10" 
                                                value="5" 
@@ -411,8 +404,8 @@
                                     </div>
                                 </div>
                                 <textarea 
-                                    name="values_motivation" 
-                                    placeholder="Beschreibe deine Werte und Motivation..."
+                                    name="order_structure" 
+                                    placeholder="Beschreibe deine Vorliebe für Ordnung und wie du strukturiert arbeitest..."
                                     rows="4"
                                     required></textarea>
                             </div>
@@ -420,51 +413,81 @@
 
                         <!-- Navigation Buttons -->
                         <div class="navigation-buttons">
-                            <a href="index-raisec.html" class="btn-secondary">Zurück zur Übersicht</a>
-                            <a href="raisec-results.html" class="btn-primary">Weiter zu Auswertung</a>
-                        </div>                    </form>
+                            <a href="enterprising-raisec.html" class="btn btn-secondary">
+                                <span class="btn-icon">←</span>
+                                Zurück zu Unternehmerisch
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                Zur Auswertung
+                                <span class="btn-icon">→</span>
+                            </button>
+                        </div>
+                    </form>
                 </div>
 
                 <!-- Sidebar -->
                 <div class="sidebar">
-                    <div class="sidebar-card">
-                        <h3>💡 Tipps für konventionelle Typen</h3>
-                        <ul>
-                            <li>Nutze deine praktischen Fähigkeiten</li>
-                            <li>Suche nach technischen Herausforderungen</li>
-                            <li>Entwickle deine handwerklichen Skills</li>
-                            <li>Netzwerke mit anderen Technikern</li>
-                        </ul>
-                    </div>
+                    <div class="sidebar-content">
+                        <!-- Tipps Section -->
+                        <div class="sidebar-card">
+                            <div class="card-header">
+                                <h3>💡 Tipps für deine konventionellen Interessen</h3>
+                            </div>
+                            <div class="card-content">
+                                <ul>
+                                    <li>Besuche Organisations- und Management-Kurse</li>
+                                    <li>Arbeite an strukturierten Projekten</li>
+                                    <li>Entwickle deine organisatorischen Fähigkeiten</li>
+                                    <li>Lerne neue Systeme und Prozesse kennen</li>
+                                    <li>Verbessere deine Datenverarbeitungsfähigkeiten</li>
+                                </ul>
+                            </div>
+                        </div>
 
-                    <div class="sidebar-card">
-                        <h3>🔗 Verwandte Methoden</h3>
-                        <ul>
-                            <li><a href="../ikigai/index-ikigai.html">Ikigai</a></li>
-                            <li><a href="../swot/index-swot.html">SWOT</a></li>
-                            <li><a href="../wheel-of-life/index-wheel-of-life.html">Wheel of Life</a></li>
-                        </ul>
-                    </div>
+                        <!-- Verwandte Methoden -->
+                        <div class="sidebar-card">
+                            <div class="card-header">
+                                <h3>🔗 Verwandte Methoden</h3>
+                            </div>
+                            <div class="card-content">
+                                <ul>
+                                    <li><a href="../ikigai/index-ikigai.html">Ikigai</a></li>
+                                    <li><a href="../swot/index-swot.html">SWOT-Analyse</a></li>
+                                    <li><a href="../wheel-of-life/index-wheel-of-life.html">Wheel of Life</a></li>
+                                </ul>
+                            </div>
+                        </div>
 
-                    <div class="sidebar-card">
-                        <h3>📚 Empfohlene Ressourcen</h3>
-                        <ul>
-                            <li>Technische Zeitschriften</li>
-                            <li>Handwerkliche Kurse</li>
-                            <li>Technische Weiterbildungen</li>
-                            <li>Praktische Projekte</li>
-                        </ul>
-                    </div>
+                        <!-- Ressourcen -->
+                        <div class="sidebar-card">
+                            <div class="card-header">
+                                <h3>📚 Ressourcen</h3>
+                            </div>
+                            <div class="card-content">
+                                <ul>
+                                    <li>Bücher über Organisation und Zeitmanagement</li>
+                                    <li>Kurse zu Datenverarbeitung</li>
+                                    <li>Workshops zu systematischem Arbeiten</li>
+                                    <li>Podcasts über Produktivität</li>
+                                </ul>
+                            </div>
+                        </div>
 
-                    <div class="sidebar-card">
-                        <h3>🎯 Berufsfelder</h3>
-                        <ul>
-                            <li>Ingenieurwesen</li>
-                            <li>Handwerk</li>
-                            <li>Technik</li>
-                            <li>Landwirtschaft</li>
-                            <li>Maschinenbau</li>
-                        </ul>
+                        <!-- Berufsfelder -->
+                        <div class="sidebar-card">
+                            <div class="card-header">
+                                <h3>💼 Passende Berufsfelder</h3>
+                            </div>
+                            <div class="card-content">
+                                <ul>
+                                    <li>Büro und Verwaltung</li>
+                                    <li>Buchhaltung und Finanzen</li>
+                                    <li>Datenverarbeitung</li>
+                                    <li>Qualitätskontrolle</li>
+                                    <li>Archiv und Dokumentation</li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -475,86 +498,32 @@
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                <div class="footer-section">
-                    <h3>RAISEC - Konventionell</h3>
-                    <p>Praktisch-technisch orientierte Berufsinteressen</p>
-                </div>
-                <div class="footer-section">
-                    <h3>Navigation</h3>
-                    <ul>
-                        <li><a href="index-raisec.html">Übersicht</a></li>
-                        <li><a href="investigative-raisec.html">Investigativ</a></li>
-                        <li><a href="artistic-raisec.html">Künstlerisch</a></li>
-                    </ul>
-                </div>
+                <p>&copy; 2025 Manuel Weiss. Alle Rechte vorbehalten.</p>
             </div>
         </div>
     </footer>
 
     <script src="js/raisec-workflow.js"></script>
     <script>
-        // Slider functionality
-        document.querySelectorAll('.importance-slider').forEach(slider => {
-            slider.addEventListener('input', function() {
-                const value = this.value;
-                const valueDisplay = this.parentElement.querySelector('.slider-value');
-                if (valueDisplay) {
-                    valueDisplay.textContent = value;
-                }
-            });
-        });
-
-        // Form handling
-        document.getElementById('conventional-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Collect form data including sliders
-            const formData = new FormData(this);
-            const conventionalData = {};
-            
-            for (let [key, value] of formData.entries()) {
-                conventionalData[key] = value;
-            }
-            
-            // Calculate average score
-            const sliderValues = [
-                parseInt(conventionalData.technical_skills_slider),
-                parseInt(conventionalData.problem_solving_slider),
-                parseInt(conventionalData.career_preferences_slider),
-                parseInt(conventionalData.work_environment_slider),
-                parseInt(conventionalData.learning_style_slider),
-                parseInt(conventionalData.values_motivation_slider)
-            ];
-            
-            const averageScore = sliderValues.reduce((sum, val) => sum + val, 0) / sliderValues.length;
-            conventionalData.averageScore = averageScore;
-            conventionalData.type = 'Realistic';
-            
-            // Save to localStorage
-            localStorage.setItem('raisec-conventional', JSON.stringify(conventionalData));
-            
-            // Navigate to next step
-            window.location.href = 'investigative-raisec.html';
-        });
-        
-        // Load saved data
-        const savedData = localStorage.getItem('raisec-conventional');
-        if (savedData) {
-            const data = JSON.parse(savedData);
-            Object.keys(data).forEach(key => {
-                const field = document.querySelector(`[name="${key}"]`);
-                if (field) {
-                    field.value = data[key];
-                    // Update slider displays
-                    if (key.includes('_slider')) {
-                        const valueDisplay = field.parentElement.querySelector('.slider-value');
-                        if (valueDisplay) {
-                            valueDisplay.textContent = data[key];
-                        }
+        // Fix navigation for conventional page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Fix submit button
+            const submitButton = document.querySelector('button[type="submit"]');
+            if (submitButton) {
+                submitButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    // Save form data
+                    const formData = new FormData(document.getElementById('conventional-form'));
+                    const data = {};
+                    for (let [key, value] of formData.entries()) {
+                        data[key] = value;
                     }
-                }
-            });
-        }
+                    localStorage.setItem('raisec-conventional', JSON.stringify(data));
+                    // Navigate to results
+                    window.location.href = 'raisec-results.html';
+                });
+            }
+        });
     </script>
 </body>
 </html>
