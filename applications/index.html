@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bewerbungsautomatisierung - Intelligente Bewerbungstools</title>
+    <meta name="description" content="Automatisieren Sie Ihre Bewerbungen mit KI-gestützten Tools. 90% Zeitersparnis durch intelligente Anschreiben-Generierung, Lebenslauf-Optimierung und Bewerbungs-Tracking.">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="css/applications-main.css">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="../images/manuel-weiss-portrait.jpg" alt="Manuel Weiss" class="nav-logo">
+                <span class="nav-title">Manuel Weiss</span>
+            </div>
+            
+            <div class="nav-menu">
+                <a href="../index.html" class="nav-link">Start</a>
+                <a href="../persoenlichkeitsentwicklung-uebersicht.html" class="nav-link">Persönlichkeitsentwicklung</a>
+                <a href="index.html" class="nav-link active">Bewerbungsautomatisierung</a>
+                <a href="../website-services.html" class="nav-link">Services</a>
+            </div>
+            
+            <div class="auth-section">
+                <button id="realAuthButton" class="btn-auth">
+                    <i class="fas fa-user"></i>
+                    Anmelden
+                </button>
+                <div id="realUserMenu" class="user-menu" style="display: none;">
+                    <div class="user-info">
+                        <img id="userAvatarImg" src="../images/manuel-weiss-portrait.jpg" alt="User Avatar" class="user-avatar-img">
+                        <span id="userName">Benutzer</span>
+                    </div>
+                    <a href="../user-profile-dashboard.html" class="user-menu-link">
+                        <i class="fas fa-chart-line"></i>
+                        Dashboard
+                    </a>
+                    <a href="#" class="user-menu-link" onclick="window.realUserAuth.logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Abmelden
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    <span class="gradient-text">Bewerbungsautomatisierung</span>
+                    <br>mit KI-Power
+                </h1>
+                <p class="hero-subtitle">
+                    Automatisieren Sie Ihre Bewerbungen und sparen Sie 90% Ihrer Zeit. 
+                    KI-gestützte Anschreiben, optimierte Lebensläufe und intelligentes Tracking.
+                </p>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">90%</span>
+                        <span class="stat-label">Zeitersparnis</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">3x</span>
+                        <span class="stat-label">Mehr Bewerbungen</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">85%</span>
+                        <span class="stat-label">Erfolgsrate</span>
+                    </div>
+                </div>
+                <div class="hero-actions">
+                    <a href="profile-setup.html" class="btn btn-primary btn-large">
+                        <i class="fas fa-rocket"></i>
+                        Jetzt starten
+                    </a>
+                    <a href="#features" class="btn btn-outline btn-large">
+                        <i class="fas fa-play"></i>
+                        Mehr erfahren
+                    </a>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="floating-cards">
+                    <div class="card card-1">
+                        <i class="fas fa-file-alt"></i>
+                        <span>Anschreiben</span>
+                    </div>
+                    <div class="card card-2">
+                        <i class="fas fa-user-tie"></i>
+                        <span>Lebenslauf</span>
+                    </div>
+                    <div class="card card-3">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Tracking</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Intelligente Bewerbungstools</h2>
+                <p class="section-subtitle">
+                    Alles was Sie für erfolgreiche Bewerbungen brauchen - automatisiert und optimiert
+                </p>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3 class="feature-title">KI-Anschreiben-Generator</h3>
+                    <p class="feature-description">
+                        Automatische Generierung personalisierter Anschreiben basierend auf Stellenbeschreibung und Ihrem Profil.
+                    </p>
+                    <ul class="feature-benefits">
+                        <li>GPT-3.5 Turbo Integration</li>
+                        <li>Branchen-spezifische Templates</li>
+                        <li>A/B-Testing für Optimierung</li>
+                    </ul>
+                    <a href="application-generator.html" class="feature-link">
+                        Generator starten <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-file-user"></i>
+                    </div>
+                    <h3 class="feature-title">Lebenslauf-Optimierung</h3>
+                    <p class="feature-description">
+                        KI-gestützte Analyse und Optimierung Ihres Lebenslaufs für maximale ATS-Kompatibilität.
+                    </p>
+                    <ul class="feature-benefits">
+                        <li>Keyword-Optimierung</li>
+                        <li>ATS-Kompatibilität</li>
+                        <li>Multi-Version-Management</li>
+                    </ul>
+                    <a href="document-upload.html" class="feature-link">
+                        Optimieren <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3 class="feature-title">Bewerbungs-Tracking</h3>
+                    <p class="feature-description">
+                        Übersichtliche Verwaltung aller Bewerbungen mit Kanban-Board und automatischen Erinnerungen.
+                    </p>
+                    <ul class="feature-benefits">
+                        <li>Kanban-Board Interface</li>
+                        <li>Automatische Erinnerungen</li>
+                        <li>Timeline-Übersicht</li>
+                    </ul>
+                    <a href="tracking-dashboard.html" class="feature-link">
+                        Dashboard öffnen <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <h3 class="feature-title">Interview-Vorbereitung</h3>
+                    <p class="feature-description">
+                        Intelligente Vorbereitung mit KI-generierten Fragen und personalisierten Antwortvorschlägen.
+                    </p>
+                    <ul class="feature-benefits">
+                        <li>KI-Fragen-Generator</li>
+                        <li>STAR-Methode Training</li>
+                        <li>Unternehmens-Recherche</li>
+                    </ul>
+                    <a href="interview-prep.html" class="feature-link">
+                        Vorbereiten <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-analytics"></i>
+                    </div>
+                    <h3 class="feature-title">Analytics Dashboard</h3>
+                    <p class="feature-description">
+                        Detaillierte Erfolgsanalyse mit KPIs, Erfolgsraten und Optimierungsvorschlägen.
+                    </p>
+                    <ul class="feature-benefits">
+                        <li>Erfolgs-Metriken</li>
+                        <li>Gehalts-Benchmarking</li>
+                        <li>Optimierungsvorschläge</li>
+                    </ul>
+                    <a href="tracking-dashboard.html#analytics" class="feature-link">
+                        Analytics anzeigen <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <h3 class="feature-title">Automatisierung</h3>
+                    <p class="feature-description">
+                        Automatische Workflows für Follow-ups, E-Mail-Versendung und Status-Updates.
+                    </p>
+                    <ul class="feature-benefits">
+                        <li>E-Mail-Integration</li>
+                        <li>Automatische Workflows</li>
+                        <li>Batch-Processing</li>
+                    </ul>
+                    <a href="profile-setup.html" class="feature-link">
+                        Setup starten <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Workflow Section -->
+    <section class="workflow-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Ihr Bewerbungs-Workflow</h2>
+                <p class="section-subtitle">
+                    Von der Profilerstellung bis zur erfolgreichen Bewerbung - alles in 5 einfachen Schritten
+                </p>
+            </div>
+            
+            <div class="workflow-steps">
+                <div class="workflow-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3 class="step-title">Profil erstellen</h3>
+                        <p class="step-description">
+                            Erstellen Sie Ihr persönliches Profil mit Erfahrungen, Fähigkeiten und Karrierezielen.
+                        </p>
+                        <a href="profile-setup.html" class="step-link">Profil starten</a>
+                    </div>
+                </div>
+                
+                <div class="workflow-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3 class="step-title">Dokumente hochladen</h3>
+                        <p class="step-description">
+                            Laden Sie Ihren Lebenslauf und relevante Dokumente hoch für die KI-Analyse.
+                        </p>
+                        <a href="document-upload.html" class="step-link">Dokumente hochladen</a>
+                    </div>
+                </div>
+                
+                <div class="workflow-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3 class="step-title">Bewerbung generieren</h3>
+                        <p class="step-description">
+                            Erstellen Sie automatisch personalisierte Anschreiben für jede Stellenausschreibung.
+                        </p>
+                        <a href="application-generator.html" class="step-link">Generator starten</a>
+                    </div>
+                </div>
+                
+                <div class="workflow-step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3 class="step-title">Bewerbungen tracken</h3>
+                        <p class="step-description">
+                            Verwalten Sie alle Ihre Bewerbungen übersichtlich und erhalten Sie automatische Erinnerungen.
+                        </p>
+                        <a href="tracking-dashboard.html" class="step-link">Dashboard öffnen</a>
+                    </div>
+                </div>
+                
+                <div class="workflow-step">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h3 class="step-title">Interview vorbereiten</h3>
+                        <p class="step-description">
+                            Bereiten Sie sich optimal auf Interviews vor mit KI-generierten Fragen und Antworten.
+                        </p>
+                        <a href="interview-prep.html" class="step-link">Vorbereitung starten</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-content">
+                <h2 class="cta-title">Bereit für den nächsten Karriereschritt?</h2>
+                <p class="cta-description">
+                    Starten Sie noch heute mit der Automatisierung Ihrer Bewerbungen und sparen Sie wertvolle Zeit.
+                </p>
+                <div class="cta-actions">
+                    <a href="profile-setup.html" class="btn btn-primary btn-large">
+                        <i class="fas fa-rocket"></i>
+                        Kostenlos starten
+                    </a>
+                    <a href="#features" class="btn btn-outline btn-large">
+                        <i class="fas fa-info-circle"></i>
+                        Mehr erfahren
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3 class="footer-title">Bewerbungsautomatisierung</h3>
+                    <p class="footer-description">
+                        Intelligente Tools für erfolgreiche Bewerbungen. Automatisierung, KI-Power und maximale Effizienz.
+                    </p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4 class="footer-subtitle">Features</h4>
+                    <ul class="footer-links">
+                        <li><a href="application-generator.html">KI-Anschreiben</a></li>
+                        <li><a href="document-upload.html">CV-Optimierung</a></li>
+                        <li><a href="tracking-dashboard.html">Bewerbungs-Tracking</a></li>
+                        <li><a href="interview-prep.html">Interview-Vorbereitung</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4 class="footer-subtitle">Support</h4>
+                    <ul class="footer-links">
+                        <li><a href="../index.html">Startseite</a></li>
+                        <li><a href="../persoenlichkeitsentwicklung-uebersicht.html">Persönlichkeitsentwicklung</a></li>
+                        <li><a href="../website-services.html">Services</a></li>
+                        <li><a href="../impressum.html">Impressum</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 Manuel Weiss. Alle Rechte vorbehalten.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="../js/real-user-auth-system.js"></script>
+    <script src="js/applications-core.js"></script>
+</body>
+</html>

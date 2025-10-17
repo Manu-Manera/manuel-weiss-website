@@ -54,6 +54,21 @@
   to = "/persoenlichkeitsentwicklung-uebersicht.html"
   status = 301
 
+[[redirects]]
+  from = "/applications"
+  to = "/applications/index.html"
+  status = 301
+
+[[redirects]]
+  from = "/bewerbung"
+  to = "/applications/index.html"
+  status = 301
+
+[[redirects]]
+  from = "/bewerbungen"
+  to = "/applications/index.html"
+  status = 301
+
 # Headers für bessere Performance und Sicherheit
 [[headers]]
   for = "/*"

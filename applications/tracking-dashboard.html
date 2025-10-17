@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bewerbungs-Tracking - Bewerbungsautomatisierung</title>
+    <meta name="description" content="Verwalten Sie alle Ihre Bewerbungen übersichtlich. Kanban-Board, Timeline und automatische Erinnerungen für optimale Organisation.">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="css/applications-main.css">
+    <link rel="stylesheet" href="css/applications-workflow.css">
+    <link rel="stylesheet" href="css/applications-dashboard.css">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="../images/manuel-weiss-portrait.jpg" alt="Manuel Weiss" class="nav-logo">
+                <span class="nav-title">Manuel Weiss</span>
+            </div>
+            
+            <div class="nav-menu">
+                <a href="../index.html" class="nav-link">Start</a>
+                <a href="../persoenlichkeitsentwicklung-uebersicht.html" class="nav-link">Persönlichkeitsentwicklung</a>
+                <a href="index.html" class="nav-link active">Bewerbungsautomatisierung</a>
+                <a href="../website-services.html" class="nav-link">Services</a>
+            </div>
+            
+            <div class="auth-section">
+                <button id="realAuthButton" class="btn-auth">
+                    <i class="fas fa-user"></i>
+                    Anmelden
+                </button>
+                <div id="realUserMenu" class="user-menu" style="display: none;">
+                    <div class="user-info">
+                        <img id="userAvatarImg" src="../images/manuel-weiss-portrait.jpg" alt="User Avatar" class="user-avatar-img">
+                        <span id="userName">Benutzer</span>
+                    </div>
+                    <a href="../user-profile-dashboard.html" class="user-menu-link">
+                        <i class="fas fa-chart-line"></i>
+                        Dashboard
+                    </a>
+                    <a href="#" class="user-menu-link" onclick="window.realUserAuth.logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Abmelden
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Progress Bar -->
+    <div class="progress-container">
+        <div class="progress-bar">
+            <div class="progress-fill" style="width: 80%"></div>
+        </div>
+        <div class="progress-text">Schritt 4 von 5: Bewerbungen verwalten</div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <div class="workflow-header">
+                <h1 class="workflow-title">Bewerbungs-Tracking</h1>
+                <p class="workflow-subtitle">
+                    Verwalten Sie alle Ihre Bewerbungen übersichtlich. Kanban-Board, Timeline und automatische Erinnerungen.
+                </p>
+            </div>
+
+            <!-- Dashboard Stats -->
+            <section class="dashboard-stats">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-paper-plane"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-number" id="totalApplications">0</h3>
+                            <p class="stat-label">Gesamt Bewerbungen</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-number" id="pendingApplications">0</h3>
+                            <p class="stat-label">Ausstehend</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-number" id="interviewApplications">0</h3>
+                            <p class="stat-label">Interviews</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-number" id="successRate">0%</h3>
+                            <p class="stat-label">Erfolgsrate</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Kanban Board -->
+            <section class="kanban-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-columns"></i>
+                        Bewerbungs-Board
+                    </h2>
+                    <div class="section-actions">
+                        <button class="btn btn-primary" onclick="showAddApplicationModal()">
+                            <i class="fas fa-plus"></i>
+                            Neue Bewerbung
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="kanban-board">
+                    <div class="kanban-column" data-status="preparation">
+                        <div class="column-header">
+                            <h3 class="column-title">Vorbereitung</h3>
+                            <span class="column-count" id="preparationCount">0</span>
+                        </div>
+                        <div class="column-content" id="preparationColumn">
+                            <!-- Applications will be added here -->
+                        </div>
+                    </div>
+                    
+                    <div class="kanban-column" data-status="sent">
+                        <div class="column-header">
+                            <h3 class="column-title">Versendet</h3>
+                            <span class="column-count" id="sentCount">0</span>
+                        </div>
+                        <div class="column-content" id="sentColumn">
+                            <!-- Applications will be added here -->
+                        </div>
+                    </div>
+                    
+                    <div class="kanban-column" data-status="confirmed">
+                        <div class="column-header">
+                            <h3 class="column-title">Bestätigt</h3>
+                            <span class="column-count" id="confirmedCount">0</span>
+                        </div>
+                        <div class="column-content" id="confirmedColumn">
+                            <!-- Applications will be added here -->
+                        </div>
+                    </div>
+                    
+                    <div class="kanban-column" data-status="interview">
+                        <div class="column-header">
+                            <h3 class="column-title">Interview</h3>
+                            <span class="column-count" id="interviewCount">0</span>
+                        </div>
+                        <div class="column-content" id="interviewColumn">
+                            <!-- Applications will be added here -->
+                        </div>
+                    </div>
+                    
+                    <div class="kanban-column" data-status="offer">
+                        <div class="column-header">
+                            <h3 class="column-title">Angebot</h3>
+                            <span class="column-count" id="offerCount">0</span>
+                        </div>
+                        <div class="column-content" id="offerColumn">
+                            <!-- Applications will be added here -->
+                        </div>
+                    </div>
+                    
+                    <div class="kanban-column" data-status="rejected">
+                        <div class="column-header">
+                            <h3 class="column-title">Abgelehnt</h3>
+                            <span class="column-count" id="rejectedCount">0</span>
+                        </div>
+                        <div class="column-content" id="rejectedColumn">
+                            <!-- Applications will be added here -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Timeline -->
+            <section class="timeline-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-history"></i>
+                        Aktivitäten-Timeline
+                    </h2>
+                </div>
+                
+                <div class="timeline-container" id="timelineContainer">
+                    <!-- Timeline items will be added here -->
+                </div>
+            </section>
+
+            <!-- Analytics -->
+            <section class="analytics-section" id="analytics">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-chart-line"></i>
+                        Analytics & Insights
+                    </h2>
+                </div>
+                
+                <div class="analytics-grid">
+                    <div class="analytics-card">
+                        <h3 class="card-title">Bewerbungen pro Woche</h3>
+                        <div class="chart-placeholder">
+                            <i class="fas fa-chart-bar"></i>
+                            <p>Chart wird geladen...</p>
+                        </div>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <h3 class="card-title">Erfolgsrate nach Branche</h3>
+                        <div class="chart-placeholder">
+                            <i class="fas fa-chart-pie"></i>
+                            <p>Chart wird geladen...</p>
+                        </div>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <h3 class="card-title">Durchschnittliche Antwortzeit</h3>
+                        <div class="metric-display">
+                            <span class="metric-value" id="avgResponseTime">-</span>
+                            <span class="metric-unit">Tage</span>
+                        </div>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <h3 class="card-title">Top Unternehmen</h3>
+                        <div class="top-companies" id="topCompanies">
+                            <!-- Companies will be added here -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <button type="button" class="btn btn-outline" onclick="history.back()">
+                    <i class="fas fa-arrow-left"></i>
+                    Zurück
+                </button>
+                
+                <button type="button" class="btn btn-primary" id="continueBtn" onclick="handleContinue()">
+                    <i class="fas fa-arrow-right"></i>
+                    Weiter zur Interview-Vorbereitung
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Add Application Modal -->
+    <div id="addApplicationModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Neue Bewerbung hinzufügen</h3>
+                <button class="modal-close" onclick="closeAddApplicationModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="addApplicationForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="appJobTitle" class="form-label">Jobtitel *</label>
+                            <input type="text" id="appJobTitle" name="jobTitle" class="form-input" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="appCompany" class="form-label">Unternehmen *</label>
+                            <input type="text" id="appCompany" name="company" class="form-input" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="appLocation" class="form-label">Standort</label>
+                            <input type="text" id="appLocation" name="location" class="form-input">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="appStatus" class="form-label">Status</label>
+                            <select id="appStatus" name="status" class="form-select">
+                                <option value="preparation">Vorbereitung</option>
+                                <option value="sent">Versendet</option>
+                                <option value="confirmed">Bestätigt</option>
+                                <option value="interview">Interview</option>
+                                <option value="offer">Angebot</option>
+                                <option value="rejected">Abgelehnt</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="appAppliedDate" class="form-label">Bewerbungsdatum</label>
+                            <input type="date" id="appAppliedDate" name="appliedDate" class="form-input">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="appDeadline" class="form-label">Bewerbungsfrist</label>
+                            <input type="date" id="appDeadline" name="deadline" class="form-input">
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            <label for="appNotes" class="form-label">Notizen</label>
+                            <textarea id="appNotes" name="notes" class="form-textarea" rows="3" placeholder="Zusätzliche Informationen..."></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-outline" onclick="closeAddApplicationModal()">
+                            Abbrechen
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-plus"></i>
+                            Hinzufügen
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Detail Modal -->
+    <div id="applicationDetailModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Bewerbungsdetails</h3>
+                <button class="modal-close" onclick="closeApplicationDetailModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="applicationDetailContent">
+                <!-- Application details will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../js/real-user-auth-system.js"></script>
+    <script src="js/applications-core.js"></script>
+    <script src="js/tracking-system.js"></script>
+</body>
+</html>
