@@ -14,6 +14,12 @@
 /personality        /persoenlichkeitsentwicklung-uebersicht.html 200
 /methods            /persoenlichkeitsentwicklung-uebersicht.html 200
 
+# Application Automation Routes
+/applications       /applications/index.html      200
+/bewerbung          /applications/index.html      200
+/bewerbungen        /applications/index.html      200
+/application        /applications/index.html      200
+
 # API Documentation & OpenAPI
 /api-docs           /api-documentation.html   200
 /api-docs/          /api-documentation.html   200

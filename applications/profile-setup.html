@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil erstellen - Bewerbungsautomatisierung</title>
+    <meta name="description" content="Erstellen Sie Ihr persönliches Profil für die Bewerbungsautomatisierung. Erfahrungen, Fähigkeiten und Karriereziele definieren.">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="css/applications-main.css">
+    <link rel="stylesheet" href="css/applications-workflow.css">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="../images/manuel-weiss-portrait.jpg" alt="Manuel Weiss" class="nav-logo">
+                <span class="nav-title">Manuel Weiss</span>
+            </div>
+            
+            <div class="nav-menu">
+                <a href="../index.html" class="nav-link">Start</a>
+                <a href="../persoenlichkeitsentwicklung-uebersicht.html" class="nav-link">Persönlichkeitsentwicklung</a>
+                <a href="index.html" class="nav-link active">Bewerbungsautomatisierung</a>
+                <a href="../website-services.html" class="nav-link">Services</a>
+            </div>
+            
+            <div class="auth-section">
+                <button id="realAuthButton" class="btn-auth">
+                    <i class="fas fa-user"></i>
+                    Anmelden
+                </button>
+                <div id="realUserMenu" class="user-menu" style="display: none;">
+                    <div class="user-info">
+                        <img id="userAvatarImg" src="../images/manuel-weiss-portrait.jpg" alt="User Avatar" class="user-avatar-img">
+                        <span id="userName">Benutzer</span>
+                    </div>
+                    <a href="../user-profile-dashboard.html" class="user-menu-link">
+                        <i class="fas fa-chart-line"></i>
+                        Dashboard
+                    </a>
+                    <a href="#" class="user-menu-link" onclick="window.realUserAuth.logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Abmelden
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Progress Bar -->
+    <div class="progress-container">
+        <div class="progress-bar">
+            <div class="progress-fill" style="width: 20%"></div>
+        </div>
+        <div class="progress-text">Schritt 1 von 5: Profil erstellen</div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <div class="workflow-header">
+                <h1 class="workflow-title">Ihr Bewerbungsprofil</h1>
+                <p class="workflow-subtitle">
+                    Erstellen Sie Ihr persönliches Profil für optimale Bewerbungsautomatisierung. 
+                    Je detaillierter Ihr Profil, desto besser können wir Ihre Bewerbungen personalisieren.
+                </p>
+            </div>
+
+            <form id="profileForm" class="profile-form">
+                <!-- Persönliche Daten -->
+                <section class="form-section">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class="fas fa-user"></i>
+                            Persönliche Daten
+                        </h2>
+                        <p class="section-description">Grundlegende Informationen über Sie</p>
+                    </div>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="firstName" class="form-label">Vorname *</label>
+                            <input type="text" id="firstName" name="firstName" class="form-input" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="lastName" class="form-label">Nachname *</label>
+                            <input type="text" id="lastName" name="lastName" class="form-input" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email" class="form-label">E-Mail *</label>
+                            <input type="email" id="email" name="email" class="form-input" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="phone" class="form-label">Telefon</label>
+                            <input type="tel" id="phone" name="phone" class="form-input">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="location" class="form-label">Wohnort *</label>
+                            <input type="text" id="location" name="location" class="form-input" placeholder="z.B. Berlin, München" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="birthDate" class="form-label">Geburtsdatum</label>
+                            <input type="date" id="birthDate" name="birthDate" class="form-input">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Berufserfahrung -->
+                <section class="form-section">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class="fas fa-briefcase"></i>
+                            Berufserfahrung
+                        </h2>
+                        <p class="section-description">Ihre bisherigen beruflichen Erfahrungen</p>
+                    </div>
+                    
+                    <div id="experienceContainer">
+                        <div class="experience-item">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label">Position *</label>
+                                    <input type="text" name="position" class="form-input" placeholder="z.B. Softwareentwickler" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Unternehmen *</label>
+                                    <input type="text" name="company" class="form-input" placeholder="z.B. Tech Corp GmbH" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Von</label>
+                                    <input type="month" name="startDate" class="form-input">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Bis</label>
+                                    <input type="month" name="endDate" class="form-input">
+                                    <div class="form-checkbox">
+                                        <input type="checkbox" name="currentJob" id="currentJob">
+                                        <label for="currentJob">Aktuell</label>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group full-width">
+                                    <label class="form-label">Beschreibung</label>
+                                    <textarea name="description" class="form-textarea" rows="3" placeholder="Beschreiben Sie Ihre Aufgaben und Erfolge..."></textarea>
+                                </div>
+                            </div>
+                            
+                            <button type="button" class="btn btn-outline btn-sm remove-experience">
+                                <i class="fas fa-trash"></i>
+                                Entfernen
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <button type="button" id="addExperience" class="btn btn-outline">
+                        <i class="fas fa-plus"></i>
+                        Weitere Erfahrung hinzufügen
+                    </button>
+                </section>
+
+                <!-- Ausbildung -->
+                <section class="form-section">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class="fas fa-graduation-cap"></i>
+                            Ausbildung
+                        </h2>
+                        <p class="section-description">Ihre Bildungsabschlüsse und Zertifikate</p>
+                    </div>
+                    
+                    <div id="educationContainer">
+                        <div class="education-item">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label">Abschluss *</label>
+                                    <select name="degree" class="form-select" required>
+                                        <option value="">Bitte wählen...</option>
+                                        <option value="abitur">Abitur</option>
+                                        <option value="fachabitur">Fachabitur</option>
+                                        <option value="ausbildung">Ausbildung</option>
+                                        <option value="bachelor">Bachelor</option>
+                                        <option value="master">Master</option>
+                                        <option value="diplom">Diplom</option>
+                                        <option value="doktor">Doktor</option>
+                                        <option value="zertifikat">Zertifikat</option>
+                                        <option value="sonstiges">Sonstiges</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Fachrichtung *</label>
+                                    <input type="text" name="field" class="form-input" placeholder="z.B. Informatik, BWL" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Institution</label>
+                                    <input type="text" name="institution" class="form-input" placeholder="z.B. Universität München">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Jahr</label>
+                                    <input type="number" name="year" class="form-input" placeholder="2020" min="1950" max="2030">
+                                </div>
+                            </div>
+                            
+                            <button type="button" class="btn btn-outline btn-sm remove-education">
+                                <i class="fas fa-trash"></i>
+                                Entfernen
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <button type="button" id="addEducation" class="btn btn-outline">
+                        <i class="fas fa-plus"></i>
+                        Weitere Ausbildung hinzufügen
+                    </button>
+                </section>
+
+                <!-- Fähigkeiten -->
+                <section class="form-section">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class="fas fa-cogs"></i>
+                            Fähigkeiten & Kompetenzen
+                        </h2>
+                        <p class="section-description">Ihre technischen und fachlichen Fähigkeiten</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Technische Fähigkeiten</label>
+                        <div class="skills-input">
+                            <input type="text" id="technicalSkills" class="form-input" placeholder="z.B. JavaScript, Python, React...">
+                            <div class="skills-tags" id="technicalTags"></div>
+                        </div>
+                        <small class="form-help">Trennen Sie Fähigkeiten mit Kommas</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Sprachkenntnisse</label>
+                        <div class="languages-container">
+                            <div class="language-item">
+                                <input type="text" name="language" class="form-input" placeholder="Sprache">
+                                <select name="level" class="form-select">
+                                    <option value="">Niveau</option>
+                                    <option value="A1">A1 - Anfänger</option>
+                                    <option value="A2">A2 - Grundkenntnisse</option>
+                                    <option value="B1">B1 - Mittelstufe</option>
+                                    <option value="B2">B2 - Gute Kenntnisse</option>
+                                    <option value="C1">C1 - Sehr gute Kenntnisse</option>
+                                    <option value="C2">C2 - Muttersprache</option>
+                                </select>
+                                <button type="button" class="btn btn-outline btn-sm remove-language">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <button type="button" id="addLanguage" class="btn btn-outline btn-sm">
+                            <i class="fas fa-plus"></i>
+                            Sprache hinzufügen
+                        </button>
+                    </div>
+                </section>
+
+                <!-- Karriereziele -->
+                <section class="form-section">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class="fas fa-target"></i>
+                            Karriereziele & Präferenzen
+                        </h2>
+                        <p class="section-description">Was möchten Sie erreichen?</p>
+                    </div>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="desiredPosition" class="form-label">Gewünschte Position</label>
+                            <input type="text" id="desiredPosition" name="desiredPosition" class="form-input" placeholder="z.B. Senior Developer, Team Lead">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="desiredIndustry" class="form-label">Bevorzugte Branche</label>
+                            <select id="desiredIndustry" name="desiredIndustry" class="form-select">
+                                <option value="">Bitte wählen...</option>
+                                <option value="it">IT & Software</option>
+                                <option value="finance">Finanzwesen</option>
+                                <option value="healthcare">Gesundheitswesen</option>
+                                <option value="education">Bildung</option>
+                                <option value="marketing">Marketing</option>
+                                <option value="consulting">Beratung</option>
+                                <option value="manufacturing">Produktion</option>
+                                <option value="retail">Einzelhandel</option>
+                                <option value="other">Sonstige</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="salaryExpectation" class="form-label">Gehaltsvorstellung (€)</label>
+                            <input type="number" id="salaryExpectation" name="salaryExpectation" class="form-input" placeholder="50000" min="0">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="workType" class="form-label">Arbeitsmodell</label>
+                            <select id="workType" name="workType" class="form-select">
+                                <option value="">Bitte wählen...</option>
+                                <option value="fulltime">Vollzeit</option>
+                                <option value="parttime">Teilzeit</option>
+                                <option value="contract">Freelance</option>
+                                <option value="remote">Remote</option>
+                                <option value="hybrid">Hybrid</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group full-width">
+                            <label for="motivation" class="form-label">Motivation & Ziele</label>
+                            <textarea id="motivation" name="motivation" class="form-textarea" rows="4" placeholder="Was treibt Sie an? Welche Ziele haben Sie?"></textarea>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" onclick="history.back()">
+                        <i class="fas fa-arrow-left"></i>
+                        Zurück
+                    </button>
+                    
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i>
+                        Profil speichern & weiter
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="../js/real-user-auth-system.js"></script>
+    <script src="js/applications-core.js"></script>
+    <script src="js/profile-setup.js"></script>
+</body>
+</html>

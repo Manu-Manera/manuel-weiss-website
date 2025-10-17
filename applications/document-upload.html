@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dokumente hochladen - Bewerbungsautomatisierung</title>
+    <meta name="description" content="Laden Sie Ihre Bewerbungsdokumente hoch für die KI-Analyse und Optimierung. Lebenslauf, Zeugnisse und Portfolio.">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="css/applications-main.css">
+    <link rel="stylesheet" href="css/applications-workflow.css">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="../images/manuel-weiss-portrait.jpg" alt="Manuel Weiss" class="nav-logo">
+                <span class="nav-title">Manuel Weiss</span>
+            </div>
+            
+            <div class="nav-menu">
+                <a href="../index.html" class="nav-link">Start</a>
+                <a href="../persoenlichkeitsentwicklung-uebersicht.html" class="nav-link">Persönlichkeitsentwicklung</a>
+                <a href="index.html" class="nav-link active">Bewerbungsautomatisierung</a>
+                <a href="../website-services.html" class="nav-link">Services</a>
+            </div>
+            
+            <div class="auth-section">
+                <button id="realAuthButton" class="btn-auth">
+                    <i class="fas fa-user"></i>
+                    Anmelden
+                </button>
+                <div id="realUserMenu" class="user-menu" style="display: none;">
+                    <div class="user-info">
+                        <img id="userAvatarImg" src="../images/manuel-weiss-portrait.jpg" alt="User Avatar" class="user-avatar-img">
+                        <span id="userName">Benutzer</span>
+                    </div>
+                    <a href="../user-profile-dashboard.html" class="user-menu-link">
+                        <i class="fas fa-chart-line"></i>
+                        Dashboard
+                    </a>
+                    <a href="#" class="user-menu-link" onclick="window.realUserAuth.logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Abmelden
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Progress Bar -->
+    <div class="progress-container">
+        <div class="progress-bar">
+            <div class="progress-fill" style="width: 40%"></div>
+        </div>
+        <div class="progress-text">Schritt 2 von 5: Dokumente hochladen</div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <div class="workflow-header">
+                <h1 class="workflow-title">Dokumente hochladen</h1>
+                <p class="workflow-subtitle">
+                    Laden Sie Ihre Bewerbungsdokumente hoch für die KI-Analyse und Optimierung. 
+                    Je mehr Dokumente Sie bereitstellen, desto besser können wir Ihre Bewerbungen personalisieren.
+                </p>
+            </div>
+
+            <div class="upload-container">
+                <!-- Lebenslauf Upload -->
+                <section class="upload-section">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class="fas fa-file-user"></i>
+                            Lebenslauf
+                        </h2>
+                        <p class="section-description">Ihr aktueller Lebenslauf (PDF oder DOCX)</p>
+                    </div>
+                    
+                    <div class="upload-area" id="cvUploadArea">
+                        <div class="upload-content">
+                            <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                            <h3 class="upload-title">Lebenslauf hochladen</h3>
+                            <p class="upload-description">
+                                Ziehen Sie Ihre Datei hierher oder klicken Sie zum Auswählen
+                            </p>
+                            <div class="upload-formats">
+                                <span class="format-tag">PDF</span>
+                                <span class="format-tag">DOCX</span>
+                            </div>
+                            <input type="file" id="cvFile" name="cvFile" accept=".pdf,.docx" class="file-input" hidden>
+                            <button type="button" class="btn btn-primary" onclick="document.getElementById('cvFile').click()">
+                                <i class="fas fa-plus"></i>
+                                Datei auswählen
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="file-preview" id="cvPreview" style="display: none;">
+                        <div class="preview-content">
+                            <div class="file-info">
+                                <i class="fas fa-file-pdf file-icon"></i>
+                                <div class="file-details">
+                                    <h4 class="file-name">Lebenslauf.pdf</h4>
+                                    <p class="file-size">2.3 MB</p>
+                                </div>
+                            </div>
+                            <div class="file-actions">
+                                <button type="button" class="btn btn-outline btn-sm" onclick="previewFile('cv')">
+                                    <i class="fas fa-eye"></i>
+                                    Vorschau
+                                </button>
+                                <button type="button" class="btn btn-outline btn-sm" onclick="removeFile('cv')">
+                                    <i class="fas fa-trash"></i>
+                                    Entfernen
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Zeugnisse Upload -->
+                <section class="upload-section">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class="fas fa-certificate"></i>
+                            Zeugnisse & Zertifikate
+                        </h2>
+                        <p class="section-description">Relevante Zeugnisse und Zertifikate (optional)</p>
+                    </div>
+                    
+                    <div class="upload-area" id="certificatesUploadArea">
+                        <div class="upload-content">
+                            <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                            <h3 class="upload-title">Zeugnisse hochladen</h3>
+                            <p class="upload-description">
+                                Mehrere Dateien können gleichzeitig hochgeladen werden
+                            </p>
+                            <div class="upload-formats">
+                                <span class="format-tag">PDF</span>
+                                <span class="format-tag">JPG</span>
+                                <span class="format-tag">PNG</span>
+                            </div>
+                            <input type="file" id="certificatesFile" name="certificatesFile" accept=".pdf,.jpg,.jpeg,.png" multiple class="file-input" hidden>
+                            <button type="button" class="btn btn-primary" onclick="document.getElementById('certificatesFile').click()">
+                                <i class="fas fa-plus"></i>
+                                Dateien auswählen
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="files-list" id="certificatesList" style="display: none;">
+                        <!-- Files will be added here dynamically -->
+                    </div>
+                </section>
+
+                <!-- Portfolio Upload -->
+                <section class="upload-section">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class="fas fa-briefcase"></i>
+                            Portfolio & Referenzen
+                        </h2>
+                        <p class="section-description">Arbeitsproben und Referenzen (optional)</p>
+                    </div>
+                    
+                    <div class="upload-area" id="portfolioUploadArea">
+                        <div class="upload-content">
+                            <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                            <h3 class="upload-title">Portfolio hochladen</h3>
+                            <p class="upload-description">
+                                Zeigen Sie Ihre besten Arbeiten und Referenzen
+                            </p>
+                            <div class="upload-formats">
+                                <span class="format-tag">PDF</span>
+                                <span class="format-tag">DOCX</span>
+                                <span class="format-tag">ZIP</span>
+                            </div>
+                            <input type="file" id="portfolioFile" name="portfolioFile" accept=".pdf,.docx,.zip" multiple class="file-input" hidden>
+                            <button type="button" class="btn btn-primary" onclick="document.getElementById('portfolioFile').click()">
+                                <i class="fas fa-plus"></i>
+                                Dateien auswählen
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="files-list" id="portfolioList" style="display: none;">
+                        <!-- Files will be added here dynamically -->
+                    </div>
+                </section>
+
+                <!-- Foto Upload -->
+                <section class="upload-section">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class="fas fa-camera"></i>
+                            Bewerbungsfoto
+                        </h2>
+                        <p class="section-description">Professionelles Bewerbungsfoto (optional)</p>
+                    </div>
+                    
+                    <div class="upload-area" id="photoUploadArea">
+                        <div class="upload-content">
+                            <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                            <h3 class="upload-title">Foto hochladen</h3>
+                            <p class="upload-description">
+                                Professionelles Bewerbungsfoto im Hochformat
+                            </p>
+                            <div class="upload-formats">
+                                <span class="format-tag">JPG</span>
+                                <span class="format-tag">PNG</span>
+                            </div>
+                            <input type="file" id="photoFile" name="photoFile" accept=".jpg,.jpeg,.png" class="file-input" hidden>
+                            <button type="button" class="btn btn-primary" onclick="document.getElementById('photoFile').click()">
+                                <i class="fas fa-plus"></i>
+                                Foto auswählen
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="file-preview" id="photoPreview" style="display: none;">
+                        <div class="preview-content">
+                            <div class="file-info">
+                                <i class="fas fa-image file-icon"></i>
+                                <div class="file-details">
+                                    <h4 class="file-name">Bewerbungsfoto.jpg</h4>
+                                    <p class="file-size">1.2 MB</p>
+                                </div>
+                            </div>
+                            <div class="file-actions">
+                                <button type="button" class="btn btn-outline btn-sm" onclick="previewFile('photo')">
+                                    <i class="fas fa-eye"></i>
+                                    Vorschau
+                                </button>
+                                <button type="button" class="btn btn-outline btn-sm" onclick="removeFile('photo')">
+                                    <i class="fas fa-trash"></i>
+                                    Entfernen
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Upload Summary -->
+                <section class="upload-summary">
+                    <div class="summary-header">
+                        <h3 class="summary-title">
+                            <i class="fas fa-check-circle"></i>
+                            Upload-Zusammenfassung
+                        </h3>
+                        <p class="summary-description">Übersicht Ihrer hochgeladenen Dokumente</p>
+                    </div>
+                    
+                    <div class="summary-stats">
+                        <div class="stat-item">
+                            <span class="stat-number" id="totalFiles">0</span>
+                            <span class="stat-label">Dateien</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number" id="totalSize">0 MB</span>
+                            <span class="stat-label">Gesamtgröße</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number" id="completionRate">0%</span>
+                            <span class="stat-label">Vollständigkeit</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" onclick="history.back()">
+                        <i class="fas fa-arrow-left"></i>
+                        Zurück
+                    </button>
+                    
+                    <button type="button" class="btn btn-primary" id="continueBtn" onclick="handleContinue()">
+                        <i class="fas fa-arrow-right"></i>
+                        Weiter zu Bewerbung
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- File Preview Modal -->
+    <div id="previewModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Datei-Vorschau</h3>
+                <button class="modal-close" onclick="closePreview()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="previewContent">
+                    <!-- Preview content will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../js/real-user-auth-system.js"></script>
+    <script src="js/applications-core.js"></script>
+    <script src="js/document-upload.js"></script>
+</body>
+</html>

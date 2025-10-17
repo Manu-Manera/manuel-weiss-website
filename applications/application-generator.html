@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bewerbung generieren - Bewerbungsautomatisierung</title>
+    <meta name="description" content="Generieren Sie automatisch personalisierte Bewerbungsanschreiben mit KI-Power. GPT-3.5 Turbo für optimale Ergebnisse.">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="css/applications-main.css">
+    <link rel="stylesheet" href="css/applications-workflow.css">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="../images/manuel-weiss-portrait.jpg" alt="Manuel Weiss" class="nav-logo">
+                <span class="nav-title">Manuel Weiss</span>
+            </div>
+            
+            <div class="nav-menu">
+                <a href="../index.html" class="nav-link">Start</a>
+                <a href="../persoenlichkeitsentwicklung-uebersicht.html" class="nav-link">Persönlichkeitsentwicklung</a>
+                <a href="index.html" class="nav-link active">Bewerbungsautomatisierung</a>
+                <a href="../website-services.html" class="nav-link">Services</a>
+            </div>
+            
+            <div class="auth-section">
+                <button id="realAuthButton" class="btn-auth">
+                    <i class="fas fa-user"></i>
+                    Anmelden
+                </button>
+                <div id="realUserMenu" class="user-menu" style="display: none;">
+                    <div class="user-info">
+                        <img id="userAvatarImg" src="../images/manuel-weiss-portrait.jpg" alt="User Avatar" class="user-avatar-img">
+                        <span id="userName">Benutzer</span>
+                    </div>
+                    <a href="../user-profile-dashboard.html" class="user-menu-link">
+                        <i class="fas fa-chart-line"></i>
+                        Dashboard
+                    </a>
+                    <a href="#" class="user-menu-link" onclick="window.realUserAuth.logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Abmelden
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Progress Bar -->
+    <div class="progress-container">
+        <div class="progress-bar">
+            <div class="progress-fill" style="width: 60%"></div>
+        </div>
+        <div class="progress-text">Schritt 3 von 5: Bewerbung generieren</div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <div class="workflow-header">
+                <h1 class="workflow-title">KI-Anschreiben-Generator</h1>
+                <p class="workflow-subtitle">
+                    Erstellen Sie automatisch personalisierte Bewerbungsanschreiben mit KI-Power. 
+                    Basierend auf Ihrem Profil und der Stellenausschreibung.
+                </p>
+            </div>
+
+            <div class="generator-container">
+                <!-- Job Information Form -->
+                <section class="form-section">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class="fas fa-briefcase"></i>
+                            Stelleninformationen
+                        </h2>
+                        <p class="section-description">Geben Sie die Details der Stellenausschreibung ein</p>
+                    </div>
+                    
+                    <form id="jobInfoForm" class="job-form">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="jobTitle" class="form-label">Jobtitel *</label>
+                                <input type="text" id="jobTitle" name="jobTitle" class="form-input" placeholder="z.B. Senior Softwareentwickler" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="companyName" class="form-label">Unternehmen *</label>
+                                <input type="text" id="companyName" name="companyName" class="form-input" placeholder="z.B. Tech Corp GmbH" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="industry" class="form-label">Branche</label>
+                                <select id="industry" name="industry" class="form-select">
+                                    <option value="">Bitte wählen...</option>
+                                    <option value="it">IT & Software</option>
+                                    <option value="finance">Finanzwesen</option>
+                                    <option value="healthcare">Gesundheitswesen</option>
+                                    <option value="education">Bildung</option>
+                                    <option value="marketing">Marketing</option>
+                                    <option value="consulting">Beratung</option>
+                                    <option value="manufacturing">Produktion</option>
+                                    <option value="retail">Einzelhandel</option>
+                                    <option value="other">Sonstige</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="location" class="form-label">Standort</label>
+                                <input type="text" id="location" name="location" class="form-input" placeholder="z.B. Berlin, München">
+                            </div>
+                            
+                            <div class="form-group full-width">
+                                <label for="jobDescription" class="form-label">Stellenbeschreibung *</label>
+                                <textarea id="jobDescription" name="jobDescription" class="form-textarea" rows="6" placeholder="Kopieren Sie hier die vollständige Stellenausschreibung ein..." required></textarea>
+                                <small class="form-help">Je detaillierter die Beschreibung, desto besser das Ergebnis</small>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="contactPerson" class="form-label">Ansprechpartner</label>
+                                <input type="text" id="contactPerson" name="contactPerson" class="form-input" placeholder="z.B. Max Mustermann">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="applicationDeadline" class="form-label">Bewerbungsfrist</label>
+                                <input type="date" id="applicationDeadline" name="applicationDeadline" class="form-input">
+                            </div>
+                        </div>
+                    </form>
+                </section>
+
+                <!-- Generation Options -->
+                <section class="form-section">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class="fas fa-cogs"></i>
+                            Anpassungsoptionen
+                        </h2>
+                        <p class="section-description">Passen Sie den Stil und Inhalt Ihres Anschreibens an</p>
+                    </div>
+                    
+                    <div class="options-grid">
+                        <div class="option-group">
+                            <label class="option-label">Tonalität</label>
+                            <div class="radio-group">
+                                <label class="radio-option">
+                                    <input type="radio" name="tone" value="formal" checked>
+                                    <span class="radio-custom"></span>
+                                    <div class="radio-content">
+                                        <strong>Formal</strong>
+                                        <small>Professionell und sachlich</small>
+                                    </div>
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="tone" value="modern">
+                                    <span class="radio-custom"></span>
+                                    <div class="radio-content">
+                                        <strong>Modern</strong>
+                                        <small>Zeitgemäß und dynamisch</small>
+                                    </div>
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="tone" value="creative">
+                                    <span class="radio-custom"></span>
+                                    <div class="radio-content">
+                                        <strong>Kreativ</strong>
+                                        <small>Originell und einzigartig</small>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="option-group">
+                            <label class="option-label">Länge</label>
+                            <div class="radio-group">
+                                <label class="radio-option">
+                                    <input type="radio" name="length" value="short" checked>
+                                    <span class="radio-custom"></span>
+                                    <div class="radio-content">
+                                        <strong>Kurz</strong>
+                                        <small>~150 Wörter</small>
+                                    </div>
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="length" value="medium">
+                                    <span class="radio-custom"></span>
+                                    <div class="radio-content">
+                                        <strong>Standard</strong>
+                                        <small>~250 Wörter</small>
+                                    </div>
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="length" value="long">
+                                    <span class="radio-custom"></span>
+                                    <div class="radio-content">
+                                        <strong>Ausführlich</strong>
+                                        <small>~350 Wörter</small>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="option-group">
+                            <label class="option-label">Schwerpunkt</label>
+                            <div class="radio-group">
+                                <label class="radio-option">
+                                    <input type="radio" name="focus" value="experience" checked>
+                                    <span class="radio-custom"></span>
+                                    <div class="radio-content">
+                                        <strong>Erfahrung</strong>
+                                        <small>Berufserfahrung hervorheben</small>
+                                    </div>
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="focus" value="skills">
+                                    <span class="radio-custom"></span>
+                                    <div class="radio-content">
+                                        <strong>Fähigkeiten</strong>
+                                        <small>Technische Kompetenzen</small>
+                                    </div>
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="focus" value="motivation">
+                                    <span class="radio-custom"></span>
+                                    <div class="radio-content">
+                                        <strong>Motivation</strong>
+                                        <small>Persönliche Motivation</small>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Generation Actions -->
+                <section class="form-section">
+                    <div class="generation-actions">
+                        <button type="button" id="generateBtn" class="btn btn-primary btn-large">
+                            <i class="fas fa-robot"></i>
+                            Anschreiben generieren
+                        </button>
+                        
+                        <div class="generation-info">
+                            <div class="info-item">
+                                <i class="fas fa-clock"></i>
+                                <span>Generierung dauert ca. 30-60 Sekunden</span>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-shield-alt"></i>
+                                <span>Ihre Daten werden sicher verarbeitet</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Generated Content -->
+                <section id="generatedContent" class="form-section" style="display: none;">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class="fas fa-file-alt"></i>
+                            Generiertes Anschreiben
+                        </h2>
+                        <p class="section-description">Überprüfen und bearbeiten Sie Ihr generiertes Anschreiben</p>
+                    </div>
+                    
+                    <div class="content-actions">
+                        <button type="button" id="regenerateBtn" class="btn btn-outline">
+                            <i class="fas fa-redo"></i>
+                            Neu generieren
+                        </button>
+                        <button type="button" id="saveBtn" class="btn btn-primary">
+                            <i class="fas fa-save"></i>
+                            Speichern
+                        </button>
+                        <button type="button" id="downloadBtn" class="btn btn-outline">
+                            <i class="fas fa-download"></i>
+                            PDF herunterladen
+                        </button>
+                    </div>
+                    
+                    <div class="generated-text">
+                        <textarea id="generatedText" class="form-textarea" rows="15" placeholder="Ihr generiertes Anschreiben erscheint hier..."></textarea>
+                    </div>
+                    
+                    <div class="generation-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Wörter:</span>
+                            <span class="stat-value" id="wordCount">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Zeichen:</span>
+                            <span class="stat-value" id="charCount">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Generiert:</span>
+                            <span class="stat-value" id="generationTime">-</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Template Fallback -->
+                <section id="templateSection" class="form-section" style="display: none;">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class="fas fa-file-alt"></i>
+                            Anschreiben-Templates
+                        </h2>
+                        <p class="section-description">Wählen Sie ein passendes Template als Alternative</p>
+                    </div>
+                    
+                    <div class="templates-grid">
+                        <div class="template-card">
+                            <h3 class="template-title">Formal Standard</h3>
+                            <p class="template-description">Klassisches, professionelles Anschreiben</p>
+                            <button type="button" class="btn btn-outline" onclick="useTemplate('formal')">
+                                <i class="fas fa-file-alt"></i>
+                                Verwenden
+                            </button>
+                        </div>
+                        
+                        <div class="template-card">
+                            <h3 class="template-title">Modern IT</h3>
+                            <p class="template-description">Zeitgemäßes Anschreiben für IT-Berufe</p>
+                            <button type="button" class="btn btn-outline" onclick="useTemplate('modern-it')">
+                                <i class="fas fa-file-alt"></i>
+                                Verwenden
+                            </button>
+                        </div>
+                        
+                        <div class="template-card">
+                            <h3 class="template-title">Kreativ Marketing</h3>
+                            <p class="template-description">Originelles Anschreiben für Marketing</p>
+                            <button type="button" class="btn btn-outline" onclick="useTemplate('creative-marketing')">
+                                <i class="fas fa-file-alt"></i>
+                                Verwenden
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" onclick="history.back()">
+                        <i class="fas fa-arrow-left"></i>
+                        Zurück
+                    </button>
+                    
+                    <button type="button" class="btn btn-primary" id="continueBtn" onclick="handleContinue()" style="display: none;">
+                        <i class="fas fa-arrow-right"></i>
+                        Weiter zum Tracking
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <h3>Anschreiben wird generiert...</h3>
+            <p>Bitte warten Sie, während die KI Ihr personalisiertes Anschreiben erstellt.</p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../js/real-user-auth-system.js"></script>
+    <script src="js/applications-core.js"></script>
+    <script src="js/ai-cover-letter-generator.js"></script>
+</body>
+</html>
