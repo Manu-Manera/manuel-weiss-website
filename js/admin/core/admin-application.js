@@ -136,38 +136,32 @@ class AdminApplication {
      * Sections initialisieren
      */
     initializeSections() {
-        // Dashboard Section
-        this.sections.dashboard = new DashboardSection();
-        
-        // Content Section
-        this.sections.content = new ContentSection();
-        
-        // Nutrition Section
-        this.sections.nutrition = new NutritionSection();
-        
-        // Personal Training Section
-        this.sections.personalTraining = new PersonalTrainingSection();
-        
-        // Translations Section
-        this.sections.translations = new TranslationsSection();
-        
-        // API Keys Section
-        this.sections.apiKeys = new ApiKeysSection();
-        
-        // Applications Section
-        this.sections.applications = new ApplicationsSection();
-        
-        // Media Section
-        this.sections.media = new MediaSection();
-        
-        // Personality Methods Section
-        this.sections.personalityMethods = new PersonalityMethodsSection();
-        
-        // Ikigai Section
-        this.sections.ikigai = new IkigaiSection();
-        
-        // Weitere Sections werden lazy geladen
-        console.log('Sections initialized');
+        const createIfAvailable = (key, globalName) => {
+            try {
+                const Ctor = window[globalName];
+                if (typeof Ctor === 'function') {
+                    this.sections[key] = new Ctor();
+                } else {
+                    console.warn(`[Admin] Section '${key}' skipped: ${globalName} not loaded yet`);
+                }
+            } catch (e) {
+                console.error(`[Admin] Failed to initialize section '${key}':`, e);
+            }
+        };
+
+        // Initialize only if constructors are present; otherwise they'll be loaded on demand
+        createIfAvailable('dashboard', 'DashboardSection');
+        createIfAvailable('content', 'ContentSection');
+        createIfAvailable('nutrition', 'NutritionSection');
+        createIfAvailable('personalTraining', 'PersonalTrainingSection');
+        createIfAvailable('translations', 'TranslationsSection');
+        createIfAvailable('apiKeys', 'ApiKeysSection');
+        createIfAvailable('applications', 'ApplicationsSection');
+        createIfAvailable('media', 'MediaSection');
+        createIfAvailable('personalityMethods', 'PersonalityMethodsSection');
+        createIfAvailable('ikigai', 'IkigaiSection');
+
+        console.log('Sections initialized (guarded)');
     }
     
     /**
