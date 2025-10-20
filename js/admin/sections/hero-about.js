@@ -131,3 +131,28 @@ class HeroAboutSection {
 // Global
 window.HeroAboutSection = HeroAboutSection;
 
+// Auto-Bootstrapping: initialisiert, sobald das Section-Template im DOM ist
+(function bootstrapHeroAbout() {
+    const tryInit = () => {
+        // nur initialisieren, wenn die Felder vorhanden sind
+        const hasForm = document.getElementById('heroName');
+        if (hasForm) {
+            if (!window.heroAboutSection) {
+                window.heroAboutSection = new HeroAboutSection();
+                window.heroAboutSection.init();
+            }
+            return; // fertig
+        }
+        setTimeout(tryInit, 200);
+    };
+
+    // beim Laden und bei Navigationswechseln probieren
+    document.addEventListener('DOMContentLoaded', tryInit);
+    window.addEventListener('hashchange', () => {
+        // Nur für hero-about Route versuchen
+        if (location.hash.replace('#', '') === 'hero-about') {
+            setTimeout(tryInit, 100);
+        }
+    });
+})();
+
