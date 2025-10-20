@@ -578,3 +578,5 @@ function handleComplete() {
 document.addEventListener('DOMContentLoaded', () => {
     window.interviewAssistant = new InterviewAssistant();
 });
+
+

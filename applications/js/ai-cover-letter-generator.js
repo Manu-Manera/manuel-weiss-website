@@ -494,3 +494,5 @@ function handleContinue() {
 document.addEventListener('DOMContentLoaded', () => {
     window.aiCoverLetterGenerator = new AICoverLetterGenerator();
 });
+
+

@@ -176,9 +176,25 @@ class AdminApplication {
     handleInitializationError(error) {
         console.error('Admin Application initialization failed:', error);
         
-        // Fallback: Redirect zu Backup
-        if (confirm('Fehler beim Laden des Admin Panels. Zur Backup-Version wechseln?')) {
-            window.location.href = 'admin-backup.html';
+        // Show error message in content area
+        const content = document.getElementById('admin-content');
+        if (content) {
+            content.innerHTML = `
+                <div style="text-align: center; padding: 4rem; color: #ef4444;">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                    <h2>Fehler beim Laden des Admin Panels</h2>
+                    <p>Es gab ein Problem beim Laden der JavaScript-Dateien.</p>
+                    <p><strong>Fehler:</strong> ${error.message}</p>
+                    <div style="margin-top: 2rem;">
+                        <button onclick="location.reload()" style="background: #6366f1; color: white; border: none; padding: 1rem 2rem; border-radius: 8px; cursor: pointer; margin-right: 1rem;">
+                            <i class="fas fa-refresh"></i> Seite neu laden
+                        </button>
+                        <button onclick="window.location.href='admin-backup.html'" style="background: #10b981; color: white; border: none; padding: 1rem 2rem; border-radius: 8px; cursor: pointer;">
+                            <i class="fas fa-backup"></i> Zur Backup-Version
+                        </button>
+                    </div>
+                </div>
+            `;
         }
     }
     

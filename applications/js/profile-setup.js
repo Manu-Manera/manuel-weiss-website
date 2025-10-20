@@ -668,3 +668,4 @@ class ProfileSetup {
 document.addEventListener('DOMContentLoaded', () => {
     window.profileSetup = new ProfileSetup();
 });
+

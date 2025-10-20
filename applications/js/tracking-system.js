@@ -513,3 +513,5 @@ function handleContinue() {
 document.addEventListener('DOMContentLoaded', () => {
     window.trackingSystem = new TrackingSystem();
 });
+
+
