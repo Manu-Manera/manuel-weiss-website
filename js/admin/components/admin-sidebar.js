@@ -475,11 +475,21 @@ class AdminSidebar extends HTMLElement {
             if (toggleLabel) {
                 toggleLabel.textContent = 'Ausklappen';
             }
+            // shift main layout when collapsed
+            const adminMain = document.querySelector('.admin-main');
+            if (adminMain) {
+                adminMain.classList.add('sidebar-collapsed');
+            }
         } else {
             this.classList.remove('collapsed');
             const toggleLabel = this.querySelector('.toggle-label');
             if (toggleLabel) {
                 toggleLabel.textContent = 'Einklappen';
+            }
+            // reset main layout when expanded
+            const adminMain = document.querySelector('.admin-main');
+            if (adminMain) {
+                adminMain.classList.remove('sidebar-collapsed');
             }
         }
     }

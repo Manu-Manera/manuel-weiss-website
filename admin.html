@@ -140,6 +140,10 @@
             align-items: center;
             padding: 1rem;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: sticky;
+            top: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            z-index: 2;
         }
         
         admin-sidebar .sidebar-brand {
@@ -206,9 +210,7 @@
             width: 100%;
         }
         
-        admin-sidebar.collapsed .nav-item span {
-            display: none;
-        }
+        admin-sidebar.collapsed .nav-item span { display: none !important; }
         
         admin-sidebar.collapsed .nav-item:hover span {
             display: block;
