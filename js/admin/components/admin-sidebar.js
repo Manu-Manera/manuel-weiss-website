@@ -30,7 +30,7 @@ class AdminSidebar extends HTMLElement {
                     <div class="avatar">
                         <span class="avatar-text">MW</span>
                     </div>
-                    <div>
+                    <div class="brand-text">
                         <h3>Admin Panel</h3>
                         <p>Manuel Weiss</p>
                     </div>
