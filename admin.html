@@ -194,6 +194,57 @@
             font-size: 1.2rem;
         }
         
+        /* Collapsed Sidebar - Nur Icons mit Hover-Tooltips */
+        admin-sidebar.collapsed {
+            overflow-x: visible;
+        }
+        
+        admin-sidebar.collapsed .nav-item a {
+            justify-content: center;
+            padding: 1rem 0;
+            position: relative;
+            width: 100%;
+        }
+        
+        admin-sidebar.collapsed .nav-item span {
+            display: none;
+        }
+        
+        admin-sidebar.collapsed .nav-item:hover span {
+            display: block;
+            position: absolute;
+            left: 80px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #333;
+            color: white !important;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            white-space: nowrap;
+            z-index: 1001;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            font-size: 0.875rem;
+        }
+        
+        admin-sidebar.collapsed .nav-item:hover a {
+            background: rgba(255, 255, 255, 0.9);
+            color: #000000 !important;
+        }
+        
+        admin-sidebar.collapsed .nav-item:hover i {
+            color: #000000 !important;
+        }
+        
+        /* Submenu in collapsed state */
+        admin-sidebar.collapsed .submenu {
+            display: none !important;
+        }
+        
+        /* Section title in collapsed state */
+        admin-sidebar.collapsed .nav-section-title {
+            display: none;
+        }
+        
         /* Topbar Styles */
         .admin-topbar {
             background: white;
