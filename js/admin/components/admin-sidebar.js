@@ -471,10 +471,16 @@ class AdminSidebar extends HTMLElement {
         
         if (collapsed) {
             this.classList.add('collapsed');
-            this.querySelector('.toggle-label').textContent = 'Ausklappen';
+            const toggleLabel = this.querySelector('.toggle-label');
+            if (toggleLabel) {
+                toggleLabel.textContent = 'Ausklappen';
+            }
         } else {
             this.classList.remove('collapsed');
-            this.querySelector('.toggle-label').textContent = 'Einklappen';
+            const toggleLabel = this.querySelector('.toggle-label');
+            if (toggleLabel) {
+                toggleLabel.textContent = 'Einklappen';
+            }
         }
     }
     
