@@ -62,3 +62,62 @@
         </div>
     </div>
 </div>
+
+<!-- Texte & Angaben -->
+<div class="hero-card" style="margin-top: 1.5rem;">
+    <h3>📝 Texte & Angaben</h3>
+    <div class="form-grid" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem;">
+        <div class="form-group">
+            <label for="heroName">Name</label>
+            <input type="text" id="heroName" placeholder="Manuel Weiss">
+        </div>
+        <div class="form-group">
+            <label for="heroTitle">Titel</label>
+            <input type="text" id="heroTitle" placeholder="HR Berater für AI & Transformation">
+        </div>
+        <div class="form-group" style="grid-column: 1 / -1;">
+            <label for="heroSubtitle">Untertitel (Hero)</label>
+            <textarea id="heroSubtitle" rows="2" placeholder="Innovative Lösungen für moderne Unternehmen..."></textarea>
+        </div>
+        <div class="form-group">
+            <label for="heroEmail">E-Mail</label>
+            <input type="email" id="heroEmail" placeholder="weiss-manuel@gmx.de">
+        </div>
+        <div class="form-group">
+            <label for="heroPhone">Telefon</label>
+            <input type="text" id="heroPhone" placeholder="+41 79 838 55 90">
+        </div>
+        <div class="form-group" style="grid-column: 1 / -1;">
+            <label for="heroLocation">Standort</label>
+            <input type="text" id="heroLocation" placeholder="Pilatusstrasse 40, 8330 Pfäffikon ZH">
+        </div>
+    </div>
+
+    <h4 style="margin-top: 1rem;">📊 Statistiken</h4>
+    <div class="form-grid" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem;">
+        <div class="form-group">
+            <label for="stat1Number">Stat 1 Zahl</label>
+            <input type="text" id="stat1Number" placeholder="5+">
+            <label for="stat1Label" style="margin-top: .25rem;">Stat 1 Label</label>
+            <input type="text" id="stat1Label" placeholder="Jahre Erfahrung">
+        </div>
+        <div class="form-group">
+            <label for="stat2Number">Stat 2 Zahl</label>
+            <input type="text" id="stat2Number" placeholder="50+">
+            <label for="stat2Label" style="margin-top: .25rem;">Stat 2 Label</label>
+            <input type="text" id="stat2Label" placeholder="Projekte">
+        </div>
+        <div class="form-group">
+            <label for="stat3Number">Stat 3 Zahl</label>
+            <input type="text" id="stat3Number" placeholder="100%">
+            <label for="stat3Label" style="margin-top: .25rem;">Stat 3 Label</label>
+            <input type="text" id="stat3Label" placeholder="Zufriedenheit">
+        </div>
+    </div>
+
+    <div class="actions" style="margin-top: 1rem; display: flex; gap: .5rem;">
+        <button id="heroSaveBtn" class="btn btn-primary"><i class="fas fa-save"></i> Speichern</button>
+        <button id="heroApplyBtn" class="btn btn-secondary"><i class="fas fa-sync"></i> Auf Website anwenden</button>
+        <button id="heroResetBtn" class="btn btn-outline"><i class="fas fa-undo"></i> Zurücksetzen</button>
+    </div>
+</div>
