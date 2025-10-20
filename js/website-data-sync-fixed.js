@@ -153,54 +153,134 @@ function loadWebsiteAdditionalData() {
     if (storedData) {
         try {
             const profileData = JSON.parse(storedData);
+            console.log('📝 Lade Hero-Daten:', profileData);
             
-            // Name aktualisieren
-            if (profileData.name) {
-                updateElementWithSelectors([
-                    '#hero-name', '.hero-name', '.main-name', 'h1'
-                ], profileData.name);
-            }
-            
-            // Titel aktualisieren
+            // Hero Titel aktualisieren
             if (profileData.title) {
-                updateElementWithSelectors([
-                    '#hero-title', '.hero-title', '.main-title', 'h2'
-                ], profileData.title);
+                updateHeroTitle(profileData.title);
             }
             
-            // Bio aktualisieren
-            if (profileData.bio) {
-                updateElementWithSelectors([
-                    '#about-bio', '.about-bio', '.main-bio', '.bio'
-                ], profileData.bio);
+            // Hero Untertitel aktualisieren
+            if (profileData.subtitle) {
+                updateHeroSubtitle(profileData.subtitle);
             }
             
-            // E-Mail aktualisieren
+            // Kontakt-Daten aktualisieren
             if (profileData.email) {
-                updateElementWithSelectors([
-                    '#about-email', '.about-email', '.contact-email', '.email'
-                ], profileData.email);
+                updateContactEmail(profileData.email);
             }
             
-            // Telefon aktualisieren
             if (profileData.phone) {
-                updateElementWithSelectors([
-                    '#about-phone', '.about-phone', '.contact-phone', '.phone'
-                ], profileData.phone);
+                updateContactPhone(profileData.phone);
             }
             
-            // Standort aktualisieren
             if (profileData.location) {
-                updateElementWithSelectors([
-                    '#about-location', '.about-location', '.contact-location', '.location'
-                ], profileData.location);
+                updateContactLocation(profileData.location);
             }
             
-            console.log('✅ Zusätzliche Daten erfolgreich aktualisiert');
+            console.log('✅ Hero-Daten erfolgreich aktualisiert');
         } catch (error) {
-            console.error('❌ Fehler beim Laden der zusätzlichen Daten:', error);
+            console.error('❌ Fehler beim Laden der Hero-Daten:', error);
         }
     }
+}
+
+/**
+ * Hero Titel aktualisieren
+ */
+function updateHeroTitle(title) {
+    const titleSelectors = [
+        '.hero-title .gradient-text',
+        '.hero-title span.gradient-text',
+        '.hero h1 .gradient-text',
+        '.hero h1 span:last-child'
+    ];
+    
+    titleSelectors.forEach(selector => {
+        const element = document.querySelector(selector);
+        if (element) {
+            element.textContent = title;
+            console.log(`✅ Hero Titel aktualisiert: ${selector} = ${title}`);
+        }
+    });
+}
+
+/**
+ * Hero Untertitel aktualisieren
+ */
+function updateHeroSubtitle(subtitle) {
+    const subtitleSelectors = [
+        '.hero-subtitle',
+        '.hero p',
+        '.hero-content p'
+    ];
+    
+    subtitleSelectors.forEach(selector => {
+        const element = document.querySelector(selector);
+        if (element) {
+            element.textContent = subtitle;
+            console.log(`✅ Hero Untertitel aktualisiert: ${selector} = ${subtitle}`);
+        }
+    });
+}
+
+/**
+ * Kontakt E-Mail aktualisieren
+ */
+function updateContactEmail(email) {
+    const emailSelectors = [
+        'a[href^="mailto:"]',
+        '.contact-item a[href^="mailto:"]',
+        '.contact-details a[href^="mailto:"]'
+    ];
+    
+    emailSelectors.forEach(selector => {
+        const element = document.querySelector(selector);
+        if (element) {
+            element.href = `mailto:${email}`;
+            element.textContent = email;
+            console.log(`✅ E-Mail aktualisiert: ${selector} = ${email}`);
+        }
+    });
+}
+
+/**
+ * Kontakt Telefon aktualisieren
+ */
+function updateContactPhone(phone) {
+    const phoneSelectors = [
+        'a[href^="tel:"]',
+        '.contact-item a[href^="tel:"]',
+        '.contact-details a[href^="tel:"]'
+    ];
+    
+    phoneSelectors.forEach(selector => {
+        const element = document.querySelector(selector);
+        if (element) {
+            element.href = `tel:${phone}`;
+            element.textContent = phone;
+            console.log(`✅ Telefon aktualisiert: ${selector} = ${phone}`);
+        }
+    });
+}
+
+/**
+ * Kontakt Standort aktualisieren
+ */
+function updateContactLocation(location) {
+    const locationSelectors = [
+        '.contact-item p',
+        '.contact-details p',
+        '.contact-item:has(.fas.fa-map-marker-alt) p'
+    ];
+    
+    locationSelectors.forEach(selector => {
+        const element = document.querySelector(selector);
+        if (element && element.textContent.includes('Pilatusstrasse')) {
+            element.textContent = location;
+            console.log(`✅ Standort aktualisiert: ${selector} = ${location}`);
+        }
+    });
 }
 
 /**

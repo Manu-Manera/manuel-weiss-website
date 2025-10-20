@@ -88,12 +88,19 @@ class HeroAboutSection {
     }
 
     applyToWebsite() {
+        this.save();
+        
+        // Direkte Website-Sync aufrufen
         if (window.loadWebsiteDataFromLocalStorage) {
-            this.save();
             window.loadWebsiteDataFromLocalStorage();
             this.toast('Auf Website angewendet');
         } else {
-            this.toast('Website Sync nicht geladen', 'error');
+            // Fallback: Storage Event triggern
+            window.dispatchEvent(new StorageEvent('storage', {
+                key: this.storageKey,
+                newValue: localStorage.getItem(this.storageKey)
+            }));
+            this.toast('Daten gespeichert - Website wird aktualisiert');
         }
     }
 
