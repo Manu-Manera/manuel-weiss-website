@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Manuel Weiss</title>
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="admin-styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        /* Simple Admin Layout */
+        .admin-layout {
+            display: flex;
+            min-height: 100vh;
+            background: #f8fafc;
+        }
+        
+        .admin-sidebar {
+            width: 280px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        
+        .admin-main {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem;
+        }
+        
+        .admin-content {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .sidebar-brand h3 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+        
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+        
+        .nav-item a {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+        
+        .nav-item a:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .nav-item.active a {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .error-message {
+            text-align: center;
+            padding: 4rem;
+            color: #ef4444;
+        }
+        
+        .error-message h2 {
+            margin-bottom: 1rem;
+        }
+        
+        .error-message p {
+            margin-bottom: 2rem;
+        }
+        
+        .btn {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-right: 1rem;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn:hover {
+            background: #4f46e5;
+        }
+        
+        .btn-success {
+            background: #10b981;
+        }
+        
+        .btn-success:hover {
+            background: #059669;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <div class="admin-sidebar">
+            <div class="sidebar-brand">
+                <div class="avatar" style="width: 50px; height: 50px; background: rgba(255, 255, 255, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+                    MW
+                </div>
+                <div>
+                    <h3>Admin Panel</h3>
+                    <p>Manuel Weiss</p>
+                </div>
+            </div>
+            
+            <nav>
+                <div class="nav-item active">
+                    <a href="#dashboard">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#applications">
+                        <i class="fas fa-briefcase"></i>
+                        <span>Bewerbungen</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#api-keys">
+                        <i class="fas fa-key"></i>
+                        <span>API Keys</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#media">
+                        <i class="fas fa-images"></i>
+                        <span>Medien</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#content">
+                        <i class="fas fa-edit"></i>
+                        <span>Inhalte</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#settings">
+                        <i class="fas fa-cog"></i>
+                        <span>Einstellungen</span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="/" target="_blank">
+                        <i class="fas fa-external-link-alt"></i>
+                        <span>Website ansehen</span>
+                    </a>
+                </div>
+            </nav>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="admin-main">
+            <div class="admin-content">
+                <div id="admin-content">
+                    <div class="loading-placeholder" style="text-align: center; padding: 4rem; color: #64748b;">
+                        <i class="fas fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                        <p>Lade Admin Panel...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Simple JavaScript -->
+    <script>
+        // Simple Admin Panel
+        class SimpleAdminPanel {
+            constructor() {
+                this.currentSection = 'dashboard';
+                this.init();
+            }
+            
+            init() {
+                console.log('Simple Admin Panel initialized');
+                this.loadSection('dashboard');
+                this.attachEventListeners();
+            }
+            
+            attachEventListeners() {
+                // Navigation
+                document.querySelectorAll('.nav-item a').forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const section = e.currentTarget.getAttribute('href').substring(1);
+                        this.navigateToSection(section);
+                    });
+                });
+            }
+            
+            navigateToSection(sectionId) {
+                this.currentSection = sectionId;
+                
+                // Update active nav item
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                const activeItem = document.querySelector(`[href="#${sectionId}"]`).parentElement;
+                activeItem.classList.add('active');
+                
+                // Load section content
+                this.loadSection(sectionId);
+            }
+            
+            loadSection(sectionId) {
+                const content = document.getElementById('admin-content');
+                
+                switch (sectionId) {
+                    case 'dashboard':
+                        content.innerHTML = this.getDashboardContent();
+                        break;
+                    case 'applications':
+                        content.innerHTML = this.getApplicationsContent();
+                        break;
+                    case 'api-keys':
+                        content.innerHTML = this.getApiKeysContent();
+                        break;
+                    case 'media':
+                        content.innerHTML = this.getMediaContent();
+                        break;
+                    case 'content':
+                        content.innerHTML = this.getContentContent();
+                        break;
+                    case 'settings':
+                        content.innerHTML = this.getSettingsContent();
+                        break;
+                    default:
+                        content.innerHTML = this.getDashboardContent();
+                }
+            }
+            
+            getDashboardContent() {
+                return `
+                    <div style="text-align: center; padding: 4rem;">
+                        <h1 style="color: #1e293b; margin-bottom: 2rem;">Dashboard</h1>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
+                            <div style="background: #f8fafc; padding: 2rem; border-radius: 12px; text-align: center;">
+                                <i class="fas fa-briefcase" style="font-size: 2rem; color: #6366f1; margin-bottom: 1rem;"></i>
+                                <h3>Bewerbungen</h3>
+                                <p>Verwalte deine Bewerbungen</p>
+                            </div>
+                            <div style="background: #f8fafc; padding: 2rem; border-radius: 12px; text-align: center;">
+                                <i class="fas fa-key" style="font-size: 2rem; color: #10b981; margin-bottom: 1rem;"></i>
+                                <h3>API Keys</h3>
+                                <p>Verwalte deine API-Schlüssel</p>
+                            </div>
+                            <div style="background: #f8fafc; padding: 2rem; border-radius: 12px; text-align: center;">
+                                <i class="fas fa-images" style="font-size: 2rem; color: #f59e0b; margin-bottom: 1rem;"></i>
+                                <h3>Medien</h3>
+                                <p>Verwalte deine Medien</p>
+                            </div>
+                        </div>
+                        <div style="margin-top: 2rem;">
+                            <button class="btn" onclick="adminPanel.navigateToSection('applications')">
+                                <i class="fas fa-briefcase"></i> Bewerbungen verwalten
+                            </button>
+                            <button class="btn" onclick="adminPanel.navigateToSection('api-keys')">
+                                <i class="fas fa-key"></i> API Keys verwalten
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            getApplicationsContent() {
+                return `
+                    <div style="text-align: center; padding: 4rem;">
+                        <h1 style="color: #1e293b; margin-bottom: 2rem;">Bewerbungen</h1>
+                        <p style="color: #64748b; margin-bottom: 2rem;">Verwalte deine Bewerbungen und Bewerbungsunterlagen</p>
+                        <div style="background: #f8fafc; padding: 2rem; border-radius: 12px; margin-bottom: 2rem;">
+                            <h3>Bewerbungsmanagement</h3>
+                            <p>Hier kannst du deine Bewerbungen verwalten</p>
+                        </div>
+                        <button class="btn" onclick="adminPanel.navigateToSection('dashboard')">
+                            <i class="fas fa-arrow-left"></i> Zurück zum Dashboard
+                        </button>
+                    </div>
+                `;
+            }
+            
+            getApiKeysContent() {
+                return `
+                    <div style="text-align: center; padding: 4rem;">
+                        <h1 style="color: #1e293b; margin-bottom: 2rem;">API Keys</h1>
+                        <p style="color: #64748b; margin-bottom: 2rem;">Verwalte deine API-Schlüssel für verschiedene Services</p>
+                        <div style="background: #f8fafc; padding: 2rem; border-radius: 12px; margin-bottom: 2rem;">
+                            <h3>API-Schlüssel verwalten</h3>
+                            <p>Hier kannst du deine API-Schlüssel konfigurieren</p>
+                        </div>
+                        <button class="btn" onclick="adminPanel.navigateToSection('dashboard')">
+                            <i class="fas fa-arrow-left"></i> Zurück zum Dashboard
+                        </button>
+                    </div>
+                `;
+            }
+            
+            getMediaContent() {
+                return `
+                    <div style="text-align: center; padding: 4rem;">
+                        <h1 style="color: #1e293b; margin-bottom: 2rem;">Medien</h1>
+                        <p style="color: #64748b; margin-bottom: 2rem;">Verwalte deine Medien und Dateien</p>
+                        <div style="background: #f8fafc; padding: 2rem; border-radius: 12px; margin-bottom: 2rem;">
+                            <h3>Medienverwaltung</h3>
+                            <p>Hier kannst du deine Medien verwalten</p>
+                        </div>
+                        <button class="btn" onclick="adminPanel.navigateToSection('dashboard')">
+                            <i class="fas fa-arrow-left"></i> Zurück zum Dashboard
+                        </button>
+                    </div>
+                `;
+            }
+            
+            getContentContent() {
+                return `
+                    <div style="text-align: center; padding: 4rem;">
+                        <h1 style="color: #1e293b; margin-bottom: 2rem;">Inhalte</h1>
+                        <p style="color: #64748b; margin-bottom: 2rem;">Verwalte deine Website-Inhalte</p>
+                        <div style="background: #f8fafc; padding: 2rem; border-radius: 12px; margin-bottom: 2rem;">
+                            <h3>Content Management</h3>
+                            <p>Hier kannst du deine Inhalte verwalten</p>
+                        </div>
+                        <button class="btn" onclick="adminPanel.navigateToSection('dashboard')">
+                            <i class="fas fa-arrow-left"></i> Zurück zum Dashboard
+                        </button>
+                    </div>
+                `;
+            }
+            
+            getSettingsContent() {
+                return `
+                    <div style="text-align: center; padding: 4rem;">
+                        <h1 style="color: #1e293b; margin-bottom: 2rem;">Einstellungen</h1>
+                        <p style="color: #64748b; margin-bottom: 2rem;">Verwalte deine Admin-Panel-Einstellungen</p>
+                        <div style="background: #f8fafc; padding: 2rem; border-radius: 12px; margin-bottom: 2rem;">
+                            <h3>Admin-Einstellungen</h3>
+                            <p>Hier kannst du deine Einstellungen verwalten</p>
+                        </div>
+                        <button class="btn" onclick="adminPanel.navigateToSection('dashboard')">
+                            <i class="fas fa-arrow-left"></i> Zurück zum Dashboard
+                        </button>
+                    </div>
+                `;
+            }
+        }
+        
+        // Initialize Admin Panel
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                window.adminPanel = new SimpleAdminPanel();
+                console.log('Admin Panel loaded successfully');
+            } catch (error) {
+                console.error('Admin Panel initialization failed:', error);
+                document.getElementById('admin-content').innerHTML = `
+                    <div class="error-message">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                        <h2>Fehler beim Laden des Admin Panels</h2>
+                        <p>Es gab ein Problem beim Laden der JavaScript-Dateien.</p>
+                        <p><strong>Fehler:</strong> ${error.message}</p>
+                        <div style="margin-top: 2rem;">
+                            <button class="btn" onclick="location.reload()">
+                                <i class="fas fa-refresh"></i> Seite neu laden
+                            </button>
+                            <a href="admin-backup.html" class="btn btn-success">
+                                <i class="fas fa-backup"></i> Zur Backup-Version
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>
