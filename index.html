@@ -390,9 +390,6 @@
     <script src="js/real-user-auth-system.js"></script>
     <script src="script.js"></script>
     
-        <!-- Website Data Sync - KORRIGIERTE VERSION -->
-        <script src="js/website-data-sync-fixed.js"></script>
-    
     <!-- Smart API für AWS-Integration -->
     <script>
         // Smart API laden für AWS-Integration
@@ -403,6 +400,9 @@
         };
         document.head.appendChild(smartApiScript);
     </script>
+    
+    <!-- Website Data Sync - KORRIGIERTE VERSION: zuletzt laden, damit es alles überschreibt -->
+    <script src="js/website-data-sync-fixed.js"></script>
 
     <!-- Login Visibility Control -->
     <script>
@@ -757,26 +757,8 @@
                     const data = JSON.parse(heroData);
                     console.log('✅ WEBSITE: Hero data found:', data);
                     
-                    // Hero-Titel aktualisieren
-                    if (data.title) {
-                        const heroTitle = document.querySelector('.hero-title');
-                        if (heroTitle) {
-                            // Titel mit Gradient-Text für "AI & Transformation" formatieren
-                            let titleText = data.title;
-                            if (titleText.includes('AI & Transformation')) {
-                                titleText = titleText.replace('AI & Transformation', '<span class="gradient-text">AI & Transformation</span>');
-                            }
-                            heroTitle.innerHTML = titleText;
-                        }
-                    }
-                    
-                    // Hero-Untertitel aktualisieren
-                    if (data.subtitle) {
-                        const heroSubtitle = document.querySelector('.hero-subtitle');
-                        if (heroSubtitle) {
-                            heroSubtitle.textContent = data.subtitle;
-                        }
-                    }
+                    // Hero Content wird zentral von website-data-sync-fixed.js gesetzt
+                    // Hier nicht mehr überschreiben, um Konflikte zu vermeiden
                     
                     // PROFILBILD LADEN - GARANTIERT FUNKTIONIEREND
                     console.log('📸 WEBSITE: Loading profile image...');

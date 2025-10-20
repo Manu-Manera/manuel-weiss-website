@@ -324,10 +324,9 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('🌐 DOM geladen, starte Website Data Sync...');
     loadWebsiteDataFromLocalStorage();
     
-    // Zusätzlich: Alle 5 Sekunden prüfen (für den Fall, dass Storage-Events nicht funktionieren)
-    setInterval(() => {
-        loadWebsiteDataFromLocalStorage();
-    }, 5000);
+    // Re-apply kurz nach nachgeladenen Skripten
+    setTimeout(loadWebsiteDataFromLocalStorage, 300);
+    setTimeout(loadWebsiteDataFromLocalStorage, 1000);
     
     console.log('✅ Website Data Sync initialisiert');
 });
