@@ -391,33 +391,47 @@ class AdminSidebar extends HTMLElement {
      * State initialisieren
      */
     initializeState() {
-        // State Manager verbinden
-        if (window.AdminApp && window.AdminApp.stateManager) {
-            this.stateManager = window.AdminApp.stateManager;
-            this.navigation = window.AdminApp.navigation;
-            
-            // State Changes abonnieren
-            this.stateManager.subscribe('currentSection', (sectionId) => {
-                this.setActiveSection(sectionId);
-            });
-            
-            this.stateManager.subscribe('sidebarCollapsed', (collapsed) => {
-                this.setCollapsed(collapsed);
-            });
-        }
+        // Warten auf AdminApp Initialisierung
+        const checkAdminApp = () => {
+            if (window.AdminApp && window.AdminApp.stateManager) {
+                this.stateManager = window.AdminApp.stateManager;
+                this.navigation = window.AdminApp.navigation;
+                
+                console.log('Sidebar connected to AdminApp');
+                
+                // State Changes abonnieren
+                this.stateManager.subscribe('currentSection', (sectionId) => {
+                    this.setActiveSection(sectionId);
+                });
+                
+                this.stateManager.subscribe('sidebarCollapsed', (collapsed) => {
+                    this.setCollapsed(collapsed);
+                });
+                
+                // Initial State setzen
+                this.setActiveSection(this.activeSection);
+            } else {
+                // Retry nach 100ms
+                setTimeout(checkAdminApp, 100);
+            }
+        };
         
-        // Initial State setzen
-        this.setActiveSection(this.activeSection);
+        checkAdminApp();
     }
     
     /**
      * Navigation zu Section
      */
     navigateToSection(sectionId) {
+        console.log('Sidebar navigation to:', sectionId);
+        
         if (this.navigation) {
             this.navigation.navigateToSection(sectionId);
+        } else if (window.AdminApp && window.AdminApp.navigation) {
+            window.AdminApp.navigation.navigateToSection(sectionId);
         } else {
             // Fallback
+            console.log('Using fallback navigation');
             window.location.hash = sectionId;
         }
     }

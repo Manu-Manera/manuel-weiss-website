@@ -102,6 +102,8 @@ class AdminNavigation {
      * Section laden
      */
     async loadSection(sectionId) {
+        console.log('Loading section:', sectionId);
+        
         if (!this.sectionLoader) {
             throw new Error('Section loader not set');
         }
@@ -111,18 +113,47 @@ class AdminNavigation {
             throw new Error(`Route not found for section: ${sectionId}`);
         }
         
+        console.log('Route found:', route);
+        
         // Section laden mit Route
         const result = await this.sectionLoader.loadSection(sectionId, route);
+        
+        console.log('Section loaded, template length:', result.template.length);
         
         // Content in DOM einfügen
         const container = document.getElementById('admin-content');
         if (container) {
             container.innerHTML = result.template;
             container.setAttribute('data-section', sectionId);
+            console.log('Content inserted into DOM');
+        } else {
+            console.error('Admin content container not found');
         }
         
         // Section als geladen markieren
         this.stateManager.setState('currentSection', sectionId);
+        
+        // Section-spezifische Initialisierung
+        this.initializeSection(sectionId);
+    }
+    
+    /**
+     * Section-spezifische Initialisierung
+     */
+    initializeSection(sectionId) {
+        console.log('Initializing section:', sectionId);
+        
+        // Hero-About Section spezifische Initialisierung
+        if (sectionId === 'hero-about') {
+            // Warten auf DOM Update
+            setTimeout(() => {
+                if (window.HeroAboutSection && !window.heroAboutSection) {
+                    console.log('Initializing HeroAboutSection');
+                    window.heroAboutSection = new window.HeroAboutSection();
+                    window.heroAboutSection.init();
+                }
+            }, 100);
+        }
     }
     
     /**
