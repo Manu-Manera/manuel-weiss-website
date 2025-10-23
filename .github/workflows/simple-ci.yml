@@ -22,7 +22,7 @@ jobs:
         
     - name: Install Dependencies
       run: |
-        npm install --no-package-lock
+        npm ci
         echo "Dependencies installed successfully"
       
     - name: Validate HTML

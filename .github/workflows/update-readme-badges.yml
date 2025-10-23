@@ -29,7 +29,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          npm install --no-package-lock
+          npm ci
           echo "Dependencies installed successfully"
 
       - name: Generate badges
@@ -61,28 +61,28 @@ jobs:
           
           # Create updated README content
           cat > README_UPDATED.md << EOF
-# 🚀 Manuel Weiss - Professional Services Website
-
-**Eine umfassende, moderne Website mit KI-gestütztem Bewerbungsmanager, AWS-Backend und vollständiger Business-Lösung.**
-
-## 📊 Live Metrics
-
-![Success Rate](${{ steps.generate-badges.outputs.success_badge }})
-![Applications](${{ steps.generate-badges.outputs.applications_badge }})
-![User Rating](${{ steps.generate-badges.outputs.rating_badge }})
-![Lighthouse Score](${{ steps.generate-badges.outputs.lighthouse_badge }})
-
-**Last Updated:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")
-
----
-
-## 🌐 Live Website
-
-**Website:** [https://manu-manera.github.io/manuel-weiss-website](https://manu-manera.github.io/manuel-weiss-website)  
-**Netlify:** [https://mawps.netlify.app](https://mawps.netlify.app) *(Primär)*
-
----
-
+          # 🚀 Manuel Weiss - Professional Services Website
+          
+          **Eine umfassende, moderne Website mit KI-gestütztem Bewerbungsmanager, AWS-Backend und vollständiger Business-Lösung.**
+          
+          ## 📊 Live Metrics
+          
+          ![Success Rate](${{ steps.generate-badges.outputs.success_badge }})
+          ![Applications](${{ steps.generate-badges.outputs.applications_badge }})
+          ![User Rating](${{ steps.generate-badges.outputs.rating_badge }})
+          ![Lighthouse Score](${{ steps.generate-badges.outputs.lighthouse_badge }})
+          
+          **Last Updated:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          
+          ---
+          
+          ## 🌐 Live Website
+          
+          **Website:** [https://manu-manera.github.io/manuel-weiss-website](https://manu-manera.github.io/manuel-weiss-website)  
+          **Netlify:** [https://mawps.netlify.app](https://mawps.netlify.app) *(Primär)*
+          
+          ---
+          
 ## 🚀 Features
 
 ### 🤖 KI-gestützte Bewerbungsautomatisierung
@@ -107,11 +107,11 @@ jobs:
 - **Ikigai Workflow** - Lebenszweck-Entdeckung
 - **RAISEC Test** - Berufsorientierung
 - **SWOT Analyse** - Stärken-Schwächen-Analyse
-
----
-
-## 🛠️ Technologie-Stack
-
+          
+          ---
+          
+          ## 🛠️ Technologie-Stack
+          
 - **Frontend:** HTML5, CSS3, JavaScript (ES6+)
 - **Backend:** AWS Lambda, DynamoDB, S3
 - **Deployment:** Netlify, GitHub Pages
@@ -148,7 +148,7 @@ EOF
             echo "No changes to commit"
           else
             cp README_UPDATED.md README.md
-            git add README.md
+          git add README.md
             git commit -m "Update README badges - $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
-            git push
+          git push
           fi
