@@ -1,0 +1,151 @@
+<!-- AI Investment System Section -->
+<div class="section-content ai-investments-section">
+    <div class="section-header">
+        <h2><i class="fas fa-chart-line"></i> AI Investment System</h2>
+        <div class="section-actions">
+            <button class="btn btn-primary" id="refreshData">
+                <i class="fas fa-sync-alt"></i> Daten aktualisieren
+            </button>
+            <button class="btn btn-secondary" id="exportData">
+                <i class="fas fa-download"></i> Export
+            </button>
+        </div>
+    </div>
+
+    <!-- Dashboard Overview -->
+    <div class="dashboard-overview">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-signal"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 id="totalSignals">0</h3>
+                    <p>Aktive Signale</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-lightbulb"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 id="totalProposals">0</h3>
+                    <p>Investment Vorschläge</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-gavel"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 id="totalDecisions">0</h3>
+                    <p>Entscheidungen</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 id="totalReturns">0%</h3>
+                    <p>Gesamtrendite</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Tabs -->
+    <div class="ai-investments-tabs">
+        <div class="tab-navigation">
+            <button class="tab-btn active" data-tab="signals">
+                <i class="fas fa-signal"></i> Signale
+            </button>
+            <button class="tab-btn" data-tab="proposals">
+                <i class="fas fa-lightbulb"></i> Vorschläge
+            </button>
+            <button class="tab-btn" data-tab="decisions">
+                <i class="fas fa-gavel"></i> Entscheidungen
+            </button>
+            <button class="tab-btn" data-tab="analytics">
+                <i class="fas fa-chart-bar"></i> Analytik
+            </button>
+        </div>
+
+        <!-- Signals Tab -->
+        <div class="tab-content active" id="signals-tab">
+            <div class="signals-container">
+                <div class="signals-filters">
+                    <select id="signalSource">
+                        <option value="all">Alle Quellen</option>
+                        <option value="twitter">Twitter</option>
+                        <option value="reddit">Reddit</option>
+                        <option value="news">News</option>
+                    </select>
+                    <select id="signalScore">
+                        <option value="all">Alle Scores</option>
+                        <option value="high">Hoch (>0.8)</option>
+                        <option value="medium">Mittel (0.5-0.8)</option>
+                        <option value="low">Niedrig (<0.5)</option>
+                    </select>
+                </div>
+                <div class="signals-list" id="signalsList">
+                    <!-- Signals will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Proposals Tab -->
+        <div class="tab-content" id="proposals-tab">
+            <div class="proposals-container">
+                <div class="proposals-filters">
+                    <select id="proposalStatus">
+                        <option value="all">Alle Status</option>
+                        <option value="pending">Ausstehend</option>
+                        <option value="approved">Genehmigt</option>
+                        <option value="rejected">Abgelehnt</option>
+                    </select>
+                </div>
+                <div class="proposals-list" id="proposalsList">
+                    <!-- Proposals will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Decisions Tab -->
+        <div class="tab-content" id="decisions-tab">
+            <div class="decisions-container">
+                <div class="decisions-filters">
+                    <select id="decisionStatus">
+                        <option value="all">Alle Status</option>
+                        <option value="executed">Ausgeführt</option>
+                        <option value="pending">Ausstehend</option>
+                        <option value="cancelled">Storniert</option>
+                    </select>
+                </div>
+                <div class="decisions-list" id="decisionsList">
+                    <!-- Decisions will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Tab -->
+        <div class="tab-content" id="analytics-tab">
+            <div class="analytics-container">
+                <div class="charts-grid">
+                    <div class="chart-container">
+                        <h3>Performance über Zeit</h3>
+                        <canvas id="performanceChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Signal-Verteilung</h3>
+                        <canvas id="signalDistributionChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Risiko-Analyse</h3>
+                        <canvas id="riskAnalysisChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
