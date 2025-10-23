@@ -34,8 +34,8 @@ class TwitterClient {
         body: JSON.stringify({
           query,
           max_results: maxResults,
-          tweet.fields: 'created_at,public_metrics,context_annotations,entities',
-          user.fields: 'verified,public_metrics',
+          'tweet.fields': 'created_at,public_metrics,context_annotations,entities',
+          'user.fields': 'verified,public_metrics',
           expansions: 'author_id'
         })
       });
@@ -44,7 +44,7 @@ class TwitterClient {
         throw new Error(`Twitter API error: ${response.status}`);
       }
 
-      const data = await response.json();
+      const data = await response.json() as any;
       return data.data || [];
     } catch (error) {
       logger.error('Twitter API search failed', error as Error, { query });
@@ -62,7 +62,7 @@ class TwitterClient {
         },
         body: JSON.stringify({
           max_results: maxResults,
-          tweet.fields: 'created_at,public_metrics,context_annotations,entities'
+          'tweet.fields': 'created_at,public_metrics,context_annotations,entities'
         })
       });
 
@@ -70,7 +70,7 @@ class TwitterClient {
         throw new Error(`Twitter API error: ${response.status}`);
       }
 
-      const data = await response.json();
+      const data = await response.json() as any;
       return data.data || [];
     } catch (error) {
       logger.error('Twitter API user tweets failed', error as Error, { userId });
@@ -112,7 +112,7 @@ class RedditClient {
         throw new Error(`Reddit API error: ${response.status}`);
       }
 
-      const data = await response.json();
+      const data = await response.json() as any;
       this.accessToken = data.access_token;
       return this.accessToken;
     } catch (error) {
@@ -142,7 +142,7 @@ class RedditClient {
         throw new Error(`Reddit API error: ${response.status}`);
       }
 
-      const data = await response.json();
+      const data = await response.json() as any;
       return data.data?.children?.map((child: any) => child.data) || [];
     } catch (error) {
       logger.error('Reddit API search failed', error as Error, { subreddit, query });
@@ -181,7 +181,7 @@ class YouTubeClient {
         throw new Error(`YouTube API error: ${response.status}`);
       }
 
-      const data = await response.json();
+      const data = await response.json() as any;
       return data.items || [];
     } catch (error) {
       logger.error('YouTube API search failed', error as Error, { query });
@@ -218,7 +218,7 @@ class LinkedInClient {
         throw new Error(`LinkedIn API error: ${response.status}`);
       }
 
-      const data = await response.json();
+      const data = await response.json() as any;
       return data.elements || [];
     } catch (error) {
       logger.error('LinkedIn API search failed', error as Error, { query });

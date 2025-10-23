@@ -36,11 +36,13 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
-    "zod": "^3.22.0",
-    "openai": "^4.20.0",
+    "@types/aws-lambda": "^8.10.156",
     "aws-sdk": "^2.1500.0",
     "crypto": "^1.0.1",
-    "uuid": "^9.0.0"
+    "openai": "^4.20.0",
+    "uuid": "^9.0.0",
+    "winston": "^3.18.3",
+    "zod": "^3.22.0"
   },
   "peerDependencies": {
     "typescript": ">=5.0.0"

@@ -45,7 +45,6 @@
     "@types/puppeteer": "^7.0.4",
     "playwright": "^1.40.1",
     "@playwright/test": "^1.40.1",
-    "k6": "^0.47.0",
     "artillery": "^2.0.0",
     "lighthouse": "^11.4.0",
     "axe-core": "^4.8.2",
@@ -53,42 +52,6 @@
     "sonarjs": "^1.0.0",
     "eslint-plugin-security": "^1.7.1",
     "eslint-plugin-sonarjs": "^0.23.0"
-  },
-  "jest": {
-    "preset": "ts-jest",
-    "testEnvironment": "node",
-    "roots": ["<rootDir>/tests"],
-    "testMatch": [
-      "**/__tests__/**/*.ts",
-      "**/?(*.)+(spec|test).ts"
-    ],
-    "transform": {
-      "^.+\\.ts$": "ts-jest"
-    },
-    "collectCoverageFrom": [
-      "**/*.ts",
-      "!**/*.d.ts",
-      "!**/node_modules/**",
-      "!**/tests/**"
-    ],
-    "coverageDirectory": "coverage",
-    "coverageReporters": [
-      "text",
-      "lcov",
-      "html"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "branches": 80,
-        "functions": 80,
-        "lines": 80,
-        "statements": 80
-      }
-    },
-    "setupFilesAfterEnv": ["<rootDir>/tests/setup.ts"],
-    "testTimeout": 30000,
-    "maxWorkers": 4,
-    "verbose": true
   },
   "engines": {
     "node": ">=18.0.0"

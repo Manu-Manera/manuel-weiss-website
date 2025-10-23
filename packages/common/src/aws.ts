@@ -297,16 +297,17 @@ export class AWSHelpers {
     const converted: any = {};
     
     for (const [key, value] of Object.entries(item)) {
-      if (value.S) {
-        converted[key] = value.S;
-      } else if (value.N) {
-        converted[key] = parseFloat(value.N);
-      } else if (value.BOOL !== undefined) {
-        converted[key] = value.BOOL;
-      } else if (value.L) {
-        converted[key] = value.L.map((v: any) => this.convertFromDynamoDBItem({ item: v }).item);
-      } else if (value.M) {
-        converted[key] = this.convertFromDynamoDBItem(value.M);
+      const dynamoValue = value as any;
+      if (dynamoValue.S) {
+        converted[key] = dynamoValue.S;
+      } else if (dynamoValue.N) {
+        converted[key] = parseFloat(dynamoValue.N);
+      } else if (dynamoValue.BOOL !== undefined) {
+        converted[key] = dynamoValue.BOOL;
+      } else if (dynamoValue.L) {
+        converted[key] = dynamoValue.L.map((v: any) => this.convertFromDynamoDBItem({ item: v }).item);
+      } else if (dynamoValue.M) {
+        converted[key] = this.convertFromDynamoDBItem(dynamoValue.M);
       }
     }
     
