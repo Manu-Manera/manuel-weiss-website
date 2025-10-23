@@ -47,11 +47,15 @@ class AIInvestmentSection {
      * Event Listeners setzen
      */
     setupEventListeners() {
-        // Tab Navigation
+        // Tab Navigation - mit Debug-Logging
         const tabButtons = document.querySelectorAll('.tab-btn');
+        console.log('Setting up tab listeners for', tabButtons.length, 'buttons');
+        
         tabButtons.forEach(btn => {
             btn.addEventListener('click', (e) => {
+                e.preventDefault();
                 const tabId = e.currentTarget.dataset.tab;
+                console.log('Tab clicked:', tabId);
                 this.switchTab(tabId);
             });
         });
@@ -69,6 +73,14 @@ class AIInvestmentSection {
         if (exportBtn) {
             exportBtn.addEventListener('click', () => {
                 this.exportData();
+            });
+        }
+        
+        // Start Analysis Button
+        const startAnalysisBtn = document.getElementById('startAnalysis');
+        if (startAnalysisBtn) {
+            startAnalysisBtn.addEventListener('click', () => {
+                this.startAnalysis();
             });
         }
         
@@ -117,21 +129,58 @@ class AIInvestmentSection {
      * Tab wechseln
      */
     switchTab(tabId) {
+        console.log('Switching to tab:', tabId);
+        
         // Tab Buttons
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.classList.remove('active');
         });
-        document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+        const activeBtn = document.querySelector(`[data-tab="${tabId}"]`);
+        if (activeBtn) {
+            activeBtn.classList.add('active');
+            console.log('Tab button activated:', tabId);
+        } else {
+            console.error('Tab button not found:', tabId);
+        }
         
         // Tab Content
         document.querySelectorAll('.tab-content').forEach(content => {
             content.classList.remove('active');
         });
-        document.getElementById(`${tabId}-tab`).classList.add('active');
+        const activeContent = document.getElementById(`${tabId}-tab`);
+        if (activeContent) {
+            activeContent.classList.add('active');
+            console.log('Tab content activated:', tabId);
+        } else {
+            console.error('Tab content not found:', `${tabId}-tab`);
+        }
         
         // Charts aktualisieren wenn Analytics Tab
         if (tabId === 'analytics') {
             this.updateCharts();
+        }
+        
+        // Tab-spezifische Aktionen
+        this.handleTabSwitch(tabId);
+    }
+    
+    /**
+     * Tab-spezifische Aktionen
+     */
+    handleTabSwitch(tabId) {
+        switch(tabId) {
+            case 'signals':
+                this.loadSignalsData();
+                break;
+            case 'proposals':
+                this.loadProposalsData();
+                break;
+            case 'decisions':
+                this.loadDecisionsData();
+                break;
+            case 'analytics':
+                this.loadAnalyticsData();
+                break;
         }
     }
     
@@ -492,7 +541,295 @@ class AIInvestmentSection {
         
         URL.revokeObjectURL(url);
     }
+    
+    /**
+     * Analyse starten
+     */
+    async startAnalysis() {
+        console.log('Starting analysis...');
+        
+        // UI für Analyse-Status anzeigen
+        this.showAnalysisStatus();
+        
+        try {
+            // Schritt 1: Signale sammeln
+            await this.collectSignals();
+            
+            // Schritt 2: Signale analysieren
+            await this.analyzeSignals();
+            
+            // Schritt 3: Vorschläge generieren
+            await this.generateProposals();
+            
+            // Schritt 4: Analyse abschließen
+            await this.completeAnalysis();
+            
+        } catch (error) {
+            console.error('Analysis failed:', error);
+            this.showAnalysisError(error);
+        }
+    }
+    
+    /**
+     * Analyse-Status anzeigen
+     */
+    showAnalysisStatus() {
+        const statusDiv = document.getElementById('analysisStatus');
+        if (statusDiv) {
+            statusDiv.style.display = 'block';
+        }
+        
+        // Button deaktivieren
+        const startBtn = document.getElementById('startAnalysis');
+        if (startBtn) {
+            startBtn.disabled = true;
+            startBtn.innerHTML = '<i class="fas fa-cog fa-spin"></i> Analyse läuft...';
+        }
+    }
+    
+    /**
+     * Signale sammeln
+     */
+    async collectSignals() {
+        this.updateAnalysisProgress('Signale werden gesammelt...', 25);
+        
+        // Simuliere Signale sammeln
+        await this.delay(2000);
+        
+        // Mock Signale hinzufügen
+        const newSignals = [
+            {
+                id: `signal-${Date.now()}-1`,
+                source: 'twitter',
+                content: 'Tesla announces new battery technology breakthrough',
+                score: 0.92,
+                confidence: 0.95,
+                timestamp: new Date().toISOString(),
+                metadata: { author: '@tesla_news', followers: 50000 }
+            },
+            {
+                id: `signal-${Date.now()}-2`,
+                source: 'reddit',
+                content: 'Apple stock showing strong momentum after earnings',
+                score: 0.88,
+                confidence: 0.90,
+                timestamp: new Date().toISOString(),
+                metadata: { subreddit: 'investing', upvotes: 250 }
+            },
+            {
+                id: `signal-${Date.now()}-3`,
+                source: 'news',
+                content: 'Federal Reserve hints at interest rate changes',
+                score: 0.75,
+                confidence: 0.85,
+                timestamp: new Date().toISOString(),
+                metadata: { source: 'Reuters', category: 'economics' }
+            }
+        ];
+        
+        this.data.signals.push(...newSignals);
+        console.log('Signals collected:', newSignals.length);
+    }
+    
+    /**
+     * Signale analysieren
+     */
+    async analyzeSignals() {
+        this.updateAnalysisProgress('Signale werden analysiert...', 50);
+        
+        // Simuliere Analyse
+        await this.delay(1500);
+        
+        console.log('Signals analyzed');
+    }
+    
+    /**
+     * Vorschläge generieren
+     */
+    async generateProposals() {
+        this.updateAnalysisProgress('Investment-Vorschläge werden generiert...', 75);
+        
+        // Simuliere Vorschlag-Generierung
+        await this.delay(2000);
+        
+        // Mock Vorschläge generieren
+        const newProposals = [
+            {
+                id: `proposal-${Date.now()}-1`,
+                signalId: this.data.signals[this.data.signals.length - 3].id,
+                asset: 'TSLA',
+                action: 'buy',
+                amount: 15,
+                price: 280.00,
+                riskScore: 0.25,
+                timestamp: new Date().toISOString(),
+                status: 'pending',
+                reasoning: 'Strong positive sentiment from Tesla battery breakthrough'
+            },
+            {
+                id: `proposal-${Date.now()}-2`,
+                signalId: this.data.signals[this.data.signals.length - 2].id,
+                asset: 'AAPL',
+                action: 'buy',
+                amount: 20,
+                price: 190.00,
+                riskScore: 0.30,
+                timestamp: new Date().toISOString(),
+                status: 'pending',
+                reasoning: 'Apple showing strong momentum after earnings beat'
+            }
+        ];
+        
+        this.data.proposals.push(...newProposals);
+        console.log('Proposals generated:', newProposals.length);
+    }
+    
+    /**
+     * Analyse abschließen
+     */
+    async completeAnalysis() {
+        this.updateAnalysisProgress('Analyse wird abgeschlossen...', 100);
+        
+        // Simuliere Abschluss
+        await this.delay(1000);
+        
+        // UI aktualisieren
+        this.updateUI();
+        
+        // Status verstecken
+        this.hideAnalysisStatus();
+        
+        // Erfolgsmeldung
+        this.showAnalysisSuccess();
+        
+        console.log('Analysis completed successfully');
+    }
+    
+    /**
+     * Analyse-Status aktualisieren
+     */
+    updateAnalysisProgress(message, progress) {
+        const progressText = document.getElementById('analysisProgress');
+        const progressFill = document.getElementById('progressFill');
+        
+        if (progressText) {
+            progressText.textContent = message;
+        }
+        
+        if (progressFill) {
+            progressFill.style.width = `${progress}%`;
+        }
+    }
+    
+    /**
+     * Analyse-Status verstecken
+     */
+    hideAnalysisStatus() {
+        const statusDiv = document.getElementById('analysisStatus');
+        if (statusDiv) {
+            statusDiv.style.display = 'none';
+        }
+        
+        // Button zurücksetzen
+        const startBtn = document.getElementById('startAnalysis');
+        if (startBtn) {
+            startBtn.disabled = false;
+            startBtn.innerHTML = '<i class="fas fa-play"></i> Analyse starten';
+        }
+    }
+    
+    /**
+     * Analyse-Erfolg anzeigen
+     */
+    showAnalysisSuccess() {
+        // Toast-Nachricht oder Modal
+        const successDiv = document.createElement('div');
+        successDiv.className = 'analysis-success';
+        successDiv.innerHTML = `
+            <div class="success-content">
+                <i class="fas fa-check-circle"></i>
+                <h3>Analyse abgeschlossen!</h3>
+                <p>${this.data.signals.length} Signale verarbeitet, ${this.data.proposals.length} Vorschläge generiert</p>
+            </div>
+        `;
+        
+        document.body.appendChild(successDiv);
+        
+        // Nach 3 Sekunden entfernen
+        setTimeout(() => {
+            if (successDiv.parentNode) {
+                successDiv.parentNode.removeChild(successDiv);
+            }
+        }, 3000);
+    }
+    
+    /**
+     * Analyse-Fehler anzeigen
+     */
+    showAnalysisError(error) {
+        console.error('Analysis error:', error);
+        this.hideAnalysisStatus();
+        
+        // Fehler-Nachricht
+        alert(`Analyse fehlgeschlagen: ${error.message}`);
+    }
+    
+    /**
+     * Delay-Funktion für Simulation
+     */
+    delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+    
+    /**
+     * Tab-spezifische Daten laden
+     */
+    loadSignalsData() {
+        console.log('Loading signals data...');
+        this.updateSignalsList();
+    }
+    
+    loadProposalsData() {
+        console.log('Loading proposals data...');
+        this.updateProposalsList();
+    }
+    
+    loadDecisionsData() {
+        console.log('Loading decisions data...');
+        this.updateDecisionsList();
+    }
+    
+    loadAnalyticsData() {
+        console.log('Loading analytics data...');
+        this.updateCharts();
+    }
 }
 
 // Global verfügbar machen
 window.AIInvestmentSection = AIInvestmentSection;
+
+// Auto-Bootstrapping: initialisiert, sobald das Section-Template im DOM ist
+(function bootstrapAIInvestment() {
+    const tryInit = () => {
+        // Prüfen ob AI Investment Section im DOM ist
+        const hasAISection = document.querySelector('.ai-investments-section');
+        if (hasAISection) {
+            if (!window.aiInvestmentSection) {
+                console.log('Auto-initializing AI Investment Section...');
+                window.aiInvestmentSection = new AIInvestmentSection();
+                window.aiInvestmentSection.init();
+            }
+            return; // fertig
+        }
+        
+        // Retry nach 100ms
+        setTimeout(tryInit, 100);
+    };
+    
+    // Starten sobald DOM bereit ist
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', tryInit);
+    } else {
+        tryInit();
+    }
+})();
