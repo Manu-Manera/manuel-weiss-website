@@ -104,8 +104,84 @@ class IkigaiSmartWorkflow {
         // Save final analysis
         localStorage.setItem('ikigaiFinalAnalysis', JSON.stringify(analysis));
         
-        // Redirect to results page
-        window.location.href = 'results.html';
+        // Show completion modal with options
+        this.showCompletionModal();
+    }
+
+    showCompletionModal() {
+        const modal = document.createElement('div');
+        modal.className = 'completion-modal';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>🎉 Ikigai-Workflow abgeschlossen!</h2>
+                    <p>Dein persönlicher Ikigai-Workflow wurde erfolgreich beendet.</p>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn btn-primary" onclick="viewInsights()">
+                        <i class="fas fa-brain"></i>
+                        KI-Insights anzeigen
+                    </button>
+                    <button class="btn btn-outline" onclick="exportPDF()">
+                        <i class="fas fa-download"></i>
+                        PDF herunterladen
+                    </button>
+                    <button class="btn btn-secondary" onclick="closeModal()">
+                        <i class="fas fa-home"></i>
+                        Zurück zur Übersicht
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        // Add modal styles
+        const style = document.createElement('style');
+        style.textContent = `
+            .completion-modal {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.8);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10000;
+                backdrop-filter: blur(10px);
+            }
+            .modal-content {
+                background: white;
+                border-radius: 20px;
+                padding: 3rem;
+                max-width: 500px;
+                text-align: center;
+                box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            }
+            .modal-header h2 {
+                color: #333;
+                margin-bottom: 1rem;
+                font-size: 2rem;
+            }
+            .modal-header p {
+                color: #666;
+                margin-bottom: 2rem;
+                line-height: 1.6;
+            }
+            .modal-actions {
+                display: flex;
+                flex-direction: column;
+                gap: 1rem;
+            }
+            .modal-actions .btn {
+                width: 100%;
+                padding: 1rem 2rem;
+                font-size: 1.1rem;
+                font-weight: 600;
+            }
+        `;
+        document.head.appendChild(style);
+        document.body.appendChild(modal);
     }
 
     generateIkigaiAnalysis() {
@@ -414,6 +490,28 @@ function scrollToSection(section) {
     if (targetStep) {
         window.location.href = `${targetStep}.html`;
     }
+}
+
+// Modal functions
+function viewInsights() {
+    window.location.href = 'insights-overview.html';
+}
+
+function exportPDF() {
+    if (typeof exportIkigaiToPDF === 'function') {
+        exportIkigaiToPDF();
+    } else {
+        // Fallback: redirect to insights page
+        window.location.href = 'insights-overview.html';
+    }
+}
+
+function closeModal() {
+    const modal = document.querySelector('.completion-modal');
+    if (modal) {
+        modal.remove();
+    }
+    window.location.href = 'index-ikigai.html';
 }
 
 // Initialize workflow when DOM is loaded
