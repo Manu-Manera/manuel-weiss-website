@@ -1,9 +1,12 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { AWSHelpers } from '@ai-investment/common';
-import { SocialIngestionRequestSchema, SignalSchema } from '@ai-investment/common';
-import { logger } from '@ai-investment/common';
-import { TimeUtils } from '@ai-investment/common';
-import { HashUtils } from '@ai-investment/common';
+import { 
+  AWSHelpers, 
+  SocialIngestionRequestSchema, 
+  SignalSchema,
+  Logger,
+  TimeUtils,
+  HashUtils
+} from '/opt/nodejs/index.js';
 
 // AWS Configuration
 const awsConfig = {
@@ -13,6 +16,9 @@ const awsConfig = {
 };
 
 const aws = new AWSHelpers(awsConfig);
+
+// Initialize logger
+const logger = new Logger({ module: 'ingestion-social' });
 
 // Twitter API Client
 class TwitterClient {
