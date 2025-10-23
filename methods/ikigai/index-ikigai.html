@@ -19,6 +19,7 @@
     <!-- Styles -->
     <link rel="stylesheet" href="../../css/ikigai-smart-styles.css">
     <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="css/enhanced-features.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     
@@ -194,7 +195,95 @@
         </div>
     </section>
 
+    <!-- Enhanced Features Section -->
+    <section class="enhanced-features">
+        <div class="features-container">
+            <h2>🚀 Erweiterte Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🧠</div>
+                    <h3>KI-basierte Insights</h3>
+                    <p>Automatische Analyse deiner Antworten mit personalisierten Empfehlungen</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🎨</div>
+                    <h3>Animiertes Diagramm</h3>
+                    <p>Interaktives Ikigai-Diagramm mit Drag & Drop Funktionalität</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">📄</div>
+                    <h3>Export-Funktionen</h3>
+                    <p>Exportiere deine Ergebnisse als PDF, Word oder JSON</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🔗</div>
+                    <h3>Verwandte Methoden</h3>
+                    <p>Automatische Vorschläge für ergänzende Workflows</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Insights Demo -->
+    <section class="ai-insights-demo">
+        <div class="demo-container">
+            <h2>🧠 KI-Insights Demo</h2>
+            <div id="ai-insights-preview" class="insights-preview">
+                <p>Lade KI-basierte Insights...</p>
+            </div>
+            <button class="btn btn-primary" onclick="loadAIInsights()">
+                <i class="fas fa-brain"></i>
+                Insights laden
+            </button>
+        </div>
+    </section>
+
+    <!-- Animated Diagram Demo -->
+    <section class="animated-diagram-demo">
+        <div class="demo-container">
+            <h2>🎨 Interaktives Ikigai-Diagramm</h2>
+            <div id="ikigai-animated-diagram"></div>
+            <div class="diagram-controls">
+                <button class="btn btn-secondary" onclick="resetDiagram()">
+                    <i class="fas fa-refresh"></i>
+                    Diagramm zurücksetzen
+                </button>
+                <button class="btn btn-primary" onclick="animateDiagram()">
+                    <i class="fas fa-play"></i>
+                    Animation starten
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Export Functions -->
+    <section class="export-functions">
+        <div class="export-container">
+            <h2>📄 Export-Funktionen</h2>
+            <div class="export-buttons">
+                <button class="btn btn-outline" onclick="exportIkigaiToPDF()">
+                    <i class="fas fa-file-pdf"></i>
+                    PDF Export
+                </button>
+                <button class="btn btn-outline" onclick="exportIkigaiToWord()">
+                    <i class="fas fa-file-word"></i>
+                    Word Export
+                </button>
+                <button class="btn btn-outline" onclick="exportIkigaiToJSON()">
+                    <i class="fas fa-file-code"></i>
+                    JSON Export
+                </button>
+            </div>
+        </div>
+    </section>
+
     <!-- Scripts -->
+    <script src="js/ikigai-ai-insights.js"></script>
+    <script src="js/ikigai-animated-diagram.js"></script>
+    <script src="js/ikigai-export-functions.js"></script>
     <script>
         function startIkigaiWorkflow() {
             window.location.href = 'step1-ikigai.html';
@@ -203,6 +292,59 @@
         function scrollToSection(section) {
             document.getElementById(section)?.scrollIntoView({ behavior: 'smooth' });
         }
+
+        function loadAIInsights() {
+            const preview = document.getElementById('ai-insights-preview');
+            preview.innerHTML = '<p>Lade KI-Insights...</p>';
+            
+            setTimeout(() => {
+                if (typeof getPersonalizedRecommendations === 'function') {
+                    const recommendations = getPersonalizedRecommendations();
+                    if (recommendations && recommendations.immediate) {
+                        let html = '<h3>💡 Personalisierte Empfehlungen:</h3><ul>';
+                        recommendations.immediate.forEach(rec => {
+                            html += `<li><strong>${rec.title}</strong>: ${rec.description}</li>`;
+                        });
+                        html += '</ul>';
+                        preview.innerHTML = html;
+                    } else {
+                        preview.innerHTML = '<p>Keine spezifischen Empfehlungen verfügbar. Starte den Workflow für personalisierte Insights!</p>';
+                    }
+                } else {
+                    preview.innerHTML = '<p>KI-Insights sind noch nicht verfügbar. Starte den Workflow!</p>';
+                }
+            }, 1000);
+        }
+
+        function resetDiagram() {
+            if (window.ikigaiAnimatedDiagram) {
+                window.ikigaiAnimatedDiagram.resetDiagram();
+            }
+        }
+
+        function animateDiagram() {
+            if (window.ikigaiAnimatedDiagram) {
+                window.ikigaiAnimatedDiagram.animateAllFills();
+            }
+        }
+
+        // Initialize enhanced features when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize animated diagram
+            if (typeof IkigaiAnimatedDiagram !== 'undefined') {
+                window.ikigaiAnimatedDiagram = new IkigaiAnimatedDiagram('ikigai-animated-diagram');
+            }
+            
+            // Initialize AI insights
+            if (typeof IkigaiAIInsights !== 'undefined') {
+                window.ikigaiAIInsights = new IkigaiAIInsights();
+            }
+            
+            // Initialize export functions
+            if (typeof IkigaiExportFunctions !== 'undefined') {
+                window.ikigaiExportFunctions = new IkigaiExportFunctions();
+            }
+        });
     </script>
 </body>
 </html>

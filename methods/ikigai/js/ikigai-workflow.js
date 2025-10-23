@@ -17,6 +17,9 @@ class IkigaiSmartWorkflow {
         this.loadSavedData();
         this.setupEventListeners();
         this.updateProgress();
+        this.initializeAIInsights();
+        this.initializeAnimatedDiagram();
+        this.initializeExportFunctions();
         console.log('🎯 Ikigai Smart Workflow initialized');
     }
 
@@ -299,6 +302,94 @@ class IkigaiSmartWorkflow {
         a.download = `ikigai-workflow-${new Date().toISOString().split('T')[0]}.json`;
         a.click();
         URL.revokeObjectURL(url);
+    }
+
+    // Neue Methoden für erweiterte Features
+    initializeAIInsights() {
+        if (typeof IkigaiAIInsights !== 'undefined') {
+            this.aiInsights = new IkigaiAIInsights();
+        }
+    }
+
+    initializeAnimatedDiagram() {
+        const diagramContainer = document.getElementById('ikigai-animated-diagram');
+        if (diagramContainer && typeof IkigaiAnimatedDiagram !== 'undefined') {
+            this.animatedDiagram = new IkigaiAnimatedDiagram('ikigai-animated-diagram');
+        }
+    }
+
+    initializeExportFunctions() {
+        if (typeof IkigaiExportFunctions !== 'undefined') {
+            this.exportFunctions = new IkigaiExportFunctions();
+        }
+    }
+
+    // KI-basierte Insights
+    getAIInsights(stepNumber) {
+        if (this.aiInsights) {
+            return this.aiInsights.getInsights(stepNumber);
+        }
+        return null;
+    }
+
+    getPersonalizedRecommendations() {
+        if (this.aiInsights) {
+            return this.aiInsights.getPersonalizedRecommendations();
+        }
+        return null;
+    }
+
+    // Animiertes Diagramm
+    updateAnimatedDiagram() {
+        if (this.animatedDiagram) {
+            // Aktualisiere Diagramm basierend auf Workflow-Daten
+            const areas = ['passion', 'mission', 'profession', 'vocation'];
+            areas.forEach(area => {
+                const progress = this.calculateAreaProgress(area);
+                this.animatedDiagram.setAreaProgress(area, progress);
+            });
+        }
+    }
+
+    calculateAreaProgress(area) {
+        // Berechne Fortschritt basierend auf den Workflow-Daten
+        const stepMapping = {
+            passion: 2,
+            mission: 3,
+            profession: 4,
+            vocation: 5
+        };
+        
+        const stepNumber = stepMapping[area];
+        const stepData = this.workflowData[`step${stepNumber}`];
+        
+        if (!stepData) return 0;
+        
+        // Einfache Berechnung: Anzahl ausgefüllter Felder * 20
+        const fields = Object.keys(stepData).filter(key => 
+            key !== 'step' && key !== 'timestamp' && stepData[key] && stepData[key].trim()
+        );
+        
+        return Math.min(fields.length * 20, 100);
+    }
+
+    // Export-Funktionen
+    exportToPDF() {
+        if (this.exportFunctions) {
+            this.exportFunctions.exportToPDF();
+        }
+    }
+
+    exportToWord() {
+        if (this.exportFunctions) {
+            this.exportFunctions.exportToWord();
+        }
+    }
+
+    exportToJSON() {
+        if (this.exportFunctions) {
+            this.exportFunctions.exportToJSON();
+        }
     }
 }
 
