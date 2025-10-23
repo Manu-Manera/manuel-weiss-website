@@ -304,6 +304,12 @@ class AdminSidebar extends HTMLElement {
                                 <span>AI Twin</span>
                             </a>
                         </li>
+                        <li class="nav-item" data-section="ai-investments" data-tooltip="AI Investment System">
+                            <a href="#ai-investments">
+                                <i class="fas fa-chart-line"></i>
+                                <span>AI Investment System</span>
+                            </a>
+                        </li>
                         <li class="nav-item" data-section="translations" data-tooltip="Translations">
                             <a href="#translations">
                                 <i class="fas fa-language"></i>
