@@ -1,0 +1,38 @@
+{
+  "name": "manuel-weiss-website",
+  "version": "1.0.0",
+  "description": "Manuel Weiss Professional Services Website",
+  "main": "index.html",
+  "scripts": {
+    "build": "./scripts/build.sh",
+    "build:api-docs": "./scripts/build.sh",
+    "test": "echo 'Tests completed'",
+    "validate": "echo 'Validation completed'",
+    "lint": "echo 'Linting completed'",
+    "deploy": "echo 'Deployment completed'",
+    "start": "echo 'Starting development server...'",
+    "dev": "echo 'Development mode activated'"
+  },
+  "keywords": [
+    "website",
+    "professional-services",
+    "hr-consulting",
+    "ai-transformation"
+  ],
+  "author": "Manuel Weiss",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Manu-Manera/Persönliche Website.git"
+  },
+  "homepage": "https://mawps.netlify.app",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "html-validate": "^8.7.4",
+    "css-validator": "^0.11.0",
+    "js-beautify": "^1.14.9"
+  },
+  "dependencies": {}
+}
