@@ -23,10 +23,20 @@ window.addEventListener('error', (event) => {
             }
         } else if (message.includes('network') || message.includes('fetch')) {
             console.error('🚨 Network Error detected');
+            if (window.enhancedAuth) {
+                window.enhancedAuth.showNotification(
                     'Netzwerk-Fehler: Bitte Internetverbindung prüfen', 
+                    'error'
+                );
+            }
         } else if (message.includes('token') || message.includes('auth')) {
             console.error('🚨 Auth Error detected');
+            if (window.enhancedAuth) {
+                window.enhancedAuth.showNotification(
                     'Authentifizierungs-Fehler: Bitte erneut anmelden', 
+                    'error'
+                );
+            }
         }
     }
 });
@@ -37,7 +47,16 @@ window.addEventListener('unhandledrejection', (event) => {
     if (event.reason && event.reason.message) {
         const message = event.reason.message.toLowerCase();
         if (message.includes('cors') || message.includes('network') || message.includes('auth')) {
+            if (window.enhancedAuth) {
+                window.enhancedAuth.showNotification(
                     'System-Fehler: Bitte Seite neu laden', 
+                    'error'
+                );
+            }
+        }
+    }
+});
+
 // Debug Information
 console.log('🔧 Auth System Status:', {
     enhancedAuth: !!window.enhancedAuth,
@@ -45,8 +64,11 @@ console.log('🔧 Auth System Status:', {
     globalAuth: !!window.globalAuth,
     authModals: !!window.authModals,
     awsSDK: typeof AWS !== 'undefined'
+});
 </script>
+
 <!-- Auth Status Debug Panel (nur in Development) -->
+<script>
 // Debug Panel für Development
 if (window.location.hostname === 'localhost' || window.location.hostname.includes('127.0.0.1')) {
     const debugPanel = document.createElement('div');
@@ -80,8 +102,9 @@ if (window.location.hostname === 'localhost' || window.location.hostname.include
     // Update alle 5 Sekunden
     setInterval(updateDebugInfo, 5000);
 }
-    
-    <script>
+</script>
+
+<script>
         // Load auth modals
         async function loadAuthModals() {
             try {
