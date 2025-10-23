@@ -16,7 +16,7 @@ export class Logger {
     this.context = context;
     
     this.logger = createLogger({
-      level: process.env.LOG_LEVEL || 'info',
+      level: process.env['LOG_LEVEL'] || 'info',
       format: format.combine(
         format.timestamp(),
         format.errors({ stack: true }),
@@ -25,7 +25,7 @@ export class Logger {
       defaultMeta: {
         service: 'ai-investment',
         version: '1.0.0',
-        environment: process.env.NODE_ENV || 'development'
+        environment: process.env['NODE_ENV'] || 'development'
       },
       transports: [
         new transports.Console({
@@ -38,7 +38,7 @@ export class Logger {
     });
 
     // Add file transport in production
-    if (process.env.NODE_ENV === 'production') {
+    if (process.env['NODE_ENV'] === 'production') {
       this.logger.add(new transports.File({
         filename: 'logs/error.log',
         level: 'error',

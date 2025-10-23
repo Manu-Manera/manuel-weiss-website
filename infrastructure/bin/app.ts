@@ -75,10 +75,11 @@ new cdk.CfnOutput(apiStack, 'ApiGatewayUrl', {
   description: 'API Gateway URL'
 });
 
-new cdk.CfnOutput(apiStack, 'WebSocketUrl', {
-  value: apiStack.webSocketApi.apiEndpoint,
-  description: 'WebSocket API URL'
-});
+// WebSocket API removed - using SSE instead
+// new cdk.CfnOutput(apiStack, 'WebSocketUrl', {
+//   value: apiStack.webSocketApi.apiEndpoint,
+//   description: 'WebSocket API URL'
+// });
 
 new cdk.CfnOutput(dataStack, 'DynamoDbTableName', {
   value: dataStack.signalsTable.tableName,

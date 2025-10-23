@@ -11,9 +11,9 @@ export class AWSHelpers {
   constructor(config: AWSConfig) {
     const awsConfig = {
       region: config.region,
-      accessKeyId: config.accessKeyId,
-      secretAccessKey: config.secretAccessKey,
-      sessionToken: config.sessionToken
+      ...(config.accessKeyId && { accessKeyId: config.accessKeyId }),
+      ...(config.secretAccessKey && { secretAccessKey: config.secretAccessKey }),
+      ...(config.sessionToken && { sessionToken: config.sessionToken })
     };
 
     this.dynamoDB = new DynamoDB(awsConfig);
@@ -32,7 +32,7 @@ export class AWSHelpers {
         ...options
       }).promise();
     } catch (error) {
-      throw new Error(`DynamoDB put failed: ${error.message}`);
+      throw new Error(`DynamoDB put failed: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
@@ -45,7 +45,7 @@ export class AWSHelpers {
       
       return result.Item ? this.convertFromDynamoDBItem(result.Item) : null;
     } catch (error) {
-      throw new Error(`DynamoDB get failed: ${error.message}`);
+      throw new Error(`DynamoDB get failed: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
@@ -59,7 +59,7 @@ export class AWSHelpers {
       
       return result.Items?.map(item => this.convertFromDynamoDBItem(item)) || [];
     } catch (error) {
-      throw new Error(`DynamoDB query failed: ${error.message}`);
+      throw new Error(`DynamoDB query failed: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
@@ -72,7 +72,7 @@ export class AWSHelpers {
       
       return result.Items?.map(item => this.convertFromDynamoDBItem(item)) || [];
     } catch (error) {
-      throw new Error(`DynamoDB scan failed: ${error.message}`);
+      throw new Error(`DynamoDB scan failed: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
@@ -88,7 +88,7 @@ export class AWSHelpers {
       
       return this.convertFromDynamoDBItem(result.Attributes);
     } catch (error) {
-      throw new Error(`DynamoDB update failed: ${error.message}`);
+      throw new Error(`DynamoDB update failed: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
@@ -99,7 +99,7 @@ export class AWSHelpers {
         Key: this.convertToDynamoDBItem(key)
       }).promise();
     } catch (error) {
-      throw new Error(`DynamoDB delete failed: ${error.message}`);
+      throw new Error(`DynamoDB delete failed: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
@@ -115,7 +115,7 @@ export class AWSHelpers {
       
       return result.Location;
     } catch (error) {
-      throw new Error(`S3 upload failed: ${error.message}`);
+      throw new Error(`S3 upload failed: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
@@ -128,7 +128,7 @@ export class AWSHelpers {
       
       return result.Body as Buffer;
     } catch (error) {
-      throw new Error(`S3 download failed: ${error.message}`);
+      throw new Error(`S3 download failed: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
@@ -139,7 +139,7 @@ export class AWSHelpers {
         Key: key
       }).promise();
     } catch (error) {
-      throw new Error(`S3 delete failed: ${error.message}`);
+      throw new Error(`S3 delete failed: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
@@ -147,12 +147,12 @@ export class AWSHelpers {
     try {
       const result = await this.s3.listObjectsV2({
         Bucket: bucket,
-        Prefix: prefix
+        ...(prefix && { Prefix: prefix })
       }).promise();
       
-      return result.Contents?.map(obj => obj.Key) || [];
+      return result.Contents?.map(obj => obj.Key).filter((key): key is string => key !== undefined) || [];
     } catch (error) {
-      throw new Error(`S3 list failed: ${error.message}`);
+      throw new Error(`S3 list failed: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
@@ -164,10 +164,10 @@ export class AWSHelpers {
       }).promise();
       return true;
     } catch (error) {
-      if (error.code === 'NotFound') {
+      if ((error as any).code === 'NotFound') {
         return false;
       }
-      throw new Error(`S3 exists check failed: ${error.message}`);
+      throw new Error(`S3 exists check failed: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
@@ -180,7 +180,7 @@ export class AWSHelpers {
       
       return JSON.parse(result.SecretString || '{}');
     } catch (error) {
-      throw new Error(`Secrets Manager get failed: ${error.message}`);
+      throw new Error(`Secrets Manager get failed: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
@@ -191,7 +191,7 @@ export class AWSHelpers {
         SecretString: JSON.stringify(secretValue)
       }).promise();
     } catch (error) {
-      throw new Error(`Secrets Manager put failed: ${error.message}`);
+      throw new Error(`Secrets Manager put failed: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
@@ -204,11 +204,11 @@ export class AWSHelpers {
           MetricName: metricName,
           Value: value,
           Unit: unit,
-          Dimensions: dimensions
+          ...(dimensions && { Dimensions: dimensions })
         }]
       }).promise();
     } catch (error) {
-      throw new Error(`CloudWatch put metric failed: ${error.message}`);
+      throw new Error(`CloudWatch put metric failed: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
@@ -225,7 +225,7 @@ export class AWSHelpers {
       
       return result.Datapoints;
     } catch (error) {
-      throw new Error(`CloudWatch get metric statistics failed: ${error.message}`);
+      throw new Error(`CloudWatch get metric statistics failed: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
@@ -238,7 +238,7 @@ export class AWSHelpers {
         ...options
       }).promise();
     } catch (error) {
-      throw new Error(`SQS send message failed: ${error.message}`);
+      throw new Error(`SQS send message failed: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
@@ -251,7 +251,7 @@ export class AWSHelpers {
       
       return result.Messages || [];
     } catch (error) {
-      throw new Error(`SQS receive message failed: ${error.message}`);
+      throw new Error(`SQS receive message failed: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
@@ -262,7 +262,7 @@ export class AWSHelpers {
         ReceiptHandle: receiptHandle
       }).promise();
     } catch (error) {
-      throw new Error(`SQS delete message failed: ${error.message}`);
+      throw new Error(`SQS delete message failed: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
@@ -332,7 +332,7 @@ export class AWSHelpers {
         }).promise();
       }
     } catch (error) {
-      throw new Error(`DynamoDB batch write failed: ${error.message}`);
+      throw new Error(`DynamoDB batch write failed: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
@@ -357,7 +357,7 @@ export class AWSHelpers {
       
       return results;
     } catch (error) {
-      throw new Error(`DynamoDB batch get failed: ${error.message}`);
+      throw new Error(`DynamoDB batch get failed: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 

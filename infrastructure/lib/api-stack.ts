@@ -14,7 +14,6 @@ export interface ApiStackProps extends cdk.StackProps {
 
 export class ApiStack extends cdk.Stack {
   public readonly apiGateway: apigateway.RestApi;
-  public readonly webSocketApi: apigateway.WebSocketApi;
 
   constructor(scope: Construct, id: string, props: ApiStackProps) {
     super(scope, id, props);
@@ -83,7 +82,7 @@ export class ApiStack extends cdk.Stack {
     // Health Check Endpoint
     const healthCheckLambda = new lambda.Function(this, 'HealthCheckFunction', {
       functionName: 'ai-investment-health-check',
-      runtime: lambda.Runtime.NODEJS_20_X,
+      runtime: lambda.Runtime.NODEJS_18_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline(`
         exports.handler = async (event) => {
@@ -111,7 +110,7 @@ export class ApiStack extends cdk.Stack {
     // Metrics Endpoint
     const metricsLambda = new lambda.Function(this, 'MetricsFunction', {
       functionName: 'ai-investment-metrics',
-      runtime: lambda.Runtime.NODEJS_20_X,
+      runtime: lambda.Runtime.NODEJS_18_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline(`
         exports.handler = async (event) => {
@@ -204,26 +203,9 @@ export class ApiStack extends cdk.Stack {
       apiKeyRequired: true
     });
 
-    // WebSocket API
-    this.webSocketApi = new apigateway.WebSocketApi(this, 'AIInvestmentWebSocketAPI', {
-      apiName: 'AI Investment WebSocket API',
-      description: 'WebSocket API for real-time updates',
-      connectRouteOptions: {
-        integration: new apigateway.WebSocketLambdaIntegration('ConnectIntegration', props.computeStack.streamingFunction)
-      },
-      disconnectRouteOptions: {
-        integration: new apigateway.WebSocketLambdaIntegration('DisconnectIntegration', props.computeStack.streamingFunction)
-      },
-      defaultRouteOptions: {
-        integration: new apigateway.WebSocketLambdaIntegration('DefaultIntegration', props.computeStack.streamingFunction)
-      }
-    });
-
-    const webSocketStage = new apigateway.WebSocketStage(this, 'WebSocketStage', {
-      webSocketApi: this.webSocketApi,
-      stageName: 'prod',
-      autoDeploy: true
-    });
+    // WebSocket API - Using REST API with WebSocket-like functionality
+    // Note: WebSocket API is not available in this CDK version
+    // Using Server-Sent Events (SSE) instead for real-time updates
 
     // Grant Lambda functions permission to invoke each other
     props.computeStack.ingestionSocialFunction.grantInvoke(props.computeStack.scoringFunction);
@@ -237,10 +219,11 @@ export class ApiStack extends cdk.Stack {
       description: 'API Gateway URL'
     });
 
-    new cdk.CfnOutput(this, 'WebSocketUrl', {
-      value: this.webSocketApi.apiEndpoint,
-      description: 'WebSocket API URL'
-    });
+    // WebSocket API removed - using SSE instead
+    // new cdk.CfnOutput(this, 'WebSocketUrl', {
+    //   value: this.webSocketApi.apiEndpoint,
+    //   description: 'WebSocket API URL'
+    // });
 
     new cdk.CfnOutput(this, 'ApiKeyId', {
       value: apiKey.keyId,

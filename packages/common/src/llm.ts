@@ -10,7 +10,7 @@ export class LLMAdapter {
   constructor(config: LLMConfig) {
     this.config = config;
     this.client = new OpenAI({
-      apiKey: config.apiKey || process.env.OPENAI_API_KEY,
+      apiKey: config.apiKey || process.env['OPENAI_API_KEY'],
       timeout: config.timeout * 1000 // Convert to milliseconds
     });
   }
@@ -289,7 +289,7 @@ ${JSON.stringify(schema, null, 2)}`;
       'text-embedding-ada-002': { input: 0.0001, output: 0 }
     };
 
-    const modelPricing = pricing[model] || pricing['gpt-3.5-turbo'];
+    const modelPricing = pricing[model] || pricing['gpt-3.5-turbo'] || { input: 0.0015, output: 0.002 };
     return tokens * modelPricing.input / 1000; // Cost per 1K tokens
   }
 

@@ -237,36 +237,5 @@ export interface CacheStats {
   memoryUsage: number;
 }
 
-// Export all types
-export const Types = {
-  Signal,
-  Proposal,
-  Outcome,
-  ApiResponse,
-  Pagination,
-  Filter,
-  HealthCheck,
-  Metrics,
-  WebSocketMessage,
-  SSEEvent,
-  LLMConfig,
-  AWSConfig,
-  DatabaseConfig,
-  CacheConfig,
-  FeatureVector,
-  ScoreResult,
-  AttributionResult,
-  FusedScore,
-  RiskAssessment,
-  PortfolioRisk,
-  LearningMetrics,
-  ModelPerformance,
-  MarketContext,
-  MarketData,
-  Event,
-  Alert,
-  Connection,
-  ConnectionStats,
-  CacheEntry,
-  CacheStats
-} as const;
+// Export all types - removed Types object as it causes TypeScript issues
+// All types are already exported individually above

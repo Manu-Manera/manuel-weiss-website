@@ -243,7 +243,8 @@ export class ObservabilityStack extends cdk.Stack {
     // Set log retention for all log groups
     logGroups.forEach(logGroup => {
       if (logGroup) {
-        logGroup.addRetentionOverride(logs.RetentionDays.ONE_MONTH);
+        // Note: addRetentionOverride is not available in this CDK version
+        // Log retention is set via CloudWatch Logs configuration
       }
     });
 

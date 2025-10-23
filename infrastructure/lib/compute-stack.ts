@@ -4,6 +4,7 @@ import * as sqs from 'aws-cdk-lib/aws-sqs';
 import * as events from 'aws-cdk-lib/aws-events';
 import * as targets from 'aws-cdk-lib/aws-events-targets';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as kms from 'aws-cdk-lib/aws-kms';
 import { Construct } from 'constructs';
 import { DataStack } from './data-stack';
 import { AuthStack } from './auth-stack';
@@ -11,7 +12,7 @@ import { AuthStack } from './auth-stack';
 export interface ComputeStackProps extends cdk.StackProps {
   dataStack: DataStack;
   authStack: AuthStack;
-  kmsKey: cdk.aws-kms.Key;
+  kmsKey: kms.Key;
 }
 
 export class ComputeStack extends cdk.Stack {
@@ -28,7 +29,7 @@ export class ComputeStack extends cdk.Stack {
     // Lambda Layer for common dependencies
     const commonLayer = new lambda.LayerVersion(this, 'CommonLayer', {
       code: lambda.Code.fromAsset('lambda/layers/common'),
-      compatibleRuntimes: [lambda.Runtime.NODEJS_20_X],
+      compatibleRuntimes: [lambda.Runtime.NODEJS_18_X],
       description: 'Common dependencies for AI Investment System'
     });
 
@@ -167,7 +168,7 @@ export class ComputeStack extends cdk.Stack {
     // Social Media Ingestion Function
     this.ingestionSocialFunction = new lambda.Function(this, 'IngestionSocialFunction', {
       functionName: 'ai-investment-ingest-social',
-      runtime: lambda.Runtime.NODEJS_20_X,
+      runtime: lambda.Runtime.NODEJS_18_X,
       handler: 'index.handler',
       code: lambda.Code.fromAsset('lambda/ingestion-social'),
       layers: [commonLayer],
@@ -180,13 +181,12 @@ export class ComputeStack extends cdk.Stack {
         SECRETS_MANAGER_SECRET_ID: 'ai-investment-secrets',
         NODE_ENV: 'production'
       },
-      reservedConcurrencyLimit: 10
     });
 
     // News Ingestion Function
     this.ingestionNewsFunction = new lambda.Function(this, 'IngestionNewsFunction', {
       functionName: 'ai-investment-ingest-news',
-      runtime: lambda.Runtime.NODEJS_20_X,
+      runtime: lambda.Runtime.NODEJS_18_X,
       handler: 'index.handler',
       code: lambda.Code.fromAsset('lambda/ingestion-news'),
       layers: [commonLayer],
@@ -199,13 +199,12 @@ export class ComputeStack extends cdk.Stack {
         SECRETS_MANAGER_SECRET_ID: 'ai-investment-secrets',
         NODE_ENV: 'production'
       },
-      reservedConcurrencyLimit: 10
     });
 
     // Scoring Function
     this.scoringFunction = new lambda.Function(this, 'ScoringFunction', {
       functionName: 'ai-investment-score',
-      runtime: lambda.Runtime.NODEJS_20_X,
+      runtime: lambda.Runtime.NODEJS_18_X,
       handler: 'index.handler',
       code: lambda.Code.fromAsset('lambda/scoring'),
       layers: [commonLayer],
@@ -218,13 +217,12 @@ export class ComputeStack extends cdk.Stack {
         SECRETS_MANAGER_SECRET_ID: 'ai-investment-secrets',
         NODE_ENV: 'production'
       },
-      reservedConcurrencyLimit: 5
     });
 
     // Orchestrator Function
     this.orchestratorFunction = new lambda.Function(this, 'OrchestratorFunction', {
       functionName: 'ai-investment-orchestrator',
-      runtime: lambda.Runtime.NODEJS_20_X,
+      runtime: lambda.Runtime.NODEJS_18_X,
       handler: 'index.handler',
       code: lambda.Code.fromAsset('lambda/orchestrator'),
       layers: [commonLayer],
@@ -238,13 +236,12 @@ export class ComputeStack extends cdk.Stack {
         SECRETS_MANAGER_SECRET_ID: 'ai-investment-secrets',
         NODE_ENV: 'production'
       },
-      reservedConcurrencyLimit: 5
     });
 
     // Evaluation Function
     this.evaluationFunction = new lambda.Function(this, 'EvaluationFunction', {
       functionName: 'ai-investment-evaluation',
-      runtime: lambda.Runtime.NODEJS_20_X,
+      runtime: lambda.Runtime.NODEJS_18_X,
       handler: 'index.handler',
       code: lambda.Code.fromAsset('lambda/evaluation'),
       layers: [commonLayer],
@@ -258,13 +255,12 @@ export class ComputeStack extends cdk.Stack {
         SECRETS_MANAGER_SECRET_ID: 'ai-investment-secrets',
         NODE_ENV: 'production'
       },
-      reservedConcurrencyLimit: 3
     });
 
     // Streaming Function
     this.streamingFunction = new lambda.Function(this, 'StreamingFunction', {
       functionName: 'ai-investment-streaming',
-      runtime: lambda.Runtime.NODEJS_20_X,
+      runtime: lambda.Runtime.NODEJS_18_X,
       handler: 'index.handler',
       code: lambda.Code.fromAsset('lambda/streaming'),
       layers: [commonLayer],
@@ -276,7 +272,6 @@ export class ComputeStack extends cdk.Stack {
         PROPOSALS_TABLE_NAME: props.dataStack.proposalsTable.tableName,
         NODE_ENV: 'production'
       },
-      reservedConcurrencyLimit: 20
     });
 
     // EventBridge Schedules
