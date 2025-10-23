@@ -36,6 +36,7 @@
             <div class="nav-menu" id="navMenu">
                 <a href="#home" class="nav-link active" data-de="Home" data-en="Home">Home</a>
                 <a href="#services" class="nav-link" data-de="Services" data-en="Services">Services</a>
+                <a href="#about" class="nav-link" data-de="Über mich" data-en="About">Über mich</a>
                 <a href="persoenlichkeitsentwicklung-uebersicht.html" class="nav-link" data-de="Persönlichkeitsentwicklung" data-en="Personality Development">Persönlichkeitsentwicklung</a>
                 <a href="applications/index.html" class="nav-link" data-de="Bewerbungsautomatisierung" data-en="Application Automation">Bewerbungsautomatisierung</a>
                 <a href="#contact" class="nav-link" data-de="Kontakt" data-en="Contact">Kontakt</a>
@@ -300,6 +301,69 @@
                         <span class="activity-link">Mehr erfahren <i class="fas fa-arrow-right"></i></span>
                     </div>
                 </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <div class="about-content">
+                <div class="about-text">
+                    <h2 class="section-title">Über mich</h2>
+                    <p class="about-description">
+                        Als HR-Berater mit Fokus auf AI und Transformation bringe ich über 5 Jahre Erfahrung in der Digitalisierung von HR-Prozessen mit. 
+                        Mein Ziel ist es, Unternehmen dabei zu unterstützen, ihre HR-Abteilungen zukunftsfähig zu gestalten.
+                    </p>
+                    <div class="about-highlights">
+                        <div class="highlight-item">
+                            <div class="highlight-icon">
+                                <i class="fas fa-graduation-cap"></i>
+                            </div>
+                            <div class="highlight-content">
+                                <h3>Bildung & Expertise</h3>
+                                <p>Studium der Wirtschaftswissenschaften mit Schwerpunkt Personalwesen und Digitalisierung</p>
+                            </div>
+                        </div>
+                        <div class="highlight-item">
+                            <div class="highlight-icon">
+                                <i class="fas fa-briefcase"></i>
+                            </div>
+                            <div class="highlight-content">
+                                <h3>Berufserfahrung</h3>
+                                <p>5+ Jahre in HR-Beratung, AI-Integration und Geschäftsprozessoptimierung</p>
+                            </div>
+                        </div>
+                        <div class="highlight-item">
+                            <div class="highlight-icon">
+                                <i class="fas fa-lightbulb"></i>
+                            </div>
+                            <div class="highlight-content">
+                                <h3>Innovation</h3>
+                                <p>Spezialisiert auf moderne HR-Technologien und KI-gestützte Lösungen</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-visual">
+                    <div class="about-image">
+                        <img src="manuel-weiss-portrait.jpg" alt="Manuel Weiss" class="profile-image">
+                    </div>
+                    <div class="about-stats">
+                        <div class="stat-card">
+                            <div class="stat-number">5+</div>
+                            <div class="stat-label">Jahre Erfahrung</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">50+</div>
+                            <div class="stat-label">Projekte</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">100%</div>
+                            <div class="stat-label">Zufriedenheit</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -1387,6 +1451,43 @@
 
     <!-- Enhanced Website Data Sync -->
     <script src="js/website-sync-enhanced.js?v=20250120"></script>
+
+    <!-- Navigation Fix Script -->
+    <script>
+        // Ensure navigation works properly
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Navigation fix script loaded');
+            
+            // Fix navigation links
+            const navLinks = document.querySelectorAll('.nav-link[href^="#"]');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    const target = document.querySelector(targetId);
+                    
+                    if (target) {
+                        console.log('Scrolling to:', targetId);
+                        const offset = 80;
+                        const targetPosition = target.offsetTop - offset;
+                        
+                        window.scrollTo({
+                            top: targetPosition,
+                            behavior: 'smooth'
+                        });
+                        
+                        // Update active nav link
+                        document.querySelectorAll('.nav-link').forEach(navLink => {
+                            navLink.classList.remove('active');
+                        });
+                        this.classList.add('active');
+                    } else {
+                        console.log('Target not found:', targetId);
+                    }
+                });
+            });
+        });
+    </script>
 
 </body>
 </html>

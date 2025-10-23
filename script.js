@@ -196,22 +196,29 @@ function initContactForm() {
 
 // Smooth scroll
 function initSmoothScroll() {
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href');
+            const target = document.querySelector(targetId);
             
-        if (target) {
+            if (target) {
                 const offset = 80; // Navbar height
                 const targetPosition = target.offsetTop - offset;
                 
                 window.scrollTo({
                     top: targetPosition,
                     behavior: 'smooth'
-            });
-        }
+                });
+                
+                // Update active nav link
+                document.querySelectorAll('.nav-link').forEach(link => {
+                    link.classList.remove('active');
+                });
+                this.classList.add('active');
+            }
+        });
     });
-});
 }
 
 // Typing effect for hero title
