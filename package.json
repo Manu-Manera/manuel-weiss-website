@@ -30,9 +30,12 @@
     "node": ">=18.0.0"
   },
   "devDependencies": {
-    "html-validate": "^8.7.4",
     "css-validator": "^0.11.0",
+    "html-validate": "^8.7.4",
     "js-beautify": "^1.14.9"
   },
-  "dependencies": {}
+  "dependencies": {
+    "aws-sdk": "2.1692.0",
+    "openai": "6.6.0"
+  }
 }
