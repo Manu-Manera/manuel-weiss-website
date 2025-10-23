@@ -813,30 +813,30 @@
 
 .petal-passion {
     background: linear-gradient(135deg, #ff6b9d, #c44569, #ff8a80);
-    top: 0%;
-    left: 0%;
-    transform: rotate(-15deg);
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%) rotate(-15deg);
 }
 
 .petal-mission {
     background: linear-gradient(135deg, #4ecdc4, #44a08d, #26d0ce);
-    top: 0%;
-    right: 0%;
-    transform: rotate(15deg);
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%) rotate(15deg);
 }
 
 .petal-profession {
     background: linear-gradient(135deg, #a8edea, #fed6e3, #d299c2);
-    bottom: 0%;
-    left: 0%;
-    transform: rotate(15deg);
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) rotate(15deg);
 }
 
 .petal-vocation {
     background: linear-gradient(135deg, #ffecd2, #fcb69f, #ff9a9e);
-    bottom: 0%;
-    right: 0%;
-    transform: rotate(-15deg);
+    top: 50%;
+    left: 20px;
+    transform: translateY(-50%) rotate(-15deg);
 }
 
 /* Glass Schnittbereiche mit Mouseover-Effekten */
@@ -885,29 +885,29 @@
 /* Positionierung der Schnittbereiche */
 .intersection-passion-mission {
     background: linear-gradient(135deg, #ff6b9d, #4ecdc4, #ff8a80);
-    top: 15%;
-    left: 15%;
+    top: 25%;
+    left: 25%;
     transform: rotate(-5deg);
 }
 
 .intersection-mission-profession {
     background: linear-gradient(135deg, #4ecdc4, #a8edea, #26d0ce);
-    top: 15%;
-    right: 15%;
+    top: 25%;
+    right: 25%;
     transform: rotate(5deg);
 }
 
 .intersection-profession-vocation {
     background: linear-gradient(135deg, #a8edea, #ffecd2, #d299c2);
-    bottom: 15%;
-    left: 15%;
+    bottom: 25%;
+    right: 25%;
     transform: rotate(5deg);
 }
 
 .intersection-vocation-passion {
     background: linear-gradient(135deg, #ffecd2, #ff6b9d, #ff9a9e);
-    bottom: 15%;
-    right: 15%;
+    bottom: 25%;
+    left: 25%;
     transform: rotate(-5deg);
 }
 
