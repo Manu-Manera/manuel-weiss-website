@@ -10,6 +10,8 @@ class HeroAboutSection {
         this.cacheEls();
         this.loadFromStorage();
         this.attachEvents();
+        this.loadGallery();
+        this.loadCurrentProfileImage();
         console.log('HeroAbout Section initialized');
     }
 
@@ -29,7 +31,16 @@ class HeroAboutSection {
             stat3Label: document.getElementById('stat3Label'),
             saveBtn: document.getElementById('heroSaveBtn'),
             applyBtn: document.getElementById('heroApplyBtn'),
-            resetBtn: document.getElementById('heroResetBtn')
+            resetBtn: document.getElementById('heroResetBtn'),
+            // Profilbild-Elemente
+            currentProfileImage: document.getElementById('current-profile-image'),
+            changeProfileBtn: document.getElementById('change-profile-btn'),
+            imageUpload: document.getElementById('image-upload'),
+            galleryUploadInput: document.getElementById('gallery-upload-input'),
+            selectGalleryImagesBtn: document.getElementById('select-gallery-images-btn'),
+            profileGalleryGrid: document.getElementById('profile-gallery-grid'),
+            refreshGalleryBtn: document.getElementById('refresh-gallery-btn'),
+            clearGalleryBtn: document.getElementById('clear-gallery-btn')
         };
     }
 
@@ -37,6 +48,17 @@ class HeroAboutSection {
         this.els.saveBtn?.addEventListener('click', () => this.save());
         this.els.applyBtn?.addEventListener('click', () => this.applyToWebsite());
         this.els.resetBtn?.addEventListener('click', () => this.reset());
+        
+        // Profilbild-Events
+        this.els.changeProfileBtn?.addEventListener('click', () => this.els.imageUpload?.click());
+        this.els.imageUpload?.addEventListener('change', (e) => this.handleImageUpload(e));
+        this.els.selectGalleryImagesBtn?.addEventListener('click', () => this.els.galleryUploadInput?.click());
+        this.els.galleryUploadInput?.addEventListener('change', (e) => this.handleGalleryUpload(e));
+        this.els.refreshGalleryBtn?.addEventListener('click', () => this.loadGallery());
+        this.els.clearGalleryBtn?.addEventListener('click', () => this.clearGallery());
+        
+        // Drag & Drop für Galerie
+        this.setupDragAndDrop();
     }
 
     loadFromStorage() {
@@ -112,6 +134,239 @@ class HeroAboutSection {
         this.toast('Zurückgesetzt');
     }
 
+    /**
+     * Profilbild-Upload behandeln
+     */
+    async handleImageUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        if (!this.validateImageFile(file)) return;
+        
+        try {
+            this.toast('Profilbild wird hochgeladen...', 'info');
+            
+            // Bild zu Base64 konvertieren
+            const base64 = await this.fileToBase64(file);
+            
+            // In LocalStorage speichern
+            localStorage.setItem('adminProfileImage', base64);
+            
+            // Aktuelles Profilbild aktualisieren
+            this.updateCurrentProfileImage(base64);
+            
+            // Galerie neu laden
+            this.loadGallery();
+            
+            this.toast('Profilbild erfolgreich hochgeladen!', 'success');
+            
+        } catch (error) {
+            console.error('Profilbild-Upload Fehler:', error);
+            this.toast('Fehler beim Hochladen des Profilbilds', 'error');
+        }
+    }
+    
+    /**
+     * Galerie-Upload behandeln
+     */
+    async handleGalleryUpload(event) {
+        const files = Array.from(event.target.files);
+        if (files.length === 0) return;
+        
+        // Alle Dateien validieren
+        const validFiles = files.filter(file => this.validateImageFile(file));
+        if (validFiles.length === 0) return;
+        
+        try {
+            this.toast(`${validFiles.length} Bilder werden hochgeladen...`, 'info');
+            
+            const gallery = this.getGallery();
+            
+            for (const file of validFiles) {
+                const base64 = await this.fileToBase64(file);
+                const imageData = {
+                    id: Date.now() + Math.random(),
+                    name: file.name,
+                    data: base64,
+                    uploaded: new Date().toISOString()
+                };
+                gallery.push(imageData);
+            }
+            
+            // Galerie speichern
+            localStorage.setItem('adminProfileGallery', JSON.stringify(gallery));
+            
+            // Galerie anzeigen
+            this.loadGallery();
+            
+            this.toast(`${validFiles.length} Bilder erfolgreich hochgeladen!`, 'success');
+            
+        } catch (error) {
+            console.error('Galerie-Upload Fehler:', error);
+            this.toast('Fehler beim Hochladen der Bilder', 'error');
+        }
+    }
+    
+    /**
+     * Drag & Drop Setup
+     */
+    setupDragAndDrop() {
+        const uploadArea = document.getElementById('gallery-upload-area');
+        if (!uploadArea) return;
+        
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('drag-over');
+        });
+        
+        uploadArea.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('drag-over');
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('drag-over');
+            
+            const files = Array.from(e.dataTransfer.files);
+            if (files.length > 0) {
+                this.handleGalleryUpload({ target: { files } });
+            }
+        });
+    }
+    
+    /**
+     * Bild-Datei validieren
+     */
+    validateImageFile(file) {
+        const maxSize = 5 * 1024 * 1024; // 5MB
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/svg+xml'];
+        
+        if (file.size > maxSize) {
+            this.toast('Datei ist zu groß (max. 5MB)', 'error');
+            return false;
+        }
+        
+        if (!allowedTypes.includes(file.type)) {
+            this.toast('Nicht unterstütztes Dateiformat', 'error');
+            return false;
+        }
+        
+        return true;
+    }
+    
+    /**
+     * Datei zu Base64 konvertieren
+     */
+    fileToBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    }
+    
+    /**
+     * Aktuelles Profilbild aktualisieren
+     */
+    updateCurrentProfileImage(base64) {
+        if (this.els.currentProfileImage) {
+            this.els.currentProfileImage.src = base64;
+        }
+    }
+    
+    /**
+     * Galerie laden
+     */
+    loadGallery() {
+        const gallery = this.getGallery();
+        const grid = this.els.profileGalleryGrid;
+        
+        if (!grid) return;
+        
+        if (gallery.length === 0) {
+            grid.innerHTML = '<p style="text-align: center; color: #666; padding: 2rem;">Keine Bilder in der Galerie</p>';
+            return;
+        }
+        
+        grid.innerHTML = gallery.map(image => `
+            <div class="gallery-item" data-id="${image.id}">
+                <img src="${image.data}" alt="${image.name}" style="width: 100%; height: 120px; object-fit: cover; border-radius: 8px;">
+                <div class="gallery-item-actions">
+                    <button onclick="heroAboutSection.setAsProfile('${image.id}')" class="btn btn-sm btn-primary">
+                        <i class="fas fa-user"></i> Als Profilbild
+                    </button>
+                    <button onclick="heroAboutSection.deleteFromGallery('${image.id}')" class="btn btn-sm btn-danger">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+                <p style="font-size: 0.8rem; margin-top: 0.5rem; text-align: center;">${image.name}</p>
+            </div>
+        `).join('');
+    }
+    
+    /**
+     * Galerie aus LocalStorage laden
+     */
+    getGallery() {
+        try {
+            const stored = localStorage.getItem('adminProfileGallery');
+            return stored ? JSON.parse(stored) : [];
+        } catch {
+            return [];
+        }
+    }
+    
+    /**
+     * Als Profilbild setzen
+     */
+    setAsProfile(imageId) {
+        const gallery = this.getGallery();
+        const image = gallery.find(img => img.id === imageId);
+        
+        if (image) {
+            localStorage.setItem('adminProfileImage', image.data);
+            this.updateCurrentProfileImage(image.data);
+            this.toast('Profilbild geändert!', 'success');
+        }
+    }
+    
+    /**
+     * Aus Galerie löschen
+     */
+    deleteFromGallery(imageId) {
+        if (!confirm('Bild wirklich löschen?')) return;
+        
+        const gallery = this.getGallery();
+        const filtered = gallery.filter(img => img.id !== imageId);
+        
+        localStorage.setItem('adminProfileGallery', JSON.stringify(filtered));
+        this.loadGallery();
+        this.toast('Bild gelöscht!', 'success');
+    }
+    
+    /**
+     * Galerie leeren
+     */
+    clearGallery() {
+        if (!confirm('Alle Bilder wirklich löschen?')) return;
+        
+        localStorage.removeItem('adminProfileGallery');
+        this.loadGallery();
+        this.toast('Galerie geleert!', 'success');
+    }
+    
+    /**
+     * Aktuelles Profilbild laden
+     */
+    loadCurrentProfileImage() {
+        const storedImage = localStorage.getItem('adminProfileImage');
+        if (storedImage && this.els.currentProfileImage) {
+            this.els.currentProfileImage.src = storedImage;
+        }
+    }
+
     toast(msg, type = 'success') {
         try {
             const t = document.createElement('div');
@@ -155,4 +410,7 @@ window.HeroAboutSection = HeroAboutSection;
         }
     });
 })();
+
+// Global verfügbar machen für onclick-Handler
+window.heroAboutSection = null;
 
