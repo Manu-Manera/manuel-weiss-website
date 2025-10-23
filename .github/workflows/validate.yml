@@ -1,0 +1,249 @@
+name: Validate Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to validate'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+      validation_type:
+        description: 'Type of validation'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - code
+          - infrastructure
+          - security
+          - performance
+          - compliance
+
+env:
+  NODE_VERSION: '18'
+  AWS_REGION: 'eu-central-1'
+
+jobs:
+  # Code validation
+  code-validation:
+    name: Code Validation
+    runs-on: ubuntu-latest
+    if: github.event.inputs.validation_type == 'all' || github.event.inputs.validation_type == 'code'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Run Prettier
+        run: npm run format:check
+
+      - name: Run TypeScript check
+        run: npm run type-check
+
+      - name: Run unit tests
+        run: npm run test:unit
+
+      - name: Run integration tests
+        run: npm run test:integration
+
+      - name: Run e2e tests
+        run: npm run test:e2e
+
+  # Infrastructure validation
+  infrastructure-validation:
+    name: Infrastructure Validation
+    runs-on: ubuntu-latest
+    if: github.event.inputs.validation_type == 'all' || github.event.inputs.validation_type == 'infrastructure'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Run CDK synth
+        run: npm run cdk:synth
+
+      - name: Run CDK diff
+        run: npm run cdk:diff
+
+      - name: Run infrastructure tests
+        run: npm run test:infrastructure
+
+      - name: Run infrastructure validation
+        run: npm run validate:infrastructure -- --environment=${{ github.event.inputs.environment }}
+
+  # Security validation
+  security-validation:
+    name: Security Validation
+    runs-on: ubuntu-latest
+    if: github.event.inputs.validation_type == 'all' || github.event.inputs.validation_type == 'security'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run security tests
+        run: npm run test:security
+
+      - name: Run security scan
+        run: npm run security:scan
+
+      - name: Run vulnerability check
+        run: npm run security:vulnerability-check
+
+      - name: Run security validation
+        run: npm run validate:security -- --environment=${{ github.event.inputs.environment }}
+
+  # Performance validation
+  performance-validation:
+    name: Performance Validation
+    runs-on: ubuntu-latest
+    if: github.event.inputs.validation_type == 'all' || github.event.inputs.validation_type == 'performance'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run performance tests
+        run: npm run test:performance
+
+      - name: Run load tests
+        run: npm run test:load
+
+      - name: Run stress tests
+        run: npm run test:stress
+
+      - name: Run performance validation
+        run: npm run validate:performance -- --environment=${{ github.event.inputs.environment }}
+
+  # Compliance validation
+  compliance-validation:
+    name: Compliance Validation
+    runs-on: ubuntu-latest
+    if: github.event.inputs.validation_type == 'all' || github.event.inputs.validation_type == 'compliance'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Run GDPR compliance check
+        run: npm run compliance:gdpr
+
+      - name: Run SOC 2 compliance check
+        run: npm run compliance:soc2
+
+      - name: Run ISO 27001 compliance check
+        run: npm run compliance:iso27001
+
+      - name: Run PCI DSS compliance check
+        run: npm run compliance:pcidss
+
+      - name: Run compliance validation
+        run: npm run validate:compliance -- --environment=${{ github.event.inputs.environment }}
+
+  # Generate validation report
+  validation-report:
+    name: Generate Validation Report
+    runs-on: ubuntu-latest
+    needs: [code-validation, infrastructure-validation, security-validation, performance-validation, compliance-validation]
+    if: always()
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Generate validation report
+        run: npm run validate:report -- --environment=${{ github.event.inputs.environment }}
+
+      - name: Upload validation report
+        uses: actions/upload-artifact@v3
+        with:
+          name: validation-report
+          path: validation-report/
+
+      - name: Send validation notification
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          channel: '#validation'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}

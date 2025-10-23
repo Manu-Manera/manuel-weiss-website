@@ -1,0 +1,209 @@
+name: Notify Pipeline
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to notify about'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - staging
+          - production
+      notification_type:
+        description: 'Type of notification'
+        required: true
+        default: 'status'
+        type: choice
+        options:
+          - status
+          - alert
+          - report
+          - update
+      message:
+        description: 'Custom message'
+        required: false
+        default: ''
+        type: string
+      channel:
+        description: 'Slack channel'
+        required: false
+        default: '#general'
+        type: string
+
+env:
+  NODE_VERSION: '18'
+  AWS_REGION: 'eu-central-1'
+
+jobs:
+  # Status notification
+  status-notification:
+    name: Status Notification
+    runs-on: ubuntu-latest
+    if: github.event.inputs.notification_type == 'status'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Get system status
+        run: npm run status:get -- --environment=${{ github.event.inputs.environment }}
+
+      - name: Send status notification
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          channel: ${{ github.event.inputs.channel }}
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+
+  # Alert notification
+  alert-notification:
+    name: Alert Notification
+    runs-on: ubuntu-latest
+    if: github.event.inputs.notification_type == 'alert'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Get alert details
+        run: npm run alert:get -- --environment=${{ github.event.inputs.environment }}
+
+      - name: Send alert notification
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          channel: ${{ github.event.inputs.channel }}
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+
+  # Report notification
+  report-notification:
+    name: Report Notification
+    runs-on: ubuntu-latest
+    if: github.event.inputs.notification_type == 'report'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Generate report
+        run: npm run report:generate -- --environment=${{ github.event.inputs.environment }}
+
+      - name: Send report notification
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          channel: ${{ github.event.inputs.channel }}
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+
+  # Update notification
+  update-notification:
+    name: Update Notification
+    runs-on: ubuntu-latest
+    if: github.event.inputs.notification_type == 'update'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Get update details
+        run: npm run update:get -- --environment=${{ github.event.inputs.environment }}
+
+      - name: Send update notification
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          channel: ${{ github.event.inputs.channel }}
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+
+  # Custom notification
+  custom-notification:
+    name: Custom Notification
+    runs-on: ubuntu-latest
+    if: github.event.inputs.message != ''
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Send custom notification
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          channel: ${{ github.event.inputs.channel }}
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+          custom_payload: |
+            {
+              "text": "${{ github.event.inputs.message }}",
+              "username": "AI Investment System",
+              "icon_emoji": ":robot_face:"
+            }

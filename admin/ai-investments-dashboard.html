@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Investment System Dashboard</title>
+    <link rel="stylesheet" href="../css/admin-styles.css">
+    <link rel="stylesheet" href="../css/ai-investment-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/date-fns@2.29.3/index.min.js"></script>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-robot"></i> AI Investment</h2>
+            </div>
+            <ul class="sidebar-menu">
+                <li class="menu-item active" data-section="overview">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Übersicht</span>
+                </li>
+                <li class="menu-item" data-section="signals">
+                    <i class="fas fa-signal"></i>
+                    <span>Signale</span>
+                </li>
+                <li class="menu-item" data-section="proposals">
+                    <i class="fas fa-lightbulb"></i>
+                    <span>Vorschläge</span>
+                </li>
+                <li class="menu-item" data-section="decisions">
+                    <i class="fas fa-gavel"></i>
+                    <span>Entscheidungen</span>
+                </li>
+                <li class="menu-item" data-section="outcomes">
+                    <i class="fas fa-trophy"></i>
+                    <span>Ergebnisse</span>
+                </li>
+                <li class="menu-item" data-section="risk">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Risikomanagement</span>
+                </li>
+                <li class="menu-item" data-section="analytics">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Analytik</span>
+                </li>
+                <li class="menu-item" data-section="settings">
+                    <i class="fas fa-cog"></i>
+                    <span>Einstellungen</span>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <h1>AI Investment System Dashboard</h1>
+                    <div class="status-indicator">
+                        <span class="status-dot online"></span>
+                        <span>System Online</span>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="user-info">
+                        <i class="fas fa-user-circle"></i>
+                        <span>Admin User</span>
+                    </div>
+                    <button class="btn btn-primary" id="refreshBtn">
+                        <i class="fas fa-sync-alt"></i>
+                        Aktualisieren
+                    </button>
+                </div>
+            </header>
+
+            <!-- Overview Section -->
+            <section id="overview" class="dashboard-section active">
+                <div class="section-header">
+                    <h2>System Übersicht</h2>
+                    <div class="time-range-selector">
+                        <select id="timeRange">
+                            <option value="1h">Letzte Stunde</option>
+                            <option value="24h" selected>Letzte 24 Stunden</option>
+                            <option value="7d">Letzte 7 Tage</option>
+                            <option value="30d">Letzte 30 Tage</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Key Metrics Cards -->
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <i class="fas fa-signal"></i>
+                        </div>
+                        <div class="metric-content">
+                            <h3>Signale</h3>
+                            <div class="metric-value" id="totalSignals">1,250</div>
+                            <div class="metric-change positive">
+                                <i class="fas fa-arrow-up"></i>
+                                +12% vs. gestern
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                        <div class="metric-content">
+                            <h3>Vorschläge</h3>
+                            <div class="metric-value" id="totalProposals">45</div>
+                            <div class="metric-change positive">
+                                <i class="fas fa-arrow-up"></i>
+                                +8% vs. gestern
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <i class="fas fa-gavel"></i>
+                        </div>
+                        <div class="metric-content">
+                            <h3>Entscheidungen</h3>
+                            <div class="metric-value" id="totalDecisions">42</div>
+                            <div class="metric-change positive">
+                                <i class="fas fa-arrow-up"></i>
+                                +15% vs. gestern
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <div class="metric-content">
+                            <h3>Erfolgsrate</h3>
+                            <div class="metric-value" id="successRate">75%</div>
+                            <div class="metric-change positive">
+                                <i class="fas fa-arrow-up"></i>
+                                +3% vs. gestern
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row -->
+                <div class="charts-row">
+                    <div class="chart-container">
+                        <h3>Signale über Zeit</h3>
+                        <canvas id="signalsChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Vorschläge Status</h3>
+                        <canvas id="proposalsChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="activity-section">
+                    <h3>Aktuelle Aktivität</h3>
+                    <div class="activity-list" id="recentActivity">
+                        <!-- Activity items will be populated by JavaScript -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Signals Section -->
+            <section id="signals" class="dashboard-section">
+                <div class="section-header">
+                    <h2>Signale Management</h2>
+                    <div class="section-actions">
+                        <button class="btn btn-secondary" id="refreshSignalsBtn">
+                            <i class="fas fa-sync-alt"></i>
+                            Aktualisieren
+                        </button>
+                        <button class="btn btn-primary" id="ingestSignalsBtn">
+                            <i class="fas fa-plus"></i>
+                            Neue Signale
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="filters-section">
+                    <div class="filter-group">
+                        <label>Quelle:</label>
+                        <select id="signalSourceFilter">
+                            <option value="">Alle</option>
+                            <option value="twitter">Twitter</option>
+                            <option value="reddit">Reddit</option>
+                            <option value="youtube">YouTube</option>
+                            <option value="linkedin">LinkedIn</option>
+                            <option value="reuters">Reuters</option>
+                            <option value="bloomberg">Bloomberg</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Zeitraum:</label>
+                        <select id="signalTimeFilter">
+                            <option value="1h">Letzte Stunde</option>
+                            <option value="24h" selected>Letzte 24 Stunden</option>
+                            <option value="7d">Letzte 7 Tage</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Score:</label>
+                        <input type="range" id="signalScoreFilter" min="0" max="1" step="0.1" value="0.5">
+                        <span id="scoreValue">0.5</span>
+                    </div>
+                </div>
+
+                <!-- Signals Table -->
+                <div class="table-container">
+                    <table class="data-table" id="signalsTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Quelle</th>
+                                <th>Inhalt</th>
+                                <th>Score</th>
+                                <th>Vertrauen</th>
+                                <th>Zeitstempel</th>
+                                <th>Aktionen</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Table rows will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination">
+                    <button class="btn btn-secondary" id="prevPageBtn" disabled>
+                        <i class="fas fa-chevron-left"></i>
+                        Vorherige
+                    </button>
+                    <span class="page-info">
+                        Seite <span id="currentPage">1</span> von <span id="totalPages">10</span>
+                    </span>
+                    <button class="btn btn-secondary" id="nextPageBtn">
+                        Nächste
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Proposals Section -->
+            <section id="proposals" class="dashboard-section">
+                <div class="section-header">
+                    <h2>Investment Vorschläge</h2>
+                    <div class="section-actions">
+                        <button class="btn btn-secondary" id="refreshProposalsBtn">
+                            <i class="fas fa-sync-alt"></i>
+                            Aktualisieren
+                        </button>
+                        <button class="btn btn-primary" id="generateProposalBtn">
+                            <i class="fas fa-magic"></i>
+                            Vorschlag generieren
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Proposal Filters -->
+                <div class="filters-section">
+                    <div class="filter-group">
+                        <label>Status:</label>
+                        <select id="proposalStatusFilter">
+                            <option value="">Alle</option>
+                            <option value="proposed">Vorgeschlagen</option>
+                            <option value="approved">Genehmigt</option>
+                            <option value="rejected">Abgelehnt</option>
+                            <option value="executed">Ausgeführt</option>
+                            <option value="closed">Geschlossen</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Risiko:</label>
+                        <input type="range" id="riskFilter" min="0" max="1" step="0.1" value="0.5">
+                        <span id="riskValue">0.5</span>
+                    </div>
+                </div>
+
+                <!-- Proposals Grid -->
+                <div class="proposals-grid" id="proposalsGrid">
+                    <!-- Proposal cards will be populated by JavaScript -->
+                </div>
+            </section>
+
+            <!-- Decisions Section -->
+            <section id="decisions" class="dashboard-section">
+                <div class="section-header">
+                    <h2>Entscheidungen</h2>
+                    <div class="section-actions">
+                        <button class="btn btn-secondary" id="refreshDecisionsBtn">
+                            <i class="fas fa-sync-alt"></i>
+                            Aktualisieren
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Decision Statistics -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h4>Genehmigt</h4>
+                        <div class="stat-value" id="approvedDecisions">32</div>
+                        <div class="stat-percentage">76%</div>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Abgelehnt</h4>
+                        <div class="stat-value" id="rejectedDecisions">10</div>
+                        <div class="stat-percentage">24%</div>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Durchschnittliche Vertrauen</h4>
+                        <div class="stat-value" id="avgConfidence">0.82</div>
+                        <div class="stat-percentage">Sehr hoch</div>
+                    </div>
+                </div>
+
+                <!-- Decisions Table -->
+                <div class="table-container">
+                    <table class="data-table" id="decisionsTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Vorschlag ID</th>
+                                <th>Aktion</th>
+                                <th>Vertrauen</th>
+                                <th>Größenanpassung</th>
+                                <th>Zeitstempel</th>
+                                <th>Aktionen</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Table rows will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Outcomes Section -->
+            <section id="outcomes" class="dashboard-section">
+                <div class="section-header">
+                    <h2>Investment Ergebnisse</h2>
+                    <div class="section-actions">
+                        <button class="btn btn-secondary" id="refreshOutcomesBtn">
+                            <i class="fas fa-sync-alt"></i>
+                            Aktualisieren
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Performance Metrics -->
+                <div class="performance-metrics">
+                    <div class="metric-card">
+                        <h4>Durchschnittliche Rendite</h4>
+                        <div class="metric-value" id="avgReturn">8.2%</div>
+                    </div>
+                    <div class="metric-card">
+                        <h4>Sharpe Ratio</h4>
+                        <div class="metric-value" id="sharpeRatio">1.4</div>
+                    </div>
+                    <div class="metric-card">
+                        <h4>Maximaler Drawdown</h4>
+                        <div class="metric-value" id="maxDrawdown">5.1%</div>
+                    </div>
+                    <div class="metric-card">
+                        <h4>Gewinnrate</h4>
+                        <div class="metric-value" id="winRate">75%</div>
+                    </div>
+                </div>
+
+                <!-- Outcomes Chart -->
+                <div class="chart-container full-width">
+                    <h3>Performance über Zeit</h3>
+                    <canvas id="performanceChart"></canvas>
+                </div>
+
+                <!-- Outcomes Table -->
+                <div class="table-container">
+                    <table class="data-table" id="outcomesTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Vorschlag ID</th>
+                                <th>Rendite</th>
+                                <th>Sharpe Ratio</th>
+                                <th>Drawdown</th>
+                                <th>Zeitstempel</th>
+                                <th>Aktionen</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Table rows will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Risk Management Section -->
+            <section id="risk" class="dashboard-section">
+                <div class="section-header">
+                    <h2>Risikomanagement</h2>
+                    <div class="section-actions">
+                        <button class="btn btn-secondary" id="refreshRiskBtn">
+                            <i class="fas fa-sync-alt"></i>
+                            Aktualisieren
+                        </button>
+                        <button class="btn btn-primary" id="riskCheckBtn">
+                            <i class="fas fa-shield-alt"></i>
+                            Risiko prüfen
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Risk Metrics -->
+                <div class="risk-metrics">
+                    <div class="risk-card high">
+                        <h4>VaR (95%)</h4>
+                        <div class="risk-value" id="var95">8.5%</div>
+                        <div class="risk-status">Hoch</div>
+                    </div>
+                    <div class="risk-card medium">
+                        <h4>CVaR (95%)</h4>
+                        <div class="risk-value" id="cvar95">12.3%</div>
+                        <div class="risk-status">Mittel</div>
+                    </div>
+                    <div class="risk-card low">
+                        <h4>Volatilität</h4>
+                        <div class="risk-value" id="volatility">20.1%</div>
+                        <div class="risk-status">Niedrig</div>
+                    </div>
+                    <div class="risk-card medium">
+                        <h4>Korrelation</h4>
+                        <div class="risk-value" id="correlation">0.65</div>
+                        <div class="risk-status">Mittel</div>
+                    </div>
+                </div>
+
+                <!-- Risk Chart -->
+                <div class="chart-container full-width">
+                    <h3>Risiko über Zeit</h3>
+                    <canvas id="riskChart"></canvas>
+                </div>
+
+                <!-- Risk Alerts -->
+                <div class="alerts-section">
+                    <h3>Risiko Warnungen</h3>
+                    <div class="alerts-list" id="riskAlerts">
+                        <!-- Risk alerts will be populated by JavaScript -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Analytics Section -->
+            <section id="analytics" class="dashboard-section">
+                <div class="section-header">
+                    <h2>Analytik & Insights</h2>
+                    <div class="section-actions">
+                        <button class="btn btn-secondary" id="refreshAnalyticsBtn">
+                            <i class="fas fa-sync-alt"></i>
+                            Aktualisieren
+                        </button>
+                        <button class="btn btn-primary" id="generateInsightsBtn">
+                            <i class="fas fa-brain"></i>
+                            Insights generieren
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Analytics Charts -->
+                <div class="analytics-charts">
+                    <div class="chart-container">
+                        <h3>Signal Quellen Verteilung</h3>
+                        <canvas id="sourceDistributionChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Performance nach Asset</h3>
+                        <canvas id="assetPerformanceChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Insights -->
+                <div class="insights-section">
+                    <h3>AI Insights</h3>
+                    <div class="insights-list" id="insightsList">
+                        <!-- Insights will be populated by JavaScript -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings Section -->
+            <section id="settings" class="dashboard-section">
+                <div class="section-header">
+                    <h2>System Einstellungen</h2>
+                </div>
+
+                <!-- Settings Tabs -->
+                <div class="settings-tabs">
+                    <button class="tab-btn active" data-tab="general">Allgemein</button>
+                    <button class="tab-btn" data-tab="risk">Risiko</button>
+                    <button class="tab-btn" data-tab="notifications">Benachrichtigungen</button>
+                    <button class="tab-btn" data-tab="api">API</button>
+                </div>
+
+                <!-- General Settings -->
+                <div class="settings-tab-content active" id="general">
+                    <div class="setting-group">
+                        <label>System Name</label>
+                        <input type="text" id="systemName" value="AI Investment System">
+                    </div>
+                    <div class="setting-group">
+                        <label>Zeitzone</label>
+                        <select id="timezone">
+                            <option value="Europe/Zurich" selected>Europa/Zürich</option>
+                            <option value="UTC">UTC</option>
+                            <option value="America/New_York">Amerika/New York</option>
+                        </select>
+                    </div>
+                    <div class="setting-group">
+                        <label>Sprache</label>
+                        <select id="language">
+                            <option value="de" selected>Deutsch</option>
+                            <option value="en">English</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Risk Settings -->
+                <div class="settings-tab-content" id="risk">
+                    <div class="setting-group">
+                        <label>Maximales Risiko</label>
+                        <input type="range" id="maxRisk" min="0" max="1" step="0.1" value="0.8">
+                        <span id="maxRiskValue">0.8</span>
+                    </div>
+                    <div class="setting-group">
+                        <label>VaR Konfidenz</label>
+                        <select id="varConfidence">
+                            <option value="0.95" selected>95%</option>
+                            <option value="0.99">99%</option>
+                        </select>
+                    </div>
+                    <div class="setting-group">
+                        <label>Stop Loss</label>
+                        <input type="range" id="stopLoss" min="0" max="0.2" step="0.01" value="0.08">
+                        <span id="stopLossValue">8%</span>
+                    </div>
+                </div>
+
+                <!-- Notifications Settings -->
+                <div class="settings-tab-content" id="notifications">
+                    <div class="setting-group">
+                        <label>
+                            <input type="checkbox" id="emailNotifications" checked>
+                            E-Mail Benachrichtigungen
+                        </label>
+                    </div>
+                    <div class="setting-group">
+                        <label>
+                            <input type="checkbox" id="riskAlerts" checked>
+                            Risiko Warnungen
+                        </label>
+                    </div>
+                    <div class="setting-group">
+                        <label>
+                            <input type="checkbox" id="performanceAlerts" checked>
+                            Performance Benachrichtigungen
+                        </label>
+                    </div>
+                </div>
+
+                <!-- API Settings -->
+                <div class="settings-tab-content" id="api">
+                    <div class="setting-group">
+                        <label>API Endpoint</label>
+                        <input type="text" id="apiEndpoint" value="https://api.ai-investment.com/v1">
+                    </div>
+                    <div class="setting-group">
+                        <label>API Key</label>
+                        <input type="password" id="apiKey" placeholder="Ihr API Key">
+                    </div>
+                    <div class="setting-group">
+                        <label>Rate Limit</label>
+                        <input type="number" id="rateLimit" value="100" min="1" max="1000">
+                        <span>Anfragen pro Minute</span>
+                    </div>
+                </div>
+
+                <!-- Save Settings -->
+                <div class="settings-actions">
+                    <button class="btn btn-primary" id="saveSettingsBtn">
+                        <i class="fas fa-save"></i>
+                        Einstellungen speichern
+                    </button>
+                    <button class="btn btn-secondary" id="resetSettingsBtn">
+                        <i class="fas fa-undo"></i>
+                        Zurücksetzen
+                    </button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Lade Daten...</p>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal" id="signalDetailModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Signal Details</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body" id="signalDetailContent">
+                <!-- Signal details will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="proposalDetailModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Vorschlag Details</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body" id="proposalDetailContent">
+                <!-- Proposal details will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../js/admin/state-manager.js"></script>
+    <script src="../js/admin/navigation.js"></script>
+    <script src="../js/admin/sections/ai-investments.js"></script>
+    <script src="ai-investments-dashboard.js"></script>
+</body>
+</html>

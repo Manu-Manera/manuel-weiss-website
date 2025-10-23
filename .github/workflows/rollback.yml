@@ -1,0 +1,185 @@
+name: Rollback Pipeline
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to rollback'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+      version:
+        description: 'Version to rollback to'
+        required: true
+        default: 'previous'
+        type: string
+      reason:
+        description: 'Reason for rollback'
+        required: true
+        default: 'Critical issue detected'
+        type: string
+
+env:
+  NODE_VERSION: '18'
+  AWS_REGION: 'eu-central-1'
+
+jobs:
+  # Validate rollback
+  validate-rollback:
+    name: Validate Rollback
+    runs-on: ubuntu-latest
+    outputs:
+      can_rollback: ${{ steps.validate.outputs.can_rollback }}
+      rollback_version: ${{ steps.validate.outputs.rollback_version }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Validate rollback
+        id: validate
+        run: |
+          if [[ "${{ github.event.inputs.version }}" == "previous" ]]; then
+            ROLLBACK_VERSION=$(npm run deploy:get-previous-version -- --environment=${{ github.event.inputs.environment }})
+          else
+            ROLLBACK_VERSION=${{ github.event.inputs.version }}
+          fi
+          
+          if npm run deploy:validate-version -- --version=$ROLLBACK_VERSION --environment=${{ github.event.inputs.environment }}; then
+            echo "can_rollback=true" >> $GITHUB_OUTPUT
+            echo "rollback_version=$ROLLBACK_VERSION" >> $GITHUB_OUTPUT
+          else
+            echo "can_rollback=false" >> $GITHUB_OUTPUT
+            echo "rollback_version=" >> $GITHUB_OUTPUT
+          fi
+
+  # Rollback staging
+  rollback-staging:
+    name: Rollback Staging
+    runs-on: ubuntu-latest
+    needs: validate-rollback
+    if: needs.validate-rollback.outputs.can_rollback == 'true' && github.event.inputs.environment == 'staging'
+    environment: staging
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Rollback staging
+        run: npm run deploy:rollback -- --environment=staging --version=${{ needs.validate-rollback.outputs.rollback_version }}
+
+      - name: Run staging tests
+        run: npm run test:staging
+
+      - name: Update rollback status
+        run: npm run deploy:status:staging
+
+  # Rollback production
+  rollback-production:
+    name: Rollback Production
+    runs-on: ubuntu-latest
+    needs: validate-rollback
+    if: needs.validate-rollback.outputs.can_rollback == 'true' && github.event.inputs.environment == 'production'
+    environment: production
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Rollback production
+        run: npm run deploy:rollback -- --environment=production --version=${{ needs.validate-rollback.outputs.rollback_version }}
+
+      - name: Run production tests
+        run: npm run test:production
+
+      - name: Update rollback status
+        run: npm run deploy:status:production
+
+  # Post-rollback
+  post-rollback:
+    name: Post-rollback
+    runs-on: ubuntu-latest
+    needs: [validate-rollback, rollback-staging, rollback-production]
+    if: always()
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Send rollback notification
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          channel: '#deployments'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+
+      - name: Create rollback issue
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: 'Rollback to ${{ needs.validate-rollback.outputs.rollback_version }}',
+              body: 'Rollback performed due to: ${{ github.event.inputs.reason }}',
+              labels: ['rollback', 'urgent']
+            })
+
+      - name: Update monitoring
+        run: npm run monitoring:update

@@ -1,0 +1,1497 @@
+openapi: 3.1.0
+info:
+  title: AI Investment System API
+  description: Comprehensive API for AI-powered investment management system
+  version: 1.0.0
+  contact:
+    name: AI Investment System
+    email: support@ai-investment.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://api.ai-investment.com/v1
+    description: Production server
+  - url: https://staging-api.ai-investment.com/v1
+    description: Staging server
+  - url: http://localhost:3000/v1
+    description: Development server
+
+security:
+  - BearerAuth: []
+  - ApiKeyAuth: []
+
+paths:
+  /health:
+    get:
+      summary: Health check endpoint
+      description: Returns the health status of the API
+      tags:
+        - System
+      security: []
+      responses:
+        '200':
+          description: API is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "healthy"
+                  timestamp:
+                    type: string
+                    format: date-time
+                  version:
+                    type: string
+                    example: "1.0.0"
+                  uptime:
+                    type: number
+                    example: 3600
+
+  /ingestion/social:
+    post:
+      summary: Ingest social media signals
+      description: Collect and process signals from social media platforms
+      tags:
+        - Ingestion
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SocialIngestionRequest'
+      responses:
+        '200':
+          description: Social signals ingested successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IngestionResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /ingestion/news:
+    post:
+      summary: Ingest news signals
+      description: Collect and process signals from news sources
+      tags:
+        - Ingestion
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewsIngestionRequest'
+      responses:
+        '200':
+          description: News signals ingested successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IngestionResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /scoring/score:
+    post:
+      summary: Score and fuse signals
+      description: Apply ML models to score and fuse investment signals
+      tags:
+        - Scoring
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScoringRequest'
+      responses:
+        '200':
+          description: Signals scored successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScoringResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /orchestrator/propose:
+    post:
+      summary: Generate investment proposal
+      description: Create investment proposals based on scored signals
+      tags:
+        - Orchestrator
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProposalRequest'
+      responses:
+        '200':
+          description: Proposal generated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProposalResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /orchestrator/risk/check:
+    post:
+      summary: Perform risk assessment
+      description: Advanced risk analysis for investment proposals
+      tags:
+        - Orchestrator
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RiskCheckRequest'
+      responses:
+        '200':
+          description: Risk assessment completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RiskCheckResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /decision/make:
+    post:
+      summary: Make investment decision
+      description: Process investment decisions based on proposals
+      tags:
+        - Decision
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DecisionRequest'
+      responses:
+        '200':
+          description: Decision made successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DecisionResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /decision/evaluate:
+    post:
+      summary: Evaluate investment outcome
+      description: Analyze investment outcomes and update learning models
+      tags:
+        - Decision
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EvaluationRequest'
+      responses:
+        '200':
+          description: Evaluation completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EvaluationResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /dashboard/overview:
+    get:
+      summary: Get dashboard overview
+      description: Retrieve system overview and key metrics
+      tags:
+        - Dashboard
+      parameters:
+        - name: timeframe
+          in: query
+          description: Time period for metrics
+          required: false
+          schema:
+            type: string
+            enum: [1h, 24h, 7d, 30d]
+            default: 24h
+      responses:
+        '200':
+          description: Dashboard data retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /dashboard/signals:
+    get:
+      summary: Get recent signals
+      description: Retrieve recent investment signals
+      tags:
+        - Dashboard
+      parameters:
+        - name: limit
+          in: query
+          description: Maximum number of signals to return
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 50
+        - name: source
+          in: query
+          description: Filter by signal source
+          required: false
+          schema:
+            type: string
+            enum: [twitter, reddit, youtube, linkedin, reuters, bloomberg, ft, wsj, sec, finma, esma]
+      responses:
+        '200':
+          description: Signals retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SignalsResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /dashboard/proposals:
+    get:
+      summary: Get recent proposals
+      description: Retrieve recent investment proposals
+      tags:
+        - Dashboard
+      parameters:
+        - name: limit
+          in: query
+          description: Maximum number of proposals to return
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 50
+        - name: status
+          in: query
+          description: Filter by proposal status
+          required: false
+          schema:
+            type: string
+            enum: [proposed, approved, rejected, executed, closed]
+      responses:
+        '200':
+          description: Proposals retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProposalsResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /dashboard/outcomes:
+    get:
+      summary: Get recent outcomes
+      description: Retrieve recent investment outcomes
+      tags:
+        - Dashboard
+      parameters:
+        - name: limit
+          in: query
+          description: Maximum number of outcomes to return
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 50
+        - name: timeframe
+          in: query
+          description: Time period for outcomes
+          required: false
+          schema:
+            type: string
+            enum: [1d, 7d, 30d, 90d]
+            default: 30d
+      responses:
+        '200':
+          description: Outcomes retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OutcomesResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /metrics/system:
+    get:
+      summary: Get system metrics
+      description: Retrieve system performance and health metrics
+      tags:
+        - Metrics
+      responses:
+        '200':
+          description: System metrics retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemMetricsResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /metrics/business:
+    get:
+      summary: Get business metrics
+      description: Retrieve business performance metrics
+      tags:
+        - Metrics
+      parameters:
+        - name: timeframe
+          in: query
+          description: Time period for metrics
+          required: false
+          schema:
+            type: string
+            enum: [1h, 24h, 7d, 30d, 90d]
+            default: 24h
+      responses:
+        '200':
+          description: Business metrics retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BusinessMetricsResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+
+  schemas:
+    # Core Types
+    Signal:
+      type: object
+      required:
+        - id
+        - source
+        - content
+        - timestamp
+        - scores
+        - confidences
+      properties:
+        id:
+          type: string
+          example: "signal_123"
+        source:
+          type: string
+          enum: [twitter, reddit, youtube, linkedin, reuters, bloomberg, ft, wsj, sec, finma, esma]
+          example: "twitter"
+        content:
+          type: string
+          example: "Bitcoin adoption increasing in institutions"
+        timestamp:
+          type: string
+          format: date-time
+          example: "2024-01-15T10:30:00Z"
+        scores:
+          $ref: '#/components/schemas/SignalScores'
+        confidences:
+          $ref: '#/components/schemas/SignalConfidences'
+        metadata:
+          $ref: '#/components/schemas/SignalMetadata'
+
+    SignalScores:
+      type: object
+      required:
+        - fused
+        - sentiment
+        - relevance
+        - novelty
+        - credibility
+      properties:
+        fused:
+          type: number
+          minimum: 0
+          maximum: 1
+          example: 0.85
+        sentiment:
+          type: number
+          minimum: 0
+          maximum: 1
+          example: 0.8
+        relevance:
+          type: number
+          minimum: 0
+          maximum: 1
+          example: 0.9
+        novelty:
+          type: number
+          minimum: 0
+          maximum: 1
+          example: 0.7
+        credibility:
+          type: number
+          minimum: 0
+          maximum: 1
+          example: 0.8
+
+    SignalConfidences:
+      type: object
+      required:
+        - fused
+      properties:
+        fused:
+          type: number
+          minimum: 0
+          maximum: 1
+          example: 0.8
+
+    SignalMetadata:
+      type: object
+      properties:
+        author:
+          type: string
+          example: "crypto_analyst"
+        language:
+          type: string
+          example: "en"
+        entities:
+          type: array
+          items:
+            type: string
+          example: ["Bitcoin", "BTC", "institution"]
+        hashtags:
+          type: array
+          items:
+            type: string
+          example: ["#Bitcoin", "#Crypto", "#Adoption"]
+
+    Proposal:
+      type: object
+      required:
+        - id
+        - thesis
+        - assets
+        - size_pct
+        - horizon_days
+        - entry_price
+        - stop_loss
+        - take_profit
+        - invalidate_if
+        - explain
+        - constraints_checked
+        - status
+        - created_at
+        - updated_at
+        - risk_score
+        - expected_return
+        - sharpe_ratio
+      properties:
+        id:
+          type: string
+          example: "proposal_456"
+        thesis:
+          type: string
+          example: "Bitcoin adoption is increasing due to institutional interest"
+        assets:
+          type: array
+          items:
+            type: string
+          example: ["BTC", "ETH"]
+        size_pct:
+          type: number
+          minimum: 0
+          maximum: 1
+          example: 0.05
+        horizon_days:
+          type: integer
+          minimum: 1
+          maximum: 365
+          example: 7
+        entry_price:
+          type: object
+          additionalProperties:
+            type: number
+          example: {"BTC": 50000, "ETH": 3000}
+        stop_loss:
+          type: number
+          minimum: 0
+          maximum: 1
+          example: 0.08
+        take_profit:
+          type: number
+          minimum: 0
+          maximum: 1
+          example: 0.12
+        invalidate_if:
+          type: array
+          items:
+            type: string
+          example: ["Risk score exceeds 0.8"]
+        explain:
+          type: string
+          example: "Detailed explanation of the investment thesis"
+        constraints_checked:
+          type: boolean
+          example: true
+        status:
+          type: string
+          enum: [proposed, approved, rejected, executed, closed]
+          example: "proposed"
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-01-15T10:30:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2024-01-15T10:30:00Z"
+        risk_score:
+          type: number
+          minimum: 0
+          maximum: 1
+          example: 0.6
+        expected_return:
+          type: number
+          example: 0.08
+        sharpe_ratio:
+          type: number
+          example: 1.2
+
+    Outcome:
+      type: object
+      required:
+        - id
+        - proposal_id
+        - exit_price
+        - return_pct
+        - volatility
+        - sharpe_ratio
+        - max_drawdown
+        - win_rate
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          example: "outcome_789"
+        proposal_id:
+          type: string
+          example: "proposal_456"
+        exit_price:
+          type: object
+          additionalProperties:
+            type: number
+          example: {"BTC": 52000, "ETH": 3200}
+        return_pct:
+          type: number
+          example: 0.04
+        volatility:
+          type: number
+          minimum: 0
+          example: 0.2
+        sharpe_ratio:
+          type: number
+          example: 1.2
+        max_drawdown:
+          type: number
+          minimum: 0
+          example: 0.02
+        win_rate:
+          type: number
+          minimum: 0
+          maximum: 1
+          example: 1.0
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-01-15T10:30:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2024-01-15T10:30:00Z"
+
+    # Request/Response Types
+    SocialIngestionRequest:
+      type: object
+      required:
+        - sources
+        - timeframe
+        - userId
+      properties:
+        sources:
+          type: array
+          items:
+            type: string
+            enum: [twitter, reddit, youtube, linkedin]
+          example: ["twitter", "reddit"]
+        timeframe:
+          type: string
+          enum: [1h, 24h, 7d]
+          example: "24h"
+        userId:
+          type: string
+          example: "user_123"
+
+    NewsIngestionRequest:
+      type: object
+      required:
+        - sources
+        - timeframe
+        - userId
+      properties:
+        sources:
+          type: array
+          items:
+            type: string
+            enum: [reuters, bloomberg, ft, wsj, sec, finma, esma]
+          example: ["reuters", "bloomberg"]
+        timeframe:
+          type: string
+          enum: [1h, 24h, 7d]
+          example: "24h"
+        userId:
+          type: string
+          example: "user_123"
+
+    IngestionResponse:
+      type: object
+      required:
+        - ok
+        - data
+      properties:
+        ok:
+          type: boolean
+          example: true
+        data:
+          type: object
+          required:
+            - signals
+            - processed
+            - errors
+          properties:
+            signals:
+              type: array
+              items:
+                $ref: '#/components/schemas/Signal'
+            processed:
+              type: integer
+              example: 150
+            errors:
+              type: integer
+              example: 5
+
+    ScoringRequest:
+      type: object
+      required:
+        - signals
+        - userId
+      properties:
+        signals:
+          type: array
+          items:
+            $ref: '#/components/schemas/Signal'
+        userId:
+          type: string
+          example: "user_123"
+
+    ScoringResponse:
+      type: object
+      required:
+        - ok
+        - data
+      properties:
+        ok:
+          type: boolean
+          example: true
+        data:
+          type: object
+          required:
+            - scored_signals
+            - fusion_results
+            - conflicts
+          properties:
+            scored_signals:
+              type: array
+              items:
+                $ref: '#/components/schemas/Signal'
+            fusion_results:
+              type: object
+              properties:
+                consensus:
+                  type: number
+                  example: 0.75
+                confidence:
+                  type: number
+                  example: 0.8
+                diversity:
+                  type: number
+                  example: 0.6
+            conflicts:
+              type: array
+              items:
+                type: string
+              example: ["Conflicting sentiment signals detected"]
+
+    ProposalRequest:
+      type: object
+      required:
+        - signals
+        - assets
+        - timeframe
+        - userId
+      properties:
+        signals:
+          type: array
+          items:
+            $ref: '#/components/schemas/Signal'
+        assets:
+          type: array
+          items:
+            type: string
+          example: ["BTC", "ETH"]
+        timeframe:
+          type: string
+          enum: [1d, 7d, 30d, 90d]
+          example: "7d"
+        userId:
+          type: string
+          example: "user_123"
+
+    ProposalResponse:
+      type: object
+      required:
+        - ok
+        - data
+      properties:
+        ok:
+          type: boolean
+          example: true
+        data:
+          $ref: '#/components/schemas/Proposal'
+
+    RiskCheckRequest:
+      type: object
+      required:
+        - proposal
+        - assets
+        - userId
+      properties:
+        proposal:
+          $ref: '#/components/schemas/Proposal'
+        assets:
+          type: array
+          items:
+            type: string
+          example: ["BTC", "ETH"]
+        userId:
+          type: string
+          example: "user_123"
+
+    RiskCheckResponse:
+      type: object
+      required:
+        - ok
+        - data
+      properties:
+        ok:
+          type: boolean
+          example: true
+        data:
+          type: object
+          required:
+            - risk_score
+            - var
+            - cvar
+            - volatility
+            - correlation
+            - liquidity
+            - recommendations
+          properties:
+            risk_score:
+              type: number
+              minimum: 0
+              maximum: 1
+              example: 0.6
+            var:
+              type: object
+              properties:
+                historical:
+                  type: number
+                  example: 0.08
+                parametric:
+                  type: number
+                  example: 0.09
+                monte_carlo:
+                  type: number
+                  example: 0.085
+                cornish_fisher:
+                  type: number
+                  example: 0.087
+            cvar:
+              type: object
+              properties:
+                historical:
+                  type: number
+                  example: 0.12
+                monte_carlo:
+                  type: number
+                  example: 0.125
+            volatility:
+              type: number
+              example: 0.2
+            correlation:
+              type: array
+              items:
+                type: array
+                items:
+                  type: number
+              example: [[1.0, 0.7], [0.7, 1.0]]
+            liquidity:
+              type: number
+              example: 0.9
+            recommendations:
+              type: array
+              items:
+                type: string
+              example: ["Moderate risk - implement risk management measures"]
+
+    DecisionRequest:
+      type: object
+      required:
+        - proposal
+        - context
+        - userId
+      properties:
+        proposal:
+          $ref: '#/components/schemas/Proposal'
+        context:
+          type: object
+          properties:
+            portfolio_concentration:
+              type: number
+              example: 0.3
+            market_conditions:
+              type: string
+              example: "bullish"
+            user_risk_tolerance:
+              type: string
+              example: "moderate"
+        userId:
+          type: string
+          example: "user_123"
+
+    DecisionResponse:
+      type: object
+      required:
+        - ok
+        - data
+      properties:
+        ok:
+          type: boolean
+          example: true
+        data:
+          type: object
+          required:
+            - id
+            - proposal_id
+            - action
+            - confidence
+            - size_adjustment
+            - rationale
+            - rule_results
+            - created_at
+            - updated_at
+          properties:
+            id:
+              type: string
+              example: "decision_789"
+            proposal_id:
+              type: string
+              example: "proposal_456"
+            action:
+              type: string
+              enum: [approve, reject, reduce_size, diversify, modify]
+              example: "approve"
+            confidence:
+              type: number
+              minimum: 0
+              maximum: 1
+              example: 0.8
+            size_adjustment:
+              type: number
+              example: 1.0
+            rationale:
+              type: string
+              example: "Proposal meets all decision criteria"
+            rule_results:
+              type: array
+              items:
+                type: object
+                properties:
+                  ruleId:
+                    type: string
+                    example: "risk_threshold"
+                  ruleName:
+                    type: string
+                    example: "Risk Threshold Rule"
+                  condition:
+                    type: string
+                    example: "proposal.risk_score > 0.8"
+                  result:
+                    type: boolean
+                    example: false
+                  action:
+                    type: string
+                    example: "reject"
+                  priority:
+                    type: integer
+                    example: 1
+            created_at:
+              type: string
+              format: date-time
+              example: "2024-01-15T10:30:00Z"
+            updated_at:
+              type: string
+              format: date-time
+              example: "2024-01-15T10:30:00Z"
+
+    EvaluationRequest:
+      type: object
+      required:
+        - proposal
+        - outcome
+        - userId
+      properties:
+        proposal:
+          $ref: '#/components/schemas/Proposal'
+        outcome:
+          $ref: '#/components/schemas/Outcome'
+        userId:
+          type: string
+          example: "user_123"
+
+    EvaluationResponse:
+      type: object
+      required:
+        - ok
+        - data
+      properties:
+        ok:
+          type: boolean
+          example: true
+        data:
+          type: object
+          required:
+            - id
+            - proposal_id
+            - outcome_id
+            - performance
+            - decision_quality
+            - insights
+            - created_at
+            - updated_at
+          properties:
+            id:
+              type: string
+              example: "evaluation_101"
+            proposal_id:
+              type: string
+              example: "proposal_456"
+            outcome_id:
+              type: string
+              example: "outcome_789"
+            performance:
+              type: object
+              properties:
+                return_pct:
+                  type: number
+                  example: 0.04
+                sharpe_ratio:
+                  type: number
+                  example: 1.2
+                max_drawdown:
+                  type: number
+                  example: 0.02
+                win_rate:
+                  type: number
+                  example: 1.0
+                overall_score:
+                  type: number
+                  example: 0.8
+            decision_quality:
+              type: object
+              properties:
+                accuracy:
+                  type: string
+                  example: "Good"
+                risk_management:
+                  type: string
+                  example: "Effective"
+                timing:
+                  type: string
+                  example: "Good"
+                position_sizing:
+                  type: string
+                  example: "Appropriate"
+                overall_quality:
+                  type: string
+                  example: "Good"
+                score:
+                  type: number
+                  example: 0.8
+            insights:
+              type: array
+              items:
+                type: string
+              example: ["Signal quality was accurate", "Risk management was effective"]
+            created_at:
+              type: string
+              format: date-time
+              example: "2024-01-15T10:30:00Z"
+            updated_at:
+              type: string
+              format: date-time
+              example: "2024-01-15T10:30:00Z"
+
+    DashboardResponse:
+      type: object
+      required:
+        - ok
+        - data
+      properties:
+        ok:
+          type: boolean
+          example: true
+        data:
+          type: object
+          required:
+            - overview
+            - metrics
+            - recent_activity
+          properties:
+            overview:
+              type: object
+              properties:
+                total_signals:
+                  type: integer
+                  example: 1250
+                total_proposals:
+                  type: integer
+                  example: 45
+                total_outcomes:
+                  type: integer
+                  example: 38
+                success_rate:
+                  type: number
+                  example: 0.75
+            metrics:
+              type: object
+              properties:
+                system_health:
+                  type: string
+                  example: "healthy"
+                avg_processing_time:
+                  type: number
+                  example: 2.5
+                error_rate:
+                  type: number
+                  example: 0.02
+            recent_activity:
+              type: array
+              items:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    example: "signal"
+                  id:
+                    type: string
+                    example: "signal_123"
+                  timestamp:
+                    type: string
+                    format: date-time
+                    example: "2024-01-15T10:30:00Z"
+                  description:
+                    type: string
+                    example: "New signal from Twitter"
+
+    SignalsResponse:
+      type: object
+      required:
+        - ok
+        - data
+      properties:
+        ok:
+          type: boolean
+          example: true
+        data:
+          type: object
+          required:
+            - signals
+            - total
+            - page
+            - limit
+          properties:
+            signals:
+              type: array
+              items:
+                $ref: '#/components/schemas/Signal'
+            total:
+              type: integer
+              example: 1250
+            page:
+              type: integer
+              example: 1
+            limit:
+              type: integer
+              example: 50
+
+    ProposalsResponse:
+      type: object
+      required:
+        - ok
+        - data
+      properties:
+        ok:
+          type: boolean
+          example: true
+        data:
+          type: object
+          required:
+            - proposals
+            - total
+            - page
+            - limit
+          properties:
+            proposals:
+              type: array
+              items:
+                $ref: '#/components/schemas/Proposal'
+            total:
+              type: integer
+              example: 45
+            page:
+              type: integer
+              example: 1
+            limit:
+              type: integer
+              example: 50
+
+    OutcomesResponse:
+      type: object
+      required:
+        - ok
+        - data
+      properties:
+        ok:
+          type: boolean
+          example: true
+        data:
+          type: object
+          required:
+            - outcomes
+            - total
+            - page
+            - limit
+          properties:
+            outcomes:
+              type: array
+              items:
+                $ref: '#/components/schemas/Outcome'
+            total:
+              type: integer
+              example: 38
+            page:
+              type: integer
+              example: 1
+            limit:
+              type: integer
+              example: 50
+
+    SystemMetricsResponse:
+      type: object
+      required:
+        - ok
+        - data
+      properties:
+        ok:
+          type: boolean
+          example: true
+        data:
+          type: object
+          required:
+            - cpu_usage
+            - memory_usage
+            - disk_usage
+            - network_io
+            - response_times
+            - error_rates
+          properties:
+            cpu_usage:
+              type: number
+              example: 0.65
+            memory_usage:
+              type: number
+              example: 0.72
+            disk_usage:
+              type: number
+              example: 0.45
+            network_io:
+              type: object
+              properties:
+                bytes_in:
+                  type: number
+                  example: 1024000
+                bytes_out:
+                  type: number
+                  example: 512000
+            response_times:
+              type: object
+              properties:
+                avg:
+                  type: number
+                  example: 250
+                p95:
+                  type: number
+                  example: 500
+                p99:
+                  type: number
+                  example: 1000
+            error_rates:
+              type: object
+              properties:
+                total:
+                  type: number
+                  example: 0.02
+                by_endpoint:
+                  type: object
+                  additionalProperties:
+                    type: number
+
+    BusinessMetricsResponse:
+      type: object
+      required:
+        - ok
+        - data
+      properties:
+        ok:
+          type: boolean
+          example: true
+        data:
+          type: object
+          required:
+            - signals_processed
+            - proposals_generated
+            - decisions_made
+            - outcomes_evaluated
+            - success_rate
+            - avg_return
+            - sharpe_ratio
+          properties:
+            signals_processed:
+              type: integer
+              example: 1250
+            proposals_generated:
+              type: integer
+              example: 45
+            decisions_made:
+              type: integer
+              example: 42
+            outcomes_evaluated:
+              type: integer
+              example: 38
+            success_rate:
+              type: number
+              example: 0.75
+            avg_return:
+              type: number
+              example: 0.08
+            sharpe_ratio:
+              type: number
+              example: 1.2
+
+    ErrorResponse:
+      type: object
+      required:
+        - ok
+        - error
+        - details
+      properties:
+        ok:
+          type: boolean
+          example: false
+        error:
+          type: string
+          example: "ValidationError"
+        details:
+          type: string
+          example: "Invalid request data provided"
+        timestamp:
+          type: string
+          format: date-time
+          example: "2024-01-15T10:30:00Z"
+        request_id:
+          type: string
+          example: "req_123"
+
+tags:
+  - name: System
+    description: System health and status endpoints
+  - name: Ingestion
+    description: Data ingestion and signal collection
+  - name: Scoring
+    description: Signal scoring and fusion
+  - name: Orchestrator
+    description: Investment proposal generation and risk management
+  - name: Decision
+    description: Investment decision making and evaluation
+  - name: Dashboard
+    description: Dashboard and monitoring endpoints
+  - name: Metrics
+    description: System and business metrics

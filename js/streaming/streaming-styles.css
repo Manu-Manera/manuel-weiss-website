@@ -1,0 +1,546 @@
+/* AI Investment System Streaming Styles */
+
+/* Streaming Notifications */
+.streaming-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 350px;
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    z-index: 10000;
+    animation: slideInRight 0.3s ease;
+    font-family: var(--font-family);
+}
+
+.streaming-notification.info {
+    border-left: 4px solid var(--info-color);
+}
+
+.streaming-notification.success {
+    border-left: 4px solid var(--success-color);
+}
+
+.streaming-notification.warning {
+    border-left: 4px solid var(--warning-color);
+}
+
+.streaming-notification.error {
+    border-left: 4px solid var(--danger-color);
+}
+
+.notification-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-bottom: 1px solid var(--border-light);
+    background-color: var(--bg-secondary);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.notification-header h4 {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.notification-close {
+    background: none;
+    border: none;
+    font-size: var(--font-size-lg);
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: var(--spacing-xs);
+    line-height: 1;
+    border-radius: var(--radius-sm);
+    transition: all 0.2s ease;
+}
+
+.notification-close:hover {
+    color: var(--text-primary);
+    background-color: var(--bg-tertiary);
+}
+
+.notification-body {
+    padding: var(--spacing-md) var(--spacing-lg);
+}
+
+.notification-body p {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Streaming Status Indicator */
+.streaming-status {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    font-size: var(--font-size-xs);
+    font-weight: 500;
+    z-index: 1000;
+}
+
+.streaming-status.connected {
+    color: var(--success-color);
+    border-color: var(--success-color);
+}
+
+.streaming-status.disconnected {
+    color: var(--danger-color);
+    border-color: var(--danger-color);
+}
+
+.streaming-status.connecting {
+    color: var(--warning-color);
+    border-color: var(--warning-color);
+}
+
+.streaming-status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: currentColor;
+    animation: pulse 2s infinite;
+}
+
+.streaming-status.connected .streaming-status-dot {
+    background-color: var(--success-color);
+}
+
+.streaming-status.disconnected .streaming-status-dot {
+    background-color: var(--danger-color);
+}
+
+.streaming-status.connecting .streaming-status-dot {
+    background-color: var(--warning-color);
+}
+
+/* Real-time Data Indicators */
+.realtime-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background-color: var(--success-color);
+    color: white;
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-xs);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+
+.realtime-indicator::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: white;
+    animation: pulse 1.5s infinite;
+}
+
+.realtime-indicator.offline {
+    background-color: var(--text-muted);
+}
+
+.realtime-indicator.offline::before {
+    animation: none;
+    background-color: var(--bg-primary);
+}
+
+/* Live Data Updates */
+.live-update {
+    animation: highlight 0.5s ease;
+}
+
+.live-update-signal {
+    border-left: 3px solid var(--info-color);
+    background-color: rgba(6, 182, 212, 0.05);
+}
+
+.live-update-proposal {
+    border-left: 3px solid var(--primary-color);
+    background-color: rgba(59, 130, 246, 0.05);
+}
+
+.live-update-decision {
+    border-left: 3px solid var(--warning-color);
+    background-color: rgba(245, 158, 11, 0.05);
+}
+
+.live-update-outcome {
+    border-left: 3px solid var(--success-color);
+    background-color: rgba(16, 185, 129, 0.05);
+}
+
+.live-update-risk {
+    border-left: 3px solid var(--danger-color);
+    background-color: rgba(239, 68, 68, 0.05);
+}
+
+.live-update-system {
+    border-left: 3px solid var(--text-secondary);
+    background-color: rgba(100, 116, 139, 0.05);
+}
+
+/* Streaming Controls */
+.streaming-controls {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    z-index: 1000;
+}
+
+.streaming-control {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    font-size: var(--font-size-xs);
+    font-weight: 500;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.streaming-control:hover {
+    background-color: var(--bg-secondary);
+    border-color: var(--primary-color);
+}
+
+.streaming-control.active {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.streaming-control i {
+    font-size: var(--font-size-sm);
+}
+
+/* Event Timeline */
+.event-timeline {
+    position: fixed;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+    width: 300px;
+    max-height: 400px;
+    overflow-y: auto;
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    z-index: 1000;
+}
+
+.event-timeline-header {
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-bottom: 1px solid var(--border-color);
+    background-color: var(--bg-secondary);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.event-timeline-header h3 {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.event-timeline-list {
+    padding: var(--spacing-md);
+}
+
+.event-timeline-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--spacing-sm);
+    transition: all 0.2s ease;
+}
+
+.event-timeline-item:hover {
+    background-color: var(--bg-secondary);
+}
+
+.event-timeline-item.signal {
+    border-left: 3px solid var(--info-color);
+}
+
+.event-timeline-item.proposal {
+    border-left: 3px solid var(--primary-color);
+}
+
+.event-timeline-item.decision {
+    border-left: 3px solid var(--warning-color);
+}
+
+.event-timeline-item.outcome {
+    border-left: 3px solid var(--success-color);
+}
+
+.event-timeline-item.risk {
+    border-left: 3px solid var(--danger-color);
+}
+
+.event-timeline-item.system {
+    border-left: 3px solid var(--text-secondary);
+}
+
+.event-timeline-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: var(--font-size-sm);
+    flex-shrink: 0;
+}
+
+.event-timeline-item.signal .event-timeline-icon {
+    background-color: var(--info-color);
+}
+
+.event-timeline-item.proposal .event-timeline-icon {
+    background-color: var(--primary-color);
+}
+
+.event-timeline-item.decision .event-timeline-icon {
+    background-color: var(--warning-color);
+}
+
+.event-timeline-item.outcome .event-timeline-icon {
+    background-color: var(--success-color);
+}
+
+.event-timeline-item.risk .event-timeline-icon {
+    background-color: var(--danger-color);
+}
+
+.event-timeline-item.system .event-timeline-icon {
+    background-color: var(--text-secondary);
+}
+
+.event-timeline-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.event-timeline-title {
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.event-timeline-description {
+    font-size: var(--font-size-xs);
+    color: var(--text-secondary);
+    line-height: 1.4;
+    margin-bottom: var(--spacing-xs);
+}
+
+.event-timeline-time {
+    font-size: var(--font-size-xs);
+    color: var(--text-muted);
+}
+
+/* Connection Status */
+.connection-status {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    font-size: var(--font-size-xs);
+    font-weight: 500;
+    z-index: 1000;
+}
+
+.connection-status.connected {
+    color: var(--success-color);
+    border-color: var(--success-color);
+}
+
+.connection-status.disconnected {
+    color: var(--danger-color);
+    border-color: var(--danger-color);
+}
+
+.connection-status.connecting {
+    color: var(--warning-color);
+    border-color: var(--warning-color);
+}
+
+.connection-status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: currentColor;
+    animation: pulse 2s infinite;
+}
+
+.connection-status.connected .connection-status-dot {
+    background-color: var(--success-color);
+}
+
+.connection-status.disconnected .connection-status-dot {
+    background-color: var(--danger-color);
+}
+
+.connection-status.connecting .connection-status-dot {
+    background-color: var(--warning-color);
+}
+
+/* Animations */
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+@keyframes highlight {
+    0% {
+        background-color: rgba(59, 130, 246, 0.1);
+    }
+    100% {
+        background-color: transparent;
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .streaming-notification {
+        width: calc(100% - 40px);
+        right: 20px;
+        left: 20px;
+    }
+    
+    .event-timeline {
+        position: relative;
+        top: auto;
+        right: auto;
+        transform: none;
+        width: 100%;
+        max-height: 300px;
+        margin: var(--spacing-md);
+    }
+    
+    .streaming-controls {
+        position: relative;
+        bottom: auto;
+        right: auto;
+        flex-direction: row;
+        justify-content: center;
+        margin: var(--spacing-md);
+    }
+    
+    .streaming-status {
+        position: relative;
+        bottom: auto;
+        left: auto;
+        margin: var(--spacing-md);
+    }
+    
+    .connection-status {
+        position: relative;
+        top: auto;
+        left: auto;
+        margin: var(--spacing-md);
+    }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    .streaming-notification {
+        background-color: var(--bg-dark);
+        border-color: var(--border-color);
+        color: var(--text-primary);
+    }
+    
+    .streaming-status,
+    .connection-status {
+        background-color: var(--bg-dark);
+        border-color: var(--border-color);
+        color: var(--text-primary);
+    }
+    
+    .event-timeline {
+        background-color: var(--bg-dark);
+        border-color: var(--border-color);
+    }
+    
+    .streaming-control {
+        background-color: var(--bg-dark);
+        border-color: var(--border-color);
+        color: var(--text-primary);
+    }
+}
+
+/* Print Styles */
+@media print {
+    .streaming-notification,
+    .streaming-status,
+    .connection-status,
+    .streaming-controls,
+    .event-timeline {
+        display: none !important;
+    }
+}
