@@ -15,9 +15,19 @@ class AdminSidebar extends HTMLElement {
      * Component initialisieren
      */
     connectedCallback() {
+        console.log('AdminSidebar connectedCallback');
         this.render();
         this.attachEventListeners();
         this.initializeState();
+        
+        // Debug: AdminApp Status prüfen
+        setTimeout(() => {
+            console.log('AdminApp status:', {
+                AdminApp: !!window.AdminApp,
+                navigation: !!(window.AdminApp && window.AdminApp.navigation),
+                stateManager: !!(window.AdminApp && window.AdminApp.stateManager)
+            });
+        }, 1000);
     }
     
     /**
@@ -369,7 +379,22 @@ class AdminSidebar extends HTMLElement {
         navItems.forEach(item => {
             item.addEventListener('click', (e) => {
                 e.preventDefault();
+                e.stopPropagation();
                 const sectionId = item.dataset.section;
+                console.log('Nav item clicked:', sectionId);
+                this.navigateToSection(sectionId);
+            });
+        });
+        
+        // Auch Links in den Nav Items
+        const navLinks = this.querySelectorAll('.nav-item a[href^="#"]');
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const href = link.getAttribute('href');
+                const sectionId = href.substring(1); // Remove #
+                console.log('Nav link clicked:', sectionId);
                 this.navigateToSection(sectionId);
             });
         });
@@ -425,14 +450,68 @@ class AdminSidebar extends HTMLElement {
     navigateToSection(sectionId) {
         console.log('Sidebar navigation to:', sectionId);
         
-        if (this.navigation) {
-            this.navigation.navigateToSection(sectionId);
-        } else if (window.AdminApp && window.AdminApp.navigation) {
+        // Direkte Navigation über AdminApp
+        if (window.AdminApp && window.AdminApp.navigation) {
+            console.log('Using AdminApp navigation');
             window.AdminApp.navigation.navigateToSection(sectionId);
+        } else if (this.navigation) {
+            console.log('Using local navigation');
+            this.navigation.navigateToSection(sectionId);
         } else {
-            // Fallback
+            // Fallback: Direkte Hash-Änderung
             console.log('Using fallback navigation');
-            window.location.hash = sectionId;
+            window.location.hash = '#' + sectionId;
+            
+            // Manuell Section laden falls AdminApp nicht verfügbar
+            setTimeout(() => {
+                this.loadSectionManually(sectionId);
+            }, 100);
+        }
+    }
+    
+    /**
+     * Section manuell laden (Fallback)
+     */
+    async loadSectionManually(sectionId) {
+        try {
+            console.log('Loading section manually:', sectionId);
+            
+            // Template laden
+            const response = await fetch(`admin/sections/${sectionId}.html`);
+            if (!response.ok) {
+                throw new Error(`Template not found: ${sectionId}`);
+            }
+            
+            const template = await response.text();
+            
+            // Content in DOM einfügen
+            const container = document.getElementById('admin-content');
+            if (container) {
+                container.innerHTML = template;
+                container.setAttribute('data-section', sectionId);
+                console.log('Section loaded manually:', sectionId);
+                
+                // Section-spezifische Initialisierung
+                this.initializeSectionManually(sectionId);
+            }
+        } catch (error) {
+            console.error('Manual section loading failed:', error);
+        }
+    }
+    
+    /**
+     * Section manuell initialisieren
+     */
+    initializeSectionManually(sectionId) {
+        if (sectionId === 'hero-about') {
+            // Hero-About Section initialisieren
+            setTimeout(() => {
+                if (window.HeroAboutSection && !window.heroAboutSection) {
+                    console.log('Initializing HeroAboutSection manually');
+                    window.heroAboutSection = new window.HeroAboutSection();
+                    window.heroAboutSection.init();
+                }
+            }, 200);
         }
     }
     

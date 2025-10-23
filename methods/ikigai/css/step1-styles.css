@@ -232,6 +232,12 @@
     border-top: 2px solid #f8f9fa;
 }
 
+.nav-left {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
 .btn {
     padding: 1rem 2rem;
     border: none;
