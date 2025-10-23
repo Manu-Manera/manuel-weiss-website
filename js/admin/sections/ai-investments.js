@@ -185,65 +185,39 @@ class AIInvestmentSection {
     }
     
     /**
-     * Daten laden
+     * Daten laden - NUR ECHTE DATEN
      */
     async loadData() {
         try {
-            // Mock Data für Demo
+            // KEINE MOCK-DATEN - nur echte Daten aus APIs
             this.data = {
-                signals: [
-                    {
-                        id: 'signal-1',
-                        source: 'twitter',
-                        content: 'Tesla stock showing strong momentum',
-                        score: 0.85,
-                        confidence: 0.92,
-                        timestamp: new Date().toISOString(),
-                        metadata: { author: '@trader123', followers: 10000 }
-                    },
-                    {
-                        id: 'signal-2',
-                        source: 'reddit',
-                        content: 'Apple earnings beat expectations',
-                        score: 0.78,
-                        confidence: 0.88,
-                        timestamp: new Date().toISOString(),
-                        metadata: { subreddit: 'investing', upvotes: 150 }
-                    }
-                ],
-                proposals: [
-                    {
-                        id: 'proposal-1',
-                        signalId: 'signal-1',
-                        asset: 'TSLA',
-                        action: 'buy',
-                        amount: 10,
-                        price: 250.00,
-                        riskScore: 0.3,
-                        timestamp: new Date().toISOString(),
-                        status: 'pending'
-                    }
-                ],
-                decisions: [
-                    {
-                        id: 'decision-1',
-                        proposalId: 'proposal-1',
-                        action: 'execute',
-                        timestamp: new Date().toISOString(),
-                        result: 'success'
-                    }
-                ],
+                signals: [],
+                proposals: [],
+                decisions: [],
                 analytics: {
-                    totalReturns: 12.5,
-                    winRate: 0.75,
-                    sharpeRatio: 1.8
+                    totalReturns: 0,
+                    winRate: 0,
+                    sharpeRatio: 0
                 }
             };
             
-            console.log('Data loaded successfully');
+            // Echte Daten aus APIs laden
+            await this.loadRealSignals();
+            await this.loadRealProposals();
+            await this.loadRealDecisions();
+            await this.loadRealAnalytics();
+            
+            console.log('Real data loaded successfully');
             
         } catch (error) {
-            console.error('Failed to load data:', error);
+            console.error('Failed to load real data:', error);
+            // Bei Fehlern: leere Daten, KEINE Mock-Daten
+            this.data = {
+                signals: [],
+                proposals: [],
+                decisions: [],
+                analytics: { totalReturns: 0, winRate: 0, sharpeRatio: 0 }
+            };
         }
     }
     
@@ -308,7 +282,7 @@ class AIInvestmentSection {
                     <span>Risk: ${(proposal.riskScore * 100).toFixed(1)}%</span>
                 </div>
                 <div class="proposal-status">${proposal.status}</div>
-            </div>
+                    </div>
         `).join('');
     }
     
@@ -588,47 +562,28 @@ class AIInvestmentSection {
     }
     
     /**
-     * Signale sammeln
+     * Signale sammeln - NUR ECHTE DATEN
      */
     async collectSignals() {
-        this.updateAnalysisProgress('Signale werden gesammelt...', 25);
+        this.updateAnalysisProgress('Echte Signale werden gesammelt...', 25);
         
-        // Simuliere Signale sammeln
-        await this.delay(2000);
-        
-        // Mock Signale hinzufügen
-        const newSignals = [
-            {
-                id: `signal-${Date.now()}-1`,
-                source: 'twitter',
-                content: 'Tesla announces new battery technology breakthrough',
-                score: 0.92,
-                confidence: 0.95,
-                timestamp: new Date().toISOString(),
-                metadata: { author: '@tesla_news', followers: 50000 }
-            },
-            {
-                id: `signal-${Date.now()}-2`,
-                source: 'reddit',
-                content: 'Apple stock showing strong momentum after earnings',
-                score: 0.88,
-                confidence: 0.90,
-                timestamp: new Date().toISOString(),
-                metadata: { subreddit: 'investing', upvotes: 250 }
-            },
-            {
-                id: `signal-${Date.now()}-3`,
-                source: 'news',
-                content: 'Federal Reserve hints at interest rate changes',
-                score: 0.75,
-                confidence: 0.85,
-                timestamp: new Date().toISOString(),
-                metadata: { source: 'Reuters', category: 'economics' }
-            }
-        ];
-        
-        this.data.signals.push(...newSignals);
-        console.log('Signals collected:', newSignals.length);
+        try {
+            // ECHTE APIs aufrufen - KEINE Mock-Daten
+            const twitterSignals = await this.fetchTwitterSignals();
+            const redditSignals = await this.fetchRedditSignals();
+            const newsSignals = await this.fetchNewsSignals();
+            
+            // Echte Signale hinzufügen
+            const realSignals = [...twitterSignals, ...redditSignals, ...newsSignals];
+            this.data.signals.push(...realSignals);
+            
+            console.log('Real signals collected:', realSignals.length);
+            
+        } catch (error) {
+            console.error('Failed to collect real signals:', error);
+            // Bei Fehlern: KEINE Mock-Daten, nur leere Liste
+            this.data.signals = [];
+        }
     }
     
     /**
@@ -644,44 +599,23 @@ class AIInvestmentSection {
     }
     
     /**
-     * Vorschläge generieren
+     * Vorschläge generieren - NUR ECHTE ANALYSE
      */
     async generateProposals() {
-        this.updateAnalysisProgress('Investment-Vorschläge werden generiert...', 75);
+        this.updateAnalysisProgress('Echte Investment-Vorschläge werden generiert...', 75);
         
-        // Simuliere Vorschlag-Generierung
-        await this.delay(2000);
-        
-        // Mock Vorschläge generieren
-        const newProposals = [
-            {
-                id: `proposal-${Date.now()}-1`,
-                signalId: this.data.signals[this.data.signals.length - 3].id,
-                asset: 'TSLA',
-                action: 'buy',
-                amount: 15,
-                price: 280.00,
-                riskScore: 0.25,
-                timestamp: new Date().toISOString(),
-                status: 'pending',
-                reasoning: 'Strong positive sentiment from Tesla battery breakthrough'
-            },
-            {
-                id: `proposal-${Date.now()}-2`,
-                signalId: this.data.signals[this.data.signals.length - 2].id,
-                asset: 'AAPL',
-                action: 'buy',
-                amount: 20,
-                price: 190.00,
-                riskScore: 0.30,
-                timestamp: new Date().toISOString(),
-                status: 'pending',
-                reasoning: 'Apple showing strong momentum after earnings beat'
-            }
-        ];
-        
-        this.data.proposals.push(...newProposals);
-        console.log('Proposals generated:', newProposals.length);
+        try {
+            // ECHTE AI-Analyse der Signale
+            const realProposals = await this.analyzeSignalsForProposals();
+            this.data.proposals.push(...realProposals);
+            
+            console.log('Real proposals generated:', realProposals.length);
+            
+        } catch (error) {
+            console.error('Failed to generate real proposals:', error);
+            // Bei Fehlern: KEINE Mock-Daten, nur leere Liste
+            this.data.proposals = [];
+        }
     }
     
     /**
@@ -775,10 +709,186 @@ class AIInvestmentSection {
     }
     
     /**
-     * Delay-Funktion für Simulation
+     * ECHTE API-Funktionen - KEINE Mock-Daten
      */
-    delay(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
+    
+    /**
+     * Twitter Signale von echten APIs holen
+     */
+    async fetchTwitterSignals() {
+        try {
+            const response = await fetch('/api/twitter/signals', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${process.env.TWITTER_BEARER_TOKEN}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Twitter API error: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            return data.signals || [];
+            
+        } catch (error) {
+            console.error('Twitter API failed:', error);
+            return []; // Leere Liste bei Fehlern, KEINE Mock-Daten
+        }
+    }
+    
+    /**
+     * Reddit Signale von echten APIs holen
+     */
+    async fetchRedditSignals() {
+        try {
+            const response = await fetch('/api/reddit/signals', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${process.env.REDDIT_ACCESS_TOKEN}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Reddit API error: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            return data.signals || [];
+            
+        } catch (error) {
+            console.error('Reddit API failed:', error);
+            return []; // Leere Liste bei Fehlern, KEINE Mock-Daten
+        }
+    }
+    
+    /**
+     * News Signale von echten APIs holen
+     */
+    async fetchNewsSignals() {
+        try {
+            const response = await fetch('/api/news/signals', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${process.env.NEWS_API_KEY}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error(`News API error: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            return data.signals || [];
+            
+        } catch (error) {
+            console.error('News API failed:', error);
+            return []; // Leere Liste bei Fehlern, KEINE Mock-Daten
+        }
+    }
+    
+    /**
+     * Echte AI-Analyse für Vorschläge
+     */
+    async analyzeSignalsForProposals() {
+        try {
+            const response = await fetch('/api/ai/analyze-signals', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    signals: this.data.signals,
+                    analysisType: 'investment_proposals'
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error(`AI Analysis API error: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            return data.proposals || [];
+            
+        } catch (error) {
+            console.error('AI Analysis API failed:', error);
+            return []; // Leere Liste bei Fehlern, KEINE Mock-Daten
+        }
+    }
+    
+    /**
+     * Echte Daten aus APIs laden
+     */
+    async loadRealSignals() {
+        try {
+            const response = await fetch('/api/signals', {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                this.data.signals = data.signals || [];
+            }
+        } catch (error) {
+            console.error('Failed to load real signals:', error);
+            this.data.signals = [];
+        }
+    }
+    
+    async loadRealProposals() {
+        try {
+            const response = await fetch('/api/proposals', {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                this.data.proposals = data.proposals || [];
+            }
+        } catch (error) {
+            console.error('Failed to load real proposals:', error);
+            this.data.proposals = [];
+        }
+    }
+    
+    async loadRealDecisions() {
+        try {
+            const response = await fetch('/api/decisions', {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                this.data.decisions = data.decisions || [];
+            }
+        } catch (error) {
+            console.error('Failed to load real decisions:', error);
+            this.data.decisions = [];
+        }
+    }
+    
+    async loadRealAnalytics() {
+        try {
+            const response = await fetch('/api/analytics', {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                this.data.analytics = data.analytics || { totalReturns: 0, winRate: 0, sharpeRatio: 0 };
+            }
+        } catch (error) {
+            console.error('Failed to load real analytics:', error);
+            this.data.analytics = { totalReturns: 0, winRate: 0, sharpeRatio: 0 };
+        }
     }
     
     /**
