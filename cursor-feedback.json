@@ -1,0 +1,211 @@
+{
+  "timestamp": "2025-10-23T12:12:38.636Z",
+  "tests": [
+    {
+      "name": "index.html existiert",
+      "status": "PASS",
+      "critical": true,
+      "timestamp": "2025-10-23T12:12:38.639Z"
+    },
+    {
+      "name": "styles.css existiert",
+      "status": "PASS",
+      "critical": true,
+      "timestamp": "2025-10-23T12:12:38.639Z"
+    },
+    {
+      "name": "script.js existiert",
+      "status": "PASS",
+      "critical": true,
+      "timestamp": "2025-10-23T12:12:38.639Z"
+    },
+    {
+      "name": "Admin-Sync-Dateien existieren",
+      "status": "PASS",
+      "critical": true,
+      "timestamp": "2025-10-23T12:12:38.639Z"
+    },
+    {
+      "name": "Admin: admin.html existiert",
+      "status": "PASS",
+      "critical": true,
+      "timestamp": "2025-10-23T12:12:38.639Z"
+    },
+    {
+      "name": "Admin: admin-styles.css existiert",
+      "status": "PASS",
+      "critical": true,
+      "timestamp": "2025-10-23T12:12:38.639Z"
+    },
+    {
+      "name": "Admin: admin-script.js existiert",
+      "status": "PASS",
+      "critical": true,
+      "timestamp": "2025-10-23T12:12:38.639Z"
+    },
+    {
+      "name": "KI-Workflow: ki-bewerbungsworkflow.html",
+      "status": "FAIL",
+      "critical": true,
+      "timestamp": "2025-10-23T12:12:38.639Z"
+    },
+    {
+      "name": "KI-Workflow: bewerbungsart-wahl.html",
+      "status": "FAIL",
+      "critical": true,
+      "timestamp": "2025-10-23T12:12:38.639Z"
+    },
+    {
+      "name": "KI-Workflow: ki-stellenanalyse.html",
+      "status": "PASS",
+      "critical": true,
+      "timestamp": "2025-10-23T12:12:38.639Z"
+    },
+    {
+      "name": "KI-Workflow: matching-skillgap.html",
+      "status": "FAIL",
+      "critical": true,
+      "timestamp": "2025-10-23T12:12:38.639Z"
+    },
+    {
+      "name": "KI-Workflow: anschreiben-generieren.html",
+      "status": "FAIL",
+      "critical": true,
+      "timestamp": "2025-10-23T12:12:38.639Z"
+    },
+    {
+      "name": "KI-Workflow: dokumente-optimieren.html",
+      "status": "FAIL",
+      "critical": true,
+      "timestamp": "2025-10-23T12:12:38.639Z"
+    },
+    {
+      "name": "KI-Workflow: design-layout.html",
+      "status": "FAIL",
+      "critical": true,
+      "timestamp": "2025-10-23T12:12:38.639Z"
+    },
+    {
+      "name": "KI-Workflow: export-versand.html",
+      "status": "FAIL",
+      "critical": true,
+      "timestamp": "2025-10-23T12:12:38.639Z"
+    },
+    {
+      "name": "Integrität: index.html",
+      "status": "PASS",
+      "details": "Größe: 67855 bytes",
+      "timestamp": "2025-10-23T12:12:38.639Z"
+    },
+    {
+      "name": "Integrität: admin.html",
+      "status": "PASS",
+      "details": "Größe: 21057 bytes",
+      "timestamp": "2025-10-23T12:12:38.639Z"
+    },
+    {
+      "name": "Integrität: styles.css",
+      "status": "PASS",
+      "details": "Größe: 43840 bytes",
+      "timestamp": "2025-10-23T12:12:38.639Z"
+    },
+    {
+      "name": "Integrität: admin-styles.css",
+      "status": "PASS",
+      "details": "Größe: 102613 bytes",
+      "timestamp": "2025-10-23T12:12:38.639Z"
+    },
+    {
+      "name": "Integrität: script.js",
+      "status": "PASS",
+      "details": "Größe: 21837 bytes",
+      "timestamp": "2025-10-23T12:12:38.639Z"
+    },
+    {
+      "name": "Integrität: admin-script.js",
+      "status": "PASS",
+      "details": "Größe: 141525 bytes",
+      "timestamp": "2025-10-23T12:12:38.639Z"
+    },
+    {
+      "name": "Git Status",
+      "status": "WARNING",
+      "details": "Uncommitted changes vorhanden",
+      "timestamp": "2025-10-23T12:12:38.666Z"
+    },
+    {
+      "name": "Netlify Config",
+      "status": "PASS",
+      "timestamp": "2025-10-23T12:12:38.666Z"
+    },
+    {
+      "name": "GitHub Actions",
+      "status": "PASS",
+      "timestamp": "2025-10-23T12:12:38.666Z"
+    }
+  ],
+  "errors": [
+    {
+      "type": "KI_WORKFLOW_FILE_MISSING",
+      "file": "ki-bewerbungsworkflow.html",
+      "message": "KI-Workflow Datei fehlt: ki-bewerbungsworkflow.html",
+      "timestamp": "2025-10-23T12:12:38.639Z"
+    },
+    {
+      "type": "KI_WORKFLOW_FILE_MISSING",
+      "file": "bewerbungsart-wahl.html",
+      "message": "KI-Workflow Datei fehlt: bewerbungsart-wahl.html",
+      "timestamp": "2025-10-23T12:12:38.639Z"
+    },
+    {
+      "type": "KI_WORKFLOW_FILE_MISSING",
+      "file": "matching-skillgap.html",
+      "message": "KI-Workflow Datei fehlt: matching-skillgap.html",
+      "timestamp": "2025-10-23T12:12:38.639Z"
+    },
+    {
+      "type": "KI_WORKFLOW_FILE_MISSING",
+      "file": "anschreiben-generieren.html",
+      "message": "KI-Workflow Datei fehlt: anschreiben-generieren.html",
+      "timestamp": "2025-10-23T12:12:38.639Z"
+    },
+    {
+      "type": "KI_WORKFLOW_FILE_MISSING",
+      "file": "dokumente-optimieren.html",
+      "message": "KI-Workflow Datei fehlt: dokumente-optimieren.html",
+      "timestamp": "2025-10-23T12:12:38.639Z"
+    },
+    {
+      "type": "KI_WORKFLOW_FILE_MISSING",
+      "file": "design-layout.html",
+      "message": "KI-Workflow Datei fehlt: design-layout.html",
+      "timestamp": "2025-10-23T12:12:38.639Z"
+    },
+    {
+      "type": "KI_WORKFLOW_FILE_MISSING",
+      "file": "export-versand.html",
+      "message": "KI-Workflow Datei fehlt: export-versand.html",
+      "timestamp": "2025-10-23T12:12:38.639Z"
+    },
+    {
+      "type": "FILE_MISSING",
+      "file": "bewerbungsmanager.html",
+      "message": "Kritische Datei fehlt: bewerbungsmanager.html",
+      "timestamp": "2025-10-23T12:12:38.639Z"
+    },
+    {
+      "type": "FILE_MISSING",
+      "file": "ki-bewerbungsworkflow.html",
+      "message": "Kritische Datei fehlt: ki-bewerbungsworkflow.html",
+      "timestamp": "2025-10-23T12:12:38.639Z"
+    }
+  ],
+  "warnings": [
+    {
+      "type": "UNCOMMITTED_CHANGES",
+      "message": "Es gibt uncommitted Änderungen",
+      "timestamp": "2025-10-23T12:12:38.666Z"
+    }
+  ],
+  "suggestions": []
+}
