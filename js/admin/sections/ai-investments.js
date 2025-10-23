@@ -1,442 +1,240 @@
 /**
- * AI Investment System Section Module
- * Vollständige Integration des AI Investment Systems in das Admin Panel
+ * AI Investment System Section
+ * Verwaltung des AI Investment Systems
  */
 class AIInvestmentSection {
     constructor() {
-        this.stateManager = null;
-        this.initialized = false;
-        this.realTimeConnection = null;
-        this.dashboardData = {
+        this.data = {
             signals: [],
             proposals: [],
-            outcomes: [],
-            metrics: {}
+            decisions: [],
+            analytics: {}
         };
+        this.charts = {};
+        this.initialized = false;
     }
     
     /**
      * Section initialisieren
      */
-    init() {
+    async init() {
         if (this.initialized) return;
         
-        // Dependencies prüfen
-        if (window.AdminApp && window.AdminApp.stateManager) {
-            this.stateManager = window.AdminApp.stateManager;
-        }
+        console.log('Initializing AI Investment Section...');
         
-        // AI Investment Dashboard laden
-        this.loadAIDashboard();
-        
-        // Real-time Connection aufbauen
-        this.establishRealTimeConnection();
-        
-        // Event Listeners hinzufügen
-        this.attachEventListeners();
-        
-        this.initialized = true;
-        console.log('AI Investment Section initialized');
-    }
-    
-    /**
-     * AI Investment Dashboard laden
-     */
-    async loadAIDashboard() {
         try {
-            // Dashboard HTML generieren
-            const dashboardHTML = this.generateDashboardHTML();
+            // Event Listeners setzen
+            this.setupEventListeners();
             
-            // Content Container finden und befüllen
-            const contentContainer = document.getElementById('admin-content');
-            if (contentContainer) {
-                contentContainer.innerHTML = dashboardHTML;
-            }
-            
-            // Dashboard Daten laden
-            await this.loadDashboardData();
+            // Daten laden
+            await this.loadData();
             
             // Charts initialisieren
             this.initializeCharts();
             
+            // UI aktualisieren
+            this.updateUI();
+            
+            this.initialized = true;
+            console.log('AI Investment Section initialized successfully');
+            
         } catch (error) {
-            console.error('Failed to load AI Investment Dashboard:', error);
-            this.showError('Fehler beim Laden des AI Investment Dashboards');
+            console.error('Failed to initialize AI Investment Section:', error);
         }
     }
     
     /**
-     * Dashboard HTML generieren
+     * Event Listeners setzen
      */
-    generateDashboardHTML() {
-        return `
-            <div class="ai-investment-dashboard">
-                <!-- Header -->
-                <div class="dashboard-header">
-                    <div class="header-content">
-                        <h1 class="dashboard-title">
-                            <i class="fas fa-robot"></i>
-                            AI Investment System
-                        </h1>
-                        <p class="dashboard-subtitle">
-                            Intelligente Investment-Entscheidungen basierend auf KI-Analyse
-                        </p>
-                    </div>
-                    <div class="header-actions">
-                        <button class="btn btn-primary" onclick="aiInvestment.refreshDashboard()">
-                            <i class="fas fa-sync-alt"></i>
-                            Aktualisieren
-                        </button>
-                        <button class="btn btn-secondary" onclick="aiInvestment.showSettings()">
-                            <i class="fas fa-cog"></i>
-                            Einstellungen
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Status Banner -->
-                <div class="status-banner" id="statusBanner">
-                    <div class="status-content">
-                        <i class="fas fa-info-circle"></i>
-                        <span>System läuft normal - Letzte Aktualisierung: <span id="lastUpdate">--</span></span>
-                    </div>
-                </div>
-                
-                <!-- Main Dashboard Grid -->
-                <div class="dashboard-grid">
-                    <!-- Live Signals -->
-                    <div class="dashboard-card signals-card">
-                        <div class="card-header">
-                            <h3><i class="fas fa-signal"></i> Live Signals</h3>
-                            <div class="card-actions">
-                                <button class="btn-icon" onclick="aiInvestment.toggleSignalsFilter()">
-                                    <i class="fas fa-filter"></i>
-                                </button>
-                                <button class="btn-icon" onclick="aiInvestment.exportSignals()">
-                                    <i class="fas fa-download"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="card-content">
-                            <div class="signals-list" id="signalsList">
-                                <div class="loading-placeholder">
-                                    <i class="fas fa-spinner fa-spin"></i>
-                                    <p>Lade Signals...</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Investment Proposals -->
-                    <div class="dashboard-card proposals-card">
-                        <div class="card-header">
-                            <h3><i class="fas fa-lightbulb"></i> Investment Proposals</h3>
-                            <div class="card-actions">
-                                <button class="btn-icon" onclick="aiInvestment.showProposalDetails()">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="card-content">
-                            <div class="proposals-list" id="proposalsList">
-                                <div class="loading-placeholder">
-                                    <i class="fas fa-spinner fa-spin"></i>
-                                    <p>Lade Proposals...</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Risk & Performance -->
-                    <div class="dashboard-card risk-card">
-                        <div class="card-header">
-                            <h3><i class="fas fa-shield-alt"></i> Risk & Performance</h3>
-                        </div>
-                        <div class="card-content">
-                            <div class="risk-metrics" id="riskMetrics">
-                                <div class="metric-item">
-                                    <div class="metric-label">VaR (95%)</div>
-                                    <div class="metric-value" id="varValue">--</div>
-                                </div>
-                                <div class="metric-item">
-                                    <div class="metric-label">Sharpe Ratio</div>
-                                    <div class="metric-value" id="sharpeValue">--</div>
-                                </div>
-                                <div class="metric-item">
-                                    <div class="metric-label">Max Drawdown</div>
-                                    <div class="metric-value" id="drawdownValue">--</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Learning & Analytics -->
-                    <div class="dashboard-card learning-card">
-                        <div class="card-header">
-                            <h3><i class="fas fa-chart-line"></i> Learning & Analytics</h3>
-                        </div>
-                        <div class="card-content">
-                            <div class="learning-metrics" id="learningMetrics">
-                                <div class="metric-item">
-                                    <div class="metric-label">Hit Rate (7d)</div>
-                                    <div class="metric-value" id="hitRate7d">--</div>
-                                </div>
-                                <div class="metric-item">
-                                    <div class="metric-label">Hit Rate (30d)</div>
-                                    <div class="metric-value" id="hitRate30d">--</div>
-                                </div>
-                                <div class="metric-item">
-                                    <div class="metric-label">Reliability</div>
-                                    <div class="metric-value" id="reliability">--</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Detailed Views -->
-                <div class="detailed-views" id="detailedViews" style="display: none;">
-                    <!-- Signal Details Modal -->
-                    <div class="modal" id="signalDetailsModal">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h3>Signal Details</h3>
-                                <button class="modal-close" onclick="aiInvestment.closeModal('signalDetailsModal')">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </div>
-                            <div class="modal-body" id="signalDetailsContent">
-                                <!-- Signal details will be loaded here -->
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Proposal Details Modal -->
-                    <div class="modal" id="proposalDetailsModal">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h3>Proposal Details</h3>
-                                <button class="modal-close" onclick="aiInvestment.closeModal('proposalDetailsModal')">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </div>
-                            <div class="modal-body" id="proposalDetailsContent">
-                                <!-- Proposal details will be loaded here -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
+    setupEventListeners() {
+        // Tab Navigation
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        tabButtons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const tabId = e.currentTarget.dataset.tab;
+                this.switchTab(tabId);
+            });
+        });
+        
+        // Refresh Button
+        const refreshBtn = document.getElementById('refreshData');
+        if (refreshBtn) {
+            refreshBtn.addEventListener('click', () => {
+                this.refreshData();
+            });
+        }
+        
+        // Export Button
+        const exportBtn = document.getElementById('exportData');
+        if (exportBtn) {
+            exportBtn.addEventListener('click', () => {
+                this.exportData();
+            });
+        }
+        
+        // Filter Event Listeners
+        this.setupFilters();
     }
     
     /**
-     * Dashboard Daten laden
+     * Filter Event Listeners setzen
      */
-    async loadDashboardData() {
-        try {
-            // Parallel alle Daten laden
-            const [signals, proposals, outcomes, metrics] = await Promise.all([
-                this.loadSignals(),
-                this.loadProposals(),
-                this.loadOutcomes(),
-                this.loadMetrics()
-            ]);
-            
-            // Dashboard aktualisieren
-            this.updateDashboard({ signals, proposals, outcomes, metrics });
-            
-            // Letzte Aktualisierung setzen
-            document.getElementById('lastUpdate').textContent = new Date().toLocaleString('de-DE');
-            
-        } catch (error) {
-            console.error('Failed to load dashboard data:', error);
-            this.showError('Fehler beim Laden der Dashboard-Daten');
+    setupFilters() {
+        // Signal Filters
+        const signalSource = document.getElementById('signalSource');
+        const signalScore = document.getElementById('signalScore');
+        
+        if (signalSource) {
+            signalSource.addEventListener('change', () => {
+                this.filterSignals();
+            });
+        }
+        
+        if (signalScore) {
+            signalScore.addEventListener('change', () => {
+                this.filterSignals();
+            });
+        }
+        
+        // Proposal Filters
+        const proposalStatus = document.getElementById('proposalStatus');
+        if (proposalStatus) {
+            proposalStatus.addEventListener('change', () => {
+                this.filterProposals();
+            });
+        }
+        
+        // Decision Filters
+        const decisionStatus = document.getElementById('decisionStatus');
+        if (decisionStatus) {
+            decisionStatus.addEventListener('change', () => {
+                this.filterDecisions();
+            });
         }
     }
     
     /**
-     * Signals laden
+     * Tab wechseln
      */
-    async loadSignals() {
+    switchTab(tabId) {
+        // Tab Buttons
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+        
+        // Tab Content
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.remove('active');
+        });
+        document.getElementById(`${tabId}-tab`).classList.add('active');
+        
+        // Charts aktualisieren wenn Analytics Tab
+        if (tabId === 'analytics') {
+            this.updateCharts();
+        }
+    }
+    
+    /**
+     * Daten laden
+     */
+    async loadData() {
         try {
-            // Mock data - in real implementation, load from API
-            const signals = [
-                {
-                    id: '1',
-                    asset: 'BTC',
-                    timestamp: new Date(),
-                    source: 'twitter',
-                    content: 'Bitcoin zeigt starke technische Signale für einen Aufwärtstrend',
-                    sentiment: 0.8,
-                    relevance: 0.9,
-                    novelty: 0.7,
-                    credibility: 0.85,
-                    entities: ['Bitcoin', 'BTC', 'Krypto'],
-                    language: 'de'
-                },
-                {
-                    id: '2',
-                    asset: 'ETH',
-                    timestamp: new Date(Date.now() - 300000),
-                    source: 'reddit',
-                    content: 'Ethereum 2.0 Upgrade bringt neue Möglichkeiten für DeFi',
-                    sentiment: 0.6,
-                    relevance: 0.8,
-                    novelty: 0.9,
-                    credibility: 0.75,
-                    entities: ['Ethereum', 'ETH', 'DeFi'],
-                    language: 'de'
+            // Mock Data für Demo
+            this.data = {
+                signals: [
+                    {
+                        id: 'signal-1',
+                        source: 'twitter',
+                        content: 'Tesla stock showing strong momentum',
+                        score: 0.85,
+                        confidence: 0.92,
+                        timestamp: new Date().toISOString(),
+                        metadata: { author: '@trader123', followers: 10000 }
+                    },
+                    {
+                        id: 'signal-2',
+                        source: 'reddit',
+                        content: 'Apple earnings beat expectations',
+                        score: 0.78,
+                        confidence: 0.88,
+                        timestamp: new Date().toISOString(),
+                        metadata: { subreddit: 'investing', upvotes: 150 }
+                    }
+                ],
+                proposals: [
+                    {
+                        id: 'proposal-1',
+                        signalId: 'signal-1',
+                        asset: 'TSLA',
+                        action: 'buy',
+                        amount: 10,
+                        price: 250.00,
+                        riskScore: 0.3,
+                        timestamp: new Date().toISOString(),
+                        status: 'pending'
+                    }
+                ],
+                decisions: [
+                    {
+                        id: 'decision-1',
+                        proposalId: 'proposal-1',
+                        action: 'execute',
+                        timestamp: new Date().toISOString(),
+                        result: 'success'
+                    }
+                ],
+                analytics: {
+                    totalReturns: 12.5,
+                    winRate: 0.75,
+                    sharpeRatio: 1.8
                 }
-            ];
-            
-            return signals;
-        } catch (error) {
-            console.error('Failed to load signals:', error);
-            return [];
-        }
-    }
-    
-    /**
-     * Proposals laden
-     */
-    async loadProposals() {
-        try {
-            // Mock data
-            const proposals = [
-                {
-                    id: '1',
-                    thesis: 'Bitcoin zeigt starke technische Signale für einen Aufwärtstrend',
-                    assets: ['BTC'],
-                    size_pct: 0.15,
-                    horizon_days: 30,
-                    entry_price: 45000,
-                    stop_loss: 40000,
-                    take_profit: 55000,
-                    status: 'proposed',
-                    created_at: new Date(),
-                    explain: 'Basierend auf technischer Analyse und Sentiment-Daten'
-                }
-            ];
-            
-            return proposals;
-        } catch (error) {
-            console.error('Failed to load proposals:', error);
-            return [];
-        }
-    }
-    
-    /**
-     * Outcomes laden
-     */
-    async loadOutcomes() {
-        try {
-            // Mock data
-            const outcomes = [
-                {
-                    id: '1',
-                    proposal_id: '1',
-                    evaluated_at: new Date(),
-                    pnl_pct: 0.12,
-                    hit: true,
-                    breaches: [],
-                    actual_duration_days: 25,
-                    final_price: 50000,
-                    max_drawdown: -0.05,
-                    sharpe_ratio: 1.8
-                }
-            ];
-            
-            return outcomes;
-        } catch (error) {
-            console.error('Failed to load outcomes:', error);
-            return [];
-        }
-    }
-    
-    /**
-     * Metrics laden
-     */
-    async loadMetrics() {
-        try {
-            // Mock data
-            const metrics = {
-                var_95: 0.08,
-                sharpe_ratio: 1.5,
-                max_drawdown: 0.12,
-                hit_rate_7d: 0.75,
-                hit_rate_30d: 0.68,
-                reliability: 0.82
             };
             
-            return metrics;
+            console.log('Data loaded successfully');
+            
         } catch (error) {
-            console.error('Failed to load metrics:', error);
-            return {};
+            console.error('Failed to load data:', error);
         }
     }
     
     /**
-     * Dashboard aktualisieren
+     * UI aktualisieren
      */
-    updateDashboard(data) {
-        this.dashboardData = data;
-        
-        // Signals aktualisieren
-        this.updateSignalsList(data.signals);
-        
-        // Proposals aktualisieren
-        this.updateProposalsList(data.proposals);
-        
-        // Metrics aktualisieren
-        this.updateMetrics(data.metrics);
+    updateUI() {
+        this.updateStats();
+        this.updateSignalsList();
+        this.updateProposalsList();
+        this.updateDecisionsList();
     }
     
     /**
-     * Signals Liste aktualisieren
+     * Statistiken aktualisieren
      */
-    updateSignalsList(signals) {
+    updateStats() {
+        document.getElementById('totalSignals').textContent = this.data.signals.length;
+        document.getElementById('totalProposals').textContent = this.data.proposals.length;
+        document.getElementById('totalDecisions').textContent = this.data.decisions.length;
+        document.getElementById('totalReturns').textContent = `${this.data.analytics.totalReturns}%`;
+    }
+    
+    /**
+     * Signale Liste aktualisieren
+     */
+    updateSignalsList() {
         const container = document.getElementById('signalsList');
         if (!container) return;
         
-        if (signals.length === 0) {
-            container.innerHTML = `
-                <div class="empty-state">
-                    <i class="fas fa-signal"></i>
-                    <p>Keine Signals verfügbar</p>
-                </div>
-            `;
-            return;
-        }
-        
-        container.innerHTML = signals.map(signal => `
-            <div class="signal-item" onclick="aiInvestment.showSignalDetails('${signal.id}')">
+        container.innerHTML = this.data.signals.map(signal => `
+            <div class="signal-item">
                 <div class="signal-header">
-                    <div class="signal-asset">${signal.asset}</div>
-                    <div class="signal-source">
-                        <i class="fab fa-${this.getSourceIcon(signal.source)}"></i>
-                        ${signal.source}
-                    </div>
-                    <div class="signal-time">${this.formatTime(signal.timestamp)}</div>
+                    <span class="signal-source">${signal.source}</span>
+                    <span class="signal-score">${(signal.score * 100).toFixed(1)}%</span>
                 </div>
-                <div class="signal-content">
-                    <p>${signal.content}</p>
-                </div>
-                <div class="signal-metrics">
-                    <div class="metric">
-                        <span class="metric-label">Sentiment:</span>
-                        <span class="metric-value ${this.getSentimentClass(signal.sentiment)}">
-                            ${(signal.sentiment * 100).toFixed(0)}%
-                        </span>
-                    </div>
-                    <div class="metric">
-                        <span class="metric-label">Relevance:</span>
-                        <span class="metric-value">${(signal.relevance * 100).toFixed(0)}%</span>
-                    </div>
-                    <div class="metric">
-                        <span class="metric-label">Credibility:</span>
-                        <span class="metric-value">${(signal.credibility * 100).toFixed(0)}%</span>
-                    </div>
+                <div class="signal-content">${signal.content}</div>
+                <div class="signal-meta">
+                    <span class="signal-time">${new Date(signal.timestamp).toLocaleString()}</span>
+                    <span class="signal-confidence">Confidence: ${(signal.confidence * 100).toFixed(1)}%</span>
                 </div>
             </div>
         `).join('');
@@ -445,283 +243,256 @@ class AIInvestmentSection {
     /**
      * Proposals Liste aktualisieren
      */
-    updateProposalsList(proposals) {
+    updateProposalsList() {
         const container = document.getElementById('proposalsList');
         if (!container) return;
         
-        if (proposals.length === 0) {
-            container.innerHTML = `
-                <div class="empty-state">
-                    <i class="fas fa-lightbulb"></i>
-                    <p>Keine Proposals verfügbar</p>
-                </div>
-            `;
-            return;
-        }
-        
-        container.innerHTML = proposals.map(proposal => `
-            <div class="proposal-item" onclick="aiInvestment.showProposalDetails('${proposal.id}')">
+        container.innerHTML = this.data.proposals.map(proposal => `
+            <div class="proposal-item">
                 <div class="proposal-header">
-                    <div class="proposal-assets">${proposal.assets.join(', ')}</div>
-                    <div class="proposal-status status-${proposal.status}">
-                        ${this.getStatusText(proposal.status)}
-                    </div>
+                    <span class="proposal-asset">${proposal.asset}</span>
+                    <span class="proposal-action">${proposal.action.toUpperCase()}</span>
                 </div>
-                <div class="proposal-content">
-                    <p>${proposal.thesis}</p>
+                <div class="proposal-details">
+                    <span>Amount: ${proposal.amount}</span>
+                    <span>Price: $${proposal.price}</span>
+                    <span>Risk: ${(proposal.riskScore * 100).toFixed(1)}%</span>
                 </div>
-                <div class="proposal-metrics">
-                    <div class="metric">
-                        <span class="metric-label">Size:</span>
-                        <span class="metric-value">${(proposal.size_pct * 100).toFixed(1)}%</span>
-                    </div>
-                    <div class="metric">
-                        <span class="metric-label">Horizon:</span>
-                        <span class="metric-value">${proposal.horizon_days} Tage</span>
-                    </div>
-                    <div class="metric">
-                        <span class="metric-label">Entry:</span>
-                        <span class="metric-value">$${proposal.entry_price.toLocaleString()}</span>
-                    </div>
+                <div class="proposal-status">${proposal.status}</div>
+            </div>
+        `).join('');
+    }
+    
+    /**
+     * Decisions Liste aktualisieren
+     */
+    updateDecisionsList() {
+        const container = document.getElementById('decisionsList');
+        if (!container) return;
+        
+        container.innerHTML = this.data.decisions.map(decision => `
+            <div class="decision-item">
+                <div class="decision-header">
+                    <span class="decision-id">${decision.id}</span>
+                    <span class="decision-result">${decision.result}</span>
                 </div>
-                <div class="proposal-actions">
-                    <button class="btn btn-success btn-sm" onclick="aiInvestment.approveProposal('${proposal.id}')">
-                        <i class="fas fa-check"></i> Approve
-                    </button>
-                    <button class="btn btn-danger btn-sm" onclick="aiInvestment.rejectProposal('${proposal.id}')">
-                        <i class="fas fa-times"></i> Reject
-                    </button>
+                <div class="decision-details">
+                    <span>Action: ${decision.action}</span>
+                    <span>Time: ${new Date(decision.timestamp).toLocaleString()}</span>
                 </div>
             </div>
         `).join('');
     }
     
     /**
-     * Metrics aktualisieren
-     */
-    updateMetrics(metrics) {
-        // Risk Metrics
-        document.getElementById('varValue').textContent = `${(metrics.var_95 * 100).toFixed(1)}%`;
-        document.getElementById('sharpeValue').textContent = metrics.sharpe_ratio.toFixed(2);
-        document.getElementById('drawdownValue').textContent = `${(metrics.max_drawdown * 100).toFixed(1)}%`;
-        
-        // Learning Metrics
-        document.getElementById('hitRate7d').textContent = `${(metrics.hit_rate_7d * 100).toFixed(0)}%`;
-        document.getElementById('hitRate30d').textContent = `${(metrics.hit_rate_30d * 100).toFixed(0)}%`;
-        document.getElementById('reliability').textContent = `${(metrics.reliability * 100).toFixed(0)}%`;
-    }
-    
-    /**
-     * Real-time Connection aufbauen
-     */
-    establishRealTimeConnection() {
-        try {
-            // WebSocket oder SSE Connection
-            this.realTimeConnection = new EventSource('/api/v1/dashboard/stream');
-            
-            this.realTimeConnection.onmessage = (event) => {
-                const data = JSON.parse(event.data);
-                this.handleRealTimeUpdate(data);
-            };
-            
-            this.realTimeConnection.onerror = (error) => {
-                console.error('Real-time connection error:', error);
-                this.showError('Verbindung zu Real-time Updates unterbrochen');
-            };
-            
-        } catch (error) {
-            console.error('Failed to establish real-time connection:', error);
-        }
-    }
-    
-    /**
-     * Real-time Updates verarbeiten
-     */
-    handleRealTimeUpdate(data) {
-        switch (data.type) {
-            case 'signal.created':
-                this.addNewSignal(data.signal);
-                break;
-            case 'proposal.created':
-                this.addNewProposal(data.proposal);
-                break;
-            case 'metrics.updated':
-                this.updateMetrics(data.metrics);
-                break;
-        }
-    }
-    
-    /**
-     * Event Listeners hinzufügen
-     */
-    attachEventListeners() {
-        // Auto-refresh alle 30 Sekunden
-        setInterval(() => {
-            this.loadDashboardData();
-        }, 30000);
-    }
-    
-    /**
-     * Utility Functions
-     */
-    getSourceIcon(source) {
-        const icons = {
-            'twitter': 'twitter',
-            'reddit': 'reddit',
-            'news': 'newspaper',
-            'youtube': 'youtube'
-        };
-        return icons[source] || 'globe';
-    }
-    
-    getSentimentClass(sentiment) {
-        if (sentiment > 0.5) return 'positive';
-        if (sentiment < -0.5) return 'negative';
-        return 'neutral';
-    }
-    
-    getStatusText(status) {
-        const statusTexts = {
-            'proposed': 'Vorgeschlagen',
-            'approved': 'Genehmigt',
-            'rejected': 'Abgelehnt',
-            'executed': 'Ausgeführt'
-        };
-        return statusTexts[status] || status;
-    }
-    
-    formatTime(timestamp) {
-        const date = new Date(timestamp);
-        const now = new Date();
-        const diff = now - date;
-        
-        if (diff < 60000) return 'Gerade eben';
-        if (diff < 3600000) return `${Math.floor(diff / 60000)}m`;
-        if (diff < 86400000) return `${Math.floor(diff / 3600000)}h`;
-        return date.toLocaleDateString('de-DE');
-    }
-    
-    /**
-     * Action Handlers
-     */
-    async refreshDashboard() {
-        await this.loadDashboardData();
-    }
-    
-    showSettings() {
-        // Settings Modal öffnen
-        console.log('Settings clicked');
-    }
-    
-    showSignalDetails(signalId) {
-        const signal = this.dashboardData.signals.find(s => s.id === signalId);
-        if (!signal) return;
-        
-        // Modal mit Signal Details öffnen
-        console.log('Show signal details:', signal);
-    }
-    
-    showProposalDetails(proposalId) {
-        const proposal = this.dashboardData.proposals.find(p => p.id === proposalId);
-        if (!proposal) return;
-        
-        // Modal mit Proposal Details öffnen
-        console.log('Show proposal details:', proposal);
-    }
-    
-    async approveProposal(proposalId) {
-        try {
-            // API Call zum Approven
-            console.log('Approve proposal:', proposalId);
-            // await this.apiCall(`/api/v1/proposals/${proposalId}/approve`, 'POST');
-        } catch (error) {
-            console.error('Failed to approve proposal:', error);
-        }
-    }
-    
-    async rejectProposal(proposalId) {
-        try {
-            // API Call zum Rejecten
-            console.log('Reject proposal:', proposalId);
-            // await this.apiCall(`/api/v1/proposals/${proposalId}/reject`, 'POST');
-        } catch (error) {
-            console.error('Failed to reject proposal:', error);
-        }
-    }
-    
-    /**
-     * Error Handling
-     */
-    showError(message) {
-        // Error Banner anzeigen
-        const banner = document.getElementById('statusBanner');
-        if (banner) {
-            banner.className = 'status-banner error';
-            banner.innerHTML = `
-                <div class="status-content">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <span>${message}</span>
-                </div>
-            `;
-        }
-    }
-    
-    /**
      * Charts initialisieren
      */
     initializeCharts() {
-        // Chart.js oder ähnliche Library für Visualisierungen
-        console.log('Charts initialized');
+        // Performance Chart
+        const performanceCtx = document.getElementById('performanceChart');
+        if (performanceCtx) {
+            this.charts.performance = new Chart(performanceCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Portfolio Value',
+                        data: [100, 105, 110, 108, 115, 120],
+                        borderColor: '#6366f1',
+                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Signal Distribution Chart
+        const signalDistCtx = document.getElementById('signalDistributionChart');
+        if (signalDistCtx) {
+            this.charts.signalDistribution = new Chart(signalDistCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Twitter', 'Reddit', 'News'],
+                    datasets: [{
+                        data: [40, 35, 25],
+                        backgroundColor: ['#6366f1', '#10b981', '#f59e0b']
+                    }]
+                },
+                options: {
+                    responsive: true
+                }
+            });
+        }
+        
+        // Risk Analysis Chart
+        const riskCtx = document.getElementById('riskAnalysisChart');
+        if (riskCtx) {
+            this.charts.riskAnalysis = new Chart(riskCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Low Risk', 'Medium Risk', 'High Risk'],
+                    datasets: [{
+                        label: 'Investments',
+                        data: [15, 8, 3],
+                        backgroundColor: ['#10b981', '#f59e0b', '#ef4444']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+    }
+    
+    /**
+     * Charts aktualisieren
+     */
+    updateCharts() {
+        // Charts werden bei Bedarf aktualisiert
+        console.log('Updating charts...');
+    }
+    
+    /**
+     * Signale filtern
+     */
+    filterSignals() {
+        const source = document.getElementById('signalSource')?.value;
+        const score = document.getElementById('signalScore')?.value;
+        
+        let filtered = this.data.signals;
+        
+        if (source && source !== 'all') {
+            filtered = filtered.filter(signal => signal.source === source);
+        }
+        
+        if (score && score !== 'all') {
+            filtered = filtered.filter(signal => {
+                if (score === 'high') return signal.score > 0.8;
+                if (score === 'medium') return signal.score >= 0.5 && signal.score <= 0.8;
+                if (score === 'low') return signal.score < 0.5;
+                return true;
+            });
+        }
+        
+        // UI aktualisieren
+        const container = document.getElementById('signalsList');
+        if (container) {
+            container.innerHTML = filtered.map(signal => `
+                <div class="signal-item">
+                    <div class="signal-header">
+                        <span class="signal-source">${signal.source}</span>
+                        <span class="signal-score">${(signal.score * 100).toFixed(1)}%</span>
+                    </div>
+                    <div class="signal-content">${signal.content}</div>
+                    <div class="signal-meta">
+                        <span class="signal-time">${new Date(signal.timestamp).toLocaleString()}</span>
+                        <span class="signal-confidence">Confidence: ${(signal.confidence * 100).toFixed(1)}%</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+    }
+    
+    /**
+     * Proposals filtern
+     */
+    filterProposals() {
+        const status = document.getElementById('proposalStatus')?.value;
+        
+        let filtered = this.data.proposals;
+        
+        if (status && status !== 'all') {
+            filtered = filtered.filter(proposal => proposal.status === status);
+        }
+        
+        // UI aktualisieren
+        const container = document.getElementById('proposalsList');
+        if (container) {
+            container.innerHTML = filtered.map(proposal => `
+                <div class="proposal-item">
+                    <div class="proposal-header">
+                        <span class="proposal-asset">${proposal.asset}</span>
+                        <span class="proposal-action">${proposal.action.toUpperCase()}</span>
+                    </div>
+                    <div class="proposal-details">
+                        <span>Amount: ${proposal.amount}</span>
+                        <span>Price: $${proposal.price}</span>
+                        <span>Risk: ${(proposal.riskScore * 100).toFixed(1)}%</span>
+                    </div>
+                    <div class="proposal-status">${proposal.status}</div>
+                </div>
+            `).join('');
+        }
+    }
+    
+    /**
+     * Decisions filtern
+     */
+    filterDecisions() {
+        const status = document.getElementById('decisionStatus')?.value;
+        
+        let filtered = this.data.decisions;
+        
+        if (status && status !== 'all') {
+            filtered = filtered.filter(decision => decision.result === status);
+        }
+        
+        // UI aktualisieren
+        const container = document.getElementById('decisionsList');
+        if (container) {
+            container.innerHTML = filtered.map(decision => `
+                <div class="decision-item">
+                    <div class="decision-header">
+                        <span class="decision-id">${decision.id}</span>
+                        <span class="decision-result">${decision.result}</span>
+                    </div>
+                    <div class="decision-details">
+                        <span>Action: ${decision.action}</span>
+                        <span>Time: ${new Date(decision.timestamp).toLocaleString()}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+    }
+    
+    /**
+     * Daten aktualisieren
+     */
+    async refreshData() {
+        console.log('Refreshing data...');
+        await this.loadData();
+        this.updateUI();
+    }
+    
+    /**
+     * Daten exportieren
+     */
+    exportData() {
+        const dataStr = JSON.stringify(this.data, null, 2);
+        const dataBlob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(dataBlob);
+        
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `ai-investment-data-${new Date().toISOString().split('T')[0]}.json`;
+        link.click();
+        
+        URL.revokeObjectURL(url);
     }
 }
-
-// Global Functions für Legacy Support
-window.aiInvestment = {
-    refreshDashboard: () => {
-        if (window.AdminApp && window.AdminApp.sections && window.AdminApp.sections.aiInvestment) {
-            window.AdminApp.sections.aiInvestment.refreshDashboard();
-        }
-    },
-    showSettings: () => {
-        if (window.AdminApp && window.AdminApp.sections && window.AdminApp.sections.aiInvestment) {
-            window.AdminApp.sections.aiInvestment.showSettings();
-        }
-    },
-    showSignalDetails: (signalId) => {
-        if (window.AdminApp && window.AdminApp.sections && window.AdminApp.sections.aiInvestment) {
-            window.AdminApp.sections.aiInvestment.showSignalDetails(signalId);
-        }
-    },
-    showProposalDetails: (proposalId) => {
-        if (window.AdminApp && window.AdminApp.sections && window.AdminApp.sections.aiInvestment) {
-            window.AdminApp.sections.aiInvestment.showProposalDetails(proposalId);
-        }
-    },
-    approveProposal: (proposalId) => {
-        if (window.AdminApp && window.AdminApp.sections && window.AdminApp.sections.aiInvestment) {
-            window.AdminApp.sections.aiInvestment.approveProposal(proposalId);
-        }
-    },
-    rejectProposal: (proposalId) => {
-        if (window.AdminApp && window.AdminApp.sections && window.AdminApp.sections.aiInvestment) {
-            window.AdminApp.sections.aiInvestment.rejectProposal(proposalId);
-        }
-    }
-};
-
-// Section initialisieren wenn DOM bereit
-document.addEventListener('DOMContentLoaded', () => {
-    // Warten bis AdminApp verfügbar ist
-    const initSection = () => {
-        if (window.AdminApp && window.AdminApp.sections) {
-            window.AdminApp.sections.aiInvestment = new AIInvestmentSection();
-            window.AdminApp.sections.aiInvestment.init();
-        } else {
-            setTimeout(initSection, 100);
-        }
-    };
-    initSection();
-});
 
 // Global verfügbar machen
 window.AIInvestmentSection = AIInvestmentSection;

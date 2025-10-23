@@ -113,7 +113,7 @@ class AdminApplication {
             { id: 'systemic-coaching', template: 'admin/sections/personality-methods/systemic-coaching.html', script: 'js/admin/sections/personality-methods.js' },
             { id: 'target-coaching', template: 'admin/sections/personality-methods/target-coaching.html', script: 'js/admin/sections/personality-methods.js' },
             { id: 'all-methods', template: 'admin/sections/personality-methods/all-methods.html', script: 'js/admin/sections/personality-methods.js' },
-            { id: 'ai-investments', template: 'admin/ai-investments-dashboard.html', script: 'js/admin/sections/ai-investments.js' }
+            { id: 'ai-investments', template: 'admin/sections/ai-investments.html', script: 'js/admin/sections/ai-investments.js' }
         ];
         
         routes.forEach(route => {

@@ -442,11 +442,18 @@ class AdminSidebar extends HTMLElement {
                 // Initial State setzen
                 this.setActiveSection(this.activeSection);
             } else {
-                // Retry nach 100ms
-                setTimeout(checkAdminApp, 100);
+                // Retry nach 100ms, aber nur maximal 50 mal (5 Sekunden)
+                if (this.retryCount < 50) {
+                    this.retryCount = (this.retryCount || 0) + 1;
+                    setTimeout(checkAdminApp, 100);
+                } else {
+                    console.warn('AdminApp not available after 5 seconds, using fallback navigation');
+                    this.useFallbackNavigation = true;
+                }
             }
         };
         
+        this.retryCount = 0;
         checkAdminApp();
     }
     
@@ -473,6 +480,9 @@ class AdminSidebar extends HTMLElement {
                 this.loadSectionManually(sectionId);
             }, 100);
         }
+        
+        // Active Section in Sidebar setzen
+        this.setActiveSection(sectionId);
     }
     
     /**
