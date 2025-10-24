@@ -630,10 +630,10 @@ class AdvancedDataAggregator {
         this.providers = {
             'reddit': new RedditAPIProvider(),
             'twitter': new TwitterAPIv2Provider(process.env.TWITTER_BEARER_TOKEN),
-            'news': new GoogleNewsAPIProvider(process.env.NEWS_API_KEY),
+            'news': new GoogleNewsAPIProvider('YOUR_NEWS_API_KEY'),
             'discord': new DiscordAPIProvider(process.env.DISCORD_BOT_TOKEN),
             'telegram': new TelegramAPIProvider(process.env.TELEGRAM_BOT_TOKEN),
-            'alpha_vantage': new AlphaVantageProvider(process.env.ALPHA_VANTAGE_API_KEY),
+            'alpha_vantage': new AlphaVantageProvider('YOUR_ALPHA_VANTAGE_API_KEY'),
             'yahoo': new YahooFinanceProvider(),
             'coingecko': new CoinGeckoProvider()
         };

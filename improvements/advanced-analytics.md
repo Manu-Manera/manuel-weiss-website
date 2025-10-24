@@ -201,7 +201,7 @@ class BacktestingEngine {
         };
         this.dataProviders = {
             'yahoo': new YahooFinanceDataProvider(),
-            'alpha_vantage': new AlphaVantageDataProvider(process.env.ALPHA_VANTAGE_API_KEY),
+            'alpha_vantage': new AlphaVantageDataProvider('YOUR_ALPHA_VANTAGE_API_KEY'),
             'crypto': new CryptoDataProvider()
         };
     }

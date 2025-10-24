@@ -13,10 +13,10 @@
 class RealTimeMarketDataManager {
     constructor() {
         this.dataProviders = {
-            'alpha_vantage': new AlphaVantageProvider(process.env.ALPHA_VANTAGE_API_KEY),
+            'alpha_vantage': new AlphaVantageProvider('YOUR_ALPHA_VANTAGE_API_KEY'),
             'yahoo': new YahooFinanceProvider(),
             'coingecko': new CoinGeckoProvider(),
-            'polygon': new PolygonProvider(process.env.POLYGON_API_KEY)
+            'polygon': new PolygonProvider('YOUR_POLYGON_API_KEY')
         };
         
         this.dataStreams = new Map();
@@ -217,19 +217,19 @@ class EnhancedAIAnalysisManager {
     constructor() {
         this.aiModels = {
             'gpt4': new GPT4Analyzer({
-                apiKey: process.env.OPENAI_API_KEY,
+                apiKey: 'YOUR_OPENAI_API_KEY',
                 model: 'gpt-4-turbo-preview',
                 temperature: 0.3,
                 maxTokens: 4000
             }),
             'claude': new ClaudeAnalyzer({
-                apiKey: process.env.ANTHROPIC_API_KEY,
+                apiKey: 'YOUR_ANTHROPIC_API_KEY',
                 model: 'claude-3-opus-20240229',
                 temperature: 0.2,
                 maxTokens: 4000
             }),
             'gemini': new GeminiAnalyzer({
-                apiKey: process.env.GOOGLE_API_KEY,
+                apiKey: 'YOUR_GOOGLE_API_KEY',
                 model: 'gemini-pro',
                 temperature: 0.4,
                 maxTokens: 2048
@@ -517,7 +517,7 @@ class BacktestingEngine {
         
         this.dataProviders = {
             'yahoo': new YahooFinanceDataProvider(),
-            'alpha_vantage': new AlphaVantageDataProvider(process.env.ALPHA_VANTAGE_API_KEY),
+            'alpha_vantage': new AlphaVantageDataProvider('YOUR_ALPHA_VANTAGE_API_KEY'),
             'crypto': new CryptoDataProvider()
         };
     }
@@ -993,7 +993,7 @@ class AdditionalDataSourcesManager {
         this.dataSources = {
             'discord': new DiscordAPIProvider(process.env.DISCORD_BOT_TOKEN),
             'telegram': new TelegramAPIProvider(process.env.TELEGRAM_BOT_TOKEN),
-            'google_news': new GoogleNewsAPIProvider(process.env.GOOGLE_NEWS_API_KEY)
+            'google_news': new GoogleNewsAPIProvider('YOUR_GOOGLE_NEWS_API_KEY')
         };
     }
     

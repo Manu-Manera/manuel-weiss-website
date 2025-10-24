@@ -494,7 +494,7 @@ class PolygonMarketDataProvider {
 class BasicMarketDataService {
     constructor() {
         this.providers = {
-            'alpha_vantage': new AlphaVantageMarketDataProvider(process.env.ALPHA_VANTAGE_API_KEY),
+            'alpha_vantage': new AlphaVantageMarketDataProvider('YOUR_ALPHA_VANTAGE_API_KEY'),
             'yahoo': new YahooFinanceMarketDataProvider(),
             'coingecko': new CoinGeckoMarketDataProvider()
         };
@@ -609,7 +609,7 @@ class BasicMarketDataService {
 class AdvancedMarketDataService extends BasicMarketDataService {
     constructor() {
         super();
-        this.providers.polygon = new PolygonMarketDataProvider(process.env.POLYGON_API_KEY);
+        this.providers.polygon = new PolygonMarketDataProvider('YOUR_POLYGON_API_KEY');
         
         this.updateIntervals = {
             'stocks': 1 * 60 * 1000, // 1 minute

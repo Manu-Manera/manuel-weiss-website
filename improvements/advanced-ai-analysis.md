@@ -117,19 +117,19 @@ class MultiModelConsensusSystem {
     constructor() {
         this.models = {
             'gpt4': new GPT4Analyzer({
-                apiKey: process.env.OPENAI_API_KEY,
+                apiKey: 'YOUR_OPENAI_API_KEY',
                 model: 'gpt-4-turbo-preview',
                 temperature: 0.3,
                 maxTokens: 4000
             }),
             'claude': new ClaudeAnalyzer({
-                apiKey: process.env.ANTHROPIC_API_KEY,
+                apiKey: 'YOUR_ANTHROPIC_API_KEY',
                 model: 'claude-3-opus-20240229',
                 temperature: 0.2,
                 maxTokens: 4000
             }),
             'gemini': new GeminiAnalyzer({
-                apiKey: process.env.GOOGLE_API_KEY,
+                apiKey: 'YOUR_GOOGLE_API_KEY',
                 model: 'gemini-pro',
                 temperature: 0.4,
                 maxTokens: 2048
