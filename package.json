@@ -36,6 +36,8 @@
   },
   "dependencies": {
     "aws-sdk": "2.1692.0",
-    "openai": "6.6.0"
+    "dotenv": "17.2.3",
+    "openai": "6.6.0",
+    "snoowrap": "1.23.0"
   }
 }

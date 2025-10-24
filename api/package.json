@@ -1,35 +1,29 @@
 {
   "name": "ai-investment-api",
   "version": "1.0.0",
-  "description": "API Client Generation and OpenAPI Specification for AI Investment System",
-  "main": "client-generator.js",
+  "description": "AI Investment System API - NUR ECHTE DATEN",
+  "main": "index.js",
   "scripts": {
-    "generate": "node client-generator.js",
-    "generate:typescript": "npx @openapitools/openapi-generator-cli generate -i openapi.yaml -g typescript-axios -o generated/typescript --additional-properties=npmName=ai-investment-client,packageName=ai-investment-client",
-    "generate:python": "npx @openapitools/openapi-generator-cli generate -i openapi.yaml -g python -o generated/python --additional-properties=packageName=ai_investment_client,packageVersion=1.0.0",
-    "generate:javascript": "npx @openapitools/openapi-generator-cli generate -i openapi.yaml -g javascript -o generated/javascript --additional-properties=npmName=ai-investment-client,packageVersion=1.0.0",
-    "generate:java": "npx @openapitools/openapi-generator-cli generate -i openapi.yaml -g java -o generated/java --additional-properties=groupId=com.ai-investment,artifactId=ai-investment-client,packageName=com.aiinvestment.client",
-    "generate:csharp": "npx @openapitools/openapi-generator-cli generate -i openapi.yaml -g csharp -o generated/csharp --additional-properties=packageName=AIInvestment.Client,packageVersion=1.0.0",
-    "generate:docs": "npx @openapitools/openapi-generator-cli generate -i openapi.yaml -g html2 -o generated/docs",
-    "generate:postman": "npx @openapitools/openapi-generator-cli generate -i openapi.yaml -g postman -o generated/postman",
-    "validate": "npx @openapitools/openapi-generator-cli validate -i openapi.yaml",
+    "start": "node index.js",
+    "dev": "nodemon index.js",
     "test": "jest",
-    "lint": "eslint . --ext .js",
-    "deploy": "npm run generate && npm run validate"
+    "lint": "eslint .",
+    "build": "echo 'No build step needed for Node.js API'"
   },
   "dependencies": {
-    "@openapitools/openapi-generator-cli": "^2.7.0",
-    "yaml": "^2.3.4",
-    "fs-extra": "^11.2.0"
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "express-rate-limit": "^7.1.5",
+    "aws-sdk": "^2.1580.0",
+    "openai": "^4.29.0",
+    "winston": "^3.12.0",
+    "dotenv": "^16.3.1"
   },
   "devDependencies": {
-    "@types/node": "^20.10.5",
+    "nodemon": "^3.0.2",
     "jest": "^29.7.0",
-    "eslint": "^8.56.0",
-    "eslint-config-standard": "^17.1.0",
-    "eslint-plugin-import": "^2.29.1",
-    "eslint-plugin-n": "^16.6.2",
-    "eslint-plugin-promise": "^6.1.1"
+    "eslint": "^8.57.0"
   },
   "engines": {
     "node": ">=18.0.0"
@@ -38,10 +32,9 @@
     "ai",
     "investment",
     "api",
-    "openapi",
-    "client",
-    "generation"
+    "real-data",
+    "no-mock"
   ],
-  "author": "AI Investment System",
+  "author": "Manuel Weiss",
   "license": "MIT"
 }

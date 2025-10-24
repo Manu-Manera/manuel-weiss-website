@@ -13,8 +13,48 @@ process.env.REDDIT_API_KEY = 'test-reddit-key';
 // Use real console for live testing
 // Keep original console for real output
 
-// Global test utilities
+// KEINE MOCK-DATEN - nur echte Test-Utilities
 (global as any).testUtils = {
+  // Nur echte API-Tests, KEINE Mock-Daten
+  testRealAPI: async (endpoint: string) => {
+    try {
+      const response = await fetch(endpoint);
+      return response.ok;
+    } catch (error) {
+      return false;
+    }
+  },
+  
+  // Echte Daten-Validierung
+  validateRealData: (data: any) => {
+    return data && typeof data === 'object' && !data.isMock;
+  },
+  
+  // Echte API-Keys testen
+  testAPIKeys: () => {
+    return {
+      hasOpenAI: !!process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY !== 'test-openai-key',
+      hasTwitter: !!process.env.TWITTER_API_KEY && process.env.TWITTER_API_KEY !== 'test-twitter-key',
+      hasReddit: !!process.env.REDDIT_API_KEY && process.env.REDDIT_API_KEY !== 'test-reddit-key'
+    };
+  }
+};
+
+// Setup before each test
+beforeEach(() => {
+  jest.clearAllMocks();
+});
+
+// Cleanup after each test
+afterEach(() => {
+  jest.restoreAllMocks();
+});
+
+// Global test timeout
+jest.setTimeout(30000);
+
+export {};
+
   createMockSignal: (overrides = {}) => ({
     id: 'signal-123',
     source: 'twitter',

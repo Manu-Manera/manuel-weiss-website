@@ -720,7 +720,6 @@ class AIInvestmentSection {
             const response = await fetch('/api/twitter/signals', {
                 method: 'GET',
                 headers: {
-                    'Authorization': `Bearer ${process.env.TWITTER_BEARER_TOKEN}`,
                     'Content-Type': 'application/json'
                 }
             });
@@ -746,7 +745,6 @@ class AIInvestmentSection {
             const response = await fetch('/api/reddit/signals', {
                 method: 'GET',
                 headers: {
-                    'Authorization': `Bearer ${process.env.REDDIT_ACCESS_TOKEN}`,
                     'Content-Type': 'application/json'
                 }
             });
@@ -772,7 +770,6 @@ class AIInvestmentSection {
             const response = await fetch('/api/news/signals', {
                 method: 'GET',
                 headers: {
-                    'Authorization': `Bearer ${process.env.NEWS_API_KEY}`,
                     'Content-Type': 'application/json'
                 }
             });
@@ -798,7 +795,6 @@ class AIInvestmentSection {
             const response = await fetch('/api/ai/analyze-signals', {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
@@ -892,25 +888,139 @@ class AIInvestmentSection {
     }
     
     /**
-     * Tab-spezifische Daten laden
+     * Tab-spezifische Daten laden - NUR ECHTE DATEN
      */
-    loadSignalsData() {
-        console.log('Loading signals data...');
+    async loadSignalsData() {
+        console.log('Loading real signals data...');
+        await this.loadRealSignals();
         this.updateSignalsList();
     }
     
-    loadProposalsData() {
-        console.log('Loading proposals data...');
+    async loadProposalsData() {
+        console.log('Loading real proposals data...');
+        await this.loadRealProposals();
         this.updateProposalsList();
     }
     
-    loadDecisionsData() {
-        console.log('Loading decisions data...');
+    async loadDecisionsData() {
+        console.log('Loading real decisions data...');
+        await this.loadRealDecisions();
         this.updateDecisionsList();
     }
     
-    loadAnalyticsData() {
-        console.log('Loading analytics data...');
+    async loadAnalyticsData() {
+        console.log('Loading real analytics data...');
+        await this.loadRealAnalytics();
+        this.updateCharts();
+    }
+}
+
+// Global verfügbar machen
+window.AIInvestmentSection = AIInvestmentSection;
+
+// Auto-Bootstrapping: initialisiert, sobald das Section-Template im DOM ist
+(function bootstrapAIInvestment() {
+    const tryInit = () => {
+        // Prüfen ob AI Investment Section im DOM ist
+        const hasAISection = document.querySelector('.ai-investments-section');
+        if (hasAISection) {
+            if (!window.aiInvestmentSection) {
+                console.log('Auto-initializing AI Investment Section...');
+                window.aiInvestmentSection = new AIInvestmentSection();
+                window.aiInvestmentSection.init();
+            }
+            return; // fertig
+        }
+        
+        // Retry nach 100ms
+        setTimeout(tryInit, 100);
+    };
+    
+    // Starten sobald DOM bereit ist
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', tryInit);
+    } else {
+        tryInit();
+    }
+})();
+        }
+    }
+    
+    async loadRealProposals() {
+        try {
+            const response = await fetch('/api/proposals', {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                this.data.proposals = data.proposals || [];
+            }
+        } catch (error) {
+            console.error('Failed to load real proposals:', error);
+            this.data.proposals = [];
+        }
+    }
+    
+    async loadRealDecisions() {
+        try {
+            const response = await fetch('/api/decisions', {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                this.data.decisions = data.decisions || [];
+            }
+        } catch (error) {
+            console.error('Failed to load real decisions:', error);
+            this.data.decisions = [];
+        }
+    }
+    
+    async loadRealAnalytics() {
+        try {
+            const response = await fetch('/api/analytics', {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                this.data.analytics = data.analytics || { totalReturns: 0, winRate: 0, sharpeRatio: 0 };
+            }
+        } catch (error) {
+            console.error('Failed to load real analytics:', error);
+            this.data.analytics = { totalReturns: 0, winRate: 0, sharpeRatio: 0 };
+        }
+    }
+    
+    /**
+     * Tab-spezifische Daten laden - NUR ECHTE DATEN
+     */
+    async loadSignalsData() {
+        console.log('Loading real signals data...');
+        await this.loadRealSignals();
+        this.updateSignalsList();
+    }
+    
+    async loadProposalsData() {
+        console.log('Loading real proposals data...');
+        await this.loadRealProposals();
+        this.updateProposalsList();
+    }
+    
+    async loadDecisionsData() {
+        console.log('Loading real decisions data...');
+        await this.loadRealDecisions();
+        this.updateDecisionsList();
+    }
+    
+    async loadAnalyticsData() {
+        console.log('Loading real analytics data...');
+        await this.loadRealAnalytics();
         this.updateCharts();
     }
 }

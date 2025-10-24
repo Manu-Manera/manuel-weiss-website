@@ -5,45 +5,8 @@ import { HashUtils } from '../../packages/common/src/hash';
 import { AWSHelpers } from '../../packages/common/src/aws';
 import { LLMAdapter } from '../../packages/common/src/llm';
 
-// Mock AWS SDK
-jest.mock('aws-sdk', () => ({
-  DynamoDB: {
-    DocumentClient: jest.fn(() => ({
-      put: jest.fn().mockReturnValue({ promise: () => Promise.resolve({}) }),
-      query: jest.fn().mockReturnValue({ promise: () => Promise.resolve({ Items: [] }) }),
-      get: jest.fn().mockReturnValue({ promise: () => Promise.resolve({ Item: {} }) }),
-      update: jest.fn().mockReturnValue({ promise: () => Promise.resolve({}) }),
-      delete: jest.fn().mockReturnValue({ promise: () => Promise.resolve({}) })
-    }))
-  },
-  S3: jest.fn(() => ({
-    upload: jest.fn().mockReturnValue({ promise: () => Promise.resolve({}) }),
-    getObject: jest.fn().mockReturnValue({ promise: () => Promise.resolve({ Body: 'test' }) }),
-    deleteObject: jest.fn().mockReturnValue({ promise: () => Promise.resolve({}) })
-  })),
-  TimestreamWrite: jest.fn(() => ({
-    writeRecords: jest.fn().mockReturnValue({ promise: () => Promise.resolve({}) })
-  }))
-}));
-
-// Mock OpenAI
-jest.mock('openai', () => ({
-  OpenAI: jest.fn(() => ({
-    chat: {
-      completions: {
-        create: jest.fn().mockResolvedValue({
-          choices: [{ message: { content: 'Test response' } }],
-          usage: { total_tokens: 100 }
-        })
-      }
-    },
-    embeddings: {
-      create: jest.fn().mockResolvedValue({
-        data: [{ embedding: [0.1, 0.2, 0.3] }]
-      })
-    }
-  }))
-}));
+// KEINE MOCKS - nur echte APIs testen
+// Alle Tests verwenden echte AWS und OpenAI APIs
 
 describe('Common Package Tests', () => {
   describe('Logger', () => {

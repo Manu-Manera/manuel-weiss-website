@@ -1,74 +1,137 @@
 # AI Investment System API
 
-## Overview
+## 🚨 WICHTIG: NUR ECHTE DATEN - KEINE MOCK-DATEN
 
-The AI Investment System API provides a comprehensive REST API for AI-powered investment management. It includes endpoints for data ingestion, signal scoring, proposal generation, risk management, decision making, and outcome evaluation.
+Diese API verwendet **ausschließlich echte Daten** aus:
+- Twitter API v2
+- Reddit API
+- News API
+- OpenAI API
+- AWS DynamoDB
+- AWS S3
 
-## Features
+**KEINE Mock-Daten, KEINE Demo-Daten, KEINE Test-Daten!**
 
-### Core API Endpoints
-- **Health Check**: System status and health monitoring
-- **Data Ingestion**: Social media and news signal collection
-- **Signal Scoring**: ML-based signal scoring and fusion
-- **Investment Orchestration**: Proposal generation and risk assessment
-- **Decision Management**: Investment decision making and evaluation
-- **Dashboard**: System overview and monitoring
-- **Metrics**: System and business performance metrics
-
-### API Features
-- **OpenAPI 3.1 Specification**: Complete API documentation
-- **Multi-Language Client Generation**: TypeScript, Python, JavaScript, Java, C#
-- **Comprehensive Documentation**: HTML documentation and Postman collection
-- **Authentication**: JWT Bearer tokens and API keys
-- **Rate Limiting**: Built-in rate limiting and throttling
-- **Error Handling**: Structured error responses
-- **Validation**: Request/response validation with Zod schemas
-
-## Quick Start
-
-### 1. Install Dependencies
+## Installation
 
 ```bash
+cd api
 npm install
 ```
 
-### 2. Generate API Clients
+## Umgebungsvariablen
+
+Kopiere `env.example` zu `.env` und fülle die echten API-Keys aus:
 
 ```bash
-# Generate all clients
-npm run generate
-
-# Generate specific client
-npm run generate:typescript
-npm run generate:python
-npm run generate:javascript
-npm run generate:java
-npm run generate:csharp
+cp env.example .env
 ```
 
-### 3. Generate Documentation
+**Erforderliche API-Keys:**
+- `OPENAI_API_KEY` - OpenAI API Key
+- `TWITTER_BEARER_TOKEN` - Twitter API v2 Bearer Token
+- `REDDIT_ACCESS_TOKEN` - Reddit API Access Token
+- `NEWS_API_KEY` - News API Key
+- `AWS_ACCESS_KEY_ID` - AWS Access Key
+- `AWS_SECRET_ACCESS_KEY` - AWS Secret Key
+
+## Starten
 
 ```bash
-# Generate HTML documentation
-npm run generate:docs
+# Development
+npm run dev
 
-# Generate Postman collection
-npm run generate:postman
+# Production
+npm start
 ```
 
-### 4. Validate API Specification
+## API-Endpunkte
 
-```bash
-npm run validate
-```
+### Signale
+- `GET /api/signals` - Echte Signale aus der Datenbank
+- `POST /api/signals` - Neues Signal speichern
+- `GET /api/signals/:id` - Signal nach ID
 
-## API Endpoints
+### Proposals
+- `GET /api/proposals` - Echte Proposals aus der Datenbank
+- `POST /api/proposals` - Neues Proposal speichern
+- `PUT /api/proposals/:id/status` - Proposal Status aktualisieren
 
-### System Endpoints
+### Decisions
+- `GET /api/decisions` - Echte Decisions aus der Datenbank
+- `POST /api/decisions` - Neue Decision speichern
+- `PUT /api/decisions/:id/status` - Decision Status aktualisieren
 
-#### GET /health
-Health check endpoint for system monitoring.
+### Analytics
+- `GET /api/analytics` - Echte Analytics berechnen
+- `GET /api/analytics/performance-timeline` - Performance über Zeit
 
+### Social Media APIs
+- `GET /api/twitter/signals` - Echte Twitter Signale
+- `GET /api/reddit/signals` - Echte Reddit Signale
+- `GET /api/news/signals` - Echte News Signale
+
+### AI Analysis
+- `POST /api/ai/analyze-signals` - Echte AI-Analyse
+- `POST /api/ai/sentiment-analysis` - Echte Sentiment-Analyse
+
+## Datenquellen
+
+### Twitter API v2
+- Endpoint: `https://api.twitter.com/2/tweets/search/recent`
+- Query: `stock market OR investment OR trading OR finance`
+- Felder: `created_at,public_metrics,context_annotations,entities`
+
+### Reddit API
+- Endpoint: `https://oauth.reddit.com/r/investing/hot`
+- Subreddit: `r/investing`
+- Felder: `title,selftext,score,ups,downs,num_comments`
+
+### News API
+- Endpoint: `https://newsapi.org/v2/everything`
+- Query: `stock+market+OR+investment+OR+trading`
+- Felder: `title,description,source,publishedAt`
+
+### OpenAI API
+- Model: `gpt-4` für Investment-Analyse
+- Model: `gpt-3.5-turbo` für Sentiment-Analyse
+- Temperature: `0.3` für konsistente Ergebnisse
+
+## Sicherheit
+
+- **Helmet.js** für Security Headers
+- **CORS** für Cross-Origin Requests
+- **Rate Limiting** (100 Requests/15min)
+- **Input Validation** für alle Endpunkte
+- **Error Handling** ohne Datenlecks
+
+## Monitoring
+
+- **Winston** für strukturiertes Logging
+- **AWS CloudWatch** für Metriken
+- **Health Check** unter `/api/health`
+
+## Keine Mock-Daten
+
+Dieses System verwendet **ausschließlich echte Daten**:
+
+✅ **Echte APIs**: Twitter, Reddit, News, OpenAI
+✅ **Echte Datenbank**: AWS DynamoDB
+✅ **Echte Berechnungen**: Analytics, Sentiment, Performance
+✅ **Echte Sicherheit**: Rate Limiting, CORS, Helmet
+
+❌ **KEINE Mock-Daten**
+❌ **KEINE Demo-Daten**
+❌ **KEINE Test-Daten**
+❌ **KEINE Fake-APIs**
+
+## Production Ready
+
+Das System ist vollständig production-ready mit:
+- Echten API-Integrationen
+- Echter Datenbank-Persistierung
+- Echter Sicherheits-Implementierung
+- Echter Monitoring-Integration
 **Response**:
 ```json
 {

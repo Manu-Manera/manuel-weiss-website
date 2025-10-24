@@ -167,4 +167,100 @@
             </div>
         </div>
     </div>
+
+    <!-- Trading Mode Selector -->
+    <div class="trading-mode-selector">
+        <h3>Trading Mode</h3>
+        <div class="mode-buttons">
+            <button class="mode-btn active" data-mode="general">General Investment</button>
+            <button class="mode-btn" data-mode="crypto">Crypto Trading</button>
+            <button class="mode-btn" data-mode="stocks">Stock Trading</button>
+        </div>
+        
+        <!-- Risk & Time Settings -->
+        <div class="trading-settings">
+            <div class="setting-group">
+                <label>Risk Level:</label>
+                <select id="risk-level-selector">
+                    <option value="low">Low Risk</option>
+                    <option value="medium" selected>Medium Risk</option>
+                    <option value="high">High Risk</option>
+                </select>
+            </div>
+            
+            <div class="setting-group">
+                <label>Time Horizon:</label>
+                <select id="time-horizon-selector">
+                    <option value="short">Short Term (1-3 months)</option>
+                    <option value="medium" selected>Medium Term (3-12 months)</option>
+                    <option value="long">Long Term (1+ years)</option>
+                </select>
+            </div>
+            
+            <div class="setting-group">
+                <label>Budget:</label>
+                <input type="number" id="trading-budget" value="10000" min="1000" step="1000">
+            </div>
+        </div>
+    </div>
+
+    <!-- Crypto Trading Section -->
+    <div class="tab-content" id="crypto-trading-section" style="display: none;">
+        <h3>🪙 Crypto Trading</h3>
+        <div class="crypto-dashboard">
+            <div class="crypto-signals">
+                <h4>Crypto Signals</h4>
+                <div id="crypto-signals-list"></div>
+            </div>
+            <div class="crypto-proposals">
+                <h4>Crypto Proposals</h4>
+                <div id="crypto-proposals-list"></div>
+            </div>
+            <div class="crypto-market">
+                <h4>Market Data</h4>
+                <div id="crypto-market-data"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stock Trading Section -->
+    <div class="tab-content" id="stocks-trading-section" style="display: none;">
+        <h3>📈 Stock Trading</h3>
+        <div class="stocks-dashboard">
+            <div class="stocks-signals">
+                <h4>Stock Signals</h4>
+                <div id="stocks-signals-list"></div>
+            </div>
+            <div class="stocks-proposals">
+                <h4>Stock Proposals</h4>
+                <div id="stocks-proposals-list"></div>
+            </div>
+            <div class="stocks-market">
+                <h4>Market Data</h4>
+                <div id="stocks-market-data"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- General Trading Section -->
+    <div class="tab-content" id="general-trading-section">
+        <h3>📊 General Investment</h3>
+        <div class="general-dashboard">
+            <div class="general-signals">
+                <h4>Investment Signals</h4>
+                <div id="general-signals-list"></div>
+            </div>
+            <div class="general-proposals">
+                <h4>Investment Proposals</h4>
+                <div id="general-proposals-list"></div>
+            </div>
+            <div class="general-market">
+                <h4>Market Overview</h4>
+                <div id="general-market-data"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Trading Data Container -->
+    <div id="trading-data-container"></div>
 </div>
