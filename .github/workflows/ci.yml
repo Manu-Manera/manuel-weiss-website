@@ -28,7 +28,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Run ESLint
         run: npm run lint
@@ -55,7 +55,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Run unit tests
         run: npm run test:unit
@@ -83,7 +83,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Run integration tests
         run: npm run test:integration
@@ -111,7 +111,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Run E2E tests
         run: npm run test:e2e
@@ -139,7 +139,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Run security audit
         run: npm audit --audit-level=moderate
@@ -170,7 +170,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Run performance tests
         run: npm run test:performance
@@ -197,7 +197,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Run accessibility tests
         run: npm run test:accessibility
@@ -224,7 +224,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Build packages
         run: npm run build
@@ -259,7 +259,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -299,7 +299,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -348,7 +348,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Generate changelog
         run: npm run changelog
