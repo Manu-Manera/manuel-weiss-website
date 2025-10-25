@@ -163,7 +163,7 @@ jobs:
         run: npm run backup:report -- --environment=${{ github.event.inputs.environment }}
 
       - name: Upload backup report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: backup-report
           path: backup-report/

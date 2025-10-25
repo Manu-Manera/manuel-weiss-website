@@ -231,7 +231,7 @@ jobs:
         run: npm run health:report -- --environment=${{ github.event.inputs.environment }}
 
       - name: Upload health report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: health-report
           path: health-report/
