@@ -226,7 +226,7 @@ jobs:
         run: npm run scale:report -- --environment=${{ github.event.inputs.environment }}
 
       - name: Upload scaling report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: scaling-report
           path: scaling-report/

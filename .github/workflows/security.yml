@@ -41,7 +41,7 @@ jobs:
           args: --severity-threshold=high
 
       - name: Upload Snyk results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: snyk-results
@@ -301,7 +301,7 @@ jobs:
         run: npm run security:report
 
       - name: Upload security report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: security-report
           path: security-report/
