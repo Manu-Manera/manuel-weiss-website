@@ -23,7 +23,7 @@ jobs:
     
     - name: 📦 Install Dependencies
       run: |
-        npm ci
+        npm install
         echo "Dependencies installed successfully"
     
     - name: 🔍 Validate HTML Files
