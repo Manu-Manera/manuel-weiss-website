@@ -60,7 +60,7 @@ jobs:
           echo "Updating README with badges..."
           
           # Create updated README content
-          cat > README_UPDATED.md << EOF
+          cat > README_UPDATED.md << 'EOF'
           # 🚀 Manuel Weiss - Professional Services Website
           
           **Eine umfassende, moderne Website mit KI-gestütztem Bewerbungsmanager, AWS-Backend und vollständiger Business-Lösung.**
@@ -83,60 +83,60 @@ jobs:
           
           ---
           
-## 🚀 Features
-
-### 🤖 KI-gestützte Bewerbungsautomatisierung
-- **Smart CV Generator** - Automatische Lebenslauf-Erstellung
-- **Cover Letter AI** - Intelligente Anschreiben-Generierung
-- **Job Matching** - KI-basierte Stellenauswahl
-- **Interview Prep** - Vorbereitung mit KI-Coach
-
-### 📊 Analytics Dashboard
-- **Application Tracking** - Vollständige Bewerbungsverfolgung
-- **Success Metrics** - Erfolgsraten und Statistiken
-- **Performance Insights** - Detaillierte Analysen
-
-### 🔧 AWS Backend Integration
-- **DynamoDB** - Datenbank für Anwendungen
-- **S3 Storage** - Datei-Upload und -Verwaltung
-- **Lambda Functions** - Serverless Backend
-- **API Gateway** - RESTful API-Schnittstellen
-
-### 🎯 Persönlichkeitsentwicklung
-- **33+ Methoden** - Wissenschaftlich fundierte Tools
-- **Ikigai Workflow** - Lebenszweck-Entdeckung
-- **RAISEC Test** - Berufsorientierung
-- **SWOT Analyse** - Stärken-Schwächen-Analyse
+          ## 🚀 Features
+          
+          ### 🤖 KI-gestützte Bewerbungsautomatisierung
+          - **Smart CV Generator** - Automatische Lebenslauf-Erstellung
+          - **Cover Letter AI** - Intelligente Anschreiben-Generierung
+          - **Job Matching** - KI-basierte Stellenauswahl
+          - **Interview Prep** - Vorbereitung mit KI-Coach
+          
+          ### 📊 Analytics Dashboard
+          - **Application Tracking** - Vollständige Bewerbungsverfolgung
+          - **Success Metrics** - Erfolgsraten und Statistiken
+          - **Performance Insights** - Detaillierte Analysen
+          
+          ### 🔧 AWS Backend Integration
+          - **DynamoDB** - Datenbank für Anwendungen
+          - **S3 Storage** - Datei-Upload und -Verwaltung
+          - **Lambda Functions** - Serverless Backend
+          - **API Gateway** - RESTful API-Schnittstellen
+          
+          ### 🎯 Persönlichkeitsentwicklung
+          - **33+ Methoden** - Wissenschaftlich fundierte Tools
+          - **Ikigai Workflow** - Lebenszweck-Entdeckung
+          - **RAISEC Test** - Berufsorientierung
+          - **SWOT Analyse** - Stärken-Schwächen-Analyse
           
           ---
           
           ## 🛠️ Technologie-Stack
           
-- **Frontend:** HTML5, CSS3, JavaScript (ES6+)
-- **Backend:** AWS Lambda, DynamoDB, S3
-- **Deployment:** Netlify, GitHub Pages
-- **CI/CD:** GitHub Actions
-- **Monitoring:** AWS CloudWatch
-
----
-
-## 📈 Projekt-Status
-
-- ✅ **Frontend:** Vollständig implementiert
-- ✅ **Backend:** AWS-Integration aktiv
-- ✅ **Deployment:** Automatisiert
-- ✅ **Monitoring:** Live-Metriken verfügbar
-
----
-
-## 🤝 Contributing
-
-Dieses Projekt ist ein persönliches Portfolio-Projekt. Für Fragen oder Feedback kontaktieren Sie mich gerne.
-
----
-
-**© 2024 Manuel Weiss - Professional Services**
-EOF
+          - **Frontend:** HTML5, CSS3, JavaScript (ES6+)
+          - **Backend:** AWS Lambda, DynamoDB, S3
+          - **Deployment:** Netlify, GitHub Pages
+          - **CI/CD:** GitHub Actions
+          - **Monitoring:** AWS CloudWatch
+          
+          ---
+          
+          ## 📈 Projekt-Status
+          
+          - ✅ **Frontend:** Vollständig implementiert
+          - ✅ **Backend:** AWS-Integration aktiv
+          - ✅ **Deployment:** Automatisiert
+          - ✅ **Monitoring:** Live-Metriken verfügbar
+          
+          ---
+          
+          ## 🤝 Contributing
+          
+          Dieses Projekt ist ein persönliches Portfolio-Projekt. Für Fragen oder Feedback kontaktieren Sie mich gerne.
+          
+          ---
+          
+          **© 2024 Manuel Weiss - Professional Services**
+          EOF
 
       - name: Commit changes
         run: |
