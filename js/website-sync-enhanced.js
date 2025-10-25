@@ -59,7 +59,7 @@ class WebsiteDataSync {
         if (data.title) {
             const heroTitle = document.getElementById('hero-title');
             if (heroTitle) {
-                heroTitle.innerHTML = `<span data-de="HR Berater für" data-en="HR Consultant for">HR Berater für</span> <span class="gradient-text">${data.title}</span>`;
+                heroTitle.innerHTML = `<span class="gradient-text">${data.title}</span>`;
             }
         }
         
