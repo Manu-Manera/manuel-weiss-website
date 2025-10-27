@@ -1,483 +1,330 @@
-/**
- * PROFILE SETUP - JAVASCRIPT
- * Handles the profile creation form and data management
- */
+// =================== BEWERBUNGSPROFIL SETUP SYSTEM ===================
+// Vollständige Integration mit AWS Cognito und Adminpanel
 
-class ProfileSetup {
+class BewerbungsprofilManager {
     constructor() {
-        this.form = document.getElementById('profileForm');
-        this.applicationsCore = null;
+        this.currentUser = null;
+        this.profileData = {};
+        this.isAuthenticated = false;
         this.init();
     }
 
     async init() {
-        console.log('👤 Initializing Profile Setup...');
+        console.log('🚀 Bewerbungsprofil Manager wird initialisiert...');
         
-        // Wait for applications core
-        await this.waitForApplicationsCore();
+        // Auth-Status prüfen
+        await this.checkAuthStatus();
         
-        // Setup form handlers
-        this.setupFormHandlers();
+        // Event Listeners setup
+        this.setupEventListeners();
         
-        // Setup dynamic form elements
-        this.setupDynamicElements();
-        
-        // Load existing profile if available
-        this.loadExistingProfile();
-        
-        console.log('✅ Profile Setup initialized');
+        // Formular vorausfüllen falls User eingeloggt
+        if (this.isAuthenticated) {
+            await this.loadExistingProfile();
+        }
     }
 
-    async waitForApplicationsCore() {
-        return new Promise((resolve) => {
-            const checkCore = () => {
-                if (window.applicationsCore && window.applicationsCore.isInitialized) {
-                    this.applicationsCore = window.applicationsCore;
-                    resolve();
-                } else {
-                    setTimeout(checkCore, 100);
-                }
-            };
-            checkCore();
-        });
+    async checkAuthStatus() {
+        try {
+            // Prüfe ob real-user-auth-system verfügbar ist
+            if (window.realUserAuth && window.realUserAuth.isAuthenticated()) {
+                this.currentUser = window.realUserAuth.getCurrentUser();
+                this.isAuthenticated = true;
+                console.log('✅ User ist authentifiziert:', this.currentUser);
+                this.updateAuthUI();
+            } else {
+                console.log('⚠️ User nicht authentifiziert');
+                this.showAuthPrompt();
+            }
+        } catch (error) {
+            console.error('❌ Auth-Status-Check fehlgeschlagen:', error);
+            this.showAuthPrompt();
+        }
     }
 
-    setupFormHandlers() {
-        // Form submission
-        this.form.addEventListener('submit', (e) => {
-            e.preventDefault();
-            this.handleFormSubmission();
-        });
+    updateAuthUI() {
+        const authButton = document.getElementById('realAuthButton');
+        const userMenu = document.getElementById('realUserMenu');
+        const userName = document.getElementById('userName');
+        const userAvatarImg = document.getElementById('userAvatarImg');
 
-        // Real-time validation
-        this.setupValidation();
-
-        // Skills input handling
-        this.setupSkillsInput();
-
-        // Current job checkbox
-        this.setupCurrentJobHandlers();
+        if (this.isAuthenticated && this.currentUser) {
+            if (authButton) authButton.style.display = 'none';
+            if (userMenu) userMenu.style.display = 'block';
+            if (userName) userName.textContent = this.currentUser.name || this.currentUser.email;
+            if (userAvatarImg) {
+                userAvatarImg.src = this.currentUser.avatar || '../images/manuel-weiss-portrait.jpg';
+                userAvatarImg.alt = this.currentUser.name || 'User Avatar';
+            }
+        }
     }
 
-    setupDynamicElements() {
-        // Add experience button
-        document.getElementById('addExperience').addEventListener('click', () => {
-            this.addExperienceItem();
-        });
-
-        // Add education button
-        document.getElementById('addEducation').addEventListener('click', () => {
-            this.addEducationItem();
-        });
-
-        // Add language button
-        document.getElementById('addLanguage').addEventListener('click', () => {
-            this.addLanguageItem();
-        });
+    showAuthPrompt() {
+        const authButton = document.getElementById('realAuthButton');
+        if (authButton) {
+            authButton.style.display = 'block';
+            authButton.innerHTML = '<i class="fas fa-user"></i> Anmelden';
+        }
     }
 
-    setupValidation() {
-        const inputs = this.form.querySelectorAll('input, select, textarea');
-        
-        inputs.forEach(input => {
-            input.addEventListener('blur', () => {
-                this.validateField(input);
-            });
+    async loadExistingProfile() {
+        try {
+            if (!this.currentUser) return;
+
+            console.log('📋 Lade existierendes Profil für:', this.currentUser.email);
             
-            input.addEventListener('input', () => {
-                this.clearFieldError(input);
+            // API-Call um existierendes Profil zu laden
+            const response = await fetch(`/api/applications/profile/${this.currentUser.id}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${await this.getAuthToken()}`,
+                    'Content-Type': 'application/json'
+                }
             });
+
+            if (response.ok) {
+                const profileData = await response.json();
+                this.profileData = profileData;
+                this.populateForm(profileData);
+                console.log('✅ Profil erfolgreich geladen');
+            } else {
+                console.log('ℹ️ Kein existierendes Profil gefunden, neues Profil wird erstellt');
+            }
+        } catch (error) {
+            console.error('❌ Fehler beim Laden des Profils:', error);
+        }
+    }
+
+    populateForm(profileData) {
+        // Persönliche Daten
+        if (profileData.personal) {
+            const personal = profileData.personal;
+            this.setFormValue('firstName', personal.firstName);
+            this.setFormValue('lastName', personal.lastName);
+            this.setFormValue('email', personal.email);
+            this.setFormValue('phone', personal.phone);
+            this.setFormValue('location', personal.location);
+            this.setFormValue('birthDate', personal.birthDate);
+        }
+
+        // Berufserfahrung
+        if (profileData.experience && profileData.experience.length > 0) {
+            this.populateExperience(profileData.experience);
+        }
+
+        // Ausbildung
+        if (profileData.education && profileData.education.length > 0) {
+            this.populateEducation(profileData.education);
+        }
+
+        // Fähigkeiten
+        if (profileData.skills) {
+            this.setFormValue('technicalSkills', profileData.skills.technical?.join(', '));
+            this.populateLanguages(profileData.skills.languages);
+        }
+
+        // Karriereziele
+        if (profileData.careerGoals) {
+            const goals = profileData.careerGoals;
+            this.setFormValue('desiredPosition', goals.desiredPosition);
+            this.setFormValue('desiredIndustry', goals.desiredIndustry);
+            this.setFormValue('salaryExpectation', goals.salaryExpectation);
+            this.setFormValue('workType', goals.workType);
+            this.setFormValue('motivation', goals.motivation);
+        }
+    }
+
+    setFormValue(fieldId, value) {
+        const field = document.getElementById(fieldId);
+        if (field && value) {
+            field.value = value;
+        }
+    }
+
+    populateExperience(experiences) {
+        const container = document.getElementById('experienceContainer');
+        if (!container) return;
+
+        // Erste Erfahrung entfernen (Template)
+        const firstExp = container.querySelector('.experience-item');
+        if (firstExp) firstExp.remove();
+
+        experiences.forEach((exp, index) => {
+            this.addExperienceItem(exp);
         });
     }
 
-    setupSkillsInput() {
-        const skillsInput = document.getElementById('technicalSkills');
-        const skillsTags = document.getElementById('technicalTags');
-        
-        skillsInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === ',') {
-                e.preventDefault();
-                this.addSkillTag(skillsInput.value.trim());
-                skillsInput.value = '';
-            }
-        });
-        
-        skillsInput.addEventListener('blur', () => {
-            if (skillsInput.value.trim()) {
-                this.addSkillTag(skillsInput.value.trim());
-                skillsInput.value = '';
-            }
+    populateEducation(educations) {
+        const container = document.getElementById('educationContainer');
+        if (!container) return;
+
+        // Erste Ausbildung entfernen (Template)
+        const firstEdu = container.querySelector('.education-item');
+        if (firstEdu) firstEdu.remove();
+
+        educations.forEach((edu, index) => {
+            this.addEducationItem(edu);
         });
     }
 
-    setupCurrentJobHandlers() {
-        // Handle current job checkbox changes
+    populateLanguages(languages) {
+        const container = document.querySelector('.languages-container');
+        if (!container || !languages) return;
+
+        // Erste Sprache entfernen (Template)
+        const firstLang = container.querySelector('.language-item');
+        if (firstLang) firstLang.remove();
+
+        languages.forEach((lang, index) => {
+            this.addLanguageItem(lang);
+        });
+    }
+
+    setupEventListeners() {
+        // Form Submit
+        const profileForm = document.getElementById('profileForm');
+        if (profileForm) {
+            profileForm.addEventListener('submit', (e) => this.handleFormSubmit(e));
+        }
+
+        // Experience Management
+        const addExperienceBtn = document.getElementById('addExperience');
+        if (addExperienceBtn) {
+            addExperienceBtn.addEventListener('click', () => this.addExperienceItem());
+        }
+
+        // Education Management
+        const addEducationBtn = document.getElementById('addEducation');
+        if (addEducationBtn) {
+            addEducationBtn.addEventListener('click', () => this.addEducationItem());
+        }
+
+        // Language Management
+        const addLanguageBtn = document.getElementById('addLanguage');
+        if (addLanguageBtn) {
+            addLanguageBtn.addEventListener('click', () => this.addLanguageItem());
+        }
+
+        // Skills Input
+        const technicalSkillsInput = document.getElementById('technicalSkills');
+        if (technicalSkillsInput) {
+            technicalSkillsInput.addEventListener('input', (e) => this.handleSkillsInput(e));
+        }
+
+        // Current Job Checkbox
         document.addEventListener('change', (e) => {
             if (e.target.name === 'currentJob') {
-                const endDateInput = e.target.closest('.experience-item').querySelector('input[name="endDate"]');
-                if (e.target.checked) {
-                    endDateInput.disabled = true;
-                    endDateInput.value = '';
-                } else {
-                    endDateInput.disabled = false;
-                }
+                this.handleCurrentJobChange(e.target);
+            }
+        });
+
+        // Remove Buttons
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('remove-experience')) {
+                this.removeExperienceItem(e.target);
+            } else if (e.target.classList.contains('remove-education')) {
+                this.removeEducationItem(e.target);
+            } else if (e.target.classList.contains('remove-language')) {
+                this.removeLanguageItem(e.target);
             }
         });
     }
 
-    addSkillTag(skill) {
-        if (!skill) return;
+    async handleFormSubmit(e) {
+        e.preventDefault();
         
-        const skillsTags = document.getElementById('technicalTags');
-        const existingTags = Array.from(skillsTags.children).map(tag => tag.textContent.trim());
-        
-        if (existingTags.includes(skill)) return;
-        
-        const tag = document.createElement('span');
-        tag.className = 'skill-tag';
-        tag.innerHTML = `
-            ${skill}
-            <button type="button" class="remove-skill" onclick="this.parentElement.remove()">
-                <i class="fas fa-times"></i>
-            </button>
-        `;
-        
-        skillsTags.appendChild(tag);
-    }
-
-    addExperienceItem() {
-        const container = document.getElementById('experienceContainer');
-        const newItem = this.createExperienceItem();
-        container.appendChild(newItem);
-        
-        // Setup remove button
-        const removeBtn = newItem.querySelector('.remove-experience');
-        removeBtn.addEventListener('click', () => {
-            newItem.remove();
-        });
-        
-        // Setup current job handler
-        const currentJobCheckbox = newItem.querySelector('input[name="currentJob"]');
-        const endDateInput = newItem.querySelector('input[name="endDate"]');
-        
-        currentJobCheckbox.addEventListener('change', () => {
-            if (currentJobCheckbox.checked) {
-                endDateInput.disabled = true;
-                endDateInput.value = '';
-            } else {
-                endDateInput.disabled = false;
-            }
-        });
-        
-        // Animate in
-        newItem.classList.add('fade-in');
-    }
-
-    createExperienceItem() {
-        const div = document.createElement('div');
-        div.className = 'experience-item';
-        div.innerHTML = `
-            <div class="form-grid">
-                <div class="form-group">
-                    <label class="form-label">Position *</label>
-                    <input type="text" name="position" class="form-input" placeholder="z.B. Softwareentwickler" required>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Unternehmen *</label>
-                    <input type="text" name="company" class="form-input" placeholder="z.B. Tech Corp GmbH" required>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Von</label>
-                    <input type="month" name="startDate" class="form-input">
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Bis</label>
-                    <input type="month" name="endDate" class="form-input">
-                    <div class="form-checkbox">
-                        <input type="checkbox" name="currentJob">
-                        <label>Aktuell</label>
-                    </div>
-                </div>
-                
-                <div class="form-group full-width">
-                    <label class="form-label">Beschreibung</label>
-                    <textarea name="description" class="form-textarea" rows="3" placeholder="Beschreiben Sie Ihre Aufgaben und Erfolge..."></textarea>
-                </div>
-            </div>
-            
-            <button type="button" class="btn btn-outline btn-sm remove-experience">
-                <i class="fas fa-trash"></i>
-                Entfernen
-            </button>
-        `;
-        return div;
-    }
-
-    addEducationItem() {
-        const container = document.getElementById('educationContainer');
-        const newItem = this.createEducationItem();
-        container.appendChild(newItem);
-        
-        // Setup remove button
-        const removeBtn = newItem.querySelector('.remove-education');
-        removeBtn.addEventListener('click', () => {
-            newItem.remove();
-        });
-        
-        // Animate in
-        newItem.classList.add('fade-in');
-    }
-
-    createEducationItem() {
-        const div = document.createElement('div');
-        div.className = 'education-item';
-        div.innerHTML = `
-            <div class="form-grid">
-                <div class="form-group">
-                    <label class="form-label">Abschluss *</label>
-                    <select name="degree" class="form-select" required>
-                        <option value="">Bitte wählen...</option>
-                        <option value="abitur">Abitur</option>
-                        <option value="fachabitur">Fachabitur</option>
-                        <option value="ausbildung">Ausbildung</option>
-                        <option value="bachelor">Bachelor</option>
-                        <option value="master">Master</option>
-                        <option value="diplom">Diplom</option>
-                        <option value="doktor">Doktor</option>
-                        <option value="zertifikat">Zertifikat</option>
-                        <option value="sonstiges">Sonstiges</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Fachrichtung *</label>
-                    <input type="text" name="field" class="form-input" placeholder="z.B. Informatik, BWL" required>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Institution</label>
-                    <input type="text" name="institution" class="form-input" placeholder="z.B. Universität München">
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Jahr</label>
-                    <input type="number" name="year" class="form-input" placeholder="2020" min="1950" max="2030">
-                </div>
-            </div>
-            
-            <button type="button" class="btn btn-outline btn-sm remove-education">
-                <i class="fas fa-trash"></i>
-                Entfernen
-            </button>
-        `;
-        return div;
-    }
-
-    addLanguageItem() {
-        const container = document.querySelector('.languages-container');
-        const newItem = this.createLanguageItem();
-        container.appendChild(newItem);
-        
-        // Setup remove button
-        const removeBtn = newItem.querySelector('.remove-language');
-        removeBtn.addEventListener('click', () => {
-            newItem.remove();
-        });
-        
-        // Animate in
-        newItem.classList.add('fade-in');
-    }
-
-    createLanguageItem() {
-        const div = document.createElement('div');
-        div.className = 'language-item';
-        div.innerHTML = `
-            <input type="text" name="language" class="form-input" placeholder="Sprache">
-            <select name="level" class="form-select">
-                <option value="">Niveau</option>
-                <option value="A1">A1 - Anfänger</option>
-                <option value="A2">A2 - Grundkenntnisse</option>
-                <option value="B1">B1 - Mittelstufe</option>
-                <option value="B2">B2 - Gute Kenntnisse</option>
-                <option value="C1">C1 - Sehr gute Kenntnisse</option>
-                <option value="C2">C2 - Muttersprache</option>
-            </select>
-            <button type="button" class="btn btn-outline btn-sm remove-language">
-                <i class="fas fa-trash"></i>
-            </button>
-        `;
-        return div;
-    }
-
-    validateField(field) {
-        const value = field.value.trim();
-        const isRequired = field.hasAttribute('required');
-        
-        // Clear previous errors
-        this.clearFieldError(field);
-        
-        // Required field validation
-        if (isRequired && !value) {
-            this.showFieldError(field, 'Dieses Feld ist erforderlich');
-            return false;
-        }
-        
-        // Email validation
-        if (field.type === 'email' && value) {
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(value)) {
-                this.showFieldError(field, 'Bitte geben Sie eine gültige E-Mail-Adresse ein');
-                return false;
-            }
-        }
-        
-        // Phone validation
-        if (field.type === 'tel' && value) {
-            const phoneRegex = /^[\+]?[0-9\s\-\(\)]{10,}$/;
-            if (!phoneRegex.test(value)) {
-                this.showFieldError(field, 'Bitte geben Sie eine gültige Telefonnummer ein');
-                return false;
-            }
-        }
-        
-        // Number validation
-        if (field.type === 'number' && value) {
-            const min = field.getAttribute('min');
-            const max = field.getAttribute('max');
-            const numValue = parseFloat(value);
-            
-            if (min && numValue < parseFloat(min)) {
-                this.showFieldError(field, `Wert muss mindestens ${min} sein`);
-                return false;
-            }
-            
-            if (max && numValue > parseFloat(max)) {
-                this.showFieldError(field, `Wert darf höchstens ${max} sein`);
-                return false;
-            }
-        }
-        
-        // Mark as valid
-        field.classList.add('success');
-        return true;
-    }
-
-    showFieldError(field, message) {
-        field.classList.add('error');
-        
-        // Remove existing error message
-        const existingError = field.parentNode.querySelector('.error-message');
-        if (existingError) {
-            existingError.remove();
-        }
-        
-        // Add new error message
-        const errorDiv = document.createElement('div');
-        errorDiv.className = 'error-message';
-        errorDiv.textContent = message;
-        field.parentNode.appendChild(errorDiv);
-    }
-
-    clearFieldError(field) {
-        field.classList.remove('error', 'success');
-        const errorMessage = field.parentNode.querySelector('.error-message');
-        if (errorMessage) {
-            errorMessage.remove();
-        }
-    }
-
-    async handleFormSubmission() {
-        console.log('📝 Handling form submission...');
-        
-        // Validate all fields
-        const isValid = this.validateForm();
-        if (!isValid) {
-            this.showNotification('Bitte korrigieren Sie die Fehler im Formular', 'error');
+        if (!this.isAuthenticated) {
+            alert('❌ Bitte melden Sie sich zuerst an, um Ihr Profil zu speichern.');
             return;
         }
-        
-        // Show loading state
-        const submitBtn = this.form.querySelector('button[type="submit"]');
-        const originalText = submitBtn.innerHTML;
-        submitBtn.classList.add('loading');
-        submitBtn.disabled = true;
-        
+
         try {
-            // Collect form data
-            const formData = this.collectFormData();
+            // Formular validieren
+            if (!this.validateForm()) {
+                return;
+            }
+
+            // Daten sammeln
+            const profileData = this.collectFormData();
             
-            // Save profile data
-            const savedProfile = this.applicationsCore.saveProfileData(formData);
+            // Loading State
+            this.showLoadingState();
+
+            // Profil speichern
+            const result = await this.saveProfile(profileData);
             
-            // Track progress
-            this.applicationsCore.trackProgress('profile-setup', formData);
-            
-            // Show success message
-            this.showNotification('Profil erfolgreich gespeichert!', 'success');
-            
-            // Redirect to next step
-            setTimeout(() => {
-                window.location.href = 'document-upload.html';
-            }, 1500);
-            
+            if (result.success) {
+                this.showSuccessMessage();
+                // Weiterleitung zum nächsten Schritt
+                setTimeout(() => {
+                    window.location.href = 'job-analysis.html';
+                }, 2000);
+                } else {
+                this.showErrorMessage(result.error);
+            }
         } catch (error) {
-            console.error('❌ Error saving profile:', error);
-            this.showNotification('Fehler beim Speichern des Profils. Bitte versuchen Sie es erneut.', 'error');
-        } finally {
-            // Reset button state
-            submitBtn.classList.remove('loading');
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = originalText;
+            console.error('❌ Formular-Submit-Fehler:', error);
+            this.showErrorMessage('Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut.');
         }
     }
 
     validateForm() {
-        const requiredFields = this.form.querySelectorAll('[required]');
+        const requiredFields = ['firstName', 'lastName', 'email', 'location'];
         let isValid = true;
-        
-        requiredFields.forEach(field => {
-            if (!this.validateField(field)) {
+
+        requiredFields.forEach(fieldId => {
+            const field = document.getElementById(fieldId);
+            if (!field || !field.value.trim()) {
+                this.showFieldError(fieldId, 'Dieses Feld ist erforderlich');
                 isValid = false;
+            } else {
+                this.clearFieldError(fieldId);
             }
         });
-        
+
+        // E-Mail Validierung
+        const emailField = document.getElementById('email');
+        if (emailField && emailField.value) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(emailField.value)) {
+                this.showFieldError('email', 'Bitte geben Sie eine gültige E-Mail-Adresse ein');
+                isValid = false;
+            }
+        }
+
         return isValid;
     }
 
     collectFormData() {
-        const formData = new FormData(this.form);
-        const data = {};
-        
-        // Basic fields
-        for (const [key, value] of formData.entries()) {
-            if (data[key]) {
-                // Handle multiple values (arrays)
-                if (Array.isArray(data[key])) {
-                    data[key].push(value);
-                } else {
-                    data[key] = [data[key], value];
-                }
-            } else {
-                data[key] = value;
+        return {
+            userId: this.currentUser.id,
+            personal: {
+                firstName: document.getElementById('firstName')?.value,
+                lastName: document.getElementById('lastName')?.value,
+                email: document.getElementById('email')?.value,
+                phone: document.getElementById('phone')?.value,
+                location: document.getElementById('location')?.value,
+                birthDate: document.getElementById('birthDate')?.value
+            },
+            experience: this.collectExperienceData(),
+            education: this.collectEducationData(),
+            skills: {
+                technical: this.collectTechnicalSkills(),
+                languages: this.collectLanguageData()
+            },
+            careerGoals: {
+                desiredPosition: document.getElementById('desiredPosition')?.value,
+                desiredIndustry: document.getElementById('desiredIndustry')?.value,
+                salaryExpectation: document.getElementById('salaryExpectation')?.value,
+                workType: document.getElementById('workType')?.value,
+                motivation: document.getElementById('motivation')?.value
+            },
+            metadata: {
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                version: 1
             }
-        }
-        
-        // Collect experience data
-        data.experience = this.collectExperienceData();
-        
-        // Collect education data
-        data.education = this.collectEducationData();
-        
-        // Collect skills
-        data.technicalSkills = this.collectSkills();
-        
-        // Collect languages
-        data.languages = this.collectLanguages();
-        
-        return data;
+        };
     }
 
     collectExperienceData() {
@@ -486,12 +333,12 @@ class ProfileSetup {
         
         experienceItems.forEach(item => {
             const experience = {
-                position: item.querySelector('input[name="position"]').value,
-                company: item.querySelector('input[name="company"]').value,
-                startDate: item.querySelector('input[name="startDate"]').value,
-                endDate: item.querySelector('input[name="endDate"]').value,
-                currentJob: item.querySelector('input[name="currentJob"]').checked,
-                description: item.querySelector('textarea[name="description"]').value
+                position: item.querySelector('input[name="position"]')?.value,
+                company: item.querySelector('input[name="company"]')?.value,
+                startDate: item.querySelector('input[name="startDate"]')?.value,
+                endDate: item.querySelector('input[name="endDate"]')?.value,
+                currentJob: item.querySelector('input[name="currentJob"]')?.checked,
+                description: item.querySelector('textarea[name="description"]')?.value
             };
             
             if (experience.position && experience.company) {
@@ -508,10 +355,10 @@ class ProfileSetup {
         
         educationItems.forEach(item => {
             const education = {
-                degree: item.querySelector('select[name="degree"]').value,
-                field: item.querySelector('input[name="field"]').value,
-                institution: item.querySelector('input[name="institution"]').value,
-                year: item.querySelector('input[name="year"]').value
+                degree: item.querySelector('select[name="degree"]')?.value,
+                field: item.querySelector('input[name="field"]')?.value,
+                institution: item.querySelector('input[name="institution"]')?.value,
+                year: item.querySelector('input[name="year"]')?.value
             };
             
             if (education.degree && education.field) {
@@ -522,22 +369,25 @@ class ProfileSetup {
         return educations;
     }
 
-    collectSkills() {
-        const skillTags = document.querySelectorAll('.skill-tag');
-        return Array.from(skillTags).map(tag => 
-            tag.textContent.replace('×', '').trim()
-        );
+    collectTechnicalSkills() {
+        const skillsInput = document.getElementById('technicalSkills');
+        if (!skillsInput || !skillsInput.value) return [];
+        
+        return skillsInput.value
+            .split(',')
+            .map(skill => skill.trim())
+            .filter(skill => skill.length > 0);
     }
 
-    collectLanguages() {
+    collectLanguageData() {
         const languages = [];
         const languageItems = document.querySelectorAll('.language-item');
         
         languageItems.forEach(item => {
-            const language = item.querySelector('input[name="language"]').value;
-            const level = item.querySelector('select[name="level"]').value;
+            const language = item.querySelector('input[name="language"]')?.value;
+            const level = item.querySelector('select[name="level"]')?.value;
             
-            if (language) {
+            if (language && level) {
                 languages.push({ language, level });
             }
         });
@@ -545,127 +395,371 @@ class ProfileSetup {
         return languages;
     }
 
-    loadExistingProfile() {
-        if (!this.applicationsCore) return;
-        
-        const existingProfile = this.applicationsCore.getProfileData();
-        if (!existingProfile) return;
-        
-        console.log('📋 Loading existing profile...');
-        
-        // Populate basic fields
-        Object.keys(existingProfile).forEach(key => {
-            const field = this.form.querySelector(`[name="${key}"]`);
-            if (field && existingProfile[key]) {
-                if (field.type === 'checkbox') {
-                    field.checked = existingProfile[key];
-                } else {
-                    field.value = existingProfile[key];
-                }
+    async saveProfile(profileData) {
+        try {
+            const response = await fetch('/api/applications/profile', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${await this.getAuthToken()}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(profileData)
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                return {
+                    success: true,
+                    profile: result,
+                    message: 'Profil erfolgreich gespeichert'
+                };
+            } else {
+                const error = await response.json();
+                return {
+                    success: false,
+                    error: error.message || 'Profil konnte nicht gespeichert werden'
+                };
             }
-        });
-        
-        // Populate experience
-        if (existingProfile.experience && Array.isArray(existingProfile.experience)) {
-            existingProfile.experience.forEach((exp, index) => {
-                if (index > 0) {
-                    this.addExperienceItem();
-                }
-                this.populateExperienceItem(index, exp);
-            });
-        }
-        
-        // Populate education
-        if (existingProfile.education && Array.isArray(existingProfile.education)) {
-            existingProfile.education.forEach((edu, index) => {
-                if (index > 0) {
-                    this.addEducationItem();
-                }
-                this.populateEducationItem(index, edu);
-            });
-        }
-        
-        // Populate skills
-        if (existingProfile.technicalSkills && Array.isArray(existingProfile.technicalSkills)) {
-            existingProfile.technicalSkills.forEach(skill => {
-                this.addSkillTag(skill);
-            });
-        }
-        
-        // Populate languages
-        if (existingProfile.languages && Array.isArray(existingProfile.languages)) {
-            existingProfile.languages.forEach((lang, index) => {
-                if (index > 0) {
-                    this.addLanguageItem();
-                }
-                this.populateLanguageItem(index, lang);
-            });
+        } catch (error) {
+            console.error('❌ Profil-Speicher-Fehler:', error);
+            return {
+                success: false,
+                error: 'Netzwerkfehler beim Speichern des Profils'
+            };
         }
     }
 
-    populateExperienceItem(index, experience) {
-        const items = document.querySelectorAll('.experience-item');
-        const item = items[index];
-        if (!item) return;
-        
-        item.querySelector('input[name="position"]').value = experience.position || '';
-        item.querySelector('input[name="company"]').value = experience.company || '';
-        item.querySelector('input[name="startDate"]').value = experience.startDate || '';
-        item.querySelector('input[name="endDate"]').value = experience.endDate || '';
-        item.querySelector('input[name="currentJob"]').checked = experience.currentJob || false;
-        item.querySelector('textarea[name="description"]').value = experience.description || '';
-        
-        // Handle current job checkbox
-        if (experience.currentJob) {
-            item.querySelector('input[name="endDate"]').disabled = true;
+    async getAuthToken() {
+        try {
+            if (window.realUserAuth) {
+                return await window.realUserAuth.getAuthToken();
+            }
+            return null;
+        } catch (error) {
+            console.error('❌ Auth-Token-Fehler:', error);
+            return null;
         }
     }
 
-    populateEducationItem(index, education) {
-        const items = document.querySelectorAll('.education-item');
-        const item = items[index];
-        if (!item) return;
-        
-        item.querySelector('select[name="degree"]').value = education.degree || '';
-        item.querySelector('input[name="field"]').value = education.field || '';
-        item.querySelector('input[name="institution"]').value = education.institution || '';
-        item.querySelector('input[name="year"]').value = education.year || '';
-    }
+    // Experience Management
+    addExperienceItem(data = {}) {
+        const container = document.getElementById('experienceContainer');
+        if (!container) return;
 
-    populateLanguageItem(index, language) {
-        const items = document.querySelectorAll('.language-item');
-        const item = items[index];
-        if (!item) return;
-        
-        item.querySelector('input[name="language"]').value = language.language || '';
-        item.querySelector('select[name="level"]').value = language.level || '';
-    }
-
-    showNotification(message, type = 'info') {
-        if (this.applicationsCore) {
-            this.applicationsCore.showNotification(message, type);
-        } else {
-            // Fallback notification
-            const notification = document.createElement('div');
-            notification.className = `notification notification-${type}`;
-            notification.innerHTML = `
-                <div class="notification-content">
-                    <i class="fas fa-${type === 'error' ? 'exclamation-circle' : type === 'success' ? 'check-circle' : 'info-circle'}"></i>
-                    <span>${message}</span>
+        const experienceItem = document.createElement('div');
+        experienceItem.className = 'experience-item';
+        experienceItem.innerHTML = `
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">Position *</label>
+                    <input type="text" name="position" class="form-input" placeholder="z.B. Softwareentwickler" value="${data.position || ''}" required>
                 </div>
-            `;
+                
+                <div class="form-group">
+                    <label class="form-label">Unternehmen *</label>
+                    <input type="text" name="company" class="form-input" placeholder="z.B. Tech Corp GmbH" value="${data.company || ''}" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Von</label>
+                    <input type="month" name="startDate" class="form-input" value="${data.startDate || ''}">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Bis</label>
+                    <input type="month" name="endDate" class="form-input" value="${data.endDate || ''}" ${data.currentJob ? 'disabled' : ''}>
+                    <div class="form-checkbox">
+                        <input type="checkbox" name="currentJob" ${data.currentJob ? 'checked' : ''}>
+                        <label>Aktuell</label>
+                    </div>
+                </div>
+                
+                <div class="form-group full-width">
+                    <label class="form-label">Beschreibung</label>
+                    <textarea name="description" class="form-textarea" rows="3" placeholder="Beschreiben Sie Ihre Aufgaben und Erfolge...">${data.description || ''}</textarea>
+                </div>
+            </div>
             
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.remove();
-            }, 5000);
+            <button type="button" class="btn btn-outline btn-sm remove-experience">
+                <i class="fas fa-trash"></i>
+                Entfernen
+            </button>
+        `;
+
+        container.appendChild(experienceItem);
+    }
+
+    removeExperienceItem(button) {
+        const experienceItem = button.closest('.experience-item');
+        if (experienceItem) {
+            experienceItem.remove();
         }
+    }
+
+    // Education Management
+    addEducationItem(data = {}) {
+        const container = document.getElementById('educationContainer');
+        if (!container) return;
+
+        const educationItem = document.createElement('div');
+        educationItem.className = 'education-item';
+        educationItem.innerHTML = `
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">Abschluss *</label>
+                    <select name="degree" class="form-select" required>
+                        <option value="">Bitte wählen...</option>
+                        <option value="abitur" ${data.degree === 'abitur' ? 'selected' : ''}>Abitur</option>
+                        <option value="fachabitur" ${data.degree === 'fachabitur' ? 'selected' : ''}>Fachabitur</option>
+                        <option value="ausbildung" ${data.degree === 'ausbildung' ? 'selected' : ''}>Ausbildung</option>
+                        <option value="bachelor" ${data.degree === 'bachelor' ? 'selected' : ''}>Bachelor</option>
+                        <option value="master" ${data.degree === 'master' ? 'selected' : ''}>Master</option>
+                        <option value="diplom" ${data.degree === 'diplom' ? 'selected' : ''}>Diplom</option>
+                        <option value="doktor" ${data.degree === 'doktor' ? 'selected' : ''}>Doktor</option>
+                        <option value="zertifikat" ${data.degree === 'zertifikat' ? 'selected' : ''}>Zertifikat</option>
+                        <option value="sonstiges" ${data.degree === 'sonstiges' ? 'selected' : ''}>Sonstiges</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Fachrichtung *</label>
+                    <input type="text" name="field" class="form-input" placeholder="z.B. Informatik, BWL" value="${data.field || ''}" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Institution</label>
+                    <input type="text" name="institution" class="form-input" placeholder="z.B. Universität München" value="${data.institution || ''}">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Jahr</label>
+                    <input type="number" name="year" class="form-input" placeholder="2020" min="1950" max="2030" value="${data.year || ''}">
+                </div>
+            </div>
+            
+            <button type="button" class="btn btn-outline btn-sm remove-education">
+                <i class="fas fa-trash"></i>
+                Entfernen
+            </button>
+        `;
+
+        container.appendChild(educationItem);
+    }
+
+    removeEducationItem(button) {
+        const educationItem = button.closest('.education-item');
+        if (educationItem) {
+            educationItem.remove();
+        }
+    }
+
+    // Language Management
+    addLanguageItem(data = {}) {
+        const container = document.querySelector('.languages-container');
+        if (!container) return;
+
+        const languageItem = document.createElement('div');
+        languageItem.className = 'language-item';
+        languageItem.innerHTML = `
+            <input type="text" name="language" class="form-input" placeholder="Sprache" value="${data.language || ''}">
+            <select name="level" class="form-select">
+                <option value="">Niveau</option>
+                <option value="A1" ${data.level === 'A1' ? 'selected' : ''}>A1 - Anfänger</option>
+                <option value="A2" ${data.level === 'A2' ? 'selected' : ''}>A2 - Grundkenntnisse</option>
+                <option value="B1" ${data.level === 'B1' ? 'selected' : ''}>B1 - Mittelstufe</option>
+                <option value="B2" ${data.level === 'B2' ? 'selected' : ''}>B2 - Gute Kenntnisse</option>
+                <option value="C1" ${data.level === 'C1' ? 'selected' : ''}>C1 - Sehr gute Kenntnisse</option>
+                <option value="C2" ${data.level === 'C2' ? 'selected' : ''}>C2 - Muttersprache</option>
+            </select>
+            <button type="button" class="btn btn-outline btn-sm remove-language">
+                <i class="fas fa-trash"></i>
+            </button>
+        `;
+
+        container.appendChild(languageItem);
+    }
+
+    removeLanguageItem(button) {
+        const languageItem = button.closest('.language-item');
+        if (languageItem) {
+            languageItem.remove();
+        }
+    }
+
+    // Skills Management
+    handleSkillsInput(e) {
+        const input = e.target;
+        const tagsContainer = document.getElementById('technicalTags');
+        if (!tagsContainer) return;
+
+        const skills = input.value.split(',').map(skill => skill.trim()).filter(skill => skill.length > 0);
+        
+        tagsContainer.innerHTML = skills.map(skill => 
+            `<span class="skill-tag">${skill}</span>`
+        ).join('');
+    }
+
+    // Current Job Handling
+    handleCurrentJobChange(checkbox) {
+        const endDateInput = checkbox.closest('.form-group').querySelector('input[name="endDate"]');
+        if (endDateInput) {
+            endDateInput.disabled = checkbox.checked;
+            if (checkbox.checked) {
+                endDateInput.value = '';
+            }
+        }
+    }
+
+    // UI Helpers
+    showFieldError(fieldId, message) {
+        const field = document.getElementById(fieldId);
+        if (!field) return;
+
+        field.classList.add('error');
+        
+        let errorElement = field.parentNode.querySelector('.field-error');
+        if (!errorElement) {
+            errorElement = document.createElement('div');
+            errorElement.className = 'field-error';
+            field.parentNode.appendChild(errorElement);
+        }
+        errorElement.textContent = message;
+    }
+
+    clearFieldError(fieldId) {
+        const field = document.getElementById(fieldId);
+        if (!field) return;
+
+        field.classList.remove('error');
+        
+        const errorElement = field.parentNode.querySelector('.field-error');
+        if (errorElement) {
+            errorElement.remove();
+        }
+    }
+
+    showLoadingState() {
+        const submitBtn = document.querySelector('button[type="submit"]');
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Speichern...';
+        }
+    }
+
+    showSuccessMessage() {
+        const submitBtn = document.querySelector('button[type="submit"]');
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-check"></i> Erfolgreich gespeichert!';
+            submitBtn.style.background = '#10b981';
+        }
+    }
+
+    showErrorMessage(message) {
+        const submitBtn = document.querySelector('button[type="submit"]');
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-save"></i> Profil speichern & weiter';
+            submitBtn.style.background = '';
+        }
+
+        // Error Toast
+        this.showToast(message, 'error');
+    }
+
+    showToast(message, type = 'info') {
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.innerHTML = `
+            <div class="toast-content">
+                <i class="fas fa-${type === 'error' ? 'exclamation-triangle' : 'check-circle'}"></i>
+                <span>${message}</span>
+            </div>
+        `;
+
+        document.body.appendChild(toast);
+
+        // Auto-remove nach 5 Sekunden
+        setTimeout(() => {
+            toast.remove();
+        }, 5000);
     }
 }
 
-// Initialize when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    window.profileSetup = new ProfileSetup();
-});
+// Global Instance
+window.bewerbungsprofilManager = new BewerbungsprofilManager();
 
+// CSS für Error States und Toast
+const additionalStyles = `
+<style>
+.form-input.error {
+    border-color: #ef4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.field-error {
+    color: #ef4444;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.toast {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    background: white;
+    border-radius: 8px;
+    padding: 1rem 1.5rem;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    z-index: 10000;
+    animation: slideInRight 0.3s ease-out;
+}
+
+.toast-error {
+    border-left: 4px solid #ef4444;
+}
+
+.toast-success {
+    border-left: 4px solid #10b981;
+}
+
+.toast-content {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.toast-error .toast-content i {
+    color: #ef4444;
+}
+
+.toast-success .toast-content i {
+    color: #10b981;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.skill-tag {
+    display: inline-block;
+    background: #e0f2fe;
+    color: #0277bd;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    margin: 0.25rem;
+}
+</style>
+`;
+
+document.head.insertAdjacentHTML('beforeend', additionalStyles);
+
+console.log('✅ Bewerbungsprofil Manager geladen');
