@@ -14,13 +14,13 @@ class AdminApplication {
     }
     
     /**
-     * Application initialisieren
+     * Application initialisieren - Cookie-sichere Version
      */
     async init() {
         if (this.initialized) return;
         
         try {
-            console.log('Initializing Admin Application...');
+            console.log('🚀 Initializing Admin Application...');
             
             // Core Components initialisieren
             this.stateManager = new AdminStateManager();
@@ -48,14 +48,43 @@ class AdminApplication {
             this.navigation.handleDirectLinks();
             
             this.initialized = true;
-            console.log('Admin Application initialized successfully');
+            console.log('✅ Admin Application initialized successfully');
             
             // Global verfügbar machen
             window.AdminApp = this;
             
+            // Cookie-Konflikt-Warnung
+            this.checkCookieConflicts();
+            
         } catch (error) {
-            console.error('Failed to initialize Admin Application:', error);
+            console.error('❌ Failed to initialize Admin Application:', error);
             this.handleInitializationError(error);
+        }
+    }
+    
+    /**
+     * Cookie-Konflikte prüfen
+     */
+    checkCookieConflicts() {
+        try {
+            // Prüfen ob localStorage funktioniert
+            const test = '__admin_cookie_test__';
+            localStorage.setItem(test, test);
+            localStorage.removeItem(test);
+            
+            console.log('✅ No cookie conflicts detected');
+        } catch (error) {
+            console.warn('⚠️ Potential cookie conflicts detected:', error);
+            
+            // Warnung anzeigen
+            if (this.stateManager) {
+                this.stateManager.addNotification({
+                    type: 'warning',
+                    title: 'Cookie Conflict Detected',
+                    message: 'Navigation may not work properly due to cookie conflicts. Please clear your browser cookies.',
+                    duration: 10000
+                });
+            }
         }
     }
     

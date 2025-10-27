@@ -240,7 +240,13 @@ class NutritionSection {
 
     async saveRecipes() {
         try {
-            localStorage.setItem('saved_recipes', JSON.stringify(this.recipes));
+            // Cookie-sichere Speicherung
+            if (AdminUtils.storage.isAvailable()) {
+                AdminUtils.storage.set('saved_recipes', this.recipes);
+                console.log('✅ Nutrition recipes saved');
+            } else {
+                console.warn('⚠️ Storage not available, recipes not saved');
+            }
         } catch (error) {
             console.error('❌ Nutrition: Error saving recipes:', error);
         }
@@ -248,7 +254,13 @@ class NutritionSection {
 
     async saveStats() {
         try {
-            localStorage.setItem('nutrition_stats', JSON.stringify(this.stats));
+            // Cookie-sichere Speicherung
+            if (AdminUtils.storage.isAvailable()) {
+                AdminUtils.storage.set('nutrition_stats', this.stats);
+                console.log('✅ Nutrition stats saved');
+            } else {
+                console.warn('⚠️ Storage not available, stats not saved');
+            }
         } catch (error) {
             console.error('❌ Nutrition: Error saving stats:', error);
         }

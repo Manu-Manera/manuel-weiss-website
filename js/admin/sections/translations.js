@@ -45,10 +45,44 @@ class TranslationsSection {
 
     async loadTranslations() {
         try {
-            const storedTranslations = localStorage.getItem('website_translations');
-            if (storedTranslations) {
-                this.translations = JSON.parse(storedTranslations);
+            // Cookie-sichere Speicherung
+            if (AdminUtils.storage.isAvailable()) {
+                const storedTranslations = AdminUtils.storage.get('website_translations');
+                if (storedTranslations) {
+                    this.translations = storedTranslations;
+                    console.log('✅ Translations loaded from storage');
+                } else {
+                    // Fallback: Standard Übersetzungen
+                    this.translations = {
+                        de: {
+                            'nav.home': 'Home',
+                            'nav.services': 'Services',
+                            'nav.about': 'Über mich',
+                            'nav.contact': 'Kontakt',
+                            'hero.title': 'HR Berater für AI & Transformation',
+                            'hero.subtitle': 'Innovative Lösungen für moderne Unternehmen. Digitalisierung, Geschäftsprozesse und Personalwesen.',
+                            'services.title': 'Meine Services',
+                            'services.subtitle': 'Professionelle Beratung in den Bereichen HR, AI und Geschäftsprozesse',
+                            'personality.title': 'Persönlichkeitsentwicklung',
+                            'personality.subtitle': 'Entwickle dich kontinuierlich weiter mit bewährten Methoden'
+                        },
+                        en: {
+                            'nav.home': 'Home',
+                            'nav.services': 'Services',
+                            'nav.about': 'About',
+                            'nav.contact': 'Contact',
+                            'hero.title': 'HR Consultant for AI & Transformation',
+                            'hero.subtitle': 'Innovative solutions for modern companies. Digitalization, business processes and human resources.',
+                            'services.title': 'My Services',
+                            'services.subtitle': 'Professional consulting in HR, AI and business processes',
+                            'personality.title': 'Personality Development',
+                            'personality.subtitle': 'Continuously develop yourself with proven methods'
+                        }
+                    };
+                    console.log('✅ Default translations loaded');
+                }
             } else {
+                console.warn('⚠️ Storage not available, using default translations');
                 // Fallback: Standard Übersetzungen
                 this.translations = {
                     de: {
@@ -132,8 +166,13 @@ class TranslationsSection {
                 this.translations[this.currentLanguage][key] = this.changes[key];
             });
             
-            // In localStorage speichern
-            localStorage.setItem('website_translations', JSON.stringify(this.translations));
+            // Cookie-sichere Speicherung
+            if (AdminUtils.storage.isAvailable()) {
+                AdminUtils.storage.set('website_translations', this.translations);
+                console.log('✅ Translations saved');
+            } else {
+                console.warn('⚠️ Storage not available, translations not saved');
+            }
             
             // Visual Feedback zurücksetzen
             document.querySelectorAll('input[data-original], textarea[data-original]').forEach(input => {

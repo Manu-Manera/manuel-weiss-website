@@ -87,28 +87,83 @@ class AdminStateManager {
     }
     
     /**
-     * LocalStorage laden
+     * LocalStorage laden - Cookie-sichere Version
      */
     loadFromStorage() {
         try {
+            // Prüfen ob localStorage verfügbar ist
+            if (!this.isLocalStorageAvailable()) {
+                console.warn('LocalStorage not available, using memory state');
+                return;
+            }
+            
             const saved = localStorage.getItem('admin_state');
             if (saved) {
                 const parsed = JSON.parse(saved);
-                this.state = { ...this.state, ...parsed };
+                
+                // Nur sichere State-Teile laden, um Cookie-Konflikte zu vermeiden
+                this.state = { 
+                    ...this.state, 
+                    currentSection: parsed.currentSection || 'dashboard',
+                    sidebarCollapsed: parsed.sidebarCollapsed || false,
+                    user: parsed.user || this.state.user,
+                    notifications: parsed.notifications || [],
+                    settings: parsed.settings || {}
+                };
+                
+                // LoadedSections als Set wiederherstellen
+                if (parsed.loadedSections && Array.isArray(parsed.loadedSections)) {
+                    this.state.loadedSections = new Set(parsed.loadedSections);
+                }
+                
+                console.log('✅ Admin state loaded from storage');
             }
         } catch (error) {
             console.warn('Failed to load state from storage:', error);
+            // Bei Fehlern: State zurücksetzen
+            this.reset();
         }
     }
     
     /**
-     * LocalStorage speichern
+     * LocalStorage speichern - Cookie-sichere Version
      */
     saveToStorage() {
         try {
-            localStorage.setItem('admin_state', JSON.stringify(this.state));
+            // Prüfen ob localStorage verfügbar ist
+            if (!this.isLocalStorageAvailable()) {
+                console.warn('LocalStorage not available, state not saved');
+                return;
+            }
+            
+            // Nur sichere State-Teile speichern, um Cookie-Konflikte zu vermeiden
+            const safeState = {
+                currentSection: this.state.currentSection,
+                sidebarCollapsed: this.state.sidebarCollapsed,
+                user: this.state.user,
+                notifications: this.state.notifications.slice(0, 10), // Nur letzte 10 Notifications
+                settings: this.state.settings,
+                loadedSections: Array.from(this.state.loadedSections)
+            };
+            
+            localStorage.setItem('admin_state', JSON.stringify(safeState));
+            console.log('✅ Admin state saved to storage');
         } catch (error) {
             console.warn('Failed to save state to storage:', error);
+        }
+    }
+    
+    /**
+     * LocalStorage Verfügbarkeit prüfen
+     */
+    isLocalStorageAvailable() {
+        try {
+            const test = '__admin_localStorage_test__';
+            localStorage.setItem(test, test);
+            localStorage.removeItem(test);
+            return true;
+        } catch (e) {
+            return false;
         }
     }
     

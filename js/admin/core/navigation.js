@@ -66,10 +66,12 @@ class AdminNavigation {
     }
     
     /**
-     * Navigation zu Section
+     * Navigation zu Section - Cookie-sichere Version
      */
     async navigateToSection(sectionId) {
         try {
+            console.log('🚀 Navigating to section:', sectionId);
+            
             // Middleware ausführen
             for (const middleware of this.middleware) {
                 const result = await middleware(sectionId);
@@ -79,8 +81,8 @@ class AdminNavigation {
             // Section laden
             await this.loadSection(sectionId);
             
-            // State aktualisieren
-            this.stateManager.markSectionLoaded(sectionId);
+            // State aktualisieren (ohne automatisches Speichern)
+            this.stateManager.setState('currentSection', sectionId);
             this.currentSection = sectionId;
             
             // URL aktualisieren (ohne Hash-Change zu triggern)
@@ -92,8 +94,10 @@ class AdminNavigation {
             // Event dispatchen
             this.dispatchNavigationEvent(sectionId);
             
+            console.log('✅ Navigation completed:', sectionId);
+            
         } catch (error) {
-            console.error(`Failed to navigate to section ${sectionId}:`, error);
+            console.error(`❌ Failed to navigate to section ${sectionId}:`, error);
             this.handleNavigationError(sectionId, error);
         }
     }
