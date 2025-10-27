@@ -198,9 +198,14 @@ class AdminTopbar extends HTMLElement {
             });
         }
         
-        // Dark Mode aus LocalStorage laden
-        this.darkMode = localStorage.getItem('darkMode') === 'true';
-        this.updateDarkMode();
+        // Dark Mode aus LocalStorage laden - Cookie-sichere Version
+        try {
+            this.darkMode = localStorage.getItem('darkMode') === 'true';
+            this.updateDarkMode();
+        } catch (error) {
+            console.warn('Dark mode setting not available due to storage issues:', error);
+            this.darkMode = false;
+        }
         
         // Initial Notifications laden
         this.updateNotifications(this.stateManager?.getState('notifications') || []);

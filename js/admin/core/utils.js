@@ -98,73 +98,150 @@ class AdminUtils {
     }
     
     /**
-     * LocalStorage Helper
+     * LocalStorage Helper - Cookie-sichere Version
      */
     static storage = {
         get(key, defaultValue = null) {
             try {
+                // Prüfen ob localStorage verfügbar ist
+                if (!this.isAvailable()) {
+                    console.warn('LocalStorage not available, returning default value');
+                    return defaultValue;
+                }
+                
                 const item = localStorage.getItem(key);
                 return item ? JSON.parse(item) : defaultValue;
-            } catch {
+            } catch (error) {
+                console.warn('LocalStorage get error:', error);
                 return defaultValue;
             }
         },
         
         set(key, value) {
             try {
+                // Prüfen ob localStorage verfügbar ist
+                if (!this.isAvailable()) {
+                    console.warn('LocalStorage not available, cannot save');
+                    return false;
+                }
+                
                 localStorage.setItem(key, JSON.stringify(value));
                 return true;
-            } catch {
+            } catch (error) {
+                console.warn('LocalStorage set error:', error);
                 return false;
             }
         },
         
         remove(key) {
             try {
+                // Prüfen ob localStorage verfügbar ist
+                if (!this.isAvailable()) {
+                    console.warn('LocalStorage not available, cannot remove');
+                    return false;
+                }
+                
                 localStorage.removeItem(key);
                 return true;
-            } catch {
+            } catch (error) {
+                console.warn('LocalStorage remove error:', error);
                 return false;
             }
         },
         
         clear() {
             try {
+                // Prüfen ob localStorage verfügbar ist
+                if (!this.isAvailable()) {
+                    console.warn('LocalStorage not available, cannot clear');
+                    return false;
+                }
+                
                 localStorage.clear();
                 return true;
-            } catch {
+            } catch (error) {
+                console.warn('LocalStorage clear error:', error);
+                return false;
+            }
+        },
+        
+        /**
+         * LocalStorage Verfügbarkeit prüfen
+         */
+        isAvailable() {
+            try {
+                const test = '__admin_utils_test__';
+                localStorage.setItem(test, test);
+                localStorage.removeItem(test);
+                return true;
+            } catch (e) {
                 return false;
             }
         }
     };
     
     /**
-     * SessionStorage Helper
+     * SessionStorage Helper - Cookie-sichere Version
      */
     static session = {
         get(key, defaultValue = null) {
             try {
+                // Prüfen ob sessionStorage verfügbar ist
+                if (!this.isAvailable()) {
+                    console.warn('SessionStorage not available, returning default value');
+                    return defaultValue;
+                }
+                
                 const item = sessionStorage.getItem(key);
                 return item ? JSON.parse(item) : defaultValue;
-            } catch {
+            } catch (error) {
+                console.warn('SessionStorage get error:', error);
                 return defaultValue;
             }
         },
         
         set(key, value) {
             try {
+                // Prüfen ob sessionStorage verfügbar ist
+                if (!this.isAvailable()) {
+                    console.warn('SessionStorage not available, cannot save');
+                    return false;
+                }
+                
                 sessionStorage.setItem(key, JSON.stringify(value));
                 return true;
-            } catch {
+            } catch (error) {
+                console.warn('SessionStorage set error:', error);
                 return false;
             }
         },
         
         remove(key) {
             try {
+                // Prüfen ob sessionStorage verfügbar ist
+                if (!this.isAvailable()) {
+                    console.warn('SessionStorage not available, cannot remove');
+                    return false;
+                }
+                
                 sessionStorage.removeItem(key);
                 return true;
-            } catch {
+            } catch (error) {
+                console.warn('SessionStorage remove error:', error);
+                return false;
+            }
+        },
+        
+        /**
+         * SessionStorage Verfügbarkeit prüfen
+         */
+        isAvailable() {
+            try {
+                const test = '__admin_session_test__';
+                sessionStorage.setItem(test, test);
+                sessionStorage.removeItem(test);
+                return true;
+            } catch (e) {
                 return false;
             }
         }

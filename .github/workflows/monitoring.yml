@@ -2,7 +2,7 @@ name: Monitoring Pipeline
 
 on:
   schedule:
-    - cron: '*/5 * * * *' # Every 5 minutes
+    - cron: '*/5 * * * *' # Every 5 minutes - RE-ENABLED
   workflow_dispatch:
     inputs:
       environment:
@@ -34,7 +34,7 @@ jobs:
   health-monitoring:
     name: Health Monitoring
     runs-on: ubuntu-latest
-    if: github.event.inputs.monitoring_type == 'all' || github.event.inputs.monitoring_type == 'health'
+    if: (github.event.inputs.monitoring_type == 'all' || github.event.inputs.monitoring_type == 'health') && github.event_name == 'workflow_dispatch'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -68,7 +68,7 @@ jobs:
   performance-monitoring:
     name: Performance Monitoring
     runs-on: ubuntu-latest
-    if: github.event.inputs.monitoring_type == 'all' || github.event.inputs.monitoring_type == 'performance'
+    if: (github.event.inputs.monitoring_type == 'all' || github.event.inputs.monitoring_type == 'performance') && github.event_name == 'workflow_dispatch'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4

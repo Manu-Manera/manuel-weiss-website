@@ -458,21 +458,21 @@ class AdminSidebar extends HTMLElement {
     }
     
     /**
-     * Navigation zu Section
+     * Navigation zu Section - Cookie-sichere Version
      */
     navigateToSection(sectionId) {
-        console.log('Sidebar navigation to:', sectionId);
+        console.log('🚀 Sidebar navigation to:', sectionId);
         
         // Direkte Navigation über AdminApp
         if (window.AdminApp && window.AdminApp.navigation) {
-            console.log('Using AdminApp navigation');
+            console.log('✅ Using AdminApp navigation');
             window.AdminApp.navigation.navigateToSection(sectionId);
         } else if (this.navigation) {
-            console.log('Using local navigation');
+            console.log('✅ Using local navigation');
             this.navigation.navigateToSection(sectionId);
         } else {
             // Fallback: Direkte Hash-Änderung
-            console.log('Using fallback navigation');
+            console.log('⚠️ Using fallback navigation');
             window.location.hash = '#' + sectionId;
             
             // Manuell Section laden falls AdminApp nicht verfügbar
