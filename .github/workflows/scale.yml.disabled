@@ -1,41 +1,60 @@
-name: Health Pipeline
+name: Scale Pipeline
 
-on:
-  schedule:
-    - cron: '*/5 * * * *' # Every 5 minutes
-  workflow_dispatch:
+name: Scale Pipeline
+
+# DISABLED - Workflow komplett deaktiviert um E-Mail-Spam zu stoppen
+# on:
+#   schedule:
+#     - cron: '*/10 * * * *' # Every 10 minutes - DISABLED
+#   workflow_dispatch:
     inputs:
       environment:
-        description: 'Environment to check health'
+        description: 'Environment to scale'
         required: true
         default: 'production'
         type: choice
         options:
           - staging
           - production
-      health_type:
-        description: 'Type of health check'
+      scale_type:
+        description: 'Type of scaling'
         required: true
-        default: 'all'
+        default: 'auto'
         type: choice
         options:
-          - all
-          - application
-          - infrastructure
-          - database
-          - api
-          - monitoring
+          - auto
+          - manual
+      target_cpu:
+        description: 'Target CPU utilization (%)'
+        required: false
+        default: '70'
+        type: string
+      target_memory:
+        description: 'Target memory utilization (%)'
+        required: false
+        default: '80'
+        type: string
+      min_instances:
+        description: 'Minimum number of instances'
+        required: false
+        default: '1'
+        type: string
+      max_instances:
+        description: 'Maximum number of instances'
+        required: false
+        default: '10'
+        type: string
 
 env:
   NODE_VERSION: '18'
   AWS_REGION: 'eu-central-1'
 
 jobs:
-  # Application health
-  application-health:
-    name: Application Health
+  # Auto scaling
+  auto-scaling:
+    name: Auto Scaling
     runs-on: ubuntu-latest
-    if: github.event.inputs.health_type == 'all' || github.event.inputs.health_type == 'application'
+    if: github.event.inputs.scale_type == 'auto'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -51,26 +70,25 @@ jobs:
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
-        if: ${{ secrets.AWS_ACCESS_KEY_ID != '' }}
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Check application health
-        run: npm run health:application -- --environment=${{ github.event.inputs.environment }}
+      - name: Check current metrics
+        run: npm run scale:check-metrics -- --environment=${{ github.event.inputs.environment }}
 
-      - name: Check Lambda health
-        run: npm run health:lambda -- --environment=${{ github.event.inputs.environment }}
+      - name: Calculate scaling decision
+        run: npm run scale:calculate -- --environment=${{ github.event.inputs.environment }}
 
-      - name: Check ECS health
-        run: npm run health:ecs -- --environment=${{ github.event.inputs.environment }}
+      - name: Apply auto scaling
+        run: npm run scale:apply-auto -- --environment=${{ github.event.inputs.environment }}
 
-  # Infrastructure health
-  infrastructure-health:
-    name: Infrastructure Health
+  # Manual scaling
+  manual-scaling:
+    name: Manual Scaling
     runs-on: ubuntu-latest
-    if: github.event.inputs.health_type == 'all' || github.event.inputs.health_type == 'infrastructure'
+    if: github.event.inputs.scale_type == 'manual'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -86,131 +104,19 @@ jobs:
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
-        if: ${{ secrets.AWS_ACCESS_KEY_ID != '' }}
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Check VPC health
-        run: npm run health:vpc -- --environment=${{ github.event.inputs.environment }}
+      - name: Apply manual scaling
+        run: npm run scale:apply-manual -- --environment=${{ github.event.inputs.environment }} --target-cpu=${{ github.event.inputs.target_cpu }} --target-memory=${{ github.event.inputs.target_memory }} --min-instances=${{ github.event.inputs.min_instances }} --max-instances=${{ github.event.inputs.max_instances }}
 
-      - name: Check Load Balancer health
-        run: npm run health:load-balancer -- --environment=${{ github.event.inputs.environment }}
-
-      - name: Check Auto Scaling health
-        run: npm run health:auto-scaling -- --environment=${{ github.event.inputs.environment }}
-
-  # Database health
-  database-health:
-    name: Database Health
+  # Scale Lambda functions
+  scale-lambda:
+    name: Scale Lambda Functions
     runs-on: ubuntu-latest
-    if: github.event.inputs.health_type == 'all' || github.event.inputs.health_type == 'database'
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        if: ${{ secrets.AWS_ACCESS_KEY_ID != '' }}
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
-
-      - name: Check DynamoDB health
-        run: npm run health:dynamodb -- --environment=${{ github.event.inputs.environment }}
-
-      - name: Check RDS health
-        run: npm run health:rds -- --environment=${{ github.event.inputs.environment }}
-
-      - name: Check Timestream health
-        run: npm run health:timestream -- --environment=${{ github.event.inputs.environment }}
-
-  # API health
-  api-health:
-    name: API Health
-    runs-on: ubuntu-latest
-    if: github.event.inputs.health_type == 'all' || github.event.inputs.health_type == 'api'
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        if: ${{ secrets.AWS_ACCESS_KEY_ID != '' }}
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
-
-      - name: Check API Gateway health
-        run: npm run health:api-gateway -- --environment=${{ github.event.inputs.environment }}
-
-      - name: Check API endpoints health
-        run: npm run health:api-endpoints -- --environment=${{ github.event.inputs.environment }}
-
-      - name: Check API performance
-        run: npm run health:api-performance -- --environment=${{ github.event.inputs.environment }}
-
-  # Monitoring health
-  monitoring-health:
-    name: Monitoring Health
-    runs-on: ubuntu-latest
-    if: github.event.inputs.health_type == 'all' || github.event.inputs.health_type == 'monitoring'
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        if: ${{ secrets.AWS_ACCESS_KEY_ID != '' }}
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
-
-      - name: Check CloudWatch health
-        run: npm run health:cloudwatch -- --environment=${{ github.event.inputs.environment }}
-
-      - name: Check X-Ray health
-        run: npm run health:xray -- --environment=${{ github.event.inputs.environment }}
-
-      - name: Check monitoring dashboards
-        run: npm run health:dashboards -- --environment=${{ github.event.inputs.environment }}
-
-  # Generate health report
-  health-report:
-    name: Generate Health Report
-    runs-on: ubuntu-latest
-    needs: [application-health, infrastructure-health, database-health, api-health, monitoring-health]
+    needs: [auto-scaling, manual-scaling]
     if: always()
     steps:
       - name: Checkout code
@@ -227,24 +133,110 @@ jobs:
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
-        if: ${{ secrets.AWS_ACCESS_KEY_ID != '' }}
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Generate health report
-        run: npm run health:report -- --environment=${{ github.event.inputs.environment }}
+      - name: Scale Lambda functions
+        run: npm run scale:lambda -- --environment=${{ github.event.inputs.environment }}
 
-      - name: Upload health report
+  # Scale ECS services
+  scale-ecs:
+    name: Scale ECS Services
+    runs-on: ubuntu-latest
+    needs: [auto-scaling, manual-scaling]
+    if: always()
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Scale ECS services
+        run: npm run scale:ecs -- --environment=${{ github.event.inputs.environment }}
+
+  # Scale RDS instances
+  scale-rds:
+    name: Scale RDS Instances
+    runs-on: ubuntu-latest
+    needs: [auto-scaling, manual-scaling]
+    if: always()
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Scale RDS instances
+        run: npm run scale:rds -- --environment=${{ github.event.inputs.environment }}
+
+  # Generate scaling report
+  scaling-report:
+    name: Generate Scaling Report
+    runs-on: ubuntu-latest
+    needs: [auto-scaling, manual-scaling, scale-lambda, scale-ecs, scale-rds]
+    if: always()
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Generate scaling report
+        run: npm run scale:report -- --environment=${{ github.event.inputs.environment }}
+
+      - name: Upload scaling report
         uses: actions/upload-artifact@v4
         with:
-          name: health-report
-          path: health-report/
+          name: scaling-report
+          path: scaling-report/
 
-      - name: Send health notification
+      - name: Send scaling notification
         uses: 8398a7/action-slack@v3
         with:
           status: ${{ job.status }}
-          channel: '#health'
+          channel: '#scaling'
           webhook_url: ${{ secrets.SLACK_WEBHOOK }}
