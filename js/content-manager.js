@@ -69,7 +69,7 @@ class ContentManager {
             rentals: [],
             projects: [],
             contact: {
-                email: "weiss-manuel@gmx.de",
+                email: "info@manuel-weiss.ch",
                 phone: "+49 173 3993407"
             }
         };
