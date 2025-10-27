@@ -1,0 +1,21 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "0d100b2d70f68d0a1b74897f7dfdfb4d68ad4aded6921615b62cdbb608c67bc0": {
+      "displayName": "ManuelWeissEmailSetup Template",
+      "source": {
+        "path": "ManuelWeissEmailSetup.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "038333965110-eu-central-1-a0b8038c": {
+          "bucketName": "cdk-hnb659fds-assets-038333965110-eu-central-1",
+          "objectKey": "0d100b2d70f68d0a1b74897f7dfdfb4d68ad4aded6921615b62cdbb608c67bc0.json",
+          "region": "eu-central-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::038333965110:role/cdk-hnb659fds-file-publishing-role-038333965110-eu-central-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

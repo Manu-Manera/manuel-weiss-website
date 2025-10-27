@@ -1,0 +1,21 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "ab50df490f3c561ca72421715168acfb4a1f3b6a96d5bd88d02a3f50685dda99": {
+      "displayName": "ManuEmailSetup Template",
+      "source": {
+        "path": "ManuEmailSetup.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "038333965110-eu-central-1-aa88c96f": {
+          "bucketName": "cdk-hnb659fds-assets-038333965110-eu-central-1",
+          "objectKey": "ab50df490f3c561ca72421715168acfb4a1f3b6a96d5bd88d02a3f50685dda99.json",
+          "region": "eu-central-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::038333965110:role/cdk-hnb659fds-file-publishing-role-038333965110-eu-central-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -1,0 +1,11 @@
+# Automatisches Domain-Monitoring für manuel-weiss.ch
+# Läuft alle 10 Minuten und prüft den Status
+
+# Cron-Job (alle 10 Minuten)
+*/10 * * * * /Users/manumanera/Documents/GitHub/Persönliche\ Website/check-domain.sh >> /Users/manumanera/Documents/GitHub/Persönliche\ Website/domain-monitor.log 2>&1
+
+# Alternative: Alle 30 Minuten (weniger häufig)
+# */30 * * * * /Users/manumanera/Documents/GitHub/Persönliche\ Website/check-domain.sh >> /Users/manumanera/Documents/GitHub/Persönliche\ Website/domain-monitor.log 2>&1
+
+# Alternative: Alle Stunde (sehr selten)
+# 0 * * * * /Users/manumanera/Documents/GitHub/Persönliche\ Website/check-domain.sh >> /Users/manumanera/Documents/GitHub/Persönliche\ Website/domain-monitor.log 2>&1

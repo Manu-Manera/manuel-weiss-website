@@ -159,7 +159,11 @@
     "js-beautify": "^1.14.9"
   },
   "dependencies": {
+    "@aws-cdk/cloud-assembly-schema": "48.16.0",
+    "@types/node": "24.9.1",
+    "aws-cdk-lib": "2.221.0",
     "aws-sdk": "2.1692.0",
+    "constructs": "10.4.2",
     "dotenv": "17.2.3",
     "openai": "6.6.0",
     "snoowrap": "1.23.0"
