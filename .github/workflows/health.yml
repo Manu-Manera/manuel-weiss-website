@@ -1,0 +1,250 @@
+name: Health Pipeline
+
+on:
+  schedule:
+    - cron: '*/5 * * * *' # Every 5 minutes
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to check health'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - staging
+          - production
+      health_type:
+        description: 'Type of health check'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - application
+          - infrastructure
+          - database
+          - api
+          - monitoring
+
+env:
+  NODE_VERSION: '18'
+  AWS_REGION: 'eu-central-1'
+
+jobs:
+  # Application health
+  application-health:
+    name: Application Health
+    runs-on: ubuntu-latest
+    if: github.event.inputs.health_type == 'all' || github.event.inputs.health_type == 'application'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        if: ${{ secrets.AWS_ACCESS_KEY_ID != '' }}
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Check application health
+        run: npm run health:application -- --environment=${{ github.event.inputs.environment }}
+
+      - name: Check Lambda health
+        run: npm run health:lambda -- --environment=${{ github.event.inputs.environment }}
+
+      - name: Check ECS health
+        run: npm run health:ecs -- --environment=${{ github.event.inputs.environment }}
+
+  # Infrastructure health
+  infrastructure-health:
+    name: Infrastructure Health
+    runs-on: ubuntu-latest
+    if: github.event.inputs.health_type == 'all' || github.event.inputs.health_type == 'infrastructure'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        if: ${{ secrets.AWS_ACCESS_KEY_ID != '' }}
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Check VPC health
+        run: npm run health:vpc -- --environment=${{ github.event.inputs.environment }}
+
+      - name: Check Load Balancer health
+        run: npm run health:load-balancer -- --environment=${{ github.event.inputs.environment }}
+
+      - name: Check Auto Scaling health
+        run: npm run health:auto-scaling -- --environment=${{ github.event.inputs.environment }}
+
+  # Database health
+  database-health:
+    name: Database Health
+    runs-on: ubuntu-latest
+    if: github.event.inputs.health_type == 'all' || github.event.inputs.health_type == 'database'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        if: ${{ secrets.AWS_ACCESS_KEY_ID != '' }}
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Check DynamoDB health
+        run: npm run health:dynamodb -- --environment=${{ github.event.inputs.environment }}
+
+      - name: Check RDS health
+        run: npm run health:rds -- --environment=${{ github.event.inputs.environment }}
+
+      - name: Check Timestream health
+        run: npm run health:timestream -- --environment=${{ github.event.inputs.environment }}
+
+  # API health
+  api-health:
+    name: API Health
+    runs-on: ubuntu-latest
+    if: github.event.inputs.health_type == 'all' || github.event.inputs.health_type == 'api'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        if: ${{ secrets.AWS_ACCESS_KEY_ID != '' }}
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Check API Gateway health
+        run: npm run health:api-gateway -- --environment=${{ github.event.inputs.environment }}
+
+      - name: Check API endpoints health
+        run: npm run health:api-endpoints -- --environment=${{ github.event.inputs.environment }}
+
+      - name: Check API performance
+        run: npm run health:api-performance -- --environment=${{ github.event.inputs.environment }}
+
+  # Monitoring health
+  monitoring-health:
+    name: Monitoring Health
+    runs-on: ubuntu-latest
+    if: github.event.inputs.health_type == 'all' || github.event.inputs.health_type == 'monitoring'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        if: ${{ secrets.AWS_ACCESS_KEY_ID != '' }}
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Check CloudWatch health
+        run: npm run health:cloudwatch -- --environment=${{ github.event.inputs.environment }}
+
+      - name: Check X-Ray health
+        run: npm run health:xray -- --environment=${{ github.event.inputs.environment }}
+
+      - name: Check monitoring dashboards
+        run: npm run health:dashboards -- --environment=${{ github.event.inputs.environment }}
+
+  # Generate health report
+  health-report:
+    name: Generate Health Report
+    runs-on: ubuntu-latest
+    needs: [application-health, infrastructure-health, database-health, api-health, monitoring-health]
+    if: always()
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        if: ${{ secrets.AWS_ACCESS_KEY_ID != '' }}
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Generate health report
+        run: npm run health:report -- --environment=${{ github.event.inputs.environment }}
+
+      - name: Upload health report
+        uses: actions/upload-artifact@v4
+        with:
+          name: health-report
+          path: health-report/
+
+      - name: Send health notification
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          channel: '#health'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}

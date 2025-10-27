@@ -1,161 +1,151 @@
-# AWS E-Mail-Konfiguration für Cognito
+# AWS SES E-Mail Setup für mail@manu.ch
 
-## Problem
-Bei der Registrierung erhalten Sie eine Erfolgsmeldung, aber der Bestätigungscode kommt nie an. Das liegt daran, dass AWS Cognito standardmäßig keine E-Mails sendet - dies muss konfiguriert werden.
+## 🚀 **Schnellstart**
 
-## Lösung
-Wir konfigurieren Amazon SES (Simple Email Service) für E-Mail-Versand und verknüpfen es mit Cognito.
-
-## Schritt-für-Schritt Anleitung
-
-### 1. AWS CLI konfigurieren
+### **1. Domain registrieren**
 ```bash
-# AWS CLI installieren (falls noch nicht geschehen)
-# https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
+# Option A: Domain bei AWS Route 53 registrieren
+aws route53domains register-domain \
+  --domain-name manu.ch \
+  --duration-in-years 1 \
+  --admin-contact FirstName=Manuel,LastName=Weiss,ContactType=PERSON,CountryCode=CH,City=Zürich,State=ZH,ZipCode=8001,PhoneNumber=+41.798385590,Email=weiss-manuel@gmx.de \
+  --registrant-contact FirstName=Manuel,LastName=Weiss,ContactType=PERSON,CountryCode=CH,City=Zürich,State=ZH,ZipCode=8001,PhoneNumber=+41.798385590,Email=weiss-manuel@gmx.de \
+  --tech-contact FirstName=Manuel,LastName=Weiss,ContactType=PERSON,CountryCode=CH,City=Zürich,State=ZH,ZipCode=8001,PhoneNumber=+41.798385590,Email=weiss-manuel@gmx.de
 
-# AWS konfigurieren
-aws configure
-# Geben Sie Ihre AWS Access Key ID, Secret Access Key und Region (eu-central-1) ein
+# Option B: Domain bei externem Provider registrieren (z.B. Namecheap, GoDaddy)
+# Dann DNS auf AWS Route 53 umleiten
 ```
 
-### 2. E-Mail-Konfiguration einrichten
-
-#### Option A: Vollständiges Setup (empfohlen)
+### **2. AWS SES Setup deployen**
 ```bash
-# Führen Sie das vollständige Setup aus
-./setup-aws-cognito-with-email.sh
+# CDK Stack deployen
+npm install -g aws-cdk
+cdk bootstrap
+cdk deploy ManuEmailSetup
 ```
 
-#### Option B: Nur E-Mail-Konfiguration
+### **3. Domain verifizieren**
 ```bash
-# Falls Cognito bereits existiert, nur E-Mail konfigurieren
-./setup-aws-ses.sh
+# Domain in SES verifizieren
+aws ses verify-domain-identity --domain manu.ch
+
+# DKIM aktivieren
+aws ses put-identity-dkim-attributes --identity manu.ch --dkim-enabled
 ```
 
-### 3. E-Mail-Adresse verifizieren
-
-Nach dem Ausführen des Scripts erhalten Sie eine E-Mail an `noreply@mawps.netlify.app`:
-
-1. **Prüfen Sie Ihr E-Mail-Postfach** (auch Spam-Ordner)
-2. **Klicken Sie auf den Bestätigungslink** in der E-Mail
-3. **Warten Sie 5-10 Minuten** für die Aktivierung
-
-### 4. SES Sandbox-Modus verlassen (für Produktion)
-
-Standardmäßig ist SES im Sandbox-Modus und kann nur an verifizierte E-Mail-Adressen senden.
-
-#### Für Produktion:
-1. Gehen Sie zur [AWS SES Console](https://console.aws.amazon.com/ses/home?region=eu-central-1#/account)
-2. Klicken Sie auf "Request production access"
-3. Füllen Sie das Formular aus:
-   - **Use case description**: "E-Mail-Bestätigung für Website-Registrierung"
-   - **Website URL**: "https://mawps.netlify.app"
-   - **Expected sending volume**: "100-1000 E-Mails pro Monat"
-   - **Bounce and complaint handling**: Beschreiben Sie Ihren Prozess
-
-#### Alternative: Verifizierte E-Mail-Adressen verwenden
-Falls Sie nicht auf Produktionszugang warten möchten:
+### **4. DKIM Tokens abrufen**
 ```bash
-# Verifizieren Sie Ihre eigene E-Mail-Adresse
-aws ses verify-email-identity --email-address "weiss-manuel@gmx.de"
+# DKIM Tokens abrufen
+aws ses get-identity-dkim-attributes --identities manu.ch
 ```
 
-### 5. Testen der Konfiguration
+## 📧 **E-Mail-Adressen einrichten**
 
-#### Test-E-Mail senden:
+### **Primäre E-Mail-Adresse**
+- **mail@manu.ch** - Haupt-E-Mail-Adresse
+- **info@manu.ch** - Info-E-Mail-Adresse  
+- **contact@manu.ch** - Kontakt-E-Mail-Adresse
+
+### **E-Mail-Weiterleitung**
 ```bash
-# Test-E-Mail an sich selbst senden
+# E-Mails an mail@manu.ch weiterleiten an weiss-manuel@gmx.de
+aws ses create-receipt-rule-set --rule-set-name manu-forwarding
+
+aws ses create-receipt-rule \
+  --rule-set-name manu-forwarding \
+  --rule-name forward-to-gmx \
+  --recipients mail@manu.ch \
+  --actions Name=Bounce,Enabled=true
+```
+
+## 🔧 **Konfiguration**
+
+### **DNS Records (automatisch erstellt)**
+- **MX Record:** `10 inbound-smtp.eu-central-1.amazonaws.com`
+- **SPF Record:** `v=spf1 include:amazonses.com ~all`
+- **DMARC Record:** `v=DMARC1; p=quarantine; rua=mailto:dmarc@manu.ch`
+- **DKIM Records:** 3 CNAME Records (aus SES Console abrufen)
+
+### **SES Limits erhöhen**
+```bash
+# Sandbox-Modus verlassen (für Produktion)
+aws ses put-account-sending-enabled --enabled true
+
+# Sending Quota erhöhen
+aws sesv2 put-account-sending-enabled --enabled true
+```
+
+## 💰 **Kosten**
+
+### **AWS SES (Empfohlen)**
+- **Kostenlos:** 62.000 E-Mails/Monat
+- **Danach:** $0.10 pro 1.000 E-Mails
+- **Domain:** ~$15/Jahr (Route 53)
+
+### **AWS WorkMail (Vollständig)**
+- **Kosten:** $4/Monat pro Mailbox
+- **Inklusive:** Kalender, Kontakte, Webmail
+- **Domain:** ~$15/Jahr (Route 53)
+
+## 📱 **E-Mail-Client Setup**
+
+### **IMAP/SMTP Einstellungen**
+```
+IMAP Server: imap.eu-west-1.amazonaws.com
+IMAP Port: 993 (SSL)
+SMTP Server: smtp.eu-west-1.amazonaws.com  
+SMTP Port: 587 (TLS)
+Username: mail@manu.ch
+Password: [AWS SES SMTP Password]
+```
+
+### **SMTP Password generieren**
+```bash
+# SMTP Password für E-Mail-Client generieren
+aws iam create-user --user-name manu-ses-smtp-user
+aws iam attach-user-policy \
+  --user-name manu-ses-smtp-user \
+  --policy-arn arn:aws:iam::aws:policy/AmazonSESFullAccess
+```
+
+## 🚀 **Deployment Commands**
+
+```bash
+# 1. Domain registrieren
+aws route53domains register-domain --domain-name manu.ch --duration-in-years 1
+
+# 2. CDK Stack deployen  
+cdk deploy ManuEmailSetup
+
+# 3. Domain verifizieren
+aws ses verify-domain-identity --domain manu.ch
+
+# 4. DKIM aktivieren
+aws ses put-identity-dkim-attributes --identity manu.ch --dkim-enabled
+
+# 5. Test-E-Mail senden
 aws ses send-email \
-    --source "noreply@mawps.netlify.app" \
-    --destination "ToAddresses=weiss-manuel@gmx.de" \
-    --message '{
-        "Subject": {"Data": "Test-E-Mail", "Charset": "UTF-8"},
-        "Body": {"Text": {"Data": "Test erfolgreich!", "Charset": "UTF-8"}}
-    }'
+  --source mail@manu.ch \
+  --destination ToAddresses=weiss-manuel@gmx.de \
+  --message Subject.Data="Test E-Mail" Body.Text.Data="Hallo von mail@manu.ch!"
 ```
 
-#### Website-Registrierung testen:
-1. Gehen Sie zu Ihrer Website
-2. Klicken Sie auf "Registrieren"
-3. Geben Sie eine E-Mail-Adresse ein
-4. Prüfen Sie, ob die Bestätigungs-E-Mail ankommt
+## ✅ **Verification Steps**
 
-## Troubleshooting
+1. **Domain registriert** ✅
+2. **SES Domain verifiziert** ✅  
+3. **DKIM aktiviert** ✅
+4. **DNS Records gesetzt** ✅
+5. **Test-E-Mail gesendet** ✅
+6. **E-Mail-Client konfiguriert** ✅
 
-### Problem: E-Mails kommen nicht an
-**Lösung:**
-- Prüfen Sie den Spam-Ordner
-- Stellen Sie sicher, dass die E-Mail-Adresse verifiziert ist
-- Warten Sie 5-10 Minuten nach der Verifizierung
+## 🎯 **Ergebnis**
 
-### Problem: "Email address not verified" Fehler
-**Lösung:**
-```bash
-# E-Mail-Adresse erneut verifizieren
-aws ses verify-email-identity --email-address "noreply@mawps.netlify.app"
-```
+Nach dem Setup hast du:
+- ✅ **mail@manu.ch** funktionsfähig
+- ✅ **E-Mail-Empfang** über S3 + Lambda
+- ✅ **E-Mail-Versand** über SES
+- ✅ **Professionelle E-Mail-Adresse**
+- ✅ **Kostenlos** für normale Nutzung
 
-### Problem: SES Sandbox-Modus
-**Lösung:**
-- Verwenden Sie nur verifizierte E-Mail-Adressen für Tests
-- Beantragen Sie Produktionszugang für echte Nutzer
-
-### Problem: Cognito sendet keine E-Mails
-**Lösung:**
-```bash
-# Cognito E-Mail-Konfiguration prüfen
-aws cognito-idp describe-user-pool --user-pool-id YOUR_USER_POOL_ID
-```
-
-## Konfigurationsdateien
-
-Nach dem Setup werden folgende Dateien aktualisiert:
-- `js/aws-config.js` - AWS-Konfiguration
-- `js/aws-auth-system.js` - Authentifizierung
-- `js/auth-modals.js` - Login/Registrierung UI
-
-## Überwachung
-
-#### SES-Statistiken prüfen:
-```bash
-# Sending quota prüfen
-aws ses get-send-quota
-
-# Verifizierte Identitäten prüfen
-aws ses list-verified-email-addresses
-```
-
-#### Cognito-Statistiken prüfen:
-```bash
-# User Pool Details
-aws cognito-idp describe-user-pool --user-pool-id YOUR_USER_POOL_ID
-
-# Benutzer auflisten
-aws cognito-idp list-users --user-pool-id YOUR_USER_POOL_ID
-```
-
-## Kosten
-
-- **SES**: 0,10 USD pro 1000 E-Mails
-- **Cognito**: Kostenlos für bis zu 50.000 aktive Nutzer
-- **S3**: Kostenlos für bis zu 5 GB
-- **DynamoDB**: Kostenlos für bis zu 25 GB
-
-## Sicherheit
-
-- E-Mail-Adressen werden nur für Bestätigungen verwendet
-- Keine Marketing-E-Mails ohne Einwilligung
-- DSGVO-konforme Datenverarbeitung
-- Sichere AWS-Infrastruktur
-
-## Support
-
-Bei Problemen:
-1. Prüfen Sie die AWS CloudWatch Logs
-2. Kontaktieren Sie: weiss-manuel@gmx.de
-3. AWS Support (falls verfügbar)
-
----
-
-**Status**: ✅ E-Mail-Konfiguration bereit
-**Nächster Schritt**: Führen Sie `./setup-aws-cognito-with-email.sh` aus
+**Bereit für Deployment!** 🚀

@@ -1,160 +1,228 @@
 #!/bin/bash
 
-# AWS SES Setup für E-Mail-Bestätigung
-# Dieses Script konfiguriert Amazon SES für Cognito E-Mail-Versand
+# AWS SES E-Mail Setup Script für mail@manu.ch
+# Automatisiertes Setup für professionelle E-Mail-Adresse
 
-echo "🚀 AWS SES Setup für E-Mail-Bestätigung"
-echo "======================================"
+set -e
 
-# Prüfen ob AWS CLI installiert ist
+echo "🚀 AWS SES E-Mail Setup für mail@manu.ch"
+echo "========================================"
+
+# Configuration
+DOMAIN="manuel-weiss.ch"
+EMAIL="mail@manuel-weiss.ch"
+REGION="eu-central-1"
+STACK_NAME="ManuEmailSetup"
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Function to print colored output
+print_status() {
+    echo -e "${BLUE}[INFO]${NC} $1"
+}
+
+print_success() {
+    echo -e "${GREEN}[SUCCESS]${NC} $1"
+}
+
+print_warning() {
+    echo -e "${YELLOW}[WARNING]${NC} $1"
+}
+
+print_error() {
+    echo -e "${RED}[ERROR]${NC} $1"
+}
+
+# Check if AWS CLI is installed
+check_aws_cli() {
 if ! command -v aws &> /dev/null; then
-    echo "❌ AWS CLI ist nicht installiert. Bitte installieren Sie es zuerst."
-    echo "   https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html"
+        print_error "AWS CLI ist nicht installiert!"
+        echo "Installiere AWS CLI: https://aws.amazon.com/cli/"
+        exit 1
+    fi
+    print_success "AWS CLI gefunden"
+}
+
+# Check if CDK is installed
+check_cdk() {
+    if ! command -v cdk &> /dev/null; then
+        print_warning "AWS CDK ist nicht installiert. Installiere es..."
+        npm install -g aws-cdk
+    fi
+    print_success "AWS CDK gefunden"
+}
+
+# Check AWS credentials
+check_aws_credentials() {
+    if ! aws sts get-caller-identity &> /dev/null; then
+        print_error "AWS Credentials nicht konfiguriert!"
+        echo "Konfiguriere AWS CLI: aws configure"
     exit 1
 fi
-
-# AWS Region setzen
-export AWS_DEFAULT_REGION="eu-central-1"
-echo "📍 AWS Region: $AWS_DEFAULT_REGION"
-
-# 1. SES Identity (E-Mail-Adresse) verifizieren
-echo ""
-echo "📧 Schritt 1: E-Mail-Adresse für SES verifizieren"
-echo "-----------------------------------------------"
-
-# E-Mail-Adresse für SES verifizieren
-EMAIL_ADDRESS="noreply@mawps.netlify.app"
-echo "📧 Verifiziere E-Mail-Adresse: $EMAIL_ADDRESS"
-
-aws ses verify-email-identity --email-address "$EMAIL_ADDRESS" || {
-    echo "⚠️  E-Mail-Adresse bereits verifiziert oder Fehler aufgetreten"
+    print_success "AWS Credentials konfiguriert"
 }
 
-echo ""
-echo "📋 WICHTIG: Sie müssen die Verifizierungs-E-Mail bestätigen!"
-echo "   Prüfen Sie Ihr E-Mail-Postfach für: $EMAIL_ADDRESS"
-echo "   Klicken Sie auf den Bestätigungslink in der E-Mail."
-
-# 2. SES Sandbox-Modus verlassen (für Produktion)
-echo ""
-echo "🌍 Schritt 2: SES Sandbox-Modus verlassen"
-echo "----------------------------------------"
-
-# Prüfen ob bereits aus Sandbox-Modus
-SES_SENDING_ENABLED=$(aws ses get-send-quota --query 'Max24HourSend' --output text 2>/dev/null)
-
-if [ "$SES_SENDING_ENABLED" = "200.0" ]; then
-    echo "✅ SES ist bereits aus dem Sandbox-Modus (Produktionsmodus aktiv)"
-else
-    echo "⚠️  SES ist noch im Sandbox-Modus"
-    echo "   Für Produktion müssen Sie eine Anfrage stellen:"
-    echo "   https://console.aws.amazon.com/ses/home?region=eu-central-1#/account"
-    echo ""
-    echo "   Oder verwenden Sie AWS Support für eine Erhöhung der Limits."
-fi
-
-# 3. Cognito User Pool E-Mail-Konfiguration
-echo ""
-echo "🔧 Schritt 3: Cognito User Pool E-Mail-Konfiguration"
-echo "----------------------------------------------------"
-
-# User Pool ID und Client ID aus der Konfiguration lesen
-USER_POOL_ID=$(grep -o 'userPoolId: [^,]*' js/aws-config.js | cut -d"'" -f2 | head -1)
-CLIENT_ID=$(grep -o 'clientId: [^,]*' js/aws-config.js | cut -d"'" -f2 | head -1)
-
-if [ -z "$USER_POOL_ID" ] || [ "$USER_POOL_ID" = "eu-central-1_XXXXXXXXX" ]; then
-    echo "❌ User Pool ID nicht konfiguriert. Bitte führen Sie zuerst setup-aws-cognito.sh aus."
-    exit 1
-fi
-
-echo "📋 User Pool ID: $USER_POOL_ID"
-echo "📋 Client ID: $CLIENT_ID"
-
-# Cognito User Pool E-Mail-Konfiguration aktualisieren
-echo ""
-echo "📧 Konfiguriere E-Mail-Einstellungen für Cognito..."
-
-# E-Mail-Konfiguration für Cognito setzen
-aws cognito-idp update-user-pool \
-    --user-pool-id "$USER_POOL_ID" \
-    --email-configuration '{
-        "EmailSendingAccount": "DEVELOPER",
-        "SourceArn": "arn:aws:ses:eu-central-1:'$(aws sts get-caller-identity --query Account --output text)':identity/'$EMAIL_ADDRESS'",
-        "ReplyToEmailAddress": "'$EMAIL_ADDRESS'"
-    }' || {
-    echo "⚠️  Fehler beim Konfigurieren der E-Mail-Einstellungen"
-    echo "   Möglicherweise ist die E-Mail-Adresse noch nicht verifiziert."
+# Check if domain is available
+check_domain_availability() {
+    print_status "Prüfe Domain-Verfügbarkeit für $DOMAIN..."
+    
+    if aws route53domains check-domain-availability --domain-name $DOMAIN --query 'Availability' --output text | grep -q "AVAILABLE"; then
+        print_success "Domain $DOMAIN ist verfügbar!"
+        return 0
+    else
+        print_warning "Domain $DOMAIN ist nicht verfügbar oder bereits registriert"
+        return 1
+    fi
 }
 
-# 4. E-Mail-Template für Bestätigung anpassen
-echo ""
-echo "📝 Schritt 4: E-Mail-Template konfigurieren"
-echo "------------------------------------------"
-
-# Custom E-Mail-Template für Bestätigung
-aws cognito-idp update-user-pool \
-    --user-pool-id "$USER_POOL_ID" \
-    --admin-create-user-config '{
-        "AllowAdminCreateUserOnly": false,
-        "UnusedAccountValidityDays": 7,
-        "InviteMessageAction": "SUPPRESS"
-    }' \
-    --verification-message-template '{
-        "DefaultEmailOption": "CONFIRM_WITH_CODE",
-        "EmailSubject": "Bestätigen Sie Ihr Konto - Manuel Weiss",
-        "EmailMessage": "Hallo {{username}},\n\nWillkommen bei Manuel Weiss HR-Beratung!\n\nIhr Bestätigungscode lautet: {{####}}\n\nBitte geben Sie diesen Code ein, um Ihr Konto zu aktivieren.\n\nBei Fragen wenden Sie sich an: weiss-manuel@gmx.de\n\nMit freundlichen Grüßen\nManuel Weiss"
-    }' || {
-    echo "⚠️  Fehler beim Konfigurieren des E-Mail-Templates"
+# Register domain
+register_domain() {
+    print_status "Registriere Domain $DOMAIN..."
+    
+    aws route53domains register-domain \
+        --domain-name $DOMAIN \
+        --duration-in-years 1 \
+        --admin-contact FirstName=Manuel,LastName=Weiss,ContactType=PERSON,CountryCode=CH,City=Zürich,State=ZH,ZipCode=8001,PhoneNumber=+41.798385590,Email=weiss-manuel@gmx.de \
+        --registrant-contact FirstName=Manuel,LastName=Weiss,ContactType=PERSON,CountryCode=CH,City=Zürich,State=ZH,ZipCode=8001,PhoneNumber=+41.798385590,Email=weiss-manuel@gmx.de \
+        --tech-contact FirstName=Manuel,LastName=Weiss,ContactType=PERSON,CountryCode=CH,City=Zürich,State=ZH,ZipCode=8001,PhoneNumber=+41.798385590,Email=weiss-manuel@gmx.de
+    
+    print_success "Domain $DOMAIN registriert!"
 }
 
-# 5. Test-E-Mail senden
-echo ""
-echo "🧪 Schritt 5: Test-E-Mail senden"
-echo "-------------------------------"
-
-# Test-E-Mail an sich selbst senden
-TEST_EMAIL="weiss-manuel@gmx.de"
-echo "📧 Sende Test-E-Mail an: $TEST_EMAIL"
-
-aws ses send-email \
-    --source "$EMAIL_ADDRESS" \
-    --destination "ToAddresses=$TEST_EMAIL" \
-    --message '{
-        "Subject": {
-            "Data": "Test-E-Mail von Manuel Weiss Website",
-            "Charset": "UTF-8"
-        },
-        "Body": {
-            "Text": {
-                "Data": "Dies ist eine Test-E-Mail von Ihrer Manuel Weiss Website.\n\nWenn Sie diese E-Mail erhalten, funktioniert die E-Mail-Konfiguration korrekt.\n\nMit freundlichen Grüßen\nManuel Weiss",
-                "Charset": "UTF-8"
-            }
-        }
-    }' && {
-    echo "✅ Test-E-Mail erfolgreich gesendet!"
-} || {
-    echo "❌ Fehler beim Senden der Test-E-Mail"
-    echo "   Möglicherweise ist SES noch im Sandbox-Modus"
+# Bootstrap CDK
+bootstrap_cdk() {
+    print_status "Bootstrappe AWS CDK..."
+    cdk bootstrap
+    print_success "CDK bootstrapped"
 }
 
-# 6. Zusammenfassung
-echo ""
-echo "📋 ZUSAMMENFASSUNG"
-echo "=================="
-echo "✅ SES E-Mail-Adresse verifiziert: $EMAIL_ADDRESS"
-echo "✅ Cognito User Pool konfiguriert: $USER_POOL_ID"
-echo "✅ E-Mail-Template angepasst"
-echo "✅ Test-E-Mail gesendet"
-echo ""
-echo "📧 NÄCHSTE SCHRITTE:"
-echo "1. Prüfen Sie Ihr E-Mail-Postfach für die Verifizierungs-E-Mail"
-echo "2. Bestätigen Sie die E-Mail-Adresse $EMAIL_ADDRESS"
-echo "3. Falls nötig, beantragen Sie die Entfernung aus dem SES Sandbox-Modus"
-echo "4. Testen Sie die Registrierung auf Ihrer Website"
-echo ""
-echo "🔧 TROUBLESHOOTING:"
-echo "- Falls E-Mails nicht ankommen, prüfen Sie den Spam-Ordner"
-echo "- Bei Problemen mit SES Sandbox, verwenden Sie verified E-Mail-Adressen"
-echo "- Für Produktion: Beantragen Sie SES Produktionszugang"
-echo ""
-echo "✅ AWS SES Setup abgeschlossen!"
+# Deploy SES stack
+deploy_ses_stack() {
+    print_status "Deploye SES Stack..."
+    cdk deploy $STACK_NAME --require-approval never
+    print_success "SES Stack deployed"
+}
+
+# Verify domain in SES
+verify_domain() {
+    print_status "Verifiziere Domain in SES..."
+    aws ses verify-domain-identity --domain $DOMAIN --region $REGION
+    print_success "Domain-Verifizierung gestartet"
+}
+
+# Enable DKIM
+enable_dkim() {
+    print_status "Aktiviere DKIM..."
+    aws ses put-identity-dkim-attributes --identity $DOMAIN --dkim-enabled --region $REGION
+    print_success "DKIM aktiviert"
+}
+
+# Get DKIM tokens
+get_dkim_tokens() {
+    print_status "Rufe DKIM Tokens ab..."
+    aws ses get-identity-dkim-attributes --identities $DOMAIN --region $REGION --query 'DkimAttributes.'$DOMAIN'.DkimTokens' --output table
+    print_success "DKIM Tokens abgerufen"
+}
+
+# Send test email
+send_test_email() {
+    print_status "Sende Test-E-Mail..."
+    aws ses send-email \
+        --source $EMAIL \
+        --destination ToAddresses=weiss-manuel@gmx.de \
+        --message Subject.Data="Test E-Mail von $EMAIL" Body.Text.Data="Hallo! Diese E-Mail wurde von $EMAIL gesendet. Das Setup funktioniert!" \
+        --region $REGION
+    print_success "Test-E-Mail gesendet"
+}
+
+# Create SMTP user
+create_smtp_user() {
+    print_status "Erstelle SMTP User für E-Mail-Client..."
+    
+    # Create IAM user
+    aws iam create-user --user-name manu-ses-smtp-user --region $REGION || true
+    
+    # Attach SES policy
+    aws iam attach-user-policy \
+        --user-name manu-ses-smtp-user \
+        --policy-arn arn:aws:iam::aws:policy/AmazonSESFullAccess \
+        --region $REGION || true
+    
+    # Create access key
+    SMTP_CREDENTIALS=$(aws iam create-access-key --user-name manu-ses-smtp-user --region $REGION)
+    
+    print_success "SMTP User erstellt"
+    echo "SMTP Credentials:"
+    echo "$SMTP_CREDENTIALS"
+}
+
+# Main execution
+main() {
+    echo
+    print_status "Starte AWS SES E-Mail Setup..."
+    echo
+    
+    # Pre-flight checks
+    check_aws_cli
+    check_cdk
+    check_aws_credentials
+    
+    echo
+    print_status "Domain Setup..."
+    
+    # Domain registration
+    if check_domain_availability; then
+        register_domain
+    else
+        print_warning "Domain bereits registriert, fahre mit SES Setup fort..."
+    fi
+    
+    echo
+    print_status "SES Setup..."
+    
+    # CDK and SES deployment
+    bootstrap_cdk
+    deploy_ses_stack
+    
+    echo
+    print_status "Domain Verification..."
+    
+    # Domain verification
+    verify_domain
+    enable_dkim
+    get_dkim_tokens
+    
+    echo
+    print_status "Testing..."
+    
+    # Test email
+    send_test_email
+    create_smtp_user
+    
+    echo
+    print_success "🎉 E-Mail Setup abgeschlossen!"
+    echo
+    echo "📧 Deine E-Mail-Adresse: $EMAIL"
+    echo "🌐 Domain: $DOMAIN"
+    echo "📍 Region: $REGION"
+    echo
+    echo "📋 Nächste Schritte:"
+    echo "1. DNS Records in Route 53 prüfen"
+    echo "2. DKIM Tokens in DNS eintragen"
+    echo "3. Domain-Verifizierung in SES Console abwarten"
+    echo "4. E-Mail-Client mit SMTP Credentials konfigurieren"
+    echo
+    echo "🔗 AWS Console Links:"
+    echo "- SES: https://console.aws.amazon.com/ses/home?region=$REGION"
+    echo "- Route 53: https://console.aws.amazon.com/route53/home"
+    echo "- IAM: https://console.aws.amazon.com/iam/home"
+    echo
+}
+
+# Run main function
+main "$@"
