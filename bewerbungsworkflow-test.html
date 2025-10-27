@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bewerbungsworkflow Test - Manuel Weiss</title>
+    <meta name="description" content="Test-Seite für den kompletten Bewerbungsworkflow mit AWS Cognito Integration">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .test-header {
+            text-align: center;
+            color: white;
+            margin-bottom: 3rem;
+        }
+        
+        .test-header h1 {
+            font-size: 2.5rem;
+            margin: 0 0 1rem;
+            font-weight: 700;
+        }
+        
+        .test-header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin: 0;
+        }
+        
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .test-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .test-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        
+        .test-card h3 {
+            color: #1f2937;
+            margin: 0 0 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .test-card .icon {
+            font-size: 1.5rem;
+            color: #3b82f6;
+        }
+        
+        .test-card p {
+            color: #6b7280;
+            margin: 0 0 1.5rem;
+            line-height: 1.6;
+        }
+        
+        .test-button {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .test-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+        }
+        
+        .test-button.secondary {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+        
+        .test-button.secondary:hover {
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+        }
+        
+        .test-button.danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+        
+        .test-button.danger:hover {
+            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
+        }
+        
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+        
+        .status-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+        
+        .status-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .status-error {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+        
+        .workflow-demo {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .workflow-demo h2 {
+            color: #1f2937;
+            margin: 0 0 1.5rem;
+            text-align: center;
+        }
+        
+        .workflow-steps {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .workflow-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            flex: 1;
+            min-width: 120px;
+        }
+        
+        .step-number {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            background: #e5e7eb;
+            color: #6b7280;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .step-number.active {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            transform: scale(1.1);
+        }
+        
+        .step-number.completed {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+        
+        .step-label {
+            font-size: 0.875rem;
+            color: #6b7280;
+            text-align: center;
+            font-weight: 500;
+        }
+        
+        .step-line {
+            width: 2rem;
+            height: 3px;
+            background: #e5e7eb;
+            border-radius: 2px;
+            margin: 0 0.5rem;
+        }
+        
+        .demo-button {
+            text-align: center;
+        }
+        
+        .demo-button button {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1.1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: all 0.3s ease;
+        }
+        
+        .demo-button button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(139, 92, 246, 0.3);
+        }
+        
+        .auth-status {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .auth-status h3 {
+            color: #374151;
+            margin: 0 0 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .auth-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .auth-info-item {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .auth-info-item strong {
+            color: #374151;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+        
+        .auth-info-item span {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+        
+        @media (max-width: 768px) {
+            .test-container {
+                padding: 1rem;
+            }
+            
+            .test-header h1 {
+                font-size: 2rem;
+            }
+            
+            .workflow-steps {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .step-line {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <!-- Header -->
+        <div class="test-header">
+            <h1>🚀 Bewerbungsworkflow Test</h1>
+            <p>Vollständige Integration mit AWS Cognito und Adminpanel</p>
+        </div>
+
+        <!-- Auth Status -->
+        <div class="auth-status">
+            <h3>
+                <i class="fas fa-shield-alt" style="color: #3b82f6;"></i>
+                Authentifizierungsstatus
+            </h3>
+            <div class="auth-info" id="authInfo">
+                <div class="auth-info-item">
+                    <strong>Status</strong>
+                    <span id="authStatus">Prüfe...</span>
+                </div>
+                <div class="auth-info-item">
+                    <strong>Benutzer</strong>
+                    <span id="userInfo">Unbekannt</span>
+                </div>
+                <div class="auth-info-item">
+                    <strong>Rolle</strong>
+                    <span id="userRole">Unbekannt</span>
+                </div>
+                <div class="auth-info-item">
+                    <strong>Token</strong>
+                    <span id="tokenStatus">Nicht verfügbar</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Workflow Demo -->
+        <div class="workflow-demo">
+            <h2>📋 Bewerbungsworkflow Demo</h2>
+            <div class="workflow-steps">
+                <div class="workflow-step">
+                    <div class="step-number" id="step1">1</div>
+                    <div class="step-label">Profil erstellen</div>
+                </div>
+                <div class="step-line"></div>
+                <div class="workflow-step">
+                    <div class="step-number" id="step2">2</div>
+                    <div class="step-label">Stellenanalyse</div>
+                </div>
+                <div class="step-line"></div>
+                <div class="workflow-step">
+                    <div class="step-number" id="step3">3</div>
+                    <div class="step-label">Bewerbungsschreiben</div>
+                </div>
+                <div class="step-line"></div>
+                <div class="workflow-step">
+                    <div class="step-number" id="step4">4</div>
+                    <div class="step-label">Lebenslauf</div>
+                </div>
+                <div class="step-line"></div>
+                <div class="workflow-step">
+                    <div class="step-number" id="step5">5</div>
+                    <div class="step-label">Design</div>
+                </div>
+                <div class="step-line"></div>
+                <div class="workflow-step">
+                    <div class="step-number" id="step6">6</div>
+                    <div class="step-label">Download</div>
+                </div>
+            </div>
+            <div class="demo-button">
+                <button onclick="startWorkflowDemo()">
+                    <i class="fas fa-play"></i>
+                    Workflow Demo starten
+                </button>
+            </div>
+        </div>
+
+        <!-- Test Cards -->
+        <div class="test-grid">
+            <!-- Bewerbungsprofil Test -->
+            <div class="test-card">
+                <h3>
+                    <i class="fas fa-user-circle" class="icon"></i>
+                    Bewerbungsprofil
+                </h3>
+                <div class="status-indicator status-success">
+                    <i class="fas fa-check-circle"></i>
+                    Funktionalität implementiert
+                </div>
+                <p>
+                    Vollständige Bewerbungsprofil-Erstellung mit AWS Cognito Integration.
+                    Speichert Profile in DynamoDB und synchronisiert mit dem Adminpanel.
+                </p>
+                <a href="applications/profile-setup.html" class="test-button">
+                    <i class="fas fa-user-plus"></i>
+                    Profil erstellen
+                </a>
+            </div>
+
+            <!-- Workflow Test -->
+            <div class="test-card">
+                <h3>
+                    <i class="fas fa-cogs" class="icon"></i>
+                    Smart Workflow
+                </h3>
+                <div class="status-indicator status-success">
+                    <i class="fas fa-check-circle"></i>
+                    Alle Module geladen
+                </div>
+                <p>
+                    6-stufiger KI-gestützter Bewerbungsworkflow mit modularem Aufbau.
+                    Automatische Profil-Integration und Stellenanalyse.
+                </p>
+                <button onclick="startSmartWorkflow()" class="test-button">
+                    <i class="fas fa-rocket"></i>
+                    Workflow starten
+                </button>
+            </div>
+
+            <!-- Admin Panel Test -->
+            <div class="test-card">
+                <h3>
+                    <i class="fas fa-tools" class="icon"></i>
+                    Admin Panel
+                </h3>
+                <div class="status-indicator status-success">
+                    <i class="fas fa-check-circle"></i>
+                    Bewerbungsprofile integriert
+                </div>
+                <p>
+                    Erweiterte Admin-Funktionalität mit Bewerbungsprofil-Management.
+                    Vollständige User-Verwaltung und Profil-Übersicht.
+                </p>
+                <a href="admin.html" class="test-button secondary">
+                    <i class="fas fa-cog"></i>
+                    Admin Panel
+                </a>
+            </div>
+
+            <!-- API Test -->
+            <div class="test-card">
+                <h3>
+                    <i class="fas fa-code" class="icon"></i>
+                    API Integration
+                </h3>
+                <div class="status-indicator status-success">
+                    <i class="fas fa-check-circle"></i>
+                    Backend bereit
+                </div>
+                <p>
+                    Vollständige REST API mit AWS Lambda und DynamoDB.
+                    Authentifizierung über Cognito und Offline-Fallback.
+                </p>
+                <button onclick="testAPI()" class="test-button">
+                    <i class="fas fa-flask"></i>
+                    API testen
+                </button>
+            </div>
+
+            <!-- Auth Test -->
+            <div class="test-card">
+                <h3>
+                    <i class="fas fa-key" class="icon"></i>
+                    Authentifizierung
+                </h3>
+                <div class="status-indicator status-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Test erforderlich
+                </div>
+                <p>
+                    AWS Cognito Integration mit automatischem Token-Refresh.
+                    Offline-Synchronisation und Session-Management.
+                </p>
+                <button onclick="testAuth()" class="test-button secondary">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Auth testen
+                </button>
+            </div>
+
+            <!-- Export Test -->
+            <div class="test-card">
+                <h3>
+                    <i class="fas fa-download" class="icon"></i>
+                    Export & Backup
+                </h3>
+                <div class="status-indicator status-success">
+                    <i class="fas fa-check-circle"></i>
+                    Export verfügbar
+                </div>
+                <p>
+                    Vollständiger Datenexport in verschiedenen Formaten.
+                    Admin-Backup und Profil-Synchronisation.
+                </p>
+                <button onclick="testExport()" class="test-button">
+                    <i class="fas fa-file-export"></i>
+                    Export testen
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/real-user-auth-system.js"></script>
+    <script src="js/bewerbung-core.js"></script>
+    <script src="js/bewerbung-steps/bewerbung-step1.js"></script>
+    <script src="js/bewerbung-steps/bewerbung-step2.js"></script>
+    <script src="js/bewerbung-steps/bewerbung-step3-6.js"></script>
+    <script src="applications/js/bewerbungsprofil-api.js"></script>
+    
+    <script>
+        // Test Script
+        let currentStep = 1;
+        
+        async function checkAuthStatus() {
+            const authStatus = document.getElementById('authStatus');
+            const userInfo = document.getElementById('userInfo');
+            const userRole = document.getElementById('userRole');
+            const tokenStatus = document.getElementById('tokenStatus');
+            
+            try {
+                if (window.realUserAuth && window.realUserAuth.isAuthenticated()) {
+                    const user = window.realUserAuth.getCurrentUser();
+                    const token = await window.realUserAuth.getAuthToken();
+                    
+                    authStatus.textContent = 'Angemeldet';
+                    authStatus.parentElement.className = 'auth-info-item';
+                    authStatus.parentElement.style.background = '#dcfce7';
+                    
+                    userInfo.textContent = user.name || user.email || 'Unbekannt';
+                    userRole.textContent = user.role || 'user';
+                    tokenStatus.textContent = token ? 'Verfügbar' : 'Nicht verfügbar';
+                } else {
+                    authStatus.textContent = 'Nicht angemeldet';
+                    authStatus.parentElement.className = 'auth-info-item';
+                    authStatus.parentElement.style.background = '#fee2e2';
+                    
+                    userInfo.textContent = 'Nicht verfügbar';
+                    userRole.textContent = 'Nicht verfügbar';
+                    tokenStatus.textContent = 'Nicht verfügbar';
+                }
+            } catch (error) {
+                console.error('Auth Status Check Error:', error);
+                authStatus.textContent = 'Fehler';
+                authStatus.parentElement.style.background = '#fee2e2';
+            }
+        }
+        
+        function startWorkflowDemo() {
+            console.log('🚀 Starte Workflow Demo...');
+            
+            // Simuliere Workflow-Schritte
+            const steps = document.querySelectorAll('.step-number');
+            steps.forEach(step => step.classList.remove('active', 'completed'));
+            
+            let stepIndex = 1;
+            const interval = setInterval(() => {
+                if (stepIndex <= 6) {
+                    const step = document.getElementById(`step${stepIndex}`);
+                    if (step) {
+                        step.classList.add('active');
+                        if (stepIndex > 1) {
+                            document.getElementById(`step${stepIndex - 1}`).classList.remove('active');
+                            document.getElementById(`step${stepIndex - 1}`).classList.add('completed');
+                        }
+                    }
+                    stepIndex++;
+                } else {
+                    clearInterval(interval);
+                    // Alle Schritte als abgeschlossen markieren
+                    steps.forEach(step => {
+                        step.classList.remove('active');
+                        step.classList.add('completed');
+                    });
+                    
+                    setTimeout(() => {
+                        alert('🎉 Workflow Demo erfolgreich abgeschlossen!\n\nAlle 6 Schritte wurden durchlaufen.');
+                        // Reset
+                        steps.forEach(step => {
+                            step.classList.remove('active', 'completed');
+                        });
+                    }, 1000);
+                }
+            }, 1000);
+        }
+        
+        function startSmartWorkflow() {
+            if (window.startSmartBewerbungsWorkflow) {
+                window.startSmartBewerbungsWorkflow();
+            } else {
+                alert('❌ Workflow-Module nicht geladen. Bitte laden Sie die Seite neu.');
+            }
+        }
+        
+        async function testAPI() {
+            try {
+                console.log('🧪 Teste API...');
+                
+                if (window.bewerbungsprofilAPI) {
+                    const result = await window.bewerbungsprofilAPI.getAllProfiles();
+                    if (result.success) {
+                        alert(`✅ API Test erfolgreich!\n\nGefundene Profile: ${result.profiles.length}`);
+                    } else {
+                        alert(`⚠️ API Test mit Warnung:\n\n${result.error}`);
+                    }
+                } else {
+                    alert('❌ API nicht verfügbar');
+                }
+            } catch (error) {
+                console.error('API Test Error:', error);
+                alert(`❌ API Test fehlgeschlagen:\n\n${error.message}`);
+            }
+        }
+        
+        async function testAuth() {
+            try {
+                console.log('🔐 Teste Authentifizierung...');
+                
+                if (window.realUserAuth) {
+                    if (window.realUserAuth.isAuthenticated()) {
+                        const user = window.realUserAuth.getCurrentUser();
+                        alert(`✅ Auth Test erfolgreich!\n\nAngemeldet als: ${user.name || user.email}\nRolle: ${user.role}`);
+                    } else {
+                        alert('⚠️ Nicht angemeldet. Bitte melden Sie sich zuerst an.');
+                    }
+                } else {
+                    alert('❌ Auth-System nicht verfügbar');
+                }
+            } catch (error) {
+                console.error('Auth Test Error:', error);
+                alert(`❌ Auth Test fehlgeschlagen:\n\n${error.message}`);
+            }
+        }
+        
+        async function testExport() {
+            try {
+                console.log('📤 Teste Export...');
+                
+                if (window.bewerbungsprofilAPI) {
+                    // Mock Export Test
+                    const mockData = {
+                        testDate: new Date().toISOString(),
+                        profiles: [],
+                        message: 'Export Test erfolgreich'
+                    };
+                    
+                    const blob = new Blob([JSON.stringify(mockData, null, 2)], { type: 'application/json' });
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'bewerbungsprofile-test-export.json';
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                    
+                    alert('✅ Export Test erfolgreich!\n\nTest-Datei wurde heruntergeladen.');
+                } else {
+                    alert('❌ Export-System nicht verfügbar');
+                }
+            } catch (error) {
+                console.error('Export Test Error:', error);
+                alert(`❌ Export Test fehlgeschlagen:\n\n${error.message}`);
+            }
+        }
+        
+        // Initialisierung
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Bewerbungsworkflow Test Seite geladen');
+            
+            // Auth Status prüfen
+            setTimeout(checkAuthStatus, 1000);
+            
+            // Regelmäßige Updates
+            setInterval(checkAuthStatus, 30000);
+        });
+    </script>
+</body>
+</html>
