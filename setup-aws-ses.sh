@@ -87,9 +87,9 @@ register_domain() {
     aws route53domains register-domain \
         --domain-name $DOMAIN \
         --duration-in-years 1 \
-        --admin-contact FirstName=Manuel,LastName=Weiss,ContactType=PERSON,CountryCode=CH,City=Zürich,State=ZH,ZipCode=8001,PhoneNumber=+41.798385590,Email=weiss-manuel@gmx.de \
-        --registrant-contact FirstName=Manuel,LastName=Weiss,ContactType=PERSON,CountryCode=CH,City=Zürich,State=ZH,ZipCode=8001,PhoneNumber=+41.798385590,Email=weiss-manuel@gmx.de \
-        --tech-contact FirstName=Manuel,LastName=Weiss,ContactType=PERSON,CountryCode=CH,City=Zürich,State=ZH,ZipCode=8001,PhoneNumber=+41.798385590,Email=weiss-manuel@gmx.de
+        --admin-contact FirstName=Manuel,LastName=Weiss,ContactType=PERSON,CountryCode=CH,City=Zürich,State=ZH,ZipCode=8001,PhoneNumber=+41.798385590,Email=info@manuel-weiss.ch \
+        --registrant-contact FirstName=Manuel,LastName=Weiss,ContactType=PERSON,CountryCode=CH,City=Zürich,State=ZH,ZipCode=8001,PhoneNumber=+41.798385590,Email=info@manuel-weiss.ch \
+        --tech-contact FirstName=Manuel,LastName=Weiss,ContactType=PERSON,CountryCode=CH,City=Zürich,State=ZH,ZipCode=8001,PhoneNumber=+41.798385590,Email=info@manuel-weiss.ch
     
     print_success "Domain $DOMAIN registriert!"
 }
@@ -134,7 +134,7 @@ send_test_email() {
     print_status "Sende Test-E-Mail..."
     aws ses send-email \
         --source $EMAIL \
-        --destination ToAddresses=weiss-manuel@gmx.de \
+        --destination ToAddresses=info@manuel-weiss.ch \
         --message Subject.Data="Test E-Mail von $EMAIL" Body.Text.Data="Hallo! Diese E-Mail wurde von $EMAIL gesendet. Das Setup funktioniert!" \
         --region $REGION
     print_success "Test-E-Mail gesendet"

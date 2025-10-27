@@ -4,7 +4,7 @@
 # Prüft Status und sendet Push-Benachrichtigung
 
 DOMAIN="manuel-weiss.ch"
-EMAIL="weiss-manuel@gmx.de"
+EMAIL="info@manuel-weiss.ch"
 REGION="eu-central-1"
 OPERATION_ID="c5e5a200-f6b9-40b6-a7ab-450bea2168fc"
 
