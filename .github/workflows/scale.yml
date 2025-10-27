@@ -1,9 +1,12 @@
 name: Scale Pipeline
 
-on:
-  schedule:
-    - cron: '*/10 * * * *' # Every 10 minutes - RE-ENABLED
-  workflow_dispatch:
+name: Scale Pipeline
+
+# DISABLED - Workflow komplett deaktiviert um E-Mail-Spam zu stoppen
+# on:
+#   schedule:
+#     - cron: '*/10 * * * *' # Every 10 minutes - DISABLED
+#   workflow_dispatch:
     inputs:
       environment:
         description: 'Environment to scale'
