@@ -378,3 +378,4 @@ export const handler = async (event) => {
         }, headers);
     }
 };
+

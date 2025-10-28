@@ -434,3 +434,4 @@ if (window.bewerbungsprofilManager) {
 }
 
 console.log('✅ Bewerbungsprofil API Integration geladen');
+
