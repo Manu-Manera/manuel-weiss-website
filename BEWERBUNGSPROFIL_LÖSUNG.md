@@ -184,3 +184,4 @@ Bei Fragen oder Problemen:
 ---
 
 **🎉 Das Bewerbungsprofil funktioniert jetzt vollständig und ist mit AWS Cognito und dem Adminpanel verknüpft!**
+

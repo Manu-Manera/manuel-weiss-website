@@ -641,3 +641,4 @@ if (window.AdminUserManagementUI) {
 }
 
 console.log('✅ Admin Bewerbungsprofil Manager geladen');
+
