@@ -347,3 +347,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
 console.log('✅ Steps 3-6 Module geladen');
 
+
+

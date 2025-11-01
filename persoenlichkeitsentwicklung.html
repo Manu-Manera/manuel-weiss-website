@@ -1195,10 +1195,10 @@
 <div id="authModalsContainer"></div>
 
 <!-- Scripts -->
-    
-<script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
-<script src="js/aws-auth.js"></script>
 <script src="script.js"></script>
+
+<!-- Unified Auth System -->
+<script src="js/unified-auth-loader.js"></script>
     <!-- Ikigai workflow wird über ikigai.html geladen -->
     <script src="js/method-loader.js"></script>
     <script src="js/persoenlichkeitsentwicklung-methods.js"></script>
@@ -1210,17 +1210,6 @@
         let currentIkigaiStep = 1;
         const totalIkigaiSteps = 7;
         
-        
-    // Load auth modals
-    async function loadAuthModals() {
-        try {
-            const response = await fetch('components/auth-modals.html');
-            const html = await response.text();
-            document.getElementById('authModalsContainer').innerHTML = html;
-        } catch (error) {
-            console.error('Error loading auth modals:', error);
-        }
-    }
 
     // AWS User System Functions
     function loginUser() {
