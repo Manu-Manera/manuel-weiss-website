@@ -276,3 +276,5 @@ if (window.bewerbungData && window.bewerbungData.currentStep === 1) {
 
 console.log('✅ Step 1 Modul geladen');
 
+
+

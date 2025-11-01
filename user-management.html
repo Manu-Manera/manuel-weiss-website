@@ -355,19 +355,11 @@
     <div id="authModalsContainer"></div>
 
     <!-- Scripts -->
-    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
-    <!-- Alte Auth-Datei entfernt - verwende js/aws-auth-system.js -->
+    <!-- Unified Auth System -->
+    <script src="js/unified-auth-loader.js"></script>
+    
     <script>
-        // Load auth modals
-        async function loadAuthModals() {
-            try {
-                const response = await fetch('components/auth-modals.html');
-                const html = await response.text();
-                document.getElementById('authModalsContainer').innerHTML = html;
-            } catch (error) {
-                console.error('Error loading auth modals:', error);
-            }
-        }
+        // Auth Modals werden automatisch vom unified-auth-loader geladen
 
         // Show status message
         function showStatusMessage(message, type = 'info') {
