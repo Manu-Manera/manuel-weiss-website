@@ -157,17 +157,29 @@ class HeroAboutSection {
             heroData.subtitle = data.subtitle;
         }
         
+        // Profilbild auch in heroData speichern
+        const profileImage = localStorage.getItem('adminProfileImage');
+        if (profileImage) {
+            heroData.profileImage = profileImage;
+        }
+        
         // heroData speichern
         localStorage.setItem('heroData', JSON.stringify(heroData));
         
-        // Storage Event auslösen
+        // Storage Events auslösen für beide Keys
         window.dispatchEvent(new StorageEvent('storage', {
             key: 'heroData',
             newValue: JSON.stringify(heroData),
             oldValue: localStorage.getItem('heroData')
         }));
         
-        console.log('✅ Hero-Daten zur Website synchronisiert');
+        window.dispatchEvent(new StorageEvent('storage', {
+            key: 'adminProfileData',
+            newValue: localStorage.getItem('adminProfileData'),
+            oldValue: localStorage.getItem('adminProfileData')
+        }));
+        
+        console.log('✅ Hero-Daten zur Website synchronisiert:', heroData);
     }
     
     /**

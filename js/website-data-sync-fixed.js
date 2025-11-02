@@ -150,7 +150,30 @@ function updateStatisticElement(statNumber, type, value) {
  * Lädt weitere Daten von LocalStorage
  */
 function loadWebsiteAdditionalData() {
-    const storedData = localStorage.getItem(ADMIN_DATA_KEY);
+    // Erst aus adminProfileData laden
+    let storedData = localStorage.getItem(ADMIN_DATA_KEY);
+    
+    // Falls nicht vorhanden, auch aus heroData laden
+    if (!storedData) {
+        const heroData = localStorage.getItem('heroData');
+        if (heroData) {
+            try {
+                const heroDataObj = JSON.parse(heroData);
+                // heroData zu adminProfileData-Format konvertieren
+                storedData = JSON.stringify({
+                    title: heroDataObj.title || '',
+                    subtitle: heroDataObj.subtitle || '',
+                    email: heroDataObj.email || '',
+                    phone: heroDataObj.phone || '',
+                    location: heroDataObj.location || ''
+                });
+                console.log('📝 Lade Hero-Daten aus heroData');
+            } catch (e) {
+                console.error('❌ Fehler beim Konvertieren von heroData:', e);
+            }
+        }
+    }
+    
     if (storedData) {
         try {
             const profileData = JSON.parse(storedData);
@@ -183,6 +206,8 @@ function loadWebsiteAdditionalData() {
         } catch (error) {
             console.error('❌ Fehler beim Laden der Hero-Daten:', error);
         }
+    } else {
+        console.log('ℹ️ Keine Hero-Daten in localStorage gefunden');
     }
 }
 
@@ -318,13 +343,17 @@ function updateElementWithSelectors(selectors, value) {
  * Event Listener für Storage-Änderungen
  */
 window.addEventListener('storage', (event) => {
-    if (event.key === ADMIN_DATA_KEY) {
-        console.log('🔄 Storage-Event erkannt für Profil-Daten. Aktualisiere Website...');
+    if (event.key === ADMIN_DATA_KEY || event.key === 'adminProfileData') {
+        console.log('🔄 Storage-Event erkannt für Profil-Daten. Aktualisiere Website...', event.key);
         loadWebsiteDataFromLocalStorage();
     }
-    if (event.key === PROFILE_IMAGE_KEY) {
-        console.log('🔄 Storage-Event erkannt für Profilbild. Aktualisiere Website...');
+    if (event.key === PROFILE_IMAGE_KEY || event.key === 'adminProfileImage' || event.key === 'heroProfileImage') {
+        console.log('🔄 Storage-Event erkannt für Profilbild. Aktualisiere Website...', event.key);
         loadWebsiteProfileImage();
+    }
+    if (event.key === 'heroData') {
+        console.log('🔄 Storage-Event erkannt für Hero-Daten. Aktualisiere Website...');
+        loadWebsiteDataFromLocalStorage();
     }
 });
 
