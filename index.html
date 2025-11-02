@@ -823,10 +823,20 @@
                         console.log('✅ WEBSITE: Profile image from heroData');
                     }
                     
-                    // 2. Aus localStorage laden
+                    // 2. Aus localStorage laden - MEHRERE KEYS prüfen für Kompatibilität
+                    if (!profileImage) {
+                        profileImage = localStorage.getItem('adminProfileImage');
+                        console.log('📸 WEBSITE: Profile image from adminProfileImage:', profileImage ? 'Found' : 'Not found');
+                    }
+                    
                     if (!profileImage) {
                         profileImage = localStorage.getItem('heroProfileImage');
-                        console.log('📸 WEBSITE: Profile image from localStorage:', profileImage ? 'Found' : 'Not found');
+                        console.log('📸 WEBSITE: Profile image from heroProfileImage:', profileImage ? 'Found' : 'Not found');
+                    }
+                    
+                    if (!profileImage) {
+                        profileImage = localStorage.getItem('profileImage');
+                        console.log('📸 WEBSITE: Profile image from profileImage:', profileImage ? 'Found' : 'Not found');
                     }
                     
                     // 3. Profilbild anzeigen
@@ -1114,28 +1124,67 @@
         
         // Sofortige Website-Aktualisierung bei Profilbild-Änderungen
         function updateWebsiteProfileImage() {
-            const heroData = localStorage.getItem('heroData');
-            if (heroData) {
-                try {
+            let profileImage = null;
+            
+            // Prüfe mehrere Quellen
+            try {
+                const heroData = localStorage.getItem('heroData');
+                if (heroData) {
                     const data = JSON.parse(heroData);
                     if (data.profileImage) {
-                        const profilePhoto = document.getElementById('profile-photo');
-                        if (profilePhoto) {
-                            profilePhoto.src = data.profileImage;
-                            profilePhoto.style.display = 'block';
-                            console.log('🔄 WEBSITE: Profile image updated from localStorage');
-                        }
+                        profileImage = data.profileImage;
                     }
-                } catch (error) {
-                    console.error('❌ WEBSITE: Error updating profile image:', error);
+                }
+            } catch (error) {
+                console.error('❌ WEBSITE: Error parsing heroData:', error);
+            }
+            
+            // Falls nicht in heroData, andere Keys prüfen
+            if (!profileImage) {
+                profileImage = localStorage.getItem('adminProfileImage');
+            }
+            if (!profileImage) {
+                profileImage = localStorage.getItem('heroProfileImage');
+            }
+            if (!profileImage) {
+                profileImage = localStorage.getItem('profileImage');
+            }
+            
+            if (profileImage) {
+                const profilePhoto = document.getElementById('profile-photo');
+                if (profilePhoto) {
+                    profilePhoto.src = profileImage;
+                    profilePhoto.style.display = 'block';
+                    console.log('🔄 WEBSITE: Profile image updated from localStorage');
                 }
             }
         }
         
         // Profilbild-Updates alle 3 Sekunden prüfen
-        // Live-Update für Profilbild
+        // Live-Update für Profilbild - MEHRERE KEYS prüfen
         function updateProfileImageLive() {
-            const storedImage = localStorage.getItem('heroProfileImage');
+            let storedImage = localStorage.getItem('adminProfileImage');
+            if (!storedImage) {
+                storedImage = localStorage.getItem('heroProfileImage');
+            }
+            if (!storedImage) {
+                storedImage = localStorage.getItem('profileImage');
+            }
+            if (!storedImage) {
+                // Auch heroData prüfen
+                try {
+                    const heroData = localStorage.getItem('heroData');
+                    if (heroData) {
+                        const data = JSON.parse(heroData);
+                        if (data.profileImage) {
+                            storedImage = data.profileImage;
+                        }
+                    }
+                } catch (e) {
+                    // Ignorieren
+                }
+            }
+            
             if (storedImage) {
                 const profilePhoto = document.getElementById('profile-photo');
                 if (profilePhoto && profilePhoto.src !== storedImage) {
@@ -1148,6 +1197,10 @@
         
         // Polling für Live-Updates
         setInterval(updateProfileImageLive, 2000);
+        
+        // Globale Funktionen exportieren für Admin-Panel Zugriff
+        window.updateProfileImageLive = updateProfileImageLive;
+        window.updateWebsiteProfileImage = updateWebsiteProfileImage;
         
         console.log('✅ WEBSITE: Hero data integration ready');
     </script>

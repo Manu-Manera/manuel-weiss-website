@@ -112,6 +112,9 @@ class HeroAboutSection {
     applyToWebsite() {
         this.save();
         
+        // Profilbild auch anwenden
+        this.syncToWebsite();
+        
         // Direkte Website-Sync aufrufen
         if (window.loadWebsiteDataFromLocalStorage) {
             window.loadWebsiteDataFromLocalStorage();
@@ -124,6 +127,37 @@ class HeroAboutSection {
             }));
             this.toast('Daten gespeichert - Website wird aktualisiert');
         }
+    }
+    
+    /**
+     * Synchronisiert Profilbild zur Website
+     */
+    syncToWebsite() {
+        const profileImage = localStorage.getItem('adminProfileImage');
+        if (!profileImage) return;
+        
+        // Storage Events auslösen für alle relevanten Keys
+        const keys = ['adminProfileImage', 'heroProfileImage', 'profileImage', 'heroData'];
+        keys.forEach(key => {
+            if (localStorage.getItem(key)) {
+                window.dispatchEvent(new StorageEvent('storage', {
+                    key: key,
+                    newValue: localStorage.getItem(key),
+                    oldValue: localStorage.getItem(key)
+                }));
+            }
+        });
+        
+        // Direkte Website-Funktionen aufrufen falls verfügbar
+        if (window.loadWebsiteProfileImage) {
+            window.loadWebsiteProfileImage();
+        }
+        
+        if (window.updateProfileImageLive) {
+            window.updateProfileImageLive();
+        }
+        
+        console.log('✅ Profilbild zur Website synchronisiert');
     }
 
     reset() {
@@ -149,14 +183,33 @@ class HeroAboutSection {
             // Bild zu Base64 konvertieren
             const base64 = await this.fileToBase64(file);
             
-            // In LocalStorage speichern
+            // In LocalStorage speichern - MEHRERE KEYS für Kompatibilität
             localStorage.setItem('adminProfileImage', base64);
+            localStorage.setItem('heroProfileImage', base64);
+            localStorage.setItem('profileImage', base64);
+            
+            // Profilbild auch in heroData speichern (für Kompatibilität)
+            let heroData = {};
+            try {
+                const stored = localStorage.getItem('heroData');
+                if (stored) {
+                    heroData = JSON.parse(stored);
+                }
+            } catch (e) {
+                console.warn('heroData nicht gefunden oder ungültig, erstelle neues Objekt');
+            }
+            
+            heroData.profileImage = base64;
+            localStorage.setItem('heroData', JSON.stringify(heroData));
             
             // Aktuelles Profilbild aktualisieren
             this.updateCurrentProfileImage(base64);
             
             // Galerie neu laden
             this.loadGallery();
+            
+            // Website sofort aktualisieren
+            this.syncToWebsite();
             
             this.toast('Profilbild erfolgreich hochgeladen!', 'success');
             
@@ -326,8 +379,32 @@ class HeroAboutSection {
         const image = gallery.find(img => img.id === imageId);
         
         if (image) {
-            localStorage.setItem('adminProfileImage', image.data);
-            this.updateCurrentProfileImage(image.data);
+            const base64 = image.data;
+            
+            // In LocalStorage speichern - MEHRERE KEYS für Kompatibilität
+            localStorage.setItem('adminProfileImage', base64);
+            localStorage.setItem('heroProfileImage', base64);
+            localStorage.setItem('profileImage', base64);
+            
+            // Profilbild auch in heroData speichern
+            let heroData = {};
+            try {
+                const stored = localStorage.getItem('heroData');
+                if (stored) {
+                    heroData = JSON.parse(stored);
+                }
+            } catch (e) {
+                console.warn('heroData nicht gefunden oder ungültig');
+            }
+            
+            heroData.profileImage = base64;
+            localStorage.setItem('heroData', JSON.stringify(heroData));
+            
+            this.updateCurrentProfileImage(base64);
+            
+            // Website sofort aktualisieren
+            this.syncToWebsite();
+            
             this.toast('Profilbild geändert!', 'success');
         }
     }
