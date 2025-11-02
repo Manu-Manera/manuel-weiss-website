@@ -49,10 +49,21 @@
     <!-- Scripts -->
     <script src="../../js/therapy-form-finder.js"></script>
     <script>
-        // Initialisiere Therapy Finder
+        // Initialisiere Therapy Finder (wird bereits im Script selbst initialisiert)
         document.addEventListener('DOMContentLoaded', () => {
-            therapyFinder = new TherapyFormFinder();
-            therapyFinder.start('therapyFinderContainer');
+            // Warte kurz, falls Script noch lädt
+            if (typeof TherapyFormFinder !== 'undefined' && window.therapyFinder) {
+                console.log('TherapyFinder bereits initialisiert');
+            } else {
+                // Fallback: Initialisiere neu wenn nicht vorhanden
+                setTimeout(() => {
+                    if (typeof TherapyFormFinder !== 'undefined') {
+                        window.therapyFinder = new TherapyFormFinder();
+                        window.therapyFinder.start('therapyFinderContainer');
+                        console.log('TherapyFinder als Fallback initialisiert');
+                    }
+                }, 200);
+            }
         });
     </script>
 </body>

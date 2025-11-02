@@ -7,9 +7,17 @@ class TherapyFormFinder {
     constructor() {
         this.currentStep = 0;
         this.answers = {};
-        this.therapyForms = this.initializeTherapyForms();
-        this.questions = this.initializeQuestions();
+        this.therapyForms = this.initializeTherapyForms() || [];
+        this.questions = this.initializeQuestions() || [];
         this.container = null;
+        
+        // Debug: Prüfe ob Initialisierung erfolgreich war
+        if (!this.questions || this.questions.length === 0) {
+            console.error('ERROR: Questions nicht initialisiert!', this.questions);
+        }
+        if (!this.therapyForms || this.therapyForms.length === 0) {
+            console.error('ERROR: TherapyForms nicht initialisiert!', this.therapyForms);
+        }
     }
 
     /**
@@ -479,12 +487,34 @@ class TherapyFormFinder {
      * Rendert die aktuelle Frage oder Ergebnisse
      */
     render() {
+        // Sicherheitsprüfung
+        if (!this.questions || !Array.isArray(this.questions) || this.questions.length === 0) {
+            console.error('ERROR: Questions nicht verfügbar!', this.questions);
+            if (this.container) {
+                this.container.innerHTML = `
+                    <div class="therapy-finder-container">
+                        <div class="error-message">
+                            <h2>Fehler bei der Initialisierung</h2>
+                            <p>Die Fragen konnten nicht geladen werden. Bitte lade die Seite neu.</p>
+                            <button onclick="location.reload()" class="btn btn-primary">Seite neu laden</button>
+                        </div>
+                    </div>
+                `;
+            }
+            return;
+        }
+        
         if (this.currentStep >= this.questions.length) {
             this.showResults();
             return;
         }
 
         const question = this.questions[this.currentStep];
+        if (!question) {
+            console.error('ERROR: Frage nicht gefunden für Step:', this.currentStep);
+            return;
+        }
+        
         const progress = ((this.currentStep + 1) / this.questions.length) * 100;
 
         this.container.innerHTML = `
@@ -893,11 +923,35 @@ class TherapyFormFinder {
 let therapyFinder;
 
 // Initialisierung wenn DOM geladen ist
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
+function initializeTherapyFinder() {
+    if (typeof TherapyFormFinder !== 'undefined') {
         therapyFinder = new TherapyFormFinder();
-    });
-} else {
-    therapyFinder = new TherapyFormFinder();
+        console.log('TherapyFormFinder initialisiert:', therapyFinder);
+        console.log('Questions:', therapyFinder.questions?.length || 0);
+        console.log('TherapyForms:', therapyFinder.therapyForms?.length || 0);
+        
+        // Wenn Container bereits existiert, direkt starten
+        const container = document.getElementById('therapyFinderContainer');
+        if (container) {
+            therapyFinder.start('therapyFinderContainer');
+        }
+    } else {
+        console.error('TherapyFormFinder Klasse nicht gefunden!');
+    }
 }
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeTherapyFinder);
+} else {
+    // DOM ist bereits geladen
+    setTimeout(initializeTherapyFinder, 100);
+}
+
+// Auch für window.onload als Fallback
+window.addEventListener('load', function() {
+    if (!therapyFinder) {
+        console.log('Fallback: Initialisiere TherapyFinder bei window.load');
+        initializeTherapyFinder();
+    }
+});
 
