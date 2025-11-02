@@ -1,0 +1,1202 @@
+/**
+ * Activity & Rental Pages Styles
+ * Umfassende Styles für Wohnmobil, Fotobox, E-Bike und SUP Seiten
+ */
+
+/* ============================================
+   NAVIGATION
+   ============================================ */
+.nav-modern {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.nav-modern .nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.nav-modern .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    color: var(--gray-900, #0f172a);
+    font-weight: 700;
+    font-size: 1.125rem;
+}
+
+.nav-modern .nav-logo img {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+}
+
+.nav-modern .nav-menu {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-modern .nav-link {
+    font-weight: 500;
+    color: var(--gray-600, #64748b);
+    text-decoration: none;
+    transition: color 0.3s ease;
+    position: relative;
+}
+
+.nav-modern .nav-link:hover {
+    color: var(--primary, #6366f1);
+}
+
+.nav-modern .nav-toggle {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+    padding: 0.5rem;
+}
+
+.nav-modern .nav-toggle span {
+    width: 25px;
+    height: 3px;
+    background: var(--gray-900, #0f172a);
+    border-radius: 3px;
+    transition: all 0.3s ease;
+}
+
+@media (max-width: 768px) {
+    .nav-modern .nav-toggle {
+        display: flex;
+    }
+    
+    .nav-modern .nav-menu {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        flex-direction: column;
+        padding: 1rem 0;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        transform: translateY(-100%);
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+    }
+    
+    .nav-modern .nav-menu.active {
+        transform: translateY(0);
+        opacity: 1;
+        visibility: visible;
+    }
+}
+
+/* Body Padding für feste Navigation */
+body {
+    padding-top: 80px;
+}
+
+/* ============================================
+   GRID SYSTEM (Bootstrap-ähnlich)
+   ============================================ */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 -1rem;
+}
+
+.row > * {
+    padding: 0 1rem;
+}
+
+.col-md-6,
+.col-lg-3,
+.col-lg-4,
+.col-lg-8,
+.col-lg-10,
+.col-12 {
+    width: 100%;
+}
+
+@media (min-width: 768px) {
+    .col-md-6 {
+        width: 50%;
+    }
+    
+    .col-lg-3 {
+        width: 25%;
+    }
+    
+    .col-lg-4 {
+        width: 33.333333%;
+    }
+    
+    .col-lg-8 {
+        width: 66.666667%;
+    }
+    
+    .col-lg-10 {
+        width: 83.333333%;
+    }
+}
+
+.g-3,
+.g-4 {
+    margin: 0 -0.75rem;
+}
+
+.g-3 > *,
+.g-4 > * {
+    padding: 0 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.g-4 {
+    margin: 0 -1rem;
+}
+
+.g-4 > * {
+    padding: 0 1rem;
+    margin-bottom: 2rem;
+}
+
+.justify-content-center {
+    justify-content: center;
+}
+
+.align-items-center {
+    align-items: center;
+}
+
+.text-center {
+    text-align: center;
+}
+
+/* ============================================
+   TYPOGRAPHY
+   ============================================ */
+.display-1 {
+    font-size: 4rem;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+}
+
+.display-2 {
+    font-size: 3rem;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+}
+
+.display-3 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 1rem;
+}
+
+.lead {
+    font-size: 1.25rem;
+    font-weight: 400;
+    line-height: 1.6;
+    color: var(--gray-600, #64748b);
+}
+
+.text-muted {
+    color: var(--gray-500, #64748b);
+}
+
+.text-primary {
+    color: var(--primary, #6366f1);
+}
+
+.text-success {
+    color: var(--success, #10b981);
+}
+
+.text-white {
+    color: white;
+}
+
+.mb-0 { margin-bottom: 0; }
+.mb-1 { margin-bottom: 0.25rem; }
+.mb-2 { margin-bottom: 0.5rem; }
+.mb-3 { margin-bottom: 1rem; }
+.mb-4 { margin-bottom: 1.5rem; }
+.mb-5 { margin-bottom: 3rem; }
+
+.mt-3 { margin-top: 1rem; }
+.mt-4 { margin-top: 1.5rem; }
+.mt-5 { margin-top: 3rem; }
+
+/* ============================================
+   HERO SECTION
+   ============================================ */
+.activity-hero {
+    position: relative;
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    overflow: hidden;
+    padding: 4rem 0;
+}
+
+.activity-hero.gradient-forest {
+    background: linear-gradient(135deg, #2d5016 0%, #4a7c2a 100%);
+}
+
+.activity-hero.gradient-ocean {
+    background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+}
+
+.hero-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 0;
+}
+
+.hero-background .hero-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.4) 100%);
+    z-index: 1;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+}
+
+.hero-cta {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+}
+
+.hero-waves {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    overflow: hidden;
+    line-height: 0;
+    z-index: 2;
+}
+
+.hero-waves svg {
+    display: block;
+    width: calc(100% + 1.3px);
+    height: 120px;
+}
+
+/* ============================================
+   SECTIONS
+   ============================================ */
+.section {
+    padding: 5rem 0;
+}
+
+.section-header {
+    margin-bottom: 3rem;
+}
+
+.bg-light {
+    background-color: var(--gray-50, #f8fafc);
+}
+
+.bg-primary {
+    background: linear-gradient(135deg, var(--primary, #6366f1) 0%, var(--secondary, #8b5cf6) 100%);
+    color: white;
+}
+
+.bg-white {
+    background: white;
+}
+
+/* ============================================
+   FEATURE CARDS
+   ============================================ */
+.feature-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    text-align: center;
+    transition: all 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.feature-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+}
+
+.feature-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 1.5rem;
+    background: linear-gradient(135deg, var(--primary, #6366f1) 0%, var(--secondary, #8b5cf6) 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: white;
+}
+
+.feature-card h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--gray-900, #0f172a);
+}
+
+.feature-card p {
+    color: var(--gray-600, #64748b);
+    line-height: 1.6;
+    flex: 1;
+}
+
+/* ============================================
+   PRICING CARDS
+   ============================================ */
+.pricing-card {
+    background: white;
+    padding: 2.5rem;
+    border-radius: 20px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.pricing-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.15);
+}
+
+.pricing-package {
+    background: white;
+    border: 2px solid var(--gray-200, #e2e8f0);
+    border-radius: 20px;
+    padding: 2.5rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    position: relative;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.pricing-package.featured {
+    border-color: var(--primary, #6366f1);
+    box-shadow: 0 12px 32px rgba(102, 126, 234, 0.2);
+    transform: scale(1.05);
+}
+
+.package-badge {
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, var(--primary, #6366f1) 0%, var(--secondary, #8b5cf6) 100%);
+    color: white;
+    padding: 0.5rem 1.5rem;
+    border-radius: 25px;
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.package-title {
+    font-size: 1.75rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    color: var(--gray-900, #0f172a);
+}
+
+.package-price {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+}
+
+.package-price .currency {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--gray-600, #64748b);
+}
+
+.package-price .amount {
+    font-size: 3rem;
+    font-weight: 800;
+    color: var(--primary, #6366f1);
+}
+
+.package-price .period {
+    font-size: 1rem;
+    color: var(--gray-500, #64748b);
+}
+
+.package-features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 2rem 0;
+    text-align: left;
+    flex: 1;
+}
+
+.package-features li {
+    padding: 0.75rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--gray-700, #334155);
+}
+
+.package-features li i {
+    color: var(--success, #10b981);
+    font-size: 1.125rem;
+}
+
+.price-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.price-list li {
+    padding: 1rem 0;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border-bottom: 1px solid var(--gray-200, #e2e8f0);
+}
+
+.price-list li:last-child {
+    border-bottom: none;
+}
+
+.price-list li i {
+    font-size: 1.25rem;
+}
+
+.price-list li strong {
+    margin-left: auto;
+    color: var(--gray-900, #0f172a);
+    font-weight: 700;
+}
+
+.pricing-table {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.table-modern {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-modern thead {
+    background: var(--gray-50, #f8fafc);
+}
+
+.table-modern th {
+    padding: 1.25rem;
+    text-align: left;
+    font-weight: 700;
+    color: var(--gray-900, #0f172a);
+    border-bottom: 2px solid var(--gray-200, #e2e8f0);
+}
+
+.table-modern td {
+    padding: 1.25rem;
+    border-bottom: 1px solid var(--gray-200, #e2e8f0);
+    color: var(--gray-700, #334155);
+}
+
+.table-modern tbody tr:hover {
+    background: var(--gray-50, #f8fafc);
+}
+
+/* ============================================
+   BUTTONS
+   ============================================ */
+.btn {
+    display: inline-block;
+    padding: 0.875rem 2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    line-height: 1.5;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary, #6366f1) 0%, var(--secondary, #8b5cf6) 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+}
+
+.btn-outline-light {
+    background: transparent;
+    color: white;
+    border: 2px solid rgba(255,255,255,0.5);
+}
+
+.btn-outline-light:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: white;
+}
+
+.btn-outline-primary {
+    background: transparent;
+    color: var(--primary, #6366f1);
+    border: 2px solid var(--primary, #6366f1);
+}
+
+.btn-outline-primary:hover {
+    background: var(--primary, #6366f1);
+    color: white;
+}
+
+.btn-light {
+    background: white;
+    color: var(--primary, #6366f1);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.btn-light:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.btn-lg {
+    padding: 1.125rem 2.5rem;
+    font-size: 1.125rem;
+}
+
+.btn-block {
+    width: 100%;
+}
+
+.w-100 {
+    width: 100%;
+}
+
+/* ============================================
+   FORMS
+   ============================================ */
+.booking-form {
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    padding: 2.5rem;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+.bg-primary .booking-form {
+    background: rgba(255,255,255,0.95);
+    color: var(--gray-900, #0f172a);
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--gray-700, #334155);
+}
+
+.bg-primary .form-group label {
+    color: var(--gray-900, #0f172a);
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.875rem 1.25rem;
+    font-size: 1rem;
+    border: 2px solid var(--gray-300, #cbd5e1);
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    background: white;
+    color: var(--gray-900, #0f172a);
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary, #6366f1);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.bg-primary .form-control {
+    background: white;
+}
+
+.form-check {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.form-check-input {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.form-check-label {
+    margin: 0;
+    cursor: pointer;
+}
+
+/* ============================================
+   GALLERY
+   ============================================ */
+.image-gallery {
+    margin-top: 2rem;
+}
+
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.gallery-item {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    aspect-ratio: 4/3;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.gallery-item:hover {
+    transform: scale(1.03);
+}
+
+.gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.gallery-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.gallery-item:hover .gallery-overlay {
+    opacity: 1;
+}
+
+.gallery-overlay i {
+    color: white;
+    font-size: 2rem;
+}
+
+/* ============================================
+   BIKE/SUP CARDS
+   ============================================ */
+.bike-card,
+.route-card {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.bike-card:hover,
+.route-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+}
+
+.bike-card.featured {
+    border: 2px solid var(--primary, #6366f1);
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.2);
+}
+
+.bike-badge {
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, var(--primary, #6366f1) 0%, var(--secondary, #8b5cf6) 100%);
+    color: white;
+    padding: 0.5rem 1.5rem;
+    border-radius: 25px;
+    font-size: 0.875rem;
+    font-weight: 700;
+}
+
+.bike-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.bike-header h3 {
+    font-size: 1.75rem;
+    font-weight: 800;
+    margin: 0;
+}
+
+.bike-type {
+    background: var(--gray-100, #f1f5f9);
+    color: var(--gray-700, #334155);
+    padding: 0.375rem 1rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.bike-image,
+.info-image {
+    margin: 1.5rem 0;
+    border-radius: 12px;
+    overflow: hidden;
+    aspect-ratio: 16/9;
+}
+
+.placeholder-image {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--gray-200, #e2e8f0) 0%, var(--gray-300, #cbd5e1) 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--gray-500, #64748b);
+}
+
+.placeholder-image i {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.bike-features ul,
+.bike-features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.5rem 0;
+    flex: 1;
+}
+
+.bike-features li {
+    padding: 0.5rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--gray-700, #334155);
+}
+
+.bike-features li i {
+    color: var(--success, #10b981);
+}
+
+.bike-price {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: auto;
+    padding-top: 1.5rem;
+    border-top: 2px solid var(--gray-200, #e2e8f0);
+}
+
+.bike-price .from {
+    font-size: 0.875rem;
+    color: var(--gray-500, #64748b);
+}
+
+.bike-price .amount {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--primary, #6366f1);
+}
+
+.bike-price .period {
+    font-size: 0.875rem;
+    color: var(--gray-500, #64748b);
+}
+
+/* ============================================
+   ROUTE CARDS
+   ============================================ */
+.route-difficulty {
+    display: inline-block;
+    padding: 0.375rem 1rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.route-difficulty.easy {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.route-difficulty.medium {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.route-difficulty.hard {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.route-card h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.route-info {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.route-info span {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--gray-600, #64748b);
+    font-size: 0.875rem;
+}
+
+.route-info i {
+    color: var(--primary, #6366f1);
+}
+
+.route-card p {
+    color: var(--gray-600, #64748b);
+    line-height: 1.6;
+}
+
+/* ============================================
+   INFO LIST
+   ============================================ */
+.info-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.info-item {
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+}
+
+.info-item i {
+    font-size: 1.75rem;
+    margin-top: 0.25rem;
+    flex-shrink: 0;
+}
+
+.info-item h4 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--gray-900, #0f172a);
+}
+
+.info-item p {
+    color: var(--gray-600, #64748b);
+    margin: 0;
+    line-height: 1.6;
+}
+
+/* ============================================
+   FADE IN ANIMATIONS
+   ============================================ */
+.fade-in {
+    animation: fadeIn 0.8s ease-out;
+}
+
+.fade-in-delay-1 {
+    animation: fadeIn 0.8s ease-out 0.2s both;
+}
+
+.fade-in-delay-2 {
+    animation: fadeIn 0.8s ease-out 0.4s both;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ============================================
+   FOOTER (zusätzliche Styles)
+   ============================================ */
+.footer {
+    background: var(--gray-900, #0f172a);
+    color: white;
+    padding: 4rem 0 2rem;
+    margin-top: 4rem;
+}
+
+.footer .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.footer h4,
+.footer h5 {
+    color: white;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+}
+
+.footer p {
+    color: rgba(255,255,255,0.8);
+    margin-bottom: 0.75rem;
+}
+
+.footer-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-links li {
+    margin-bottom: 0.75rem;
+}
+
+.footer-links a {
+    color: rgba(255,255,255,0.8);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer-links a:hover {
+    color: white;
+}
+
+.social-links {
+    display: flex;
+    gap: 1rem;
+}
+
+.social-links a {
+    width: 40px;
+    height: 40px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.social-links a:hover {
+    background: var(--primary, #6366f1);
+    transform: translateY(-3px);
+}
+
+.footer-divider {
+    border: none;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    margin: 2rem 0 1rem;
+}
+
+/* ============================================
+   FEATURE LIST (für Pricing)
+   ============================================ */
+.feature-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: left;
+}
+
+.feature-list li {
+    padding: 0.75rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--gray-700, #334155);
+}
+
+.feature-list li i {
+    color: var(--success, #10b981);
+    font-size: 1.125rem;
+}
+
+/* ============================================
+   PRICING HEADER/BODY
+   ============================================ */
+.pricing-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.pricing-header h3 {
+    font-size: 1.75rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+}
+
+.pricing-body {
+    margin-top: 2rem;
+}
+
+.pricing-body .price {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+}
+
+.pricing-body .price .currency {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--gray-600, #64748b);
+}
+
+.pricing-body .price .amount {
+    font-size: 3rem;
+    font-weight: 800;
+    color: var(--primary, #6366f1);
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+.h5 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.h-100 {
+    height: 100%;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+    .display-1 {
+        font-size: 2.5rem;
+    }
+    
+    .display-2 {
+        font-size: 2rem;
+    }
+    
+    .display-3 {
+        font-size: 1.75rem;
+    }
+    
+    .section {
+        padding: 3rem 0;
+    }
+    
+    .hero-cta {
+        flex-direction: column;
+    }
+    
+    .hero-cta .btn {
+        width: 100%;
+    }
+    
+    .gallery-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .pricing-package.featured {
+        transform: scale(1);
+    }
+}
+
