@@ -38,8 +38,9 @@ function loadWebsiteProfileImage() {
     if (storedImage) {
         console.log('🖼️ Profilbild gefunden, aktualisiere Website...');
         
-        // Verschiedene Selektoren für Profilbild
+        // Verschiedene Selektoren für Profilbild - WICHTIG: #profile-photo zuerst prüfen
         const imageSelectors = [
+            '#profile-photo',
             '#hero-profile-image',
             '.hero-image',
             '.profile-image',
