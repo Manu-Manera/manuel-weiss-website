@@ -115,6 +115,9 @@ class HeroAboutSection {
         // Profilbild auch anwenden
         this.syncToWebsite();
         
+        // Hero-Text auch in heroData speichern (für Kompatibilität)
+        this.syncHeroDataToWebsite();
+        
         // Direkte Website-Sync aufrufen
         if (window.loadWebsiteDataFromLocalStorage) {
             window.loadWebsiteDataFromLocalStorage();
@@ -127,6 +130,44 @@ class HeroAboutSection {
             }));
             this.toast('Daten gespeichert - Website wird aktualisiert');
         }
+    }
+    
+    /**
+     * Synchronisiert Hero-Daten zur Website
+     */
+    syncHeroDataToWebsite() {
+        const data = this.getFormData();
+        
+        // heroData laden oder erstellen
+        let heroData = {};
+        try {
+            const stored = localStorage.getItem('heroData');
+            if (stored) {
+                heroData = JSON.parse(stored);
+            }
+        } catch (e) {
+            console.warn('heroData nicht gefunden oder ungültig');
+        }
+        
+        // Hero-Text in heroData speichern
+        if (data.title) {
+            heroData.title = data.title;
+        }
+        if (data.subtitle) {
+            heroData.subtitle = data.subtitle;
+        }
+        
+        // heroData speichern
+        localStorage.setItem('heroData', JSON.stringify(heroData));
+        
+        // Storage Event auslösen
+        window.dispatchEvent(new StorageEvent('storage', {
+            key: 'heroData',
+            newValue: JSON.stringify(heroData),
+            oldValue: localStorage.getItem('heroData')
+        }));
+        
+        console.log('✅ Hero-Daten zur Website synchronisiert');
     }
     
     /**
