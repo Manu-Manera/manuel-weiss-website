@@ -36,16 +36,27 @@ function startMethod(methodId) {
         'solution-focused': 'methods/solution-focused/solution-focused.html',
         'systemic-coaching': 'methods/systemic-coaching/systemic-coaching.html',
         'target-coaching': 'methods/target-coaching/target-coaching.html',
-        'therapy-form-finder': 'methods/therapy-form-finder.html'
+        'therapy-form-finder': 'methods/therapy-form-finder.html',
+        'therapy-form-finder-test': 'methods/therapy-form-finder.html'  // Fallback für Tests
     };
     
-    const url = methodUrls[methodId];
+    // Debug: Log all available methods
+    console.log('Available methods:', Object.keys(methodUrls));
+    console.log('Looking for method:', methodId);
+    
+    // Try direct match first, then normalized
+    const normalizedId = methodId.trim();
+    const url = methodUrls[methodId] || methodUrls[normalizedId];
+    
     if (url) {
-        console.log('Navigating to:', url);
+        console.log('✓ Method found:', methodId, '-> Navigating to:', url);
         window.location.href = url;
     } else {
-        console.error(`Method ${methodId} not found`);
-        alert('Diese Methode ist noch nicht verfügbar.');
+        console.error('✗ Method NOT found:', methodId);
+        console.error('Available methods:', Object.keys(methodUrls));
+        console.error('Method ID received:', JSON.stringify(methodId));
+        console.error('Method ID type:', typeof methodId);
+        alert(`Diese Methode ist noch nicht verfügbar.\n\nMethod ID: "${methodId}"\n\nBitte öffne die Browser-Konsole (F12) für weitere Details.`);
     }
 }
 
