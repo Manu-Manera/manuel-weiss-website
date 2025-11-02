@@ -200,7 +200,17 @@ function updateHeroTitle(title) {
     titleSelectors.forEach(selector => {
         const element = document.querySelector(selector);
         if (element) {
-            element.textContent = title;
+            // Prüfen ob Herz-Animation vorhanden ist
+            const heartSpan = element.querySelector('.heart-animation');
+            
+            // Text aktualisieren, aber Herz-Animation beibehalten
+            if (title.includes('❤️') || title.includes('<span')) {
+                element.innerHTML = title;
+            } else {
+                // Herz-Animation hinzufügen wenn nicht vorhanden
+                const heartHtml = heartSpan ? heartSpan.outerHTML : '<span class="heart-animation">❤️</span>';
+                element.innerHTML = title + ' ' + heartHtml;
+            }
             console.log(`✅ Hero Titel aktualisiert: ${selector} = ${title}`);
         }
     });
