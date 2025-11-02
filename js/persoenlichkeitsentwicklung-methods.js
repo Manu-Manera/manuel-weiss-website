@@ -35,7 +35,8 @@ function startMethod(methodId) {
         'rubikon-model': 'methods/rubikon-model/rubikon-model.html',
         'solution-focused': 'methods/solution-focused/solution-focused.html',
         'systemic-coaching': 'methods/systemic-coaching/systemic-coaching.html',
-        'target-coaching': 'methods/target-coaching/target-coaching.html'
+        'target-coaching': 'methods/target-coaching/target-coaching.html',
+        'therapy-form-finder': 'methods/therapy-form-finder.html'
     };
     
     const url = methodUrls[methodId];
