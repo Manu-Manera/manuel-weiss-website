@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Therapieform-Finder - Finde die passende Therapieform für dich</title>
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="../../css/therapy-form-finder.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../../manuel-weiss-photo.svg">
+</head>
+<body>
+    <!-- Header -->
+    <header class="therapy-header">
+        <div class="container">
+            <div class="header-content">
+                <a href="../../persoenlichkeitsentwicklung-uebersicht.html" class="back-link">
+                    <i class="fas fa-arrow-left"></i> Zurück zur Übersicht
+                </a>
+                <h1>Therapieform-Finder</h1>
+                <p class="header-subtitle">Finde die passende Therapieform für dich mit unserem umfangreichen Fragebogen</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="therapy-main">
+        <div class="container">
+            <div id="therapyFinderContainer"></div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="therapy-footer">
+        <div class="container">
+            <p>&copy; 2024 Manuel Weiss. Alle Rechte vorbehalten.</p>
+            <p class="disclaimer">
+                <strong>Hinweis:</strong> Dieser Fragebogen dient zur Orientierung und ersetzt keine professionelle Diagnostik oder Beratung. 
+                Die Ergebnisse sind als Vorschläge zu verstehen. Bei psychischen Beschwerden konsultiere bitte einen qualifizierten Therapeuten oder Psychiater.
+            </p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="../../js/therapy-form-finder.js"></script>
+    <script>
+        // Initialisiere Therapy Finder
+        document.addEventListener('DOMContentLoaded', () => {
+            therapyFinder = new TherapyFormFinder();
+            therapyFinder.start('therapyFinderContainer');
+        });
+    </script>
+</body>
+</html>
+
