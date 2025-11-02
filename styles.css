@@ -834,6 +834,32 @@ a:hover {
     background: var(--white);
 }
 
+/* Services Categories */
+.services-category {
+    margin-bottom: 5rem;
+}
+
+.services-category:last-child {
+    margin-bottom: 0;
+}
+
+.services-category-title {
+    font-size: var(--font-size-2xl);
+    font-weight: 700;
+    color: var(--gray-900);
+    margin-bottom: var(--spacing-xl);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 3px solid var(--primary);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.services-category-title i {
+    color: var(--primary);
+    font-size: 1.5rem;
+}
+
 .services-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
