@@ -215,7 +215,7 @@ a:hover {
 .nav-container {
     max-width: var(--container-max-width);
     margin: 0 auto;
-    padding: 0 var(--spacing-lg);
+    padding: 0 var(--spacing-xl);
     height: 100%;
     display: flex;
     align-items: center;
@@ -255,7 +255,7 @@ a:hover {
 .nav-menu {
     display: flex;
     align-items: center;
-    gap: var(--spacing-xl);
+    gap: var(--spacing-2xl);
 }
 
 .nav-link {
@@ -263,6 +263,8 @@ a:hover {
     color: var(--gray-600);
     transition: color var(--transition-fast);
     position: relative;
+    padding: 0 var(--spacing-sm);
+    letter-spacing: 0.01em;
 }
 
 .nav-link:hover,
@@ -530,9 +532,16 @@ a:hover {
     line-height: 1.5;
     max-width: 200px;
     margin: 0 auto;
-    word-wrap: break-word;
-    hyphens: auto;
+    word-wrap: normal;
+    word-break: keep-all;
+    hyphens: none;
     display: block;
+}
+
+/* Bessere Lesbarkeit: keine Silbentrennung im Hero-Subtext */
+.hero-subtitle {
+    hyphens: none;
+    word-break: normal;
 }
 
 /* Buttons */

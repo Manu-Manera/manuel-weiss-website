@@ -1108,6 +1108,36 @@
                         window.loadWebsiteDataFromLocalStorage();
                     }, 500);
                 }
+
+                // Profilbild sofort synchronisieren und an Quelle "pinnen"
+                if (window.loadWebsiteProfileImage) {
+                    window.loadWebsiteProfileImage();
+                }
+
+                // Beobachter: verhindert Zurücksetzen auf Platzhalter-Bild
+                (function pinProfileImage() {
+                    const stored = localStorage.getItem('adminProfileImage')
+                        || localStorage.getItem('heroProfileImage')
+                        || localStorage.getItem('profileImage');
+                    const img = document.getElementById('profile-photo');
+                    if (!img || !stored) return;
+
+                    const desiredSrc = stored;
+                    const ensure = () => {
+                        if (img.src !== desiredSrc) {
+                            img.src = desiredSrc;
+                            img.style.display = 'block';
+                            console.log('🔒 WEBSITE: Profile image pinned to stored value');
+                        }
+                    };
+
+                    ensure();
+
+                    try {
+                        const observer = new MutationObserver(() => ensure());
+                        observer.observe(img, { attributes: true, attributeFilter: ['src'] });
+                    } catch {}
+                })();
             } catch (error) {
                 console.error('❌ WEBSITE: Failed to load hero data:', error);
                 // Bei Fehler trotzdem Standard-Werte garantieren
