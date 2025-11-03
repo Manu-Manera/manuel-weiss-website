@@ -494,11 +494,25 @@ a:hover {
 
 .hero-stats {
     display: flex;
-    gap: var(--spacing-xl);
+    gap: 0;
+    align-items: stretch;
 }
 
 .stat-item {
     text-align: center;
+    flex: 1;
+    padding: var(--spacing-lg) var(--spacing-xl);
+    position: relative;
+}
+
+.stat-item:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 20%;
+    bottom: 20%;
+    width: 1px;
+    background: rgba(255, 255, 255, 0.3);
 }
 
 .stat-number {
@@ -506,17 +520,19 @@ a:hover {
     font-size: var(--font-size-3xl);
     font-weight: 700;
     color: white;
+    margin-bottom: var(--spacing-sm);
 }
 
 .stat-label {
     font-size: var(--font-size-sm);
     color: white;
     opacity: 0.9;
-    line-height: 1.4;
-    max-width: 150px;
+    line-height: 1.5;
+    max-width: 200px;
     margin: 0 auto;
     word-wrap: break-word;
     hyphens: auto;
+    display: block;
 }
 
 /* Buttons */
