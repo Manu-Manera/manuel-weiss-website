@@ -842,7 +842,16 @@
             
             if (heroData) {
                 try {
-                    const data = JSON.parse(heroData);
+                    let data = JSON.parse(heroData);
+                    // Admin-Panel-Daten bevorzugen (Titel/Untertitel aus adminProfileData überschreiben)
+                    try {
+                        const adminProfileData = localStorage.getItem('adminProfileData');
+                        if (adminProfileData) {
+                            const apd = JSON.parse(adminProfileData);
+                            data.title = apd.title || data.title;
+                            data.subtitle = apd.subtitle || data.subtitle;
+                        }
+                    } catch {}
                     console.log('✅ WEBSITE: Hero data found:', data);
                     
                     // Hero-Text aus heroData laden und anzeigen
