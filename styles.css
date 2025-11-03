@@ -976,6 +976,11 @@ a:hover {
     transform: translateX(4px);
 }
 
+/* Persönlichkeitsentwicklung Kachel: Beschreibung in weiss */
+.service-card.modern-highlight p {
+    color: #ffffff !important;
+}
+
 .service-icon {
     width: 60px;
     height: 60px;
