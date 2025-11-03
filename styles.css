@@ -981,6 +981,12 @@ a:hover {
     color: #ffffff !important;
 }
 
+/* AI-Digitalisierung - Workflow CTA Text in weiß für bessere Lesbarkeit auf Gradient */
+.workflow-cta p,
+.workflow-cta h2 {
+    color: #ffffff !important;
+}
+
 .service-icon {
     width: 60px;
     height: 60px;
