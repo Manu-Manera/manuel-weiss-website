@@ -227,45 +227,50 @@ class HeroAboutSection {
     async handleImageUpload(event) {
         const file = event.target.files[0];
         if (!file) return;
-        
         if (!this.validateImageFile(file)) return;
         
         try {
             this.toast('Profilbild wird hochgeladen...', 'info');
             
-            // Bild zu Base64 konvertieren
-            const base64 = await this.fileToBase64(file);
+            // 1) Versuche Upload nach S3 via Presigned URL, wenn konfiguriert
+            let uploadedUrl = null;
+            try {
+                if (window.awsMedia && window.AWS_APP_CONFIG && window.AWS_APP_CONFIG.MEDIA_API_BASE) {
+                    const userId = 'owner';
+                    const result = await window.awsMedia.uploadProfileImage(file, userId);
+                    uploadedUrl = result.publicUrl;
+                }
+            } catch (e) {
+                console.warn('S3 Upload via Presigned URL fehlgeschlagen, falle auf Base64 zurück:', e.message);
+            }
             
-            // In LocalStorage speichern - MEHRERE KEYS für Kompatibilität
-            localStorage.setItem('adminProfileImage', base64);
-            localStorage.setItem('heroProfileImage', base64);
-            localStorage.setItem('profileImage', base64);
+            // 2) Fallback Base64 (sofortige Vorschau, lokale Persistenz)
+            let previewSrc = uploadedUrl;
+            if (!previewSrc) {
+                previewSrc = await this.fileToBase64(file);
+            }
             
-            // Profilbild auch in heroData speichern (für Kompatibilität)
+            // 3) Persistenz – wenn S3-URL vorhanden, diese speichern; sonst Base64
+            const finalSrc = uploadedUrl || previewSrc;
+            localStorage.setItem('adminProfileImage', finalSrc);
+            localStorage.setItem('heroProfileImage', finalSrc);
+            localStorage.setItem('profileImage', finalSrc);
+            
+            // heroData updaten
             let heroData = {};
             try {
                 const stored = localStorage.getItem('heroData');
-                if (stored) {
-                    heroData = JSON.parse(stored);
-                }
-            } catch (e) {
-                console.warn('heroData nicht gefunden oder ungültig, erstelle neues Objekt');
-            }
-            
-            heroData.profileImage = base64;
+                if (stored) heroData = JSON.parse(stored);
+            } catch {}
+            heroData.profileImage = finalSrc;
             localStorage.setItem('heroData', JSON.stringify(heroData));
             
-            // Aktuelles Profilbild aktualisieren
-            this.updateCurrentProfileImage(base64);
-            
-            // Galerie neu laden
+            // Vorschau und Website aktualisieren
+            this.updateCurrentProfileImage(finalSrc);
             this.loadGallery();
-            
-            // Website sofort aktualisieren
             this.syncToWebsite();
             
             this.toast('Profilbild erfolgreich hochgeladen!', 'success');
-            
         } catch (error) {
             console.error('Profilbild-Upload Fehler:', error);
             this.toast('Fehler beim Hochladen des Profilbilds', 'error');
