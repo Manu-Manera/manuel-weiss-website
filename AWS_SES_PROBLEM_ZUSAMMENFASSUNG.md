@@ -175,3 +175,4 @@ aws sesv2 get-email-identity --email-identity manuel-weiss.ch --region eu-centra
 **Alle technischen Komponenten sind korrekt konfiguriert. Es fehlt nur die Nameserver-Änderung beim Domain-Registrar!**
 
 
+

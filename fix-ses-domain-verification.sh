@@ -180,3 +180,4 @@ echo "4. Status prüfen mit: aws sesv2 get-email-identity --email-identity $DOMA
 echo ""
 
 
+

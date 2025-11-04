@@ -194,3 +194,4 @@ dig CNAME smln6ugnqm64joyksgg2thjvnli3vzyb._domainkey.manuel-weiss.ch +short
 **Ohne Nameserver-Änderung funktioniert das E-Mail-System nicht!**
 
 
+
