@@ -8,9 +8,8 @@
 // 2. Trage die ausgegebene URL hier ein (z.B. https://abc123.execute-api.eu-central-1.amazonaws.com/prod)
 
 window.AWS_APP_CONFIG = Object.assign({}, window.AWS_APP_CONFIG || {}, {
-  // TODO: Nach Deployment des Media-Stacks hier die API-Base-URL eintragen
-  // Aktuell: Fallback auf localStorage (keine AWS-Integration)
-  MEDIA_API_BASE: null, // Wird nach Deployment gesetzt: 'https://YOUR_API.execute-api.eu-central-1.amazonaws.com/prod',
+  // Media API Base URL (nach Deployment gesetzt)
+  MEDIA_API_BASE: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod',
   
   // AWS Region für S3
   REGION: 'eu-central-1',
