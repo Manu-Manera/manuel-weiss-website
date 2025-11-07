@@ -54,16 +54,12 @@ Resources:
     Type: AWS::Serverless::Api
     Properties:
       StageName: prod
-      Cors:
-        AllowOrigin: "*"
-        AllowHeaders: "*"
-        AllowMethods: "OPTIONS,POST"
 
   PresignFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ../lambda
-      Handler: profile-image-upload-url.handler
+      CodeUri: ../lambda-profile-image
+      Handler: index.handler
       Environment:
         Variables:
           BUCKET_NAME: !Ref MediaBucket
@@ -81,6 +77,12 @@ Resources:
             RestApiId: !Ref MediaApi
             Path: /profile-image/upload-url
             Method: POST
+        PresignOptions:
+          Type: Api
+          Properties:
+            RestApiId: !Ref MediaApi
+            Path: /profile-image/upload-url
+            Method: OPTIONS
 
 Outputs:
   ApiBaseUrl:
