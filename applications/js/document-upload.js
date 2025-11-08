@@ -121,22 +121,45 @@ class DocumentUpload {
         this.handleFiles(files, type);
     }
 
-    handleFiles(files, type) {
+    async handleFiles(files, type) {
         if (!files.length) return;
         
         // Validate files
         const validFiles = this.validateFiles(files, type);
         if (!validFiles.length) return;
         
-        // Process files
-        if (type === 'cv' || type === 'photo') {
-            // Single file
-            this.uploadedFiles[type] = validFiles[0];
-            this.showFilePreview(validFiles[0], type);
-        } else {
-            // Multiple files
-            this.uploadedFiles[type] = [...this.uploadedFiles[type], ...validFiles];
-            this.showFilesList(validFiles, type);
+        // Upload files to AWS S3
+        try {
+            this.showNotification('Dateien werden hochgeladen...', 'info');
+            
+            if (type === 'cv' || type === 'photo') {
+                // Single file - upload to S3
+                const file = validFiles[0];
+                const uploadResult = await this.uploadFileToS3(file, type);
+                this.uploadedFiles[type] = {
+                    file: file,
+                    uploadResult: uploadResult
+                };
+                this.showFilePreview(file, type, uploadResult);
+            } else {
+                // Multiple files - upload all to S3
+                const uploadPromises = validFiles.map(file => this.uploadFileToS3(file, type));
+                const uploadResults = await Promise.all(uploadPromises);
+                
+                const uploadedFiles = validFiles.map((file, index) => ({
+                    file: file,
+                    uploadResult: uploadResults[index]
+                }));
+                
+                this.uploadedFiles[type] = [...this.uploadedFiles[type], ...uploadedFiles];
+                this.showFilesList(validFiles, type, uploadResults);
+            }
+            
+            this.showNotification('Dateien erfolgreich hochgeladen!', 'success');
+        } catch (error) {
+            console.error('Upload-Fehler:', error);
+            this.showNotification(`Fehler beim Hochladen: ${error.message}`, 'error');
+            return;
         }
         
         // Update summary
@@ -144,6 +167,53 @@ class DocumentUpload {
         
         // Save to storage
         this.saveDocuments();
+    }
+    
+    async uploadFileToS3(file, type) {
+        // Map document types to AWS file types
+        const fileTypeMap = {
+            'cv': 'cv',
+            'certificates': 'certificate',
+            'portfolio': 'document',
+            'photo': 'profile'
+        };
+        
+        const awsFileType = fileTypeMap[type] || 'document';
+        
+        // Get user ID
+        const userId = this.getUserId();
+        
+        // Check if AWS Media is available
+        if (!window.awsMedia || !window.awsMedia.uploadDocument) {
+            // Fallback: For photos, use uploadProfileImage
+            if (type === 'photo' && window.awsMedia && window.awsMedia.uploadProfileImage) {
+                return await window.awsMedia.uploadProfileImage(file, userId);
+            }
+            throw new Error('AWS Media Upload nicht verfügbar. Bitte Seite neu laden.');
+        }
+        
+        // Upload document
+        if (type === 'photo') {
+            // Use profile image upload for photos
+            return await window.awsMedia.uploadProfileImage(file, userId);
+        } else {
+            // Use document upload for other files
+            return await window.awsMedia.uploadDocument(file, userId, awsFileType);
+        }
+    }
+    
+    getUserId() {
+        // Try to get user ID from various sources
+        if (this.applicationsCore && this.applicationsCore.currentUser) {
+            return this.applicationsCore.currentUser.id;
+        }
+        if (window.realUserAuth && window.realUserAuth.getCurrentUser) {
+            const user = window.realUserAuth.getCurrentUser();
+            if (user) return user.id || user.username;
+        }
+        return localStorage.getItem('currentUserId') || 
+               localStorage.getItem('user_id') || 
+               'anonymous';
     }
 
     validateFiles(files, type) {
@@ -191,12 +261,13 @@ class DocumentUpload {
         if (uploadArea) uploadArea.style.display = 'none';
     }
 
-    showFilesList(files, type) {
+    showFilesList(files, type, uploadResults = []) {
         const list = document.getElementById(`${type}List`);
         if (!list) return;
         
-        files.forEach(file => {
-            const fileItem = this.createFileItem(file, type);
+        files.forEach((file, index) => {
+            const uploadResult = uploadResults[index] || null;
+            const fileItem = this.createFileItem(file, type, uploadResult);
             list.appendChild(fileItem);
         });
         
@@ -209,14 +280,17 @@ class DocumentUpload {
         }
     }
 
-    createFileItem(file, type) {
+    createFileItem(file, type, uploadResult = null) {
         const item = document.createElement('div');
         item.className = 'file-item';
+        const uploadStatus = uploadResult 
+            ? '<i class="fas fa-check-circle" style="color: #10b981; margin-left: 0.5rem;" title="Hochgeladen"></i>'
+            : '<i class="fas fa-spinner fa-spin" style="color: #3b82f6; margin-left: 0.5rem;" title="Wird hochgeladen..."></i>';
         item.innerHTML = `
             <div class="file-info">
                 <i class="${this.getFileIcon(file.name)} file-icon"></i>
                 <div class="file-details">
-                    <h4 class="file-name">${file.name}</h4>
+                    <h4 class="file-name">${file.name}${uploadStatus}</h4>
                     <p class="file-size">${this.formatFileSize(file.size)}</p>
                 </div>
             </div>
@@ -311,15 +385,81 @@ class DocumentUpload {
     saveDocuments() {
         if (!this.applicationsCore) return;
         
+        // Extract file info and upload results
         const documentData = {
-            files: this.uploadedFiles,
+            files: {},
+            uploadResults: {},
             uploadedAt: new Date().toISOString(),
             totalFiles: this.getTotalFiles(),
             totalSize: this.getTotalSize()
         };
         
+        // Save CV
+        if (this.uploadedFiles.cv) {
+            documentData.files.cv = {
+                name: this.uploadedFiles.cv.file?.name || this.uploadedFiles.cv.name,
+                size: this.uploadedFiles.cv.file?.size || this.uploadedFiles.cv.size
+            };
+            if (this.uploadedFiles.cv.uploadResult) {
+                documentData.uploadResults.cv = {
+                    url: this.uploadedFiles.cv.uploadResult.publicUrl,
+                    key: this.uploadedFiles.cv.uploadResult.key
+                };
+            }
+        }
+        
+        // Save certificates
+        if (this.uploadedFiles.certificates && this.uploadedFiles.certificates.length > 0) {
+            documentData.files.certificates = this.uploadedFiles.certificates.map(item => ({
+                name: item.file?.name || item.name,
+                size: item.file?.size || item.size
+            }));
+            documentData.uploadResults.certificates = this.uploadedFiles.certificates
+                .filter(item => item.uploadResult)
+                .map(item => ({
+                    url: item.uploadResult.publicUrl,
+                    key: item.uploadResult.key
+                }));
+        }
+        
+        // Save portfolio
+        if (this.uploadedFiles.portfolio && this.uploadedFiles.portfolio.length > 0) {
+            documentData.files.portfolio = this.uploadedFiles.portfolio.map(item => ({
+                name: item.file?.name || item.name,
+                size: item.file?.size || item.size
+            }));
+            documentData.uploadResults.portfolio = this.uploadedFiles.portfolio
+                .filter(item => item.uploadResult)
+                .map(item => ({
+                    url: item.uploadResult.publicUrl,
+                    key: item.uploadResult.key
+                }));
+        }
+        
+        // Save photo
+        if (this.uploadedFiles.photo) {
+            documentData.files.photo = {
+                name: this.uploadedFiles.photo.file?.name || this.uploadedFiles.photo.name,
+                size: this.uploadedFiles.photo.file?.size || this.uploadedFiles.photo.size
+            };
+            if (this.uploadedFiles.photo.uploadResult) {
+                documentData.uploadResults.photo = {
+                    url: this.uploadedFiles.photo.uploadResult.publicUrl,
+                    key: this.uploadedFiles.photo.uploadResult.key
+                };
+            }
+        }
+        
         this.applicationsCore.saveDocumentData(documentData);
         this.applicationsCore.trackProgress('document-upload', documentData);
+        
+        // Also save to localStorage for profile
+        const userId = this.getUserId();
+        const profileKey = `profile_${userId}`;
+        const profileData = JSON.parse(localStorage.getItem(profileKey) || '{}');
+        if (!profileData.documents) profileData.documents = {};
+        profileData.documents = { ...profileData.documents, ...documentData.uploadResults };
+        localStorage.setItem(profileKey, JSON.stringify(profileData));
         
         console.log('💾 Documents saved:', documentData);
     }
