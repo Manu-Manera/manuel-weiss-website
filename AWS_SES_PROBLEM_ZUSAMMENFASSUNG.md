@@ -177,3 +177,4 @@ aws sesv2 get-email-identity --email-identity manuel-weiss.ch --region eu-centra
 
 
 
+
