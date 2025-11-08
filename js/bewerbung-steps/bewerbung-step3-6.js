@@ -509,19 +509,43 @@ window.initStep4 = function() {
     // Helper: Upload file to S3
     async function uploadFileToS3(file, fileType) {
         try {
-            if (!window.awsMedia || !window.awsMedia.uploadDocument) {
-                throw new Error('AWS Media Upload nicht verfügbar. Bitte Seite neu laden.');
+            // Check if awsMedia is available
+            if (!window.awsMedia) {
+                console.error('❌ window.awsMedia nicht verfügbar. Prüfe ob js/aws-app-config.js und js/aws-media.js geladen wurden.');
+                throw new Error('AWS Media Upload nicht verfügbar. Bitte Seite neu laden und prüfen, ob alle Scripts geladen wurden.');
+            }
+            
+            if (!window.awsMedia.uploadDocument) {
+                console.error('❌ window.awsMedia.uploadDocument nicht verfügbar.');
+                throw new Error('Upload-Funktion nicht verfügbar. Bitte Seite neu laden.');
+            }
+            
+            // Check API config
+            if (!window.AWS_APP_CONFIG || !window.AWS_APP_CONFIG.MEDIA_API_BASE) {
+                console.error('❌ AWS_APP_CONFIG.MEDIA_API_BASE nicht konfiguriert.');
+                throw new Error('API-Endpoint nicht konfiguriert. Bitte js/aws-app-config.js prüfen.');
             }
             
             const userId = getUserId();
+            console.log(`📤 Lade Datei hoch: ${file.name} (${fileType}) für User: ${userId}`);
+            
             const uploadResult = await window.awsMedia.uploadDocument(file, userId, fileType);
+            
+            console.log('✅ Upload erfolgreich:', uploadResult);
             
             // Speichere im Profil
             saveDocumentToProfile(uploadResult, fileType);
             
             return uploadResult;
         } catch (error) {
-            console.error('Upload-Fehler:', error);
+            console.error('❌ Upload-Fehler:', error);
+            console.error('Error details:', {
+                message: error.message,
+                stack: error.stack,
+                awsMediaAvailable: !!window.awsMedia,
+                uploadDocumentAvailable: !!(window.awsMedia && window.awsMedia.uploadDocument),
+                apiConfigAvailable: !!(window.AWS_APP_CONFIG && window.AWS_APP_CONFIG.MEDIA_API_BASE)
+            });
             throw error;
         }
     }

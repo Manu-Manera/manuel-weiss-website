@@ -44,34 +44,42 @@
       throw new Error(`Invalid fileType. Must be one of: ${validTypes.join(', ')}`);
     }
     
-    // Use document endpoint or profile endpoint with fileType parameter
-    const endpoint = fileType === 'cv' || fileType === 'certificate' || fileType === 'document' 
-      ? `${API_BASE}/document/upload-url` 
-      : `${API_BASE}/profile-image/upload-url`;
+    // WORKAROUND: Use profile-image endpoint with fileType parameter until /document/upload-url is deployed
+    // The Lambda function already supports fileType parameter
+    const endpoint = `${API_BASE}/profile-image/upload-url`;
     
-    const presign = await fetch(endpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        contentType: file.type, 
-        userId: userId,
-        fileType: fileType
-      }),
-    }).then(res => {
-      if (!res.ok) throw new Error(`Presign failed: ${res.status}`);
-      return res.json();
-    });
-    
-    const publicUrl = await uploadWithPresignedUrl(file, presign);
-    return { 
-      publicUrl, 
-      key: presign.key, 
-      bucket: presign.bucket, 
-      region: presign.region,
-      fileType: fileType,
-      fileName: file.name,
-      size: file.size
-    };
+    try {
+      const presign = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          contentType: file.type, 
+          userId: userId,
+          fileType: fileType  // Lambda function will handle this
+        }),
+      });
+      
+      if (!presign.ok) {
+        const errorText = await presign.text();
+        throw new Error(`Presign failed: ${presign.status} - ${errorText}`);
+      }
+      
+      const presignData = await presign.json();
+      
+      const publicUrl = await uploadWithPresignedUrl(file, presignData);
+      return { 
+        publicUrl, 
+        key: presignData.key, 
+        bucket: presignData.bucket, 
+        region: presignData.region,
+        fileType: fileType,
+        fileName: file.name,
+        size: file.size
+      };
+    } catch (error) {
+      console.error('Document upload error:', error);
+      throw error;
+    }
   }
 
   window.awsMedia = { uploadProfileImage, uploadDocument };
