@@ -509,7 +509,20 @@ window.initStep4 = function() {
     // Helper: Upload file to S3
     async function uploadFileToS3(file, fileType) {
         try {
-            // Check if awsMedia is available
+            // Use unified upload system if available (preferred)
+            if (window.unifiedFileUpload && window.unifiedFileUpload.upload) {
+                console.log(`📤 Lade Datei hoch (unified): ${file.name} (${fileType})`);
+                const uploadResult = await window.unifiedFileUpload.upload(file, {
+                    type: fileType,
+                    onProgress: (percent, fileName) => {
+                        console.log(`Upload Progress: ${percent}% - ${fileName}`);
+                    }
+                });
+                console.log('✅ Upload erfolgreich (unified):', uploadResult);
+                return uploadResult;
+            }
+            
+            // Fallback to direct AWS Media upload
             if (!window.awsMedia) {
                 console.error('❌ window.awsMedia nicht verfügbar. Prüfe ob js/aws-app-config.js und js/aws-media.js geladen wurden.');
                 throw new Error('AWS Media Upload nicht verfügbar. Bitte Seite neu laden und prüfen, ob alle Scripts geladen wurden.');
@@ -520,7 +533,6 @@ window.initStep4 = function() {
                 throw new Error('Upload-Funktion nicht verfügbar. Bitte Seite neu laden.');
             }
             
-            // Check API config
             if (!window.AWS_APP_CONFIG || !window.AWS_APP_CONFIG.MEDIA_API_BASE) {
                 console.error('❌ AWS_APP_CONFIG.MEDIA_API_BASE nicht konfiguriert.');
                 throw new Error('API-Endpoint nicht konfiguriert. Bitte js/aws-app-config.js prüfen.');
@@ -542,6 +554,7 @@ window.initStep4 = function() {
             console.error('Error details:', {
                 message: error.message,
                 stack: error.stack,
+                unifiedUploadAvailable: !!window.unifiedFileUpload,
                 awsMediaAvailable: !!window.awsMedia,
                 uploadDocumentAvailable: !!(window.awsMedia && window.awsMedia.uploadDocument),
                 apiConfigAvailable: !!(window.AWS_APP_CONFIG && window.AWS_APP_CONFIG.MEDIA_API_BASE)

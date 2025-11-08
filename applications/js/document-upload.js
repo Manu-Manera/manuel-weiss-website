@@ -170,7 +170,20 @@ class DocumentUpload {
     }
     
     async uploadFileToS3(file, type) {
-        // Map document types to AWS file types
+        // Use unified upload system if available
+        if (window.unifiedFileUpload && window.unifiedFileUpload.upload) {
+            return await window.unifiedFileUpload.upload(file, {
+                type: type,
+                onProgress: (percent, fileName) => {
+                    console.log(`Upload Progress: ${percent}% - ${fileName}`);
+                },
+                onError: (error, file) => {
+                    console.error(`Upload Error für ${file?.name}:`, error);
+                }
+            });
+        }
+        
+        // Fallback to direct AWS Media upload
         const fileTypeMap = {
             'cv': 'cv',
             'certificates': 'certificate',
@@ -179,25 +192,15 @@ class DocumentUpload {
         };
         
         const awsFileType = fileTypeMap[type] || 'document';
-        
-        // Get user ID
         const userId = this.getUserId();
         
-        // Check if AWS Media is available
-        if (!window.awsMedia || !window.awsMedia.uploadDocument) {
-            // Fallback: For photos, use uploadProfileImage
-            if (type === 'photo' && window.awsMedia && window.awsMedia.uploadProfileImage) {
-                return await window.awsMedia.uploadProfileImage(file, userId);
-            }
+        if (!window.awsMedia) {
             throw new Error('AWS Media Upload nicht verfügbar. Bitte Seite neu laden.');
         }
         
-        // Upload document
         if (type === 'photo') {
-            // Use profile image upload for photos
             return await window.awsMedia.uploadProfileImage(file, userId);
         } else {
-            // Use document upload for other files
             return await window.awsMedia.uploadDocument(file, userId, awsFileType);
         }
     }
