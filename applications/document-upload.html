@@ -32,7 +32,7 @@
             </div>
             
             <div class="auth-section">
-                <button id="realAuthButton" class="btn-auth">
+                <button id="realAuthButton" class="btn-auth" type="button">
                     <i class="fas fa-user"></i>
                     Anmelden
                 </button>
@@ -318,6 +318,44 @@
     <script src="../js/real-user-auth-system.js"></script>
     <script src="js/applications-core.js"></script>
     <script src="js/document-upload.js"></script>
+    
+    <!-- Fallback: Direct button listener (guaranteed to work) -->
+    <script>
+        (function() {
+            function attachDirectListener() {
+                const btn = document.getElementById('realAuthButton');
+                if (btn) {
+                    console.log('🔧 Attaching DIRECT fallback listener to login button');
+                    
+                    // Remove any existing onclick
+                    btn.onclick = function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('🔘 DIRECT LISTENER: Login button clicked!');
+                        
+                        if (window.realUserAuth) {
+                            console.log('✅ realUserAuth found, calling showAuthModal');
+                            window.realUserAuth.showAuthModal();
+                        } else {
+                            console.error('❌ realUserAuth not found!');
+                            alert('Auth-System nicht geladen. Bitte Seite neu laden.');
+                        }
+                    };
+                    
+                    console.log('✅ DIRECT listener attached');
+                } else {
+                    console.warn('⚠️ Button not found for direct listener');
+                }
+            }
+            
+            // Try multiple times
+            attachDirectListener();
+            document.addEventListener('DOMContentLoaded', attachDirectListener);
+            setTimeout(attachDirectListener, 100);
+            setTimeout(attachDirectListener, 500);
+            setTimeout(attachDirectListener, 1000);
+        })();
+    </script>
 </body>
 </html>
 
