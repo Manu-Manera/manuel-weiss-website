@@ -69,24 +69,22 @@ window.generateStep4 = function() {
                 </p>
             </div>
 
-            <div class="cv-customization-container" style="background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+            <div class="cv-customization-container">
                 <!-- CV Tailor Option Toggle -->
-                <div class="form-section" style="margin-bottom: 2rem; padding: 1.5rem; background: #f0f9ff; border-radius: 8px; border: 1px solid #bae6fd;">
-                    <div style="display: flex; align-items: center; justify-content: space-between;">
-                        <div>
-                            <h3 style="color: #374151; margin: 0 0 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
-                                <i class="fas fa-magic" style="color: #8b5cf6;"></i>
+                <div class="cv-tailor-toggle-wrapper">
+                    <div class="cv-tailor-toggle-content">
+                        <div class="cv-tailor-toggle-info">
+                            <h3>
+                                <i class="fas fa-magic"></i>
                                 KI-gestützte CV-Anpassung (CV Tailor)
                             </h3>
-                            <p style="color: #6b7280; font-size: 0.875rem; margin: 0;">
+                            <p>
                                 Aktivieren Sie diese Option für eine vollautomatische, KI-gestützte CV-Generierung und -Anpassung
                             </p>
                         </div>
-                        <label style="position: relative; display: inline-block; width: 60px; height: 34px;">
-                            <input type="checkbox" id="cvTailorToggle" style="opacity: 0; width: 0; height: 0;">
-                            <span id="cvTailorToggleSlider" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px;">
-                                <span id="cvTailorToggleKnob" style="position: absolute; content: ''; height: 26px; width: 26px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"></span>
-                            </span>
+                        <label class="cv-tailor-toggle">
+                            <input type="checkbox" id="cvTailorToggle">
+                            <span class="cv-tailor-toggle-slider" id="cvTailorToggleSlider"></span>
                         </label>
                     </div>
                 </div>
@@ -119,19 +117,16 @@ window.generateStep4 = function() {
                         <i class="fas fa-upload" style="color: #10b981;"></i>
                         Lebenslauf hochladen
                     </h3>
-                    <div style="border: 2px dashed #d1d5db; border-radius: 8px; padding: 2rem; text-align: center; background: #f9fafb;">
+                    <div class="cv-upload-area" id="cvUploadArea">
                         <input type="file" id="cvFileInput" accept=".pdf,.docx" style="display: none;" multiple>
-                        <button type="button" onclick="document.getElementById('cvFileInput').click()" style="
-                            background: linear-gradient(135deg, #10b981, #059669); color: white; border: none;
-                            padding: 0.75rem 1.5rem; border-radius: 6px; cursor: pointer;
-                            font-weight: 500; margin-bottom: 0.5rem;
-                        ">
+                        <button type="button" class="cv-upload-button" onclick="document.getElementById('cvFileInput').click()">
                             <i class="fas fa-file-upload"></i> Dateien auswählen
                         </button>
-                        <p style="color: #6b7280; font-size: 0.875rem; margin: 0.5rem 0 0;">
+                        <div class="cv-upload-hint">
+                            <i class="fas fa-info-circle"></i>
                             PDF oder DOCX (max. 10MB pro Datei)
-                        </p>
-                        <div id="cvFileList" style="margin-top: 1rem; text-align: left;"></div>
+                        </div>
+                        <div class="cv-file-list" id="cvFileList"></div>
                     </div>
                 </div>
 
@@ -141,19 +136,16 @@ window.generateStep4 = function() {
                         <i class="fas fa-certificate" style="color: #f59e0b;"></i>
                         Zeugnisse hochladen (optional)
                     </h3>
-                    <div style="border: 2px dashed #d1d5db; border-radius: 8px; padding: 2rem; text-align: center; background: #f9fafb;">
+                    <div class="cv-upload-area" id="certificateUploadArea">
                         <input type="file" id="certificateFileInput" accept=".pdf" style="display: none;" multiple>
-                        <button type="button" onclick="document.getElementById('certificateFileInput').click()" style="
-                            background: #f59e0b; color: white; border: none;
-                            padding: 0.75rem 1.5rem; border-radius: 6px; cursor: pointer;
-                            font-weight: 500; margin-bottom: 0.5rem;
-                        ">
+                        <button type="button" class="cv-upload-button" style="background: linear-gradient(135deg, #f59e0b, #d97706);" onclick="document.getElementById('certificateFileInput').click()">
                             <i class="fas fa-file-upload"></i> Zeugnisse auswählen
                         </button>
-                        <p style="color: #6b7280; font-size: 0.875rem; margin: 0.5rem 0 0;">
+                        <div class="cv-upload-hint">
+                            <i class="fas fa-info-circle"></i>
                             PDF-Dateien (optional, für bessere Analyse)
-                        </p>
-                        <div id="certificateFileList" style="margin-top: 1rem; text-align: left;"></div>
+                        </div>
+                        <div class="cv-file-list" id="certificateFileList"></div>
                     </div>
                 </div>
 
@@ -164,63 +156,69 @@ window.generateStep4 = function() {
                         KI-gestützte CV-Anpassung
                     </h3>
                     
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
-                        <button type="button" id="generateBaselineBtn" style="
-                            background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; border: none;
-                            padding: 0.75rem 1rem; border-radius: 6px; cursor: pointer;
-                            font-weight: 500; font-size: 0.9rem;
-                        " disabled>
-                            <i class="fas fa-sparkles"></i> Baseline-CV generieren
+                    <div class="cv-action-buttons">
+                        <button type="button" id="generateBaselineBtn" class="cv-action-button cv-action-button-primary" disabled>
+                            <i class="fas fa-sparkles"></i> 
+                            <span>Baseline-CV generieren</span>
                         </button>
-                        <button type="button" id="generateTargetedBtn" style="
-                            background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; border: none;
-                            padding: 0.75rem 1rem; border-radius: 6px; cursor: pointer;
-                            font-weight: 500; font-size: 0.9rem;
-                        " disabled>
-                            <i class="fas fa-bullseye"></i> Targeted-CV generieren
+                        <button type="button" id="generateTargetedBtn" class="cv-action-button cv-action-button-secondary" disabled>
+                            <i class="fas fa-bullseye"></i> 
+                            <span>Targeted-CV generieren</span>
                         </button>
                     </div>
                     
-                    <div id="cvTailorProgress" style="display: none; background: #f0f9ff; padding: 1rem; border-radius: 6px; border: 1px solid #bae6fd; margin-bottom: 1rem;">
-                        <div style="display: flex; align-items: center; gap: 0.75rem;">
-                            <i class="fas fa-spinner fa-spin" style="color: #3b82f6;"></i>
-                            <span id="cvTailorProgressText" style="color: #1e40af;">Verarbeite...</span>
+                    <div id="cvTailorProgress" class="cv-progress-container" style="display: none;">
+                        <div class="cv-progress-content">
+                            <div class="cv-progress-spinner"></div>
+                            <span id="cvTailorProgressText" class="cv-progress-text">Verarbeite...</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- CV Comparison View -->
-                <div id="cvComparisonView" style="display: none; margin-bottom: 2rem;">
-                    <h3 style="color: #374151; margin-bottom: 1rem;">CV-Vergleich</h3>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                        <div style="background: #f8fafc; padding: 1rem; border-radius: 6px; border: 1px solid #e5e7eb;">
-                            <h4 style="margin: 0 0 0.75rem; color: #374151; font-size: 0.9rem;">Baseline-CV</h4>
-                            <div id="baselineCVPreview" style="white-space: pre-wrap; line-height: 1.6; color: #374151; font-size: 0.875rem; max-height: 400px; overflow-y: auto;"></div>
+                <div id="cvComparisonView" class="cv-comparison-container" style="display: none;">
+                    <h3 style="color: #374151; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fas fa-balance-scale" style="color: #8b5cf6;"></i>
+                        CV-Vergleich
+                    </h3>
+                    <div class="cv-comparison-grid">
+                        <div class="cv-preview-card cv-preview-card-baseline">
+                            <div class="cv-preview-header">
+                                <h4 class="cv-preview-title">
+                                    <i class="fas fa-file-alt"></i>
+                                    Baseline-CV
+                                </h4>
+                                <span class="cv-preview-badge">Original</span>
+                            </div>
+                            <div id="baselineCVPreview" class="cv-preview-content"></div>
                         </div>
-                        <div style="background: #f0fdf4; padding: 1rem; border-radius: 6px; border: 1px solid #86efac;">
-                            <h4 style="margin: 0 0 0.75rem; color: #374151; font-size: 0.9rem;">Targeted-CV (Job-angepasst)</h4>
-                            <div id="targetedCVPreview" style="white-space: pre-wrap; line-height: 1.6; color: #374151; font-size: 0.875rem; max-height: 400px; overflow-y: auto;"></div>
+                        <div class="cv-preview-card cv-preview-card-targeted">
+                            <div class="cv-preview-header">
+                                <h4 class="cv-preview-title">
+                                    <i class="fas fa-bullseye"></i>
+                                    Targeted-CV
+                                </h4>
+                                <span class="cv-preview-badge">Job-angepasst</span>
+                            </div>
+                            <div id="targetedCVPreview" class="cv-preview-content"></div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Export Options -->
-                <div id="cvExportSection" style="display: none; margin-bottom: 2rem; padding-top: 1.5rem; border-top: 1px solid #e5e7eb;">
-                    <h3 style="color: #374151; margin-bottom: 1rem;">Export</h3>
-                    <div style="display: flex; gap: 1rem;">
-                        <button type="button" id="exportDocxBtn" style="
-                            background: #059669; color: white; border: none;
-                            padding: 0.75rem 1.5rem; border-radius: 6px; cursor: pointer;
-                            font-weight: 500;
-                        ">
-                            <i class="fas fa-file-word"></i> Als DOCX exportieren
+                <div id="cvExportSection" class="cv-export-section" style="display: none;">
+                    <h3 style="color: #374151; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fas fa-download" style="color: #10b981;"></i>
+                        Export
+                    </h3>
+                    <div class="cv-export-buttons">
+                        <button type="button" id="exportDocxBtn" class="cv-export-button cv-export-button-docx">
+                            <i class="fas fa-file-word"></i> 
+                            <span>Als DOCX exportieren</span>
                         </button>
-                        <button type="button" id="exportPdfBtn" style="
-                            background: #dc2626; color: white; border: none;
-                            padding: 0.75rem 1.5rem; border-radius: 6px; cursor: pointer;
-                            font-weight: 500;
-                        ">
-                            <i class="fas fa-file-pdf"></i> Als PDF exportieren
+                        <button type="button" id="exportPdfBtn" class="cv-export-button cv-export-button-pdf">
+                            <i class="fas fa-file-pdf"></i> 
+                            <span>Als PDF exportieren</span>
                         </button>
                     </div>
                 </div>
@@ -446,30 +444,16 @@ window.initStep4 = function() {
     const cvTailorInterface = document.getElementById('cvTailorInterface');
     
     if (cvTailorToggle) {
-        const toggleSlider = document.getElementById('cvTailorToggleSlider');
-        const toggleKnob = document.getElementById('cvTailorToggleKnob');
-        
         // Load saved preference
         const savedPreference = localStorage.getItem('cvTailorEnabled');
         if (savedPreference === 'true') {
             cvTailorToggle.checked = true;
-            if (toggleSlider) toggleSlider.style.backgroundColor = '#8b5cf6';
-            if (toggleKnob) toggleKnob.style.transform = 'translateX(26px)';
             updateCVTailorUI(true);
         }
         
         cvTailorToggle.addEventListener('change', (e) => {
             const enabled = e.target.checked;
             localStorage.setItem('cvTailorEnabled', enabled.toString());
-            
-            // Update toggle visual state
-            if (toggleSlider) {
-                toggleSlider.style.backgroundColor = enabled ? '#8b5cf6' : '#ccc';
-            }
-            if (toggleKnob) {
-                toggleKnob.style.transform = enabled ? 'translateX(26px)' : 'translateX(0)';
-            }
-            
             updateCVTailorUI(enabled);
         });
     }
@@ -526,14 +510,39 @@ window.initStep4 = function() {
             });
         }
         
-        // Certificate File Upload
+        // Certificate File Upload with Drag & Drop
         const certificateFileInput = document.getElementById('certificateFileInput');
         const certificateFileList = document.getElementById('certificateFileList');
+        const certificateUploadArea = document.getElementById('certificateUploadArea');
         
-        if (certificateFileInput) {
+        if (certificateFileInput && certificateUploadArea) {
+            // Click to upload
             certificateFileInput.addEventListener('change', (e) => {
                 selectedCertificateFiles = Array.from(e.target.files);
                 displayFileList(selectedCertificateFiles, certificateFileList);
+                certificateUploadArea.classList.remove('drag-over');
+            });
+            
+            // Drag & Drop
+            certificateUploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                certificateUploadArea.classList.add('drag-over');
+            });
+            
+            certificateUploadArea.addEventListener('dragleave', () => {
+                certificateUploadArea.classList.remove('drag-over');
+            });
+            
+            certificateUploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                certificateUploadArea.classList.remove('drag-over');
+                const files = Array.from(e.dataTransfer.files).filter(f => 
+                    f.name.endsWith('.pdf')
+                );
+                if (files.length > 0) {
+                    selectedCertificateFiles = files;
+                    displayFileList(selectedCertificateFiles, certificateFileList);
+                }
             });
         }
     
@@ -600,8 +609,9 @@ window.initStep4 = function() {
             }
             
             try {
-                showProgress('Parse Stellenausschreibung...');
+                generateTargetedBtn.classList.add('loading');
                 generateTargetedBtn.disabled = true;
+                showProgress('Parse Stellenausschreibung...');
                 
                 // Parse Job Posting
                 const jobData = await window.cvTailor.parseJobPosting(jobAnalysis.description, 'text');
@@ -617,16 +627,23 @@ window.initStep4 = function() {
                 window.bewerbungData.jobData = jobData;
                 
                 hideProgress();
+                generateTargetedBtn.classList.remove('loading');
                 generateTargetedBtn.disabled = false;
-                generateTargetedBtn.innerHTML = '<i class="fas fa-check"></i> Targeted-CV generiert';
+                generateTargetedBtn.innerHTML = '<i class="fas fa-check"></i> <span>Targeted-CV generiert</span>';
                 
-                // Show export section
-                document.getElementById('cvExportSection').style.display = 'block';
+                // Show success message
+                showSuccessMessage('Targeted-CV erfolgreich generiert!');
+                
+                // Show export section with animation
+                const exportSection = document.getElementById('cvExportSection');
+                exportSection.style.display = 'block';
+                setTimeout(() => exportSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
                 
             } catch (error) {
                 console.error('Targeted CV Generation Error:', error);
-                alert(`❌ Fehler: ${error.message}`);
+                showErrorMessage(`Fehler: ${error.message}`);
                 hideProgress();
+                generateTargetedBtn.classList.remove('loading');
                 generateTargetedBtn.disabled = false;
             }
         });
@@ -642,8 +659,9 @@ window.initStep4 = function() {
             }
             
             try {
+                exportDocxBtn.classList.add('loading');
                 exportDocxBtn.disabled = true;
-                exportDocxBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Exportiere...';
+                exportDocxBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Exportiere...</span>';
                 
                 await window.cvTailor.exportCV(
                     window.bewerbungData.targetedCV,
@@ -651,17 +669,21 @@ window.initStep4 = function() {
                     `lebenslauf-${window.bewerbungData.jobAnalysis?.company || 'targeted'}-${Date.now()}.docx`
                 );
                 
-                exportDocxBtn.innerHTML = '<i class="fas fa-check"></i> Exportiert';
+                exportDocxBtn.classList.remove('loading');
+                exportDocxBtn.innerHTML = '<i class="fas fa-check"></i> <span>Exportiert</span>';
+                showSuccessMessage('CV erfolgreich als DOCX exportiert!');
+                
                 setTimeout(() => {
-                    exportDocxBtn.innerHTML = '<i class="fas fa-file-word"></i> Als DOCX exportieren';
+                    exportDocxBtn.innerHTML = '<i class="fas fa-file-word"></i> <span>Als DOCX exportieren</span>';
                     exportDocxBtn.disabled = false;
                 }, 2000);
                 
             } catch (error) {
                 console.error('Export Error:', error);
-                alert(`❌ Fehler beim Export: ${error.message}`);
+                showErrorMessage(`Fehler beim Export: ${error.message}`);
+                exportDocxBtn.classList.remove('loading');
                 exportDocxBtn.disabled = false;
-                exportDocxBtn.innerHTML = '<i class="fas fa-file-word"></i> Als DOCX exportieren';
+                exportDocxBtn.innerHTML = '<i class="fas fa-file-word"></i> <span>Als DOCX exportieren</span>';
             }
         });
     }
@@ -675,8 +697,9 @@ window.initStep4 = function() {
             }
             
             try {
+                exportPdfBtn.classList.add('loading');
                 exportPdfBtn.disabled = true;
-                exportPdfBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Exportiere...';
+                exportPdfBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Exportiere...</span>';
                 
                 await window.cvTailor.exportCV(
                     window.bewerbungData.targetedCV,
@@ -684,17 +707,21 @@ window.initStep4 = function() {
                     `lebenslauf-${window.bewerbungData.jobAnalysis?.company || 'targeted'}-${Date.now()}.pdf`
                 );
                 
-                exportPdfBtn.innerHTML = '<i class="fas fa-check"></i> Exportiert';
+                exportPdfBtn.classList.remove('loading');
+                exportPdfBtn.innerHTML = '<i class="fas fa-check"></i> <span>Exportiert</span>';
+                showSuccessMessage('CV erfolgreich als PDF exportiert!');
+                
                 setTimeout(() => {
-                    exportPdfBtn.innerHTML = '<i class="fas fa-file-pdf"></i> Als PDF exportieren';
+                    exportPdfBtn.innerHTML = '<i class="fas fa-file-pdf"></i> <span>Als PDF exportieren</span>';
                     exportPdfBtn.disabled = false;
                 }, 2000);
                 
             } catch (error) {
                 console.error('Export Error:', error);
-                alert(`❌ Fehler beim Export: ${error.message}`);
+                showErrorMessage(`Fehler beim Export: ${error.message}`);
+                exportPdfBtn.classList.remove('loading');
                 exportPdfBtn.disabled = false;
-                exportPdfBtn.innerHTML = '<i class="fas fa-file-pdf"></i> Als PDF exportieren';
+                exportPdfBtn.innerHTML = '<i class="fas fa-file-pdf"></i> <span>Als PDF exportieren</span>';
             }
         });
     }
@@ -706,22 +733,31 @@ window.initStep4 = function() {
             return;
         }
         
-        container.innerHTML = files.map((file, index) => `
-            <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.5rem; background: white; border-radius: 4px; margin-bottom: 0.5rem;">
-                <div style="display: flex; align-items: center; gap: 0.5rem;">
-                    <i class="fas fa-file" style="color: #6b7280;"></i>
-                    <span style="font-size: 0.875rem; color: #374151;">${file.name}</span>
-                    <span style="font-size: 0.75rem; color: #6b7280;">(${(file.size / 1024 / 1024).toFixed(2)} MB)</span>
+        container.innerHTML = files.map((file, index) => {
+            const fileIcon = file.name.endsWith('.pdf') ? 'fa-file-pdf' : 
+                           file.name.endsWith('.docx') ? 'fa-file-word' : 
+                           'fa-file';
+            const fileColor = file.name.endsWith('.pdf') ? '#dc2626' : 
+                            file.name.endsWith('.docx') ? '#2563eb' : 
+                            '#64748b';
+            
+            return `
+                <div class="cv-file-item">
+                    <div class="cv-file-info">
+                        <div class="cv-file-icon" style="background: linear-gradient(135deg, ${fileColor}, ${fileColor}dd);">
+                            <i class="fas ${fileIcon}"></i>
+                        </div>
+                        <div class="cv-file-details">
+                            <div class="cv-file-name">${file.name}</div>
+                            <div class="cv-file-size">${(file.size / 1024 / 1024).toFixed(2)} MB</div>
+                        </div>
+                    </div>
+                    <button type="button" class="cv-file-remove" onclick="removeFile(${index}, '${container.id}')">
+                        <i class="fas fa-times"></i>
+                    </button>
                 </div>
-                <button type="button" onclick="removeFile(${index}, '${container.id}')" style="
-                    background: #ef4444; color: white; border: none;
-                    padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer;
-                    font-size: 0.75rem;
-                ">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-        `).join('');
+            `;
+        }).join('');
     }
     
     function updateButtonStates() {
@@ -745,6 +781,50 @@ window.initStep4 = function() {
         if (progressDiv) {
             progressDiv.style.display = 'none';
         }
+    }
+    
+    function showSuccessMessage(message) {
+        // Remove existing messages
+        const existing = document.querySelectorAll('.cv-success-message, .cv-error-message');
+        existing.forEach(el => el.remove());
+        
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'cv-success-message';
+        messageDiv.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
+        
+        const progressDiv = document.getElementById('cvTailorProgress');
+        if (progressDiv && progressDiv.parentNode) {
+            progressDiv.parentNode.insertBefore(messageDiv, progressDiv);
+        }
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            messageDiv.style.opacity = '0';
+            messageDiv.style.transform = 'translateY(-10px)';
+            setTimeout(() => messageDiv.remove(), 300);
+        }, 5000);
+    }
+    
+    function showErrorMessage(message) {
+        // Remove existing messages
+        const existing = document.querySelectorAll('.cv-success-message, .cv-error-message');
+        existing.forEach(el => el.remove());
+        
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'cv-error-message';
+        messageDiv.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
+        
+        const progressDiv = document.getElementById('cvTailorProgress');
+        if (progressDiv && progressDiv.parentNode) {
+            progressDiv.parentNode.insertBefore(messageDiv, progressDiv);
+        }
+        
+        // Auto-remove after 7 seconds
+        setTimeout(() => {
+            messageDiv.style.opacity = '0';
+            messageDiv.style.transform = 'translateY(-10px)';
+            setTimeout(() => messageDiv.remove(), 300);
+        }, 7000);
     }
     
     // Global helper for file removal
