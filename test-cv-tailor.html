@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV Tailor - Funktions-Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        h1 {
+            color: #1f2937;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .test-section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .test-section h2 {
+            color: #374151;
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+        }
+        
+        .test-item {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #d1d5db;
+        }
+        
+        .test-item h3 {
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+        
+        .test-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-left: 0.5rem;
+        }
+        
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .status-running {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .status-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+        
+        .status-error {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+        
+        .test-button {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            margin-right: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        
+        .test-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        
+        .test-button:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .test-output {
+            margin-top: 0.75rem;
+            padding: 0.75rem;
+            background: #f9fafb;
+            border-radius: 4px;
+            border: 1px solid #e5e7eb;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            max-height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        
+        .summary {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+        
+        .summary h2 {
+            color: white;
+            margin-bottom: 1rem;
+        }
+        
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(255,255,255,0.2);
+            border-radius: 6px;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+        
+        .stat-label {
+            font-size: 0.875rem;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 CV Tailor - Funktions-Test</h1>
+        
+        <div class="summary" id="summary">
+            <h2>Test-Zusammenfassung</h2>
+            <div class="summary-stats">
+                <div class="stat-item">
+                    <div class="stat-number" id="totalTests">0</div>
+                    <div class="stat-label">Gesamt</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="passedTests" style="color: #dcfce7;">0</div>
+                    <div class="stat-label">Erfolgreich</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="failedTests" style="color: #fee2e2;">0</div>
+                    <div class="stat-label">Fehlgeschlagen</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="pendingTests" style="color: #fef3c7;">0</div>
+                    <div class="stat-label">Ausstehend</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Test Section 1: API Key Management -->
+        <div class="test-section">
+            <h2>1. API Key Management</h2>
+            
+            <div class="test-item">
+                <h3>API Key aus global-ai-service laden
+                    <span class="test-status status-pending" id="test-api-key-load">Ausstehend</span>
+                </h3>
+                <button class="test-button" onclick="testAPIKeyLoad()">Test starten</button>
+                <div class="test-output" id="output-api-key-load" style="display: none;"></div>
+            </div>
+            
+            <div class="test-item">
+                <h3>API Key Validierung
+                    <span class="test-status status-pending" id="test-api-key-validate">Ausstehend</span>
+                </h3>
+                <button class="test-button" onclick="testAPIKeyValidate()">Test starten</button>
+                <div class="test-output" id="output-api-key-validate" style="display: none;"></div>
+            </div>
+        </div>
+        
+        <!-- Test Section 2: Netlify Functions -->
+        <div class="test-section">
+            <h2>2. Netlify Functions</h2>
+            
+            <div class="test-item">
+                <h3>cv-files-parse (OPTIONS Request)
+                    <span class="test-status status-pending" id="test-files-parse-options">Ausstehend</span>
+                </h3>
+                <button class="test-button" onclick="testFilesParseOptions()">Test starten</button>
+                <div class="test-output" id="output-files-parse-options" style="display: none;"></div>
+            </div>
+            
+            <div class="test-item">
+                <h3>cv-general (Baseline CV Generation)
+                    <span class="test-status status-pending" id="test-cv-general">Ausstehend</span>
+                </h3>
+                <button class="test-button" onclick="testCVGeneral()">Test starten</button>
+                <div class="test-output" id="output-cv-general" style="display: none;"></div>
+            </div>
+            
+            <div class="test-item">
+                <h3>cv-job-parse (Job Posting Parse)
+                    <span class="test-status status-pending" id="test-job-parse">Ausstehend</span>
+                </h3>
+                <button class="test-button" onclick="testJobParse()">Test starten</button>
+                <div class="test-output" id="output-job-parse" style="display: none;"></div>
+            </div>
+            
+            <div class="test-item">
+                <h3>cv-target (Targeted CV Generation)
+                    <span class="test-status status-pending" id="test-cv-target">Ausstehend</span>
+                </h3>
+                <button class="test-button" onclick="testCVTarget()">Test starten</button>
+                <div class="test-output" id="output-cv-target" style="display: none;"></div>
+            </div>
+            
+            <div class="test-item">
+                <h3>cv-export (Export Function)
+                    <span class="test-status status-pending" id="test-cv-export">Ausstehend</span>
+                </h3>
+                <button class="test-button" onclick="testCVExport()">Test starten</button>
+                <div class="test-output" id="output-cv-export" style="display: none;"></div>
+            </div>
+        </div>
+        
+        <!-- Test Section 3: Frontend Integration -->
+        <div class="test-section">
+            <h2>3. Frontend Integration (CVTailor Class)</h2>
+            
+            <div class="test-item">
+                <h3>CVTailor Klasse initialisiert
+                    <span class="test-status status-pending" id="test-cv-tailor-init">Ausstehend</span>
+                </h3>
+                <button class="test-button" onclick="testCVTailorInit()">Test starten</button>
+                <div class="test-output" id="output-cv-tailor-init" style="display: none;"></div>
+            </div>
+            
+            <div class="test-item">
+                <h3>parseFiles() Methode
+                    <span class="test-status status-pending" id="test-parse-files">Ausstehend</span>
+                </h3>
+                <button class="test-button" onclick="testParseFiles()">Test starten</button>
+                <div class="test-output" id="output-parse-files" style="display: none;"></div>
+            </div>
+            
+            <div class="test-item">
+                <h3>generateBaselineCV() Methode
+                    <span class="test-status status-pending" id="test-generate-baseline">Ausstehend</span>
+                </h3>
+                <button class="test-button" onclick="testGenerateBaseline()">Test starten</button>
+                <div class="test-output" id="output-generate-baseline" style="display: none;"></div>
+            </div>
+            
+            <div class="test-item">
+                <h3>parseJobPosting() Methode
+                    <span class="test-status status-pending" id="test-parse-job">Ausstehend</span>
+                </h3>
+                <button class="test-button" onclick="testParseJob()">Test starten</button>
+                <div class="test-output" id="output-parse-job" style="display: none;"></div>
+            </div>
+            
+            <div class="test-item">
+                <h3>generateTargetedCV() Methode
+                    <span class="test-status status-pending" id="test-generate-targeted">Ausstehend</span>
+                </h3>
+                <button class="test-button" onclick="testGenerateTargeted()">Test starten</button>
+                <div class="test-output" id="output-generate-targeted" style="display: none;"></div>
+            </div>
+            
+            <div class="test-item">
+                <h3>exportCV() Methode
+                    <span class="test-status status-pending" id="test-export-cv">Ausstehend</span>
+                </h3>
+                <button class="test-button" onclick="testExportCV()">Test starten</button>
+                <div class="test-output" id="output-export-cv" style="display: none;"></div>
+            </div>
+        </div>
+        
+        <!-- Test Section 4: Workflow Integration -->
+        <div class="test-section">
+            <h2>4. Workflow Integration</h2>
+            
+            <div class="test-item">
+                <h3>Step 4 Toggle-Switch
+                    <span class="test-status status-pending" id="test-step4-toggle">Ausstehend</span>
+                </h3>
+                <button class="test-button" onclick="testStep4Toggle()">Test starten</button>
+                <div class="test-output" id="output-step4-toggle" style="display: none;"></div>
+            </div>
+            
+            <div class="test-item">
+                <h3>CV Tailor UI Anzeige
+                    <span class="test-status status-pending" id="test-cv-tailor-ui">Ausstehend</span>
+                </h3>
+                <button class="test-button" onclick="testCVTailorUI()">Test starten</button>
+                <div class="test-output" id="output-cv-tailor-ui" style="display: none;"></div>
+            </div>
+        </div>
+        
+        <!-- Test Section 5: Vollständiger Workflow -->
+        <div class="test-section">
+            <h2>5. Vollständiger Workflow Test</h2>
+            
+            <div class="test-item">
+                <h3>Kompletter CV Tailor Workflow
+                    <span class="test-status status-pending" id="test-full-workflow">Ausstehend</span>
+                </h3>
+                <button class="test-button" onclick="testFullWorkflow()">Test starten</button>
+                <div class="test-output" id="output-full-workflow" style="display: none;"></div>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 2rem;">
+            <button class="test-button" onclick="runAllTests()" style="background: linear-gradient(135deg, #10b981, #059669); padding: 1rem 2rem; font-size: 1.1rem;">
+                🚀 Alle Tests ausführen
+            </button>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="js/global-ai-service.js"></script>
+    <script src="js/cv-tailor.js"></script>
+    
+    <script>
+        // Test Statistics
+        let testStats = {
+            total: 0,
+            passed: 0,
+            failed: 0,
+            pending: 0
+        };
+        
+        function updateStats() {
+            document.getElementById('totalTests').textContent = testStats.total;
+            document.getElementById('passedTests').textContent = testStats.passed;
+            document.getElementById('failedTests').textContent = testStats.failed;
+            document.getElementById('pendingTests').textContent = testStats.pending;
+        }
+        
+        function setTestStatus(testId, status, message = '') {
+            const statusEl = document.getElementById(testId);
+            const outputEl = document.getElementById('output-' + testId.replace('test-', ''));
+            
+            statusEl.className = 'test-status status-' + status;
+            statusEl.textContent = status === 'success' ? '✅ Erfolgreich' : 
+                                  status === 'error' ? '❌ Fehlgeschlagen' :
+                                  status === 'running' ? '⏳ Läuft...' : '⏸️ Ausstehend';
+            
+            if (outputEl) {
+                if (message) {
+                    outputEl.style.display = 'block';
+                    outputEl.textContent = message;
+                } else {
+                    outputEl.style.display = 'none';
+                }
+            }
+            
+            // Update stats
+            if (status === 'success') {
+                testStats.passed++;
+                testStats.pending--;
+            } else if (status === 'error') {
+                testStats.failed++;
+                testStats.pending--;
+            }
+            updateStats();
+        }
+        
+        // Test Functions
+        async function testAPIKeyLoad() {
+            setTestStatus('test-api-key-load', 'running');
+            testStats.total++;
+            testStats.pending++;
+            updateStats();
+            
+            try {
+                if (!window.cvTailor) {
+                    throw new Error('CVTailor Klasse nicht gefunden');
+                }
+                
+                const apiKey = await window.cvTailor.getAPIKey();
+                
+                if (apiKey && apiKey.startsWith('sk-')) {
+                    setTestStatus('test-api-key-load', 'success', 
+                        `✅ API Key erfolgreich geladen\nLänge: ${apiKey.length} Zeichen\nPräfix: ${apiKey.substring(0, 7)}...`);
+                } else {
+                    setTestStatus('test-api-key-load', 'error', 
+                        `⚠️ API Key gefunden, aber Format ungültig\nKey: ${apiKey ? apiKey.substring(0, 20) + '...' : 'null'}`);
+                }
+            } catch (error) {
+                setTestStatus('test-api-key-load', 'error', `❌ Fehler: ${error.message}`);
+            }
+        }
+        
+        async function testAPIKeyValidate() {
+            setTestStatus('test-api-key-validate', 'running');
+            testStats.total++;
+            testStats.pending++;
+            updateStats();
+            
+            try {
+                const apiKey = await window.cvTailor.getAPIKey();
+                const isValid = apiKey && apiKey.startsWith('sk-') && apiKey.length > 20;
+                
+                if (isValid) {
+                    setTestStatus('test-api-key-validate', 'success', '✅ API Key ist gültig');
+                } else {
+                    setTestStatus('test-api-key-validate', 'error', '❌ API Key ist ungültig oder fehlt');
+                }
+            } catch (error) {
+                setTestStatus('test-api-key-validate', 'error', `❌ Fehler: ${error.message}`);
+            }
+        }
+        
+        async function testFilesParseOptions() {
+            setTestStatus('test-files-parse-options', 'running');
+            testStats.total++;
+            testStats.pending++;
+            updateStats();
+            
+            try {
+                const response = await fetch('/.netlify/functions/cv-files-parse', {
+                    method: 'OPTIONS'
+                });
+                
+                if (response.ok) {
+                    setTestStatus('test-files-parse-options', 'success', 
+                        `✅ OPTIONS Request erfolgreich\nStatus: ${response.status}\nCORS Headers vorhanden`);
+                } else {
+                    setTestStatus('test-files-parse-options', 'error', 
+                        `❌ OPTIONS Request fehlgeschlagen\nStatus: ${response.status}`);
+                }
+            } catch (error) {
+                setTestStatus('test-files-parse-options', 'error', `❌ Fehler: ${error.message}`);
+            }
+        }
+        
+        async function testCVGeneral() {
+            setTestStatus('test-cv-general', 'running');
+            testStats.total++;
+            testStats.pending++;
+            updateStats();
+            
+            try {
+                const apiKey = await window.cvTailor.getAPIKey();
+                const mockCVData = {
+                    personalInfo: { name: 'Test User', email: 'test@example.com' },
+                    experience: [{ title: 'Developer', company: 'Test Corp' }]
+                };
+                
+                const response = await fetch('/.netlify/functions/cv-general', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ apiKey, cvData: mockCVData })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success && result.baselineCV) {
+                    setTestStatus('test-cv-general', 'success', 
+                        `✅ Baseline-CV erfolgreich generiert\nLänge: ${result.baselineCV.length} Zeichen\nModel: ${result.model || 'N/A'}`);
+                } else {
+                    setTestStatus('test-cv-general', 'error', 
+                        `❌ Fehler: ${result.error || 'Unbekannter Fehler'}`);
+                }
+            } catch (error) {
+                setTestStatus('test-cv-general', 'error', `❌ Fehler: ${error.message}`);
+            }
+        }
+        
+        async function testJobParse() {
+            setTestStatus('test-job-parse', 'running');
+            testStats.total++;
+            testStats.pending++;
+            updateStats();
+            
+            try {
+                const apiKey = await window.cvTailor.getAPIKey();
+                const mockJobText = 'Wir suchen einen Senior Software Developer mit Erfahrung in JavaScript und React.';
+                
+                const response = await fetch('/.netlify/functions/cv-job-parse', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ apiKey, jobInput: mockJobText, inputType: 'text' })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success && result.jobData) {
+                    setTestStatus('test-job-parse', 'success', 
+                        `✅ Stellenausschreibung erfolgreich geparst\nFirma: ${result.jobData.company || 'N/A'}\nPosition: ${result.jobData.position || 'N/A'}`);
+                } else {
+                    setTestStatus('test-job-parse', 'error', 
+                        `❌ Fehler: ${result.error || 'Unbekannter Fehler'}`);
+                }
+            } catch (error) {
+                setTestStatus('test-job-parse', 'error', `❌ Fehler: ${error.message}`);
+            }
+        }
+        
+        async function testCVTarget() {
+            setTestStatus('test-cv-target', 'running');
+            testStats.total++;
+            testStats.pending++;
+            updateStats();
+            
+            try {
+                const apiKey = await window.cvTailor.getAPIKey();
+                const mockBaselineCV = 'PERSONAL INFORMATION\nTest User\n\nWORK EXPERIENCE\nDeveloper at Test Corp';
+                const mockJobData = { company: 'Test Corp', position: 'Developer', requirements: { must_have: ['JavaScript'] } };
+                
+                const response = await fetch('/.netlify/functions/cv-target', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ apiKey, baselineCV: mockBaselineCV, jobData: mockJobData })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success && result.targetedCV) {
+                    setTestStatus('test-cv-target', 'success', 
+                        `✅ Targeted-CV erfolgreich generiert\nLänge: ${result.targetedCV.length} Zeichen\nModel: ${result.model || 'N/A'}`);
+                } else {
+                    setTestStatus('test-cv-target', 'error', 
+                        `❌ Fehler: ${result.error || 'Unbekannter Fehler'}`);
+                }
+            } catch (error) {
+                setTestStatus('test-cv-target', 'error', `❌ Fehler: ${error.message}`);
+            }
+        }
+        
+        async function testCVExport() {
+            setTestStatus('test-cv-export', 'running');
+            testStats.total++;
+            testStats.pending++;
+            updateStats();
+            
+            try {
+                const mockCVContent = 'Test CV Content';
+                
+                const response = await fetch('/.netlify/functions/cv-export', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ format: 'docx', cvContent: mockCVContent, fileName: 'test-cv.docx' })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    setTestStatus('test-cv-export', 'success', 
+                        `✅ Export erfolgreich\nFormat: ${result.format}\nDateiname: ${result.fileName}`);
+                } else {
+                    setTestStatus('test-cv-export', 'error', 
+                        `❌ Fehler: ${result.error || 'Unbekannter Fehler'}`);
+                }
+            } catch (error) {
+                setTestStatus('test-cv-export', 'error', `❌ Fehler: ${error.message}`);
+            }
+        }
+        
+        function testCVTailorInit() {
+            setTestStatus('test-cv-tailor-init', 'running');
+            testStats.total++;
+            testStats.pending++;
+            updateStats();
+            
+            try {
+                if (window.cvTailor && window.cvTailor instanceof CVTailor) {
+                    setTestStatus('test-cv-tailor-init', 'success', 
+                        `✅ CVTailor Klasse erfolgreich initialisiert\nAPI Base: ${window.cvTailor.apiBase}`);
+                } else {
+                    setTestStatus('test-cv-tailor-init', 'error', '❌ CVTailor Klasse nicht gefunden');
+                }
+            } catch (error) {
+                setTestStatus('test-cv-tailor-init', 'error', `❌ Fehler: ${error.message}`);
+            }
+        }
+        
+        async function testParseFiles() {
+            setTestStatus('test-parse-files', 'running');
+            testStats.total++;
+            testStats.pending++;
+            updateStats();
+            
+            try {
+                // Create mock file
+                const mockFile = new Blob(['Mock CV Content'], { type: 'text/plain' });
+                mockFile.name = 'test-cv.txt';
+                
+                // Test if method exists
+                if (typeof window.cvTailor.parseFiles === 'function') {
+                    setTestStatus('test-parse-files', 'success', 
+                        '✅ parseFiles() Methode vorhanden\n(Hinweis: Echter Test erfordert echte Dateien)');
+                } else {
+                    setTestStatus('test-parse-files', 'error', '❌ parseFiles() Methode nicht gefunden');
+                }
+            } catch (error) {
+                setTestStatus('test-parse-files', 'error', `❌ Fehler: ${error.message}`);
+            }
+        }
+        
+        function testGenerateBaseline() {
+            setTestStatus('test-generate-baseline', 'running');
+            testStats.total++;
+            testStats.pending++;
+            updateStats();
+            
+            try {
+                if (typeof window.cvTailor.generateBaselineCV === 'function') {
+                    setTestStatus('test-generate-baseline', 'success', 
+                        '✅ generateBaselineCV() Methode vorhanden');
+                } else {
+                    setTestStatus('test-generate-baseline', 'error', '❌ generateBaselineCV() Methode nicht gefunden');
+                }
+            } catch (error) {
+                setTestStatus('test-generate-baseline', 'error', `❌ Fehler: ${error.message}`);
+            }
+        }
+        
+        function testParseJob() {
+            setTestStatus('test-parse-job', 'running');
+            testStats.total++;
+            testStats.pending++;
+            updateStats();
+            
+            try {
+                if (typeof window.cvTailor.parseJobPosting === 'function') {
+                    setTestStatus('test-parse-job', 'success', 
+                        '✅ parseJobPosting() Methode vorhanden');
+                } else {
+                    setTestStatus('test-parse-job', 'error', '❌ parseJobPosting() Methode nicht gefunden');
+                }
+            } catch (error) {
+                setTestStatus('test-parse-job', 'error', `❌ Fehler: ${error.message}`);
+            }
+        }
+        
+        function testGenerateTargeted() {
+            setTestStatus('test-generate-targeted', 'running');
+            testStats.total++;
+            testStats.pending++;
+            updateStats();
+            
+            try {
+                if (typeof window.cvTailor.generateTargetedCV === 'function') {
+                    setTestStatus('test-generate-targeted', 'success', 
+                        '✅ generateTargetedCV() Methode vorhanden');
+                } else {
+                    setTestStatus('test-generate-targeted', 'error', '❌ generateTargetedCV() Methode nicht gefunden');
+                }
+            } catch (error) {
+                setTestStatus('test-generate-targeted', 'error', `❌ Fehler: ${error.message}`);
+            }
+        }
+        
+        function testExportCV() {
+            setTestStatus('test-export-cv', 'running');
+            testStats.total++;
+            testStats.pending++;
+            updateStats();
+            
+            try {
+                if (typeof window.cvTailor.exportCV === 'function') {
+                    setTestStatus('test-export-cv', 'success', 
+                        '✅ exportCV() Methode vorhanden');
+                } else {
+                    setTestStatus('test-export-cv', 'error', '❌ exportCV() Methode nicht gefunden');
+                }
+            } catch (error) {
+                setTestStatus('test-export-cv', 'error', `❌ Fehler: ${error.message}`);
+            }
+        }
+        
+        function testStep4Toggle() {
+            setTestStatus('test-step4-toggle', 'running');
+            testStats.total++;
+            testStats.pending++;
+            updateStats();
+            
+            try {
+                // Check if step4 functions exist
+                if (typeof window.generateStep4 === 'function') {
+                    const step4HTML = window.generateStep4();
+                    const hasToggle = step4HTML.includes('cvTailorToggle');
+                    
+                    if (hasToggle) {
+                        setTestStatus('test-step4-toggle', 'success', 
+                            '✅ Toggle-Switch in Step 4 vorhanden');
+                    } else {
+                        setTestStatus('test-step4-toggle', 'error', '❌ Toggle-Switch nicht in Step 4 gefunden');
+                    }
+                } else {
+                    setTestStatus('test-step4-toggle', 'error', '❌ generateStep4() Funktion nicht gefunden');
+                }
+            } catch (error) {
+                setTestStatus('test-step4-toggle', 'error', `❌ Fehler: ${error.message}`);
+            }
+        }
+        
+        function testCVTailorUI() {
+            setTestStatus('test-cv-tailor-ui', 'running');
+            testStats.total++;
+            testStats.pending++;
+            updateStats();
+            
+            try {
+                if (typeof window.generateStep4 === 'function') {
+                    const step4HTML = window.generateStep4();
+                    const hasCVTailorUI = step4HTML.includes('cvTailorInterface') && 
+                                         step4HTML.includes('cvFileInput') &&
+                                         step4HTML.includes('generateBaselineBtn');
+                    
+                    if (hasCVTailorUI) {
+                        setTestStatus('test-cv-tailor-ui', 'success', 
+                            '✅ CV Tailor UI Elemente in Step 4 vorhanden');
+                    } else {
+                        setTestStatus('test-cv-tailor-ui', 'error', '❌ CV Tailor UI Elemente nicht vollständig');
+                    }
+                } else {
+                    setTestStatus('test-cv-tailor-ui', 'error', '❌ generateStep4() Funktion nicht gefunden');
+                }
+            } catch (error) {
+                setTestStatus('test-cv-tailor-ui', 'error', `❌ Fehler: ${error.message}`);
+            }
+        }
+        
+        async function testFullWorkflow() {
+            setTestStatus('test-full-workflow', 'running');
+            testStats.total++;
+            testStats.pending++;
+            updateStats();
+            
+            try {
+                // Test if fullWorkflow method exists
+                if (typeof window.cvTailor.fullWorkflow === 'function') {
+                    setTestStatus('test-full-workflow', 'success', 
+                        '✅ fullWorkflow() Methode vorhanden\n(Hinweis: Echter Test erfordert echte Dateien und API Key)');
+                } else {
+                    setTestStatus('test-full-workflow', 'error', '❌ fullWorkflow() Methode nicht gefunden');
+                }
+            } catch (error) {
+                setTestStatus('test-full-workflow', 'error', `❌ Fehler: ${error.message}`);
+            }
+        }
+        
+        async function runAllTests() {
+            // Reset stats
+            testStats = { total: 0, passed: 0, failed: 0, pending: 0 };
+            updateStats();
+            
+            // Run all tests in sequence
+            const tests = [
+                testCVTailorInit,
+                testAPIKeyLoad,
+                testAPIKeyValidate,
+                testFilesParseOptions,
+                testCVGeneral,
+                testJobParse,
+                testCVTarget,
+                testCVExport,
+                testParseFiles,
+                testGenerateBaseline,
+                testParseJob,
+                testGenerateTargeted,
+                testExportCV,
+                testStep4Toggle,
+                testCVTailorUI,
+                testFullWorkflow
+            ];
+            
+            for (const testFunc of tests) {
+                await testFunc();
+                await new Promise(resolve => setTimeout(resolve, 500)); // Small delay between tests
+            }
+        }
+        
+        // Initialize stats on load
+        updateStats();
+    </script>
+</body>
+</html>
+

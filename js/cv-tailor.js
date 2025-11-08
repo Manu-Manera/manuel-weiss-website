@@ -16,13 +16,39 @@ class CVTailor {
      * Lädt API Key aus global-ai-service
      */
     async getAPIKey() {
-        if (window.globalAI && window.globalAI.isAPIReady()) {
-            return window.globalAI.apiKey || window.globalAI.apiManager?.getAPIKey();
+        // Versuche zuerst global-ai-service
+        if (window.globalAI) {
+            // Warte auf Initialisierung
+            if (!window.globalAI.isReady) {
+                await window.globalAI.initialize();
+            }
+            
+            if (window.globalAI.isAPIReady()) {
+                const apiKey = window.globalAI.apiKey || 
+                              (window.globalAI.apiManager && window.globalAI.apiManager.getAPIKey()) ||
+                              (window.secureAPIManager && window.secureAPIManager.getAPIKey());
+                
+                if (apiKey && apiKey.startsWith('sk-')) {
+                    return apiKey;
+                }
+            }
         }
         
         // Fallback: Versuche aus localStorage
-        const apiKey = localStorage.getItem('openai_api_key') || 
-                      localStorage.getItem('global_api_keys')?.openai?.key;
+        let apiKey = localStorage.getItem('openai_api_key');
+        
+        if (!apiKey) {
+            // Versuche global_api_keys
+            const globalKeysStr = localStorage.getItem('global_api_keys');
+            if (globalKeysStr) {
+                try {
+                    const globalKeys = JSON.parse(globalKeysStr);
+                    apiKey = globalKeys?.openai?.key;
+                } catch (e) {
+                    console.warn('Fehler beim Parsen von global_api_keys:', e);
+                }
+            }
+        }
         
         if (apiKey && apiKey.startsWith('sk-')) {
             return apiKey;

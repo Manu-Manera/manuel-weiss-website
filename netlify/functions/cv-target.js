@@ -22,13 +22,30 @@ exports.handler = async (event, context) => {
     }
 
     try {
-        const { apiKey, baselineCV, jobData } = JSON.parse(event.body);
+        const body = JSON.parse(event.body);
+        const { apiKey, baselineCV, jobData } = body;
 
         if (!apiKey || !apiKey.startsWith('sk-')) {
             return {
                 statusCode: 400,
                 headers,
                 body: JSON.stringify({ success: false, error: 'Ungültiger API Key' })
+            };
+        }
+
+        if (!baselineCV || !baselineCV.trim()) {
+            return {
+                statusCode: 400,
+                headers,
+                body: JSON.stringify({ success: false, error: 'Kein Baseline-CV übermittelt' })
+            };
+        }
+
+        if (!jobData || !jobData.company || !jobData.position) {
+            return {
+                statusCode: 400,
+                headers,
+                body: JSON.stringify({ success: false, error: 'Unvollständige Job-Daten übermittelt' })
             };
         }
 
@@ -62,7 +79,7 @@ Erstelle den angepassten CV im gleichen Format wie der Baseline-CV.`;
                 'Authorization': `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-                model: 'gpt-4-turbo-preview',
+                model: 'gpt-4-turbo',
                 messages: [
                     {
                         role: 'system',

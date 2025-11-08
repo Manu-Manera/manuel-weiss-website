@@ -22,13 +22,22 @@ exports.handler = async (event, context) => {
     }
 
     try {
-        const { apiKey, jobInput, inputType } = JSON.parse(event.body);
+        const body = JSON.parse(event.body);
+        const { apiKey, jobInput, inputType } = body;
 
         if (!apiKey || !apiKey.startsWith('sk-')) {
             return {
                 statusCode: 400,
                 headers,
                 body: JSON.stringify({ success: false, error: 'Ungültiger API Key' })
+            };
+        }
+
+        if (!jobInput || !jobInput.trim()) {
+            return {
+                statusCode: 400,
+                headers,
+                body: JSON.stringify({ success: false, error: 'Keine Stellenausschreibung übermittelt' })
             };
         }
 
@@ -67,7 +76,7 @@ Antworte NUR als valides JSON:
                 'Authorization': `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-                model: 'gpt-4-turbo-preview',
+                model: 'gpt-4-turbo',
                 messages: [
                     {
                         role: 'system',
@@ -79,7 +88,8 @@ Antworte NUR als valides JSON:
                     }
                 ],
                 max_tokens: 2000,
-                temperature: 0.1
+                temperature: 0.1,
+                response_format: { type: 'json_object' }
             })
         });
 

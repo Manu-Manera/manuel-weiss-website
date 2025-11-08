@@ -22,13 +22,22 @@ exports.handler = async (event, context) => {
     }
 
     try {
-        const { apiKey, cvData } = JSON.parse(event.body);
+        const body = JSON.parse(event.body);
+        const { apiKey, cvData } = body;
 
         if (!apiKey || !apiKey.startsWith('sk-')) {
             return {
                 statusCode: 400,
                 headers,
                 body: JSON.stringify({ success: false, error: 'Ungültiger API Key' })
+            };
+        }
+
+        if (!cvData) {
+            return {
+                statusCode: 400,
+                headers,
+                body: JSON.stringify({ success: false, error: 'Keine CV-Daten übermittelt' })
             };
         }
 
@@ -62,7 +71,7 @@ Verwende klare Formatierung mit Absätzen und Bullet Points.`;
                 'Authorization': `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-                model: 'gpt-4-turbo-preview',
+                model: 'gpt-4-turbo',
                 messages: [
                     {
                         role: 'system',
