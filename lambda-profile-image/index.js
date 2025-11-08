@@ -1,10 +1,12 @@
 'use strict';
 
-// Lambda: returns a presigned PUT URL for uploading a profile image to S3
+// Lambda: returns a presigned PUT URL for uploading files to S3
+// Supports: profile images, CV documents (PDF/DOCX), certificates
 // Env:
 //   BUCKET_NAME: target S3 bucket
 //   REGION: aws region (e.g. eu-central-1)
 //   PROFILE_PREFIX: optional key prefix (default: public/profile-images/)
+//   DOCUMENTS_PREFIX: optional key prefix for documents (default: public/documents/)
 
 const AWS = require('aws-sdk');
 
@@ -27,11 +29,21 @@ exports.handler = async (event) => {
     }
 
     const contentType = (body && body.contentType) || 'image/jpeg';
-    const fileExt = getExtFromContentType(contentType);
+    const fileType = (body && body.fileType) || 'profile'; // 'profile', 'cv', 'certificate', 'document'
     const userId = (body && (body.userId || body.owner || body.keyHint)) || 'anonymous';
-    const prefix = process.env.PROFILE_PREFIX || 'public/profile-images/';
+    
+    // Determine prefix and file extension based on file type
+    let prefix, fileExt;
+    if (fileType === 'cv' || fileType === 'certificate' || fileType === 'document') {
+      prefix = process.env.DOCUMENTS_PREFIX || 'public/documents/';
+      fileExt = getExtFromContentType(contentType, fileType);
+    } else {
+      prefix = process.env.PROFILE_PREFIX || 'public/profile-images/';
+      fileExt = getExtFromContentType(contentType);
+    }
+    
     const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}${fileExt}`;
-    const key = `${prefix}${userId}/${fileName}`;
+    const key = `${prefix}${userId}/${fileType}/${fileName}`;
 
     const expires = 60 * 2; // 2 minutes
 
@@ -54,6 +66,7 @@ exports.handler = async (event) => {
       key,
       expires,
       region: REGION,
+      fileType,
     });
   } catch (error) {
     return json(500, { error: error.message });
@@ -82,13 +95,25 @@ function json(statusCode, body) {
   };
 }
 
-function getExtFromContentType(ct) {
-  if (!ct) return '.jpg';
+function getExtFromContentType(ct, fileType) {
+  if (!ct) {
+    return fileType === 'cv' || fileType === 'certificate' || fileType === 'document' ? '.pdf' : '.jpg';
+  }
+  
+  // Document types
+  if (ct.includes('pdf') || ct === 'application/pdf') return '.pdf';
+  if (ct.includes('msword') || ct.includes('wordprocessingml') || ct === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') return '.docx';
+  if (ct.includes('ms-excel') || ct.includes('spreadsheetml')) return '.xlsx';
+  
+  // Image types
   if (ct.includes('png')) return '.png';
   if (ct.includes('webp')) return '.webp';
   if (ct.includes('gif')) return '.gif';
   if (ct.includes('svg')) return '.svg';
-  return '.jpg';
+  if (ct.includes('jpeg') || ct.includes('jpg')) return '.jpg';
+  
+  // Default based on file type
+  return fileType === 'cv' || fileType === 'certificate' || fileType === 'document' ? '.pdf' : '.jpg';
 }
 
 

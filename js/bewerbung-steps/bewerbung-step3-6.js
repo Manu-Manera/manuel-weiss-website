@@ -91,22 +91,22 @@ window.generateStep4 = function() {
 
                 <!-- Standard CV Customization (when CV Tailor is OFF) -->
                 <div id="standardCvCustomization" style="display: block;">
-                    <div style="text-align: center; margin-bottom: 2rem;">
-                        <button type="button" id="customizeCvBtn" style="
-                            background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; border: none;
-                            padding: 1rem 2rem; border-radius: 8px; cursor: pointer;
-                            font-weight: 600; font-size: 1rem;
-                        ">
-                            <i class="fas fa-edit"></i> Lebenslauf anpassen
-                        </button>
-                    </div>
+                <div style="text-align: center; margin-bottom: 2rem;">
+                    <button type="button" id="customizeCvBtn" style="
+                        background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; border: none;
+                        padding: 1rem 2rem; border-radius: 8px; cursor: pointer;
+                        font-weight: 600; font-size: 1rem;
+                    ">
+                        <i class="fas fa-edit"></i> Lebenslauf anpassen
+                    </button>
+                </div>
 
-                    <div id="cvPreview" style="display: none; background: #f8fafc; padding: 1.5rem; border-radius: 8px; border: 1px solid #e5e7eb;">
-                        <h4 style="margin: 0 0 1rem; color: #374151;">Angepasster Lebenslauf</h4>
-                        <div id="cvContent" style="white-space: pre-wrap; line-height: 1.6; color: #374151;">
-                            <!-- Wird dynamisch gefüllt -->
-                        </div>
+                <div id="cvPreview" style="display: none; background: #f8fafc; padding: 1.5rem; border-radius: 8px; border: 1px solid #e5e7eb;">
+                    <h4 style="margin: 0 0 1rem; color: #374151;">Angepasster Lebenslauf</h4>
+                    <div id="cvContent" style="white-space: pre-wrap; line-height: 1.6; color: #374151;">
+                        <!-- Wird dynamisch gefüllt -->
                     </div>
+                </div>
                 </div>
 
                 <!-- CV Tailor Interface (when CV Tailor is ON) -->
@@ -480,34 +480,161 @@ window.initStep4 = function() {
     }
     
     function initStandardCvCustomization() {
-        const customizeBtn = document.getElementById('customizeCvBtn');
-        if (customizeBtn) {
-            customizeBtn.addEventListener('click', () => {
-                customizeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Passe an...';
-                setTimeout(() => {
-                    document.getElementById('cvPreview').style.display = 'block';
-                    document.getElementById('cvContent').textContent = 'Manuel Weiss\nSoftware Developer\n\nBerufserfahrung:\n- 3 Jahre Erfahrung in JavaScript/TypeScript\n- React und Vue.js Kenntnisse...';
-                    customizeBtn.innerHTML = '<i class="fas fa-edit"></i> Lebenslauf anpassen';
-                }, 2000);
-            });
+    const customizeBtn = document.getElementById('customizeCvBtn');
+    if (customizeBtn) {
+        customizeBtn.addEventListener('click', () => {
+            customizeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Passe an...';
+            setTimeout(() => {
+                document.getElementById('cvPreview').style.display = 'block';
+                document.getElementById('cvContent').textContent = 'Manuel Weiss\nSoftware Developer\n\nBerufserfahrung:\n- 3 Jahre Erfahrung in JavaScript/TypeScript\n- React und Vue.js Kenntnisse...';
+                customizeBtn.innerHTML = '<i class="fas fa-edit"></i> Lebenslauf anpassen';
+            }, 2000);
+        });
         }
     }
     
     // File selection state (außerhalb der Funktionen für Zugriff)
     let selectedCVFiles = [];
     let selectedCertificateFiles = [];
+    let uploadedCVFiles = []; // Speichert Upload-URLs und Metadaten
+    let uploadedCertificateFiles = []; // Speichert Upload-URLs und Metadaten
+    
+    // Helper: Get User ID
+    function getUserId() {
+        return localStorage.getItem('currentUserId') || 
+               localStorage.getItem('user_id') || 
+               'anonymous';
+    }
+    
+    // Helper: Upload file to S3
+    async function uploadFileToS3(file, fileType) {
+        try {
+            if (!window.awsMedia || !window.awsMedia.uploadDocument) {
+                throw new Error('AWS Media Upload nicht verfügbar. Bitte Seite neu laden.');
+            }
+            
+            const userId = getUserId();
+            const uploadResult = await window.awsMedia.uploadDocument(file, userId, fileType);
+            
+            // Speichere im Profil
+            saveDocumentToProfile(uploadResult, fileType);
+            
+            return uploadResult;
+        } catch (error) {
+            console.error('Upload-Fehler:', error);
+            throw error;
+        }
+    }
+    
+    // Helper: Save document URL to profile
+    function saveDocumentToProfile(uploadResult, fileType) {
+        const userId = getUserId();
+        const profileKey = `profile_${userId}`;
+        const profileData = JSON.parse(localStorage.getItem(profileKey) || '{}');
+        
+        if (!profileData.documents) {
+            profileData.documents = {};
+        }
+        if (!profileData.documents[fileType]) {
+            profileData.documents[fileType] = [];
+        }
+        
+        profileData.documents[fileType].push({
+            url: uploadResult.publicUrl,
+            key: uploadResult.key,
+            fileName: uploadResult.fileName,
+            size: uploadResult.size,
+            uploadedAt: new Date().toISOString()
+        });
+        
+        localStorage.setItem(profileKey, JSON.stringify(profileData));
+        console.log(`✅ ${fileType} gespeichert im Profil:`, uploadResult.publicUrl);
+    }
     
     function initCVTailorFunctionality() {
         // CV File Upload
         const cvFileInput = document.getElementById('cvFileInput');
         const cvFileList = document.getElementById('cvFileList');
+        const cvUploadArea = document.getElementById('cvUploadArea');
         
         if (cvFileInput) {
-            cvFileInput.addEventListener('change', (e) => {
-                selectedCVFiles = Array.from(e.target.files);
-                displayFileList(selectedCVFiles, cvFileList);
+            cvFileInput.addEventListener('change', async (e) => {
+                const files = Array.from(e.target.files);
+                if (files.length === 0) return;
+                
+                selectedCVFiles = files;
+                displayFileList(selectedCVFiles, cvFileList, true); // true = uploading
+                
+                // Upload files to S3
+                uploadedCVFiles = [];
+                for (const file of files) {
+                    try {
+                        showProgress(`Lade ${file.name} hoch...`);
+                        const uploadResult = await uploadFileToS3(file, 'cv');
+                        uploadedCVFiles.push({
+                            file: file,
+                            uploadResult: uploadResult
+                        });
+                        displayFileList(selectedCVFiles, cvFileList, false, uploadedCVFiles);
+                    } catch (error) {
+                        console.error(`Fehler beim Hochladen von ${file.name}:`, error);
+                        showErrorMessage(`Fehler beim Hochladen von ${file.name}: ${error.message}`);
+                    }
+                }
+                
+                hideProgress();
                 updateButtonStates();
+                if (uploadedCVFiles.length > 0) {
+                    showSuccessMessage(`${uploadedCVFiles.length} CV-Datei(en) erfolgreich hochgeladen!`);
+                }
             });
+            
+            // Drag & Drop für CV
+            if (cvUploadArea) {
+                cvUploadArea.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    cvUploadArea.classList.add('drag-over');
+                });
+                
+                cvUploadArea.addEventListener('dragleave', () => {
+                    cvUploadArea.classList.remove('drag-over');
+                });
+                
+                cvUploadArea.addEventListener('drop', async (e) => {
+                    e.preventDefault();
+                    cvUploadArea.classList.remove('drag-over');
+                    const files = Array.from(e.dataTransfer.files).filter(f => 
+                        f.name.endsWith('.pdf') || f.name.endsWith('.docx')
+                    );
+                    if (files.length > 0) {
+                        selectedCVFiles = files;
+                        displayFileList(selectedCVFiles, cvFileList, true);
+                        
+                        // Upload files to S3
+                        uploadedCVFiles = [];
+                        for (const file of files) {
+                            try {
+                                showProgress(`Lade ${file.name} hoch...`);
+                                const uploadResult = await uploadFileToS3(file, 'cv');
+                                uploadedCVFiles.push({
+                                    file: file,
+                                    uploadResult: uploadResult
+                                });
+                                displayFileList(selectedCVFiles, cvFileList, false, uploadedCVFiles);
+                            } catch (error) {
+                                console.error(`Fehler beim Hochladen von ${file.name}:`, error);
+                                showErrorMessage(`Fehler beim Hochladen von ${file.name}: ${error.message}`);
+                            }
+                        }
+                        
+                        hideProgress();
+                        updateButtonStates();
+                        if (uploadedCVFiles.length > 0) {
+                            showSuccessMessage(`${uploadedCVFiles.length} CV-Datei(en) erfolgreich hochgeladen!`);
+                        }
+                    }
+                });
+            }
         }
         
         // Certificate File Upload with Drag & Drop
@@ -517,10 +644,35 @@ window.initStep4 = function() {
         
         if (certificateFileInput && certificateUploadArea) {
             // Click to upload
-            certificateFileInput.addEventListener('change', (e) => {
-                selectedCertificateFiles = Array.from(e.target.files);
-                displayFileList(selectedCertificateFiles, certificateFileList);
+            certificateFileInput.addEventListener('change', async (e) => {
+                const files = Array.from(e.target.files);
+                if (files.length === 0) return;
+                
+                selectedCertificateFiles = files;
+                displayFileList(selectedCertificateFiles, certificateFileList, true);
                 certificateUploadArea.classList.remove('drag-over');
+                
+                // Upload files to S3
+                uploadedCertificateFiles = [];
+                for (const file of files) {
+                    try {
+                        showProgress(`Lade ${file.name} hoch...`);
+                        const uploadResult = await uploadFileToS3(file, 'certificate');
+                        uploadedCertificateFiles.push({
+                            file: file,
+                            uploadResult: uploadResult
+                        });
+                        displayFileList(selectedCertificateFiles, certificateFileList, false, uploadedCertificateFiles);
+                    } catch (error) {
+                        console.error(`Fehler beim Hochladen von ${file.name}:`, error);
+                        showErrorMessage(`Fehler beim Hochladen von ${file.name}: ${error.message}`);
+                    }
+                }
+                
+                hideProgress();
+                if (uploadedCertificateFiles.length > 0) {
+                    showSuccessMessage(`${uploadedCertificateFiles.length} Zeugnis(se) erfolgreich hochgeladen!`);
+                }
             });
             
             // Drag & Drop
@@ -533,7 +685,7 @@ window.initStep4 = function() {
                 certificateUploadArea.classList.remove('drag-over');
             });
             
-            certificateUploadArea.addEventListener('drop', (e) => {
+            certificateUploadArea.addEventListener('drop', async (e) => {
                 e.preventDefault();
                 certificateUploadArea.classList.remove('drag-over');
                 const files = Array.from(e.dataTransfer.files).filter(f => 
@@ -541,7 +693,29 @@ window.initStep4 = function() {
                 );
                 if (files.length > 0) {
                     selectedCertificateFiles = files;
-                    displayFileList(selectedCertificateFiles, certificateFileList);
+                    displayFileList(selectedCertificateFiles, certificateFileList, true);
+                    
+                    // Upload files to S3
+                    uploadedCertificateFiles = [];
+                    for (const file of files) {
+                        try {
+                            showProgress(`Lade ${file.name} hoch...`);
+                            const uploadResult = await uploadFileToS3(file, 'certificate');
+                            uploadedCertificateFiles.push({
+                                file: file,
+                                uploadResult: uploadResult
+                            });
+                            displayFileList(selectedCertificateFiles, certificateFileList, false, uploadedCertificateFiles);
+                        } catch (error) {
+                            console.error(`Fehler beim Hochladen von ${file.name}:`, error);
+                            showErrorMessage(`Fehler beim Hochladen von ${file.name}: ${error.message}`);
+                        }
+                    }
+                    
+                    hideProgress();
+                    if (uploadedCertificateFiles.length > 0) {
+                        showSuccessMessage(`${uploadedCertificateFiles.length} Zeugnis(se) erfolgreich hochgeladen!`);
+                    }
                 }
             });
         }
@@ -727,7 +901,7 @@ window.initStep4 = function() {
     }
     
     // Helper Functions
-    function displayFileList(files, container) {
+    function displayFileList(files, container, isUploading = false, uploadedFiles = []) {
         if (files.length === 0) {
             container.innerHTML = '';
             return;
@@ -741,15 +915,35 @@ window.initStep4 = function() {
                             file.name.endsWith('.docx') ? '#2563eb' : 
                             '#64748b';
             
+            // Check if file is uploaded
+            const uploadedFile = uploadedFiles.find(uf => uf.file === file || uf.file.name === file.name);
+            const uploadStatus = uploadedFile ? 'uploaded' : (isUploading ? 'uploading' : 'pending');
+            
+            let statusIcon = '';
+            let statusText = '';
+            if (uploadStatus === 'uploaded') {
+                statusIcon = '<i class="fas fa-check-circle" style="color: #10b981; margin-left: 0.5rem;"></i>';
+                statusText = '<span style="color: #10b981; font-size: 0.75rem; margin-left: 0.5rem;">Hochgeladen</span>';
+            } else if (uploadStatus === 'uploading') {
+                statusIcon = '<i class="fas fa-spinner fa-spin" style="color: #3b82f6; margin-left: 0.5rem;"></i>';
+                statusText = '<span style="color: #3b82f6; font-size: 0.75rem; margin-left: 0.5rem;">Wird hochgeladen...</span>';
+            }
+            
             return `
-                <div class="cv-file-item">
+                <div class="cv-file-item" data-status="${uploadStatus}">
                     <div class="cv-file-info">
                         <div class="cv-file-icon" style="background: linear-gradient(135deg, ${fileColor}, ${fileColor}dd);">
                             <i class="fas ${fileIcon}"></i>
                         </div>
                         <div class="cv-file-details">
-                            <div class="cv-file-name">${file.name}</div>
-                            <div class="cv-file-size">${(file.size / 1024 / 1024).toFixed(2)} MB</div>
+                            <div class="cv-file-name">
+                                ${file.name}
+                                ${statusIcon}
+                            </div>
+                            <div class="cv-file-size">
+                                ${(file.size / 1024 / 1024).toFixed(2)} MB
+                                ${statusText}
+                            </div>
                         </div>
                     </div>
                     <button type="button" class="cv-file-remove" onclick="removeFile(${index}, '${container.id}')">
@@ -830,12 +1024,18 @@ window.initStep4 = function() {
     // Global helper for file removal
     window.removeFile = function(index, containerId) {
         if (containerId === 'cvFileList') {
+            const removedFile = selectedCVFiles[index];
             selectedCVFiles.splice(index, 1);
-            displayFileList(selectedCVFiles, cvFileList);
+            // Remove from uploaded files if exists
+            uploadedCVFiles = uploadedCVFiles.filter(uf => uf.file !== removedFile && uf.file.name !== removedFile.name);
+            displayFileList(selectedCVFiles, cvFileList, false, uploadedCVFiles);
             updateButtonStates();
         } else if (containerId === 'certificateFileList') {
+            const removedFile = selectedCertificateFiles[index];
             selectedCertificateFiles.splice(index, 1);
-            displayFileList(selectedCertificateFiles, certificateFileList);
+            // Remove from uploaded files if exists
+            uploadedCertificateFiles = uploadedCertificateFiles.filter(uf => uf.file !== removedFile && uf.file.name !== removedFile.name);
+            displayFileList(selectedCertificateFiles, certificateFileList, false, uploadedCertificateFiles);
         }
     };
     }
