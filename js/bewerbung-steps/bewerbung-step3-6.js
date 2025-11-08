@@ -509,31 +509,33 @@ window.initStep4 = function() {
         }
     }
     
-    function initCVTailorFunctionality() {
-        // CV File Upload
-    const cvFileInput = document.getElementById('cvFileInput');
-    const cvFileList = document.getElementById('cvFileList');
+    // File selection state (außerhalb der Funktionen für Zugriff)
     let selectedCVFiles = [];
-    
-    if (cvFileInput) {
-        cvFileInput.addEventListener('change', (e) => {
-            selectedCVFiles = Array.from(e.target.files);
-            displayFileList(selectedCVFiles, cvFileList);
-            updateButtonStates();
-        });
-    }
-    
-    // Certificate File Upload
-    const certificateFileInput = document.getElementById('certificateFileInput');
-    const certificateFileList = document.getElementById('certificateFileList');
     let selectedCertificateFiles = [];
     
-    if (certificateFileInput) {
-        certificateFileInput.addEventListener('change', (e) => {
-            selectedCertificateFiles = Array.from(e.target.files);
-            displayFileList(selectedCertificateFiles, certificateFileList);
-        });
-    }
+    function initCVTailorFunctionality() {
+        // CV File Upload
+        const cvFileInput = document.getElementById('cvFileInput');
+        const cvFileList = document.getElementById('cvFileList');
+        
+        if (cvFileInput) {
+            cvFileInput.addEventListener('change', (e) => {
+                selectedCVFiles = Array.from(e.target.files);
+                displayFileList(selectedCVFiles, cvFileList);
+                updateButtonStates();
+            });
+        }
+        
+        // Certificate File Upload
+        const certificateFileInput = document.getElementById('certificateFileInput');
+        const certificateFileList = document.getElementById('certificateFileList');
+        
+        if (certificateFileInput) {
+            certificateFileInput.addEventListener('change', (e) => {
+                selectedCertificateFiles = Array.from(e.target.files);
+                displayFileList(selectedCertificateFiles, certificateFileList);
+            });
+        }
     
     // Baseline CV Generation
     const generateBaselineBtn = document.getElementById('generateBaselineBtn');
