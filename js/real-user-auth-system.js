@@ -87,39 +87,78 @@ class RealUserAuthSystem {
     }
     
     setupButtonListeners() {
-        // Wait for DOM to be ready
+        // Try immediately
+        this.attachButtonListeners();
+        
+        // Also try after DOM is ready
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => this.attachButtonListeners());
-        } else {
-            this.attachButtonListeners();
+            document.addEventListener('DOMContentLoaded', () => {
+                console.log('📋 DOMContentLoaded - attaching button listeners');
+                this.attachButtonListeners();
+            });
         }
+        
+        // Also try after a short delay (in case button is added dynamically)
+        setTimeout(() => {
+            console.log('⏰ Delayed button listener attachment');
+            this.attachButtonListeners();
+        }, 500);
+        
+        // Also try after window load
+        window.addEventListener('load', () => {
+            console.log('🪟 Window loaded - attaching button listeners');
+            this.attachButtonListeners();
+        });
     }
     
     attachButtonListeners() {
         const authButton = document.getElementById('realAuthButton');
+        console.log('🔍 Looking for #realAuthButton:', authButton ? 'FOUND' : 'NOT FOUND');
+        
         if (authButton) {
-            // Remove existing listeners
+            // Remove existing listeners and onclick handlers
             authButton.onclick = null;
-            authButton.removeEventListener('click', this.handleAuthButtonClick);
+            if (this.handleAuthButtonClick) {
+                authButton.removeEventListener('click', this.handleAuthButtonClick);
+            }
             
-            // Add new listener
+            // Create handler function
             this.handleAuthButtonClick = (e) => {
+                console.log('🔘 Login button clicked!', e);
                 e.preventDefault();
                 e.stopPropagation();
+                
                 if (this.isAuthenticated) {
+                    console.log('👤 User is authenticated - showing menu');
                     // Show user menu or profile
                     const userMenu = document.getElementById('realUserMenu');
                     if (userMenu) {
                         userMenu.style.display = userMenu.style.display === 'none' ? 'block' : 'none';
                     }
                 } else {
+                    console.log('🔓 User not authenticated - showing login modal');
                     // Show login modal
-                    this.showAuthModal();
+                    const modal = document.getElementById('realAuthModal');
+                    console.log('📦 Modal element:', modal ? 'FOUND' : 'NOT FOUND');
+                    
+                    if (modal) {
+                        this.showAuthModal();
+                    } else {
+                        console.error('❌ Modal not found! Creating it now...');
+                        this.createAuthUI();
+                        setTimeout(() => this.showAuthModal(), 100);
+                    }
                 }
             };
             
+            // Add listener
             authButton.addEventListener('click', this.handleAuthButtonClick);
-            console.log('✅ Login button listener attached');
+            console.log('✅ Login button listener attached to:', authButton);
+            
+            // Also add as onclick as fallback
+            authButton.onclick = this.handleAuthButtonClick;
+        } else {
+            console.warn('⚠️ #realAuthButton not found in DOM yet');
         }
     }
 
@@ -589,7 +628,25 @@ class RealUserAuthSystem {
 
     // UI Methods
     showAuthModal() {
-        document.getElementById('realAuthModal').style.display = 'flex';
+        console.log('📱 showAuthModal called');
+        const modal = document.getElementById('realAuthModal');
+        if (!modal) {
+            console.error('❌ Modal not found! Creating it...');
+            this.createAuthUI();
+            // Try again after creation
+            setTimeout(() => {
+                const newModal = document.getElementById('realAuthModal');
+                if (newModal) {
+                    newModal.style.display = 'flex';
+                    this.showLoginForm();
+                } else {
+                    console.error('❌ Still cannot find modal after creation!');
+                }
+            }, 100);
+            return;
+        }
+        console.log('✅ Showing modal');
+        modal.style.display = 'flex';
         this.showLoginForm();
     }
 
@@ -812,8 +869,37 @@ class RealUserAuthSystem {
     }
 }
 
-// Initialize global instance
-window.realUserAuth = new RealUserAuthSystem();
+// Initialize global instance when DOM is ready
+(function() {
+    function initAuthSystem() {
+        console.log('🚀 Creating RealUserAuthSystem instance...');
+        if (!window.realUserAuth) {
+            window.realUserAuth = new RealUserAuthSystem();
+            console.log('✅ RealUserAuthSystem instance created:', window.realUserAuth);
+        } else {
+            console.log('ℹ️ RealUserAuthSystem already exists, re-attaching listeners...');
+            window.realUserAuth.setupButtonListeners();
+        }
+    }
+    
+    // Initialize immediately if DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initAuthSystem);
+    } else {
+        initAuthSystem();
+    }
+    
+    // Also try after a short delay as fallback
+    setTimeout(() => {
+        if (!window.realUserAuth) {
+            console.warn('⚠️ RealUserAuthSystem not initialized, trying again...');
+            initAuthSystem();
+        } else {
+            // Re-attach listeners in case button was added later
+            window.realUserAuth.setupButtonListeners();
+        }
+    }, 1000);
+})();
 
 // Add CSS for auth UI
 const authCSS = `
