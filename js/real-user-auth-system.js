@@ -79,8 +79,48 @@ class RealUserAuthSystem {
         // Create auth UI if not exists
         this.createAuthUI();
         
+        // Setup button listeners
+        this.setupButtonListeners();
+        
         // Update UI based on auth state
         this.updateAuthUI();
+    }
+    
+    setupButtonListeners() {
+        // Wait for DOM to be ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => this.attachButtonListeners());
+        } else {
+            this.attachButtonListeners();
+        }
+    }
+    
+    attachButtonListeners() {
+        const authButton = document.getElementById('realAuthButton');
+        if (authButton) {
+            // Remove existing listeners
+            authButton.onclick = null;
+            authButton.removeEventListener('click', this.handleAuthButtonClick);
+            
+            // Add new listener
+            this.handleAuthButtonClick = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (this.isAuthenticated) {
+                    // Show user menu or profile
+                    const userMenu = document.getElementById('realUserMenu');
+                    if (userMenu) {
+                        userMenu.style.display = userMenu.style.display === 'none' ? 'block' : 'none';
+                    }
+                } else {
+                    // Show login modal
+                    this.showAuthModal();
+                }
+            };
+            
+            authButton.addEventListener('click', this.handleAuthButtonClick);
+            console.log('✅ Login button listener attached');
+        }
     }
 
     createAuthUI() {
