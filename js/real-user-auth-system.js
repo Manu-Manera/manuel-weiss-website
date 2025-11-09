@@ -1,5 +1,5 @@
-// Real User Authentication System - Echte Benutzerkonten mit Datenverwaltung
-// Integriert mit AWS Cognito und lokaler Datenverwaltung
+// Real User Authentication System - Echte Benutzerkonten mit AWS Cognito
+// Vollständige Integration mit AWS Cognito für Produktion
 
 class RealUserAuthSystem {
     constructor() {
@@ -10,53 +10,171 @@ class RealUserAuthSystem {
         this.achievements = [];
         this.goals = [];
         
+        // AWS Cognito Configuration
+        this.userPoolId = window.AWS_CONFIG?.userPoolId || 'eu-central-1_8gP4gLK9r';
+        this.clientId = window.AWS_CONFIG?.clientId || '7kc5tt6a23fgh53d60vkefm812';
+        this.region = window.AWS_CONFIG?.region || 'eu-central-1';
+        this.cognitoIdentityServiceProvider = null;
+        this.isInitialized = false;
+        
         this.init();
     }
 
     async init() {
-        console.log('🔐 Initializing Real User Auth System...');
+        console.log('🔐 Initializing Real User Auth System with AWS Cognito...');
         
-        // Check for existing session
-        await this.checkExistingSession();
-        
-        // Setup event listeners
-        this.setupEventListeners();
-        
-        // Initialize UI
-        this.initializeUI();
-        
-        console.log('✅ Real User Auth System initialized');
+        try {
+            // Load AWS SDK if not already loaded
+            if (typeof AWS === 'undefined') {
+                console.log('📦 Loading AWS SDK...');
+                await this.loadAWSSDK();
+            }
+            
+            // Configure AWS
+            AWS.config.region = this.region;
+            
+            // Initialize Cognito Identity Service Provider
+            this.cognitoIdentityServiceProvider = new AWS.CognitoIdentityServiceProvider({
+                region: this.region
+            });
+            
+            this.isInitialized = true;
+            console.log('✅ AWS Cognito initialized');
+            
+            // Check for existing session
+            await this.checkExistingSession();
+            
+            // Setup event listeners
+            this.setupEventListeners();
+            
+            // Initialize UI
+            this.initializeUI();
+            
+            console.log('✅ Real User Auth System initialized with AWS Cognito');
+        } catch (error) {
+            console.error('❌ Initialization error:', error);
+            this.showNotification('Fehler beim Initialisieren des Auth-Systems. Bitte Seite neu laden.', 'error');
+        }
+    }
+    
+    async loadAWSSDK() {
+        return new Promise((resolve, reject) => {
+            if (typeof AWS !== 'undefined') {
+                resolve();
+                return;
+            }
+            
+            const script = document.createElement('script');
+            script.src = 'https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js';
+            script.onload = () => {
+                console.log('✅ AWS SDK loaded');
+                resolve();
+            };
+            script.onerror = () => {
+                console.error('❌ Failed to load AWS SDK');
+                reject(new Error('Failed to load AWS SDK'));
+            };
+            document.head.appendChild(script);
+        });
     }
 
     async checkExistingSession() {
         try {
-            // Check localStorage for existing user
-            const storedUser = localStorage.getItem('realUser');
-            const storedAuth = localStorage.getItem('realAuth');
+            // Check for stored AWS Cognito tokens
+            const storedSession = localStorage.getItem('aws_auth_session');
             
-            if (storedUser && storedAuth) {
-                const userData = JSON.parse(storedUser);
-                const authData = JSON.parse(storedAuth);
+            if (storedSession) {
+                const session = JSON.parse(storedSession);
                 
-                // Check if session is still valid (not expired)
-                if (authData.expiresAt && new Date(authData.expiresAt) > new Date()) {
-                    this.currentUser = userData;
-                    this.isAuthenticated = true;
-                    this.userData = userData;
-                    
-                    // Load user progress and data
-                    await this.loadUserData();
-                    
-                    console.log('✅ Existing session found:', userData.email);
-                    return;
+                // Check if tokens are still valid
+                if (session.idToken && session.expiresAt && new Date(session.expiresAt) > new Date()) {
+                    // Try to get user info from token
+                    try {
+                        const userInfo = await this.getUserInfo(session.idToken);
+                        this.currentUser = userInfo;
+                        this.isAuthenticated = true;
+                        this.userData = userInfo;
+                        
+                        // Load user progress and data
+                        await this.loadUserData();
+                        
+                        console.log('✅ Existing AWS Cognito session found:', userInfo.email);
+                        return;
+                    } catch (error) {
+                        console.warn('⚠️ Session validation failed, clearing session:', error);
+                        this.clearSession();
+                    }
                 } else {
-                    // Session expired, clear data
-                    this.clearSession();
+                    // Session expired, try to refresh
+                    if (session.refreshToken) {
+                        try {
+                            await this.refreshSession(session.refreshToken);
+                            return;
+                        } catch (error) {
+                            console.warn('⚠️ Token refresh failed:', error);
+                            this.clearSession();
+                        }
+                    } else {
+                        this.clearSession();
+                    }
                 }
             }
         } catch (error) {
             console.error('Error checking existing session:', error);
             this.clearSession();
+        }
+    }
+    
+    async getUserInfo(idToken) {
+        // Decode JWT token to get user info
+        const payload = JSON.parse(atob(idToken.split('.')[1]));
+        return {
+            id: payload.sub,
+            email: payload.email,
+            firstName: payload.given_name || '',
+            lastName: payload.family_name || '',
+            emailVerified: payload.email_verified
+        };
+    }
+    
+    async refreshSession(refreshToken) {
+        if (!this.isInitialized) {
+            throw new Error('System not initialized');
+        }
+        
+        try {
+            const params = {
+                ClientId: this.clientId,
+                RefreshToken: refreshToken
+            };
+            
+            const result = await this.cognitoIdentityServiceProvider.initiateAuth({
+                AuthFlow: 'REFRESH_TOKEN_AUTH',
+                ClientId: this.clientId,
+                AuthParameters: {
+                    REFRESH_TOKEN: refreshToken
+                }
+            }).promise();
+            
+            // Save new session
+            const session = {
+                idToken: result.AuthenticationResult.IdToken,
+                accessToken: result.AuthenticationResult.AccessToken,
+                refreshToken: refreshToken,
+                expiresAt: new Date(Date.now() + result.AuthenticationResult.ExpiresIn * 1000).toISOString()
+            };
+            
+            localStorage.setItem('aws_auth_session', JSON.stringify(session));
+            
+            const userInfo = await this.getUserInfo(session.idToken);
+            this.currentUser = userInfo;
+            this.isAuthenticated = true;
+            this.userData = userInfo;
+            
+            console.log('✅ Session refreshed successfully');
+        } catch (error) {
+            console.error('❌ Session refresh failed:', error);
+            throw error;
         }
     }
 
@@ -248,11 +366,20 @@ class RealUserAuthSystem {
                         <form id="verifyEmailForm" class="auth-form" style="display: none;">
                             <div class="form-group">
                                 <label for="verifyCode">Bestätigungscode</label>
-                                <input type="text" id="verifyCode" required placeholder="Code aus E-Mail">
+                                <input type="text" id="verifyCode" required placeholder="Code aus E-Mail" maxlength="6">
+                                <small class="form-hint" style="color: #64748b; margin-top: 0.5rem; display: block;">
+                                    <i class="fas fa-info-circle"></i> 
+                                    Bitte geben Sie den 6-stelligen Code ein, den Sie per E-Mail erhalten haben.
+                                </small>
                             </div>
                             <button type="submit" class="btn btn-primary auth-btn">
                                 <i class="fas fa-check"></i> E-Mail bestätigen
                             </button>
+                            <div class="auth-links">
+                                <a href="#" onclick="realUserAuth.resendVerificationCode(); return false;">
+                                    <i class="fas fa-redo"></i> Code erneut senden
+                                </a>
+                            </div>
                         </form>
                     </div>
                 </div>
@@ -295,11 +422,16 @@ class RealUserAuthSystem {
         const email = document.getElementById('loginEmail').value;
         const password = document.getElementById('loginPassword').value;
 
+        if (!this.isInitialized) {
+            this.showNotification('System wird noch initialisiert. Bitte warten...', 'error');
+            return;
+        }
+
         try {
             this.showLoading('Anmeldung läuft...');
 
-            // Simulate API call (replace with real AWS Cognito)
-            const result = await this.simulateLogin(email, password);
+            // Real AWS Cognito login
+            const result = await this.loginWithCognito(email, password);
 
             if (result.success) {
                 this.currentUser = result.user;
@@ -307,7 +439,7 @@ class RealUserAuthSystem {
                 this.userData = result.user;
 
                 // Save session
-                this.saveSession(result.user, result.auth);
+                this.saveSession(result.session);
 
                 // Load user data
                 await this.loadUserData();
@@ -325,9 +457,66 @@ class RealUserAuthSystem {
             }
         } catch (error) {
             console.error('Login error:', error);
-            this.showNotification('Anmeldung fehlgeschlagen', 'error');
+            this.showNotification('Anmeldung fehlgeschlagen: ' + (error.message || 'Unbekannter Fehler'), 'error');
         } finally {
             this.hideLoading();
+        }
+    }
+    
+    async loginWithCognito(email, password) {
+        try {
+            console.log('🚀 Starting AWS Cognito login...');
+            
+            const params = {
+                AuthFlow: 'USER_PASSWORD_AUTH',
+                ClientId: this.clientId,
+                AuthParameters: {
+                    USERNAME: email,
+                    PASSWORD: password
+                }
+            };
+            
+            const result = await this.cognitoIdentityServiceProvider.initiateAuth(params).promise();
+            
+            console.log('✅ Login successful');
+            
+            // Extract tokens
+            const authResult = result.AuthenticationResult;
+            const session = {
+                idToken: authResult.IdToken,
+                accessToken: authResult.AccessToken,
+                refreshToken: authResult.RefreshToken,
+                expiresAt: new Date(Date.now() + authResult.ExpiresIn * 1000).toISOString()
+            };
+            
+            // Get user info from token
+            const userInfo = await this.getUserInfo(session.idToken);
+            
+            return {
+                success: true,
+                user: userInfo,
+                session: session
+            };
+            
+        } catch (error) {
+            console.error('❌ Login error:', error);
+            
+            let errorMessage = 'Anmeldung fehlgeschlagen. ';
+            
+            if (error.code === 'NotAuthorizedException') {
+                errorMessage += 'Ungültige E-Mail-Adresse oder Passwort.';
+            } else if (error.code === 'UserNotConfirmedException') {
+                errorMessage += 'E-Mail-Adresse wurde noch nicht bestätigt. Bitte prüfen Sie Ihr E-Mail-Postfach.';
+                // Show verification form
+                this.showEmailVerificationForm();
+                localStorage.setItem('pendingVerification', email);
+            } else if (error.code === 'UserNotFoundException') {
+                errorMessage += 'Benutzer nicht gefunden. Bitte registrieren Sie sich zuerst.';
+            } else {
+                errorMessage += error.message || 'Unbekannter Fehler.';
+            }
+            
+            return { success: false, error: errorMessage };
         }
     }
 
@@ -345,11 +534,16 @@ class RealUserAuthSystem {
             return;
         }
 
+        if (!this.isInitialized) {
+            this.showNotification('System wird noch initialisiert. Bitte warten...', 'error');
+            return;
+        }
+
         try {
             this.showLoading('Registrierung läuft...');
 
-            // Simulate API call (replace with real AWS Cognito)
-            const result = await this.simulateRegister({
+            // Real AWS Cognito registration
+            const result = await this.registerWithCognito({
                 firstName,
                 lastName,
                 email,
@@ -359,205 +553,280 @@ class RealUserAuthSystem {
 
             if (result.success) {
                 this.showEmailVerificationForm();
-                this.showNotification('Registrierung erfolgreich! Bitte E-Mail bestätigen.', 'success');
+                this.showNotification(
+                    '✅ Registrierung erfolgreich! Bitte prüfen Sie Ihr E-Mail-Postfach für den Bestätigungscode.',
+                    'success'
+                );
             } else {
                 this.showNotification(result.error, 'error');
             }
         } catch (error) {
             console.error('Registration error:', error);
-            this.showNotification('Registrierung fehlgeschlagen', 'error');
+            this.showNotification('Registrierung fehlgeschlagen: ' + (error.message || 'Unbekannter Fehler'), 'error');
         } finally {
             this.hideLoading();
+        }
+    }
+    
+    async registerWithCognito(userData) {
+        try {
+            console.log('🚀 Starting AWS Cognito registration...');
+            
+            const userAttributes = [
+                {
+                    Name: 'email',
+                    Value: userData.email
+                },
+                {
+                    Name: 'given_name',
+                    Value: userData.firstName || ''
+                },
+                {
+                    Name: 'family_name',
+                    Value: userData.lastName || ''
+                }
+            ];
+            
+            // Add custom attribute for title if needed
+            if (userData.title) {
+                userAttributes.push({
+                    Name: 'custom:title',
+                    Value: userData.title
+                });
+            }
+            
+            const params = {
+                ClientId: this.clientId,
+                Username: userData.email,
+                Password: userData.password,
+                UserAttributes: userAttributes
+            };
+            
+            const result = await this.cognitoIdentityServiceProvider.signUp(params).promise();
+            
+            console.log('✅ Registration successful');
+            
+            // Store email for verification
+            localStorage.setItem('pendingVerification', userData.email);
+            
+            return { 
+                success: true, 
+                userSub: result.UserSub,
+                codeDeliveryDetails: result.CodeDeliveryDetails
+            };
+            
+        } catch (error) {
+            console.error('❌ Registration error:', error);
+            
+            let errorMessage = 'Registrierung fehlgeschlagen. ';
+            
+            if (error.code === 'UsernameExistsException') {
+                // Try to resend confirmation code
+                try {
+                    await this.resendVerificationCode(userData.email);
+                    errorMessage = 'Diese E-Mail-Adresse ist bereits registriert. Eine neue Bestätigungs-E-Mail wurde gesendet.';
+                } catch (resendError) {
+                    errorMessage += 'Diese E-Mail-Adresse ist bereits registriert. Bitte prüfen Sie Ihr E-Mail-Postfach.';
+                }
+            } else if (error.code === 'InvalidPasswordException') {
+                errorMessage += 'Passwort entspricht nicht den Anforderungen (min. 8 Zeichen, Groß- und Kleinbuchstaben, Zahlen).';
+            } else if (error.code === 'InvalidParameterException') {
+                errorMessage += 'Ungültige Eingabedaten. Bitte prüfen Sie Ihre Eingaben.';
+            } else {
+                errorMessage += error.message || 'Unbekannter Fehler.';
+            }
+            
+            return { success: false, error: errorMessage };
         }
     }
 
     async handleForgotPassword() {
         const email = document.getElementById('forgotEmail').value;
 
+        if (!this.isInitialized) {
+            this.showNotification('System wird noch initialisiert. Bitte warten...', 'error');
+            return;
+        }
+
         try {
             this.showLoading('Passwort-Reset wird gesendet...');
 
-            // Simulate API call
-            const result = await this.simulateForgotPassword(email);
+            // Real AWS Cognito forgot password
+            const result = await this.forgotPasswordWithCognito(email);
 
             if (result.success) {
-                this.showNotification('Reset-Link wurde an Ihre E-Mail gesendet', 'success');
+                this.showNotification('✅ Reset-Code wurde an Ihre E-Mail gesendet. Bitte prüfen Sie Ihr E-Mail-Postfach.', 'success');
                 this.showLoginForm();
             } else {
                 this.showNotification(result.error, 'error');
             }
         } catch (error) {
             console.error('Forgot password error:', error);
-            this.showNotification('Passwort-Reset fehlgeschlagen', 'error');
+            this.showNotification('Passwort-Reset fehlgeschlagen: ' + (error.message || 'Unbekannter Fehler'), 'error');
         } finally {
             this.hideLoading();
+        }
+    }
+    
+    async forgotPasswordWithCognito(email) {
+        try {
+            console.log('🚀 Starting AWS Cognito forgot password...');
+            
+            const params = {
+                ClientId: this.clientId,
+                Username: email
+            };
+            
+            await this.cognitoIdentityServiceProvider.forgotPassword(params).promise();
+            
+            console.log('✅ Forgot password code sent');
+            
+            // Store email for password reset confirmation
+            localStorage.setItem('pendingPasswordReset', email);
+            
+            return { success: true };
+            
+        } catch (error) {
+            console.error('❌ Forgot password error:', error);
+            
+            let errorMessage = 'Passwort-Reset fehlgeschlagen. ';
+            
+            if (error.code === 'UserNotFoundException') {
+                errorMessage += 'Benutzer nicht gefunden.';
+            } else if (error.code === 'LimitExceededException') {
+                errorMessage += 'Zu viele Anfragen. Bitte warten Sie einen Moment.';
+            } else {
+                errorMessage += error.message || 'Unbekannter Fehler.';
+            }
+            
+            return { success: false, error: errorMessage };
         }
     }
 
     async handleEmailVerification() {
         const code = document.getElementById('verifyCode').value;
+        const email = localStorage.getItem('pendingVerification');
+
+        if (!email) {
+            this.showNotification('Keine E-Mail-Adresse gefunden. Bitte registrieren Sie sich erneut.', 'error');
+            return;
+        }
+
+        if (!this.isInitialized) {
+            this.showNotification('System wird noch initialisiert. Bitte warten...', 'error');
+            return;
+        }
 
         try {
             this.showLoading('E-Mail wird bestätigt...');
 
-            // Simulate API call
-            const result = await this.simulateEmailVerification(code);
+            // Real AWS Cognito confirmation
+            const result = await this.confirmRegistrationWithCognito(email, code);
 
             if (result.success) {
-                this.currentUser = result.user;
-                this.isAuthenticated = true;
-                this.userData = result.user;
-
-                // Save session
-                this.saveSession(result.user, result.auth);
-
-                // Load user data
-                await this.loadUserData();
-
-                // Update UI
-                this.updateAuthUI();
-                this.closeAuthModal();
-
-                this.showNotification('E-Mail erfolgreich bestätigt! Willkommen!', 'success');
-
-                // Dispatch login event
-                document.dispatchEvent(new CustomEvent('userLogin', { detail: result.user }));
+                this.showNotification('✅ E-Mail erfolgreich bestätigt! Sie können sich jetzt anmelden.', 'success');
+                
+                // Clear pending verification
+                localStorage.removeItem('pendingVerification');
+                
+                // Show login form
+                this.showLoginForm();
             } else {
                 this.showNotification(result.error, 'error');
             }
         } catch (error) {
             console.error('Email verification error:', error);
-            this.showNotification('E-Mail-Bestätigung fehlgeschlagen', 'error');
+            this.showNotification('E-Mail-Bestätigung fehlgeschlagen: ' + (error.message || 'Unbekannter Fehler'), 'error');
         } finally {
             this.hideLoading();
         }
     }
-
-    // Simulate API calls (replace with real AWS Cognito)
-    async simulateLogin(email, password) {
-        // Simulate network delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
-        // Check if user exists in localStorage
-        const users = JSON.parse(localStorage.getItem('realUsers') || '{}');
-        const user = users[email];
-
-        if (!user) {
-            return { success: false, error: 'Benutzer nicht gefunden' };
-        }
-
-        if (user.password !== password) {
-            return { success: false, error: 'Falsches Passwort' };
-        }
-
-        if (!user.verified) {
-            return { success: false, error: 'E-Mail noch nicht bestätigt' };
-        }
-
-        return {
-            success: true,
-            user: {
-                id: user.id,
-                email: user.email,
-                firstName: user.firstName,
-                lastName: user.lastName,
-                title: user.title,
-                createdAt: user.createdAt,
-                lastLogin: new Date().toISOString()
-            },
-            auth: {
-                token: 'simulated-token-' + Date.now(),
-                expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() // 24 hours
+    
+    async confirmRegistrationWithCognito(email, confirmationCode) {
+        try {
+            console.log('🚀 Starting AWS Cognito confirmation...');
+            
+            const params = {
+                ClientId: this.clientId,
+                Username: email,
+                ConfirmationCode: confirmationCode.trim()
+            };
+            
+            await this.cognitoIdentityServiceProvider.confirmSignUp(params).promise();
+            
+            console.log('✅ Confirmation successful');
+            
+            return { success: true };
+            
+        } catch (error) {
+            console.error('❌ Confirmation error:', error);
+            
+            let errorMessage = 'Bestätigung fehlgeschlagen. ';
+            
+            if (error.code === 'CodeMismatchException') {
+                errorMessage += 'Ungültiger Bestätigungscode.';
+            } else if (error.code === 'ExpiredCodeException') {
+                errorMessage += 'Bestätigungscode ist abgelaufen. Bitte neuen Code anfordern.';
+            } else if (error.code === 'NotAuthorizedException') {
+                errorMessage += 'Benutzer ist bereits bestätigt oder existiert nicht.';
+            } else {
+                errorMessage += error.message || 'Unbekannter Fehler.';
             }
-        };
+            
+            return { success: false, error: errorMessage };
+        }
     }
 
-    async simulateRegister(userData) {
-        // Simulate network delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
-        const users = JSON.parse(localStorage.getItem('realUsers') || '{}');
-
-        if (users[userData.email]) {
-            return { success: false, error: 'Benutzer existiert bereits' };
-        }
-
-        const userId = 'user_' + Date.now();
-        const user = {
-            id: userId,
-            email: userData.email,
-            firstName: userData.firstName,
-            lastName: userData.lastName,
-            title: userData.title || '',
-            password: userData.password,
-            verified: false,
-            createdAt: new Date().toISOString(),
-            profile: {
-                completedMethods: [],
-                currentGoals: [],
-                preferences: {
-                    notifications: true,
-                    dataSharing: true
-                }
-            }
-        };
-
-        users[userData.email] = user;
-        localStorage.setItem('realUsers', JSON.stringify(users));
-
-        return { success: true, userId };
-    }
-
-    async simulateForgotPassword(email) {
-        // Simulate network delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
-        const users = JSON.parse(localStorage.getItem('realUsers') || '{}');
-        if (!users[email]) {
-            return { success: false, error: 'Benutzer nicht gefunden' };
-        }
-
-        return { success: true };
-    }
-
-    async simulateEmailVerification(code) {
-        // Simulate network delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
-        // In real implementation, verify code with AWS Cognito
-        if (code !== '123456') {
-            return { success: false, error: 'Ungültiger Bestätigungscode' };
-        }
-
-        // Find user by email (in real implementation, get from context)
-        const users = JSON.parse(localStorage.getItem('realUsers') || '{}');
-        const userEmail = localStorage.getItem('pendingVerification');
+    // All simulate methods have been replaced with real AWS Cognito implementations
+    
+    async resendVerificationCode(email = null) {
+        const userEmail = email || localStorage.getItem('pendingVerification');
         
-        if (!userEmail || !users[userEmail]) {
-            return { success: false, error: 'Kein Benutzer zur Bestätigung gefunden' };
+        if (!userEmail) {
+            this.showNotification('Keine E-Mail-Adresse gefunden. Bitte registrieren Sie sich erneut.', 'error');
+            return;
         }
 
-        // Mark user as verified
-        users[userEmail].verified = true;
-        localStorage.setItem('realUsers', JSON.stringify(users));
-        localStorage.removeItem('pendingVerification');
+        if (!this.isInitialized) {
+            this.showNotification('System wird noch initialisiert. Bitte warten...', 'error');
+            return;
+        }
 
-        return {
-            success: true,
-            user: {
-                id: users[userEmail].id,
-                email: users[userEmail].email,
-                firstName: users[userEmail].firstName,
-                lastName: users[userEmail].lastName,
-                title: users[userEmail].title,
-                createdAt: users[userEmail].createdAt,
-                lastLogin: new Date().toISOString()
-            },
-            auth: {
-                token: 'simulated-token-' + Date.now(),
-                expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+        try {
+            this.showLoading('Code wird erneut gesendet...');
+            
+            // Real AWS Cognito resend
+            const params = {
+                ClientId: this.clientId,
+                Username: userEmail
+            };
+            
+            const result = await this.cognitoIdentityServiceProvider.resendConfirmationCode(params).promise();
+            
+            console.log('✅ Confirmation code resent successfully');
+            
+            this.showNotification(
+                '✅ Neue Bestätigungs-E-Mail wurde gesendet! Bitte prüfen Sie Ihr E-Mail-Postfach.',
+                'success'
+            );
+            
+        } catch (error) {
+            console.error('❌ Resend verification code error:', error);
+            
+            let errorMessage = 'Fehler beim erneuten Senden des Codes. ';
+            
+            if (error.code === 'UserNotFoundException') {
+                errorMessage += 'Benutzer nicht gefunden.';
+            } else if (error.code === 'LimitExceededException') {
+                errorMessage += 'Zu viele Anfragen. Bitte warten Sie einen Moment.';
+            } else {
+                errorMessage += error.message || 'Unbekannter Fehler.';
             }
-        };
+            
+            this.showNotification(errorMessage, 'error');
+        } finally {
+            this.hideLoading();
+        }
     }
 
     async loadUserData() {
@@ -604,20 +873,47 @@ class RealUserAuthSystem {
         }
     }
 
-    saveSession(user, auth) {
-        localStorage.setItem('realUser', JSON.stringify(user));
-        localStorage.setItem('realAuth', JSON.stringify(auth));
+    saveSession(session) {
+        // Save AWS Cognito session
+        localStorage.setItem('aws_auth_session', JSON.stringify(session));
+        
+        // Also save user info for quick access
+        if (this.currentUser) {
+            localStorage.setItem('realUser', JSON.stringify(this.currentUser));
+        }
     }
 
     clearSession() {
+        localStorage.removeItem('aws_auth_session');
         localStorage.removeItem('realUser');
-        localStorage.removeItem('realAuth');
+        localStorage.removeItem('pendingVerification');
         this.currentUser = null;
         this.isAuthenticated = false;
         this.userData = null;
     }
 
-    logout() {
+    async logout() {
+        try {
+            // If we have a session, try to revoke tokens
+            const storedSession = localStorage.getItem('aws_auth_session');
+            if (storedSession && this.isInitialized) {
+                try {
+                    const session = JSON.parse(storedSession);
+                    if (session.refreshToken) {
+                        // Revoke refresh token
+                        await this.cognitoIdentityServiceProvider.revokeToken({
+                            Token: session.refreshToken,
+                            ClientId: this.clientId
+                        }).promise();
+                    }
+                } catch (error) {
+                    console.warn('⚠️ Token revocation failed (non-critical):', error);
+                }
+            }
+        } catch (error) {
+            console.warn('⚠️ Logout error (non-critical):', error);
+        }
+        
         this.clearSession();
         this.updateAuthUI();
         this.showNotification('Erfolgreich abgemeldet', 'info');
@@ -688,6 +984,12 @@ class RealUserAuthSystem {
         // Store email for verification
         const email = document.getElementById('registerEmail').value;
         localStorage.setItem('pendingVerification', email);
+        
+        // Hide code display hint (not needed for real AWS Cognito)
+        const hint = document.getElementById('verificationHint');
+        if (hint) {
+            hint.style.display = 'none';
+        }
     }
 
     updateAuthUI() {
@@ -1130,6 +1432,28 @@ const authCSS = `
 
 .user-action:hover {
     background: #f8fafc;
+}
+
+.form-hint {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    background: #f0f9ff;
+    border: 1px solid #bae6fd;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+}
+
+.form-hint i {
+    color: #0ea5e9;
+}
+
+.form-hint span {
+    font-family: 'Courier New', monospace;
+    font-weight: 600;
+    color: #0369a1;
 }
 </style>
 `;
