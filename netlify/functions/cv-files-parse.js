@@ -1,6 +1,15 @@
 // CV Tailor - Files Parse Function
 // Parst CV (PDF/DOCX) und Zeugnisse (PDF) zu strukturierten Daten
 
+// Ensure fetch is available (Node.js 18+ has native fetch)
+let fetch;
+if (typeof globalThis.fetch === 'function') {
+    fetch = globalThis.fetch;
+} else {
+    // Fallback for older Node.js versions
+    fetch = require('node-fetch');
+}
+
 exports.handler = async (event, context) => {
     const headers = {
         'Access-Control-Allow-Origin': '*',
@@ -193,10 +202,17 @@ ${combinedText.substring(0, 15000)}`; // Limit auf 15k Zeichen
 
     } catch (error) {
         console.error('CV Parse Error:', error);
+        console.error('Error stack:', error.stack);
+        console.error('Event:', JSON.stringify(event, null, 2));
+        
         return {
             statusCode: 500,
             headers,
-            body: JSON.stringify({ success: false, error: error.message })
+            body: JSON.stringify({ 
+                success: false, 
+                error: error.message || 'Unbekannter Fehler beim Parsen der Dateien',
+                details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+            })
         };
     }
 };

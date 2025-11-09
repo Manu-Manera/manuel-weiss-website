@@ -95,12 +95,20 @@
                     }
                     
                     let uploadResult;
-                    if (awsFileType === 'profile' || type === 'photo' || type === 'image') {
-                        // Use profile image upload
-                        uploadResult = await window.awsMedia.uploadProfileImage(file, userId);
-                    } else {
-                        // Use document upload
-                        uploadResult = await window.awsMedia.uploadDocument(file, userId, awsFileType);
+                    try {
+                        if (awsFileType === 'profile' || type === 'photo' || type === 'image') {
+                            // Use profile image upload
+                            uploadResult = await window.awsMedia.uploadProfileImage(file, userId);
+                        } else {
+                            // Use document upload
+                            uploadResult = await window.awsMedia.uploadDocument(file, userId, awsFileType);
+                        }
+                    } catch (uploadError) {
+                        // Check if it's a 502/503/504 error
+                        if (uploadError.message && (uploadError.message.includes('502') || uploadError.message.includes('503') || uploadError.message.includes('504'))) {
+                            throw new Error(`Server nicht verfügbar. Bitte versuchen Sie es in ein paar Sekunden erneut. (${uploadError.message})`);
+                        }
+                        throw uploadError;
                     }
                     
                     // Add file metadata

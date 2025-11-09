@@ -90,6 +90,22 @@ class CVTailor {
                 })
             });
 
+            // Handle 502 Bad Gateway and other server errors
+            if (response.status === 502 || response.status === 503 || response.status === 504) {
+                throw new Error(`Netlify Function nicht verfügbar (${response.status}). Bitte versuchen Sie es in ein paar Sekunden erneut.`);
+            }
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                let errorData;
+                try {
+                    errorData = JSON.parse(errorText);
+                } catch {
+                    errorData = { error: errorText || `HTTP ${response.status}` };
+                }
+                throw new Error(errorData.error || `Fehler beim Parsen der Dateien (${response.status})`);
+            }
+
             const result = await response.json();
             
             if (!result.success) {
@@ -120,6 +136,21 @@ class CVTailor {
                     cvData: cvData || this.cvData
                 })
             });
+
+            if (response.status === 502 || response.status === 503 || response.status === 504) {
+                throw new Error(`Netlify Function nicht verfügbar (${response.status}). Bitte versuchen Sie es in ein paar Sekunden erneut.`);
+            }
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                let errorData;
+                try {
+                    errorData = JSON.parse(errorText);
+                } catch {
+                    errorData = { error: errorText || `HTTP ${response.status}` };
+                }
+                throw new Error(errorData.error || `Fehler bei der Baseline-CV Generierung (${response.status})`);
+            }
 
             const result = await response.json();
             
@@ -153,6 +184,21 @@ class CVTailor {
                 })
             });
 
+            if (response.status === 502 || response.status === 503 || response.status === 504) {
+                throw new Error(`Netlify Function nicht verfügbar (${response.status}). Bitte versuchen Sie es in ein paar Sekunden erneut.`);
+            }
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                let errorData;
+                try {
+                    errorData = JSON.parse(errorText);
+                } catch {
+                    errorData = { error: errorText || `HTTP ${response.status}` };
+                }
+                throw new Error(errorData.error || `Fehler beim Parsen der Stellenausschreibung (${response.status})`);
+            }
+
             const result = await response.json();
             
             if (!result.success) {
@@ -184,6 +230,21 @@ class CVTailor {
                     jobData: jobData || this.jobData
                 })
             });
+
+            if (response.status === 502 || response.status === 503 || response.status === 504) {
+                throw new Error(`Netlify Function nicht verfügbar (${response.status}). Bitte versuchen Sie es in ein paar Sekunden erneut.`);
+            }
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                let errorData;
+                try {
+                    errorData = JSON.parse(errorText);
+                } catch {
+                    errorData = { error: errorText || `HTTP ${response.status}` };
+                }
+                throw new Error(errorData.error || `Fehler bei der Targeted-CV Generierung (${response.status})`);
+            }
 
             const result = await response.json();
             

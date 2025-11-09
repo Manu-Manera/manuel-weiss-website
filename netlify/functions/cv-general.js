@@ -1,6 +1,14 @@
 // CV Tailor - Baseline CV Generation
 // Generiert einen modernen, internationalen Baseline-CV
 
+// Ensure fetch is available
+let fetch;
+if (typeof globalThis.fetch === 'function') {
+    fetch = globalThis.fetch;
+} else {
+    fetch = require('node-fetch');
+}
+
 exports.handler = async (event, context) => {
     const headers = {
         'Access-Control-Allow-Origin': '*',
@@ -108,10 +116,17 @@ Verwende klare Formatierung mit Absätzen und Bullet Points.`;
 
     } catch (error) {
         console.error('Baseline CV Generation Error:', error);
+        console.error('Error stack:', error.stack);
+        console.error('Event:', JSON.stringify(event, null, 2));
+        
         return {
             statusCode: 500,
             headers,
-            body: JSON.stringify({ success: false, error: error.message })
+            body: JSON.stringify({ 
+                success: false, 
+                error: error.message || 'Unbekannter Fehler bei der Baseline-CV Generierung',
+                details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+            })
         };
     }
 };
