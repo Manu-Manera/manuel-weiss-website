@@ -1,6 +1,14 @@
 // CV Tailor - Job Posting Parse
 // Parst Stellenausschreibung (URL, PDF oder Text)
 
+// Ensure fetch is available
+let fetch;
+if (typeof globalThis.fetch === 'function') {
+    fetch = globalThis.fetch;
+} else {
+    fetch = require('node-fetch');
+}
+
 exports.handler = async (event, context) => {
     const headers = {
         'Access-Control-Allow-Origin': '*',
@@ -126,10 +134,17 @@ Antworte NUR als valides JSON:
 
     } catch (error) {
         console.error('Job Parse Error:', error);
+        console.error('Error stack:', error.stack);
+        console.error('Event:', JSON.stringify(event, null, 2));
+        
         return {
             statusCode: 500,
             headers,
-            body: JSON.stringify({ success: false, error: error.message })
+            body: JSON.stringify({ 
+                success: false, 
+                error: error.message || 'Unbekannter Fehler beim Parsen der Stellenausschreibung',
+                details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+            })
         };
     }
 };

@@ -9,12 +9,23 @@
 
   async function requestPresignedUrl(options) {
     if (!API_BASE) throw new Error('MEDIA_API_BASE not configured');
+    
     const res = await fetch(`${API_BASE}/profile-image/upload-url`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ contentType: options.contentType, userId: options.userId }),
     });
-    if (!res.ok) throw new Error(`Presign failed: ${res.status}`);
+    
+    // Handle 502 Bad Gateway and other server errors
+    if (res.status === 502 || res.status === 503 || res.status === 504) {
+      throw new Error(`AWS API Gateway nicht verfügbar (${res.status}). Bitte versuchen Sie es in ein paar Sekunden erneut.`);
+    }
+    
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error(`Presign failed: ${res.status} - ${errorText || res.statusText}`);
+    }
+    
     return await res.json();
   }
 
@@ -59,9 +70,14 @@
         }),
       });
       
+      // Handle 502 Bad Gateway and other server errors
+      if (presign.status === 502 || presign.status === 503 || presign.status === 504) {
+        throw new Error(`AWS API Gateway nicht verfügbar (${presign.status}). Bitte versuchen Sie es in ein paar Sekunden erneut.`);
+      }
+      
       if (!presign.ok) {
         const errorText = await presign.text();
-        throw new Error(`Presign failed: ${presign.status} - ${errorText}`);
+        throw new Error(`Presign failed: ${presign.status} - ${errorText || presign.statusText}`);
       }
       
       const presignData = await presign.json();

@@ -1,6 +1,14 @@
 // CV Tailor - Targeted CV Generation
 // Generiert einen job-spezifischen CV basierend auf Baseline-CV und Stellenausschreibung
 
+// Ensure fetch is available
+let fetch;
+if (typeof globalThis.fetch === 'function') {
+    fetch = globalThis.fetch;
+} else {
+    fetch = require('node-fetch');
+}
+
 exports.handler = async (event, context) => {
     const headers = {
         'Access-Control-Allow-Origin': '*',
@@ -116,10 +124,17 @@ Erstelle den angepassten CV im gleichen Format wie der Baseline-CV.`;
 
     } catch (error) {
         console.error('Targeted CV Generation Error:', error);
+        console.error('Error stack:', error.stack);
+        console.error('Event:', JSON.stringify(event, null, 2));
+        
         return {
             statusCode: 500,
             headers,
-            body: JSON.stringify({ success: false, error: error.message })
+            body: JSON.stringify({ 
+                success: false, 
+                error: error.message || 'Unbekannter Fehler bei der Targeted-CV Generierung',
+                details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+            })
         };
     }
 };
