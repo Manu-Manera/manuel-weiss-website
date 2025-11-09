@@ -42,3 +42,4 @@ aws lambda get-function --function-name <function-name> --region eu-central-1
 2. Prüfe AWS CloudWatch → Lambda Logs
 3. Teste Functions lokal mit `netlify dev`
 
+

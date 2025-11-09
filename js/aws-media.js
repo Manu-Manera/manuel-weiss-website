@@ -8,25 +8,53 @@
   const API_BASE = (globalConfig.MEDIA_API_BASE || '').replace(/\/$/, '');
 
   async function requestPresignedUrl(options) {
-    if (!API_BASE) throw new Error('MEDIA_API_BASE not configured');
-    
-    const res = await fetch(`${API_BASE}/profile-image/upload-url`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ contentType: options.contentType, userId: options.userId }),
-    });
-    
-    // Handle 502 Bad Gateway and other server errors
-    if (res.status === 502 || res.status === 503 || res.status === 504) {
-      throw new Error(`AWS API Gateway nicht verfügbar (${res.status}). Bitte versuchen Sie es in ein paar Sekunden erneut.`);
+    if (!API_BASE) {
+      throw new Error('API Endpoint nicht konfiguriert. Bitte kontaktieren Sie den Administrator.');
     }
     
-    if (!res.ok) {
-      const errorText = await res.text();
-      throw new Error(`Presign failed: ${res.status} - ${errorText || res.statusText}`);
-    }
+    const endpoint = `${API_BASE}/profile-image/upload-url`;
     
-    return await res.json();
+    try {
+      console.log(`📤 Requesting presigned URL from: ${endpoint}`);
+      
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contentType: options.contentType, userId: options.userId }),
+      });
+      
+      // Handle 502 Bad Gateway and other server errors
+      if (res.status === 502 || res.status === 503 || res.status === 504) {
+        const errorMsg = `AWS API Gateway nicht verfügbar (${res.status}). ` +
+          `Der Server antwortet nicht. Bitte versuchen Sie es in ein paar Sekunden erneut. ` +
+          `Endpoint: ${endpoint}`;
+        console.error('❌ API Gateway Error:', errorMsg);
+        throw new Error(errorMsg);
+      }
+      
+      if (!res.ok) {
+        const errorText = await res.text();
+        const errorMsg = `Upload-URL-Anfrage fehlgeschlagen (${res.status}): ${errorText || res.statusText}. ` +
+          `Endpoint: ${endpoint}`;
+        console.error('❌ Presign Error:', errorMsg);
+        throw new Error(errorMsg);
+      }
+      
+      const data = await res.json();
+      console.log('✅ Presigned URL erhalten:', data.key);
+      return data;
+    } catch (error) {
+      console.error('❌ Presigned URL request error:', error);
+      
+      // Provide more helpful error messages
+      if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+        throw new Error(`Netzwerkfehler: Die Verbindung zum Server konnte nicht hergestellt werden. ` +
+          `Bitte überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut. ` +
+          `Endpoint: ${endpoint}`);
+      }
+      
+      throw error;
+    }
   }
 
   async function uploadWithPresignedUrl(file, presign) {
@@ -55,11 +83,18 @@
       throw new Error(`Invalid fileType. Must be one of: ${validTypes.join(', ')}`);
     }
     
+    // Check if API_BASE is configured
+    if (!API_BASE) {
+      throw new Error('API Endpoint nicht konfiguriert. Bitte kontaktieren Sie den Administrator.');
+    }
+    
     // WORKAROUND: Use profile-image endpoint with fileType parameter until /document/upload-url is deployed
     // The Lambda function already supports fileType parameter
     const endpoint = `${API_BASE}/profile-image/upload-url`;
     
     try {
+      console.log(`📤 Requesting presigned URL from: ${endpoint}`);
+      
       const presign = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -72,17 +107,27 @@
       
       // Handle 502 Bad Gateway and other server errors
       if (presign.status === 502 || presign.status === 503 || presign.status === 504) {
-        throw new Error(`AWS API Gateway nicht verfügbar (${presign.status}). Bitte versuchen Sie es in ein paar Sekunden erneut.`);
+        const errorMsg = `AWS API Gateway nicht verfügbar (${presign.status}). ` +
+          `Der Server antwortet nicht. Bitte versuchen Sie es in ein paar Sekunden erneut. ` +
+          `Endpoint: ${endpoint}`;
+        console.error('❌ API Gateway Error:', errorMsg);
+        throw new Error(errorMsg);
       }
       
       if (!presign.ok) {
         const errorText = await presign.text();
-        throw new Error(`Presign failed: ${presign.status} - ${errorText || presign.statusText}`);
+        const errorMsg = `Upload-URL-Anfrage fehlgeschlagen (${presign.status}): ${errorText || presign.statusText}. ` +
+          `Endpoint: ${endpoint}`;
+        console.error('❌ Presign Error:', errorMsg);
+        throw new Error(errorMsg);
       }
       
       const presignData = await presign.json();
+      console.log('✅ Presigned URL erhalten:', presignData.key);
       
       const publicUrl = await uploadWithPresignedUrl(file, presignData);
+      console.log('✅ Datei erfolgreich hochgeladen:', publicUrl);
+      
       return { 
         publicUrl, 
         key: presignData.key, 
@@ -93,12 +138,69 @@
         size: file.size
       };
     } catch (error) {
-      console.error('Document upload error:', error);
+      console.error('❌ Document upload error:', error);
+      
+      // Provide more helpful error messages
+      if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+        throw new Error(`Netzwerkfehler: Die Verbindung zum Server konnte nicht hergestellt werden. ` +
+          `Bitte überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut. ` +
+          `Endpoint: ${endpoint}`);
+      }
+      
       throw error;
     }
   }
 
-  window.awsMedia = { uploadProfileImage, uploadDocument };
+  /**
+   * Test API endpoint availability
+   * @returns {Promise<{available: boolean, message: string, endpoint: string}>}
+   */
+  async function testEndpoint() {
+    if (!API_BASE) {
+      return {
+        available: false,
+        message: 'API Endpoint nicht konfiguriert',
+        endpoint: 'N/A'
+      };
+    }
+    
+    const endpoint = `${API_BASE}/profile-image/upload-url`;
+    
+    try {
+      console.log(`🔍 Testing endpoint: ${endpoint}`);
+      const res = await fetch(endpoint, {
+        method: 'OPTIONS',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      
+      if (res.ok || res.status === 200 || res.status === 405) {
+        return {
+          available: true,
+          message: 'Endpoint ist erreichbar',
+          endpoint: endpoint
+        };
+      } else {
+        return {
+          available: false,
+          message: `Endpoint antwortet mit Status ${res.status}`,
+          endpoint: endpoint
+        };
+      }
+    } catch (error) {
+      return {
+        available: false,
+        message: `Endpoint nicht erreichbar: ${error.message}`,
+        endpoint: endpoint,
+        error: error.message
+      };
+    }
+  }
+
+  window.awsMedia = { 
+    uploadProfileImage, 
+    uploadDocument,
+    testEndpoint 
+  };
 })();
 
 
