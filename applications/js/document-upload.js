@@ -28,6 +28,9 @@ class DocumentUpload {
         // Wait for applications core
         await this.waitForApplicationsCore();
         
+        // Test API endpoint availability
+        await this.testAPIEndpoint();
+        
         // Setup file input handlers
         this.setupFileInputs();
         
@@ -41,6 +44,28 @@ class DocumentUpload {
         this.updateSummary();
         
         console.log('✅ Document Upload initialized');
+    }
+    
+    async testAPIEndpoint() {
+        if (window.awsMedia && window.awsMedia.testEndpoint) {
+            try {
+                const result = await window.awsMedia.testEndpoint();
+                if (!result.available) {
+                    console.warn('⚠️ API Endpoint nicht verfügbar:', result.message);
+                    console.warn('⚠️ Endpoint:', result.endpoint);
+                    // Show a warning to the user
+                    this.showNotification(
+                        `Hinweis: Der Upload-Server ist derzeit nicht erreichbar. ` +
+                        `Dateien werden lokal gespeichert und können später hochgeladen werden.`,
+                        'warning'
+                    );
+                } else {
+                    console.log('✅ API Endpoint ist verfügbar');
+                }
+            } catch (error) {
+                console.warn('⚠️ Endpoint-Test fehlgeschlagen:', error);
+            }
+        }
     }
 
     async waitForApplicationsCore() {
@@ -155,10 +180,32 @@ class DocumentUpload {
                 this.showFilesList(validFiles, type, uploadResults);
             }
             
-            this.showNotification('Dateien erfolgreich hochgeladen!', 'success');
+            // Check if any files were saved locally
+            const hasLocalStorage = (type === 'cv' || type === 'photo') 
+                ? (this.uploadedFiles[type]?.uploadResult?.storage === 'local')
+                : this.uploadedFiles[type]?.some(f => f.uploadResult?.storage === 'local');
+            
+            if (hasLocalStorage) {
+                this.showNotification('Dateien wurden lokal gespeichert. Der Server ist derzeit nicht verfügbar. Bitte versuchen Sie später erneut, die Dateien hochzuladen.', 'warning');
+            } else {
+                this.showNotification('Dateien erfolgreich hochgeladen!', 'success');
+            }
         } catch (error) {
-            console.error('Upload-Fehler:', error);
-            this.showNotification(`Fehler beim Hochladen: ${error.message}`, 'error');
+            console.error('❌ Upload-Fehler:', error);
+            
+            // Provide user-friendly error message
+            let errorMessage = 'Fehler beim Hochladen';
+            if (error.message) {
+                if (error.message.includes('502') || error.message.includes('503') || error.message.includes('504')) {
+                    errorMessage = 'Der Server ist derzeit nicht verfügbar. Bitte versuchen Sie es in ein paar Minuten erneut.';
+                } else if (error.message.includes('Netzwerkfehler') || error.message.includes('Failed to fetch')) {
+                    errorMessage = 'Netzwerkfehler: Bitte überprüfen Sie Ihre Internetverbindung.';
+                } else {
+                    errorMessage = error.message;
+                }
+            }
+            
+            this.showNotification(errorMessage, 'error');
             return;
         }
         
@@ -172,18 +219,28 @@ class DocumentUpload {
     async uploadFileToS3(file, type) {
         // Use unified upload system if available
         if (window.unifiedFileUpload && window.unifiedFileUpload.upload) {
-            return await window.unifiedFileUpload.upload(file, {
-                type: type,
-                onProgress: (percent, fileName) => {
-                    console.log(`Upload Progress: ${percent}% - ${fileName}`);
-                },
-                onError: (error, file) => {
-                    console.error(`Upload Error für ${file?.name}:`, error);
-                }
-            });
+            try {
+                return await window.unifiedFileUpload.upload(file, {
+                    type: type,
+                    onProgress: (percent, fileName) => {
+                        console.log(`Upload Progress: ${percent}% - ${fileName}`);
+                    },
+                    onError: (error, file) => {
+                        console.error(`Upload Error für ${file?.name}:`, error);
+                    }
+                });
+            } catch (error) {
+                // If unified upload fails, try fallback
+                console.warn('Unified upload failed, trying fallback:', error);
+                return await this.uploadFileToS3Fallback(file, type, error);
+            }
         }
         
         // Fallback to direct AWS Media upload
+        return await this.uploadFileToS3Fallback(file, type);
+    }
+    
+    async uploadFileToS3Fallback(file, type, originalError = null) {
         const fileTypeMap = {
             'cv': 'cv',
             'certificates': 'certificate',
@@ -195,14 +252,75 @@ class DocumentUpload {
         const userId = this.getUserId();
         
         if (!window.awsMedia) {
-            throw new Error('AWS Media Upload nicht verfügbar. Bitte Seite neu laden.');
+            // Last resort: save to localStorage as base64
+            console.warn('⚠️ AWS Media nicht verfügbar, speichere Datei lokal');
+            return await this.saveFileLocally(file, type, userId);
         }
         
-        if (type === 'photo') {
-            return await window.awsMedia.uploadProfileImage(file, userId);
-        } else {
-            return await window.awsMedia.uploadDocument(file, userId, awsFileType);
+        try {
+            if (type === 'photo') {
+                return await window.awsMedia.uploadProfileImage(file, userId);
+            } else {
+                return await window.awsMedia.uploadDocument(file, userId, awsFileType);
+            }
+        } catch (error) {
+            console.error('❌ AWS Upload fehlgeschlagen:', error);
+            
+            // If it's a 502/503/504 error, try local storage as fallback
+            if (error.message && (error.message.includes('502') || error.message.includes('503') || error.message.includes('504'))) {
+                console.warn('⚠️ Server nicht verfügbar, speichere Datei lokal als Fallback');
+                return await this.saveFileLocally(file, type, userId);
+            }
+            
+            throw error;
         }
+    }
+    
+    async saveFileLocally(file, type, userId) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => {
+                const fileData = {
+                    name: file.name,
+                    type: file.type,
+                    size: file.size,
+                    data: reader.result,
+                    uploadedAt: new Date().toISOString(),
+                    storage: 'local'
+                };
+                
+                // Save to localStorage
+                const storageKey = `local_upload_${type}_${userId}_${Date.now()}`;
+                localStorage.setItem(storageKey, JSON.stringify(fileData));
+                
+                // Also save to profile
+                const profileKey = `profile_${userId}`;
+                const profileData = JSON.parse(localStorage.getItem(profileKey) || '{}');
+                if (!profileData.localDocuments) profileData.localDocuments = {};
+                if (!profileData.localDocuments[type]) profileData.localDocuments[type] = [];
+                profileData.localDocuments[type].push({
+                    storageKey: storageKey,
+                    ...fileData
+                });
+                localStorage.setItem(profileKey, JSON.stringify(profileData));
+                
+                console.log('💾 Datei lokal gespeichert:', storageKey);
+                
+                resolve({
+                    publicUrl: `local://${storageKey}`,
+                    key: storageKey,
+                    bucket: 'local-storage',
+                    region: 'local',
+                    fileType: type,
+                    fileName: file.name,
+                    size: file.size,
+                    storage: 'local',
+                    warning: 'Datei wurde lokal gespeichert, da der Server nicht verfügbar war. Bitte versuchen Sie später erneut, die Datei hochzuladen.'
+                });
+            };
+            reader.onerror = () => reject(new Error('Fehler beim Lesen der Datei'));
+            reader.readAsDataURL(file);
+        });
     }
     
     getUserId() {
