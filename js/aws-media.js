@@ -18,28 +18,28 @@
       console.log(`📤 Requesting presigned URL from: ${endpoint}`);
       
       const res = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contentType: options.contentType, userId: options.userId }),
-      });
-      
-      // Handle 502 Bad Gateway and other server errors
-      if (res.status === 502 || res.status === 503 || res.status === 504) {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ contentType: options.contentType, userId: options.userId }),
+    });
+    
+    // Handle 502 Bad Gateway and other server errors
+    if (res.status === 502 || res.status === 503 || res.status === 504) {
         const errorMsg = `AWS API Gateway nicht verfügbar (${res.status}). ` +
           `Der Server antwortet nicht. Bitte versuchen Sie es in ein paar Sekunden erneut. ` +
           `Endpoint: ${endpoint}`;
         console.error('❌ API Gateway Error:', errorMsg);
         throw new Error(errorMsg);
-      }
-      
-      if (!res.ok) {
-        const errorText = await res.text();
+    }
+    
+    if (!res.ok) {
+      const errorText = await res.text();
         const errorMsg = `Upload-URL-Anfrage fehlgeschlagen (${res.status}): ${errorText || res.statusText}. ` +
           `Endpoint: ${endpoint}`;
         console.error('❌ Presign Error:', errorMsg);
         throw new Error(errorMsg);
-      }
-      
+    }
+    
       const data = await res.json();
       console.log('✅ Presigned URL erhalten:', data.key);
       return data;

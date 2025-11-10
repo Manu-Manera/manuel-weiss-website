@@ -40,16 +40,16 @@ class RealUserAuthSystem {
             
             this.isInitialized = true;
             console.log('✅ AWS Cognito initialized');
-            
-            // Check for existing session
-            await this.checkExistingSession();
-            
-            // Setup event listeners
-            this.setupEventListeners();
-            
-            // Initialize UI
-            this.initializeUI();
-            
+        
+        // Check for existing session
+        await this.checkExistingSession();
+        
+        // Setup event listeners
+        this.setupEventListeners();
+        
+        // Initialize UI
+        this.initializeUI();
+        
             console.log('✅ Real User Auth System initialized with AWS Cognito');
         } catch (error) {
             console.error('❌ Initialization error:', error);
@@ -92,14 +92,14 @@ class RealUserAuthSystem {
                     try {
                         const userInfo = await this.getUserInfo(session.idToken);
                         this.currentUser = userInfo;
-                        this.isAuthenticated = true;
+                    this.isAuthenticated = true;
                         this.userData = userInfo;
-                        
-                        // Load user progress and data
-                        await this.loadUserData();
-                        
+                    
+                    // Load user progress and data
+                    await this.loadUserData();
+                    
                         console.log('✅ Existing AWS Cognito session found:', userInfo.email);
-                        return;
+                    return;
                     } catch (error) {
                         console.warn('⚠️ Session validation failed, clearing session:', error);
                         this.clearSession();
@@ -112,7 +112,7 @@ class RealUserAuthSystem {
                             return;
                         } catch (error) {
                             console.warn('⚠️ Token refresh failed:', error);
-                            this.clearSession();
+                    this.clearSession();
                         }
                     } else {
                         this.clearSession();
@@ -788,7 +788,7 @@ class RealUserAuthSystem {
 
             if (result.success) {
                 this.showNotification('✅ E-Mail erfolgreich bestätigt! Sie können sich jetzt anmelden.', 'success');
-                
+
                 // Clear pending verification
                 localStorage.removeItem('pendingVerification');
                 
@@ -804,7 +804,7 @@ class RealUserAuthSystem {
             this.hideLoading();
         }
     }
-    
+
     async confirmRegistrationWithCognito(email, confirmationCode) {
         try {
             console.log('🚀 Starting AWS Cognito confirmation...');
@@ -825,7 +825,7 @@ class RealUserAuthSystem {
             console.error('❌ Confirmation error:', error);
             
             let errorMessage = 'Bestätigung fehlgeschlagen. ';
-            
+
             if (error.code === 'CodeMismatchException') {
                 errorMessage += 'Ungültiger Bestätigungscode.';
             } else if (error.code === 'ExpiredCodeException') {
@@ -844,7 +844,7 @@ class RealUserAuthSystem {
     
     async resendVerificationCode(email = null) {
         const userEmail = email || localStorage.getItem('pendingVerification');
-        
+
         if (!userEmail) {
             this.showNotification('Keine E-Mail-Adresse gefunden. Bitte registrieren Sie sich erneut.', 'error');
             return;
@@ -877,7 +877,7 @@ class RealUserAuthSystem {
             console.error('❌ Resend verification code error:', error);
             
             let errorMessage = 'Fehler beim erneuten Senden des Codes. ';
-            
+        
             if (error.code === 'UserNotFoundException') {
                 errorMessage += 'Benutzer nicht gefunden.';
             } else if (error.code === 'LimitExceededException') {
