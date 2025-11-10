@@ -553,10 +553,40 @@ class RealUserAuthSystem {
 
             if (result.success) {
                 this.showEmailVerificationForm();
-                this.showNotification(
-                    '✅ Registrierung erfolgreich! Bitte prüfen Sie Ihr E-Mail-Postfach für den Bestätigungscode.',
-                    'success'
-                );
+                
+                // Prüfe ob CodeDeliveryDetails vorhanden sind
+                if (result.codeDeliveryDetails) {
+                    const destination = result.codeDeliveryDetails.Destination || 'Ihr E-Mail-Postfach';
+                    this.showNotification(
+                        `✅ Registrierung erfolgreich! Bestätigungscode wurde an ${destination} gesendet. Bitte prüfen Sie Ihr E-Mail-Postfach (auch Spam-Ordner).`,
+                        'success'
+                    );
+                } else {
+                    // Versuche Code erneut zu senden
+                    console.warn('⚠️ Keine CodeDeliveryDetails - versuche Code erneut zu senden...');
+                    try {
+                        await this.resendVerificationCode(email);
+                        this.showNotification(
+                            '✅ Registrierung erfolgreich! Bestätigungscode wurde gesendet. Bitte prüfen Sie Ihr E-Mail-Postfach (auch Spam-Ordner).',
+                            'success'
+                        );
+                    } catch (resendError) {
+                        console.error('❌ Fehler beim erneuten Senden:', resendError);
+                        
+                        // Prüfe ob Auto-Verify das Problem ist
+                        if (resendError.message && resendError.message.includes('Auto verification')) {
+                            this.showNotification(
+                                '⚠️ Auto-Verify ist nicht aktiviert. Bitte aktivieren Sie Auto-Verify in der AWS Console oder kontaktieren Sie den Administrator.',
+                                'error'
+                            );
+                        } else {
+                            this.showNotification(
+                                '✅ Registrierung erfolgreich! Bitte verwenden Sie "Code erneut senden" falls keine E-Mail angekommen ist. Falls das Problem weiterhin besteht, kontaktieren Sie den Administrator.',
+                                'warning'
+                            );
+                        }
+                    }
+                }
             } else {
                 this.showNotification(result.error, 'error');
             }
@@ -605,9 +635,42 @@ class RealUserAuthSystem {
             const result = await this.cognitoIdentityServiceProvider.signUp(params).promise();
             
             console.log('✅ Registration successful');
+            console.log('📋 Registration result:', JSON.stringify(result, null, 2));
             
             // Store email for verification
             localStorage.setItem('pendingVerification', userData.email);
+            
+            // WORKAROUND: Wenn keine CodeDeliveryDetails zurückgegeben werden,
+            // versuche Code manuell zu senden (funktioniert nur wenn Auto-Verify aktiviert ist)
+            if (!result.CodeDeliveryDetails) {
+                console.warn('⚠️ Keine CodeDeliveryDetails in Antwort - versuche Code manuell zu senden...');
+                console.warn('⚠️ HINWEIS: Dies funktioniert nur wenn Auto-Verify im User Pool aktiviert ist!');
+                try {
+                    const resendResult = await this.cognitoIdentityServiceProvider.resendConfirmationCode({
+                        ClientId: this.clientId,
+                        Username: userData.email
+                    }).promise();
+                    
+                    console.log('✅ Code manuell gesendet:', resendResult.CodeDeliveryDetails);
+                    
+                    // Verwende die CodeDeliveryDetails vom resend
+                    return { 
+                        success: true, 
+                        userSub: result.UserSub,
+                        codeDeliveryDetails: resendResult.CodeDeliveryDetails
+                    };
+                } catch (resendError) {
+                    console.error('❌ Fehler beim manuellen Senden des Codes:', resendError);
+                    
+                    // Wenn Auto-Verify nicht aktiviert ist, gibt es eine spezifische Fehlermeldung
+                    if (resendError.code === 'NotAuthorizedException' && 
+                        resendError.message && resendError.message.includes('Auto verification')) {
+                        console.error('❌ Auto-Verify ist nicht aktiviert im User Pool!');
+                        console.error('❌ Bitte aktivieren Sie Auto-Verify in der AWS Console (siehe FIX_AUTO_VERIFY_MANUAL.md)');
+                    }
+                    // Weiter mit dem ursprünglichen Ergebnis
+                }
+            }
             
             return { 
                 success: true, 
