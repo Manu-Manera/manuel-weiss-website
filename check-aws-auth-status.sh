@@ -139,7 +139,7 @@ echo "------------------------------"
 # Prüfe verschiedene mögliche E-Mail-Adressen
 EMAILS=(
     "noreply@mawps.netlify.app"
-    "mail@manuel-weiss.de"
+    "mail@manuel-weiss.ch"
     "weiss-manuel@gmx.de"
 )
 
@@ -224,7 +224,7 @@ else
     print_status "Nächste Schritte:"
     if [ $VERIFIED_EMAILS -eq 0 ]; then
         print_status "  1. E-Mail-Adresse in SES verifizieren:"
-        print_status "     aws sesv2 create-email-identity --email-identity mail@manuel-weiss.de --region eu-central-1"
+        print_status "     aws sesv2 create-email-identity --email-identity mail@manuel-weiss.ch --region eu-central-1"
     fi
     print_status "  2. User Pool E-Mail-Konfiguration prüfen"
     print_status "  3. App Client Auth Flows prüfen"
