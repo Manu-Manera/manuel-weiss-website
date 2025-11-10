@@ -1,0 +1,32 @@
+=== DKIM-Records für Cloudflare ===
+
+Gehe zu: https://dash.cloudflare.com
+→ Wähle Domain: manuel-weiss.de
+→ DNS → Records → Add record
+
+Füge diese 3 CNAME-Records hinzu:
+
+1. Type: CNAME
+   Name: 5zcuj67ai5ufq5w25aixfhdmcj2jugdp._domainkey
+   Target: 5zcuj67ai5ufq5w25aixfhdmcj2jugdp.dkim.amazonses.com
+   Proxy status: DNS only (graue Wolke)
+   TTL: Auto
+
+2. Type: CNAME
+   Name: zdzcg3k4zb55mwj7as7m2bxusj4rtk3l._domainkey
+   Target: zdzcg3k4zb55mwj7as7m2bxusj4rtk3l.dkim.amazonses.com
+   Proxy status: DNS only (graue Wolke)
+   TTL: Auto
+
+3. Type: CNAME
+   Name: effi2hih54bdyqog32qbwuhe3ze5okxr._domainkey
+   Target: effi2hih54bdyqog32qbwuhe3ze5okxr.dkim.amazonses.com
+   Proxy status: DNS only (graue Wolke)
+   TTL: Auto
+
+WICHTIG: Proxy status muss "DNS only" sein (graue Wolke, nicht orange)!
+
+Nach dem Hinzufügen:
+→ Warte 5-10 Minuten
+→ Prüfe: ./verify-domain-dns-records.sh
+

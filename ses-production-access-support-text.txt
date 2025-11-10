@@ -1,0 +1,38 @@
+Subject: Request for SES Production Access - EU (Frankfurt) Region
+
+Hello AWS Support Team,
+
+I would like to request production access for Amazon Simple Email Service (SES) in the EU (Frankfurt) / eu-central-1 region.
+
+Service: Amazon Simple Email Service (SES)
+Region: EU (Frankfurt) / eu-central-1
+Limit Type: SES Sending Limits
+Limit: SES Production Access
+New Limit Value: 1
+
+Use Case Description:
+I am using AWS Cognito for user authentication in my web application. When users register on my website (https://mawps.netlify.app), they need to receive email verification codes to confirm their email addresses and activate their accounts.
+
+This is a standard transactional email use case for user account verification. The emails are:
+- Transactional in nature (verification codes, not marketing)
+- Sent only when users explicitly register
+- Required for the core functionality of the application
+
+Website URL: https://mawps.netlify.app
+Mail Type: Transactional
+Expected Sending Volume: Low (< 1000 emails per day)
+
+I understand and will comply with AWS SES policies and best practices, including:
+- Proper handling of bounces and complaints
+- Maintaining good email sending practices
+- Not sending unsolicited emails
+
+Currently, my SES account is in sandbox mode, which prevents me from sending verification emails to new users who register. This blocks the core functionality of my application.
+
+I would appreciate your approval for production access so that I can send verification emails to all users who register on my website.
+
+Thank you for your consideration.
+
+Best regards,
+[Your Name]
+

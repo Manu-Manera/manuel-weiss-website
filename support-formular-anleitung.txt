@@ -1,0 +1,27 @@
+=== AWS Support Formular - Schritt für Schritt ===
+
+OPTION 1 (Einfachste):
+1. Klicke auf den Link "Looking for service quota increases?"
+   (Rechts neben den Auswahlfeldern)
+2. Das führt direkt zum Quota-Increase-Formular
+3. Dann:
+   - Service: SES (Simple Email Service)
+   - Limit Type: SES Sending Limits
+   - Region: EU (Frankfurt) / eu-central-1
+   - Limit: SES Production Access
+   - New limit value: 1
+   - Use case: Kopiere Text aus ses-production-access-support-text-deutsch.txt
+
+OPTION 2 (Falls Link nicht funktioniert):
+1. Wähle "Technical" statt "Account and billing"
+2. Service: Wähle "SES" oder "Simple Email Service"
+3. Category: Wähle "Service limit increase" oder "Service Limits"
+4. Severity: "General question" ist OK
+5. Klicke "Next step"
+6. Fülle das Formular aus:
+   - Limit Type: SES Sending Limits
+   - Region: EU (Frankfurt) / eu-central-1
+   - Limit: SES Production Access
+   - New limit value: 1
+   - Use case: Kopiere Text aus ses-production-access-support-text-deutsch.txt
+

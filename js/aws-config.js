@@ -5,6 +5,13 @@ window.AWS_CONFIG = {
     clientId: '7kc5tt6a23fgh53d60vkefm812', // ✅ Live Client ID
     region: 'eu-central-1',
     
+    // Domain Configuration
+    domain: {
+        name: 'manuel-weiss.ch',
+        email: 'mail@manuel-weiss.ch',
+        region: 'eu-central-1'
+    },
+    
     // S3 Configuration for file uploads
     s3: {
         bucket: 'mawps-user-files-1760106396',
