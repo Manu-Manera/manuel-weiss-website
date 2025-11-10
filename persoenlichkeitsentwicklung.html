@@ -18,13 +18,51 @@
     
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="css/ikigai-planner.css">
     <link rel="stylesheet" href="css/user-auth.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="favicon.ico">
+    
+    <!-- Zusätzliche Styles für identischen Button wie Bewerbungsmanagement -->
+    <style>
+        /* Stelle sicher, dass .btn-auth Styles nicht überschrieben werden */
+        .navbar .auth-section .btn-auth {
+            background: linear-gradient(135deg, #10b981, #059669) !important;
+            color: white !important;
+            padding: var(--spacing-sm) var(--spacing-lg) !important;
+            border-radius: 8px !important;
+            font-weight: 600 !important;
+            font-size: var(--text-sm) !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: var(--spacing-sm) !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3) !important;
+            border: none !important;
+            cursor: pointer !important;
+        }
+        
+        .navbar .auth-section .btn-auth:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4) !important;
+            background: linear-gradient(135deg, #059669, #047857) !important;
+        }
+        
+        .navbar .auth-section .btn-auth i {
+            font-size: var(--text-sm) !important;
+        }
+        
+        /* Stelle sicher, dass .auth-section Styles nicht überschrieben werden */
+        .navbar .auth-section {
+            display: flex !important;
+            align-items: center !important;
+            margin-left: var(--spacing-md) !important;
+            padding-left: var(--spacing-md) !important;
+            border-left: 1px solid var(--gray-200) !important;
+        }
+    </style>
 </head>
 <body>
     <!-- Navigation -->
@@ -40,29 +78,28 @@
                 <a href="index.html?from_service=true#services" class="nav-link" nav.services">Services</a>
                 <a href="index.html?from_service=true#about" class="nav-link" nav.about">Über mich</a>
                 <a href="index.html?from_service=true#contact" class="nav-link" nav.contact">Kontakt</a>
+            </div>
             
-                <!-- AWS User System - Gleiche Implementierung wie Bewerbungsmanagement -->
-                <div class="auth-section">
-                    <button id="realAuthButton" class="btn-auth">
-                        <i class="fas fa-user"></i>
-                        Anmelden
-                    </button>
-                    <div id="realUserMenu" class="user-menu" style="display: none;">
-                        <div class="user-info">
-                            <img id="userAvatarImg" src="manuel-weiss-photo.svg" alt="User Avatar" class="user-avatar-img">
-                            <span id="userName">Benutzer</span>
-                        </div>
-                        <a href="user-profile-dashboard.html" class="user-menu-link">
-                            <i class="fas fa-chart-line"></i>
-                            Dashboard
-                        </a>
-                        <a href="#" class="user-menu-link" onclick="window.realUserAuth.logout()">
-                            <i class="fas fa-sign-out-alt"></i>
-                            Abmelden
-                        </a>
+            <!-- AWS User System - Gleiche Implementierung wie Bewerbungsmanagement -->
+            <div class="auth-section">
+                <button id="realAuthButton" class="btn-auth">
+                    <i class="fas fa-user"></i>
+                    Anmelden
+                </button>
+                <div id="realUserMenu" class="user-menu" style="display: none;">
+                    <div class="user-info">
+                        <img id="userAvatarImg" src="manuel-weiss-photo.svg" alt="User Avatar" class="user-avatar-img">
+                        <span id="userName">Benutzer</span>
                     </div>
+                    <a href="user-profile-dashboard.html" class="user-menu-link">
+                        <i class="fas fa-chart-line"></i>
+                        Dashboard
+                    </a>
+                    <a href="#" class="user-menu-link" onclick="window.realUserAuth.logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Abmelden
+                    </a>
                 </div>
-                
             </div>
             
             <div class="nav-toggle" id="navToggle">
@@ -1341,143 +1378,7 @@
         .answer { margin-bottom: 15px; padding: 10px; background: white; border-radius: 5px; }
         .metadata { background: #e2e8f0; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
     
-        /* AWS User System Styles - Integrated in Navigation */
-        .user-system {
-            display: flex;
-            align-items: center;
-            margin-left: 20px;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: linear-gradient(135deg, #ffffff, #f8fafc);
-            padding: 8px 16px;
-            border-radius: 25px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(99, 102, 241, 0.2);
-            transition: all 0.3s ease;
-        }
-
-        .user-info:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-        }
-
-        .user-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            overflow: hidden;
-            border: 2px solid #6366f1;
-            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
-        }
-
-        .user-avatar-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .user-details {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .user-name {
-            font-size: 0.8rem;
-            font-weight: 700;
-            color: #1e293b;
-            line-height: 1.2;
-        }
-
-        .user-email {
-            font-size: 0.7rem;
-            color: #64748b;
-            line-height: 1.2;
-        }
-
-        .user-logout {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 28px;
-            height: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
-        }
-
-        .user-logout:hover {
-            transform: scale(1.1);
-            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
-        }
-
-        .user-login {
-            display: flex;
-            align-items: center;
-        }
-
-        .btn-login {
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
-        }
-
-        .btn-login:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
-        }
-
-        .btn-login i {
-            font-size: 0.7rem;
-        }
-
-        /* Responsive Design for User System */
-        @media (max-width: 768px) {
-            .user-system {
-                margin-left: 10px;
-            }
-
-            .user-info {
-                padding: 6px 12px;
-                gap: 8px;
-            }
-
-            .user-avatar {
-                width: 28px;
-                height: 28px;
-            }
-
-            .user-name {
-                font-size: 0.7rem;
-            }
-
-            .user-email {
-                font-size: 0.6rem;
-            }
-
-            .btn-login {
-                padding: 6px 12px;
-                font-size: 0.7rem;
-            }
-        }
+        /* Alte User-System Styles entfernt - verwende jetzt .auth-section und .btn-auth aus styles.css */
     </style>
 </head>
 <body>
