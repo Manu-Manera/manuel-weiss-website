@@ -846,6 +846,74 @@ a:hover {
     font-size: var(--text-sm);
 }
 
+/* User Menu Styles - Gleiche wie Bewerbungsmanagement */
+.user-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 0.5rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    min-width: 220px;
+    z-index: 1000;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+}
+
+.user-menu .user-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.user-menu .user-avatar-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--primary);
+}
+
+.user-menu .user-info span {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: var(--text-sm);
+}
+
+.user-menu-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: all var(--transition-fast);
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    font-size: var(--text-sm);
+}
+
+.user-menu-link:hover {
+    background: var(--bg-secondary);
+    color: var(--primary);
+}
+
+.user-menu-link i {
+    width: 20px;
+    text-align: center;
+    color: var(--text-secondary);
+}
+
+.user-menu-link:hover i {
+    color: var(--primary);
+}
+
 
 @media (max-width: 360px) {
     .service-card .btn {
