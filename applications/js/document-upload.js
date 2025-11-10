@@ -188,7 +188,7 @@ class DocumentUpload {
             if (hasLocalStorage) {
                 this.showNotification('Dateien wurden lokal gespeichert. Der Server ist derzeit nicht verfügbar. Bitte versuchen Sie später erneut, die Dateien hochzuladen.', 'warning');
             } else {
-                this.showNotification('Dateien erfolgreich hochgeladen!', 'success');
+            this.showNotification('Dateien erfolgreich hochgeladen!', 'success');
             }
         } catch (error) {
             console.error('❌ Upload-Fehler:', error);
@@ -220,15 +220,15 @@ class DocumentUpload {
         // Use unified upload system if available
         if (window.unifiedFileUpload && window.unifiedFileUpload.upload) {
             try {
-                return await window.unifiedFileUpload.upload(file, {
-                    type: type,
-                    onProgress: (percent, fileName) => {
-                        console.log(`Upload Progress: ${percent}% - ${fileName}`);
-                    },
-                    onError: (error, file) => {
-                        console.error(`Upload Error für ${file?.name}:`, error);
-                    }
-                });
+            return await window.unifiedFileUpload.upload(file, {
+                type: type,
+                onProgress: (percent, fileName) => {
+                    console.log(`Upload Progress: ${percent}% - ${fileName}`);
+                },
+                onError: (error, file) => {
+                    console.error(`Upload Error für ${file?.name}:`, error);
+                }
+            });
             } catch (error) {
                 // If unified upload fails, try fallback
                 console.warn('Unified upload failed, trying fallback:', error);
@@ -258,11 +258,11 @@ class DocumentUpload {
         }
         
         try {
-            if (type === 'photo') {
-                return await window.awsMedia.uploadProfileImage(file, userId);
-            } else {
-                return await window.awsMedia.uploadDocument(file, userId, awsFileType);
-            }
+        if (type === 'photo') {
+            return await window.awsMedia.uploadProfileImage(file, userId);
+        } else {
+            return await window.awsMedia.uploadDocument(file, userId, awsFileType);
+        }
         } catch (error) {
             console.error('❌ AWS Upload fehlgeschlagen:', error);
             
