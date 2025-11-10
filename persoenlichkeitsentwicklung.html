@@ -19,6 +19,7 @@
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="css/ikigai-planner.css">
+    <link rel="stylesheet" href="css/user-auth.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
@@ -40,26 +41,25 @@
                 <a href="index.html?from_service=true#about" class="nav-link" nav.about">Über mich</a>
                 <a href="index.html?from_service=true#contact" class="nav-link" nav.contact">Kontakt</a>
             
-                <!-- AWS User System - Nur auf Service-Unterseiten -->
-                <div class="user-system" id="userSystem">
-                    <div class="user-info" id="userInfo" style="display: none;">
-                        <div class="user-avatar">
-                            <img id="userAvatar" src="manuel-weiss-photo.svg" alt="User Avatar" class="user-avatar-img">
+                <!-- AWS User System - Gleiche Implementierung wie Bewerbungsmanagement -->
+                <div class="auth-section">
+                    <button id="realAuthButton" class="btn-auth">
+                        <i class="fas fa-user"></i>
+                        Anmelden
+                    </button>
+                    <div id="realUserMenu" class="user-menu" style="display: none;">
+                        <div class="user-info">
+                            <img id="userAvatarImg" src="manuel-weiss-photo.svg" alt="User Avatar" class="user-avatar-img">
+                            <span id="userName">Benutzer</span>
                         </div>
-                        <div class="user-details">
-                            <span class="user-name" id="userName">Benutzer</span>
-                            <span class="user-email" id="userEmail">benutzer@example.com</span>
-                        </div>
-                        <button class="user-logout" id="userLogout" onclick="logoutUser()">
+                        <a href="user-profile-dashboard.html" class="user-menu-link">
+                            <i class="fas fa-chart-line"></i>
+                            Dashboard
+                        </a>
+                        <a href="#" class="user-menu-link" onclick="window.realUserAuth.logout()">
                             <i class="fas fa-sign-out-alt"></i>
-                        </button>
-                    </div>
-                    
-                    <div class="user-login" id="userLogin">
-                        <button class="btn-login" onclick="loginUser()">
-                            <i class="fas fa-sign-in-alt"></i>
-                            <span>Anmelden</span>
-                        </button>
+                            Abmelden
+                        </a>
                     </div>
                 </div>
                 
@@ -1211,33 +1211,8 @@
         const totalIkigaiSteps = 7;
         
 
-    // AWS User System Functions
-    function loginUser() {
-        const modal = document.getElementById('loginModal');
-        if (modal) {
-            modal.style.display = 'flex';
-        }
-    }
-
-    function logoutUser() {
-        if (window.awsAuth) {
-            window.awsAuth.signOut().then(() => {
-                console.log('Erfolgreich abgemeldet');
-            }).catch(error => {
-                console.error('Fehler beim Abmelden:', error);
-            });
-        }
-    }
-
-    // Initialize auth system
-    document.addEventListener('DOMContentLoaded', async function() {
-        await loadAuthModals();
-        
-        // Check user status
-        if (window.awsAuth) {
-            window.awsAuth.checkUserStatus();
-        }
-    });
+    // Auth System wird von real-user-auth-system.js verwaltet
+    // Keine separaten Funktionen mehr nötig
 
     function ikigaiNextStep() {
             console.log('ikigaiNextStep called, current step:', currentIkigaiStep);
@@ -1563,13 +1538,13 @@
         <div class="question">Flow-Passion:</div>
         <div class="answer">${data.steps.step2.data.flowPassion || 'Nicht ausgefüllt'}</div>
     </div>
-    <script src="js/global-auth-system.js"></script>
-</body>
-    </script>
-    
-    
     <!-- Translation Manager -->
     <script src="js/translation-manager.js"></script>
-    <script src="js/global-auth-system.js"></script>
+    
+    <!-- AWS Auth System - Gleiche Implementierung wie Bewerbungsmanagement -->
+    <script src="js/aws-config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/amazon-cognito-identity-js@6.3.0/dist/amazon-cognito-identity.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aws-sdk@2.1490.0/dist/aws-sdk.min.js"></script>
+    <script src="js/real-user-auth-system.js"></script>
 </body>
 </html>
