@@ -362,10 +362,48 @@
 
     <!-- Scripts -->
     <!-- AWS Config (MUSS VOR Auth-System geladen werden) -->
-    <script src="../js/aws-config.js"></script>
+    <script src="../js/aws-config.js" onerror="console.error('❌ Fehler beim Laden von aws-config.js');"></script>
+    <!-- Debug: Prüfe ob Config geladen wurde -->
+    <script>
+        // Warte kurz und prüfe ob Config geladen wurde
+        setTimeout(function() {
+            if (!window.AWS_CONFIG) {
+                console.error('❌ AWS_CONFIG wurde nicht geladen! Setze Fallback...');
+                // Fallback: Direkt setzen
+                window.AWS_CONFIG = {
+                    userPoolId: 'eu-central-1_8gP4gLK9r',
+                    clientId: '7kc5tt6a23fgh53d60vkefm812',
+                    region: 'eu-central-1'
+                };
+                console.log('✅ Fallback AWS_CONFIG gesetzt:', window.AWS_CONFIG);
+            } else {
+                console.log('✅ AWS_CONFIG geladen:', window.AWS_CONFIG);
+            }
+        }, 100);
+    </script>
+    <!-- AWS SDK laden -->
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js" 
+            onerror="console.error('❌ Fehler beim Laden von AWS SDK');"></script>
     <!-- Auth & Core -->
-    <script src="../js/real-user-auth-system.js"></script>
+    <script src="../js/real-user-auth-system.js" 
+            onerror="console.error('❌ Fehler beim Laden von real-user-auth-system.js');"></script>
     <script src="js/applications-core.js"></script>
+    <!-- Final Check -->
+    <script>
+        // Finale Prüfung nach 2 Sekunden
+        setTimeout(function() {
+            console.log('=== AUTH SYSTEM STATUS ===');
+            console.log('AWS_CONFIG:', window.AWS_CONFIG);
+            console.log('AWS SDK:', typeof AWS !== 'undefined' ? '✅ Geladen' : '❌ Nicht geladen');
+            console.log('realUserAuth:', window.realUserAuth ? '✅ Vorhanden' : '❌ Nicht vorhanden');
+            if (window.realUserAuth) {
+                console.log('  - Initialisiert:', window.realUserAuth.isInitialized);
+                console.log('  - User Pool ID:', window.realUserAuth.userPoolId);
+                console.log('  - Client ID:', window.realUserAuth.clientId);
+                console.log('  - Region:', window.realUserAuth.region);
+            }
+        }, 2000);
+    </script>
 </body>
 </html>
 
