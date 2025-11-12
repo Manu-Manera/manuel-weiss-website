@@ -186,6 +186,7 @@
     "aws-sdk": "2.1692.0",
     "constructs": "10.4.2",
     "dotenv": "17.2.3",
+    "node-fetch": "^2.7.0",
     "openai": "6.6.0",
     "snoowrap": "1.23.0"
   }
