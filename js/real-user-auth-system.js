@@ -466,15 +466,24 @@ class RealUserAuthSystem {
     async loginWithCognito(email, password) {
         try {
             console.log('🚀 Starting AWS Cognito login...');
+            console.log('📧 Email:', email);
+            console.log('🔑 Client ID:', this.clientId);
+            console.log('🏊 User Pool ID:', this.userPoolId);
+            console.log('🌍 Region:', this.region);
+            
+            // Stelle sicher, dass Email getrimmt ist
+            const trimmedEmail = email.trim().toLowerCase();
             
             const params = {
                 AuthFlow: 'USER_PASSWORD_AUTH',
                 ClientId: this.clientId,
                 AuthParameters: {
-                    USERNAME: email,
+                    USERNAME: trimmedEmail,
                     PASSWORD: password
                 }
             };
+            
+            console.log('📤 Sending login request with params:', JSON.stringify(params, null, 2));
             
             const result = await this.cognitoIdentityServiceProvider.initiateAuth(params).promise();
             
@@ -500,6 +509,9 @@ class RealUserAuthSystem {
             
         } catch (error) {
             console.error('❌ Login error:', error);
+            console.error('❌ Error code:', error.code);
+            console.error('❌ Error message:', error.message);
+            console.error('❌ Full error:', JSON.stringify(error, null, 2));
             
             let errorMessage = 'Anmeldung fehlgeschlagen. ';
             
@@ -511,7 +523,50 @@ class RealUserAuthSystem {
                 this.showEmailVerificationForm();
                 localStorage.setItem('pendingVerification', email);
             } else if (error.code === 'UserNotFoundException') {
-                errorMessage += 'Benutzer nicht gefunden. Bitte registrieren Sie sich zuerst.';
+                // Versuche mit Username statt Email
+                console.log('🔄 UserNotFoundException - versuche mit Username statt Email...');
+                try {
+                    // Hole den tatsächlichen Username aus Cognito
+                    const userInfo = await this.cognitoIdentityServiceProvider.adminGetUser({
+                        UserPoolId: this.userPoolId,
+                        Username: trimmedEmail
+                    }).promise();
+                    
+                    const actualUsername = userInfo.Username;
+                    console.log('✅ Gefundener Username:', actualUsername);
+                    
+                    // Versuche Login mit tatsächlichem Username
+                    const retryParams = {
+                        AuthFlow: 'USER_PASSWORD_AUTH',
+                        ClientId: this.clientId,
+                        AuthParameters: {
+                            USERNAME: actualUsername,
+                            PASSWORD: password
+                        }
+                    };
+                    
+                    const retryResult = await this.cognitoIdentityServiceProvider.initiateAuth(retryParams).promise();
+                    console.log('✅ Login erfolgreich mit Username!');
+                    
+                    const authResult = retryResult.AuthenticationResult;
+                    const session = {
+                        idToken: authResult.IdToken,
+                        accessToken: authResult.AccessToken,
+                        refreshToken: authResult.RefreshToken,
+                        expiresAt: new Date(Date.now() + authResult.ExpiresIn * 1000).toISOString()
+                    };
+                    
+                    const userInfoFromToken = await this.getUserInfo(session.idToken);
+                    
+                    return {
+                        success: true,
+                        user: userInfoFromToken,
+                        session: session
+                    };
+                } catch (retryError) {
+                    console.error('❌ Retry login failed:', retryError);
+                    errorMessage += 'Benutzer nicht gefunden. Bitte registrieren Sie sich zuerst.';
+                }
             } else {
                 errorMessage += error.message || 'Unbekannter Fehler.';
             }
