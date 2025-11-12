@@ -83,48 +83,108 @@ class RealUserAuthSystem {
             // Check for stored AWS Cognito tokens
             const storedSession = localStorage.getItem('aws_auth_session');
             
-            if (storedSession) {
-                const session = JSON.parse(storedSession);
-                
-                // Check if session is still valid (60 Minuten Standard oder 30 Tage mit "Angemeldet bleiben")
-                const expiresAt = session.expiresAt ? new Date(session.expiresAt) : null;
-                const isValid = session.idToken && expiresAt && expiresAt > new Date();
-                
-                if (isValid) {
-                    // Try to get user info from token
-                    try {
-                        const userInfo = await this.getUserInfo(session.idToken);
-                        this.currentUser = userInfo;
+            if (!storedSession) {
+                console.log('ℹ️ No stored session found');
+                return;
+            }
+            
+            const session = JSON.parse(storedSession);
+            console.log('🔍 Checking existing session...', {
+                hasIdToken: !!session.idToken,
+                hasRefreshToken: !!session.refreshToken,
+                expiresAt: session.expiresAt,
+                rememberMe: session.rememberMe
+            });
+            
+            // Check if session is still valid (60 Minuten Standard oder 30 Tage mit "Angemeldet bleiben")
+            const expiresAt = session.expiresAt ? new Date(session.expiresAt) : null;
+            const now = new Date();
+            const isValid = session.idToken && expiresAt && expiresAt > now;
+            
+            console.log('⏰ Session expiration check:', {
+                expiresAt: expiresAt?.toISOString(),
+                now: now.toISOString(),
+                isValid: isValid,
+                timeRemaining: expiresAt ? Math.round((expiresAt - now) / 1000 / 60) + ' Minuten' : 'unbekannt'
+            });
+            
+            if (isValid) {
+                // Try to get user info from token
+                try {
+                    const userInfo = await this.getUserInfo(session.idToken);
+                    this.currentUser = userInfo;
                     this.isAuthenticated = true;
-                        this.userData = userInfo;
+                    this.userData = userInfo;
                     
                     // Load user progress and data
                     await this.loadUserData();
                     
-                        console.log('✅ Existing AWS Cognito session found:', userInfo.email);
+                    // Update UI immediately
+                    this.updateAuthUI();
+                    
+                    console.log('✅ Existing AWS Cognito session restored:', userInfo.email);
                     return;
-                    } catch (error) {
-                        console.warn('⚠️ Session validation failed, clearing session:', error);
-                        this.clearSession();
-                    }
-                } else {
-                    // Session expired, try to refresh
+                } catch (error) {
+                    console.warn('⚠️ Token validation failed, trying refresh:', error);
+                    // Try to refresh if token validation fails (might be network issue)
                     if (session.refreshToken) {
                         try {
                             await this.refreshSession(session.refreshToken);
                             return;
-                        } catch (error) {
-                            console.warn('⚠️ Token refresh failed:', error);
-                    this.clearSession();
+                        } catch (refreshError) {
+                            console.warn('⚠️ Token refresh also failed:', refreshError);
+                            // Don't clear session immediately - might be temporary network issue
+                            // Keep session and try again later
+                            console.warn('⚠️ Keeping session, will retry on next action');
+                            // Still try to restore from stored user data
+                            const storedUser = localStorage.getItem('realUser');
+                            if (storedUser) {
+                                try {
+                                    this.currentUser = JSON.parse(storedUser);
+                                    this.isAuthenticated = true;
+                                    this.userData = this.currentUser;
+                                    this.updateAuthUI();
+                                    console.log('✅ Restored from stored user data:', this.currentUser.email);
+                                } catch (e) {
+                                    console.warn('⚠️ Could not restore from stored user data');
+                                }
+                            }
                         }
-                    } else {
+                    }
+                }
+            } else {
+                // Session expired, try to refresh
+                if (session.refreshToken) {
+                    console.log('🔄 Session expired, attempting refresh...');
+                    try {
+                        await this.refreshSession(session.refreshToken);
+                        return;
+                    } catch (error) {
+                        console.warn('⚠️ Token refresh failed:', error);
+                        // Only clear if refresh definitely failed
                         this.clearSession();
                     }
+                } else {
+                    console.warn('⚠️ Session expired and no refresh token available');
+                    this.clearSession();
                 }
             }
         } catch (error) {
-            console.error('Error checking existing session:', error);
-            this.clearSession();
+            console.error('❌ Error checking existing session:', error);
+            // Don't clear session on parse errors - might be recoverable
+            // Try to restore from stored user data as fallback
+            const storedUser = localStorage.getItem('realUser');
+            if (storedUser) {
+                try {
+                    this.currentUser = JSON.parse(storedUser);
+                    this.isAuthenticated = true;
+                    this.userData = this.currentUser;
+                    this.updateAuthUI();
+                    console.log('✅ Restored from stored user data (fallback):', this.currentUser.email);
+                } catch (e) {
+                    console.warn('⚠️ Could not restore from stored user data');
+                }
+            }
         }
     }
     
@@ -146,10 +206,7 @@ class RealUserAuthSystem {
         }
         
         try {
-            const params = {
-                ClientId: this.clientId,
-                RefreshToken: refreshToken
-            };
+            console.log('🔄 Refreshing session with refresh token...');
             
             const result = await this.cognitoIdentityServiceProvider.initiateAuth({
                 AuthFlow: 'REFRESH_TOKEN_AUTH',
@@ -159,7 +216,11 @@ class RealUserAuthSystem {
                 }
             }).promise();
             
-            // Save new session
+            // Get rememberMe from existing session
+            const existingSession = localStorage.getItem('aws_auth_session');
+            const rememberMe = existingSession ? JSON.parse(existingSession).rememberMe : false;
+            
+            // Save new session with same rememberMe setting
             const session = {
                 idToken: result.AuthenticationResult.IdToken,
                 accessToken: result.AuthenticationResult.AccessToken,
@@ -167,12 +228,17 @@ class RealUserAuthSystem {
                 expiresAt: new Date(Date.now() + result.AuthenticationResult.ExpiresIn * 1000).toISOString()
             };
             
-            localStorage.setItem('aws_auth_session', JSON.stringify(session));
+            // Use saveSession to maintain rememberMe setting
+            this.saveSession(session, rememberMe);
             
             const userInfo = await this.getUserInfo(session.idToken);
             this.currentUser = userInfo;
             this.isAuthenticated = true;
             this.userData = userInfo;
+            
+            // Load user data and update UI
+            await this.loadUserData();
+            this.updateAuthUI();
             
             console.log('✅ Session refreshed successfully');
         } catch (error) {
