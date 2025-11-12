@@ -86,8 +86,11 @@ class RealUserAuthSystem {
             if (storedSession) {
                 const session = JSON.parse(storedSession);
                 
-                // Check if tokens are still valid
-                if (session.idToken && session.expiresAt && new Date(session.expiresAt) > new Date()) {
+                // Check if session is still valid (60 Minuten Standard oder 30 Tage mit "Angemeldet bleiben")
+                const expiresAt = session.expiresAt ? new Date(session.expiresAt) : null;
+                const isValid = session.idToken && expiresAt && expiresAt > new Date();
+                
+                if (isValid) {
                     // Try to get user info from token
                     try {
                         const userInfo = await this.getUserInfo(session.idToken);
