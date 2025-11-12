@@ -1627,7 +1627,93 @@
 
     <!-- Enhanced Website Data Sync -->
     <script src="js/website-sync-enhanced.js?v=20250120"></script>
-
+    
+    <!-- AWS Auth System -->
+    <script>
+        // AWS Config INLINE (um Cache-Probleme zu vermeiden)
+        window.AWS_CONFIG = {
+            userPoolId: 'eu-central-1_8gP4gLK9r',
+            clientId: '7kc5tt6a23fgh53d60vkefm812',
+            region: 'eu-central-1',
+            domain: {
+                name: 'manuel-weiss.ch',
+                email: 'mail@manuel-weiss.ch',
+                region: 'eu-central-1'
+            },
+            s3: {
+                bucket: 'mawps-user-files-1760106396',
+                region: 'eu-central-1'
+            },
+            dynamodb: {
+                tableName: 'mawps-user-profiles',
+                region: 'eu-central-1'
+            }
+        };
+        
+        // Initialize AWS with configuration
+        if (typeof AWS !== 'undefined') {
+            AWS.config.update({
+                region: window.AWS_CONFIG.region
+            });
+            window.AWS_COGNITO_CONFIG = {
+                UserPoolId: window.AWS_CONFIG.userPoolId,
+                ClientId: window.AWS_CONFIG.clientId
+            };
+        }
+    </script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="js/real-user-auth-system.js?v=20250114"></script>
+    
+    <!-- Menü-Funktionen -->
+    <script>
+        function openProfile() {
+            if (window.realUserAuth && window.realUserAuth.showNotification) {
+                window.realUserAuth.showNotification('Profil wird geöffnet...', 'info');
+            }
+            setTimeout(() => {
+                window.location.href = 'user-profile.html#personal';
+            }, 500);
+        }
+        
+        function openSettings() {
+            if (window.realUserAuth && window.realUserAuth.showNotification) {
+                window.realUserAuth.showNotification('Einstellungen werden geöffnet...', 'info');
+            }
+            setTimeout(() => {
+                window.location.href = 'user-profile.html#settings';
+            }, 500);
+        }
+        
+        function openProgress() {
+            if (window.realUserAuth && window.realUserAuth.showNotification) {
+                window.realUserAuth.showNotification('Fortschritt wird angezeigt...', 'info');
+            }
+            setTimeout(() => {
+                window.location.href = 'user-profile.html#progress';
+            }, 500);
+        }
+        
+        // Close dropdown when clicking outside (mit Verzögerung für Button-Click)
+        document.addEventListener('click', function(event) {
+            const navUser = document.getElementById('navUser');
+            const userDropdown = document.getElementById('userDropdown');
+            const authButton = document.getElementById('realAuthButton');
+            
+            // Prüfe ob der Klick auf den Auth-Button war
+            if (authButton && authButton.contains(event.target)) {
+                return;
+            }
+            
+            // Prüfe ob der Klick außerhalb des User-Systems war
+            if (navUser && userDropdown && !navUser.contains(event.target)) {
+                setTimeout(() => {
+                    if (userDropdown) {
+                        userDropdown.style.display = 'none';
+                    }
+                }, 10);
+            }
+        });
+    </script>
 
 </body>
 </html>
