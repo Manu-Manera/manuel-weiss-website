@@ -500,15 +500,19 @@ a:hover {
     align-items: stretch;
     flex-wrap: nowrap;
     justify-content: space-around;
+    width: 100%;
 }
 
 .stat-item {
     text-align: center;
     flex: 1;
-    padding: var(--spacing-lg) var(--spacing-xl);
+    padding: var(--spacing-lg) var(--spacing-md);
     position: relative;
-    min-width: 280px;
+    min-width: 300px;
     max-width: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .stat-item:not(:last-child)::after {
@@ -543,8 +547,10 @@ a:hover {
     word-break: normal;
     hyphens: auto;
     display: block;
-    padding: 0 0.5rem;
+    padding: 0 1rem;
     white-space: normal;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 /* Bessere Lesbarkeit: keine Silbentrennung im Hero-Subtext */
