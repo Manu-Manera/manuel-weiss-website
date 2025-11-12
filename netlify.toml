@@ -1,9 +1,13 @@
 [build]
-  # Build für statische Website mit Netlify Functions
-  command = "echo 'Static site with functions - no build required'"
+  # Build für statische Website - Functions werden separat deployed
+  command = "echo 'Static site - no build required'"
   publish = "."
   functions = "netlify/functions"
   ignore = "node_modules"
+  
+[build.environment]
+  NODE_VERSION = "18"
+  NPM_FLAGS = "--no-save"
 
 # Netlify Functions für OpenAI Proxy
   
