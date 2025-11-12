@@ -473,6 +473,7 @@ class RealUserAuthSystem {
             
             // Stelle sicher, dass Email getrimmt ist
             const trimmedEmail = email.trim().toLowerCase();
+            console.log('📧 Eingabe E-Mail:', email, '→ Getrimmt:', trimmedEmail);
             
             // Für bekannte E-Mails: Verwende direkt den Username (UUID)
             // Das ist nötig weil Cognito den Username als UUID speichert, nicht als E-Mail
@@ -486,14 +487,18 @@ class RealUserAuthSystem {
             const storedUsername = localStorage.getItem(`cognito_username_${trimmedEmail}`);
             if (storedUsername) {
                 usernameToTry = storedUsername;
-                console.log('📝 Verwende gespeicherten Username:', usernameToTry);
+                console.log('📝 [1] Verwende gespeicherten Username aus localStorage:', usernameToTry);
             } else if (usernameMappings[trimmedEmail]) {
                 // Verwende direkt den gemappten Username für bekannte E-Mails
                 usernameToTry = usernameMappings[trimmedEmail];
-                console.log('📝 Verwende gemappten Username für', trimmedEmail, ':', usernameToTry);
+                console.log('📝 [2] Verwende gemappten Username für', trimmedEmail, ':', usernameToTry);
                 // Speichere für zukünftige Logins
                 localStorage.setItem(`cognito_username_${trimmedEmail}`, usernameToTry);
+            } else {
+                console.log('⚠️ [3] Kein Mapping gefunden für', trimmedEmail, '- verwende E-Mail als Username');
             }
+            
+            console.log('🎯 Finaler Username für Login:', usernameToTry);
             
             const params = {
                 AuthFlow: 'USER_PASSWORD_AUTH',
