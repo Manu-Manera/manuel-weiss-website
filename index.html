@@ -40,6 +40,12 @@
                 <a href="applications/index.html" class="nav-link">Bewerbungsautomatisierung</a>
                 <a href="website-services.html" class="nav-link">Services</a>
                 
+                <!-- Beraterprofil Download -->
+                <a href="#" class="nav-link" id="profileDownloadBtn" onclick="downloadBeraterprofil(); return false;" style="display: inline-flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-download"></i>
+                    <span>Beraterprofil</span>
+                </a>
+                
                 <!-- Language Switcher - nur eine Auswahl -->
                 <div class="language-switcher">
                     <a href="en/index.html" class="lang-link" title="Switch to English">🇬🇧 EN</a>
@@ -115,20 +121,20 @@
             </div>
             <div class="hero-visual">
                 <div class="hero-image">
-                    <img src="manuel-weiss-portrait.jpg" alt="Manuel Weiss" class="profile-image" id="profile-photo">
+                    <img src="manuel-weiss-portrait.jpg" alt="Manuel Weiss" class="profile-image" id="profile-photo" onerror="this.src='images/manuel-weiss-portrait.jpg'; this.onerror=null;">
                 </div>
                 <div class="hero-stats">
                     <div class="stat-item">
                         <span class="stat-number" id="stat1-number">6+</span>
-                        <span class="stat-label" id="stat1-label">Jahre IT Projekt Erfahrung</span>
+                        <span class="stat-label" id="stat1-label">JAHRE IT PROJEKT ERFAHRUNG</span>
                     </div>
                     <div class="stat-item">
                         <span class="stat-number" id="stat2-number">60+</span>
-                        <span class="stat-label" id="stat2-label">Erfolgreich implementierte Projekte</span>
+                        <span class="stat-label" id="stat2-label">ERFOLGREICH IMPLEMENTIERTE PROJEKTE</span>
                     </div>
                     <div class="stat-item">
                         <span class="stat-number" id="stat3-number">100%</span>
-                        <span class="stat-label" id="stat3-label">Lernkurveneffekt ;)</span>
+                        <span class="stat-label" id="stat3-label">LERNKURVENEFFEKT ;)</span>
                     </div>
                 </div>
             </div>
@@ -370,15 +376,15 @@
                     <div class="about-stats">
                         <div class="stat-card">
                             <div class="stat-number">6+</div>
-                            <div class="stat-label">Jahre IT Projekt Erfahrung</div>
+                            <div class="stat-label">JAHRE IT PROJEKT ERFAHRUNG</div>
                         </div>
                         <div class="stat-card">
                             <div class="stat-number">60+</div>
-                            <div class="stat-label">Erfolgreich implementierte Projekte</div>
+                            <div class="stat-label">ERFOLGREICH IMPLEMENTIERTE PROJEKTE</div>
                         </div>
                         <div class="stat-card">
                             <div class="stat-number">100%</div>
-                            <div class="stat-label">Lernkurveneffekt ;)</div>
+                            <div class="stat-label">LERNKURVENEFFEKT ;)</div>
                         </div>
                     </div>
                 </div>
@@ -1248,11 +1254,11 @@
             const stat3Label = document.querySelector('.hero-stats .stat-item:nth-child(3) .stat-label');
             
             if (stat1Number && !stat1Number.textContent) stat1Number.textContent = '6+';
-            if (stat1Label && !stat1Label.textContent) stat1Label.textContent = 'Jahre IT Projekt Erfahrung';
+            if (stat1Label && !stat1Label.textContent) stat1Label.textContent = 'JAHRE IT PROJEKT ERFAHRUNG';
             if (stat2Number && !stat2Number.textContent) stat2Number.textContent = '60+';
-            if (stat2Label && !stat2Label.textContent) stat2Label.textContent = 'Erfolgreich implementierte Projekte';
+            if (stat2Label && !stat2Label.textContent) stat2Label.textContent = 'ERFOLGREICH IMPLEMENTIERTE PROJEKTE';
             if (stat3Number && !stat3Number.textContent) stat3Number.textContent = '100%';
-            if (stat3Label && !stat3Label.textContent) stat3Label.textContent = 'Lernkurveneffekt ;)';
+            if (stat3Label && !stat3Label.textContent) stat3Label.textContent = 'LERNKURVENEFFEKT ;)';
         }
         
         // Polling für Live-Updates (falls Storage-Events nicht funktionieren)
