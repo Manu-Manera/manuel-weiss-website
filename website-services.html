@@ -101,9 +101,15 @@
         
         .services-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
             gap: 2rem;
             margin-top: 3rem;
+        }
+        
+        @media (max-width: 1024px) {
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
         }
         
         .service-card {
@@ -353,187 +359,130 @@
     <!-- Hero Section -->
     <section class="services-hero">
         <div class="services-hero-content">
-            <h1><i class="fas fa-globe"></i> Website Services</h1>
-            <p>67 professionelle HTML-Seiten für Ihr Online-Business. Von Persönlichkeitsentwicklung bis Bewerbungsautomatisierung - alle Services an einem Ort.</p>
-            <div class="services-stats">
-                <div class="services-stat">
-                    <span class="services-stat-number">67</span>
-                    <span class="services-stat-label">HTML-Seiten</span>
-                </div>
-                <div class="services-stat">
-                    <span class="services-stat-number">10+</span>
-                    <span class="services-stat-label">Hauptservices</span>
-                </div>
-                <div class="services-stat">
-                    <span class="services-stat-number">100%</span>
-                    <span class="services-stat-label">Responsive</span>
-                </div>
-            </div>
+            <h1>Meine Services für Dich</h1>
+            <p>Entdecke meine Angebote für deine persönliche Entwicklung und Aktivitäten</p>
         </div>
     </section>
 
     <!-- Services Section -->
     <section class="services-section">
         <div class="services-container">
-            <div class="section-header">
-                <h2 class="section-title">Alle verfügbaren Services</h2>
-                <p class="section-subtitle">
-                    Professionelle Lösungen für Ihr Business - von Coaching bis Automatisierung
-                </p>
-            </div>
-            
-            <div class="services-grid">
-                <!-- Homepage -->
-                <div class="service-card" onclick="window.location.href='index.html'">
-                    <div class="service-icon">
-                        <i class="fas fa-home"></i>
+            <div class="services-grid" style="grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));">
+                <!-- Privater Kontext und Aktivitäten -->
+                <div class="service-card" style="min-height: 500px;">
+                    <div class="service-icon" style="width: 80px; height: 80px; font-size: 2.5rem;">
+                        <i class="fas fa-user"></i>
                     </div>
-                    <h3>Homepage</h3>
-                    <p>Professionelle Unternehmensdarstellung mit modernem Design und vollständiger Business-Präsentation.</p>
-                    <ul class="service-features">
-                        <li>Responsive Design</li>
-                        <li>SEO-optimiert</li>
-                        <li>Moderne UI/UX</li>
-                    </ul>
-                    <a href="index.html" class="service-link">
-                        Zur Homepage <i class="fas fa-arrow-right"></i>
-                    </a>
+                    <h3 style="font-size: 2rem; margin-bottom: 1.5rem;">Privater Kontext und Aktivitäten</h3>
+                    <p style="font-size: 1.125rem; margin-bottom: 2rem; color: #6b7280;">
+                        Alles für deine persönliche Entwicklung, Fitness und Wohlbefinden
+                    </p>
+                    
+                    <div style="display: grid; gap: 1.5rem; margin-bottom: 2rem;">
+                        <div style="display: flex; align-items: start; gap: 1rem; padding: 1rem; background: #f9fafb; border-radius: 0.75rem;">
+                            <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.25rem; flex-shrink: 0;">
+                                <i class="fas fa-brain"></i>
+                            </div>
+                            <div>
+                                <h4 style="font-size: 1.125rem; font-weight: 600; color: #1f2937; margin-bottom: 0.5rem;">Persönlichkeitsentwicklung</h4>
+                                <p style="color: #6b7280; font-size: 0.875rem; margin-bottom: 0.5rem;">40+ bewährte Methoden für deine persönliche Entwicklung</p>
+                                <a href="persoenlichkeitsentwicklung-uebersicht.html" style="color: #667eea; font-weight: 500; text-decoration: none; font-size: 0.875rem;">
+                                    Methoden entdecken <i class="fas fa-arrow-right" style="font-size: 0.75rem;"></i>
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; align-items: start; gap: 1rem; padding: 1rem; background: #f9fafb; border-radius: 0.75rem;">
+                            <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.25rem; flex-shrink: 0;">
+                                <i class="fas fa-dumbbell"></i>
+                            </div>
+                            <div>
+                                <h4 style="font-size: 1.125rem; font-weight: 600; color: #1f2937; margin-bottom: 0.5rem;">Personal Training</h4>
+                                <p style="color: #6b7280; font-size: 0.875rem; margin-bottom: 0.5rem;">Individuelle Trainingspläne für deine Fitness-Ziele</p>
+                                <a href="personal-training.html" style="color: #667eea; font-weight: 500; text-decoration: none; font-size: 0.875rem;">
+                                    Trainingspläne <i class="fas fa-arrow-right" style="font-size: 0.75rem;"></i>
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; align-items: start; gap: 1rem; padding: 1rem; background: #f9fafb; border-radius: 0.75rem;">
+                            <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.25rem; flex-shrink: 0;">
+                                <i class="fas fa-apple-alt"></i>
+                            </div>
+                            <div>
+                                <h4 style="font-size: 1.125rem; font-weight: 600; color: #1f2937; margin-bottom: 0.5rem;">Ernährungsberatung</h4>
+                                <p style="color: #6b7280; font-size: 0.875rem; margin-bottom: 0.5rem;">Personalisierte Ernährungspläne und Rezepte</p>
+                                <a href="ernaehrungsberatung.html" style="color: #667eea; font-weight: 500; text-decoration: none; font-size: 0.875rem;">
+                                    Pläne ansehen <i class="fas fa-arrow-right" style="font-size: 0.75rem;"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 
-                <!-- Persönlichkeitsentwicklung -->
-                <div class="service-card" onclick="window.location.href='persoenlichkeitsentwicklung-uebersicht.html'">
-                    <div class="service-icon">
-                        <i class="fas fa-brain"></i>
-                    </div>
-                    <h3>Persönlichkeitsentwicklung</h3>
-                    <p>Interactive Coaching-Tools und bewährte Methoden für persönliche Entwicklung und Selbstfindung.</p>
-                    <ul class="service-features">
-                        <li>40+ Methoden</li>
-                        <li>Interaktive Workflows</li>
-                        <li>PDF-Export</li>
-                    </ul>
-                    <a href="persoenlichkeitsentwicklung-uebersicht.html" class="service-link">
-                        Methoden entdecken <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
-                
-                <!-- Bewerbungsautomatisierung -->
-                <div class="service-card" onclick="window.location.href='applications/index.html'">
-                    <div class="service-icon">
-                        <i class="fas fa-briefcase"></i>
-                    </div>
-                    <h3>Bewerbungsautomatisierung</h3>
-                    <p>KI-gestützte Bewerbungstools für automatisierte Anschreiben, CV-Optimierung und Tracking.</p>
-                    <ul class="service-features">
-                        <li>KI-Anschreiben</li>
-                        <li>CV-Optimierung</li>
-                        <li>Bewerbungs-Tracking</li>
-                    </ul>
-                    <a href="applications/index.html" class="service-link">
-                        Jetzt starten <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
-                
-                <!-- Personal Training -->
-                <div class="service-card" onclick="window.location.href='personal-training.html'">
-                    <div class="service-icon">
-                        <i class="fas fa-dumbbell"></i>
-                    </div>
-                    <h3>Personal Training</h3>
-                    <p>Individuelle Trainingspläne und Fitness-Coaching für Ihre persönlichen Ziele.</p>
-                    <ul class="service-features">
-                        <li>Individuelle Pläne</li>
-                        <li>Progress-Tracking</li>
-                        <li>Video-Anleitungen</li>
-                    </ul>
-                    <a href="personal-training.html" class="service-link">
-                        Trainingspläne <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
-                
-                <!-- Ernährungsberatung -->
-                <div class="service-card" onclick="window.location.href='ernaehrungsberatung.html'">
-                    <div class="service-icon">
-                        <i class="fas fa-apple-alt"></i>
-                    </div>
-                    <h3>Ernährungsberatung</h3>
-                    <p>Personalisierte Ernährungspläne und Rezepte für eine gesunde und ausgewogene Ernährung.</p>
-                    <ul class="service-features">
-                        <li>Personalisierte Pläne</li>
-                        <li>Rezept-Datenbank</li>
-                        <li>Ernährungs-Tracking</li>
-                    </ul>
-                    <a href="ernaehrungsberatung.html" class="service-link">
-                        Pläne ansehen <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
-                
-                <!-- HR Designer -->
-                <div class="service-card" onclick="window.location.href='hr-designer.html'">
-                    <div class="service-icon">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <h3>HR Designer</h3>
-                    <p>HR-Design und Prozessoptimierung für moderne Personalabteilungen.</p>
-                    <ul class="service-features">
-                        <li>Prozessoptimierung</li>
-                        <li>HR-Tools</li>
-                        <li>Workflow-Design</li>
-                    </ul>
-                    <a href="hr-designer.html" class="service-link">
-                        Mehr erfahren <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
-                
-                <!-- Vermietung -->
-                <div class="service-card" onclick="window.location.href='wohnmobil.html'">
-                    <div class="service-icon">
+                <!-- Vermietungen -->
+                <div class="service-card" style="min-height: 500px;">
+                    <div class="service-icon" style="width: 80px; height: 80px; font-size: 2.5rem;">
                         <i class="fas fa-caravan"></i>
                     </div>
-                    <h3>Vermietung</h3>
-                    <p>Wohnmobil, E-Bikes, SUP und Fotobox - alles für Ihren nächsten Abenteuer oder Event.</p>
-                    <ul class="service-features">
-                        <li>Wohnmobil</li>
-                        <li>E-Bikes</li>
-                        <li>SUP & Fotobox</li>
-                    </ul>
-                    <a href="wohnmobil.html" class="service-link">
-                        Verfügbarkeit prüfen <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
-                
-                <!-- KI Strategie -->
-                <div class="service-card" onclick="window.location.href='ki-strategieentwicklung.html'">
-                    <div class="service-icon">
-                        <i class="fas fa-robot"></i>
+                    <h3 style="font-size: 2rem; margin-bottom: 1.5rem;">Vermietungen</h3>
+                    <p style="font-size: 1.125rem; margin-bottom: 2rem; color: #6b7280;">
+                        Wohnmobil, E-Bikes, SUP und Fotobox für dein nächstes Abenteuer oder Event
+                    </p>
+                    
+                    <div style="display: grid; gap: 1.5rem; margin-bottom: 2rem;">
+                        <div style="display: flex; align-items: start; gap: 1rem; padding: 1rem; background: #f9fafb; border-radius: 0.75rem;">
+                            <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.25rem; flex-shrink: 0;">
+                                <i class="fas fa-caravan"></i>
+                            </div>
+                            <div>
+                                <h4 style="font-size: 1.125rem; font-weight: 600; color: #1f2937; margin-bottom: 0.5rem;">Wohnmobil</h4>
+                                <p style="color: #6b7280; font-size: 0.875rem; margin-bottom: 0.5rem;">Komfortable Reisen mit unserem modernen Wohnmobil</p>
+                                <a href="wohnmobil.html" style="color: #667eea; font-weight: 500; text-decoration: none; font-size: 0.875rem;">
+                                    Verfügbarkeit prüfen <i class="fas fa-arrow-right" style="font-size: 0.75rem;"></i>
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; align-items: start; gap: 1rem; padding: 1rem; background: #f9fafb; border-radius: 0.75rem;">
+                            <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.25rem; flex-shrink: 0;">
+                                <i class="fas fa-bicycle"></i>
+                            </div>
+                            <div>
+                                <h4 style="font-size: 1.125rem; font-weight: 600; color: #1f2937; margin-bottom: 0.5rem;">E-Bikes</h4>
+                                <p style="color: #6b7280; font-size: 0.875rem; margin-bottom: 0.5rem;">Elektrofahrräder für umweltfreundliche Mobilität</p>
+                                <a href="ebike.html" style="color: #667eea; font-weight: 500; text-decoration: none; font-size: 0.875rem;">
+                                    E-Bikes ansehen <i class="fas fa-arrow-right" style="font-size: 0.75rem;"></i>
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; align-items: start; gap: 1rem; padding: 1rem; background: #f9fafb; border-radius: 0.75rem;">
+                            <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.25rem; flex-shrink: 0;">
+                                <i class="fas fa-water"></i>
+                            </div>
+                            <div>
+                                <h4 style="font-size: 1.125rem; font-weight: 600; color: #1f2937; margin-bottom: 0.5rem;">SUP</h4>
+                                <p style="color: #6b7280; font-size: 0.875rem; margin-bottom: 0.5rem;">Stand-Up Paddling für Wassersport-Enthusiasten</p>
+                                <a href="sup.html" style="color: #667eea; font-weight: 500; text-decoration: none; font-size: 0.875rem;">
+                                    SUP mieten <i class="fas fa-arrow-right" style="font-size: 0.75rem;"></i>
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; align-items: start; gap: 1rem; padding: 1rem; background: #f9fafb; border-radius: 0.75rem;">
+                            <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 0.75rem; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.25rem; flex-shrink: 0;">
+                                <i class="fas fa-camera"></i>
+                            </div>
+                            <div>
+                                <h4 style="font-size: 1.125rem; font-weight: 600; color: #1f2937; margin-bottom: 0.5rem;">Fotobox</h4>
+                                <p style="color: #6b7280; font-size: 0.875rem; margin-bottom: 0.5rem;">Professionelle Fotobox für Events und Feiern</p>
+                                <a href="fotobox.html" style="color: #667eea; font-weight: 500; text-decoration: none; font-size: 0.875rem;">
+                                    Fotobox buchen <i class="fas fa-arrow-right" style="font-size: 0.75rem;"></i>
+                                </a>
+                            </div>
+                        </div>
                     </div>
-                    <h3>KI Strategieentwicklung</h3>
-                    <p>Strategische Beratung für KI-Integration und digitale Transformation.</p>
-                    <ul class="service-features">
-                        <li>Strategieentwicklung</li>
-                        <li>KI-Integration</li>
-                        <li>Transformation</li>
-                    </ul>
-                    <a href="ki-strategieentwicklung.html" class="service-link">
-                        Strategie starten <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
-                
-                <!-- Digital Workplace -->
-                <div class="service-card" onclick="window.location.href='digital-workplace.html'">
-                    <div class="service-icon">
-                        <i class="fas fa-laptop"></i>
-                    </div>
-                    <h3>Digital Workplace</h3>
-                    <p>Moderne Arbeitsplatzlösungen für digitale Zusammenarbeit und Produktivität.</p>
-                    <ul class="service-features">
-                        <li>Kollaboration</li>
-                        <li>Produktivität</li>
-                        <li>Moderne Tools</li>
-                    </ul>
-                    <a href="digital-workplace.html" class="service-link">
-                        Lösungen ansehen <i class="fas fa-arrow-right"></i>
-                    </a>
                 </div>
             </div>
         </div>
