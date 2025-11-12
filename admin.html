@@ -5,10 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - Manuel Weiss</title>
     
-    <!-- AWS Media Config (set MEDIA_API_BASE to your API) -->
-    <script src="js/aws-app-config.js"></script>
-    <!-- AWS Media Helpers (presigned uploads) -->
-    <script src="js/aws-media.js"></script>
     <!-- Styles -->
     <link rel="stylesheet" href="admin-styles.css">
     <link rel="stylesheet" href="admin-modern-styles.css">
@@ -638,9 +634,6 @@
     <script src="js/admin/core/lazy-loader.js?v=20251020"></script>
     <script src="js/admin/components/section-loader.js?v=20251020"></script>
     
-    <!-- Main Application (MUST be loaded before components) -->
-    <script src="js/admin/core/admin-application.js?v=20251020"></script>
-    
     <!-- Components -->
     <script src="js/admin/components/admin-sidebar.js?v=20251020"></script>
     <script src="js/admin/components/admin-topbar.js?v=20251020"></script>
@@ -663,6 +656,9 @@
     
     <!-- Global Dependencies -->
     <script src="js/global-api-manager.js?v=20251020"></script>
+    
+    <!-- Main Application -->
+    <script src="js/admin/core/admin-application.js?v=20251020"></script>
     
     <!-- Initialize -->
     <script>
@@ -715,8 +711,6 @@
                 }
             }
         });
-    <!-- Scripts -->
-    <script src="js/admin-user-management-ui.js"></script>
-    <script src="js/admin-bewerbungsprofil-manager.js"></script>
-    <script src="js/admin-persoenlichkeitsentwicklung.js"></script>
-    <script src="js/admin-script.js"></script>
+    </script>
+</body>
+</html>

@@ -304,12 +304,6 @@ class AdminSidebar extends HTMLElement {
                                 <span>AI Twin</span>
                             </a>
                         </li>
-                        <li class="nav-item" data-section="ai-investments" data-tooltip="AI Investment System">
-                            <a href="#ai-investments">
-                                <i class="fas fa-chart-line"></i>
-                                <span>AI Investment System</span>
-                            </a>
-                        </li>
                         <li class="nav-item" data-section="translations" data-tooltip="Translations">
                             <a href="#translations">
                                 <i class="fas fa-language"></i>
@@ -442,37 +436,30 @@ class AdminSidebar extends HTMLElement {
                 // Initial State setzen
                 this.setActiveSection(this.activeSection);
             } else {
-                // Retry nach 100ms, aber nur maximal 50 mal (5 Sekunden)
-                if (this.retryCount < 50) {
-                    this.retryCount = (this.retryCount || 0) + 1;
-                    setTimeout(checkAdminApp, 100);
-                } else {
-                    console.warn('AdminApp not available after 5 seconds, using fallback navigation');
-                    this.useFallbackNavigation = true;
-                }
+                // Retry nach 100ms
+                setTimeout(checkAdminApp, 100);
             }
         };
         
-        this.retryCount = 0;
         checkAdminApp();
     }
     
     /**
-     * Navigation zu Section - Cookie-sichere Version
+     * Navigation zu Section
      */
     navigateToSection(sectionId) {
-        console.log('🚀 Sidebar navigation to:', sectionId);
+        console.log('Sidebar navigation to:', sectionId);
         
         // Direkte Navigation über AdminApp
         if (window.AdminApp && window.AdminApp.navigation) {
-            console.log('✅ Using AdminApp navigation');
+            console.log('Using AdminApp navigation');
             window.AdminApp.navigation.navigateToSection(sectionId);
         } else if (this.navigation) {
-            console.log('✅ Using local navigation');
+            console.log('Using local navigation');
             this.navigation.navigateToSection(sectionId);
         } else {
             // Fallback: Direkte Hash-Änderung
-            console.log('⚠️ Using fallback navigation');
+            console.log('Using fallback navigation');
             window.location.hash = '#' + sectionId;
             
             // Manuell Section laden falls AdminApp nicht verfügbar
@@ -480,9 +467,6 @@ class AdminSidebar extends HTMLElement {
                 this.loadSectionManually(sectionId);
             }, 100);
         }
-        
-        // Active Section in Sidebar setzen
-        this.setActiveSection(sectionId);
     }
     
     /**
