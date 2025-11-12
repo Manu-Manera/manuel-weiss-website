@@ -391,16 +391,41 @@ class UnifiedAWSAuth {
         try {
             console.log('🚀 Starting real AWS Cognito login...');
             
+            // Für bekannte E-Mails: Verwende direkt den Username (UUID)
+            // Das ist nötig weil Cognito den Username als UUID speichert, nicht als E-Mail
+            const trimmedEmail = email.trim().toLowerCase();
+            const usernameMappings = {
+                'weiss-manuel@gmx.de': '037478a2-b031-7001-3e0d-2a116041afe1'
+            };
+            
+            let usernameToTry = trimmedEmail;
+            
+            // Prüfe ob wir einen gespeicherten Username haben
+            const storedUsername = localStorage.getItem(`cognito_username_${trimmedEmail}`);
+            if (storedUsername) {
+                usernameToTry = storedUsername;
+                console.log('📝 Verwende gespeicherten Username:', usernameToTry);
+            } else if (usernameMappings[trimmedEmail]) {
+                // Verwende direkt den gemappten Username für bekannte E-Mails
+                usernameToTry = usernameMappings[trimmedEmail];
+                console.log('📝 Verwende gemappten Username für', trimmedEmail, ':', usernameToTry);
+                // Speichere für zukünftige Logins
+                localStorage.setItem(`cognito_username_${trimmedEmail}`, usernameToTry);
+            }
+            
             const params = {
                 AuthFlow: 'USER_PASSWORD_AUTH',
                 ClientId: this.clientId,
                 AuthParameters: {
-                    USERNAME: email.trim(),
+                    USERNAME: usernameToTry,
                     PASSWORD: password
                 }
             };
-
-            console.log('📤 Sending login request to AWS Cognito...');
+            
+            console.log('📤 Sending login request with params:', JSON.stringify(params, null, 2));
+            console.log('🔑 Username wird verwendet:', usernameToTry);
+            console.log('📧 E-Mail war:', trimmedEmail);
+            
             const result = await this.cognitoIdentityServiceProvider.initiateAuth(params).promise();
             
             console.log('✅ Login successful:', result);
