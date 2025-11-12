@@ -18,6 +18,7 @@
     
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/persoenlichkeitsentwicklung-uebersicht.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
@@ -34,41 +35,57 @@
             </div>
             
             <div class="nav-menu" id="navMenu">
-                <a href="#home" class="nav-link active" data-de="Home" data-en="Home">Home</a>
-                <a href="#services" class="nav-link" data-de="Services" data-en="Services">Services</a>
-                <a href="#about" class="nav-link" data-de="Über mich" data-en="About">Über mich</a>
-                <a href="persoenlichkeitsentwicklung-uebersicht.html" class="nav-link" data-de="Persönlichkeitsentwicklung" data-en="Personality Development">Persönlichkeitsentwicklung</a>
-                <a href="applications/index.html" class="nav-link" data-de="Bewerbungsautomatisierung" data-en="Application Automation">Bewerbungsautomatisierung</a>
-                <a href="#contact" class="nav-link" data-de="Kontakt" data-en="Contact">Kontakt</a>
+                <a href="index.html" class="nav-link active">Start</a>
+                <a href="persoenlichkeitsentwicklung-uebersicht.html" class="nav-link">Persönlichkeitsentwicklung</a>
+                <a href="applications/index.html" class="nav-link">Bewerbungsautomatisierung</a>
+                <a href="website-services.html" class="nav-link">Services</a>
                 
-        <!-- Sprachumschaltung -->
-        <div class="language-switch">
-            <button id="langSwitch" class="btn btn-lang">
-                <i class="fas fa-globe"></i>
-                <span id="currentLang">DE</span>
-            </button>
-        </div>
-        
-        <!-- Beraterprofil herunterladen Button -->
-        <div class="profile-download-section">
-            <a href="#profile-download" class="btn btn-profile" id="profileDownloadBtn">
-                <i class="fas fa-download"></i>
-                <span class="download-text">Beraterprofil herunterladen</span>
-            </a>
-        </div>
-        
-        <!-- Auth Buttons -->
-        <div class="auth-section">
-            <button id="realAuthButton" class="btn btn-auth" onclick="realUserAuth.showAuthModal()">
-                <i class="fas fa-sign-in-alt"></i>
-                <span class="auth-text">Anmelden</span>
-            </button>
-            <div id="realUserMenu" class="user-menu" style="display: none;">
-                <!-- User menu will be populated by JavaScript -->
-            </div>
-        </div>
+                <!-- Language Switcher - nur eine Auswahl -->
+                <div class="language-switcher">
+                    <a href="en/index.html" class="lang-link" title="Switch to English">🇬🇧 EN</a>
+                </div>
                 
-                
+                <!-- Auth Buttons -->
+                <div class="auth-section">
+                    <div class="nav-user" id="navUser">
+                        <button id="realAuthButton" class="nav-login-btn">
+                            <i class="fas fa-user"></i>
+                            <span>Anmelden</span>
+                        </button>
+                        
+                        <!-- User Dropdown Menu -->
+                        <div class="user-dropdown" id="userDropdown" style="display: none;">
+                            <div class="user-dropdown-header">
+                                <div class="user-avatar-small">
+                                    <img id="userAvatarImg" src="manuel-weiss-portrait.jpg" alt="User" class="user-avatar-img">
+                                </div>
+                                <div class="user-info-small">
+                                    <div class="user-name-small" id="userName">Benutzer</div>
+                                    <div class="user-email-small" id="userEmail"></div>
+                                </div>
+                            </div>
+                            <div class="user-dropdown-content">
+                                <a href="#" class="user-dropdown-item" onclick="openProfile(); return false;">
+                                    <i class="fas fa-user-circle"></i>
+                                    <span>Profil</span>
+                                </a>
+                                <a href="#" class="user-dropdown-item" onclick="openSettings(); return false;">
+                                    <i class="fas fa-cog"></i>
+                                    <span>Einstellungen</span>
+                                </a>
+                                <a href="#" class="user-dropdown-item" onclick="openProgress(); return false;">
+                                    <i class="fas fa-chart-line"></i>
+                                    <span>Fortschritt</span>
+                                </a>
+                                <div class="user-dropdown-divider"></div>
+                                <a href="#" class="user-dropdown-item logout" onclick="window.realUserAuth?.logout(); return false;">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    <span>Abmelden</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             
             <div class="nav-toggle" id="navToggle">

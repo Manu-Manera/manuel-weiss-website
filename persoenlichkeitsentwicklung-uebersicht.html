@@ -43,11 +43,10 @@
             </div>
             
             <div class="nav-menu" id="navMenu">
-                <a href="index.html" class="nav-link">Home</a>
-                <a href="index.html#services" class="nav-link">Services</a>
-                <a href="index.html#about" class="nav-link">Über mich</a>
+                <a href="index.html" class="nav-link">Start</a>
                 <a href="persoenlichkeitsentwicklung-uebersicht.html" class="nav-link active">Persönlichkeitsentwicklung</a>
-                <a href="index.html#contact" class="nav-link">Kontakt</a>
+                <a href="applications/index.html" class="nav-link">Bewerbungsautomatisierung</a>
+                <a href="website-services.html" class="nav-link">Services</a>
                 
                 <!-- Single User System -->
                 <div class="nav-user" id="navUser">
@@ -68,20 +67,20 @@
                             </div>
                         </div>
                         <div class="user-dropdown-content">
-                            <a href="#" class="user-dropdown-item" onclick="openProfile()">
+                            <a href="#" class="user-dropdown-item" onclick="openProfile(); return false;">
                                 <i class="fas fa-user-circle"></i>
                                 <span>Profil</span>
                             </a>
-                            <a href="#" class="user-dropdown-item" onclick="openSettings()">
+                            <a href="#" class="user-dropdown-item" onclick="openSettings(); return false;">
                                 <i class="fas fa-cog"></i>
                                 <span>Einstellungen</span>
                             </a>
-                            <a href="#" class="user-dropdown-item" onclick="openProgress()">
+                            <a href="#" class="user-dropdown-item" onclick="openProgress(); return false;">
                                 <i class="fas fa-chart-line"></i>
                                 <span>Fortschritt</span>
                             </a>
                             <div class="user-dropdown-divider"></div>
-                            <a href="#" class="user-dropdown-item logout" onclick="logoutUser()">
+                            <a href="#" class="user-dropdown-item logout" onclick="logoutUser(); return false;">
                                 <i class="fas fa-sign-out-alt"></i>
                                 <span>Abmelden</span>
                             </a>
@@ -89,9 +88,9 @@
                     </div>
                 </div>
                 
+                <!-- Language Switcher - nur eine Auswahl -->
                 <div class="language-switcher">
-                    <a href="index.html" class="lang-link">🇩🇪 DE</a>
-                    <a href="en/persoenlichkeitsentwicklung-uebersicht.html" class="lang-link">🇬🇧 EN</a>
+                    <a href="en/persoenlichkeitsentwicklung-uebersicht.html" class="lang-link" title="Switch to English">🇬🇧 EN</a>
                 </div>
             </div>
             
@@ -1873,13 +1872,26 @@
         }, 500);
     }
 
-    // Close dropdown when clicking outside
+    // Close dropdown when clicking outside (mit Verzögerung für Button-Click)
     document.addEventListener('click', function(event) {
         const userSystem = document.getElementById('navUser');
         const dropdown = document.getElementById('userDropdown');
+        const loginBtn = document.getElementById('navLoginBtn');
         
-        if (!userSystem.contains(event.target)) {
-            dropdown.style.display = 'none';
+        // Prüfe ob der Klick auf den Login-Button war
+        if (loginBtn && loginBtn.contains(event.target)) {
+            // Button-Click wird separat behandelt, nichts tun
+            return;
+        }
+        
+        // Prüfe ob der Klick außerhalb des User-Systems war
+        if (userSystem && dropdown && !userSystem.contains(event.target)) {
+            // Kleine Verzögerung, damit Button-Clicks zuerst verarbeitet werden
+            setTimeout(() => {
+                if (dropdown) {
+                    dropdown.style.display = 'none';
+                }
+            }, 10);
         }
     });
 

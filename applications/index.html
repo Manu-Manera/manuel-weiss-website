@@ -29,6 +29,11 @@
                 <a href="../persoenlichkeitsentwicklung-uebersicht.html" class="nav-link">Persönlichkeitsentwicklung</a>
                 <a href="index.html" class="nav-link active">Bewerbungsautomatisierung</a>
                 <a href="../website-services.html" class="nav-link">Services</a>
+                
+                <!-- Language Switcher - nur eine Auswahl -->
+                <div class="language-switcher">
+                    <a href="../en/applications/index.html" class="lang-link" title="Switch to English">🇬🇧 EN</a>
+                </div>
             </div>
             
             <div class="auth-section">
@@ -489,13 +494,26 @@
             }, 500);
         }
         
-        // Close dropdown when clicking outside
+        // Close dropdown when clicking outside (mit Verzögerung für Button-Click)
         document.addEventListener('click', function(event) {
             const navUser = document.getElementById('navUser');
             const userDropdown = document.getElementById('userDropdown');
+            const authButton = document.getElementById('realAuthButton');
             
+            // Prüfe ob der Klick auf den Auth-Button war
+            if (authButton && authButton.contains(event.target)) {
+                // Button-Click wird separat behandelt, nichts tun
+                return;
+            }
+            
+            // Prüfe ob der Klick außerhalb des User-Systems war
             if (navUser && userDropdown && !navUser.contains(event.target)) {
-                userDropdown.style.display = 'none';
+                // Kleine Verzögerung, damit Button-Clicks zuerst verarbeitet werden
+                setTimeout(() => {
+                    if (userDropdown) {
+                        userDropdown.style.display = 'none';
+                    }
+                }, 10);
             }
         });
     </script>
