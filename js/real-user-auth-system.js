@@ -247,11 +247,12 @@ class RealUserAuthSystem {
                 e.stopPropagation();
                 
                 if (this.isAuthenticated) {
-                    console.log('👤 User is authenticated - showing menu');
-                    // Show user menu or profile
-                    const userMenu = document.getElementById('realUserMenu');
-                    if (userMenu) {
-                        userMenu.style.display = userMenu.style.display === 'none' ? 'block' : 'none';
+                    console.log('👤 User is authenticated - showing dropdown');
+                    // Toggle user dropdown
+                    const userDropdown = document.getElementById('userDropdown');
+                    if (userDropdown) {
+                        const isVisible = userDropdown.style.display === 'block';
+                        userDropdown.style.display = isVisible ? 'none' : 'block';
                     }
                 } else {
                     console.log('🔓 User not authenticated - showing login modal');
@@ -304,6 +305,12 @@ class RealUserAuthSystem {
                             <div class="form-group">
                                 <label for="loginPassword">Passwort</label>
                                 <input type="password" id="loginPassword" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="checkbox-label" style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.9rem; color: #64748b;">
+                                    <input type="checkbox" id="rememberMe" style="width: 18px; height: 18px; cursor: pointer;">
+                                    <span>Angemeldet bleiben (60 Minuten)</span>
+                                </label>
                             </div>
                             <button type="submit" class="btn btn-primary auth-btn">
                                 <i class="fas fa-sign-in-alt"></i> Anmelden
@@ -421,6 +428,7 @@ class RealUserAuthSystem {
     async handleLogin() {
         const email = document.getElementById('loginEmail').value;
         const password = document.getElementById('loginPassword').value;
+        const rememberMe = document.getElementById('rememberMe')?.checked || false;
 
         if (!this.isInitialized) {
             this.showNotification('System wird noch initialisiert. Bitte warten...', 'error');
@@ -438,8 +446,8 @@ class RealUserAuthSystem {
                 this.isAuthenticated = true;
                 this.userData = result.user;
 
-                // Save session
-                this.saveSession(result.session);
+                // Save session with rememberMe option
+                this.saveSession(result.session, rememberMe);
 
                 // Load user data
                 await this.loadUserData();
@@ -1021,14 +1029,26 @@ class RealUserAuthSystem {
         }
     }
 
-    saveSession(session) {
-        // Save AWS Cognito session
-        localStorage.setItem('aws_auth_session', JSON.stringify(session));
+    saveSession(session, rememberMe = false) {
+        // Standard: 60 Minuten (3600 Sekunden)
+        // Mit "Angemeldet bleiben": 30 Tage
+        const expiresIn = rememberMe ? (30 * 24 * 60 * 60) : (60 * 60); // 30 Tage oder 60 Minuten
+        const expiresAt = new Date(Date.now() + expiresIn * 1000).toISOString();
+        
+        // Save AWS Cognito session with expiration
+        const sessionData = {
+            ...session,
+            expiresAt: expiresAt,
+            rememberMe: rememberMe
+        };
+        localStorage.setItem('aws_auth_session', JSON.stringify(sessionData));
         
         // Also save user info for quick access
         if (this.currentUser) {
             localStorage.setItem('realUser', JSON.stringify(this.currentUser));
         }
+        
+        console.log('💾 Session gespeichert:', rememberMe ? '30 Tage (Angemeldet bleiben)' : '60 Minuten');
     }
 
     clearSession() {
@@ -1142,34 +1162,42 @@ class RealUserAuthSystem {
 
     updateAuthUI() {
         const authButton = document.getElementById('realAuthButton');
-        const userMenu = document.getElementById('realUserMenu');
+        const userDropdown = document.getElementById('userDropdown');
+        const userName = document.getElementById('userName');
+        const userEmail = document.getElementById('userEmail');
+        const userAvatarImg = document.getElementById('userAvatarImg');
 
         if (this.isAuthenticated && this.currentUser) {
-            // Show user menu
-            if (authButton) authButton.style.display = 'none';
-            if (userMenu) {
-                userMenu.style.display = 'block';
-                userMenu.innerHTML = `
-                    <div class="user-menu">
-                        <div class="user-info">
-                            <i class="fas fa-user-circle"></i>
-                            <span>${this.currentUser.firstName} ${this.currentUser.lastName}</span>
-                        </div>
-                        <div class="user-actions">
-                            <a href="user-profile-dashboard.html" class="user-action">
-                                <i class="fas fa-user"></i> Mein Profil
-                            </a>
-                            <a href="#" onclick="realUserAuth.logout()" class="user-action">
-                                <i class="fas fa-sign-out-alt"></i> Abmelden
-                            </a>
-                        </div>
-                    </div>
-                `;
+            // Update button to show user name
+            if (authButton) {
+                const buttonSpan = authButton.querySelector('span');
+                if (buttonSpan) {
+                    buttonSpan.textContent = this.currentUser.firstName || this.currentUser.email || 'Benutzer';
+                }
+                authButton.style.background = 'linear-gradient(135deg, #10b981, #059669)';
             }
+            
+            // Update dropdown info
+            if (userName) {
+                userName.textContent = `${this.currentUser.firstName || ''} ${this.currentUser.lastName || ''}`.trim() || this.currentUser.email || 'Benutzer';
+            }
+            if (userEmail) {
+                userEmail.textContent = this.currentUser.email || '';
+            }
+            
+            // Dropdown wird beim Klick auf Button angezeigt (siehe attachButtonListeners)
         } else {
-            // Show auth button
-            if (authButton) authButton.style.display = 'block';
-            if (userMenu) userMenu.style.display = 'none';
+            // Show login button
+            if (authButton) {
+                const buttonSpan = authButton.querySelector('span');
+                if (buttonSpan) {
+                    buttonSpan.textContent = 'Anmelden';
+                }
+                authButton.style.background = '';
+            }
+            if (userDropdown) {
+                userDropdown.style.display = 'none';
+            }
         }
     }
 
