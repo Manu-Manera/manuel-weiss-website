@@ -9,6 +9,24 @@
 
 ---
 
+## 🚀 DEPLOYMENT - WICHTIG!
+
+> **⚠️ BEVOR DU ÄNDERUNGEN MACHST: Lese die finale Deployment-Anleitung!**
+
+**📖 [🚀_DEPLOYMENT_FINAL.md](./🚀_DEPLOYMENT_FINAL.md)** - Vollständige Anleitung für das echte Setup
+
+**Kurzfassung:**
+1. Änderungen in Cursor/IDE machen
+2. GitHub Desktop öffnen → Commit erstellen
+3. "Push origin" klicken
+4. Netlify deployt automatisch (2-3 Min)
+5. Website testen: https://mawps.netlify.app
+
+**Repository:** `Manu-Manera/manuel-weiss-website`  
+**Deployment:** GitHub Desktop → GitHub → Netlify (automatisch)
+
+---
+
 ## 📋 Inhaltsverzeichnis
 
 1. [🎯 Projektübersicht](#-projektübersicht)
