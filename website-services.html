@@ -4,82 +4,673 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Website Services - Manuel Weiss</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); min-height: 100vh; padding: 2rem; }
-        .container { max-width: 1200px; margin: 0 auto; background: white; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.1); overflow: hidden; }
-        .header { background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color: white; padding: 3rem; text-align: center; }
-        .content { padding: 3rem; }
-        .service-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-bottom: 3rem; }
-        .service-item { background: #f9fafb; border: 2px solid #e5e7eb; border-radius: 12px; padding: 1.5rem; transition: all 0.3s ease; cursor: pointer; }
-        .service-item:hover { border-color: #3b82f6; transform: translateY(-2px); }
-        .service-item h3 { color: #1f2937; margin-bottom: 0.5rem; }
-        .service-item p { color: #6b7280; font-size: 0.875rem; }
-        .cta { text-align: center; background: #f8fafc; padding: 2rem; }
-        .btn { background: #3b82f6; color: white; border: none; padding: 1rem 2rem; border-radius: 8px; font-weight: 500; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; }
-        .btn:hover { background: #2563eb; transform: translateY(-2px); }
-    </style>
-    <link rel="stylesheet" href="css/unified-auth-system.css">
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1><i class="fas fa-globe"></i> Website Services</h1>
-            <p>67 professionelle HTML-Seiten für Ihr Online-Business</p>
-        </div>
-        
-        <div class="content">
-            <div class="service-grid">
-                <div class="service-item" onclick="window.open('index.html', '_blank')">
-                    <h3><i class="fas fa-home"></i> Homepage</h3>
-                    <p>Professionelle Unternehmensdarstellung</p>
-                </div>
-                
-                <div class="service-item" onclick="window.open('persoenlichkeitsentwicklung.html', '_blank')">
-                    <h3><i class="fas fa-brain"></i> Persönlichkeitsentwicklung</h3>
-                    <p>Interactive Coaching-Tools und Methoden</p>
-                <div class="service-item" onclick="window.open('personal-training.html', '_blank')">
-                    <h3><i class="fas fa-dumbbell"></i> Personal Training</h3>
-                    <p>Individuelle Trainingspläne und Fitness-Coaching</p>
-                <div class="service-item" onclick="window.open('ernaehrungsberatung.html', '_blank')">
-                    <h3><i class="fas fa-apple-alt"></i> Ernährungsberatung</h3>
-                    <p>Personalisierte Ernährungspläne und Rezepte</p>
-                <div class="service-item" onclick="window.open('hr-designer.html', '_blank')">
-                    <h3><i class="fas fa-users"></i> HR Designer</h3>
-                    <p>HR-Design und Prozessoptimierung</p>
-                <div class="service-item" onclick="window.open('wohnmobil.html', '_blank')">
-                    <h3><i class="fas fa-caravan"></i> Vermietung</h3>
-                    <p>Wohnmobil, E-Bikes, SUP, Fotobox</p>
-            </div>
-            
-            <div class="cta">
-                <h2>Alle Services nutzen?</h2>
-                <p style="margin-bottom: 1.5rem;">Melden Sie sich an für vollständigen Zugriff</p>
-                <a href="persoenlichkeitsentwicklung-uebersicht.html" class="btn">
-                    <i class="fas fa-brain"></i> Persönlichkeitsentwicklung
-                </a>
-    </div>
-    <!-- Auth Modals Container -->
-    <div id="authModalsContainer"></div>
-</body>
-</html>
+    <meta name="description" content="67 professionelle HTML-Seiten für Ihr Online-Business. Von Persönlichkeitsentwicklung bis Bewerbungsautomatisierung - alle Services an einem Ort.">
     
-    <script>
-        // Load auth modals
-        async function loadAuthModals() {
-            try {
-                const response = await fetch('components/unified-auth-modals.html');
-                const html = await response.text();
-                document.getElementById('authModalsContainer').innerHTML = html;
-            } catch (error) {
-                console.error('Error loading auth modals:', error);
-            }
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/persoenlichkeitsentwicklung-uebersicht.css">
+    <link rel="stylesheet" href="applications/css/applications-main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        /* Services Page Specific Styles */
+        .services-hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 8rem 0 6rem;
+            position: relative;
+            overflow: hidden;
         }
         
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', () => {
-            loadAuthModals();
+        .services-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }
+        
+        .services-hero-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            color: white;
+        }
+        
+        .services-hero h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .services-hero p {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+        
+        .services-stats {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin-top: 3rem;
+            flex-wrap: wrap;
+        }
+        
+        .services-stat {
+            text-align: center;
+        }
+        
+        .services-stat-number {
+            display: block;
+            font-size: 3rem;
+            font-weight: 700;
+            color: #fbbf24;
+            line-height: 1;
+        }
+        
+        .services-stat-label {
+            font-size: 0.875rem;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: 0.5rem;
+        }
+        
+        .services-section {
+            padding: 6rem 0;
+            background: #f9fafb;
+        }
+        
+        .services-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .service-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+            border: 1px solid #f3f4f6;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border-color: #667eea;
+        }
+        
+        .service-card:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .service-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.75rem;
+            color: white;
+            box-shadow: 0 10px 15px -3px rgba(102, 126, 234, 0.3);
+        }
+        
+        .service-card h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.75rem;
+        }
+        
+        .service-card p {
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+        
+        .service-features {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0;
+        }
+        
+        .service-features li {
+            color: #6b7280;
+            font-size: 0.875rem;
+            padding: 0.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .service-features li::before {
+            content: '✓';
+            color: #10b981;
+            font-weight: 700;
+        }
+        
+        .service-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #667eea;
+            font-weight: 500;
+            text-decoration: none;
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .service-link:hover {
+            gap: 0.75rem;
+            color: #764ba2;
+        }
+        
+        .cta-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 6rem 0;
+            text-align: center;
+            color: white;
+        }
+        
+        .cta-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .cta-content h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .cta-content p {
+            font-size: 1.125rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn-cta {
+            background: white;
+            color: #667eea;
+            padding: 1rem 2rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-cta-outline {
+            background: transparent;
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .btn-cta-outline:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        @media (max-width: 768px) {
+            .services-hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .services-stats {
+                gap: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="manuel-weiss-portrait.jpg" alt="Manuel Weiss" class="nav-logo">
+                <span class="nav-name">Manuel Weiss</span>
+            </div>
+            
+            <div class="nav-menu" id="navMenu">
+                <a href="index.html" class="nav-link">Start</a>
+                <a href="persoenlichkeitsentwicklung-uebersicht.html" class="nav-link">Persönlichkeitsentwicklung</a>
+                <a href="applications/index.html" class="nav-link">Bewerbungsautomatisierung</a>
+                <a href="website-services.html" class="nav-link active">Services</a>
+                
+                <!-- Single User System -->
+                <div class="nav-user" id="navUser">
+                    <button id="realAuthButton" class="nav-login-btn">
+                        <i class="fas fa-user"></i>
+                        <span>Anmelden</span>
+                    </button>
+                    
+                    <!-- User Dropdown Menu -->
+                    <div class="user-dropdown" id="userDropdown" style="display: none;">
+                        <div class="user-dropdown-header">
+                            <div class="user-avatar-small">
+                                <img id="userAvatarImg" src="manuel-weiss-portrait.jpg" alt="User" class="user-avatar-img">
+                            </div>
+                            <div class="user-info-small">
+                                <div class="user-name-small" id="userName">Benutzer</div>
+                                <div class="user-email-small" id="userEmail"></div>
+                            </div>
+                        </div>
+                        <div class="user-dropdown-content">
+                            <a href="#" class="user-dropdown-item" onclick="openProfile(); return false;">
+                                <i class="fas fa-user-circle"></i>
+                                <span>Profil</span>
+                            </a>
+                            <a href="#" class="user-dropdown-item" onclick="openSettings(); return false;">
+                                <i class="fas fa-cog"></i>
+                                <span>Einstellungen</span>
+                            </a>
+                            <a href="#" class="user-dropdown-item" onclick="openProgress(); return false;">
+                                <i class="fas fa-chart-line"></i>
+                                <span>Fortschritt</span>
+                            </a>
+                            <div class="user-dropdown-divider"></div>
+                            <a href="#" class="user-dropdown-item logout" onclick="window.realUserAuth?.logout(); return false;">
+                                <i class="fas fa-sign-out-alt"></i>
+                                <span>Abmelden</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Language Switcher - nur eine Auswahl -->
+                <div class="language-switcher">
+                    <a href="en/website-services.html" class="lang-link" title="Switch to English">🇬🇧 EN</a>
+                </div>
+            </div>
+            
+            <div class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="services-hero">
+        <div class="services-hero-content">
+            <h1><i class="fas fa-globe"></i> Website Services</h1>
+            <p>67 professionelle HTML-Seiten für Ihr Online-Business. Von Persönlichkeitsentwicklung bis Bewerbungsautomatisierung - alle Services an einem Ort.</p>
+            <div class="services-stats">
+                <div class="services-stat">
+                    <span class="services-stat-number">67</span>
+                    <span class="services-stat-label">HTML-Seiten</span>
+                </div>
+                <div class="services-stat">
+                    <span class="services-stat-number">10+</span>
+                    <span class="services-stat-label">Hauptservices</span>
+                </div>
+                <div class="services-stat">
+                    <span class="services-stat-number">100%</span>
+                    <span class="services-stat-label">Responsive</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="services-section">
+        <div class="services-container">
+            <div class="section-header">
+                <h2 class="section-title">Alle verfügbaren Services</h2>
+                <p class="section-subtitle">
+                    Professionelle Lösungen für Ihr Business - von Coaching bis Automatisierung
+                </p>
+            </div>
+            
+            <div class="services-grid">
+                <!-- Homepage -->
+                <div class="service-card" onclick="window.location.href='index.html'">
+                    <div class="service-icon">
+                        <i class="fas fa-home"></i>
+                    </div>
+                    <h3>Homepage</h3>
+                    <p>Professionelle Unternehmensdarstellung mit modernem Design und vollständiger Business-Präsentation.</p>
+                    <ul class="service-features">
+                        <li>Responsive Design</li>
+                        <li>SEO-optimiert</li>
+                        <li>Moderne UI/UX</li>
+                    </ul>
+                    <a href="index.html" class="service-link">
+                        Zur Homepage <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                
+                <!-- Persönlichkeitsentwicklung -->
+                <div class="service-card" onclick="window.location.href='persoenlichkeitsentwicklung-uebersicht.html'">
+                    <div class="service-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3>Persönlichkeitsentwicklung</h3>
+                    <p>Interactive Coaching-Tools und bewährte Methoden für persönliche Entwicklung und Selbstfindung.</p>
+                    <ul class="service-features">
+                        <li>40+ Methoden</li>
+                        <li>Interaktive Workflows</li>
+                        <li>PDF-Export</li>
+                    </ul>
+                    <a href="persoenlichkeitsentwicklung-uebersicht.html" class="service-link">
+                        Methoden entdecken <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                
+                <!-- Bewerbungsautomatisierung -->
+                <div class="service-card" onclick="window.location.href='applications/index.html'">
+                    <div class="service-icon">
+                        <i class="fas fa-briefcase"></i>
+                    </div>
+                    <h3>Bewerbungsautomatisierung</h3>
+                    <p>KI-gestützte Bewerbungstools für automatisierte Anschreiben, CV-Optimierung und Tracking.</p>
+                    <ul class="service-features">
+                        <li>KI-Anschreiben</li>
+                        <li>CV-Optimierung</li>
+                        <li>Bewerbungs-Tracking</li>
+                    </ul>
+                    <a href="applications/index.html" class="service-link">
+                        Jetzt starten <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                
+                <!-- Personal Training -->
+                <div class="service-card" onclick="window.location.href='personal-training.html'">
+                    <div class="service-icon">
+                        <i class="fas fa-dumbbell"></i>
+                    </div>
+                    <h3>Personal Training</h3>
+                    <p>Individuelle Trainingspläne und Fitness-Coaching für Ihre persönlichen Ziele.</p>
+                    <ul class="service-features">
+                        <li>Individuelle Pläne</li>
+                        <li>Progress-Tracking</li>
+                        <li>Video-Anleitungen</li>
+                    </ul>
+                    <a href="personal-training.html" class="service-link">
+                        Trainingspläne <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                
+                <!-- Ernährungsberatung -->
+                <div class="service-card" onclick="window.location.href='ernaehrungsberatung.html'">
+                    <div class="service-icon">
+                        <i class="fas fa-apple-alt"></i>
+                    </div>
+                    <h3>Ernährungsberatung</h3>
+                    <p>Personalisierte Ernährungspläne und Rezepte für eine gesunde und ausgewogene Ernährung.</p>
+                    <ul class="service-features">
+                        <li>Personalisierte Pläne</li>
+                        <li>Rezept-Datenbank</li>
+                        <li>Ernährungs-Tracking</li>
+                    </ul>
+                    <a href="ernaehrungsberatung.html" class="service-link">
+                        Pläne ansehen <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                
+                <!-- HR Designer -->
+                <div class="service-card" onclick="window.location.href='hr-designer.html'">
+                    <div class="service-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>HR Designer</h3>
+                    <p>HR-Design und Prozessoptimierung für moderne Personalabteilungen.</p>
+                    <ul class="service-features">
+                        <li>Prozessoptimierung</li>
+                        <li>HR-Tools</li>
+                        <li>Workflow-Design</li>
+                    </ul>
+                    <a href="hr-designer.html" class="service-link">
+                        Mehr erfahren <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                
+                <!-- Vermietung -->
+                <div class="service-card" onclick="window.location.href='wohnmobil.html'">
+                    <div class="service-icon">
+                        <i class="fas fa-caravan"></i>
+                    </div>
+                    <h3>Vermietung</h3>
+                    <p>Wohnmobil, E-Bikes, SUP und Fotobox - alles für Ihren nächsten Abenteuer oder Event.</p>
+                    <ul class="service-features">
+                        <li>Wohnmobil</li>
+                        <li>E-Bikes</li>
+                        <li>SUP & Fotobox</li>
+                    </ul>
+                    <a href="wohnmobil.html" class="service-link">
+                        Verfügbarkeit prüfen <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                
+                <!-- KI Strategie -->
+                <div class="service-card" onclick="window.location.href='ki-strategieentwicklung.html'">
+                    <div class="service-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3>KI Strategieentwicklung</h3>
+                    <p>Strategische Beratung für KI-Integration und digitale Transformation.</p>
+                    <ul class="service-features">
+                        <li>Strategieentwicklung</li>
+                        <li>KI-Integration</li>
+                        <li>Transformation</li>
+                    </ul>
+                    <a href="ki-strategieentwicklung.html" class="service-link">
+                        Strategie starten <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                
+                <!-- Digital Workplace -->
+                <div class="service-card" onclick="window.location.href='digital-workplace.html'">
+                    <div class="service-icon">
+                        <i class="fas fa-laptop"></i>
+                    </div>
+                    <h3>Digital Workplace</h3>
+                    <p>Moderne Arbeitsplatzlösungen für digitale Zusammenarbeit und Produktivität.</p>
+                    <ul class="service-features">
+                        <li>Kollaboration</li>
+                        <li>Produktivität</li>
+                        <li>Moderne Tools</li>
+                    </ul>
+                    <a href="digital-workplace.html" class="service-link">
+                        Lösungen ansehen <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="cta-content">
+            <h2>Alle Services nutzen?</h2>
+            <p>Melden Sie sich an für vollständigen Zugriff auf alle Funktionen und Premium-Features.</p>
+            <div class="cta-buttons">
+                <a href="persoenlichkeitsentwicklung-uebersicht.html" class="btn-cta">
+                    <i class="fas fa-user-plus"></i>
+                    Jetzt anmelden
+                </a>
+                <a href="applications/index.html" class="btn-cta btn-cta-outline">
+                    <i class="fas fa-rocket"></i>
+                    Bewerbungen starten
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Manuel Weiss</h3>
+                <p>HR Berater für AI & Transformation</p>
+            </div>
+            <div class="footer-section">
+                <h4>Services</h4>
+                <ul>
+                    <li><a href="persoenlichkeitsentwicklung-uebersicht.html">Persönlichkeitsentwicklung</a></li>
+                    <li><a href="applications/index.html">Bewerbungsautomatisierung</a></li>
+                    <li><a href="website-services.html">Alle Services</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Kontakt</h4>
+                <ul>
+                    <li><a href="index.html#contact">Kontakt aufnehmen</a></li>
+                    <li><a href="impressum.html">Impressum</a></li>
+                    <li><a href="datenschutz.html">Datenschutz</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Manuel Weiss. Alle Rechte vorbehalten.</p>
+        </div>
+    </footer>
+
+    <!-- AWS Auth System -->
+    <script>
+        // AWS Config INLINE (um Cache-Probleme zu vermeiden)
+        window.AWS_CONFIG = {
+            userPoolId: 'eu-central-1_8gP4gLK9r',
+            clientId: '7kc5tt6a23fgh53d60vkefm812',
+            region: 'eu-central-1',
+            domain: {
+                name: 'manuel-weiss.ch',
+                email: 'mail@manuel-weiss.ch',
+                region: 'eu-central-1'
+            },
+            s3: {
+                bucket: 'mawps-user-files-1760106396',
+                region: 'eu-central-1'
+            },
+            dynamodb: {
+                tableName: 'mawps-user-profiles',
+                region: 'eu-central-1'
+            }
+        };
+        
+        // Initialize AWS with configuration
+        if (typeof AWS !== 'undefined') {
+            AWS.config.update({
+                region: window.AWS_CONFIG.region
+            });
+            window.AWS_COGNITO_CONFIG = {
+                UserPoolId: window.AWS_CONFIG.userPoolId,
+                ClientId: window.AWS_CONFIG.clientId
+            };
+        }
+    </script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="js/real-user-auth-system.js?v=20250114"></script>
+    
+    <!-- Menü-Funktionen -->
+    <script>
+        function openProfile() {
+            if (window.realUserAuth && window.realUserAuth.showNotification) {
+                window.realUserAuth.showNotification('Profil wird geöffnet...', 'info');
+            }
+            setTimeout(() => {
+                window.location.href = 'user-profile.html#personal';
+            }, 500);
+        }
+        
+        function openSettings() {
+            if (window.realUserAuth && window.realUserAuth.showNotification) {
+                window.realUserAuth.showNotification('Einstellungen werden geöffnet...', 'info');
+            }
+            setTimeout(() => {
+                window.location.href = 'user-profile.html#settings';
+            }, 500);
+        }
+        
+        function openProgress() {
+            if (window.realUserAuth && window.realUserAuth.showNotification) {
+                window.realUserAuth.showNotification('Fortschritt wird angezeigt...', 'info');
+            }
+            setTimeout(() => {
+                window.location.href = 'user-profile.html#progress';
+            }, 500);
+        }
+        
+        // Close dropdown when clicking outside (mit Verzögerung für Button-Click)
+        document.addEventListener('click', function(event) {
+            const navUser = document.getElementById('navUser');
+            const userDropdown = document.getElementById('userDropdown');
+            const authButton = document.getElementById('realAuthButton');
+            
+            // Prüfe ob der Klick auf den Auth-Button war
+            if (authButton && authButton.contains(event.target)) {
+                return;
+            }
+            
+            // Prüfe ob der Klick außerhalb des User-Systems war
+            if (navUser && userDropdown && !navUser.contains(event.target)) {
+                setTimeout(() => {
+                    if (userDropdown) {
+                        userDropdown.style.display = 'none';
+                    }
+                }, 10);
+            }
         });
     </script>
+</body>
+</html>
