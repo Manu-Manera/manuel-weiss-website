@@ -283,13 +283,16 @@ class RealUserAuthSystem {
                 console.log('📋 DOMContentLoaded - attaching button listeners');
                 this.attachButtonListeners();
             });
+        } else {
+            // DOM already ready, attach immediately
+            this.attachButtonListeners();
         }
         
         // Also try after a short delay (in case button is added dynamically)
         setTimeout(() => {
             console.log('⏰ Delayed button listener attachment');
             this.attachButtonListeners();
-        }, 500);
+        }, 100);
         
         // Also try after window load
         window.addEventListener('load', () => {
@@ -315,36 +318,41 @@ class RealUserAuthSystem {
                 e.preventDefault();
                 e.stopPropagation();
                 
-                if (this.isAuthenticated) {
-                    console.log('👤 User is authenticated - showing dropdown');
-                    // Toggle user dropdown
-                    const userDropdown = document.getElementById('userDropdown');
-                    if (userDropdown) {
-                        const isVisible = userDropdown.style.display === 'block';
-                        userDropdown.style.display = isVisible ? 'none' : 'block';
-                    }
-                } else {
-                    console.log('🔓 User not authenticated - showing login modal');
-                    // Show login modal
-                    const modal = document.getElementById('realAuthModal');
-                    console.log('📦 Modal element:', modal ? 'FOUND' : 'NOT FOUND');
-                    
-                    if (modal) {
-                        this.showAuthModal();
+                // Use requestAnimationFrame for immediate response
+                requestAnimationFrame(() => {
+                    if (this.isAuthenticated) {
+                        console.log('👤 User is authenticated - showing dropdown');
+                        // Toggle user dropdown
+                        const userDropdown = document.getElementById('userDropdown');
+                        if (userDropdown) {
+                            const isVisible = userDropdown.style.display === 'block';
+                            userDropdown.style.display = isVisible ? 'none' : 'block';
+                            console.log('📋 Dropdown toggled:', isVisible ? 'hidden' : 'visible');
+                        }
                     } else {
-                        console.error('❌ Modal not found! Creating it now...');
-                        this.createAuthUI();
-                        setTimeout(() => this.showAuthModal(), 100);
+                        console.log('🔓 User not authenticated - showing login modal');
+                        // Show login modal
+                        const modal = document.getElementById('realAuthModal');
+                        console.log('📦 Modal element:', modal ? 'FOUND' : 'NOT FOUND');
+                        
+                        if (modal) {
+                            this.showAuthModal();
+                        } else {
+                            console.error('❌ Modal not found! Creating it now...');
+                            this.createAuthUI();
+                            setTimeout(() => this.showAuthModal(), 100);
+                        }
                     }
-                }
+                });
             };
             
-            // Add listener
-            authButton.addEventListener('click', this.handleAuthButtonClick);
-            console.log('✅ Login button listener attached to:', authButton);
+            // Remove old listeners first
+            authButton.removeEventListener('click', this.handleAuthButtonClick);
+            authButton.onclick = null;
             
-            // Also add as onclick as fallback
-            authButton.onclick = this.handleAuthButtonClick;
+            // Add listener with capture phase for faster response
+            authButton.addEventListener('click', this.handleAuthButtonClick, { capture: true });
+            console.log('✅ Login button listener attached to:', authButton);
         } else {
             console.warn('⚠️ #realAuthButton not found in DOM yet');
         }
