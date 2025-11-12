@@ -505,6 +505,8 @@ class RealUserAuthSystem {
             };
             
             console.log('📤 Sending login request with params:', JSON.stringify(params, null, 2));
+            console.log('🔑 Username wird verwendet:', usernameToTry);
+            console.log('📧 E-Mail war:', trimmedEmail);
             
             const result = await this.cognitoIdentityServiceProvider.initiateAuth(params).promise();
             
