@@ -366,8 +366,8 @@
         // AWS Configuration for Production - INLINE
         window.AWS_CONFIG = {
             // Cognito User Pool Configuration
-            userPoolId: 'eu-central-1_8gP4gLK9r', // ✅ Live User Pool ID
-            clientId: '7kc5tt6a23fgh53d60vkefm812', // ✅ Live Client ID
+            userPoolId: 'eu-central-1_8gP4gLK9r',
+            clientId: '7kc5tt6a23fgh53d60vkefm812',
             region: 'eu-central-1',
             
             // Domain Configuration
@@ -412,17 +412,17 @@
                 ClientId: window.AWS_CONFIG.clientId
             };
             
-            console.log('✅ AWS Configuration loaded (inline)');
+            console.log('AWS Configuration loaded (inline)');
         } else {
-            console.log('⚠️ AWS SDK not loaded yet, will configure when loaded');
+            console.log('AWS SDK not loaded yet, will configure when loaded');
         }
     </script>
     <!-- AWS SDK laden -->
     <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js" 
-            onerror="console.error('❌ Fehler beim Laden von AWS SDK');"></script>
+            onerror="console.error('Fehler beim Laden von AWS SDK');"></script>
     <!-- Auth & Core - mit Cache-Busting -->
     <script src="../js/real-user-auth-system.js?v=20250110" 
-            onerror="console.error('❌ Fehler beim Laden von real-user-auth-system.js');"></script>
+            onerror="console.error('Fehler beim Laden von real-user-auth-system.js');"></script>
     <script src="js/applications-core.js"></script>
     <!-- Final Check -->
     <script>
@@ -430,8 +430,8 @@
         setTimeout(function() {
             console.log('=== AUTH SYSTEM STATUS ===');
             console.log('AWS_CONFIG:', window.AWS_CONFIG);
-            console.log('AWS SDK:', typeof AWS !== 'undefined' ? '✅ Geladen' : '❌ Nicht geladen');
-            console.log('realUserAuth:', window.realUserAuth ? '✅ Vorhanden' : '❌ Nicht vorhanden');
+            console.log('AWS SDK:', typeof AWS !== 'undefined' ? 'Geladen' : 'Nicht geladen');
+            console.log('realUserAuth:', window.realUserAuth ? 'Vorhanden' : 'Nicht vorhanden');
             if (window.realUserAuth) {
                 console.log('  - Initialisiert:', window.realUserAuth.isInitialized);
                 console.log('  - User Pool ID:', window.realUserAuth.userPoolId);
