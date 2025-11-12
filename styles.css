@@ -1505,7 +1505,7 @@ a:hover {
     grid-template-columns: repeat(3, 1fr);
     gap: 1.5rem;
     width: 100%;
-    max-width: 400px;
+    max-width: 600px;
 }
 
 .stat-card {
@@ -1515,6 +1515,7 @@ a:hover {
     text-align: center;
     box-shadow: 0 5px 15px rgba(0,0,0,0.08);
     transition: all 0.3s ease;
+    min-width: 180px;
 }
 
 .stat-card:hover {
@@ -1536,8 +1537,12 @@ a:hover {
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    max-width: 280px;
+    max-width: 100%;
     margin: 0 auto;
+    padding: 0 0.5rem;
+    white-space: normal;
+    word-wrap: break-word;
+    line-height: 1.5;
 }
 
 /* Responsive About Section */
