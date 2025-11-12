@@ -9,33 +9,11 @@
   NODE_VERSION = "18"
   NPM_FLAGS = "--no-save"
 
-# Netlify Functions für OpenAI Proxy
-  
-  # Production Environment Variables
-  AWS_REGION = "eu-central-1"
-  COGNITO_USER_POOL_ID = "eu-central-1_xxxxx"
-  COGNITO_CLIENT_ID = "xxxxxxxxxx"
-  API_BASE_URL = "https://api-gateway.execute-api.eu-central-1.amazonaws.com/prod"
-  S3_MEDIA_BUCKET = "mw-prod-media"
-  CLOUDFRONT_URL = "https://d1234567890.cloudfront.net"
-  
-  # Staging Environment (für Branch Deploys)
-  [context.staging]
-    AWS_REGION = "eu-central-1"
-    COGNITO_USER_POOL_ID = "eu-central-1_staging_xxxxx"
-    COGNITO_CLIENT_ID = "staging_xxxxxxxxxx"
-    API_BASE_URL = "https://api-gateway.execute-api.eu-central-1.amazonaws.com/staging"
-    S3_MEDIA_BUCKET = "mw-staging-media"
-    CLOUDFRONT_URL = "https://d1234567890-staging.cloudfront.net"
-  
-  # Development Environment
-  [context.development]
-    AWS_REGION = "eu-central-1"
-    COGNITO_USER_POOL_ID = "eu-central-1_dev_xxxxx"
-    COGNITO_CLIENT_ID = "dev_xxxxxxxxxx"
-    API_BASE_URL = "https://api-gateway.execute-api.eu-central-1.amazonaws.com/dev"
-    S3_MEDIA_BUCKET = "mw-dev-media"
-    CLOUDFRONT_URL = "https://d1234567890-dev.cloudfront.net"
+# Hinweis: AWS-Umgebungsvariablen werden NICHT während des Builds benötigt
+# Die statische Website verwendet AWS SDK direkt im Browser zur Laufzeit
+# Falls Netlify Functions AWS-Zugriff benötigen, sollten die Variablen
+# im Netlify Dashboard unter "Site settings → Environment variables" gesetzt werden
+# und NICHT hier in netlify.toml (um Build-Fehler zu vermeiden)
   
 # Redirects für bessere SEO
 [[redirects]]
