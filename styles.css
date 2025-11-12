@@ -358,6 +358,8 @@ a:hover {
     grid-template-columns: 1fr 1fr;
     gap: var(--spacing-3xl);
     align-items: center;
+    overflow: visible;
+    box-sizing: border-box;
 }
 
 .hero-title {
@@ -514,7 +516,7 @@ a:hover {
 .stat-item {
     text-align: center;
     flex: 1 1 0;
-    padding: var(--spacing-lg) var(--spacing-sm);
+    padding: var(--spacing-lg) var(--spacing-md);
     position: relative;
     min-width: 0;
     max-width: none;
@@ -525,6 +527,7 @@ a:hover {
     background: rgba(0, 0, 0, 0.2);
     backdrop-filter: blur(10px);
     border-radius: 0;
+    width: 100%;
 }
 
 .stat-item:not(:last-child)::after {
