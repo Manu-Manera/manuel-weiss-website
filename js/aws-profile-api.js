@@ -97,7 +97,7 @@ class AWSProfileAPI {
             if (window.AWS_CONFIG?.apiBaseUrl) {
                 // Call API Gateway Lambda function
                 const response = await fetch(`${window.AWS_CONFIG.apiBaseUrl}/profile`, {
-                    method: 'PUT',
+                    method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${idToken}`
@@ -106,7 +106,15 @@ class AWSProfileAPI {
                 });
 
                 if (!response.ok) {
-                    throw new Error(`API Error: ${response.statusText}`);
+                    // Try to get error details
+                    let errorMessage = `API Error: ${response.status} ${response.statusText}`;
+                    try {
+                        const errorData = await response.json();
+                        errorMessage = errorData.error || errorData.message || errorMessage;
+                    } catch (e) {
+                        // If response is not JSON, use status text
+                    }
+                    throw new Error(errorMessage);
                 }
 
                 const result = await response.json();
