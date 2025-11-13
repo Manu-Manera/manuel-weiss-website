@@ -1,0 +1,341 @@
+/**
+ * AWS Profile API Integration
+ * Handles user profile data storage and retrieval with AWS DynamoDB
+ */
+
+class AWSProfileAPI {
+    constructor() {
+        this.isInitialized = false;
+        this.tableName = 'mawps-user-profiles';
+        this.bucketName = 'mawps-profile-images';
+        this.region = 'eu-central-1';
+        this.dynamoDB = null;
+        this.s3 = null;
+        
+        this.init();
+    }
+
+    async init() {
+        try {
+            // Wait for AWS SDK to be loaded
+            if (typeof AWS === 'undefined') {
+                console.log('⏳ Waiting for AWS SDK...');
+                setTimeout(() => this.init(), 100);
+                return;
+            }
+
+            // Initialize DynamoDB
+            this.dynamoDB = new AWS.DynamoDB.DocumentClient({
+                region: this.region,
+                credentials: AWS.config.credentials
+            });
+
+            // Initialize S3
+            this.s3 = new AWS.S3({
+                region: this.region,
+                credentials: AWS.config.credentials
+            });
+
+            this.isInitialized = true;
+            console.log('✅ AWS Profile API initialized');
+        } catch (error) {
+            console.error('❌ AWS Profile API initialization failed:', error);
+        }
+    }
+
+    /**
+     * Get authentication credentials for API calls
+     */
+    async getAuthCredentials() {
+        // Check if user is authenticated
+        if (!window.realUserAuth || !window.realUserAuth.isLoggedIn()) {
+            throw new Error('User not authenticated');
+        }
+
+        // Get current session
+        const sessionStr = localStorage.getItem('aws_auth_session');
+        if (!sessionStr) {
+            throw new Error('No valid session found');
+        }
+
+        const session = JSON.parse(sessionStr);
+        return {
+            userId: window.realUserAuth.getCurrentUser()?.id,
+            idToken: session.idToken,
+            accessToken: session.accessToken
+        };
+    }
+
+    /**
+     * Save user profile data to DynamoDB
+     */
+    async saveProfile(profileData) {
+        if (!this.isInitialized) {
+            await this.waitForInit();
+        }
+
+        try {
+            console.log('💾 Saving profile to AWS DynamoDB...');
+            
+            const { userId, idToken } = await this.getAuthCredentials();
+            
+            // Prepare item for DynamoDB
+            const item = {
+                userId: userId,
+                ...profileData,
+                updatedAt: new Date().toISOString()
+            };
+
+            // Remove undefined values
+            Object.keys(item).forEach(key => {
+                if (item[key] === undefined || item[key] === '') {
+                    delete item[key];
+                }
+            });
+
+            // Use API Gateway endpoint if available
+            if (window.AWS_CONFIG?.apiBaseUrl) {
+                // Call API Gateway Lambda function
+                const response = await fetch(`${window.AWS_CONFIG.apiBaseUrl}/profile`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${idToken}`
+                    },
+                    body: JSON.stringify(item)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.statusText}`);
+                }
+
+                const result = await response.json();
+                console.log('✅ Profile saved successfully via API');
+                return result;
+            } else {
+                // Direct DynamoDB call (requires proper IAM permissions)
+                const params = {
+                    TableName: this.tableName,
+                    Item: item
+                };
+
+                await this.dynamoDB.put(params).promise();
+                console.log('✅ Profile saved successfully to DynamoDB');
+                return { success: true };
+            }
+        } catch (error) {
+            console.error('❌ Failed to save profile:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Load user profile data from DynamoDB
+     */
+    async loadProfile() {
+        if (!this.isInitialized) {
+            await this.waitForInit();
+        }
+
+        try {
+            console.log('📥 Loading profile from AWS DynamoDB...');
+            
+            const { userId, idToken } = await this.getAuthCredentials();
+
+            // Use API Gateway endpoint if available
+            if (window.AWS_CONFIG?.apiBaseUrl) {
+                // Call API Gateway Lambda function
+                const response = await fetch(`${window.AWS_CONFIG.apiBaseUrl}/profile/${userId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${idToken}`
+                    }
+                });
+
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        console.log('ℹ️ No profile found, returning empty data');
+                        return null;
+                    }
+                    throw new Error(`API Error: ${response.statusText}`);
+                }
+
+                const result = await response.json();
+                console.log('✅ Profile loaded successfully from API');
+                return result;
+            } else {
+                // Direct DynamoDB call (requires proper IAM permissions)
+                const params = {
+                    TableName: this.tableName,
+                    Key: {
+                        userId: userId
+                    }
+                };
+
+                const result = await this.dynamoDB.get(params).promise();
+                
+                if (!result.Item) {
+                    console.log('ℹ️ No profile found, returning empty data');
+                    return null;
+                }
+
+                console.log('✅ Profile loaded successfully from DynamoDB');
+                return result.Item;
+            }
+        } catch (error) {
+            console.error('❌ Failed to load profile:', error);
+            // Return null instead of throwing to allow graceful degradation
+            return null;
+        }
+    }
+
+    /**
+     * Upload profile image to S3
+     */
+    async uploadProfileImage(file) {
+        if (!this.isInitialized) {
+            await this.waitForInit();
+        }
+
+        try {
+            console.log('📤 Uploading profile image to AWS S3...');
+            
+            const { userId, idToken } = await this.getAuthCredentials();
+            
+            // Generate unique filename
+            const fileExtension = file.name.split('.').pop();
+            const fileName = `profile-images/${userId}/avatar.${fileExtension}`;
+
+            // Use presigned URL approach if API is available
+            if (window.AWS_CONFIG?.apiBaseUrl) {
+                // Get presigned URL from API
+                const presignResponse = await fetch(`${window.AWS_CONFIG.apiBaseUrl}/profile/upload-url`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${idToken}`
+                    },
+                    body: JSON.stringify({
+                        fileName: fileName,
+                        fileType: file.type
+                    })
+                });
+
+                if (!presignResponse.ok) {
+                    throw new Error('Failed to get upload URL');
+                }
+
+                const { uploadUrl, imageUrl } = await presignResponse.json();
+
+                // Upload directly to S3 using presigned URL
+                const uploadResponse = await fetch(uploadUrl, {
+                    method: 'PUT',
+                    body: file,
+                    headers: {
+                        'Content-Type': file.type
+                    }
+                });
+
+                if (!uploadResponse.ok) {
+                    throw new Error('Failed to upload image');
+                }
+
+                console.log('✅ Profile image uploaded successfully');
+                return imageUrl;
+            } else {
+                // Direct S3 upload (requires proper IAM permissions)
+                const params = {
+                    Bucket: this.bucketName,
+                    Key: fileName,
+                    Body: file,
+                    ContentType: file.type,
+                    ACL: 'public-read'
+                };
+
+                const result = await this.s3.upload(params).promise();
+                console.log('✅ Profile image uploaded successfully to S3');
+                return result.Location;
+            }
+        } catch (error) {
+            console.error('❌ Failed to upload profile image:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Delete profile image from S3
+     */
+    async deleteProfileImage(imageUrl) {
+        if (!this.isInitialized) {
+            await this.waitForInit();
+        }
+
+        try {
+            console.log('🗑️ Deleting profile image from AWS S3...');
+            
+            const { userId, idToken } = await this.getAuthCredentials();
+            
+            if (window.AWS_CONFIG?.apiBaseUrl) {
+                const response = await fetch(`${window.AWS_CONFIG.apiBaseUrl}/profile/image`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${idToken}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to delete image');
+                }
+
+                console.log('✅ Profile image deleted successfully');
+                return true;
+            }
+        } catch (error) {
+            console.error('❌ Failed to delete profile image:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Wait for initialization
+     */
+    async waitForInit() {
+        let attempts = 0;
+        while (!this.isInitialized && attempts < 50) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+            attempts++;
+        }
+        
+        if (!this.isInitialized) {
+            throw new Error('AWS Profile API failed to initialize');
+        }
+    }
+
+    /**
+     * Sync local data with AWS (for migration)
+     */
+    async syncLocalToAWS() {
+        try {
+            console.log('🔄 Syncing local profile data to AWS...');
+            
+            // Get local data
+            const localData = localStorage.getItem('userProfile');
+            if (!localData) {
+                console.log('ℹ️ No local data to sync');
+                return;
+            }
+
+            const profileData = JSON.parse(localData);
+            
+            // Save to AWS
+            await this.saveProfile(profileData);
+            
+            console.log('✅ Local data synced to AWS successfully');
+        } catch (error) {
+            console.error('❌ Failed to sync local data to AWS:', error);
+        }
+    }
+}
+
+// Create global instance
+window.awsProfileAPI = new AWSProfileAPI();
