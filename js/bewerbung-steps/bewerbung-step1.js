@@ -10,7 +10,7 @@ window.generateStep1 = function() {
                     Schritt 1: Bewerbungsprofil erstellen
                 </h2>
                 <p style="color: #6b7280; font-size: 1.1rem; margin: 0;">
-                    Erstellen Sie Ihr persönliches Profil für optimale Bewerbungsautomatisierung
+                    Erstellen Sie Ihr persönliches Profil für optimale Bewerbungsmanager
                 </p>
             </div>
 
