@@ -2,14 +2,15 @@
 class UserProfile {
     constructor() {
         this.currentTab = 'personal';
-        this.profileData = this.loadProfileData();
-        this.progressData = this.loadProgressData();
+        this.profileData = {};
+        this.progressData = {};
+        this.awsProfileAPI = window.awsProfileAPI;
         this.init();
     }
 
-    init() {
+    async init() {
         this.setupEventListeners();
-        this.loadProfileData();
+        await this.loadProfileDataFromAWS();
         this.updateProgressDisplay();
         this.updateStats();
         this.checkAuthStatus();
@@ -17,6 +18,9 @@ class UserProfile {
         // Handle hash navigation
         this.handleHashNavigation();
         window.addEventListener('hashchange', () => this.handleHashNavigation());
+        
+        // Check if we need to migrate local data to AWS
+        this.migrateLocalDataIfNeeded();
     }
     
     handleHashNavigation() {
@@ -128,9 +132,22 @@ class UserProfile {
         });
 
         // Form inputs
+        // Auto-save on form changes with debounce
+        let saveTimeout;
         document.querySelectorAll('input, select, textarea').forEach(input => {
             input.addEventListener('change', () => {
-                this.saveProfileData();
+                // Clear existing timeout
+                clearTimeout(saveTimeout);
+                
+                // Set new timeout for auto-save
+                saveTimeout = setTimeout(async () => {
+                    try {
+                        await this.saveProfileData();
+                        this.showNotification('Änderungen automatisch gespeichert', 'success');
+                    } catch (error) {
+                        console.error('Auto-save failed:', error);
+                    }
+                }, 1000); // Save after 1 second of inactivity
             });
         });
 
@@ -174,9 +191,9 @@ class UserProfile {
 
     loadProfileData() {
         const defaultData = {
-            firstName: 'Manuel',
-            lastName: 'Weiss',
-            email: 'manuel.weiss@example.com',
+            firstName: '',
+            lastName: '',
+            email: '',
             phone: '',
             birthDate: '',
             location: '',
@@ -200,6 +217,94 @@ class UserProfile {
         }
 
         return defaultData;
+    }
+    
+    async loadProfileDataFromAWS() {
+        try {
+            console.log('📥 Loading profile from AWS...');
+            
+            if (!window.realUserAuth || !window.realUserAuth.isLoggedIn()) {
+                console.log('⚠️ User not authenticated, loading from local storage');
+                this.profileData = this.loadProfileData();
+                return;
+            }
+            
+            // Load from AWS
+            const awsData = await this.awsProfileAPI.loadProfile();
+            
+            if (awsData) {
+                console.log('✅ Profile loaded from AWS:', awsData);
+                this.profileData = awsData;
+                
+                // Update form fields with AWS data
+                this.populateFormFields(awsData);
+                
+                // Update profile image if available
+                if (awsData.profileImageUrl) {
+                    const profileImg = document.getElementById('profileImage');
+                    if (profileImg) {
+                        profileImg.src = awsData.profileImageUrl;
+                    }
+                }
+            } else {
+                console.log('ℹ️ No AWS profile found, loading from local storage');
+                this.profileData = this.loadProfileData();
+                this.populateFormFields(this.profileData);
+            }
+        } catch (error) {
+            console.error('❌ Failed to load profile from AWS:', error);
+            // Fallback to local storage
+            this.profileData = this.loadProfileData();
+            this.populateFormFields(this.profileData);
+        }
+    }
+    
+    populateFormFields(data) {
+        // Populate form fields with loaded data
+        if (data.firstName !== undefined) document.getElementById('firstName').value = data.firstName;
+        if (data.lastName !== undefined) document.getElementById('lastName').value = data.lastName;
+        if (data.email !== undefined) document.getElementById('email').value = data.email;
+        if (data.phone !== undefined) document.getElementById('phone').value = data.phone;
+        if (data.birthDate !== undefined) document.getElementById('birthDate').value = data.birthDate;
+        if (data.location !== undefined) document.getElementById('location').value = data.location;
+        if (data.profession !== undefined) document.getElementById('profession').value = data.profession;
+        if (data.company !== undefined) document.getElementById('company').value = data.company;
+        if (data.experience !== undefined) document.getElementById('experience').value = data.experience;
+        if (data.industry !== undefined) document.getElementById('industry').value = data.industry;
+        if (data.goals !== undefined) document.getElementById('goals').value = data.goals;
+        if (data.interests !== undefined) document.getElementById('interests').value = data.interests;
+        
+        // Settings
+        if (data.emailNotifications !== undefined) {
+            document.getElementById('emailNotifications').checked = data.emailNotifications;
+        }
+        if (data.weeklySummary !== undefined) {
+            document.getElementById('weeklySummary').checked = data.weeklySummary;
+        }
+        if (data.reminders !== undefined) {
+            document.getElementById('reminders').checked = data.reminders;
+        }
+        if (data.theme !== undefined) document.getElementById('theme').value = data.theme;
+        if (data.language !== undefined) document.getElementById('language').value = data.language;
+        if (data.dataSharing !== undefined) {
+            document.getElementById('dataSharing').checked = data.dataSharing;
+        }
+    }
+    
+    async migrateLocalDataIfNeeded() {
+        try {
+            // Check if we have local data but no AWS data
+            const localData = localStorage.getItem('userProfile');
+            if (localData && window.realUserAuth?.isLoggedIn()) {
+                const awsData = await this.awsProfileAPI.loadProfile();
+                if (!awsData) {
+                    console.log('🔄 Migrating local data to AWS...');
+                    await this.awsProfileAPI.syncLocalToAWS();
+                }
+            }
+        } catch (error) {
+            console.error('❌ Migration failed:', error);
+        }
     }
 
     loadProgressData() {
@@ -332,7 +437,7 @@ class UserProfile {
         });
     }
 
-    saveProfileData() {
+    async saveProfileData() {
         const formData = {
             firstName: document.getElementById('firstName')?.value || '',
             lastName: document.getElementById('lastName')?.value || '',
@@ -354,34 +459,135 @@ class UserProfile {
             dataSharing: document.getElementById('dataSharing')?.checked || false
         };
 
+        // Include profile image URL if available
+        if (this.profileData.profileImageUrl) {
+            formData.profileImageUrl = this.profileData.profileImageUrl;
+        }
+
         this.profileData = { ...this.profileData, ...formData };
+        
+        // Save to localStorage as backup
         localStorage.setItem('userProfile', JSON.stringify(this.profileData));
+        
+        // Save to AWS if authenticated
+        if (window.realUserAuth?.isLoggedIn() && this.awsProfileAPI) {
+            try {
+                console.log('💾 Saving profile to AWS...');
+                await this.awsProfileAPI.saveProfile(this.profileData);
+                console.log('✅ Profile saved to AWS successfully');
+            } catch (error) {
+                console.error('❌ Failed to save profile to AWS:', error);
+                throw error; // Re-throw to show error notification
+            }
+        }
     }
 
-    saveProfile() {
-        this.saveProfileData();
-        this.showNotification('Profil erfolgreich gespeichert!', 'success');
+    async saveProfile() {
+        try {
+            this.showLoading('Profil wird gespeichert...');
+            await this.saveProfileData();
+            this.hideLoading();
+            this.showNotification('Profil erfolgreich gespeichert!', 'success');
+        } catch (error) {
+            this.hideLoading();
+            this.showNotification('Fehler beim Speichern des Profils. Bitte versuchen Sie es erneut.', 'error');
+        }
     }
 
-    uploadAvatar() {
+    async uploadAvatar() {
         const input = document.createElement('input');
         input.type = 'file';
         input.accept = 'image/*';
-        input.onchange = (e) => {
+        input.onchange = async (e) => {
             const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                    const img = document.getElementById('profileImage');
-                    if (img) {
-                        img.src = e.target.result;
+            if (file) {
+                try {
+                    this.showLoading('Profilbild wird hochgeladen...');
+                    
+                    // Upload to AWS S3
+                    if (window.realUserAuth?.isLoggedIn() && this.awsProfileAPI) {
+                        const imageUrl = await this.awsProfileAPI.uploadProfileImage(file);
+                        
+                        // Update profile image
+                        const img = document.getElementById('profileImage');
+                        if (img) {
+                            img.src = imageUrl;
+                        }
+                        
+                        // Save image URL to profile data
+                        this.profileData.profileImageUrl = imageUrl;
+                        
+                        // Save profile to persist the image URL
+                        await this.saveProfileData();
+                        
+                        this.hideLoading();
+                        this.showNotification('Profilbild erfolgreich hochgeladen!', 'success');
+                    } else {
+                        // Fallback to local storage
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            const img = document.getElementById('profileImage');
+                            if (img) {
+                                img.src = e.target.result;
+                            }
+                            this.hideLoading();
+                            this.showNotification('Profilbild lokal gespeichert!', 'success');
+                        };
+                        reader.readAsDataURL(file);
                     }
-                    this.showNotification('Profilbild erfolgreich hochgeladen!', 'success');
-            };
-            reader.readAsDataURL(file);
+                } catch (error) {
+                    console.error('❌ Failed to upload avatar:', error);
+                    this.hideLoading();
+                    this.showNotification('Fehler beim Hochladen des Profilbilds. Bitte versuchen Sie es erneut.', 'error');
+                }
             }
         };
         input.click();
+    }
+
+    showLoading(message = 'Laden...') {
+        // Remove any existing loading
+        this.hideLoading();
+        
+        // Create loading overlay
+        const loading = document.createElement('div');
+        loading.id = 'profileLoading';
+        loading.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        `;
+        
+        loading.innerHTML = `
+            <div style="background: white; padding: 2rem; border-radius: 1rem; text-align: center;">
+                <div class="spinner" style="
+                    width: 40px;
+                    height: 40px;
+                    border: 4px solid #f3f3f3;
+                    border-top: 4px solid var(--primary-color);
+                    border-radius: 50%;
+                    animation: spin 1s linear infinite;
+                    margin: 0 auto 1rem;
+                "></div>
+                <p style="margin: 0; color: #374151;">${message}</p>
+            </div>
+        `;
+        
+        document.body.appendChild(loading);
+    }
+    
+    hideLoading() {
+        const loading = document.getElementById('profileLoading');
+        if (loading) {
+            loading.remove();
+        }
     }
 
     showNotification(message, type = 'info') {
@@ -390,7 +596,7 @@ class UserProfile {
         notification.className = `notification notification-${type}`;
         notification.innerHTML = `
             <div class="notification-content">
-                <i class="fas fa-${type === 'success' ? 'check-circle' : 'info-circle'}"></i>
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
                 <span>${message}</span>
             </div>
         `;
@@ -400,7 +606,7 @@ class UserProfile {
             position: fixed;
             top: 20px;
             right: 20px;
-            background: ${type === 'success' ? 'var(--success-color)' : 'var(--primary-color)'};
+            background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : 'var(--primary-color)'};
             color: white;
             padding: 1rem 1.5rem;
             border-radius: var(--radius-md);
@@ -414,7 +620,7 @@ class UserProfile {
         // Remove after 3 seconds
         setTimeout(() => {
             notification.style.animation = 'slideOut 0.3s ease';
-        setTimeout(() => {
+            setTimeout(() => {
                 document.body.removeChild(notification);
             }, 300);
         }, 3000);
@@ -462,6 +668,11 @@ style.textContent = `
             transform: translateX(100%);
             opacity: 0;
         }
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
     }
 `;
 document.head.appendChild(style);
