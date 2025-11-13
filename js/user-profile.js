@@ -8,21 +8,36 @@ class UserProfile {
     }
 
     init() {
-            this.setupEventListeners();
+        this.setupEventListeners();
         this.loadProfileData();
         this.updateProgressDisplay();
         this.updateStats();
         this.checkAuthStatus();
+        
+        // Handle hash navigation
+        this.handleHashNavigation();
+        window.addEventListener('hashchange', () => this.handleHashNavigation());
+    }
+    
+    handleHashNavigation() {
+        const hash = window.location.hash.slice(1); // Remove the #
+        if (hash && ['personal', 'settings', 'progress', 'achievements'].includes(hash)) {
+            console.log('📍 Navigating to tab:', hash);
+            this.switchTab(hash);
+        } else if (!hash) {
+            // Default to personal tab if no hash
+            this.switchTab('personal');
+        }
     }
 
     checkAuthStatus() {
         console.log('🔍 Checking auth status...');
-        console.log('🔍 AWS Auth available:', !!window.awsAuth);
-        console.log('🔍 Is logged in:', window.awsAuth ? window.awsAuth.isLoggedIn() : false);
+        console.log('🔍 Real User Auth available:', !!window.realUserAuth);
+        console.log('🔍 Is logged in:', window.realUserAuth ? window.realUserAuth.isLoggedIn() : false);
         
-        // Check if user is authenticated with AWS
-        if (window.awsAuth && window.awsAuth.isLoggedIn()) {
-            const currentUser = window.awsAuth.getCurrentUser();
+        // Check if user is authenticated with Real User Auth
+        if (window.realUserAuth && window.realUserAuth.isLoggedIn()) {
+            const currentUser = window.realUserAuth.getCurrentUser();
             console.log('👤 Current user from auth:', currentUser);
             
             if (currentUser) {
@@ -41,16 +56,17 @@ class UserProfile {
     updateUserInfoFromAuth(user) {
         console.log('🔄 Updating user info from auth:', user);
         
-        // Get user data from token if available
-        let userData = null;
-        if (window.awsAuth && window.awsAuth.getUserDataFromToken) {
-            userData = window.awsAuth.getUserDataFromToken();
-            console.log('👤 User data from token:', userData);
+        // Get user data from Real User Auth
+        let userData = window.realUserAuth ? window.realUserAuth.getUserData() : null;
+        if (userData) {
+            console.log('👤 User data from auth:', userData);
         }
         
-        // Use token data if available, otherwise fallback to session data
-        const displayEmail = userData ? userData.email : user.email;
-        const displayName = userData ? userData.name : (user.firstName ? `${user.firstName} ${user.lastName}` : 'Benutzer');
+        // Use real user data
+        const displayEmail = user.email || 'user@example.com';
+        const displayName = user.firstName && user.lastName ? 
+            `${user.firstName} ${user.lastName}` : 
+            (user.firstName || user.lastName || 'Benutzer');
         
         console.log('📧 Display email:', displayEmail);
         console.log('👤 Display name:', displayName);
