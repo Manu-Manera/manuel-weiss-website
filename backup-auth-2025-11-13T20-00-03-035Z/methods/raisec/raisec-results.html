@@ -1,0 +1,1398 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAISEC-Auswertung - Deine beruflichen Interessen | Manuel Weiss</title>
+    <link rel="stylesheet" href="css/raisec-smart-styles.css">
+    <link rel="stylesheet" href="css/raisec-results-styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="results-nav">
+        <div class="container">
+            <div class="nav-content">
+                <a href="index-raisec.html" class="nav-logo">
+                    <i class="fas fa-arrow-left"></i>
+                    Zurück zur Übersicht
+                </a>
+                <div class="nav-actions">
+                    <button class="btn btn-outline" onclick="window.print()">
+                        <i class="fas fa-print"></i>
+                        Drucken
+                    </button>
+                    <button class="btn btn-primary" onclick="downloadResults()">
+                        <i class="fas fa-download"></i>
+                        PDF herunterladen
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-background">
+            <div class="sparkling-stars"></div>
+        </div>
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1 class="hero-title">
+                        <span class="title-icon">📊</span>
+                        Deine RAISEC-Auswertung
+                    </h1>
+                    <p class="hero-subtitle">
+                        Entdecke deinen Persönlichkeitstyp und passende Berufsfelder
+                    </p>
+                    <p class="hero-description">
+                        Basierend auf deinen Antworten haben wir deine beruflichen Interessen 
+                        analysiert und passende Berufsfelder identifiziert.
+                    </p>
+                    <div class="hero-stats">
+                        <div class="stat-item">
+                            <span class="stat-number" id="totalScore">0</span>
+                            <span class="stat-label">Gesamtpunktzahl</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number" id="testDate">Heute</span>
+                            <span class="stat-label">Testdatum</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number" id="completionTime">6</span>
+                            <span class="stat-label">Schritte abgeschlossen</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Results Section -->
+    <section class="results-section">
+        <div class="container">
+            <div class="results-grid">
+                <!-- Haupttyp -->
+                <div class="main-type-card">
+                    <div class="card-header">
+                        <h2>Dein Haupttyp</h2>
+                        <div class="confidence-badge" id="confidenceBadge">
+                            <i class="fas fa-check-circle"></i>
+                            Hohe Übereinstimmung
+                        </div>
+                    </div>
+                    <div class="type-result" id="mainType">
+                        <div class="type-icon" id="mainTypeIcon">🔧</div>
+                        <div class="type-info">
+                            <div class="type-name" id="mainTypeName">Realistisch (R)</div>
+                            <div class="type-score" id="mainTypeScore">8.2/10</div>
+                            <div class="score-bar">
+                                <div class="score-fill" id="mainTypeScoreBar" style="width: 82%"></div>
+                            </div>
+                        </div>
+                        <div class="type-description" id="mainTypeDescription">
+                            Du bist praktisch-technisch orientiert und löst gerne konkrete Probleme. 
+                            Handwerkliche Tätigkeiten und technische Herausforderungen motivieren dich.
+                        </div>
+                    </div>
+                    <div class="type-actions">
+                        <button class="btn btn-outline" onclick="showDetailedEvaluation()">
+                            <i class="fas fa-chart-bar"></i>
+                            Detaillierte Bewertung
+                        </button>
+                        <button class="btn btn-outline" onclick="showCareerFields()">
+                            <i class="fas fa-briefcase"></i>
+                            Passende Berufsfelder
+                        </button>
+                    </div>
+                </div>
+
+                <!-- RAISEC-Hexagon -->
+                <div class="hexagon-container">
+                    <h2>Dein RAISEC-Profil</h2>
+                    <div class="hexagon-chart" id="hexagonChart">
+                        <svg viewBox="0 0 300 300" class="hexagon-svg">
+                            <!-- Hexagon Grid -->
+                            <polygon points="150,50 250,100 250,200 150,250 50,200 50,100" 
+                                     fill="none" 
+                                     stroke="rgba(255,255,255,0.3)" 
+                                     stroke-width="2"/>
+                            
+                            <!-- Score Areas -->
+                            <polygon id="realistic-area" 
+                                     points="150,50 250,100 250,200 150,250 50,200 50,100" 
+                                     fill="rgba(255,152,0,0.3)" 
+                                     stroke="#FF9800" 
+                                     stroke-width="2"/>
+                            
+                            <!-- Labels -->
+                            <text x="150" y="30" text-anchor="middle" class="hex-label">R</text>
+                            <text x="270" y="120" text-anchor="middle" class="hex-label">I</text>
+                            <text x="270" y="180" text-anchor="middle" class="hex-label">A</text>
+                            <text x="150" y="280" text-anchor="middle" class="hex-label">S</text>
+                            <text x="30" y="180" text-anchor="middle" class="hex-label">E</text>
+                            <text x="30" y="120" text-anchor="middle" class="hex-label">C</text>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Detaillierte Scores -->
+                <div class="scores-breakdown">
+                    <h2>Detaillierte Bewertung</h2>
+                    <div class="score-list" id="scoreList">
+                        <!-- Scores werden dynamisch eingefügt -->
+                    </div>
+                </div>
+
+                <!-- Berufsfelder -->
+                <div class="career-fields">
+                    <h2>Passende Berufsfelder</h2>
+                    <div class="fields-grid" id="careerFields">
+                        <!-- Berufsfelder werden dynamisch eingefügt -->
+                    </div>
+                </div>
+
+                <!-- Interpretation -->
+                <div class="interpretation">
+                    <h2>Deine Persönlichkeitsinterpretation</h2>
+                    <div class="interpretation-content" id="interpretationContent">
+                        <!-- Interpretation wird dynamisch eingefügt -->
+                    </div>
+                </div>
+
+                <!-- Empfehlungen -->
+                <div class="recommendations">
+                    <h2>Entwicklungsempfehlungen</h2>
+                    <div class="recommendations-list" id="recommendationsList">
+                        <!-- Empfehlungen werden dynamisch eingefügt -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Action Buttons -->
+    <section class="action-section">
+        <div class="container">
+            <div class="action-buttons">
+                <button class="btn-primary" onclick="downloadReport()">
+                    <i class="fas fa-download"></i> Bericht herunterladen
+                </button>
+                <button class="btn-secondary" onclick="retakeTest()">
+                    <i class="fas fa-redo"></i> Test wiederholen
+                </button>
+                <a href="../index.html" class="btn-outline">
+                    <i class="fas fa-home"></i> Zur Startseite
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Career Recommendations Section -->
+    <section class="career-recommendations">
+        <div class="container">
+            <h2 class="section-title">Passende Berufsfelder</h2>
+            <div class="career-grid" id="careerRecommendations">
+                <!-- Career recommendations will be populated here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Development Recommendations Section -->
+    <section class="development-recommendations">
+        <div class="container">
+            <h2 class="section-title">Entwicklungsempfehlungen</h2>
+            <div class="development-grid">
+                <div class="development-card">
+                    <div class="card-icon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <h3>Stärken ausbauen</h3>
+                    <p id="strengthsText">Konzentriere dich auf deine natürlichen Talente und baue sie weiter aus.</p>
+                </div>
+                <div class="development-card">
+                    <div class="card-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Schwächen verbessern</h3>
+                    <p id="weaknessesText">Identifiziere Bereiche für persönliches Wachstum und Entwicklung.</p>
+                </div>
+                <div class="development-card">
+                    <div class="card-icon">
+                        <i class="fas fa-target"></i>
+                    </div>
+                    <h3>Ziele setzen</h3>
+                    <p id="goalsText">Definiere konkrete Ziele für deine berufliche Entwicklung.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Action Buttons Section -->
+    <section class="action-buttons">
+        <div class="container">
+            <div class="action-grid">
+                <button class="action-btn primary" onclick="downloadResults()">
+                    <i class="fas fa-download"></i>
+                    <span>Bericht herunterladen</span>
+                </button>
+                <button class="action-btn secondary" onclick="retakeTest()">
+                    <i class="fas fa-redo"></i>
+                    <span>Test wiederholen</span>
+                </button>
+                <button class="action-btn tertiary" onclick="goHome()">
+                    <i class="fas fa-home"></i>
+                    <span>Zur Startseite</span>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>RAISEC-Modell</h3>
+                    <p>Berufliche Interessen & Persönlichkeitstypen</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Verwandte Methoden</h3>
+                    <ul>
+                        <li><a href="../ikigai/index-ikigai.html">Ikigai</a></li>
+                        <li><a href="../swot/index-swot.html">SWOT-Analyse</a></li>
+                        <li><a href="../wheel-of-life/index-wheel-of-life.html">Wheel of Life</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Kontakt</h3>
+                    <p>Manuel Weiss<br>Berufsorientierung & Coaching</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Manuel Weiss. Alle Rechte vorbehalten.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/raisec-workflow.js"></script>
+    <script>
+        // Add debug buttons immediately
+        function addDebugButtons() {
+            const debugContainer = document.createElement('div');
+            debugContainer.id = 'debug-container';
+            debugContainer.style.position = 'fixed';
+            debugContainer.style.top = '10px';
+            debugContainer.style.right = '10px';
+            debugContainer.style.zIndex = '9999';
+            debugContainer.style.display = 'flex';
+            debugContainer.style.flexDirection = 'column';
+            debugContainer.style.gap = '5px';
+            
+            const debugButton1 = document.createElement('button');
+            debugButton1.textContent = 'Debug: Show Data';
+            debugButton1.style.background = 'blue';
+            debugButton1.style.color = 'white';
+            debugButton1.style.padding = '10px';
+            debugButton1.style.border = 'none';
+            debugButton1.style.borderRadius = '5px';
+            debugButton1.onclick = function() {
+                console.log('=== RAISEC DEBUG DATA ===');
+                const realistic = localStorage.getItem('raisec-realistic');
+                const investigative = localStorage.getItem('raisec-investigative');
+                const artistic = localStorage.getItem('raisec-artistic');
+                const social = localStorage.getItem('raisec-social');
+                const enterprising = localStorage.getItem('raisec-enterprising');
+                const conventional = localStorage.getItem('raisec-conventional');
+                
+                console.log('Raw localStorage data:');
+                console.log('Realistic:', realistic);
+                console.log('Investigative:', investigative);
+                console.log('Artistic:', artistic);
+                console.log('Social:', social);
+                console.log('Enterprising:', enterprising);
+                console.log('Conventional:', conventional);
+                
+                // Parse and show detailed data
+                try {
+                    const realisticData = JSON.parse(realistic || '{}');
+                    const investigativeData = JSON.parse(investigative || '{}');
+                    const artisticData = JSON.parse(artistic || '{}');
+                    const socialData = JSON.parse(social || '{}');
+                    const enterprisingData = JSON.parse(enterprising || '{}');
+                    const conventionalData = JSON.parse(conventional || '{}');
+                    
+                    console.log('Parsed data:');
+                    console.log('Realistic:', realisticData);
+                    console.log('Investigative:', investigativeData);
+                    console.log('Artistic:', artisticData);
+                    console.log('Social:', socialData);
+                    console.log('Enterprising:', enterprisingData);
+                    console.log('Conventional:', conventionalData);
+                    
+                    // Calculate scores
+                    const scores = {
+                        realistic: calculateTypeScore(realisticData),
+                        investigative: calculateTypeScore(investigativeData),
+                        artistic: calculateTypeScore(artisticData),
+                        social: calculateTypeScore(socialData),
+                        enterprising: calculateTypeScore(enterprisingData),
+                        conventional: calculateTypeScore(conventionalData)
+                    };
+                    
+                    console.log('Calculated scores:', scores);
+                    
+                    // Show data in alert for easy reading
+                    let alertText = 'RAISEC Debug Data:\n\n';
+                    alertText += `Realistic: ${realistic || 'null'} (Score: ${scores.realistic})\n`;
+                    alertText += `Investigative: ${investigative || 'null'} (Score: ${scores.investigative})\n`;
+                    alertText += `Artistic: ${artistic || 'null'} (Score: ${scores.artistic})\n`;
+                    alertText += `Social: ${social || 'null'} (Score: ${scores.social})\n`;
+                    alertText += `Enterprising: ${enterprising || 'null'} (Score: ${scores.enterprising})\n`;
+                    alertText += `Conventional: ${conventional || 'null'} (Score: ${scores.conventional})\n`;
+                    
+                    alert(alertText);
+                } catch (error) {
+                    console.error('Error parsing localStorage data:', error);
+                    alert('Error parsing localStorage data. Check console for details.');
+                }
+            };
+            
+            const debugButton2 = document.createElement('button');
+            debugButton2.textContent = 'Debug: Clear Data';
+            debugButton2.style.background = 'red';
+            debugButton2.style.color = 'white';
+            debugButton2.style.padding = '10px';
+            debugButton2.style.border = 'none';
+            debugButton2.style.borderRadius = '5px';
+            debugButton2.onclick = function() {
+                localStorage.removeItem('raisec-realistic');
+                localStorage.removeItem('raisec-investigative');
+                localStorage.removeItem('raisec-artistic');
+                localStorage.removeItem('raisec-social');
+                localStorage.removeItem('raisec-enterprising');
+                localStorage.removeItem('raisec-conventional');
+                location.reload();
+            };
+            
+            const debugButton3 = document.createElement('button');
+            debugButton3.textContent = 'Debug: Test Data';
+            debugButton3.style.background = 'green';
+            debugButton3.style.color = 'white';
+            debugButton3.style.padding = '10px';
+            debugButton3.style.border = 'none';
+            debugButton3.style.borderRadius = '5px';
+            debugButton3.onclick = function() {
+                // Add realistic test data for all RAISEC types
+                const realisticData = {
+                    'technical_skills_slider': '8',
+                    'problem_solving_slider': '7',
+                    'technical_interests_slider': '9',
+                    'physical_outdoor_slider': '6',
+                    'structured_work_slider': '8',
+                    'security_reliability_slider': '7',
+                    'concrete_results_slider': '8'
+                };
+                
+                const investigativeData = {
+                    'analytical_thinking_slider': '9',
+                    'research_science_slider': '8',
+                    'complex_problems_slider': '7',
+                    'knowledge_drive_slider': '9',
+                    'scientific_method_slider': '8',
+                    'data_analysis_slider': '7'
+                };
+                
+                const artisticData = {
+                    'creativity_innovation_slider': '9',
+                    'artistic_expression_slider': '8',
+                    'emotional_intelligence_slider': '7',
+                    'originality_slider': '9',
+                    'aesthetic_sense_slider': '8',
+                    'imagination_slider': '7'
+                };
+                
+                const socialData = {
+                    'empathy_compassion_slider': '9',
+                    'communication_skills_slider': '8',
+                    'teamwork_slider': '7',
+                    'helping_others_slider': '9',
+                    'social_responsibility_slider': '8',
+                    'people_skills_slider': '7'
+                };
+                
+                const enterprisingData = {
+                    'leadership_qualities_slider': '9',
+                    'persuasion_slider': '8',
+                    'entrepreneurial_thinking_slider': '7',
+                    'initiative_slider': '9',
+                    'risk_taking_slider': '8',
+                    'networking_slider': '7'
+                };
+                
+                const conventionalData = {
+                    'organizational_skills_slider': '9',
+                    'accuracy_precision_slider': '8',
+                    'systematic_work_slider': '7',
+                    'reliability_slider': '9',
+                    'attention_detail_slider': '8',
+                    'following_procedures_slider': '7'
+                };
+                
+                localStorage.setItem('raisec-realistic', JSON.stringify(realisticData));
+                localStorage.setItem('raisec-investigative', JSON.stringify(investigativeData));
+                localStorage.setItem('raisec-artistic', JSON.stringify(artisticData));
+                localStorage.setItem('raisec-social', JSON.stringify(socialData));
+                localStorage.setItem('raisec-enterprising', JSON.stringify(enterprisingData));
+                localStorage.setItem('raisec-conventional', JSON.stringify(conventionalData));
+                
+                alert('Test-Daten hinzugefügt! Seite wird neu geladen...');
+                location.reload();
+            };
+            
+            debugContainer.appendChild(debugButton1);
+            debugContainer.appendChild(debugButton2);
+            debugContainer.appendChild(debugButton3);
+            document.body.appendChild(debugContainer);
+        }
+
+        // Add debug buttons immediately
+        addDebugButtons();
+        
+        // Load and process RAISEC data
+        document.addEventListener('DOMContentLoaded', function() {
+            loadRAISECResults();
+        });
+
+        // Also call loadRAISECResults when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', loadRAISECResults);
+        } else {
+            loadRAISECResults();
+        }
+
+        function loadRAISECResults() {
+            // Load data from all RAISEC types
+            const realisticData = JSON.parse(localStorage.getItem('raisec-realistic') || '{}');
+            const investigativeData = JSON.parse(localStorage.getItem('raisec-investigative') || '{}');
+            const artisticData = JSON.parse(localStorage.getItem('raisec-artistic') || '{}');
+            const socialData = JSON.parse(localStorage.getItem('raisec-social') || '{}');
+            const enterprisingData = JSON.parse(localStorage.getItem('raisec-enterprising') || '{}');
+            const conventionalData = JSON.parse(localStorage.getItem('raisec-conventional') || '{}');
+
+            console.log('Loaded data from localStorage:');
+            console.log('Realistic:', realisticData);
+            console.log('Investigative:', investigativeData);
+            console.log('Artistic:', artisticData);
+            console.log('Social:', socialData);
+            console.log('Enterprising:', enterprisingData);
+            console.log('Conventional:', conventionalData);
+
+            // Calculate scores for each type
+            const scores = {
+                realistic: calculateTypeScore(realisticData),
+                investigative: calculateTypeScore(investigativeData),
+                artistic: calculateTypeScore(artisticData),
+                social: calculateTypeScore(socialData),
+                enterprising: calculateTypeScore(enterprisingData),
+                conventional: calculateTypeScore(conventionalData)
+            };
+
+            console.log('Calculated scores:', scores);
+
+            // Find main type
+            const mainType = findMainType(scores);
+            console.log('Main type:', mainType, 'Score:', scores[mainType]);
+            
+            // Check if we have any data
+            const hasData = Object.values(scores).some(score => score > 0);
+            console.log('Has data:', hasData);
+            console.log('All scores:', scores);
+            
+            if (!hasData) {
+                console.log('No data found, showing message to complete test');
+                // Show message to complete test instead of demo data
+                const mainTypeElement = document.querySelector('.main-type');
+                if (mainTypeElement) {
+                    mainTypeElement.innerHTML = `
+                        <div class="no-data-message" style="text-align: center; padding: 2rem; background: #f8f9fa; border-radius: 10px; margin: 2rem 0;">
+                            <h2 style="color: #dc3545; margin-bottom: 1rem;">Test noch nicht abgeschlossen</h2>
+                            <p style="color: #6c757d; margin-bottom: 2rem;">Bitte führe zuerst den kompletten RAISEC-Test durch, um deine Ergebnisse zu sehen.</p>
+                            <a href="index-raisec.html" class="btn btn-primary" style="background: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Test starten</a>
+                        </div>
+                    `;
+                }
+                
+                // Hide other sections
+                const careerSection = document.querySelector('.career-recommendations');
+                const developmentSection = document.querySelector('.development-recommendations');
+                if (careerSection) careerSection.style.display = 'none';
+                if (developmentSection) developmentSection.style.display = 'none';
+            } else {
+                console.log('Data found, updating UI with real data');
+                console.log('Main type:', mainType, 'Score:', scores[mainType]);
+                console.log('All scores:', scores);
+                
+                // Update UI with real data
+                updateMainType(mainType, scores[mainType]);
+                updateDetailedEvaluation(scores);
+                updateCareerRecommendations(mainType, scores);
+                updatePersonalityInterpretation(mainType, scores);
+                updateDevelopmentRecommendations(mainType, scores);
+                updateHeroStats(scores);
+            }
+        }
+
+        function calculateTypeScore(data) {
+            if (!data || Object.keys(data).length === 0) {
+                console.log('No data found for this type');
+                return 0;
+            }
+            
+            console.log('Calculating score for data:', data);
+            
+            // Calculate average from all slider values
+            const sliderValues = Object.values(data).filter(value => {
+                const numValue = parseInt(value);
+                const isValid = !isNaN(numValue) && numValue >= 1 && numValue <= 10;
+                console.log(`Value: ${value}, Parsed: ${numValue}, Valid: ${isValid}`);
+                return isValid;
+            });
+            
+            console.log('Slider values found:', sliderValues);
+            
+            if (sliderValues.length === 0) {
+                console.log('No valid slider values found');
+                return 0;
+            }
+            
+            const sum = sliderValues.reduce((acc, val) => acc + parseInt(val), 0);
+            const average = sum / sliderValues.length;
+            console.log(`Sum: ${sum}, Count: ${sliderValues.length}, Average: ${average}`);
+            
+            return Math.round(average * 10) / 10;
+        }
+
+        function findMainType(scores) {
+            console.log('Finding main type from scores:', scores);
+            const mainType = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
+            console.log('Main type found:', mainType, 'with score:', scores[mainType]);
+            return mainType;
+        }
+
+        function updateMainType(type, score) {
+            const typeMap = {
+                'realistic': { 
+                    name: 'Realistisch', 
+                    icon: '🔧', 
+                    description: 'Praktisch-technisch orientiert, löst gerne konkrete Probleme. Handwerkliche Tätigkeiten und technische Herausforderungen motivieren dich.',
+                    color: '#e74c3c'
+                },
+                'investigative': { 
+                    name: 'Investigativ', 
+                    icon: '🔬', 
+                    description: 'Forschend-analytisch, wissenschaftlich interessiert. Du löst gerne komplexe Probleme und arbeitest gerne mit Daten und Theorien.',
+                    color: '#3498db'
+                },
+                'artistic': { 
+                    name: 'Künstlerisch', 
+                    icon: '🎨', 
+                    description: 'Kreativ-künstlerisch, expressiv, arbeitet gerne mit Ideen und Emotionen. Du denkst gerne außerhalb der Box.',
+                    color: '#9b59b6'
+                },
+                'social': { 
+                    name: 'Sozial', 
+                    icon: '👥', 
+                    description: 'Menschen-orientiert, helfend, arbeitet gerne mit anderen. Du möchtest anderen helfen und positive Veränderungen bewirken.',
+                    color: '#2ecc71'
+                },
+                'enterprising': { 
+                    name: 'Unternehmerisch', 
+                    icon: '💼', 
+                    description: 'Führungs-orientiert, überzeugend, arbeitet gerne mit Menschen und Ideen. Du übernimmst gerne Verantwortung und führst andere.',
+                    color: '#f39c12'
+                },
+                'conventional': { 
+                    name: 'Konventionell', 
+                    icon: '📊', 
+                    description: 'Strukturiert, regelbasiert, arbeitet gerne mit Daten und Systemen. Du schätzt Ordnung, Präzision und systematische Arbeitsweise.',
+                    color: '#95a5a6'
+                }
+            };
+
+            const typeInfo = typeMap[type];
+            if (typeInfo) {
+                document.getElementById('mainTypeIcon').textContent = typeInfo.icon;
+                document.getElementById('mainTypeName').textContent = `${typeInfo.name} (${type})`;
+                document.getElementById('mainTypeScore').textContent = `${score}/10`;
+                document.getElementById('mainTypeDescription').textContent = typeInfo.description;
+                
+                // Update score bar
+                const scoreBar = document.getElementById('mainTypeScoreBar');
+                if (scoreBar) {
+                    scoreBar.style.width = `${(score / 10) * 100}%`;
+                    scoreBar.style.backgroundColor = typeInfo.color;
+                }
+                
+                // Update confidence badge
+                const confidenceBadge = document.getElementById('confidenceBadge');
+                if (confidenceBadge) {
+                    if (score >= 8) {
+                        confidenceBadge.innerHTML = '<i class="fas fa-check-circle"></i> Sehr hohe Übereinstimmung';
+                        confidenceBadge.className = 'confidence-badge high';
+                    } else if (score >= 6) {
+                        confidenceBadge.innerHTML = '<i class="fas fa-check-circle"></i> Hohe Übereinstimmung';
+                        confidenceBadge.className = 'confidence-badge medium';
+                    } else {
+                        confidenceBadge.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Mittlere Übereinstimmung';
+                        confidenceBadge.className = 'confidence-badge low';
+                    }
+                }
+            }
+        }
+
+        function updateDetailedEvaluation(scores) {
+            const evaluationContent = document.getElementById('detailedEvaluation');
+            let html = '<div class="scores-grid">';
+            
+            Object.entries(scores).forEach(([type, score]) => {
+                const typeMap = {
+                    'R': 'Realistisch', 'I': 'Investigativ', 'A': 'Künstlerisch',
+                    'S': 'Sozial', 'E': 'Unternehmerisch', 'C': 'Konventionell'
+                };
+                
+                html += `
+                    <div class="score-item">
+                        <div class="score-label">${typeMap[type]}</div>
+                        <div class="score-bar">
+                            <div class="score-fill" style="width: ${(score/10)*100}%"></div>
+                        </div>
+                        <div class="score-value">${score}/10</div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            evaluationContent.innerHTML = html;
+        }
+
+        function updateCareerRecommendations(mainType, scores) {
+            const careerContainer = document.getElementById('careerRecommendations');
+            if (!careerContainer) {
+                console.log('Career recommendations container not found');
+                return;
+            }
+            
+            const recommendations = getCareerRecommendations(mainType, scores);
+            console.log('Career recommendations:', recommendations);
+            
+            let html = '<div class="career-grid">';
+            recommendations.forEach(career => {
+                html += `
+                    <div class="career-field">
+                        <div class="field-icon">💼</div>
+                        <div class="field-name">${career.name}</div>
+                        <div class="field-match">${career.match}</div>
+                        <div class="field-score">${career.score}/10</div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            
+            careerContainer.innerHTML = html;
+        }
+
+        function getCareerRecommendations(mainType, scores) {
+            const careers = careerDatabase[mainType] || [];
+            const topCareers = careers.slice(0, 10);
+            
+            return topCareers.map((career, index) => ({
+                name: career,
+                match: index < 3 ? 'Sehr gut' : 'Gut',
+                score: Math.round(scores[mainType] * (0.9 + Math.random() * 0.2))
+            }));
+        }
+
+        function updatePersonalityInterpretation(mainType, scores) {
+            const interpretationContent = document.getElementById('interpretationContent');
+            const interpretations = {
+                'R': {
+                    title: 'Dein realistischer Typ',
+                    strengths: ['Praktische Problemlösung', 'Handwerkliche Fähigkeiten', 'Technisches Verständnis'],
+                    development: ['Kreativität entwickeln', 'Soziale Kompetenzen stärken', 'Führungsqualitäten aufbauen']
+                },
+                'I': {
+                    title: 'Dein investigativer Typ',
+                    strengths: ['Analytisches Denken', 'Forschungsdrang', 'Wissenschaftliche Methodik'],
+                    development: ['Praktische Anwendung', 'Kommunikationsfähigkeiten', 'Teamarbeit']
+                },
+                'A': {
+                    title: 'Dein künstlerischer Typ',
+                    strengths: ['Kreativität', 'Ästhetisches Empfinden', 'Innovation'],
+                    development: ['Strukturierte Arbeitsweise', 'Geschäftssinn', 'Technische Fähigkeiten']
+                },
+                'S': {
+                    title: 'Dein sozialer Typ',
+                    strengths: ['Empathie', 'Kommunikationsfähigkeit', 'Teamarbeit'],
+                    development: ['Analytisches Denken', 'Führungsqualitäten', 'Technische Kompetenzen']
+                },
+                'E': {
+                    title: 'Dein unternehmerischer Typ',
+                    strengths: ['Führungsqualitäten', 'Überzeugungskraft', 'Initiative'],
+                    development: ['Empathie entwickeln', 'Analytische Fähigkeiten', 'Kreativität fördern']
+                },
+                'C': {
+                    title: 'Dein konventioneller Typ',
+                    strengths: ['Organisation', 'Präzision', 'Zuverlässigkeit'],
+                    development: ['Kreativität entwickeln', 'Führungsqualitäten', 'Soziale Kompetenzen']
+                }
+            };
+
+            const interpretation = interpretations[mainType];
+            interpretationContent.innerHTML = `
+                <h3>${interpretation.title}</h3>
+                <div class="interpretation-section">
+                    <h4>Deine Stärken:</h4>
+                    <ul>
+                        ${interpretation.strengths.map(strength => `<li>${strength}</li>`).join('')}
+                    </ul>
+                </div>
+                <div class="interpretation-section">
+                    <h4>Entwicklungsmöglichkeiten:</h4>
+                    <ul>
+                        ${interpretation.development.map(dev => `<li>${dev}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+        }
+
+        function updateDevelopmentRecommendations(mainType, scores) {
+            const recommendationsList = document.getElementById('recommendationsList');
+            const recommendations = {
+                'R': [
+                    'Besuche handwerkliche Kurse und Workshops',
+                    'Engagiere dich in technischen Projekten',
+                    'Netzwerke mit anderen Technikern und Handwerkern',
+                    'Entwickle deine praktischen Fähigkeiten weiter'
+                ],
+                'I': [
+                    'Besuche wissenschaftliche Konferenzen und Seminare',
+                    'Engagiere dich in Forschungsprojekten',
+                    'Lese Fachliteratur und wissenschaftliche Artikel',
+                    'Entwickle deine analytischen Fähigkeiten'
+                ],
+                'A': [
+                    'Besuche Kunstausstellungen und Museen',
+                    'Engagiere dich in kreativen Projekten',
+                    'Experimentiere mit verschiedenen künstlerischen Medien',
+                    'Entwickle deine künstlerischen Fähigkeiten'
+                ],
+                'S': [
+                    'Engagiere dich in sozialen Projekten',
+                    'Besuche Kommunikations- und Führungskurse',
+                    'Arbeite in Teams und Gruppenprojekten',
+                    'Entwickle deine sozialen Kompetenzen'
+                ],
+                'E': [
+                    'Besuche Führungskurse und Management-Seminare',
+                    'Engagiere dich in unternehmerischen Projekten',
+                    'Netzwerke mit anderen Führungskräften',
+                    'Entwickle deine Führungsqualitäten'
+                ],
+                'C': [
+                    'Besuche Organisations- und Management-Kurse',
+                    'Arbeite an strukturierten Projekten',
+                    'Entwickle deine organisatorischen Fähigkeiten',
+                    'Lerne neue Systeme und Prozesse kennen'
+                ]
+            };
+
+            const recs = recommendations[mainType] || [];
+            recommendationsList.innerHTML = recs.map(rec => `<li>${rec}</li>`).join('');
+        }
+
+        // Comprehensive Career Database (200+ professions)
+        const careerDatabase = {
+            'R': [
+                // Technische Berufe
+                'Maschinenbauingenieur', 'Elektroingenieur', 'Bauingenieur', 'Verfahrenstechniker',
+                'Mechatroniker', 'Elektroniker', 'Anlagentechniker', 'Werkzeugmechaniker',
+                'Zerspanungsmechaniker', 'Industriemechaniker', 'Kfz-Mechatroniker', 'Fahrzeugtechniker',
+                'Fluggerätemechaniker', 'Schiffsmechaniker', 'Lokführer', 'Pilot',
+                'Fluglotse', 'Schiffskapitän', 'Navigator', 'Luftfahrzeugtechniker',
+                
+                // Handwerkliche Berufe
+                'Tischler', 'Schreiner', 'Zimmerer', 'Dachdecker', 'Maurer', 'Betonbauer',
+                'Straßenbauer', 'Rohrleitungsbauer', 'Kanalbauer', 'Brunnenbauer',
+                'Steinmetz', 'Bildhauer', 'Restaurator', 'Goldschmied', 'Silberschmied',
+                'Uhrmacher', 'Optiker', 'Hörgeräteakustiker', 'Zahntechniker',
+                
+                // Landwirtschaft & Natur
+                'Landwirt', 'Gärtner', 'Forstwirt', 'Jäger', 'Fischer', 'Tierarzt',
+                'Veterinärmediziner', 'Pferdewirt', 'Tierpfleger', 'Zootierpfleger',
+                'Landschaftsgärtner', 'Garten- und Landschaftsbauer', 'Forstingenieur',
+                'Agraringenieur', 'Umweltingenieur', 'Geologe', 'Geophysiker',
+                
+                // IT & Technik
+                'Systemadministrator', 'Netzwerktechniker', 'IT-Systemelektroniker',
+                'Fachinformatiker', 'Datenbankadministrator', 'IT-Sicherheitsexperte',
+                'Cloud-Architekt', 'DevOps-Ingenieur', 'Systemanalytiker',
+                
+                // Medizin & Gesundheit
+                'Chirurg', 'Orthopäde', 'Traumatologe', 'Neurochirurg', 'Herzchirurg',
+                'Anästhesist', 'Radiologe', 'Pathologe', 'Forensiker', 'Gerichtsmediziner',
+                'Zahnarzt', 'Kieferorthopäde', 'Oralchirurg', 'Zahntechniker',
+                
+                // Sicherheit & Rettung
+                'Polizist', 'Kriminalkommissar', 'FBI-Agent', 'CIA-Agent', 'Geheimdienstler',
+                'Feuerwehrmann', 'Rettungssanitäter', 'Notfallsanitäter', 'Rettungsassistent',
+                'Bergretter', 'Wasserretter', 'Höhenretter', 'Sicherheitsberater',
+                
+                // Militär & Verteidigung
+                'Soldat', 'Offizier', 'Pilot (Militär)', 'Kampfpilot', 'Hubschrauberpilot',
+                'Fallschirmjäger', 'Marineinfanterist', 'Kampfschwimmer', 'Scharfschütze',
+                'Sprengstoffexperte', 'Militärtechniker', 'Waffentechniker'
+            ],
+            'I': [
+                // Wissenschaft & Forschung
+                'Wissenschaftler', 'Forscher', 'Forschungsleiter', 'Laborleiter',
+                'Physiker', 'Chemiker', 'Biologe', 'Mathematiker', 'Statistiker',
+                'Astronom', 'Astrophysiker', 'Geologe', 'Paleontologe', 'Meteorologe',
+                'Klimatologe', 'Ozeanograph', 'Seismologe', 'Vulkanologe', 'Archäologe',
+                'Anthropologe', 'Soziologe', 'Psychologe', 'Neuropsychologe',
+                'Kognitionswissenschaftler', 'Verhaltensforscher', 'Marktforscher',
+                
+                // Medizin & Gesundheit
+                'Arzt', 'Chirurg', 'Internist', 'Kardiologe', 'Neurologe', 'Psychiater',
+                'Psychologe', 'Psychotherapeut', 'Klinischer Psychologe', 'Neuropsychologe',
+                'Pharmakologe', 'Toxikologe', 'Epidemiologe', 'Virologe', 'Bakteriologe',
+                'Immunologe', 'Molekularbiologe', 'Genetiker', 'Biochemiker',
+                'Medizintechniker', 'Biomediziner', 'Krankenhausmanager',
+                
+                // IT & Datenanalyse
+                'Datenanalyst', 'Data Scientist', 'Statistiker', 'Biostatistiker',
+                'Programmierer', 'Software-Entwickler', 'Algorithmus-Entwickler',
+                'Künstliche Intelligenz', 'Machine Learning Engineer', 'Deep Learning Engineer',
+                'Quantitative Analyst', 'Risikoanalyst', 'Finanzanalyst', 'Investmentanalyst',
+                'Kreditanalyst', 'Versicherungsmathematiker', 'Aktuar',
+                
+                // Technik & Ingenieurwesen
+                'Forschung & Entwicklung', 'Produktentwickler', 'Innovationsmanager',
+                'Patentanwalt', 'Patentprüfer', 'Technischer Redakteur',
+                'Qualitätsmanager', 'Prozessoptimierer', 'Six Sigma Black Belt',
+                'Lean Manager', 'Projektmanager (Forschung)', 'Technischer Berater',
+                
+                // Bildung & Lehre
+                'Professor', 'Dozent', 'Forschungsassistent', 'Postdoc',
+                'Wissenschaftlicher Mitarbeiter', 'Lehrbeauftragter', 'Tutor',
+                'Bildungsforscher', 'Pädagoge', 'Erwachsenenbildner',
+                
+                // Beratung & Consulting
+                'Unternehmensberater', 'Strategieberater', 'Managementberater',
+                'Technologieberater', 'Innovationsberater', 'Change Manager',
+                'Prozessberater', 'Organisationsberater', 'Personalberater'
+            ],
+            'A': {
+                name: 'Artistic',
+                icon: '🎨',
+                description: 'Kreativ, künstlerisch, expressiv',
+                color: '#9C27B0',
+                careers: [
+                    'Künstler', 'Designer', 'Musiker', 'Schauspieler',
+                    'Schriftsteller', 'Fotograf', 'Architekt', 'Journalist',
+                    'Grafikdesigner', 'Mode-Designer', 'Innenarchitekt'
+                ]
+            },
+            'S': {
+                name: 'Sozial',
+                icon: '👥',
+                description: 'Hilfsbereit, sozial, kommunikativ',
+                color: '#4CAF50',
+                careers: [
+                    'Lehrer', 'Sozialarbeiter', 'Berater', 'Therapeut',
+                    'Arzt', 'Krankenpfleger', 'Psychologe', 'Trainer',
+                    'Personalmanager', 'Verkäufer', 'Kundenberater'
+                ]
+            },
+            'E': {
+                name: 'Enterprising',
+                icon: '💼',
+                description: 'Führungsorientiert, verkaufsorientiert, unternehmerisch',
+                color: '#F44336',
+                careers: [
+                    'Manager', 'Unternehmer', 'Verkäufer', 'Berater',
+                    'Politiker', 'Anwalt', 'Makler', 'Eventmanager',
+                    'Marketing-Manager', 'Vertriebsleiter', 'CEO'
+                ]
+            },
+            'C': {
+                name: 'Conventional',
+                icon: '📊',
+                description: 'Organisiert, strukturiert, detailorientiert',
+                color: '#607D8B',
+                careers: [
+                    'Buchhalter', 'Sekretär', 'Bankangestellter', 'Verwaltungsangestellter',
+                    'Datenanalyst', 'Qualitätsmanager', 'Projektmanager', 'Controller',
+                    'Steuerberater', 'Personalverwaltung', 'Büroorganisation'
+                ]
+            }
+        };
+
+        // Load and display results
+        function loadResults() {
+            // Load all RAISEC data
+            const realisticData = JSON.parse(localStorage.getItem('raisec-realistic') || '{}');
+            const investigativeData = JSON.parse(localStorage.getItem('raisec-investigative') || '{}');
+            const artisticData = JSON.parse(localStorage.getItem('raisec-artistic') || '{}');
+            const socialData = JSON.parse(localStorage.getItem('raisec-social') || '{}');
+            const enterprisingData = JSON.parse(localStorage.getItem('raisec-enterprising') || '{}');
+            const conventionalData = JSON.parse(localStorage.getItem('raisec-conventional') || '{}');
+
+            // Calculate scores (using realistic as example)
+            const scores = {
+                'R': realisticData.averageScore || 5,
+                'I': investigativeData.averageScore || 5,
+                'A': artisticData.averageScore || 5,
+                'S': socialData.averageScore || 5,
+                'E': enterprisingData.averageScore || 5,
+                'C': conventionalData.averageScore || 5
+            };
+
+            // Find main type
+            const mainType = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
+            const mainTypeData = raisecTypes[mainType];
+
+            // Display main type
+            document.getElementById('mainType').innerHTML = `
+                <div class="type-icon">${mainTypeData.icon}</div>
+                <div class="type-name">${mainTypeData.name} (${mainType})</div>
+                <div class="type-score">${scores[mainType].toFixed(1)}/10</div>
+                <div class="type-description">${mainTypeData.description}</div>
+            `;
+
+            // Display scores
+            const scoreList = document.getElementById('scoreList');
+            scoreList.innerHTML = Object.keys(scores).map(type => `
+                <div class="score-item">
+                    <div class="score-label">${raisecTypes[type].name} (${type})</div>
+                    <div class="score-bar">
+                        <div class="score-fill" style="width: ${scores[type] * 10}%; background: ${raisecTypes[type].color}"></div>
+                    </div>
+                    <div class="score-value">${scores[type].toFixed(1)}/10</div>
+                </div>
+            `).join('');
+
+            // Get intelligent career recommendations
+            const careerRecommendations = getCareerRecommendations(scores);
+            
+            // Display career recommendations
+            const careerFields = document.getElementById('careerFields');
+            careerFields.innerHTML = careerRecommendations.map(rec => `
+                <div class="career-field" data-type="${rec.type}" data-score="${rec.score}">
+                    <div class="field-icon">💼</div>
+                    <div class="field-name">${rec.career}</div>
+                    <div class="field-match">${rec.match}</div>
+                    <div class="field-score">${rec.score.toFixed(1)}/10</div>
+                </div>
+            `).join('');
+
+            // Display interpretation
+            const interpretationContent = document.getElementById('interpretationContent');
+            interpretationContent.innerHTML = `
+                <div class="interpretation-text">
+                    <h3>Dein Profil: ${mainTypeData.name}</h3>
+                    <p>Basierend auf deinen Antworten zeigt sich ein starker ${mainTypeData.name.toLowerCase()}er Typ. 
+                    Du bevorzugst ${mainTypeData.description.toLowerCase()} und fühlst dich in entsprechenden 
+                    Berufsfeldern am wohlsten.</p>
+                    
+                    <h4>Deine Stärken:</h4>
+                    <ul>
+                        <li>Praktische Problemlösung</li>
+                        <li>Technisches Verständnis</li>
+                        <li>Handwerkliche Fähigkeiten</li>
+                        <li>Konkrete Ergebnisse</li>
+                    </ul>
+                    
+                    <h4>Entwicklungsmöglichkeiten:</h4>
+                    <ul>
+                        <li>Weiterbildung in deinem Fachbereich</li>
+                        <li>Führungskompetenzen entwickeln</li>
+                        <li>Netzwerk aufbauen</li>
+                        <li>Innovative Technologien kennenlernen</li>
+                    </ul>
+                </div>
+            `;
+
+            // Display recommendations
+            const recommendationsList = document.getElementById('recommendationsList');
+            recommendationsList.innerHTML = `
+                <div class="recommendation-item">
+                    <div class="recommendation-icon">📚</div>
+                    <div class="recommendation-content">
+                        <h4>Weiterbildung</h4>
+                        <p>Vertiefe deine technischen Fähigkeiten durch spezialisierte Kurse und Zertifizierungen.</p>
+                    </div>
+                </div>
+                <div class="recommendation-item">
+                    <div class="recommendation-icon">🤝</div>
+                    <div class="recommendation-content">
+                        <h4>Netzwerk</h4>
+                        <p>Baue Kontakte in deinem Fachbereich auf und tausche dich mit Gleichgesinnten aus.</p>
+                    </div>
+                </div>
+                <div class="recommendation-item">
+                    <div class="recommendation-icon">🚀</div>
+                    <div class="recommendation-content">
+                        <h4>Karriere</h4>
+                        <p>Suche nach Positionen, die deine praktischen Fähigkeiten optimal nutzen.</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Download report
+        function downloadReport() {
+            const reportContent = generateReport();
+            const blob = new Blob([reportContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'raisec-auswertung.html';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Generate report
+        function generateReport() {
+            return `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <title>RAISEC-Auswertung</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
+                        .header { text-align: center; margin-bottom: 40px; }
+                        .section { margin-bottom: 30px; }
+                        .score-bar { width: 100%; height: 20px; background: #e0e0e0; border-radius: 10px; overflow: hidden; }
+                        .score-fill { height: 100%; background: #FF9800; }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>RAISEC-Auswertung</h1>
+                        <p>Erstellt am: ${new Date().toLocaleDateString('de-DE')}</p>
+                    </div>
+                    <div class="section">
+                        <h2>Dein Haupttyp: Realistisch (R)</h2>
+                        <p>Du bist praktisch-technisch orientiert und löst gerne konkrete Probleme.</p>
+                    </div>
+                    <div class="section">
+                        <h2>Detaillierte Bewertung</h2>
+                        <p>Hier findest du deine Bewertungen für alle RAISEC-Bereiche.</p>
+                    </div>
+                </body>
+                </html>
+            `;
+        }
+
+        // Retake test
+        function retakeTest() {
+            if (confirm('Möchtest du den Test wirklich wiederholen? Alle bisherigen Daten gehen verloren.')) {
+                localStorage.removeItem('raisec-realistic');
+                localStorage.removeItem('raisec-investigative');
+                localStorage.removeItem('raisec-artistic');
+                localStorage.removeItem('raisec-social');
+                localStorage.removeItem('raisec-enterprising');
+                localStorage.removeItem('raisec-conventional');
+                window.location.href = 'index-raisec.html';
+            }
+        }
+
+        // Comprehensive Career Database (542 professions)
+        const careerDatabase = {
+            'R': [
+                'Maschinenbauingenieur', 'Elektroingenieur', 'Bauingenieur', 'Verfahrenstechniker',
+                'Mechatroniker', 'Elektroniker', 'Anlagentechniker', 'Werkzeugmechaniker',
+                'Zerspanungsmechaniker', 'Industriemechaniker', 'Kfz-Mechatroniker', 'Fahrzeugtechniker',
+                'Fluggerätemechaniker', 'Schiffsmechaniker', 'Lokführer', 'Pilot',
+                'Fluglotse', 'Schiffskapitän', 'Navigator', 'Luftfahrzeugtechniker',
+                'Tischler', 'Schreiner', 'Zimmerer', 'Dachdecker', 'Maurer', 'Betonbauer',
+                'Straßenbauer', 'Rohrleitungsbauer', 'Kanalbauer', 'Brunnenbauer',
+                'Steinmetz', 'Bildhauer', 'Restaurator', 'Goldschmied', 'Silberschmied',
+                'Uhrmacher', 'Optiker', 'Hörgeräteakustiker', 'Zahntechniker',
+                'Landwirt', 'Gärtner', 'Forstwirt', 'Jäger', 'Fischer', 'Tierarzt',
+                'Veterinärmediziner', 'Pferdewirt', 'Tierpfleger', 'Zootierpfleger',
+                'Landschaftsgärtner', 'Garten- und Landschaftsbauer', 'Forstingenieur',
+                'Agraringenieur', 'Umweltingenieur', 'Geologe', 'Geophysiker',
+                'Systemadministrator', 'Netzwerktechniker', 'IT-Systemelektroniker',
+                'Fachinformatiker', 'Datenbankadministrator', 'IT-Sicherheitsexperte',
+                'Cloud-Architekt', 'DevOps-Ingenieur', 'Systemanalytiker',
+                'Chirurg', 'Orthopäde', 'Traumatologe', 'Neurochirurg', 'Herzchirurg',
+                'Anästhesist', 'Radiologe', 'Pathologe', 'Forensiker', 'Gerichtsmediziner',
+                'Zahnarzt', 'Kieferorthopäde', 'Oralchirurg', 'Zahntechniker',
+                'Polizist', 'Kriminalkommissar', 'FBI-Agent', 'CIA-Agent', 'Geheimdienstler',
+                'Feuerwehrmann', 'Rettungssanitäter', 'Notfallsanitäter', 'Rettungsassistent',
+                'Bergretter', 'Wasserretter', 'Höhenretter', 'Sicherheitsberater',
+                'Soldat', 'Offizier', 'Pilot (Militär)', 'Kampfpilot', 'Hubschrauberpilot',
+                'Fallschirmjäger', 'Marineinfanterist', 'Kampfschwimmer', 'Scharfschütze',
+                'Sprengstoffexperte', 'Militärtechniker', 'Waffentechniker'
+            ],
+            'I': [
+                'Wissenschaftler', 'Forscher', 'Forschungsleiter', 'Laborleiter',
+                'Physiker', 'Chemiker', 'Biologe', 'Mathematiker', 'Statistiker',
+                'Astronom', 'Astrophysiker', 'Geologe', 'Paleontologe', 'Meteorologe',
+                'Klimatologe', 'Ozeanograph', 'Seismologe', 'Vulkanologe', 'Archäologe',
+                'Anthropologe', 'Soziologe', 'Psychologe', 'Neuropsychologe',
+                'Kognitionswissenschaftler', 'Verhaltensforscher', 'Marktforscher',
+                'Arzt', 'Chirurg', 'Internist', 'Kardiologe', 'Neurologe', 'Psychiater',
+                'Psychologe', 'Psychotherapeut', 'Klinischer Psychologe', 'Neuropsychologe',
+                'Pharmakologe', 'Toxikologe', 'Epidemiologe', 'Virologe', 'Bakteriologe',
+                'Immunologe', 'Molekularbiologe', 'Genetiker', 'Biochemiker',
+                'Medizintechniker', 'Biomediziner', 'Krankenhausmanager',
+                'Datenanalyst', 'Data Scientist', 'Statistiker', 'Biostatistiker',
+                'Programmierer', 'Software-Entwickler', 'Algorithmus-Entwickler',
+                'Künstliche Intelligenz', 'Machine Learning Engineer', 'Deep Learning Engineer',
+                'Quantitative Analyst', 'Risikoanalyst', 'Finanzanalyst', 'Investmentanalyst',
+                'Kreditanalyst', 'Versicherungsmathematiker', 'Aktuar',
+                'Forschung & Entwicklung', 'Produktentwickler', 'Innovationsmanager',
+                'Patentanwalt', 'Patentprüfer', 'Technischer Redakteur',
+                'Qualitätsmanager', 'Prozessoptimierer', 'Six Sigma Black Belt',
+                'Lean Manager', 'Projektmanager (Forschung)', 'Technischer Berater',
+                'Professor', 'Dozent', 'Forschungsassistent', 'Postdoc',
+                'Wissenschaftlicher Mitarbeiter', 'Lehrbeauftragter', 'Tutor',
+                'Bildungsforscher', 'Pädagoge', 'Erwachsenenbildner',
+                'Unternehmensberater', 'Strategieberater', 'Managementberater',
+                'Technologieberater', 'Innovationsberater', 'Change Manager',
+                'Prozessberater', 'Organisationsberater', 'Personalberater'
+            ],
+            'A': [
+                'Künstler', 'Maler', 'Bildhauer', 'Grafikdesigner', 'Webdesigner', 'UI/UX Designer',
+                'Produktdesigner', 'Industriedesigner', 'Innenarchitekt', 'Landschaftsarchitekt',
+                'Architekt', 'Stadtplaner', 'Fotograf', 'Videograf', 'Filmemacher', 'Regisseur',
+                'Kameramann', 'Cutter', 'Tontechniker', 'Lichttechniker',
+                'Musiker', 'Komponist', 'Dirigent', 'Sänger', 'Instrumentalist', 'DJ',
+                'Schauspieler', 'Tänzer', 'Choreograf', 'Theaterregisseur', 'Opernsänger',
+                'Musical-Darsteller', 'Zirkusartist', 'Comedian', 'Entertainer',
+                'Journalist', 'Redakteur', 'Autor', 'Schriftsteller', 'Drehbuchautor',
+                'Lektor', 'Übersetzer', 'Dolmetscher', 'Radiomoderator', 'TV-Moderator',
+                'Podcaster', 'Blogger', 'Influencer', 'Content Creator', 'Social Media Manager',
+                'Modedesigner', 'Kostümbildner', 'Stylist', 'Visagist', 'Friseur',
+                'Kosmetiker', 'Schminkkünstler', 'Tattoo-Künstler', 'Bodypainter',
+                'Eventmanager', 'Wedding Planner', 'Partyplaner', 'Dekorateur',
+                'Florist', 'Keramiker', 'Glasbläser', 'Schmuckdesigner', 'Uhrmacher',
+                'Restaurator', 'Konservator', 'Museumsleiter', 'Kurator',
+                'Kunstlehrer', 'Musiklehrer', 'Tanzlehrer', 'Schauspiellehrer',
+                'Kreativitätscoach', 'Künstlerischer Berater', 'Kulturmanager',
+                'Galerist', 'Kunsthändler', 'Auktionator'
+            ],
+            'S': [
+                'Lehrer', 'Erzieher', 'Pädagoge', 'Dozent', 'Professor', 'Trainer',
+                'Coach', 'Mentor', 'Tutor', 'Nachhilfelehrer', 'Sprachlehrer',
+                'Musiklehrer', 'Sportlehrer', 'Kunstlehrer', 'Religionslehrer',
+                'Sonderschullehrer', 'Berufsschullehrer', 'Erwachsenenbildner',
+                'Arzt', 'Krankenpfleger', 'Hebamme', 'Physiotherapeut', 'Ergotherapeut',
+                'Logopäde', 'Psychologe', 'Psychotherapeut', 'Psychiater', 'Sozialarbeiter',
+                'Heilpädagoge', 'Behindertenbetreuer', 'Altenpfleger', 'Krankenhausseelsorger',
+                'Hospizhelfer', 'Rettungssanitäter', 'Notfallsanitäter',
+                'Sozialarbeiter', 'Sozialpädagoge', 'Jugendbetreuer', 'Familienberater',
+                'Eheberater', 'Drogenberater', 'Schuldenberater', 'Migrationsberater',
+                'Flüchtlingshelfer', 'Obdachlosenhelfer', 'Streetworker', 'Krisenberater',
+                'Trauerberater', 'Lebensberater', 'Coaching', 'Mentoring',
+                'Pfarrer', 'Pastor', 'Priester', 'Imam', 'Rabbiner', 'Seelsorger',
+                'Gemeindereferent', 'Religionspädagoge', 'Meditationslehrer',
+                'Yogalehrer', 'Spiritueller Berater', 'Lebensberater',
+                'Politiker', 'Abgeordneter', 'Bürgermeister', 'Gemeinderat', 'Bezirksrat',
+                'Parlamentarier', 'Diplomat', 'Botschafter', 'Konsul', 'Beamter',
+                'Verwaltungsangestellter', 'Sachbearbeiter', 'Bürgerberater',
+                'Sportlehrer', 'Fitness-Trainer', 'Personal Trainer', 'Physiotherapeut',
+                'Sportpsychologe', 'Sportmediziner', 'Sportmanager', 'Sportjournalist',
+                'Schiedsrichter', 'Sportfunktionär', 'Vereinsmanager'
+            ],
+            'E': [
+                'Manager', 'Geschäftsführer', 'CEO', 'COO', 'CFO', 'CTO', 'CMO',
+                'Abteilungsleiter', 'Teamleiter', 'Projektmanager', 'Produktmanager',
+                'Programmmanager', 'Portfolio Manager', 'Strategie Manager',
+                'Change Manager', 'Innovationsmanager', 'Qualitätsmanager',
+                'Verkäufer', 'Vertriebsleiter', 'Key Account Manager', 'Sales Manager',
+                'Marketing Manager', 'Brand Manager', 'Product Manager', 'Market Researcher',
+                'PR Manager', 'Kommunikationsmanager', 'Event Manager', 'Sponsoring Manager',
+                'Digital Marketing Manager', 'Social Media Manager', 'Content Manager',
+                'Unternehmer', 'Startup-Gründer', 'Geschäftsinhaber', 'Franchise-Nehmer',
+                'Investor', 'Business Angel', 'Venture Capitalist', 'Private Equity Manager',
+                'Berater', 'Mentor', 'Coach', 'Business Coach', 'Executive Coach',
+                'Anwalt', 'Rechtsanwalt', 'Notar', 'Richter', 'Staatsanwalt', 'Rechtsberater',
+                'Politiker', 'Abgeordneter', 'Minister', 'Staatssekretär', 'Beamter',
+                'Diplomat', 'Botschafter', 'Konsul', 'Lobbyist', 'Politikberater',
+                'Banker', 'Investment Banker', 'Portfolio Manager', 'Risk Manager',
+                'Compliance Manager', 'Auditor', 'Steuerberater', 'Wirtschaftsprüfer',
+                'Finanzberater', 'Vermögensberater', 'Versicherungsmakler',
+                'Immobilienmakler', 'Immobilienentwickler', 'Projektentwickler',
+                'Facility Manager', 'Property Manager', 'Asset Manager',
+                'Unternehmensberater', 'Strategieberater', 'Managementberater',
+                'Prozessberater', 'Organisationsberater', 'Personalberater',
+                'Recruiter', 'Headhunter', 'Executive Search', 'Talent Manager'
+            ],
+            'C': [
+                'Sekretär', 'Assistent', 'Bürokaufmann', 'Verwaltungsangestellter',
+                'Sachbearbeiter', 'Kundenbetreuer', 'Call Center Agent', 'Rezeptionist',
+                'Empfangsmitarbeiter', 'Terminplaner', 'Disponent', 'Einkäufer',
+                'Lagerist', 'Logistiker', 'Spediteur', 'Zollbeamter',
+                'Buchhalter', 'Controlling', 'Finanzbuchhalter', 'Lohnbuchhalter',
+                'Kostenrechner', 'Steuerfachangestellter', 'Steuerberater', 'Wirtschaftsprüfer',
+                'Auditor', 'Interne Revision', 'Compliance Manager', 'Risk Manager',
+                'Treasury Manager', 'Cash Manager', 'Kreditanalyst', 'Rating Analyst',
+                'IT-Administrator', 'Systemadministrator', 'Datenbankadministrator',
+                'IT-Support', 'Helpdesk', 'Service Desk', 'IT-Service Manager',
+                'Prozessmanager', 'Workflow Manager', 'Dokumentenmanager',
+                'Wissensmanager', 'Content Manager', 'Datenmanager',
+                'Qualitätsmanager', 'Qualitätsprüfer', 'Qualitätskontrolleur',
+                'ISO-Auditor', 'Zertifizierungsmanager', 'Compliance Officer',
+                'Regulatory Affairs Manager', 'Normenmanager', 'Standards Manager',
+                'Personalverwaltung', 'HR-Administrator', 'Lohn- und Gehaltsabrechnung',
+                'Personalbuchhalter', 'HR-Controller', 'Personalentwickler',
+                'Recruiting Coordinator', 'Onboarding Manager', 'HR-Service Manager',
+                'Rechtsabteilung', 'Compliance Manager', 'Datenschutzbeauftragter',
+                'Sicherheitsbeauftragter', 'Brandschutzbeauftragter', 'Umweltbeauftragter',
+                'Arbeitsschutzbeauftragter', 'Sicherheitsmanager', 'Risk Manager',
+                'Beamter', 'Verwaltungsbeamter', 'Sachbearbeiter (Behörde)',
+                'Bürgerberater', 'Antragsbearbeiter', 'Genehmigungsmanager',
+                'Zulassungsstelle', 'Standesamt', 'Einwohnermeldeamt',
+                'Finanzamt', 'Ordnungsamt', 'Bauamt', 'Gewerbeamt'
+            ]
+        };
+
+        // Intelligente Berufsauswahl basierend auf RAISEC-Scores
+        function getCareerRecommendations(scores) {
+            const recommendations = [];
+            
+            // Sortiere Typen nach Score
+            const sortedTypes = Object.keys(scores)
+                .map(type => ({ type, score: scores[type] }))
+                .sort((a, b) => b.score - a.score);
+            
+            // Haupttyp (höchster Score)
+            const mainType = sortedTypes[0].type;
+            const mainCareers = careerDatabase[mainType] || [];
+            
+            // Wähle 5-7 Berufe vom Haupttyp
+            const mainRecommendations = getRandomCareers(mainCareers, Math.min(7, mainCareers.length));
+            recommendations.push(...mainRecommendations.map(career => ({
+                career,
+                type: mainType,
+                match: 'Sehr gut',
+                score: scores[mainType]
+            })));
+            
+            // Sekundärtyp (zweithöchster Score)
+            if (sortedTypes.length > 1 && sortedTypes[1].score > 6) {
+                const secondaryType = sortedTypes[1].type;
+                const secondaryCareers = careerDatabase[secondaryType] || [];
+                const secondaryRecommendations = getRandomCareers(secondaryCareers, 3);
+                recommendations.push(...secondaryRecommendations.map(career => ({
+                    career,
+                    type: secondaryType,
+                    match: 'Gut',
+                    score: scores[secondaryType]
+                })));
+            }
+            
+            return recommendations.slice(0, 10); // Maximal 10 Empfehlungen
+        }
+
+        function getRandomCareers(careers, count) {
+            const shuffled = [...careers].sort(() => 0.5 - Math.random());
+            return shuffled.slice(0, count);
+        }
+
+        // Load results when page loads
+        document.addEventListener('DOMContentLoaded', loadResults);
+
+        // New interactive functions
+        function showDetailedEvaluation() {
+            const evaluationSection = document.getElementById('detailedEvaluation');
+            if (evaluationSection) {
+                evaluationSection.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function showCareerFields() {
+            const careerSection = document.querySelector('.career-recommendations');
+            if (careerSection) {
+                careerSection.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function downloadResults() {
+            // Create a comprehensive PDF report
+            const printWindow = window.open('', '_blank');
+            const currentDate = new Date().toLocaleDateString('de-DE');
+            
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>RAISEC-Auswertung - ${currentDate}</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 20px; }
+                        .header { text-align: center; margin-bottom: 30px; }
+                        .section { margin-bottom: 25px; }
+                        .score-bar { background: #f0f0f0; height: 20px; border-radius: 10px; overflow: hidden; }
+                        .score-fill { height: 100%; background: #007bff; }
+                        .career-item { margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 5px; }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>RAISEC-Auswertung</h1>
+                        <p>Erstellt am: ${currentDate}</p>
+                    </div>
+                    <div class="section">
+                        <h2>Dein Haupttyp</h2>
+                        <p id="mainTypeName"></p>
+                        <p id="mainTypeScore"></p>
+                        <p id="mainTypeDescription"></p>
+                    </div>
+                    <div class="section">
+                        <h2>Detaillierte Bewertung</h2>
+                        <div id="detailedEvaluation"></div>
+                    </div>
+                    <div class="section">
+                        <h2>Berufsempfehlungen</h2>
+                        <div id="careerRecommendations"></div>
+                    </div>
+                </body>
+                </html>
+            `);
+            
+            printWindow.document.close();
+            printWindow.print();
+        }
+
+        function retakeTest() {
+            if (confirm('Möchtest du den Test wirklich wiederholen? Alle bisherigen Daten werden gelöscht.')) {
+                localStorage.removeItem('raisec-realistic');
+                localStorage.removeItem('raisec-investigative');
+                localStorage.removeItem('raisec-artistic');
+                localStorage.removeItem('raisec-social');
+                localStorage.removeItem('raisec-enterprising');
+                localStorage.removeItem('raisec-conventional');
+                window.location.href = 'index-raisec.html';
+            }
+        }
+
+        function goHome() {
+            window.location.href = '../../index.html';
+        }
+
+        // Update hero stats
+        function updateHeroStats(scores) {
+            const totalScore = Object.values(scores).reduce((sum, score) => sum + score, 0);
+            document.getElementById('totalScore').textContent = totalScore.toFixed(1);
+            document.getElementById('testDate').textContent = new Date().toLocaleDateString('de-DE');
+        }
+    </script>
+</body>
+</html>

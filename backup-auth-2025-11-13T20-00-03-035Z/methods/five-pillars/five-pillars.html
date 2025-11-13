@@ -1,0 +1,385 @@
+<div class="workflow-container">
+    <div class="workflow-header">
+        <button class="btn btn-secondary" onclick="window.location.href='../../persoenlichkeitsentwicklung-uebersicht.html'">
+            <i class="fas fa-arrow-left"></i> Zurück zur Übersicht
+        </button>
+    </div>
+    <div class="workflow-intro">
+        <h3>Fünf Säulen der Persönlichkeitsentwicklung</h3>
+        <p>Entwickle deine Persönlichkeit systematisch durch die fünf fundamentalen Säulen: Körper, Geist, Seele, Beziehungen und Beruf.</p>
+        <div class="workflow-features">
+            <span class="feature-badge">Ganzheitlich</span>
+            <span class="feature-badge">Systematisch</span>
+            <span class="feature-badge">Nachhaltig</span>
+            <span class="feature-badge">Messbar</span>
+        </div>
+    
+    <div class="workflow-progress">
+        <div class="progress-step active" data-step="1">
+            <div class="step-number">1</div>
+            <div class="step-title">Analyse</div>
+        <div class="progress-step" data-step="2">
+            <div class="step-number">2</div>
+            <div class="step-title">Körper</div>
+        <div class="progress-step" data-step="3">
+            <div class="step-number">3</div>
+            <div class="step-title">Geist</div>
+        <div class="progress-step" data-step="4">
+            <div class="step-number">4</div>
+            <div class="step-title">Seele</div>
+        <div class="progress-step" data-step="5">
+            <div class="step-number">5</div>
+            <div class="step-title">Beziehungen</div>
+        <div class="progress-step" data-step="6">
+            <div class="step-number">6</div>
+            <div class="step-title">Beruf</div>
+        <div class="progress-step" data-step="7">
+            <div class="step-number">7</div>
+            <div class="step-title">Plan</div>
+    <!-- Step 1: Analyse -->
+    <div class="workflow-step active" data-step="1">
+        <div class="step-header">
+            <h3>Schritt 1: Aktuelle Situation analysieren</h3>
+            <p>Bewerte deinen aktuellen Zustand in allen fünf Säulen und identifiziere deine Stärken und Entwicklungsfelder.</p>
+        
+        <div class="five-pillars">
+            <div class="pillars-overview">
+                <h4>🏛️ Die Fünf Säulen</h4>
+                <div class="pillars-grid">
+                    <div class="pillar-card" data-pillar="body">
+                        <div class="pillar-icon">💪</div>
+                        <h5>Körper</h5>
+                        <p>Gesundheit, Fitness, Ernährung, Schlaf</p>
+                    </div>
+                    <div class="pillar-card" data-pillar="mind">
+                        <div class="pillar-icon">🧠</div>
+                        <h5>Geist</h5>
+                        <p>Lernen, Kreativität, Fokus, Wissen</p>
+                    <div class="pillar-card" data-pillar="soul">
+                        <div class="pillar-icon">🌟</div>
+                        <h5>Seele</h5>
+                        <p>Werte, Spiritualität, Sinn, Achtsamkeit</p>
+                    <div class="pillar-card" data-pillar="relationships">
+                        <div class="pillar-icon">❤️</div>
+                        <h5>Beziehungen</h5>
+                        <p>Familie, Freunde, Partnerschaft, Netzwerk</p>
+                    <div class="pillar-card" data-pillar="career">
+                        <div class="pillar-icon">💼</div>
+                        <h5>Beruf</h5>
+                        <p>Karriere, Finanzen, Ziele, Erfüllung</p>
+                </div>
+            </div>
+            
+            <div class="current-assessment">
+                <h4>📊 Aktuelle Bewertung</h4>
+                <div class="assessment-grid">
+                    <div class="assessment-item">
+                        <h5>💪 Körper</h5>
+                        <div class="rating-scale">
+                            <span>Schwach</span>
+                            <input type="range" class="pillar-slider" min="1" max="10" value="5" data-pillar="body">
+                            <span>Stark</span>
+                        </div>
+                        <div class="rating-value" id="body-rating">5/10</div>
+                    
+                        <h5>🧠 Geist</h5>
+                            <input type="range" class="pillar-slider" min="1" max="10" value="5" data-pillar="mind">
+                        <div class="rating-value" id="mind-rating">5/10</div>
+                        <h5>🌟 Seele</h5>
+                            <input type="range" class="pillar-slider" min="1" max="10" value="5" data-pillar="soul">
+                        <div class="rating-value" id="soul-rating">5/10</div>
+                        <h5>❤️ Beziehungen</h5>
+                            <input type="range" class="pillar-slider" min="1" max="10" value="5" data-pillar="relationships">
+                        <div class="rating-value" id="relationships-rating">5/10</div>
+                        <h5>💼 Beruf</h5>
+                            <input type="range" class="pillar-slider" min="1" max="10" value="5" data-pillar="career">
+                        <div class="rating-value" id="career-rating">5/10</div>
+    <!-- Step 2: Körper -->
+    <div class="workflow-step" data-step="2">
+            <h3>Schritt 2: Körper - Deine physische Säule</h3>
+            <p>Stärke deinen Körper durch bewusste Gesundheits- und Fitnesspraktiken.</p>
+        <div class="pillar-development">
+            <div class="pillar-intro">
+                <h4>💪 Körperliche Entwicklung</h4>
+                <p>Ein starker Körper ist die Grundlage für alle anderen Säulen. Investiere in deine körperliche Gesundheit.</p>
+            <div class="development-areas">
+                <div class="area-section">
+                    <h5>🏃‍♂️ Fitness & Bewegung</h5>
+                    <div class="activity-list">
+                        <div class="activity-item">
+                            <input type="checkbox" id="cardio-training">
+                            <label for="cardio-training">Kardio-Training (30 Min, 3x/Woche)</label>
+                            <div class="activity-tips">
+                                <p><strong>Tipp:</strong> Beginne mit 10 Minuten und steigere dich langsam.</p>
+                            </div>
+                            <input type="checkbox" id="strength-training">
+                            <label for="strength-training">Krafttraining (45 Min, 2x/Woche)</label>
+                                <p><strong>Tipp:</strong> Fokussiere auf Grundübungen wie Kniebeugen, Liegestütze.</p>
+                            <input type="checkbox" id="flexibility">
+                            <label for="flexibility">Flexibilität & Dehnung (15 Min täglich)</label>
+                                <p><strong>Tipp:</strong> Yoga oder einfache Dehnübungen am Morgen.</p>
+                
+                    <h5>🥗 Ernährung</h5>
+                            <input type="checkbox" id="balanced-diet">
+                            <label for="balanced-diet">Ausgewogene Ernährung</label>
+                                <p><strong>Tipp:</strong> 50% Gemüse, 25% Proteine, 25% Kohlenhydrate.</p>
+                            <input type="checkbox" id="hydration">
+                            <label for="hydration">Ausreichend trinken (2-3 Liter/Tag)</label>
+                                <p><strong>Tipp:</strong> Beginne den Tag mit einem großen Glas Wasser.</p>
+                            <input type="checkbox" id="meal-planning">
+                            <label for="meal-planning">Mahlzeiten planen</label>
+                                <p><strong>Tipp:</strong> Plane deine Mahlzeiten für die Woche im Voraus.</p>
+                    <h5>😴 Schlaf & Erholung</h5>
+                            <input type="checkbox" id="sleep-schedule">
+                            <label for="sleep-schedule">Regelmäßiger Schlafrhythmus</label>
+                                <p><strong>Tipp:</strong> Gehe jeden Tag zur gleichen Zeit ins Bett.</p>
+                            <input type="checkbox" id="sleep-hygiene">
+                            <label for="sleep-hygiene">Schlafhygiene</label>
+                                <p><strong>Tipp:</strong> Keine Bildschirme 1 Stunde vor dem Schlaf.</p>
+                            <input type="checkbox" id="recovery">
+                            <label for="recovery">Aktive Erholung</label>
+                                <p><strong>Tipp:</strong> Spaziergänge, Meditation, entspannende Aktivitäten.</p>
+    <!-- Step 3: Geist -->
+    <div class="workflow-step" data-step="3">
+            <h3>Schritt 3: Geist - Deine mentale Säule</h3>
+            <p>Entwickle deinen Geist durch kontinuierliches Lernen und mentale Fitness.</p>
+                <h4>🧠 Mentale Entwicklung</h4>
+                <p>Ein scharfer Geist hilft dir, bessere Entscheidungen zu treffen und deine Ziele zu erreichen.</p>
+                    <h5>📚 Lernen & Wissen</h5>
+                            <input type="checkbox" id="daily-reading">
+                            <label for="daily-reading">Täglich 30 Minuten lesen</label>
+                                <p><strong>Tipp:</strong> Wähle Bücher, die dich weiterbringen.</p>
+                            <input type="checkbox" id="skill-learning">
+                            <label for="skill-learning">Neue Fähigkeiten lernen</label>
+                                <p><strong>Tipp:</strong> Online-Kurse, Tutorials, praktische Projekte.</p>
+                            <input type="checkbox" id="knowledge-sharing">
+                            <label for="knowledge-sharing">Wissen teilen</label>
+                                <p><strong>Tipp:</strong> Bloggen, Präsentieren, Mentoring.</p>
+                    <h5>🎯 Fokus & Konzentration</h5>
+                            <input type="checkbox" id="pomodoro-technique">
+                            <label for="pomodoro-technique">Pomodoro-Technik</label>
+                                <p><strong>Tipp:</strong> 25 Min fokussiert arbeiten, 5 Min Pause.</p>
+                            <input type="checkbox" id="meditation">
+                            <label for="meditation">Meditation (10 Min täglich)</label>
+                                <p><strong>Tipp:</strong> Beginne mit geführten Meditationen.</p>
+                            <input type="checkbox" id="digital-detox">
+                            <label for="digital-detox">Digital Detox</label>
+                                <p><strong>Tipp:</strong> Handy-freie Zeiten einplanen.</p>
+                    <h5>💡 Kreativität</h5>
+                            <input type="checkbox" id="creative-hobbies">
+                            <label for="creative-hobbies">Kreative Hobbys</label>
+                                <p><strong>Tipp:</strong> Malen, Schreiben, Musik, Handwerk.</p>
+                            <input type="checkbox" id="brainstorming">
+                            <label for="brainstorming">Regelmäßiges Brainstorming</label>
+                                <p><strong>Tipp:</strong> Mind-Mapping, Ideen sammeln.</p>
+                            <input type="checkbox" id="problem-solving">
+                            <label for="problem-solving">Problemlösungs-Übungen</label>
+                                <p><strong>Tipp:</strong> Rätsel, Puzzles, strategische Spiele.</p>
+    <!-- Step 4: Seele -->
+    <div class="workflow-step" data-step="4">
+            <h3>Schritt 4: Seele - Deine spirituelle Säule</h3>
+            <p>Nähre deine Seele durch Werte, Spiritualität und Sinnfindung.</p>
+                <h4>🌟 Spirituelle Entwicklung</h4>
+                <p>Eine starke Seele gibt dir Halt, Sinn und innere Ruhe in allen Lebenslagen.</p>
+                    <h5>🎯 Werte & Sinn</h5>
+                            <input type="checkbox" id="values-clarification">
+                            <label for="values-clarification">Werte klären</label>
+                                <p><strong>Tipp:</strong> Definiere deine 5 wichtigsten Werte.</p>
+                            <input type="checkbox" id="purpose-finding">
+                            <label for="purpose-finding">Lebenssinn finden</label>
+                                <p><strong>Tipp:</strong> Was ist dein "Warum"? Was treibt dich an?</p>
+                            <input type="checkbox" id="value-alignment">
+                            <label for="value-alignment">Werte-Lebens-Alignment</label>
+                                <p><strong>Tipp:</strong> Lebe deine Werte im Alltag.</p>
+                    <h5>🧘‍♀️ Achtsamkeit & Spiritualität</h5>
+                            <input type="checkbox" id="mindfulness-practice">
+                            <label for="mindfulness-practice">Achtsamkeitspraxis</label>
+                                <p><strong>Tipp:</strong> 10 Min täglich im Moment sein.</p>
+                            <input type="checkbox" id="gratitude-practice">
+                            <label for="gratitude-practice">Dankbarkeitspraxis</label>
+                                <p><strong>Tipp:</strong> 3 Dinge täglich aufschreiben.</p>
+                            <input type="checkbox" id="spiritual-connection">
+                            <label for="spiritual-connection">Spirituelle Verbindung</label>
+                                <p><strong>Tipp:</strong> Gebet, Meditation, Naturverbindung.</p>
+                    <h5>🌱 Persönliches Wachstum</h5>
+                            <input type="checkbox" id="self-reflection">
+                            <label for="self-reflection">Selbstreflexion</label>
+                                <p><strong>Tipp:</strong> Wöchentliches Journaling.</p>
+                            <input type="checkbox" id="emotional-intelligence">
+                            <label for="emotional-intelligence">Emotionale Intelligenz</label>
+                                <p><strong>Tipp:</strong> Emotionen erkennen und regulieren.</p>
+                            <input type="checkbox" id="inner-peace">
+                            <label for="inner-peace">Inneren Frieden finden</label>
+                                <p><strong>Tipp:</strong> Akzeptanz, Vergebung, Loslassen.</p>
+    <!-- Step 5: Beziehungen -->
+    <div class="workflow-step" data-step="5">
+            <h3>Schritt 5: Beziehungen - Deine soziale Säule</h3>
+            <p>Pflege und entwickle bedeutungsvolle Beziehungen zu anderen Menschen.</p>
+                <h4>❤️ Beziehungsentwicklung</h4>
+                <p>Starke Beziehungen sind der Schlüssel zu Glück und Erfolg im Leben.</p>
+                    <h5>👨‍👩‍👧‍👦 Familie & Partnerschaft</h5>
+                            <input type="checkbox" id="quality-time">
+                            <label for="quality-time">Qualitätszeit verbringen</label>
+                                <p><strong>Tipp:</strong> Regelmäßige gemeinsame Aktivitäten.</p>
+                            <input type="checkbox" id="active-listening">
+                            <label for="active-listening">Aktives Zuhören</label>
+                                <p><strong>Tipp:</strong> Vollständig präsent sein, ohne zu urteilen.</p>
+                            <input type="checkbox" id="conflict-resolution">
+                            <label for="conflict-resolution">Konfliktlösung</label>
+                                <p><strong>Tipp:</strong> Win-Win-Lösungen suchen.</p>
+                    <h5>👥 Freundschaften</h5>
+                            <input type="checkbox" id="friendship-maintenance">
+                            <label for="friendship-maintenance">Freundschaften pflegen</label>
+                                <p><strong>Tipp:</strong> Regelmäßig Kontakt halten.</p>
+                            <input type="checkbox" id="new-friendships">
+                            <label for="new-friendships">Neue Freundschaften</label>
+                                <p><strong>Tipp:</strong> Hobbys, Events, Gemeinschaften.</p>
+                            <input type="checkbox" id="support-system">
+                            <label for="support-system">Unterstützungssystem</label>
+                                <p><strong>Tipp:</strong> Geben und Nehmen in Freundschaften.</p>
+                    <h5>🌐 Netzwerk & Community</h5>
+                            <input type="checkbox" id="professional-network">
+                            <label for="professional-network">Berufliches Netzwerk</label>
+                                <p><strong>Tipp:</strong> LinkedIn, Events, Mentoring.</p>
+                            <input type="checkbox" id="community-involvement">
+                            <label for="community-involvement">Gemeinschaftsengagement</label>
+                                <p><strong>Tipp:</strong> Ehrenamt, Vereine, lokale Projekte.</p>
+                            <input type="checkbox" id="social-skills">
+                            <label for="social-skills">Soziale Kompetenzen</label>
+                                <p><strong>Tipp:</strong> Kommunikation, Empathie, Teamwork.</p>
+    <!-- Step 6: Beruf -->
+    <div class="workflow-step" data-step="6">
+            <h3>Schritt 6: Beruf - Deine berufliche Säule</h3>
+            <p>Entwickle deine berufliche Laufbahn und finanzielle Unabhängigkeit.</p>
+                <h4>💼 Berufliche Entwicklung</h4>
+                <p>Ein erfüllender Beruf gibt dir finanzielle Sicherheit und persönliche Zufriedenheit.</p>
+                    <h5>🎯 Karriere & Ziele</h5>
+                            <input type="checkbox" id="career-goals">
+                            <label for="career-goals">Karriereziele definieren</label>
+                                <p><strong>Tipp:</strong> 1-Jahr, 3-Jahr, 5-Jahr Ziele setzen.</p>
+                            <input type="checkbox" id="skill-development">
+                            <label for="skill-development">Fähigkeiten entwickeln</label>
+                                <p><strong>Tipp:</strong> Relevante Skills für deine Ziele.</p>
+                            <input type="checkbox" id="performance-improvement">
+                            <label for="performance-improvement">Leistung verbessern</label>
+                                <p><strong>Tipp:</strong> Feedback einholen, kontinuierlich lernen.</p>
+                    <h5>💰 Finanzen</h5>
+                            <input type="checkbox" id="budget-planning">
+                            <label for="budget-planning">Budget planen</label>
+                                <p><strong>Tipp:</strong> 50/30/20 Regel: Bedürfnisse/Wünsche/Sparen.</p>
+                            <input type="checkbox" id="savings-goal">
+                            <label for="savings-goal">Sparziele setzen</label>
+                                <p><strong>Tipp:</strong> Notgroschen, Altersvorsorge, Investitionen.</p>
+                            <input type="checkbox" id="income-diversification">
+                            <label for="income-diversification">Einkommen diversifizieren</label>
+                                <p><strong>Tipp:</strong> Nebenverdienst, Investments, passive Einkommen.</p>
+                    <h5>🚀 Unternehmertum</h5>
+                            <input type="checkbox" id="entrepreneurial-mindset">
+                            <label for="entrepreneurial-mindset">Unternehmerisches Denken</label>
+                                <p><strong>Tipp:</strong> Probleme als Chancen sehen.</p>
+                            <input type="checkbox" id="side-business">
+                            <label for="side-business">Nebenprojekt starten</label>
+                                <p><strong>Tipp:</strong> Kleine Schritte, testen, iterieren.</p>
+                            <input type="checkbox" id="innovation">
+                            <label for="innovation">Innovation & Kreativität</label>
+                                <p><strong>Tipp:</strong> Neue Wege finden, experimentieren.</p>
+    <!-- Step 7: Entwicklungsplan -->
+    <div class="workflow-step" data-step="7">
+            <h3>Schritt 7: Persönlicher Entwicklungsplan</h3>
+            <p>Erstelle einen strukturierten Plan für deine kontinuierliche Entwicklung in allen fünf Säulen.</p>
+        <div class="development-plan">
+            <div class="plan-overview">
+                <h4>📋 Dein 90-Tage-Entwicklungsplan</h4>
+                <p>Basierend auf deiner Bewertung und den gewählten Aktivitäten erstelle einen konkreten Aktionsplan.</p>
+            <div class="plan-sections">
+                <div class="plan-section">
+                    <h5>🎯 Prioritäten setzen</h5>
+                    <div class="priority-list">
+                        <div class="priority-item">
+                            <h6>Top 3 Entwicklungsbereiche</h6>
+                            <div class="priority-inputs">
+                                <input type="text" placeholder="1. Wichtigster Bereich" id="priority-1">
+                                <input type="text" placeholder="2. Zweitwichtigster Bereich" id="priority-2">
+                                <input type="text" placeholder="3. Drittwichtigster Bereich" id="priority-3">
+                    <h5>📅 Zeitplan erstellen</h5>
+                    <div class="schedule-grid">
+                        <div class="schedule-item">
+                            <h6>Wöchentliche Routinen</h6>
+                            <div class="routine-list">
+                                <div class="routine-item">
+                                    <input type="checkbox" id="weekly-review">
+                                    <label for="weekly-review">Wöchentliches Review (Sonntag)</label>
+                                </div>
+                                    <input type="checkbox" id="weekly-planning">
+                                    <label for="weekly-planning">Wöchentliche Planung (Montag)</label>
+                                    <input type="checkbox" id="daily-habits">
+                                    <label for="daily-habits">Tägliche Gewohnheiten</label>
+                        
+                            <h6>Monatliche Meilensteine</h6>
+                            <div class="milestone-list">
+                                <div class="milestone-item">
+                                    <input type="text" placeholder="Monat 1 Ziel" id="milestone-1">
+                                    <input type="text" placeholder="Monat 2 Ziel" id="milestone-2">
+                                    <input type="text" placeholder="Monat 3 Ziel" id="milestone-3">
+                    <h5>📊 Fortschritts-Tracking</h5>
+                    <div class="tracking-methods">
+                        <div class="tracking-item">
+                            <h6>Messbare Ziele</h6>
+                            <div class="goal-inputs">
+                                <input type="text" placeholder="Spezifisches Ziel 1" id="goal-1">
+                                <input type="text" placeholder="Spezifisches Ziel 2" id="goal-2">
+                                <input type="text" placeholder="Spezifisches Ziel 3" id="goal-3">
+                            <h6>Bewertungskriterien</h6>
+                            <div class="criteria-list">
+                                <div class="criteria-item">
+                                    <input type="checkbox" id="weekly-self-assessment">
+                                    <label for="weekly-self-assessment">Wöchentliche Selbsteinschätzung</label>
+                                    <input type="checkbox" id="monthly-review">
+                                    <label for="monthly-review">Monatliches Review</label>
+                                    <input type="checkbox" id="feedback-seeking">
+                                    <label for="feedback-seeking">Feedback von anderen einholen</label>
+            <div class="plan-actions">
+                <h5>🚀 Nächste Schritte</h5>
+                <div class="action-checklist">
+                    <div class="action-item">
+                        <input type="checkbox" id="action-start-today">
+                        <label for="action-start-today">Heute mit der ersten Aktivität beginnen</label>
+                        <input type="checkbox" id="action-set-reminders">
+                        <label for="action-set-reminders">Erinnerungen für tägliche Gewohnheiten setzen</label>
+                        <input type="checkbox" id="action-find-accountability">
+                        <label for="action-find-accountability">Accountability-Partner finden</label>
+                        <input type="checkbox" id="action-celebrate-wins">
+                        <label for="action-celebrate-wins">Kleine Erfolge feiern</label>
+    <!-- Navigation -->
+    <div class="workflow-navigation">
+        <div class="nav-buttons">
+            <button class="btn btn-outline" id="prev-btn" data-action="previous-step" disabled>
+                <i class="fas fa-arrow-left"></i> Zurück
+            </button>
+            <div class="progress-info">
+                <span id="current-step">Schritt 1</span> von <span id="total-steps">7</span>
+            <button class="btn btn-primary" id="next-btn" data-action="next-step">
+                Weiter <i class="fas fa-arrow-right"></i>
+</div>
+
+<!-- Global Auth System -->
+<script src="../../js/aws-config.js"></script>
+    <script src="js/global-auth-system.js"></script><script src="../../js/unified-auth-manager.js"></script>
+    
+    <script>
+        // Load auth modals
+        async function loadAuthModals() {
+            try {
+                const response = await fetch('components/unified-auth-modals.html');
+                const html = await response.text();
+                document.getElementById('authModalsContainer').innerHTML = html;
+            } catch (error) {
+                console.error('Error loading auth modals:', error);
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAuthModals();
+        });
+    </script>

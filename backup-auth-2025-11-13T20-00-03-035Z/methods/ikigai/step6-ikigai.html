@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎯 Ikigai Step 6: Synthese</title>
+    
+    <!-- Meta Tags -->
+    <meta name="description" content="Finde die Synthese aller vier Bereiche im Ikigai-Workflow. Entdecke dein persönliches Ikigai durch die Verbindung von Passion, Mission, Profession und Vocation.">
+    <meta name="keywords" content="ikigai, synthese, lebenszweck, verbindung, passion mission profession vocation">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="css/ikigai-styles.css">
+    <link rel="stylesheet" href="css/step6-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../../manuel-weiss-photo.svg">
+</head>
+<body>
+    <!-- Header -->
+    <header class="step-header">
+        <div class="step-header-content">
+            <div class="step-info">
+                <h1>🎯 Ikigai Step 6: Synthese</h1>
+                <p class="step-description">Finde die Schnittmenge aller vier Bereiche und entdecke dein persönliches Ikigai.</p>
+            </div>
+            <div class="step-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 85.7%"></div>
+                </div>
+                <span class="progress-text">6 von 7</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="step-main">
+        <div class="step-container">
+            <!-- Left Column: Questions -->
+            <div class="questions-column">
+                <div class="step-intro">
+                    <h2>Dein Ikigai synthetisieren</h2>
+                    <p>Jetzt verbinden wir alle vier Bereiche: Was du liebst + Was die Welt braucht + Womit du Geld verdienst + Was du gut kannst = Dein Ikigai</p>
+                </div>
+
+                <form class="reflection-form" id="synthesisForm">
+                    <!-- Frage 1: Verbindungen finden -->
+                    <div class="form-group">
+                        <label for="connections">Welche Verbindungen siehst du zwischen deinen vier Bereichen?</label>
+                        <p class="question-hint">Überlege, wie sich deine Passion, Mission, Profession und Vocation überschneiden und ergänzen.</p>
+                        <textarea id="connections" name="connections" rows="6" placeholder="Beschreibe die Verbindungen zwischen deinen Bereichen..."></textarea>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li><strong>Passion + Mission:</strong> Wofür brennst du UND womit hilfst du der Welt?</li>
+                                <li><strong>Mission + Profession:</strong> Welche Probleme löst du UND womit verdienst du Geld?</li>
+                                <li><strong>Profession + Vocation:</strong> Womit verdienst du Geld UND was kannst du gut?</li>
+                                <li><strong>Vocation + Passion:</strong> Was kannst du gut UND was liebst du?</li>
+                                <li><strong>Alle vier Bereiche:</strong> Wo treffen sich alle vier Bereiche?</li>
+                                <li><strong>Synergien:</strong> Wie verstärken sich die Bereiche gegenseitig?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Frage 2: Dein Ikigai definieren -->
+                    <div class="form-group">
+                        <label for="ikigai">Wie würdest du dein Ikigai in einem Satz beschreiben?</label>
+                        <p class="question-hint">Formuliere dein persönliches Ikigai als klaren, prägnanten Satz.</p>
+                        <textarea id="ikigai" name="ikigai" rows="6" placeholder="Mein Ikigai ist..."></textarea>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li><strong>Klarheit:</strong> Ist dein Ikigai klar und verständlich?</li>
+                                <li><strong>Vollständigkeit:</strong> Enthält es alle vier Bereiche?</li>
+                                <li><strong>Authentizität:</strong> Fühlt es sich echt und wahr für dich an?</li>
+                                <li><strong>Motivation:</strong> Inspiriert es dich und gibt dir Energie?</li>
+                                <li><strong>Umsetzbarkeit:</strong> Ist es realistisch umsetzbar?</li>
+                                <li><strong>Einzigartigkeit:</strong> Ist es spezifisch für dich?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Frage 3: Vision entwickeln -->
+                    <div class="form-group">
+                        <label for="vision">Wie sieht dein Leben aus, wenn du dein Ikigai lebst?</label>
+                        <p class="question-hint">Stelle dir vor, wie dein idealer Alltag, deine Arbeit und deine Beziehungen aussehen würden.</p>
+                        <textarea id="vision" name="vision" rows="6" placeholder="Beschreibe deine Vision eines Lebens mit deinem Ikigai..."></textarea>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li><strong>Tagesablauf:</strong> Wie würde dein idealer Tag aussehen?</li>
+                                <li><strong>Arbeitsumfeld:</strong> Wo und wie würdest du arbeiten?</li>
+                                <li><strong>Beziehungen:</strong> Mit wem würdest du zusammenarbeiten?</li>
+                                <li><strong>Wirkung:</strong> Welchen Einfluss hättest du auf andere?</li>
+                                <li><strong>Gefühle:</strong> Wie würdest du dich fühlen?</li>
+                                <li><strong>Erfolg:</strong> Wie würdest du Erfolg definieren?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Navigation Buttons -->
+                    <div class="form-navigation">
+                        <div class="nav-left">
+                            <a href="index-ikigai.html" class="btn btn-outline">
+                                <i class="fas fa-home"></i>
+                                Übersicht
+                            </a>
+                            <a href="step5-ikigai.html" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i>
+                                Zurück zu Vocation
+                            </a>
+                        </div>
+                        <button type="button" class="btn btn-primary" onclick="saveAndContinue()">
+                            Weiter zu Aktionsplan
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Right Column: Tools & Resources -->
+            <div class="sidebar">
+                <div class="tools-box">
+                    <h4><i class="fas fa-puzzle-piece"></i> Synthese-Tools</h4>
+                    
+                    <div class="tool-categories">
+                        <div class="tool-category">
+                            <h5>Verbindungen visualisieren</h5>
+                            <ul>
+                                <li><strong>Mind Map:</strong> Alle Bereiche und Verbindungen visualisieren</li>
+                                <li><strong>Venn Diagramm:</strong> Schnittmengen darstellen</li>
+                                <li><strong>Ikigai Canvas:</strong> Strukturierte Synthese</li>
+                                <li><strong>Storytelling:</strong> Deine Geschichte erzählen</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="tool-category">
+                            <h5>Ikigai definieren</h5>
+                            <ul>
+                                <li><strong>Mission Statement:</strong> Dein Ikigai formulieren</li>
+                                <li><strong>Vision Board:</strong> Visuelle Darstellung</li>
+                                <li><strong>Elevator Pitch:</strong> Kurz und prägnant erklären</li>
+                                <li><strong>Feedback einholen:</strong> Von anderen testen lassen</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="resources-box">
+                    <h4><i class="fas fa-book"></i> Synthese-Ressourcen</h4>
+                    
+                    <div class="resource-links">
+                        <div class="resource-section">
+                            <h5>Bücher</h5>
+                            <ul>
+                                <li><strong>"Ikigai"</strong> von Héctor García & Francesc Miralles</li>
+                                <li><strong>"Designing Your Life"</strong> von Bill Burnett & Dave Evans</li>
+                                <li><strong>"The Path"</strong> von Michael Puett & Christine Gross-Loh</li>
+                                <li><strong>"The Purpose Driven Life"</strong> von Rick Warren</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="resource-section">
+                            <h5>Verwandte Workflows</h5>
+                            <ul>
+                                <li><a href="../raisec/index-raisec.html">RAISEC-Test</a> - Berufliche Interessen</li>
+                                <li><a href="../swot/index-swot.html">SWOT-Analyse</a> - Stärken und Schwächen</li>
+                                <li><a href="../wheel-of-life/index-wheel.html">Wheel of Life</a> - Lebensbereiche</li>
+                                <li><a href="../../persoenlichkeitsentwicklung.html">Persönlichkeitsentwicklung</a> - Übersicht</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="js/ikigai-workflow.js"></script>
+    
+    <script>
+        function saveAndContinue() {
+            // Save form data to localStorage
+            const formData = {
+                connections: document.getElementById('connections').value,
+                ikigai: document.getElementById('ikigai').value,
+                vision: document.getElementById('vision').value,
+                step: 6,
+                timestamp: new Date().toISOString()
+            };
+            
+            localStorage.setItem('ikigaiStep6', JSON.stringify(formData));
+            
+            // Redirect to step 7
+            window.location.href = 'step7-ikigai.html';
+        }
+        
+        // Initialize workflow
+        window.addEventListener('load', function() {
+            if (typeof IkigaiSmartWorkflow !== 'undefined') {
+                window.ikigaiSmartWorkflow = new IkigaiSmartWorkflow();
+                window.ikigaiSmartWorkflow.currentStep = 6;
+                window.ikigaiSmartWorkflow.updateProgress();
+            }
+        });
+        
+        // Load saved data if available
+        window.addEventListener('load', function() {
+            const savedData = localStorage.getItem('ikigaiStep6');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                document.getElementById('connections').value = data.connections || '';
+                document.getElementById('ikigai').value = data.ikigai || '';
+                document.getElementById('vision').value = data.vision || '';
+            }
+        });
+        
+        // Auto-save on input
+        document.querySelectorAll('textarea').forEach(textarea => {
+            textarea.addEventListener('input', function() {
+                const formData = {
+                    connections: document.getElementById('connections').value,
+                    ikigai: document.getElementById('ikigai').value,
+                    vision: document.getElementById('vision').value,
+                    step: 6,
+                    timestamp: new Date().toISOString()
+                };
+                localStorage.setItem('ikigaiStep6', JSON.stringify(formData));
+            });
+        });
+    </script>
+</body>
+</html>

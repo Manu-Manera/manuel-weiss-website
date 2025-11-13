@@ -1,326 +1,414 @@
-// User Progress Tracker für Persönlichkeitsentwicklung
-// Speichert Fortschritt aller Methods pro Benutzer
+/**
+ * User Progress Tracker
+ * Tracks user progress across personality development methods and workflows
+ */
 
 class UserProgressTracker {
-    constructor(globalAuth) {
-        this.auth = globalAuth;
-        this.methodProgress = {};
-        this.achievements = [];
-        this.streaks = {};
-        
-        this.init();
+    constructor() {
+        this.userId = null;
+        this.progressData = {};
+        this.autoSaveInterval = null;
+        this.pendingChanges = false;
+        this.isInitialized = false;
     }
-    
+
+    /**
+     * Initialize the progress tracker
+     */
     async init() {
-        console.log('📊 User Progress Tracker initializing...');
+        if (this.isInitialized) return;
         
-        // Load existing progress if user is logged in
-        if (this.auth.isAuthenticated()) {
-            await this.loadProgress();
+        // Check if user is authenticated
+        if (!window.realUserAuth || !window.realUserAuth.isAuthenticated()) {
+            console.log('Progress tracker: User not authenticated');
+            return;
         }
+
+        const user = window.realUserAuth.getUser();
+        if (!user) return;
         
-        // Listen for auth changes
-        this.auth.onAuthChange({
-            onLogin: () => this.loadProgress(),
-            onLogout: () => this.clearProgress()
+        this.userId = user.userId;
+        
+        // Load existing progress data
+        await this.loadProgress();
+        
+        // Set up auto-save every 30 seconds if there are changes
+        this.autoSaveInterval = setInterval(() => {
+            if (this.pendingChanges) {
+                this.saveProgress();
+            }
+        }, 30000);
+        
+        // Save on page unload
+        window.addEventListener('beforeunload', () => {
+            if (this.pendingChanges) {
+                this.saveProgress();
+            }
         });
         
-        console.log('✅ User Progress Tracker ready');
+        this.isInitialized = true;
+        console.log('Progress tracker initialized for user:', this.userId);
     }
-    
+
+    /**
+     * Load progress data from AWS
+     */
     async loadProgress() {
-        if (!this.auth.isAuthenticated()) return;
-        
-        const progress = this.auth.getProgress('personality_development');
-        this.methodProgress = progress || {};
-        
-        console.log('📈 Loaded progress for', Object.keys(this.methodProgress).length, 'methods');
+        try {
+            if (!window.awsProfileAPI) {
+                console.error('AWS Profile API not available');
+                return;
+            }
+
+            const profile = await window.awsProfileAPI.loadProfile();
+            if (profile && profile.progressData) {
+                this.progressData = profile.progressData;
+                console.log('Progress data loaded:', this.progressData);
+            } else {
+                this.progressData = this.getDefaultProgressData();
+            }
+        } catch (error) {
+            console.error('Error loading progress:', error);
+            // Load from local storage as fallback
+            this.loadFromLocalStorage();
+        }
     }
-    
-    clearProgress() {
-        this.methodProgress = {};
-        this.achievements = [];
-        this.streaks = {};
-    }
-    
-    // Method Progress Tracking
-    async completeMethodStep(methodId, stepId, stepData = {}) {
-        if (!this.auth.requireAuth()) return false;
+
+    /**
+     * Save progress data to AWS
+     */
+    async saveProgress() {
+        if (!this.userId || !this.pendingChanges) return;
         
-        if (!this.methodProgress[methodId]) {
-            this.methodProgress[methodId] = {
-                methodId,
-                startedAt: new Date().toISOString(),
-                completedSteps: [],
-                currentStep: 0,
-                totalSteps: stepData.totalSteps || 1,
-                status: 'in_progress',
-                results: {},
-                timeSpent: 0
+        try {
+            if (!window.awsProfileAPI) {
+                console.error('AWS Profile API not available');
+                this.saveToLocalStorage();
+                return;
+            }
+
+            // Get current profile data
+            const profile = await window.awsProfileAPI.loadProfile();
+            const updatedProfile = {
+                ...profile,
+                progressData: this.progressData,
+                lastProgressUpdate: new Date().toISOString()
+            };
+            
+            // Save to AWS
+            await window.awsProfileAPI.saveProfile(updatedProfile);
+            
+            this.pendingChanges = false;
+            console.log('Progress saved to AWS');
+            
+            // Also save to local storage as backup
+            this.saveToLocalStorage();
+        } catch (error) {
+            console.error('Error saving progress:', error);
+            // Fallback to local storage
+            this.saveToLocalStorage();
+        }
+    }
+
+    /**
+     * Track page visit
+     */
+    trackPageVisit(pageId, pageType = 'method') {
+        if (!this.userId) return;
+        
+        const timestamp = new Date().toISOString();
+        
+        if (!this.progressData.pages) {
+            this.progressData.pages = {};
+        }
+        
+        if (!this.progressData.pages[pageId]) {
+            this.progressData.pages[pageId] = {
+                firstVisit: timestamp,
+                lastVisit: timestamp,
+                visitCount: 0,
+                completed: false,
+                completionPercentage: 0,
+                pageType: pageType
             };
         }
         
-        const method = this.methodProgress[methodId];
+        this.progressData.pages[pageId].lastVisit = timestamp;
+        this.progressData.pages[pageId].visitCount++;
         
-        // Add completed step
-        if (!method.completedSteps.includes(stepId)) {
-            method.completedSteps.push(stepId);
-            method.currentStep = method.completedSteps.length;
+        this.pendingChanges = true;
+        this.updateOverallProgress();
+    }
+
+    /**
+     * Track step completion in multi-step workflows
+     */
+    trackStepCompletion(pageId, stepId, totalSteps) {
+        if (!this.userId) return;
+        
+        if (!this.progressData.pages) {
+            this.progressData.pages = {};
         }
         
-        // Store step results
-        method.results[stepId] = {
-            ...stepData,
+        if (!this.progressData.pages[pageId]) {
+            this.trackPageVisit(pageId, 'workflow');
+        }
+        
+        if (!this.progressData.pages[pageId].steps) {
+            this.progressData.pages[pageId].steps = {};
+        }
+        
+        this.progressData.pages[pageId].steps[stepId] = {
+            completed: true,
             completedAt: new Date().toISOString()
         };
         
-        // Check if method is complete
-        if (method.completedSteps.length >= method.totalSteps) {
-            method.status = 'completed';
-            method.completedAt = new Date().toISOString();
-            
-            // Award achievement
-            await this.awardAchievement(methodId, 'method_completed');
-            
-            // Show completion message
-            this.showCompletionMessage(methodId);
+        // Calculate completion percentage
+        const completedSteps = Object.keys(this.progressData.pages[pageId].steps).length;
+        this.progressData.pages[pageId].completionPercentage = Math.round((completedSteps / totalSteps) * 100);
+        
+        if (completedSteps >= totalSteps) {
+            this.progressData.pages[pageId].completed = true;
+            this.progressData.pages[pageId].completedAt = new Date().toISOString();
         }
         
-        // Update last activity
-        method.lastActivity = new Date().toISOString();
-        
-        // Save progress
-        await this.saveProgress();
-        
-        // Update streak
-        this.updateStreak();
-        
-        console.log(`✅ Step completed: ${methodId} -> ${stepId}`);
-        return true;
+        this.pendingChanges = true;
+        this.updateOverallProgress();
     }
-    
-    async saveMethodResult(methodId, results) {
-        if (!this.auth.requireAuth()) return false;
+
+    /**
+     * Track form data or answers
+     */
+    trackFormData(pageId, formData) {
+        if (!this.userId) return;
         
-        if (!this.methodProgress[methodId]) {
-            await this.completeMethodStep(methodId, 'initial', { totalSteps: 1 });
+        if (!this.progressData.pages) {
+            this.progressData.pages = {};
         }
         
-        this.methodProgress[methodId].finalResults = {
-            ...results,
-            savedAt: new Date().toISOString()
-        };
+        if (!this.progressData.pages[pageId]) {
+            this.trackPageVisit(pageId);
+        }
         
-        await this.saveProgress();
-        console.log(`💾 Method results saved: ${methodId}`);
-        return true;
+        if (!this.progressData.pages[pageId].formData) {
+            this.progressData.pages[pageId].formData = {};
+        }
+        
+        Object.assign(this.progressData.pages[pageId].formData, formData);
+        this.progressData.pages[pageId].lastUpdate = new Date().toISOString();
+        
+        this.pendingChanges = true;
     }
-    
-    // Progress Analytics
-    getMethodProgress(methodId) {
-        return this.methodProgress[methodId] || null;
+
+    /**
+     * Track test results
+     */
+    trackTestResult(pageId, results) {
+        if (!this.userId) return;
+        
+        if (!this.progressData.pages) {
+            this.progressData.pages = {};
+        }
+        
+        if (!this.progressData.pages[pageId]) {
+            this.trackPageVisit(pageId, 'test');
+        }
+        
+        if (!this.progressData.pages[pageId].results) {
+            this.progressData.pages[pageId].results = [];
+        }
+        
+        this.progressData.pages[pageId].results.push({
+            timestamp: new Date().toISOString(),
+            ...results
+        });
+        
+        this.progressData.pages[pageId].completed = true;
+        this.progressData.pages[pageId].completedAt = new Date().toISOString();
+        this.progressData.pages[pageId].completionPercentage = 100;
+        
+        this.pendingChanges = true;
+        this.updateOverallProgress();
     }
-    
+
+    /**
+     * Get progress for a specific page
+     */
+    getPageProgress(pageId) {
+        if (!this.progressData.pages || !this.progressData.pages[pageId]) {
+            return null;
+        }
+        return this.progressData.pages[pageId];
+    }
+
+    /**
+     * Get overall progress statistics
+     */
     getOverallProgress() {
-        const methods = Object.values(this.methodProgress);
-        const total = methods.length;
-        const completed = methods.filter(m => m.status === 'completed').length;
-        const inProgress = methods.filter(m => m.status === 'in_progress').length;
+        if (!this.progressData.pages) {
+            return {
+                totalPages: 0,
+                visitedPages: 0,
+                completedPages: 0,
+                completionPercentage: 0
+            };
+        }
+        
+        const pages = Object.values(this.progressData.pages);
+        const totalPages = pages.length;
+        const completedPages = pages.filter(p => p.completed).length;
+        const totalPercentage = pages.reduce((sum, p) => sum + (p.completionPercentage || 0), 0);
         
         return {
-            total,
-            completed,
-            inProgress,
-            completionRate: total > 0 ? (completed / total * 100).toFixed(1) : 0,
-            methods: this.methodProgress
+            totalPages,
+            visitedPages: totalPages,
+            completedPages,
+            completionPercentage: totalPages > 0 ? Math.round(totalPercentage / totalPages) : 0
         };
     }
-    
-    getRecentActivity(days = 7) {
-        const cutoff = new Date();
-        cutoff.setDate(cutoff.getDate() - days);
-        
-        return Object.values(this.methodProgress)
-            .filter(method => new Date(method.lastActivity || method.startedAt) > cutoff)
-            .sort((a, b) => new Date(b.lastActivity || b.startedAt) - new Date(a.lastActivity || a.startedAt));
-    }
-    
-    // Achievement System
-    async awardAchievement(methodId, type, data = {}) {
-        const achievement = {
-            id: `${type}_${methodId}_${Date.now()}`,
-            type,
-            methodId,
-            awardedAt: new Date().toISOString(),
-            data
+
+    /**
+     * Update overall progress statistics
+     */
+    updateOverallProgress() {
+        const stats = this.getOverallProgress();
+        this.progressData.overallStats = {
+            ...stats,
+            lastUpdate: new Date().toISOString()
         };
         
-        this.achievements.push(achievement);
-        
-        // Save to user profile
-        await this.auth.updateUserProfile({
-            achievements: this.achievements
-        });
-        
-        // Show achievement notification
-        this.showAchievementNotification(achievement);
-        
-        console.log('🏆 Achievement awarded:', achievement);
+        // Dispatch event for UI updates
+        window.dispatchEvent(new CustomEvent('progressUpdated', { 
+            detail: { 
+                userId: this.userId, 
+                stats: stats 
+            } 
+        }));
     }
-    
-    // Streak Tracking
-    updateStreak() {
-        const today = new Date().toDateString();
-        const yesterday = new Date();
-        yesterday.setDate(yesterday.getDate() - 1);
-        const yesterdayStr = yesterday.toDateString();
+
+    /**
+     * Get default progress data structure
+     */
+    getDefaultProgressData() {
+        return {
+            userId: this.userId,
+            pages: {},
+            overallStats: {
+                totalPages: 0,
+                visitedPages: 0,
+                completedPages: 0,
+                completionPercentage: 0
+            },
+            createdAt: new Date().toISOString(),
+            lastUpdate: new Date().toISOString()
+        };
+    }
+
+    /**
+     * Save to local storage (fallback)
+     */
+    saveToLocalStorage() {
+        if (!this.userId) return;
         
-        if (!this.streaks.lastActivity || this.streaks.lastActivity === yesterdayStr) {
-            // Continue or start streak
-            this.streaks.current = (this.streaks.current || 0) + 1;
-            this.streaks.lastActivity = today;
-            
-            // Check for streak milestones
-            if ([7, 14, 30, 100].includes(this.streaks.current)) {
-                this.awardAchievement('streak', 'streak_milestone', { days: this.streaks.current });
+        const key = `userProgress_${this.userId}`;
+        localStorage.setItem(key, JSON.stringify(this.progressData));
+        console.log('Progress saved to local storage');
+    }
+
+    /**
+     * Load from local storage (fallback)
+     */
+    loadFromLocalStorage() {
+        if (!this.userId) return;
+        
+        const key = `userProgress_${this.userId}`;
+        const stored = localStorage.getItem(key);
+        
+        if (stored) {
+            try {
+                this.progressData = JSON.parse(stored);
+                console.log('Progress loaded from local storage');
+            } catch (error) {
+                console.error('Error parsing local storage progress:', error);
+                this.progressData = this.getDefaultProgressData();
             }
-        } else if (this.streaks.lastActivity !== today) {
-            // Streak broken
-            this.streaks.current = 1;
-            this.streaks.lastActivity = today;
+        } else {
+            this.progressData = this.getDefaultProgressData();
         }
-        
-        // Update longest streak
-        this.streaks.longest = Math.max(this.streaks.longest || 0, this.streaks.current || 0);
     }
-    
-    // Data Persistence
-    async saveProgress() {
-        return await this.auth.saveProgress('personality_development', 'all', {
-            methods: this.methodProgress,
-            achievements: this.achievements,
-            streaks: this.streaks,
-            stats: this.getOverallProgress()
-        });
+
+    /**
+     * Clear all progress data
+     */
+    clearProgress() {
+        this.progressData = this.getDefaultProgressData();
+        this.pendingChanges = true;
+        this.saveProgress();
     }
-    
-    // UI Helpers
-    showCompletionMessage(methodId) {
-        const methodName = this.getMethodName(methodId);
-        this.auth.showNotification(`🎉 ${methodName} erfolgreich abgeschlossen!`, 'success');
-    }
-    
-    showAchievementNotification(achievement) {
-        let message = '';
-        switch (achievement.type) {
-            case 'method_completed':
-                message = `🏆 Methode abgeschlossen: ${this.getMethodName(achievement.methodId)}`;
-                break;
-            case 'streak_milestone':
-                message = `🔥 ${achievement.data.days} Tage in Folge aktiv!`;
-                break;
-            default:
-                message = '🎯 Neue Errungenschaft!';
-        }
-        
-        this.auth.showNotification(message, 'success');
-    }
-    
-    getMethodName(methodId) {
-        const methodNames = {
-            'johari-window': 'Johari-Fenster',
-            'swot-analysis': 'SWOT-Analyse', 
-            'values-clarification': 'Werte-Klärung',
-            'goal-setting': 'Ziele setzen',
-            'wheel-of-life': 'Lebensrad',
-            'strengths-finder': 'Stärken-Finder',
-            'emotional-intelligence': 'Emotionale Intelligenz',
-            'mindfulness': 'Achtsamkeit',
-            'habit-building': 'Gewohnheiten entwickeln',
-            'time-management': 'Zeitmanagement'
-        };
-        
-        return methodNames[methodId] || methodId;
-    }
-    
-    // Progress Dashboard
-    createProgressDashboard() {
-        const progress = this.getOverallProgress();
-        const recent = this.getRecentActivity();
-        
-        return `
-            <div style="
-                background: white; padding: 1.5rem; border-radius: 12px;
-                box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin: 1rem 0;
-            ">
-                <h3 style="margin: 0 0 1rem; color: #1f2937; display: flex; align-items: center; gap: 0.5rem;">
-                    <span style="font-size: 1.5rem;">📊</span>
-                    Ihr Fortschritt
-                </h3>
-                
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
-                    <div style="text-align: center; padding: 1rem; background: #f0f9ff; border-radius: 8px;">
-                        <div style="font-size: 2rem; font-weight: bold; color: #0369a1;">${progress.completed}</div>
-                        <div style="font-size: 0.875rem; color: #64748b;">Abgeschlossen</div>
-                    </div>
-                    <div style="text-align: center; padding: 1rem; background: #fef3c7; border-radius: 8px;">
-                        <div style="font-size: 2rem; font-weight: bold; color: #d97706;">${progress.inProgress}</div>
-                        <div style="font-size: 0.875rem; color: #64748b;">In Bearbeitung</div>
-                    </div>
-                    <div style="text-align: center; padding: 1rem; background: #f0fdf4; border-radius: 8px;">
-                        <div style="font-size: 2rem; font-weight: bold; color: #16a34a;">${progress.completionRate}%</div>
-                        <div style="font-size: 0.875rem; color: #64748b;">Fortschritt</div>
-                    </div>
-                    <div style="text-align: center; padding: 1rem; background: #fdf4ff; border-radius: 8px;">
-                        <div style="font-size: 2rem; font-weight: bold; color: #a21caf;">${this.streaks.current || 0}</div>
-                        <div style="font-size: 0.875rem; color: #64748b;">Aktuelle Serie</div>
-                    </div>
-                </div>
-                
-                ${recent.length > 0 ? `
-                    <div>
-                        <h4 style="margin: 0 0 0.5rem; color: #374151;">Letzte Aktivität</h4>
-                        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                            ${recent.slice(0, 3).map(method => `
-                                <div style="
-                                    display: flex; justify-content: space-between; align-items: center;
-                                    padding: 0.5rem; background: #f9fafb; border-radius: 6px;
-                                ">
-                                    <span style="font-weight: 500;">${this.getMethodName(method.methodId)}</span>
-                                    <span style="font-size: 0.75rem; color: #6b7280;">
-                                        ${method.status === 'completed' ? '✅ Abgeschlossen' : `📊 ${method.currentStep}/${method.totalSteps}`}
-                                    </span>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                ` : ''}
-            </div>
-        `;
-    }
-    
-    // Export for global use
+
+    /**
+     * Export progress data
+     */
     exportProgress() {
-        return {
-            methods: this.methodProgress,
-            achievements: this.achievements,
-            streaks: this.streaks,
-            stats: this.getOverallProgress()
-        };
+        return JSON.stringify(this.progressData, null, 2);
+    }
+
+    /**
+     * Import progress data
+     */
+    importProgress(jsonData) {
+        try {
+            const data = JSON.parse(jsonData);
+            if (data && data.userId === this.userId) {
+                this.progressData = data;
+                this.pendingChanges = true;
+                this.saveProgress();
+                return true;
+            }
+            return false;
+        } catch (error) {
+            console.error('Error importing progress:', error);
+            return false;
+        }
+    }
+
+    /**
+     * Cleanup on logout
+     */
+    cleanup() {
+        if (this.autoSaveInterval) {
+            clearInterval(this.autoSaveInterval);
+            this.autoSaveInterval = null;
+        }
+        
+        if (this.pendingChanges) {
+            this.saveProgress();
+        }
+        
+        this.userId = null;
+        this.progressData = {};
+        this.pendingChanges = false;
+        this.isInitialized = false;
     }
 }
 
-// Initialize when global auth is ready
-if (window.GlobalAuth) {
-    window.ProgressTracker = new UserProgressTracker(window.GlobalAuth);
-} else {
-    document.addEventListener('DOMContentLoaded', () => {
-        if (window.GlobalAuth) {
-            window.ProgressTracker = new UserProgressTracker(window.GlobalAuth);
+// Create global instance
+window.userProgressTracker = new UserProgressTracker();
+
+// Initialize on auth state change
+if (window.realUserAuth) {
+    window.realUserAuth.onAuthStateChange((isAuthenticated) => {
+        if (isAuthenticated) {
+            window.userProgressTracker.init();
+        } else {
+            window.userProgressTracker.cleanup();
         }
     });
 }
 
-console.log('📈 User Progress Tracker loaded');
-
-export default UserProgressTracker;
+// Auto-initialize if user is already authenticated
+document.addEventListener('DOMContentLoaded', () => {
+    if (window.realUserAuth && window.realUserAuth.isAuthenticated()) {
+        window.userProgressTracker.init();
+    }
+});

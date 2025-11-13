@@ -1445,29 +1445,49 @@
             userPoolId: 'eu-central-1_8gP4gLK9r',
             clientId: '7kc5tt6a23fgh53d60vkefm812',
             region: 'eu-central-1',
+            apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod',
+            dynamoDB: {
+                tableName: 'mawps-user-profiles',
+                region: 'eu-central-1'
+            },
             
             // Domain Configuration
             domain: {
                 name: 'manuel-weiss.ch',
                 email: 'mail@manuel-weiss.ch',
                 region: 'eu-central-1'
+            apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod',
+            dynamoDB: {
+                tableName: 'mawps-user-profiles',
+                region: 'eu-central-1'
+            },
             },
             
             // S3 Configuration for file uploads
             s3: {
                 bucket: 'mawps-user-files-1760106396',
                 region: 'eu-central-1'
+            apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod',
+            dynamoDB: {
+                tableName: 'mawps-user-profiles',
+                region: 'eu-central-1'
+            },
             },
             
             // DynamoDB Configuration for user data
             dynamodb: {
                 tableName: 'mawps-user-profiles',
                 region: 'eu-central-1'
+            apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod',
+            dynamoDB: {
+                tableName: 'mawps-user-profiles',
+                region: 'eu-central-1'
+            },
             },
             
             // API Gateway Configuration
             apiGateway: {
-                baseUrl: 'https://api.mawps.netlify.app',
+                baseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod',
                 endpoints: {
                     userProfile: '/user/profile',
                     userProgress: '/user/progress',

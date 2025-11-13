@@ -38,7 +38,7 @@ const AWS_CONFIG_INLINE = `    <!-- AWS Auth System - Einheitliche Implementieru
             
             // API Gateway Configuration
             apiGateway: {
-                baseUrl: 'https://api.mawps.netlify.app',
+                baseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod',
                 endpoints: {
                     userProfile: '/user/profile',
                     userProgress: '/user/progress',
@@ -102,7 +102,7 @@ const AWS_CONFIG_INLINE_APPLICATIONS = `    <!-- AWS Auth System - Einheitliche 
             
             // API Gateway Configuration
             apiGateway: {
-                baseUrl: 'https://api.mawps.netlify.app',
+                baseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod',
                 endpoints: {
                     userProfile: '/user/profile',
                     userProgress: '/user/progress',

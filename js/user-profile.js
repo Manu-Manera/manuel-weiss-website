@@ -9,7 +9,7 @@ class UserProfile {
     }
 
     async init() {
-        this.setupEventListeners();
+            this.setupEventListeners();
         await this.loadProfileDataFromAWS();
         this.updateProgressDisplay();
         this.updateStats();
@@ -487,7 +487,7 @@ class UserProfile {
             this.showLoading('Profil wird gespeichert...');
             await this.saveProfileData();
             this.hideLoading();
-            this.showNotification('Profil erfolgreich gespeichert!', 'success');
+        this.showNotification('Profil erfolgreich gespeichert!', 'success');
         } catch (error) {
             this.hideLoading();
             this.showNotification('Fehler beim Speichern des Profils. Bitte versuchen Sie es erneut.', 'error');
@@ -500,7 +500,7 @@ class UserProfile {
         input.accept = 'image/*';
         input.onchange = async (e) => {
             const file = e.target.files[0];
-            if (file) {
+        if (file) {
                 try {
                     this.showLoading('Profilbild wird hochgeladen...');
                     
@@ -524,16 +524,16 @@ class UserProfile {
                         this.showNotification('Profilbild erfolgreich hochgeladen!', 'success');
                     } else {
                         // Fallback to local storage
-                        const reader = new FileReader();
-                        reader.onload = (e) => {
-                            const img = document.getElementById('profileImage');
-                            if (img) {
-                                img.src = e.target.result;
-                            }
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                    const img = document.getElementById('profileImage');
+                    if (img) {
+                        img.src = e.target.result;
+                    }
                             this.hideLoading();
                             this.showNotification('Profilbild lokal gespeichert!', 'success');
-                        };
-                        reader.readAsDataURL(file);
+            };
+            reader.readAsDataURL(file);
                     }
                 } catch (error) {
                     console.error('❌ Failed to upload avatar:', error);
@@ -620,7 +620,7 @@ class UserProfile {
         // Remove after 3 seconds
         setTimeout(() => {
             notification.style.animation = 'slideOut 0.3s ease';
-            setTimeout(() => {
+        setTimeout(() => {
                 document.body.removeChild(notification);
             }, 300);
         }, 3000);

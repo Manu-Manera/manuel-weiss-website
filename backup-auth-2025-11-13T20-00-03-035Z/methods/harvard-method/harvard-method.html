@@ -1,0 +1,478 @@
+<div class="workflow-container">
+    <div class="workflow-header">
+        <button class="btn btn-secondary" onclick="window.location.href='../../persoenlichkeitsentwicklung-uebersicht.html'">
+            <i class="fas fa-arrow-left"></i> Zurück zur Übersicht
+        </button>
+    </div>
+    <div class="workflow-intro">
+        <h3>Harvard-Methode: Verhandlungsführung</h3>
+        <p>Lerne die bewährte Harvard-Methode für erfolgreiche Verhandlungen und Konfliktlösungen. Erreiche Win-Win-Lösungen durch sachbezogene Verhandlungen.</p>
+        <div class="workflow-features">
+            <span class="feature-badge">Win-Win</span>
+            <span class="feature-badge">Sachbezogen</span>
+            <span class="feature-badge">Fair</span>
+            <span class="feature-badge">Erfolgreich</span>
+        </div>
+    
+    <div class="workflow-progress">
+        <div class="progress-step active" data-step="1">
+            <div class="step-number">1</div>
+            <div class="step-title">Vorbereitung</div>
+        <div class="progress-step" data-step="2">
+            <div class="step-number">2</div>
+            <div class="step-title">Interessen</div>
+        <div class="progress-step" data-step="3">
+            <div class="step-number">3</div>
+            <div class="step-title">Optionen</div>
+        <div class="progress-step" data-step="4">
+            <div class="step-number">4</div>
+            <div class="step-title">Kriterien</div>
+        <div class="progress-step" data-step="5">
+            <div class="step-number">5</div>
+            <div class="step-title">Verhandlung</div>
+        <div class="progress-step" data-step="6">
+            <div class="step-number">6</div>
+            <div class="step-title">Abschluss</div>
+    <!-- Step 1: Vorbereitung -->
+    <div class="workflow-step active" data-step="1">
+        <div class="step-header">
+            <h3>Schritt 1: Verhandlungsvorbereitung</h3>
+            <p>Bereite dich gründlich auf die Verhandlung vor, indem du alle relevanten Informationen sammelst und deine Position klärst.</p>
+        
+        <div class="harvard-method">
+            <div class="preparation-section">
+                <h4>📋 Verhandlungsvorbereitung</h4>
+                <p>Eine gute Vorbereitung ist der Schlüssel zum Verhandlungserfolg. Sammle alle relevanten Informationen und kläre deine Position.</p>
+                
+                <div class="preparation-areas">
+                    <div class="prep-area">
+                        <h5>🎯 Verhandlungsziel definieren</h5>
+                        <div class="goal-definition">
+                            <div class="goal-item">
+                                <label>Was ist dein Hauptziel?</label>
+                                <textarea id="main-goal" placeholder="Beschreibe dein Hauptziel für diese Verhandlung..."></textarea>
+                            </div>
+                                <label>Was ist dein Mindestziel (BATNA)?</label>
+                                <textarea id="minimum-goal" placeholder="Was ist das Minimum, das du akzeptieren würdest?"></textarea>
+                                <label>Was ist dein Wunschziel?</label>
+                                <textarea id="wish-goal" placeholder="Was wäre das Beste, was du erreichen könntest?"></textarea>
+                        </div>
+                    </div>
+                    
+                        <h5>👥 Gegenpartei analysieren</h5>
+                        <div class="counterparty-analysis">
+                            <div class="analysis-item">
+                                <label>Wer ist dein Verhandlungspartner?</label>
+                                <input type="text" id="counterparty-name" placeholder="Name/Position der Gegenpartei">
+                                <label>Was sind deren wahrscheinliche Interessen?</label>
+                                <textarea id="counterparty-interests" placeholder="Welche Interessen könnte die Gegenpartei haben?"></textarea>
+                                <label>Welche Machtposition hat die Gegenpartei?</label>
+                                <textarea id="counterparty-power" placeholder="Welche Stärken/Schwächen hat die Gegenpartei?"></textarea>
+                                <label>Welche Verhandlungsstile nutzt sie typischerweise?</label>
+                                <textarea id="counterparty-style" placeholder="Wie verhandelt die Gegenpartei normalerweise?"></textarea>
+                        <h5>📊 Verhandlungskontext</h5>
+                        <div class="context-analysis">
+                            <div class="context-item">
+                                <label>Zeitrahmen der Verhandlung</label>
+                                <input type="text" id="timeframe" placeholder="Wann findet die Verhandlung statt?">
+                                <label>Verhandlungsort und -bedingungen</label>
+                                <input type="text" id="location" placeholder="Wo findet die Verhandlung statt?">
+                                <label>Wer ist noch beteiligt?</label>
+                                <textarea id="stakeholders" placeholder="Welche anderen Personen sind beteiligt?"></textarea>
+                                <label>Welche externen Faktoren beeinflussen die Verhandlung?</label>
+                                <textarea id="external-factors" placeholder="Marktbedingungen, Zeitdruck, etc."></textarea>
+                </div>
+            </div>
+    <!-- Step 2: Interessen -->
+    <div class="workflow-step" data-step="2">
+            <h3>Schritt 2: Interessen identifizieren</h3>
+            <p>Identifiziere sowohl deine eigenen Interessen als auch die der Gegenpartei. Verstehe die wahren Bedürfnisse hinter den Positionen.</p>
+        <div class="interests-section">
+            <div class="interests-intro">
+                <h4>🔍 Interessenanalyse</h4>
+                <p>Hinter jeder Position stehen Interessen. Verstehe die wahren Bedürfnisse, um kreative Lösungen zu finden.</p>
+            
+            <div class="interests-grid">
+                <div class="interests-card">
+                    <h5>🎯 Deine Interessen</h5>
+                    <div class="interests-list">
+                        <div class="interest-category">
+                            <h6>Finanzielle Interessen</h6>
+                            <div class="interest-items">
+                                <div class="interest-item">
+                                    <input type="checkbox" id="financial-security">
+                                    <label for="financial-security">Finanzielle Sicherheit</label>
+                                </div>
+                                    <input type="checkbox" id="profit-maximization">
+                                    <label for="profit-maximization">Gewinnmaximierung</label>
+                                    <input type="checkbox" id="cost-reduction">
+                                    <label for="cost-reduction">Kostenreduktion</label>
+                        
+                            <h6>Berufliche Interessen</h6>
+                                    <input type="checkbox" id="career-advancement">
+                                    <label for="career-advancement">Karrierefortschritt</label>
+                                    <input type="checkbox" id="skill-development">
+                                    <label for="skill-development">Fähigkeitsentwicklung</label>
+                                    <input type="checkbox" id="recognition">
+                                    <label for="recognition">Anerkennung</label>
+                            <h6>Persönliche Interessen</h6>
+                                    <input type="checkbox" id="work-life-balance">
+                                    <label for="work-life-balance">Work-Life-Balance</label>
+                                    <input type="checkbox" id="autonomy">
+                                    <label for="autonomy">Autonomie</label>
+                                    <input type="checkbox" id="security">
+                                    <label for="security">Sicherheit</label>
+                        <div class="custom-interests">
+                            <h6>Weitere Interessen</h6>
+                            <div class="add-interest-form">
+                                <input type="text" id="custom-interest-input" placeholder="Eigenes Interesse hinzufügen...">
+                                <button type="button" data-action="add-custom-interest" class="btn btn-primary">Hinzufügen</button>
+                    <h5>👥 Interessen der Gegenpartei</h5>
+                    <div class="counterparty-interests">
+                            <h6>Vermutete finanzielle Interessen</h6>
+                                    <input type="checkbox" id="cp-financial-security">
+                                    <label for="cp-financial-security">Finanzielle Sicherheit</label>
+                                    <input type="checkbox" id="cp-profit-maximization">
+                                    <label for="cp-profit-maximization">Gewinnmaximierung</label>
+                                    <input type="checkbox" id="cp-cost-reduction">
+                                    <label for="cp-cost-reduction">Kostenreduktion</label>
+                            <h6>Vermutete berufliche Interessen</h6>
+                                    <input type="checkbox" id="cp-career-advancement">
+                                    <label for="cp-career-advancement">Karrierefortschritt</label>
+                                    <input type="checkbox" id="cp-skill-development">
+                                    <label for="cp-skill-development">Fähigkeitsentwicklung</label>
+                                    <input type="checkbox" id="cp-recognition">
+                                    <label for="cp-recognition">Anerkennung</label>
+                            <h6>Vermutete persönliche Interessen</h6>
+                                    <input type="checkbox" id="cp-work-life-balance">
+                                    <label for="cp-work-life-balance">Work-Life-Balance</label>
+                                    <input type="checkbox" id="cp-autonomy">
+                                    <label for="cp-autonomy">Autonomie</label>
+                                    <input type="checkbox" id="cp-security">
+                                    <label for="cp-security">Sicherheit</label>
+                            <h6>Weitere vermutete Interessen</h6>
+                                <input type="text" id="cp-custom-interest-input" placeholder="Vermutetes Interesse hinzufügen...">
+                                <button type="button" data-action="add-custom-counterparty-interest" class="btn btn-primary">Hinzufügen</button>
+    <!-- Step 3: Optionen -->
+    <div class="workflow-step" data-step="3">
+            <h3>Schritt 3: Optionen entwickeln</h3>
+            <p>Entwickle verschiedene Lösungsoptionen, die die Interessen beider Parteien berücksichtigen. Kreativität ist hier gefragt!</p>
+        <div class="options-section">
+            <div class="options-intro">
+                <h4>💡 Lösungsoptionen entwickeln</h4>
+                <p>Entwickle verschiedene Optionen, die die Interessen beider Parteien berücksichtigen. Denke kreativ und außerhalb der Box!</p>
+            <div class="options-development">
+                <div class="option-category">
+                    <h5>🎯 Standard-Optionen</h5>
+                    <div class="standard-options">
+                        <div class="option-item">
+                            <h6>Option 1: Kompromiss</h6>
+                            <textarea placeholder="Beschreibe einen Kompromiss, bei dem beide Parteien etwas geben und nehmen..."></textarea>
+                            <h6>Option 2: Austausch</h6>
+                            <textarea placeholder="Beschreibe einen Austausch, bei dem verschiedene Aspekte getauscht werden..."></textarea>
+                            <h6>Option 3: Stufenweise Lösung</h6>
+                            <textarea placeholder="Beschreibe eine Lösung, die in mehreren Stufen umgesetzt wird..."></textarea>
+                    <h5>🚀 Kreative Optionen</h5>
+                    <div class="creative-options">
+                            <h6>Option 4: Win-Win-Lösung</h6>
+                            <textarea placeholder="Entwickle eine Lösung, bei der beide Parteien ihre Hauptinteressen erfüllt bekommen..."></textarea>
+                            <h6>Option 5: Erweiterte Lösung</h6>
+                            <textarea placeholder="Entwickle eine Lösung, die den Verhandlungsumfang erweitert..."></textarea>
+                            <h6>Option 6: Zukunftsorientierte Lösung</h6>
+                            <textarea placeholder="Entwickle eine Lösung, die langfristige Vorteile für beide Parteien schafft..."></textarea>
+                    <h5>➕ Zusätzliche Optionen</h5>
+                    <div class="additional-options">
+                        <div class="add-option-form">
+                            <input type="text" id="option-title-input" placeholder="Titel der Option...">
+                            <textarea id="option-description-input" placeholder="Beschreibung der Option..."></textarea>
+                            <button type="button" data-action="add-custom-option" class="btn btn-primary">Option hinzufügen</button>
+            <div class="options-evaluation">
+                <h5>📊 Optionen bewerten</h5>
+                <div class="evaluation-grid">
+                    <div class="evaluation-criteria">
+                        <h6>Bewertungskriterien</h6>
+                        <div class="criteria-list">
+                            <div class="criteria-item">
+                                <input type="checkbox" id="criterion-feasibility">
+                                <label for="criterion-feasibility">Machbarkeit</label>
+                                <input type="checkbox" id="criterion-benefit">
+                                <label for="criterion-benefit">Nutzen für beide Parteien</label>
+                                <input type="checkbox" id="criterion-cost">
+                                <label for="criterion-cost">Kosten/Nachteile</label>
+                                <input type="checkbox" id="criterion-risk">
+                                <label for="criterion-risk">Risiken</label>
+                                <input type="checkbox" id="criterion-time">
+                                <label for="criterion-time">Zeitrahmen</label>
+                    <div class="evaluation-results">
+                        <h6>Top 3 Optionen</h6>
+                        <div class="top-options">
+                            <div class="top-option">
+                                <input type="text" placeholder="1. Beste Option" id="top-option-1">
+                                <input type="text" placeholder="2. Zweitbeste Option" id="top-option-2">
+                                <input type="text" placeholder="3. Drittbeste Option" id="top-option-3">
+    <!-- Step 4: Kriterien -->
+    <div class="workflow-step" data-step="4">
+            <h3>Schritt 4: Objektive Kriterien</h3>
+            <p>Definiere objektive, faire Kriterien für die Bewertung der Lösungen. Das macht die Verhandlung sachbezogen und fair.</p>
+        <div class="criteria-section">
+            <div class="criteria-intro">
+                <h4>⚖️ Objektive Kriterien definieren</h4>
+                <p>Objektive Kriterien machen Verhandlungen fair und sachbezogen. Sie helfen, emotionale Diskussionen zu vermeiden.</p>
+            <div class="criteria-types">
+                <div class="criteria-category">
+                    <h5>📊 Messbare Kriterien</h5>
+                    <div class="measurable-criteria">
+                        <div class="criterion-item">
+                            <label>Finanzielle Kriterien</label>
+                            <div class="criterion-options">
+                                <div class="criterion-option">
+                                    <input type="checkbox" id="market-price">
+                                    <label for="market-price">Marktpreis</label>
+                                    <input type="checkbox" id="industry-standard">
+                                    <label for="industry-standard">Branchenstandard</label>
+                                    <input type="checkbox" id="historical-data">
+                                    <label for="historical-data">Historische Daten</label>
+                            <label>Zeitliche Kriterien</label>
+                                    <input type="checkbox" id="deadline">
+                                    <label for="deadline">Fristen</label>
+                                    <input type="checkbox" id="timeline">
+                                    <label for="timeline">Zeitplan</label>
+                                    <input type="checkbox" id="milestones">
+                                    <label for="milestones">Meilensteine</label>
+                            <label>Qualitative Kriterien</label>
+                                    <input type="checkbox" id="quality-standards">
+                                    <label for="quality-standards">Qualitätsstandards</label>
+                                    <input type="checkbox" id="performance-metrics">
+                                    <label for="performance-metrics">Leistungskennzahlen</label>
+                                    <input type="checkbox" id="benchmarks">
+                                    <label for="benchmarks">Benchmarks</label>
+                    <h5>🏛️ Rechtliche & Ethische Kriterien</h5>
+                    <div class="legal-ethical-criteria">
+                            <label>Rechtliche Kriterien</label>
+                                    <input type="checkbox" id="legal-compliance">
+                                    <label for="legal-compliance">Rechtskonformität</label>
+                                    <input type="checkbox" id="contract-terms">
+                                    <label for="contract-terms">Vertragsbedingungen</label>
+                                    <input type="checkbox" id="regulations">
+                                    <label for="regulations">Vorschriften</label>
+                            <label>Ethische Kriterien</label>
+                                    <input type="checkbox" id="fairness">
+                                    <label for="fairness">Fairness</label>
+                                    <input type="checkbox" id="transparency">
+                                    <label for="transparency">Transparenz</label>
+                                    <input type="checkbox" id="mutual-benefit">
+                                    <label for="mutual-benefit">Gegenseitiger Nutzen</label>
+                    <h5>➕ Eigene Kriterien</h5>
+                    <div class="custom-criteria">
+                        <div class="add-criterion-form">
+                            <input type="text" id="criterion-name-input" placeholder="Name des Kriteriums...">
+                            <textarea id="criterion-description-input" placeholder="Beschreibung des Kriteriums..."></textarea>
+                            <button type="button" data-action="add-custom-criterion" class="btn btn-primary">Kriterium hinzufügen</button>
+            <div class="criteria-prioritization">
+                <h5>🎯 Kriterien priorisieren</h5>
+                <div class="priority-list">
+                    <div class="priority-item">
+                        <label>Wichtigstes Kriterium</label>
+                        <input type="text" id="priority-criterion-1" placeholder="Das wichtigste Kriterium...">
+                        <label>Zweitwichtigstes Kriterium</label>
+                        <input type="text" id="priority-criterion-2" placeholder="Das zweitwichtigste Kriterium...">
+                        <label>Drittwichtigstes Kriterium</label>
+                        <input type="text" id="priority-criterion-3" placeholder="Das drittwichtigste Kriterium...">
+    <!-- Step 5: Verhandlung -->
+    <div class="workflow-step" data-step="5">
+            <h3>Schritt 5: Verhandlungsführung</h3>
+            <p>Führe die Verhandlung sachbezogen und fair. Nutze die Harvard-Prinzipien für eine erfolgreiche Verhandlung.</p>
+        <div class="negotiation-section">
+            <div class="negotiation-intro">
+                <h4>🤝 Verhandlungsführung</h4>
+                <p>Nutze die Harvard-Prinzipien für eine erfolgreiche, sachbezogene Verhandlung.</p>
+            <div class="negotiation-phases">
+                <div class="phase-section">
+                    <h5>🚀 Eröffnung</h5>
+                    <div class="phase-content">
+                        <div class="phase-item">
+                            <h6>Verhandlungsbeginn</h6>
+                            <div class="phase-tips">
+                                <div class="tip-item">
+                                    <input type="checkbox" id="tip-relationship">
+                                    <label for="tip-relationship">Beziehungsebene aufbauen</label>
+                                    <input type="checkbox" id="tip-agenda">
+                                    <label for="tip-agenda">Tagesordnung klären</label>
+                                    <input type="checkbox" id="tip-expectations">
+                                    <label for="tip-expectations">Erwartungen abgleichen</label>
+                            <h6>Eröffnungsangebot</h6>
+                            <div class="opening-strategies">
+                                <div class="strategy-item">
+                                    <input type="radio" name="opening-strategy" value="aggressive" id="strategy-aggressive">
+                                    <label for="strategy-aggressive">Aggressiv (hohe Forderung)</label>
+                                    <input type="radio" name="opening-strategy" value="moderate" id="strategy-moderate">
+                                    <label for="strategy-moderate">Moderat (realistische Forderung)</label>
+                                    <input type="radio" name="opening-strategy" value="collaborative" id="strategy-collaborative">
+                                    <label for="strategy-collaborative">Kollaborativ (gemeinsame Lösungssuche)</label>
+                    <h5>💬 Verhandlungsphase</h5>
+                            <h6>Kommunikationstechniken</h6>
+                            <div class="communication-techniques">
+                                <div class="technique-item">
+                                    <input type="checkbox" id="technique-active-listening">
+                                    <label for="technique-active-listening">Aktives Zuhören</label>
+                                    <input type="checkbox" id="technique-questions">
+                                    <label for="technique-questions">Offene Fragen stellen</label>
+                                    <input type="checkbox" id="technique-paraphrasing">
+                                    <label for="technique-paraphrasing">Paraphrasieren</label>
+                                    <input type="checkbox" id="technique-summarizing">
+                                    <label for="technique-summarizing">Zusammenfassen</label>
+                            <h6>Umgang mit Widerständen</h6>
+                            <div class="resistance-handling">
+                                <div class="resistance-item">
+                                    <input type="checkbox" id="resistance-acknowledge">
+                                    <label for="resistance-acknowledge">Widerstand anerkennen</label>
+                                    <input type="checkbox" id="resistance-explore">
+                                    <label for="resistance-explore">Hintergründe erforschen</label>
+                                    <input type="checkbox" id="resistance-reframe">
+                                    <label for="resistance-reframe">Umformulieren</label>
+                                    <input type="checkbox" id="resistance-alternatives">
+                                    <label for="resistance-alternatives">Alternativen anbieten</label>
+                    <h5>⚖️ Entscheidungsphase</h5>
+                            <h6>Lösungsbewertung</h6>
+                            <div class="solution-evaluation">
+                                <div class="evaluation-item">
+                                    <input type="checkbox" id="eval-criteria">
+                                    <label for="eval-criteria">An objektiven Kriterien messen</label>
+                                    <input type="checkbox" id="eval-interests">
+                                    <label for="eval-interests">Interessen beider Parteien prüfen</label>
+                                    <input type="checkbox" id="eval-alternatives">
+                                    <label for="eval-alternatives">Alternativen vergleichen</label>
+                            <h6>Entscheidungsfindung</h6>
+                            <div class="decision-making">
+                                <div class="decision-item">
+                                    <input type="checkbox" id="decision-consensus">
+                                    <label for="decision-consensus">Konsens anstreben</label>
+                                    <input type="checkbox" id="decision-compromise">
+                                    <label for="decision-compromise">Kompromiss finden</label>
+                                    <input type="checkbox" id="decision-batna">
+                                    <label for="decision-batna">BATNA prüfen</label>
+            <div class="negotiation-tips">
+                <h5>💡 Verhandlungstipps</h5>
+                <div class="tips-grid">
+                    <div class="tip-card">
+                        <h6>✅ Do's</h6>
+                        <ul>
+                            <li>Sachbezogen verhandeln</li>
+                            <li>Interessen hinter Positionen verstehen</li>
+                            <li>Objektive Kriterien nutzen</li>
+                            <li>Win-Win-Lösungen suchen</li>
+                            <li>Respektvoll kommunizieren</li>
+                        </ul>
+                        <h6>❌ Don'ts</h6>
+                            <li>Persönlich werden</li>
+                            <li>Unrealistische Forderungen</li>
+                            <li>Druck ausüben</li>
+                            <li>Emotionale Manipulation</li>
+                            <li>Einseitige Lösungen</li>
+    <!-- Step 6: Abschluss -->
+    <div class="workflow-step" data-step="6">
+            <h3>Schritt 6: Verhandlungsabschluss</h3>
+            <p>Schließe die Verhandlung professionell ab und dokumentiere die Ergebnisse. Stelle sicher, dass beide Parteien zufrieden sind.</p>
+        <div class="closure-section">
+            <div class="closure-intro">
+                <h4>🎯 Verhandlungsabschluss</h4>
+                <p>Ein professioneller Abschluss sichert den Erfolg der Verhandlung und schafft eine gute Basis für zukünftige Zusammenarbeit.</p>
+            <div class="closure-steps">
+                <div class="closure-step">
+                    <h5>📋 Vereinbarung dokumentieren</h5>
+                    <div class="documentation">
+                        <div class="doc-item">
+                            <label>Verhandlungsergebnis zusammenfassen</label>
+                            <textarea id="negotiation-summary" placeholder="Fasse die wichtigsten Punkte der Vereinbarung zusammen..."></textarea>
+                            <label>Konkrete Vereinbarungen</label>
+                            <textarea id="concrete-agreements" placeholder="Liste alle konkreten Vereinbarungen auf..."></textarea>
+                            <label>Zeitrahmen und Meilensteine</label>
+                            <textarea id="timeline-milestones" placeholder="Definiere Zeitrahmen und wichtige Meilensteine..."></textarea>
+                            <label>Verantwortlichkeiten</label>
+                            <textarea id="responsibilities" placeholder="Wer ist für was verantwortlich?"></textarea>
+                    <h5>✅ Vereinbarung bestätigen</h5>
+                    <div class="confirmation">
+                        <div class="confirmation-item">
+                            <input type="checkbox" id="confirm-understanding">
+                            <label for="confirm-understanding">Gegenseitiges Verständnis bestätigen</label>
+                            <input type="checkbox" id="confirm-commitment">
+                            <label for="confirm-commitment">Verbindlichkeit bestätigen</label>
+                            <input type="checkbox" id="confirm-satisfaction">
+                            <label for="confirm-satisfaction">Zufriedenheit beider Parteien</label>
+                            <input type="checkbox" id="confirm-follow-up">
+                            <label for="confirm-follow-up">Follow-up vereinbaren</label>
+                    <h5>📄 Schriftliche Dokumentation</h5>
+                    <div class="written-documentation">
+                        <div class="doc-type">
+                            <h6>Art der Dokumentation</h6>
+                            <div class="doc-options">
+                                <div class="doc-option">
+                                    <input type="radio" name="doc-type" value="email" id="doc-email">
+                                    <label for="doc-email">E-Mail-Zusammenfassung</label>
+                                    <input type="radio" name="doc-type" value="memo" id="doc-memo">
+                                    <label for="doc-memo">Verhandlungsprotokoll</label>
+                                    <input type="radio" name="doc-type" value="contract" id="doc-contract">
+                                    <label for="doc-contract">Vertrag/ Vereinbarung</label>
+                                    <input type="radio" name="doc-type" value="other" id="doc-other">
+                                    <label for="doc-other">Andere Form</label>
+                        <div class="doc-timeline">
+                            <label>Zeitrahmen für Dokumentation</label>
+                            <input type="text" id="doc-timeline" placeholder="Bis wann soll die Dokumentation erstellt werden?">
+                    <h5>🔄 Follow-up planen</h5>
+                    <div class="follow-up-planning">
+                        <div class="follow-up-item">
+                            <label>Erste Follow-up-Termin</label>
+                            <input type="text" id="first-follow-up" placeholder="Wann findet das erste Follow-up statt?">
+                            <label>Follow-up-Inhalte</label>
+                            <textarea id="follow-up-content" placeholder="Was soll im Follow-up besprochen werden?"></textarea>
+                            <label>Erfolgsmessung</label>
+                            <textarea id="success-measurement" placeholder="Wie wird der Erfolg der Vereinbarung gemessen?"></textarea>
+            <div class="closure-evaluation">
+                <h5>📊 Verhandlung bewerten</h5>
+                <div class="evaluation-criteria">
+                    <div class="eval-item">
+                        <label>Wie zufrieden bist du mit dem Ergebnis? (1-10)</label>
+                        <input type="range" id="satisfaction-rating" min="1" max="10" value="5">
+                        <span id="satisfaction-value">5/10</span>
+                        <label>Wie fair war die Verhandlung? (1-10)</label>
+                        <input type="range" id="fairness-rating" min="1" max="10" value="5">
+                        <span id="fairness-value">5/10</span>
+                        <label>Wie gut war die Beziehung zur Gegenpartei? (1-10)</label>
+                        <input type="range" id="relationship-rating" min="1" max="10" value="5">
+                        <span id="relationship-value">5/10</span>
+                <div class="lessons-learned">
+                    <label>Was hast du aus dieser Verhandlung gelernt?</label>
+                    <textarea id="lessons-learned" placeholder="Reflektiere über deine Erfahrungen und Erkenntnisse..."></textarea>
+    <!-- Navigation -->
+    <div class="workflow-navigation">
+        <div class="nav-buttons">
+            <button class="btn btn-outline" id="prev-btn" data-action="previous-step" disabled>
+                <i class="fas fa-arrow-left"></i> Zurück
+            </button>
+            <div class="progress-info">
+                <span id="current-step">Schritt 1</span> von <span id="total-steps">6</span>
+            <button class="btn btn-primary" id="next-btn" data-action="next-step">
+                Weiter <i class="fas fa-arrow-right"></i>
+</div>
+
+<!-- Global Auth System -->
+<script src="../../js/aws-config.js"></script>
+    <script src="js/global-auth-system.js"></script><script src="../../js/unified-auth-manager.js"></script>
+    
+    <script>
+        // Load auth modals
+        async function loadAuthModals() {
+            try {
+                const response = await fetch('components/unified-auth-modals.html');
+                const html = await response.text();
+                document.getElementById('authModalsContainer').innerHTML = html;
+            } catch (error) {
+                console.error('Error loading auth modals:', error);
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAuthModals();
+        });
+    </script>

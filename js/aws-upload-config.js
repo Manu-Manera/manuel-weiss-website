@@ -6,12 +6,12 @@ const AWS_UPLOAD_CONFIG = {
         upload: [
             'https://api.manuel-weiss.com/upload',
             'https://manuel-weiss.com/api/upload',
-            'https://d1234567890.execute-api.eu-central-1.amazonaws.com/api/upload'
+            'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/api/upload'
         ],
         download: [
             'https://api.manuel-weiss.com/download',
             'https://manuel-weiss.com/api/download',
-            'https://d1234567890.execute-api.eu-central-1.amazonaws.com/api/download'
+            'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/api/download'
         ],
         // Fallback endpoints
         fallback: [
@@ -38,8 +38,8 @@ const AWS_UPLOAD_CONFIG = {
     
     // Cognito Configuration
     cognito: {
-        userPoolId: 'eu-central-1_XXXXXXXXX',
-        userPoolClientId: 'XXXXXXXXXXXXXXXXXXXXXXXXXX',
+        userPoolId: 'eu-central-1_8gP4gLK9r',
+        userPoolClientId: '7kc5tt6a23fgh53d60vkefm812',
         region: 'eu-central-1'
     },
     
