@@ -66,19 +66,40 @@ class UserProfile {
             console.log('👤 User data from auth:', userData);
         }
         
-        // Use real user data
-        const displayEmail = user.email || 'user@example.com';
-        const displayName = user.firstName && user.lastName ? 
-            `${user.firstName} ${user.lastName}` : 
-            (user.firstName || user.lastName || 'Benutzer');
+        // Use real user data - prioritize userData over user parameter
+        const authUser = userData || user || {};
+        const displayEmail = authUser.email || user?.email || '';
+        const firstName = authUser.firstName || user?.firstName || '';
+        const lastName = authUser.lastName || user?.lastName || '';
+        const displayName = firstName && lastName ? 
+            `${firstName} ${lastName}` : 
+            (firstName || lastName || displayEmail?.split('@')[0] || 'Benutzer');
         
         console.log('📧 Display email:', displayEmail);
         console.log('👤 Display name:', displayName);
+        console.log('👤 First name:', firstName);
+        console.log('👤 Last name:', lastName);
         
-        // Update email input
+        // Update form fields - always update if we have data from auth
+        if (firstName) {
+            const firstNameInput = document.getElementById('firstName');
+            if (firstNameInput) {
+                firstNameInput.value = firstName;
+                console.log('✅ Updated firstName input:', firstName);
+            }
+        }
+        
+        if (lastName) {
+            const lastNameInput = document.getElementById('lastName');
+            if (lastNameInput) {
+                lastNameInput.value = lastName;
+                console.log('✅ Updated lastName input:', lastName);
+            }
+        }
+        
         if (displayEmail) {
             const emailInput = document.getElementById('email');
-            if (emailInput && !emailInput.value) {
+            if (emailInput) {
                 emailInput.value = displayEmail;
                 console.log('✅ Updated email input:', displayEmail);
             }
@@ -107,6 +128,16 @@ class UserProfile {
         const profileHeaderEmail = document.querySelector('.profile-header .profile-email');
         if (profileHeaderEmail) {
             profileHeaderEmail.textContent = displayEmail;
+        }
+        
+        // Also update profileData object
+        if (firstName || lastName || displayEmail) {
+            this.profileData = {
+                ...this.profileData,
+                firstName: firstName || this.profileData.firstName,
+                lastName: lastName || this.profileData.lastName,
+                email: displayEmail || this.profileData.email
+            };
         }
     }
 
@@ -229,33 +260,60 @@ class UserProfile {
                 return;
             }
             
-            // Load from AWS
-            const awsData = await this.awsProfileAPI.loadProfile();
+            // Get auth user data first
+            const currentUser = window.realUserAuth.getCurrentUser();
+            const userData = window.realUserAuth.getUserData();
+            console.log('👤 Auth user data:', currentUser, userData);
             
-            if (awsData) {
+            // Load from AWS
+            let awsData = null;
+            try {
+                awsData = await this.awsProfileAPI.loadProfile();
                 console.log('✅ Profile loaded from AWS:', awsData);
-                this.profileData = awsData;
-                
-                // Update form fields with AWS data
-                this.populateFormFields(awsData);
-                
-                // Update profile image if available
-                if (awsData.profileImageUrl) {
-                    const profileImg = document.getElementById('profileImage');
-                    if (profileImg) {
-                        profileImg.src = awsData.profileImageUrl;
-                    }
+            } catch (error) {
+                console.warn('⚠️ Could not load from AWS, using defaults:', error);
+            }
+            
+            // Merge: AWS data + Auth data (auth takes priority for name/email)
+            this.profileData = {
+                ...this.loadProfileData(), // Start with defaults
+                ...awsData, // Override with AWS data
+                // Always use auth data for name/email if available
+                firstName: userData?.firstName || currentUser?.firstName || awsData?.firstName || '',
+                lastName: userData?.lastName || currentUser?.lastName || awsData?.lastName || '',
+                email: userData?.email || currentUser?.email || awsData?.email || ''
+            };
+            
+            console.log('📋 Final profile data:', this.profileData);
+            
+            // Update form fields with merged data
+            this.populateFormFields(this.profileData);
+            
+            // Update profile image if available
+            if (this.profileData.profileImageUrl) {
+                const profileImg = document.getElementById('profileImage');
+                if (profileImg) {
+                    profileImg.src = this.profileData.profileImageUrl;
                 }
-            } else {
-                console.log('ℹ️ No AWS profile found, loading from local storage');
-                this.profileData = this.loadProfileData();
-                this.populateFormFields(this.profileData);
+            }
+            
+            // Also update from auth to ensure display is correct
+            if (currentUser || userData) {
+                this.updateUserInfoFromAuth(currentUser || userData);
             }
         } catch (error) {
             console.error('❌ Failed to load profile from AWS:', error);
             // Fallback to local storage
             this.profileData = this.loadProfileData();
             this.populateFormFields(this.profileData);
+            
+            // Still try to update from auth
+            if (window.realUserAuth && window.realUserAuth.isLoggedIn()) {
+                const currentUser = window.realUserAuth.getCurrentUser();
+                if (currentUser) {
+                    this.updateUserInfoFromAuth(currentUser);
+                }
+            }
         }
     }
     
@@ -487,10 +545,45 @@ class UserProfile {
             this.showLoading('Profil wird gespeichert...');
             await this.saveProfileData();
             this.hideLoading();
-        this.showNotification('Profil erfolgreich gespeichert!', 'success');
+            this.showNotification('Profil erfolgreich gespeichert!', 'success');
         } catch (error) {
             this.hideLoading();
-            this.showNotification('Fehler beim Speichern des Profils. Bitte versuchen Sie es erneut.', 'error');
+            console.error('❌ Save profile error:', error);
+            
+            // Extract error message
+            let errorMessage = 'Fehler beim Speichern des Profils.';
+            
+            if (error.message) {
+                errorMessage += ' ' + error.message;
+            } else if (error.response) {
+                try {
+                    const errorData = await error.response.json();
+                    errorMessage += ' ' + (errorData.error || errorData.message || 'Unbekannter Fehler');
+                } catch (e) {
+                    errorMessage += ' HTTP ' + error.response.status;
+                }
+            } else if (typeof error === 'string') {
+                errorMessage += ' ' + error;
+            }
+            
+            // Check for specific error types
+            if (errorMessage.includes('401') || errorMessage.includes('Unauthorized')) {
+                errorMessage = 'Sie sind nicht angemeldet. Bitte melden Sie sich erneut an.';
+            } else if (errorMessage.includes('NetworkError') || errorMessage.includes('Failed to fetch')) {
+                errorMessage = 'Netzwerkfehler. Bitte überprüfen Sie Ihre Internetverbindung.';
+            } else if (errorMessage.includes('500') || errorMessage.includes('Internal')) {
+                errorMessage = 'Serverfehler. Bitte versuchen Sie es später erneut.';
+            }
+            
+            this.showNotification(errorMessage, 'error');
+            
+            // Also log to console for debugging
+            console.error('Full error details:', {
+                message: error.message,
+                stack: error.stack,
+                response: error.response,
+                error: error
+            });
         }
     }
 
