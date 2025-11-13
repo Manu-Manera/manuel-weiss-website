@@ -125,31 +125,37 @@ class RealUserAuthSystem {
                     console.log('✅ Existing AWS Cognito session restored:', userInfo.email);
                     return;
                 } catch (error) {
-                    console.warn('⚠️ Token validation failed, trying refresh:', error);
-                    // Try to refresh if token validation fails (might be network issue)
-                    if (session.refreshToken) {
+                    console.warn('⚠️ Token validation failed:', error);
+                    
+                    // Bei Netzwerkfehlern: Session behalten und aus gespeicherten Daten wiederherstellen
+                    if (error.name === 'NetworkError' || !navigator.onLine) {
+                        console.warn('📡 Netzwerkfehler erkannt - behalte Session bei');
+                    }
+                    
+                    // Versuche aus gespeicherten Benutzerdaten wiederherzustellen
+                    const storedUser = localStorage.getItem('realUser');
+                    if (storedUser) {
                         try {
-                            await this.refreshSession(session.refreshToken);
-                            return;
-                        } catch (refreshError) {
-                            console.warn('⚠️ Token refresh also failed:', refreshError);
-                            // Don't clear session immediately - might be temporary network issue
-                            // Keep session and try again later
-                            console.warn('⚠️ Keeping session, will retry on next action');
-                            // Still try to restore from stored user data
-                            const storedUser = localStorage.getItem('realUser');
-                            if (storedUser) {
-                                try {
-                                    this.currentUser = JSON.parse(storedUser);
-                                    this.isAuthenticated = true;
-                                    this.userData = this.currentUser;
-                                    this.updateAuthUI();
-                                    console.log('✅ Restored from stored user data:', this.currentUser.email);
-                                } catch (e) {
-                                    console.warn('⚠️ Could not restore from stored user data');
-                                }
+                            this.currentUser = JSON.parse(storedUser);
+                            this.isAuthenticated = true;
+                            this.userData = this.currentUser;
+                            this.updateAuthUI();
+                            console.log('✅ Session aus gespeicherten Daten wiederhergestellt:', this.currentUser.email);
+                            
+                            // Versuche Token-Refresh im Hintergrund
+                            if (session.refreshToken) {
+                                this.refreshSessionInBackground(session.refreshToken);
                             }
+                            return;
+                        } catch (e) {
+                            console.warn('⚠️ Konnte nicht aus gespeicherten Daten wiederherstellen');
                         }
+                    }
+                    
+                    // Nur bei definitiven Auth-Fehlern Session löschen
+                    if (error.code === 'NotAuthorizedException') {
+                        console.warn('🔒 Token ungültig - Session wird gelöscht');
+                        this.clearSession();
                     }
                 }
             } else {
@@ -246,6 +252,17 @@ class RealUserAuthSystem {
             throw error;
         }
     }
+    
+    async refreshSessionInBackground(refreshToken) {
+        // Refresh Session im Hintergrund ohne Fehler zu werfen
+        try {
+            console.log('🔄 Starte Hintergrund-Token-Refresh...');
+            await this.refreshSession(refreshToken);
+        } catch (error) {
+            console.warn('⚠️ Hintergrund-Token-Refresh fehlgeschlagen:', error);
+            // Fehler wird nur geloggt, nicht geworfen
+        }
+    }
 
     setupEventListeners() {
         // Listen for auth events
@@ -259,6 +276,31 @@ class RealUserAuthSystem {
 
         document.addEventListener('userDataUpdate', (e) => {
             this.handleUserDataUpdate(e.detail);
+        });
+        
+        // Listen for storage events (Synchronisierung zwischen Tabs/Fenstern)
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'aws_auth_session') {
+                console.log('🔄 Session-Änderung in anderem Tab erkannt');
+                // Session aus anderem Tab neu laden
+                this.checkExistingSession().then(() => {
+                    console.log('✅ Session synchronisiert');
+                });
+            }
+        });
+        
+        // Prüfe Session beim Fokus-Wechsel (wichtig für Safari)
+        window.addEventListener('focus', () => {
+            console.log('🔍 Fenster hat Fokus erhalten - prüfe Session');
+            this.checkExistingSession();
+        });
+        
+        // Prüfe Session bei Sichtbarkeitsänderung (Page Visibility API)
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                console.log('🔍 Seite ist wieder sichtbar - prüfe Session');
+                this.checkExistingSession();
+            }
         });
     }
 
@@ -386,7 +428,7 @@ class RealUserAuthSystem {
                             <div class="form-group">
                                 <label class="checkbox-label" style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.9rem; color: #64748b;">
                                     <input type="checkbox" id="rememberMe" style="width: 18px; height: 18px; cursor: pointer;">
-                                    <span>Angemeldet bleiben (60 Minuten)</span>
+                                    <span>Angemeldet bleiben (30 Tage)</span>
                                 </label>
                             </div>
                             <button type="submit" class="btn btn-primary auth-btn">
@@ -524,7 +566,14 @@ class RealUserAuthSystem {
                 this.userData = result.user;
 
                 // Save session with rememberMe option
-                this.saveSession(result.session, rememberMe);
+                // Bei neuem Login: Session ohne expiresAt übergeben, damit es basierend auf rememberMe berechnet wird
+                const sessionToSave = {
+                    idToken: result.session.idToken,
+                    accessToken: result.session.accessToken,
+                    refreshToken: result.session.refreshToken
+                    // expiresAt wird in saveSession basierend auf rememberMe berechnet
+                };
+                this.saveSession(sessionToSave, rememberMe);
 
                 // Load user data
                 await this.loadUserData();
@@ -1110,7 +1159,16 @@ class RealUserAuthSystem {
         // Standard: 60 Minuten (3600 Sekunden)
         // Mit "Angemeldet bleiben": 30 Tage
         const expiresIn = rememberMe ? (30 * 24 * 60 * 60) : (60 * 60); // 30 Tage oder 60 Minuten
-        const expiresAt = new Date(Date.now() + expiresIn * 1000).toISOString();
+        
+        // Verwende das mitgegebene expiresAt oder berechne es neu
+        let expiresAt;
+        if (session.expiresAt) {
+            // Bei refresh: verwende das existierende expiresAt
+            expiresAt = session.expiresAt;
+        } else {
+            // Bei neuem Login: berechne expiresAt basierend auf rememberMe
+            expiresAt = new Date(Date.now() + expiresIn * 1000).toISOString();
+        }
         
         // Save AWS Cognito session with expiration
         const sessionData = {
@@ -1126,6 +1184,7 @@ class RealUserAuthSystem {
         }
         
         console.log('💾 Session gespeichert:', rememberMe ? '30 Tage (Angemeldet bleiben)' : '60 Minuten');
+        console.log('⏰ Session läuft ab um:', new Date(expiresAt).toLocaleString());
     }
 
     clearSession() {
