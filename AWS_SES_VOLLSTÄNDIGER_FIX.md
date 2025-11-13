@@ -202,3 +202,4 @@ dig CNAME smln6ugnqm64joyksgg2thjvnli3vzyb._domainkey.manuel-weiss.ch +short
 
 
 
+
