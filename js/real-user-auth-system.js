@@ -133,13 +133,13 @@ class RealUserAuthSystem {
                     }
                     
                     // Versuche aus gespeicherten Benutzerdaten wiederherzustellen
-                    const storedUser = localStorage.getItem('realUser');
-                    if (storedUser) {
-                        try {
-                            this.currentUser = JSON.parse(storedUser);
-                            this.isAuthenticated = true;
-                            this.userData = this.currentUser;
-                            this.updateAuthUI();
+                            const storedUser = localStorage.getItem('realUser');
+                            if (storedUser) {
+                                try {
+                                    this.currentUser = JSON.parse(storedUser);
+                                    this.isAuthenticated = true;
+                                    this.userData = this.currentUser;
+                                    this.updateAuthUI();
                             console.log('✅ Session aus gespeicherten Daten wiederhergestellt:', this.currentUser.email);
                             
                             // Versuche Token-Refresh im Hintergrund
@@ -147,10 +147,10 @@ class RealUserAuthSystem {
                                 this.refreshSessionInBackground(session.refreshToken);
                             }
                             return;
-                        } catch (e) {
+                                } catch (e) {
                             console.warn('⚠️ Konnte nicht aus gespeicherten Daten wiederherstellen');
-                        }
-                    }
+                                }
+                            }
                     
                     // Nur bei definitiven Auth-Fehlern Session löschen
                     if (error.code === 'NotAuthorizedException') {

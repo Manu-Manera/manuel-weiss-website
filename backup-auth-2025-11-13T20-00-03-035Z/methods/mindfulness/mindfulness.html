@@ -1,0 +1,335 @@
+<div class="workflow-container">
+    <div class="workflow-header">
+        <button class="btn btn-secondary" onclick="window.location.href='../../persoenlichkeitsentwicklung-uebersicht.html'">
+            <i class="fas fa-arrow-left"></i> Zurück zur Übersicht
+        </button>
+    </div>
+    <div class="workflow-intro">
+        <h3>Achtsamkeit & Meditation: Finde innere Ruhe und Klarheit</h3>
+        <p>Entwickle Achtsamkeit und innere Ruhe durch geführte Meditationen und Achtsamkeitsübungen. Lerne, im gegenwärtigen Moment zu leben und Stress zu reduzieren.</p>
+        <div class="workflow-features">
+            <span class="feature-badge">Geführte Meditation</span>
+            <span class="feature-badge">Achtsamkeitsübungen</span>
+            <span class="feature-badge">Stress-Reduktion</span>
+            <span class="feature-badge">Progress-Tracking</span>
+        </div>
+    
+    <div class="workflow-progress">
+        <div class="progress-step active" data-step="1">
+            <div class="step-number">1</div>
+            <div class="step-title">Achtsamkeits-Assessment</div>
+        <div class="progress-step" data-step="2">
+            <div class="step-number">2</div>
+            <div class="step-title">Meditations-Timer</div>
+        <div class="progress-step" data-step="3">
+            <div class="step-number">3</div>
+            <div class="step-title">Geführte Übungen</div>
+        <div class="progress-step" data-step="4">
+            <div class="step-number">4</div>
+            <div class="step-title">Alltags-Integration</div>
+    <!-- Step 1: Achtsamkeits-Assessment -->
+    <div class="workflow-step active" data-step="1">
+        <div class="step-header">
+            <h3>Schritt 1: Achtsamkeits-Assessment</h3>
+            <p>Erkenne deinen aktuellen Stand in Sachen Achtsamkeit und identifiziere Bereiche für deine Entwicklung.</p>
+        
+        <div class="mindfulness-assessment">
+            <div class="assessment-intro">
+                <h4>🧘 Dein Achtsamkeits-Level</h4>
+                <p>Beantworte die folgenden Fragen ehrlich, um dein aktuelles Achtsamkeits-Level zu bewerten.</p>
+            </div>
+            
+            <div class="mindfulness-questions">
+                <div class="question-group">
+                    <h5>Präsenz im Moment</h5>
+                    <div class="question-item">
+                        <label>Ich bin mir bewusst, was in meinem Körper vor sich geht (Atmung, Spannungen, etc.)</label>
+                        <div class="rating-scale">
+                            <span>Nie</span>
+                            <input type="range" class="mindfulness-slider" min="1" max="10" value="5" data-question="body-awareness">
+                            <span>Immer</span>
+                        </div>
+                    </div>
+                        <label>Ich bemerke, wenn meine Gedanken abschweifen und kann sie sanft zurücklenken</label>
+                            <input type="range" class="mindfulness-slider" min="1" max="10" value="5" data-question="thought-awareness">
+                        <label>Ich bin vollständig präsent in Gesprächen und höre wirklich zu</label>
+                            <input type="range" class="mindfulness-slider" min="1" max="10" value="5" data-question="present-listening">
+                </div>
+                
+                    <h5>Emotionale Regulation</h5>
+                        <label>Ich kann meine Emotionen beobachten, ohne von ihnen überwältigt zu werden</label>
+                            <input type="range" class="mindfulness-slider" min="1" max="10" value="5" data-question="emotion-regulation">
+                        <label>Ich reagiere bewusst auf Stress, anstatt automatisch zu reagieren</label>
+                            <input type="range" class="mindfulness-slider" min="1" max="10" value="5" data-question="stress-response">
+                        <label>Ich kann schwierige Emotionen akzeptieren und durch sie hindurchgehen</label>
+                            <input type="range" class="mindfulness-slider" min="1" max="10" value="5" data-question="emotion-acceptance">
+                    <h5>Selbstfürsorge</h5>
+                        <label>Ich nehme mir regelmäßig Zeit für Entspannung und Ruhe</label>
+                            <input type="range" class="mindfulness-slider" min="1" max="10" value="5" data-question="self-care">
+                        <label>Ich praktiziere regelmäßig Meditation oder Achtsamkeitsübungen</label>
+                            <input type="range" class="mindfulness-slider" min="1" max="10" value="5" data-question="meditation-practice">
+                        <label>Ich achte auf meine körperlichen und emotionalen Bedürfnisse</label>
+                            <input type="range" class="mindfulness-slider" min="1" max="10" value="5" data-question="needs-awareness">
+            <div class="assessment-results">
+                <h4>📊 Dein Achtsamkeits-Score</h4>
+                <div class="score-display">
+                    <div class="score-circle">
+                        <div class="score-number" id="mindfulness-score">0</div>
+                        <div class="score-label">von 100</div>
+                    <div class="score-description" id="score-description">
+                        Fülle das Assessment aus, um deinen Score zu sehen.
+    <!-- Step 2: Meditations-Timer -->
+    <div class="workflow-step" data-step="2">
+            <h3>Schritt 2: Meditations-Timer</h3>
+            <p>Nutze den integrierten Timer für deine Meditationspraxis mit verschiedenen Modi und Einstellungen.</p>
+        <div class="meditation-timer">
+            <div class="timer-display">
+                <div class="time-circle">
+                    <svg class="progress-ring" width="200" height="200">
+                        <circle class="progress-ring-circle" cx="100" cy="100" r="90" fill="transparent" stroke="#e5e7eb" stroke-width="8"/>
+                        <circle class="progress-ring-progress" cx="100" cy="100" r="90" fill="transparent" stroke="#3b82f6" stroke-width="8" stroke-dasharray="565.48" stroke-dashoffset="565.48"/>
+                    </svg>
+                    <div class="time-text" id="timer-display">00:00</div>
+            <div class="timer-controls">
+                <div class="time-presets">
+                    <h4>⏱️ Vordefinierte Zeiten</h4>
+                    <div class="preset-buttons">
+                        <button class="preset-btn" data-minutes="5">5 Min</button>
+                        <button class="preset-btn" data-minutes="10">10 Min</button>
+                        <button class="preset-btn" data-minutes="15">15 Min</button>
+                        <button class="preset-btn" data-minutes="20">20 Min</button>
+                        <button class="preset-btn" data-minutes="30">30 Min</button>
+                <div class="custom-time">
+                    <h4>🎯 Eigene Zeit</h4>
+                    <div class="time-input-group">
+                        <input type="number" id="custom-minutes" min="1" max="120" value="10" placeholder="Minuten">
+                        <span>Minuten</span>
+                <div class="timer-buttons">
+                    <button class="btn btn-primary" id="start-timer" data-action="start-meditation">
+                        <i class="fas fa-play"></i> Starten
+                    </button>
+                    <button class="btn btn-secondary" id="pause-timer" data-action="pause-meditation" disabled>
+                        <i class="fas fa-pause"></i> Pausieren
+                    <button class="btn btn-outline" id="stop-timer" data-action="stop-meditation" disabled>
+                        <i class="fas fa-stop"></i> Stoppen
+                <div class="timer-settings">
+                    <h4>⚙️ Einstellungen</h4>
+                    <div class="setting-group">
+                        <label>
+                            <input type="checkbox" id="sound-notifications" checked>
+                            Ton-Benachrichtigungen
+                        </label>
+                            <input type="checkbox" id="vibration" checked>
+                            Vibration (Mobile)
+                            <input type="checkbox" id="auto-start-break">
+                            Automatische Pause nach Session
+            <div class="meditation-stats">
+                <h4>📈 Deine Meditations-Statistiken</h4>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-number" id="total-sessions">0</div>
+                        <div class="stat-label">Sessions</div>
+                        <div class="stat-number" id="total-time">0h</div>
+                        <div class="stat-label">Gesamtzeit</div>
+                        <div class="stat-number" id="current-streak">0</div>
+                        <div class="stat-label">Tage in Folge</div>
+                        <div class="stat-number" id="longest-session">0min</div>
+                        <div class="stat-label">Längste Session</div>
+    <!-- Step 3: Geführte Übungen -->
+    <div class="workflow-step" data-step="3">
+            <h3>Schritt 3: Geführte Übungen</h3>
+            <p>Entdecke verschiedene Achtsamkeits- und Meditationsübungen für verschiedene Situationen und Bedürfnisse.</p>
+        <div class="guided-exercises">
+            <div class="exercise-categories">
+                <h4>🎯 Übungs-Kategorien</h4>
+                <div class="category-tabs">
+                    <button class="tab-btn active" data-category="beginner">Anfänger</button>
+                    <button class="tab-btn" data-category="stress">Stress-Reduktion</button>
+                    <button class="tab-btn" data-category="sleep">Schlaf</button>
+                    <button class="tab-btn" data-category="focus">Fokus</button>
+                    <button class="tab-btn" data-category="emotions">Emotionen</button>
+            <div class="exercises-container">
+                <div class="exercise-category active" id="beginner-exercises">
+                    <h5>🌱 Für Anfänger</h5>
+                    <div class="exercise-list">
+                        <div class="exercise-item" data-exercise="breathing">
+                            <div class="exercise-header">
+                                <h6>Atem-Meditation</h6>
+                                <span class="exercise-duration">5-10 Min</span>
+                            </div>
+                            <p>Eine einfache Atem-Meditation für den Einstieg in die Achtsamkeitspraxis.</p>
+                            <div class="exercise-actions">
+                                <button class="btn btn-primary" data-action="start-guided-exercise" data-param="breathing">Starten</button>
+                                <button class="btn btn-outline" data-action="show-exercise-details" data-param="breathing">Details</button>
+                        
+                        <div class="exercise-item" data-exercise="body-scan">
+                                <h6>Body-Scan</h6>
+                                <span class="exercise-duration">10-15 Min</span>
+                            <p>Eine sanfte Reise durch deinen Körper, um Spannungen zu lösen.</p>
+                                <button class="btn btn-primary" data-action="start-guided-exercise" data-param="body-scan">Starten</button>
+                                <button class="btn btn-outline" data-action="show-exercise-details" data-param="body-scan">Details</button>
+                        <div class="exercise-item" data-exercise="mindful-walking">
+                                <h6>Achtsames Gehen</h6>
+                                <span class="exercise-duration">5-20 Min</span>
+                            <p>Meditation in Bewegung - achtsames Gehen für mehr Präsenz.</p>
+                                <button class="btn btn-primary" data-action="start-guided-exercise" data-param="mindful-walking">Starten</button>
+                                <button class="btn btn-outline" data-action="show-exercise-details" data-param="mindful-walking">Details</button>
+                <div class="exercise-category" id="stress-exercises">
+                    <h5>😌 Stress-Reduktion</h5>
+                        <div class="exercise-item" data-exercise="progressive-relaxation">
+                                <h6>Progressive Muskelentspannung</h6>
+                                <span class="exercise-duration">15-20 Min</span>
+                            <p>Systematische Entspannung aller Muskelgruppen für tiefe Ruhe.</p>
+                                <button class="btn btn-primary" data-action="start-guided-exercise" data-param="progressive-relaxation">Starten</button>
+                                <button class="btn btn-outline" data-action="show-exercise-details" data-param="progressive-relaxation">Details</button>
+                        <div class="exercise-item" data-exercise="breathing-technique">
+                                <h6>4-7-8 Atemtechnik</h6>
+                            <p>Eine bewährte Atemtechnik für sofortige Entspannung.</p>
+                                <button class="btn btn-primary" data-action="start-guided-exercise" data-param="breathing-technique">Starten</button>
+                                <button class="btn btn-outline" data-action="show-exercise-details" data-param="breathing-technique">Details</button>
+                <div class="exercise-category" id="sleep-exercises">
+                    <h5>😴 Für besseren Schlaf</h5>
+                        <div class="exercise-item" data-exercise="sleep-meditation">
+                                <h6>Einschlaf-Meditation</h6>
+                                <span class="exercise-duration">10-20 Min</span>
+                            <p>Eine sanfte Meditation, die dir beim Einschlafen hilft.</p>
+                                <button class="btn btn-primary" data-action="start-guided-exercise" data-param="sleep-meditation">Starten</button>
+                                <button class="btn btn-outline" data-action="show-exercise-details" data-param="sleep-meditation">Details</button>
+                <div class="exercise-category" id="focus-exercises">
+                    <h5>🎯 Fokus & Konzentration</h5>
+                        <div class="exercise-item" data-exercise="concentration">
+                                <h6>Konzentrations-Meditation</h6>
+                            <p>Verbessere deine Konzentration und Aufmerksamkeit.</p>
+                                <button class="btn btn-primary" data-action="start-guided-exercise" data-param="concentration">Starten</button>
+                                <button class="btn btn-outline" data-action="show-exercise-details" data-param="concentration">Details</button>
+                <div class="exercise-category" id="emotions-exercises">
+                    <h5>❤️ Emotionale Balance</h5>
+                        <div class="exercise-item" data-exercise="loving-kindness">
+                                <h6>Loving-Kindness Meditation</h6>
+                            <p>Entwickle Mitgefühl und Liebe für dich und andere.</p>
+                                <button class="btn btn-primary" data-action="start-guided-exercise" data-param="loving-kindness">Starten</button>
+                                <button class="btn btn-outline" data-action="show-exercise-details" data-param="loving-kindness">Details</button>
+            <div class="exercise-player" id="exercise-player" style="display: none;">
+                <div class="player-header">
+                    <h4 id="current-exercise-title">Übung läuft...</h4>
+                    <button class="btn btn-outline" data-action="stop-guided-exercise">Beenden</button>
+                <div class="player-content">
+                    <div class="exercise-instructions" id="exercise-instructions">
+                        <!-- Instructions will be loaded here -->
+                    <div class="exercise-timer">
+                        <div class="timer-display" id="exercise-timer">00:00</div>
+    <!-- Step 4: Alltags-Integration -->
+    <div class="workflow-step" data-step="4">
+            <h3>Schritt 4: Alltags-Integration</h3>
+            <p>Integriere Achtsamkeit in deinen Alltag mit praktischen Übungen und Gewohnheiten.</p>
+        <div class="daily-integration">
+            <div class="integration-strategies">
+                <h4>🔄 Achtsamkeits-Strategien</h4>
+                <div class="strategy-grid">
+                    <div class="strategy-item">
+                        <div class="strategy-icon">☕</div>
+                        <h5>Mindful Coffee</h5>
+                        <p>Trinke deinen Kaffee bewusst - rieche, schmecke und genieße jeden Schluck.</p>
+                        <div class="strategy-trigger">
+                            <label>Trigger: <input type="text" placeholder="z.B. 'Kaffeemaschine an'" class="trigger-input"></label>
+                    
+                        <div class="strategy-icon">🚶</div>
+                        <h5>Achtsames Gehen</h5>
+                        <p>Gehe bewusst - spüre jeden Schritt, beobachte deine Umgebung.</p>
+                            <label>Trigger: <input type="text" placeholder="z.B. 'zur U-Bahn gehen'" class="trigger-input"></label>
+                        <div class="strategy-icon">📱</div>
+                        <h5>Handy-Pause</h5>
+                        <p>Bevor du dein Handy checkst, atme dreimal tief durch.</p>
+                            <label>Trigger: <input type="text" placeholder="z.B. 'Handy in die Hand nehmen'" class="trigger-input"></label>
+                        <div class="strategy-icon">🍽️</div>
+                        <h5>Achtsames Essen</h5>
+                        <p>Iss bewusst - schmecke, kau langsam, genieße jeden Bissen.</p>
+                            <label>Trigger: <input type="text" placeholder="z.B. 'Mittagessen'" class="trigger-input"></label>
+            <div class="mindfulness-reminders">
+                <h4>🔔 Achtsamkeits-Erinnerungen</h4>
+                <div class="reminder-settings">
+                    <div class="reminder-item">
+                            <input type="checkbox" id="morning-reminder" checked>
+                            Morgendliche Achtsamkeitsübung
+                        <select id="morning-time">
+                            <option value="07:00">07:00</option>
+                            <option value="07:30">07:30</option>
+                            <option value="08:00">08:00</option>
+                            <option value="08:30">08:30</option>
+                        </select>
+                            <input type="checkbox" id="evening-reminder">
+                            Abendliche Reflexion
+                        <select id="evening-time">
+                            <option value="19:00">19:00</option>
+                            <option value="20:00">20:00</option>
+                            <option value="21:00">21:00</option>
+                            <option value="22:00">22:00</option>
+                            <input type="checkbox" id="stress-reminder">
+                            Stress-Check (alle 2 Stunden)
+            <div class="mindfulness-journal">
+                <h4>📝 Achtsamkeits-Tagebuch</h4>
+                <div class="journal-entry">
+                    <div class="entry-date">
+                        <label>Datum:</label>
+                        <input type="date" id="journal-date" value="">
+                    <div class="entry-sections">
+                        <div class="entry-section">
+                            <label>Wie fühlst du dich heute? (1-10)</label>
+                            <input type="range" id="mood-rating" min="1" max="10" value="5">
+                            <span id="mood-value">5</span>
+                            <label>Welche Achtsamkeitsübungen hast du heute gemacht?</label>
+                            <textarea id="exercises-done" placeholder="Beschreibe deine Übungen..."></textarea>
+                            <label>Was hast du heute bemerkt oder gelernt?</label>
+                            <textarea id="insights" placeholder="Deine Erkenntnisse und Beobachtungen..."></textarea>
+                            <label>Herausforderungen oder Schwierigkeiten?</label>
+                            <textarea id="challenges" placeholder="Was war schwierig heute?"></textarea>
+                            <label>Dankbarkeit - wofür bist du heute dankbar?</label>
+                            <textarea id="gratitude" placeholder="Drei Dinge, für die du dankbar bist..."></textarea>
+                    <div class="journal-actions">
+                        <button class="btn btn-primary" data-action="save-journal-entry">Eintrag speichern</button>
+                        <button class="btn btn-secondary" data-action="view-journal-history">Tagebuch anzeigen</button>
+            <div class="progress-tracking">
+                <h4>📊 Fortschritts-Tracking</h4>
+                <div class="tracking-metrics">
+                    <div class="metric-item">
+                        <h5>Meditations-Tage in Folge</h5>
+                        <div class="metric-value" id="streak-days">0</div>
+                        <h5>Gesamte Meditationszeit</h5>
+                        <div class="metric-value" id="total-meditation-time">0h 0min</div>
+                        <h5>Durchschnittliche Stimmung</h5>
+                        <div class="metric-value" id="avg-mood">5.0</div>
+                        <h5>Letzte Woche</h5>
+                        <div class="metric-value" id="last-week-sessions">0 Sessions</div>
+    <!-- Navigation -->
+    <div class="workflow-navigation">
+        <div class="nav-buttons">
+            <button class="btn btn-outline" id="prev-btn" data-action="previous-step" disabled>
+                <i class="fas fa-arrow-left"></i> Zurück
+            </button>
+            <div class="progress-info">
+                <span id="current-step">Schritt 1</span> von <span id="total-steps">4</span>
+            <button class="btn btn-primary" id="next-btn" data-action="next-step">
+                Weiter <i class="fas fa-arrow-right"></i>
+</div>
+
+<!-- Global Auth System -->
+<script src="../../js/aws-config.js"></script>
+    <script src="js/global-auth-system.js"></script><script src="../../js/unified-auth-manager.js"></script>
+    
+    <script>
+        // Load auth modals
+        async function loadAuthModals() {
+            try {
+                const response = await fetch('components/unified-auth-modals.html');
+                const html = await response.text();
+                document.getElementById('authModalsContainer').innerHTML = html;
+            } catch (error) {
+                console.error('Error loading auth modals:', error);
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAuthModals();
+        });
+    </script>

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎯 Ikigai Step 5: Vocation</title>
+    
+    <!-- Meta Tags -->
+    <meta name="description" content="Erkenne deine Talente im Ikigai-Workflow. Was kannst du besonders gut? Wo liegen deine natürlichen Fähigkeiten?">
+    <meta name="keywords" content="ikigai, vocation, talente, fähigkeiten, stärken, kompetenzen">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="css/ikigai-styles.css">
+    <link rel="stylesheet" href="css/step5-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../../manuel-weiss-photo.svg">
+</head>
+<body>
+    <!-- Header -->
+    <header class="step-header">
+        <div class="step-header-content">
+            <div class="step-info">
+                <h1>🎯 Ikigai Step 5: Vocation</h1>
+                <p class="step-description">Erkenne deine Talente und natürlichen Fähigkeiten. Was kannst du besonders gut?</p>
+            </div>
+            <div class="step-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 71.4%"></div>
+                </div>
+                <span class="progress-text">5 von 7</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="step-main">
+        <div class="step-container">
+            <!-- Left Column: Questions -->
+            <div class="questions-column">
+                <div class="step-intro">
+                    <h2>Deine Vocation entdecken</h2>
+                    <p>Deine Vocation sind deine natürlichen Talente und Fähigkeiten. Was kannst du besonders gut, ohne viel Anstrengung?</p>
+                </div>
+
+                <form class="reflection-form" id="vocationForm">
+                    <!-- Frage 1: Natürliche Talente -->
+                    <div class="form-group">
+                        <label for="talents">Welche Talente hast du von Natur aus? Was fällt dir leicht?</label>
+                        <p class="question-hint">Denke an Dinge, die dir ohne große Anstrengung gelingen und bei denen andere dich bewundern.</p>
+                        <textarea id="talents" name="talents" rows="6" placeholder="Beschreibe deine natürlichen Talente..."></textarea>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li><strong>Kognitive Talente:</strong> Logisches Denken, Kreativität, Analyse?</li>
+                                <li><strong>Soziale Talente:</strong> Menschenführung, Empathie, Kommunikation?</li>
+                                <li><strong>Körperliche Talente:</strong> Koordination, Kraft, Geschicklichkeit?</li>
+                                <li><strong>Künstlerische Talente:</strong> Musik, Malen, Schreiben, Design?</li>
+                                <li><strong>Technische Talente:</strong> Problemlösung, Handwerk, Programmierung?</li>
+                                <li><strong>Intuitive Talente:</strong> Menschenkenntnis, Vorhersagen, Mustererkennung?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Frage 2: Erlernte Fähigkeiten -->
+                    <div class="form-group">
+                        <label for="skills">Welche Fähigkeiten hast du dir angeeignet? Wo hast du Expertise aufgebaut?</label>
+                        <p class="question-hint">Überlege, welche Kompetenzen du durch Übung, Ausbildung oder Erfahrung entwickelt hast.</p>
+                        <textarea id="skills" name="skills" rows="6" placeholder="Beschreibe deine erlernten Fähigkeiten..."></textarea>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li><strong>Berufliche Skills:</strong> Fachwissen, Methoden, Tools?</li>
+                                <li><strong>Soft Skills:</strong> Führung, Teamwork, Verhandlung?</li>
+                                <li><strong>Sprachliche Skills:</strong> Fremdsprachen, Rhetorik, Schreiben?</li>
+                                <li><strong>Technische Skills:</strong> Software, Hardware, digitale Tools?</li>
+                                <li><strong>Kreative Skills:</strong> Design, Musik, Handwerk?</li>
+                                <li><strong>Analytische Skills:</strong> Datenanalyse, Forschung, Strategie?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Frage 3: Stärken & Kompetenzen -->
+                    <div class="form-group">
+                        <label for="strengths">Wo liegen deine größten Stärken? Was macht dich einzigartig?</label>
+                        <p class="question-hint">Identifiziere deine Kernkompetenzen und was dich von anderen unterscheidet.</p>
+                        <textarea id="strengths" name="strengths" rows="6" placeholder="Beschreibe deine größten Stärken..."></textarea>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li><strong>Fachliche Stärken:</strong> Wo bist du Experte?</li>
+                                <li><strong>Persönliche Stärken:</strong> Welche Charaktereigenschaften helfen dir?</li>
+                                <li><strong>Soziale Stärken:</strong> Wie gut kannst du mit Menschen umgehen?</li>
+                                <li><strong>Kreative Stärken:</strong> Wo bist du besonders innovativ?</li>
+                                <li><strong>Analytische Stärken:</strong> Wo siehst du Muster und Zusammenhänge?</li>
+                                <li><strong>Führungsstärken:</strong> Wie gut kannst du andere motivieren?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Navigation Buttons -->
+                    <div class="form-navigation">
+                        <div class="nav-left">
+                            <a href="index-ikigai.html" class="btn btn-outline">
+                                <i class="fas fa-home"></i>
+                                Übersicht
+                            </a>
+                            <a href="step4-ikigai.html" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i>
+                                Zurück zu Profession
+                            </a>
+                        </div>
+                        <button type="button" class="btn btn-primary" onclick="saveAndContinue()">
+                            Weiter zu Synthese
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Right Column: Tools & Resources -->
+            <div class="sidebar">
+                <div class="tools-box">
+                    <h4><i class="fas fa-star"></i> Vocation-Tools</h4>
+                    
+                    <div class="tool-categories">
+                        <div class="tool-category">
+                            <h5>Talente entdecken</h5>
+                            <ul>
+                                <li><strong>StrengthsFinder:</strong> Gallup Stärken-Test</li>
+                                <li><strong>VIA Character Strengths:</strong> Charakterstärken identifizieren</li>
+                                <li><strong>Skills Assessment:</strong> Fähigkeiten systematisch bewerten</li>
+                                <li><strong>360° Feedback:</strong> Rückmeldung von anderen einholen</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="tool-category">
+                            <h5>Kompetenzen entwickeln</h5>
+                            <ul>
+                                <li><strong>Skill Gap Analysis:</strong> Lücken identifizieren</li>
+                                <li><strong>Learning Path:</strong> Entwicklungsplan erstellen</li>
+                                <li><strong>Mentoring:</strong> Von Experten lernen</li>
+                                <li><strong>Practice & Feedback:</strong> Regelmäßig üben und verbessern</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="resources-box">
+                    <h4><i class="fas fa-book"></i> Vocation-Ressourcen</h4>
+                    
+                    <div class="resource-links">
+                        <div class="resource-section">
+                            <h5>Bücher</h5>
+                            <ul>
+                                <li><strong>"StrengthsFinder 2.0"</strong> von Tom Rath</li>
+                                <li><strong>"The Element"</strong> von Ken Robinson</li>
+                                <li><strong>"Peak"</strong> von Anders Ericsson</li>
+                                <li><strong>"Grit"</strong> von Angela Duckworth</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="resource-section">
+                            <h5>Online-Tools</h5>
+                            <ul>
+                                <li><strong>strengthsfinder.com:</strong> Gallup Stärken-Test</li>
+                                <li><strong>valuesinaction.org:</strong> VIA Character Strengths</li>
+                                <li><strong>16personalities.com:</strong> Persönlichkeitstyp</li>
+                                <li><strong>MasterClass:</strong> Von Experten lernen</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="resource-section">
+                            <h5>Verwandte Workflows</h5>
+                            <ul>
+                                <li><a href="../raisec/index-raisec.html">RAISEC-Test</a> - Berufliche Interessen</li>
+                                <li><a href="../swot/index-swot.html">SWOT-Analyse</a> - Stärken und Schwächen</li>
+                                <li><a href="../wheel-of-life/index-wheel.html">Wheel of Life</a> - Lebensbereiche</li>
+                                <li><a href="../../persoenlichkeitsentwicklung.html">Persönlichkeitsentwicklung</a> - Übersicht</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="js/ikigai-workflow.js"></script>
+    
+    <script>
+        function saveAndContinue() {
+            // Save form data to localStorage
+            const formData = {
+                talents: document.getElementById('talents').value,
+                skills: document.getElementById('skills').value,
+                strengths: document.getElementById('strengths').value,
+                step: 5,
+                timestamp: new Date().toISOString()
+            };
+            
+            localStorage.setItem('ikigaiStep5', JSON.stringify(formData));
+            
+            // Redirect to step 6
+            window.location.href = 'step6-ikigai.html';
+        }
+        
+        // Initialize workflow
+        window.addEventListener('load', function() {
+            if (typeof IkigaiSmartWorkflow !== 'undefined') {
+                window.ikigaiSmartWorkflow = new IkigaiSmartWorkflow();
+                window.ikigaiSmartWorkflow.currentStep = 5;
+                window.ikigaiSmartWorkflow.updateProgress();
+            }
+        });
+        
+        // Load saved data if available
+        window.addEventListener('load', function() {
+            const savedData = localStorage.getItem('ikigaiStep5');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                document.getElementById('talents').value = data.talents || '';
+                document.getElementById('skills').value = data.skills || '';
+                document.getElementById('strengths').value = data.strengths || '';
+            }
+        });
+        
+        // Auto-save on input
+        document.querySelectorAll('textarea').forEach(textarea => {
+            textarea.addEventListener('input', function() {
+                const formData = {
+                    talents: document.getElementById('talents').value,
+                    skills: document.getElementById('skills').value,
+                    strengths: document.getElementById('strengths').value,
+                    step: 5,
+                    timestamp: new Date().toISOString()
+                };
+                localStorage.setItem('ikigaiStep5', JSON.stringify(formData));
+            });
+        });
+    </script>
+</body>
+</html>

@@ -2,8 +2,8 @@
 class AWSAuthSystem {
     constructor() {
         // Use configuration from aws-config.js
-        this.userPoolId = window.AWS_CONFIG?.userPoolId || 'eu-central-1_XXXXXXXXX';
-        this.clientId = window.AWS_CONFIG?.clientId || 'XXXXXXXXXXXXXXXXXXXXXXXXXX';
+        this.userPoolId = window.AWS_CONFIG?.userPoolId || 'eu-central-1_8gP4gLK9r';
+        this.clientId = window.AWS_CONFIG?.clientId || '7kc5tt6a23fgh53d60vkefm812';
         this.region = window.AWS_CONFIG?.region || 'eu-central-1';
         this.userPool = null;
         this.cognitoUser = null;

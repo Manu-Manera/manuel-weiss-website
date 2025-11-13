@@ -26,13 +26,16 @@ window.AWS_CONFIG = {
     
     // API Gateway Configuration
     apiGateway: {
-        baseUrl: 'https://api.mawps.netlify.app',
+        baseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod',
         endpoints: {
             userProfile: '/user/profile',
             userProgress: '/user/progress',
             userSettings: '/user/settings'
         }
-    }
+    },
+    
+    // API Base URL (für Kompatibilität)
+    apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod'
 };
 
 // Initialize AWS with configuration
