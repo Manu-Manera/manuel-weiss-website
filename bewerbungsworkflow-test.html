@@ -399,6 +399,54 @@
                 </a>
             </div>
 
+            <!-- Document Management Test -->
+            <div class="test-card">
+                <h3>
+                    <i class="fas fa-folder-open" class="icon"></i>
+                    Bewerbungsunterlagen Verwaltung
+                </h3>
+                <div id="documentsStatus" class="status-indicator status-pending">
+                    <i class="fas fa-circle-notch fa-spin"></i>
+                    Lade...
+                </div>
+                <p>
+                    Sichere Speicherung deiner Bewerbungsunterlagen in AWS S3 mit Metadaten in DynamoDB.
+                </p>
+                
+                <!-- Upload Section -->
+                <div class="documents-upload-section" style="margin: 20px 0;">
+                    <div id="dropZone" class="drop-zone" style="border: 2px dashed #cbd5e0; border-radius: 8px; padding: 30px; text-align: center; cursor: pointer;">
+                        <i class="fas fa-cloud-upload-alt" style="font-size: 48px; color: #667eea; margin-bottom: 16px;"></i>
+                        <p style="margin: 0 0 8px;">Datei hierher ziehen oder klicken zum Auswählen</p>
+                        <p style="margin: 0; font-size: 12px; color: #718096;">PDF, Word, Bilder (max. 10MB)</p>
+                        <input type="file" id="fileInput" style="display: none;" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt,.zip">
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 16px;">
+                        <button onclick="uploadDocumentType('lebenslauf')" class="test-button" style="font-size: 14px; padding: 8px 12px;">
+                            <i class="fas fa-file-pdf"></i> Lebenslauf
+                        </button>
+                        <button onclick="uploadDocumentType('anschreiben')" class="test-button" style="font-size: 14px; padding: 8px 12px;">
+                            <i class="fas fa-file-word"></i> Anschreiben
+                        </button>
+                        <button onclick="uploadDocumentType('zeugnisse')" class="test-button" style="font-size: 14px; padding: 8px 12px;">
+                            <i class="fas fa-certificate"></i> Zeugnis
+                        </button>
+                        <button onclick="uploadDocumentType('zertifikate')" class="test-button" style="font-size: 14px; padding: 8px 12px;">
+                            <i class="fas fa-award"></i> Zertifikat
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Documents List -->
+                <div id="documentsListContainer" style="max-height: 400px; overflow-y: auto; margin-top: 20px;">
+                    <div class="empty-state" style="text-align: center; padding: 40px; color: #a0aec0;">
+                        <i class="fas fa-folder-open" style="font-size: 48px; margin-bottom: 16px;"></i>
+                        <p>Noch keine Dokumente hochgeladen</p>
+                    </div>
+                </div>
+            </div>
+
             <!-- Workflow Test -->
             <div class="test-card">
                 <h3>
@@ -557,10 +605,104 @@
     <script src="js/bewerbung-steps/bewerbung-step2.js"></script>
     <script src="js/bewerbung-steps/bewerbung-step3-6.js"></script>
     <script src="applications/js/bewerbungsprofil-api.js"></script>
+    <script src="js/bewerbung-documents-manager.js"></script>
     
     <script>
         // Test Script
         let currentStep = 1;
+        
+        // Document Management Functions
+        let currentDocumentType = 'general';
+        
+        async function initDocuments() {
+            const status = document.getElementById('documentsStatus');
+            
+            try {
+                // Initialize documents manager
+                if (window.bewerbungDocumentsManager) {
+                    const initialized = await window.bewerbungDocumentsManager.init();
+                    if (initialized) {
+                        status.className = 'status-indicator status-success';
+                        status.innerHTML = '<i class="fas fa-check-circle"></i> Bereit';
+                        
+                        // Setup drag and drop
+                        setupDocumentUpload();
+                    } else {
+                        throw new Error('Not authenticated');
+                    }
+                } else {
+                    throw new Error('Documents manager not loaded');
+                }
+            } catch (error) {
+                console.error('Documents init error:', error);
+                status.className = 'status-indicator status-error';
+                status.innerHTML = '<i class="fas fa-exclamation-circle"></i> Fehler: ' + error.message;
+            }
+        }
+        
+        function setupDocumentUpload() {
+            const dropZone = document.getElementById('dropZone');
+            const fileInput = document.getElementById('fileInput');
+            
+            // Click to upload
+            dropZone.addEventListener('click', () => fileInput.click());
+            
+            // File selection
+            fileInput.addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    await uploadFile(file);
+                    fileInput.value = '';
+                }
+            });
+            
+            // Drag and drop
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.style.borderColor = '#667eea';
+                dropZone.style.background = '#f7f9ff';
+            });
+            
+            dropZone.addEventListener('dragleave', () => {
+                dropZone.style.borderColor = '#cbd5e0';
+                dropZone.style.background = 'transparent';
+            });
+            
+            dropZone.addEventListener('drop', async (e) => {
+                e.preventDefault();
+                dropZone.style.borderColor = '#cbd5e0';
+                dropZone.style.background = 'transparent';
+                
+                const files = Array.from(e.dataTransfer.files);
+                if (files.length > 0) {
+                    await uploadFile(files[0]);
+                }
+            });
+        }
+        
+        function uploadDocumentType(type) {
+            currentDocumentType = type;
+            document.getElementById('fileInput').click();
+        }
+        
+        async function uploadFile(file) {
+            try {
+                await window.bewerbungDocumentsManager.uploadDocument(file, currentDocumentType);
+                currentDocumentType = 'general'; // Reset
+            } catch (error) {
+                console.error('Upload error:', error);
+                alert('Upload fehlgeschlagen: ' + error.message);
+            }
+        }
+        
+        // Initialize documents when auth is ready
+        if (window.realUserAuth) {
+            window.realUserAuth.onAuthStateChange((isAuthenticated) => {
+                if (isAuthenticated) {
+                    initDocuments();
+                }
+            });
+        }
         
         async function checkAuthStatus() {
             const authStatus = document.getElementById('authStatus');

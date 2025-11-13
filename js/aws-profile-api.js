@@ -145,7 +145,7 @@ class AWSProfileAPI {
             // Use API Gateway endpoint if available
             if (window.AWS_CONFIG?.apiBaseUrl) {
                 // Call API Gateway Lambda function
-                const response = await fetch(`${window.AWS_CONFIG.apiBaseUrl}/profile/${userId}`, {
+                const response = await fetch(`${window.AWS_CONFIG.apiBaseUrl}/profile`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${idToken}`

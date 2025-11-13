@@ -1,0 +1,15 @@
+{
+  "name": "mawps-documents-api",
+  "version": "1.0.0",
+  "description": "Documents API for MAWPS user documents",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.1498.0",
+    "jsonwebtoken": "^9.0.2",
+    "jwks-rsa": "^3.1.0",
+    "uuid": "^9.0.1"
+  }
+}
