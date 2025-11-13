@@ -42,15 +42,21 @@
                 <span class="nav-name">Manuel Weiss</span>
             </div>
             
-            <div class="nav-menu" id="navMenu">
+            <div class="nav-menu">
                 <a href="index.html" class="nav-link">Start</a>
                 <a href="persoenlichkeitsentwicklung-uebersicht.html" class="nav-link active">Persönlichkeitsentwicklung</a>
                 <a href="applications/index.html" class="nav-link">Bewerbungsautomatisierung</a>
                 <a href="website-services.html" class="nav-link">Services</a>
                 
-                <!-- Single User System -->
+                <!-- Language Switcher - nur eine Auswahl -->
+                <div class="language-switcher">
+                    <a href="en/persoenlichkeitsentwicklung-uebersicht.html" class="lang-link" title="Switch to English">🇬🇧 EN</a>
+                </div>
+            </div>
+            
+            <div class="auth-section">
                 <div class="nav-user" id="navUser">
-                    <button class="nav-login-btn" id="navLoginBtn">
+                    <button id="realAuthButton" class="nav-login-btn">
                         <i class="fas fa-user"></i>
                         <span>Anmelden</span>
                     </button>
@@ -59,11 +65,11 @@
                     <div class="user-dropdown" id="userDropdown" style="display: none;">
                         <div class="user-dropdown-header">
                             <div class="user-avatar-small">
-                                <img src="manuel-weiss-portrait.jpg" alt="User" class="user-avatar-img">
+                                <img id="userAvatarImg" src="manuel-weiss-portrait.jpg" alt="User" class="user-avatar-img">
                             </div>
                             <div class="user-info-small">
-                                <div class="user-name-small">Manuel Weiss</div>
-                                <div class="user-email-small">manuel.weiss@example.com</div>
+                                <div class="user-name-small" id="userName">Benutzer</div>
+                                <div class="user-email-small" id="userEmail">weiss-manuel@gmx.de</div>
                             </div>
                         </div>
                         <div class="user-dropdown-content">
@@ -80,17 +86,12 @@
                                 <span>Fortschritt</span>
                             </a>
                             <div class="user-dropdown-divider"></div>
-                            <a href="#" class="user-dropdown-item logout" onclick="logoutUser(); return false;">
+                            <a href="#" class="user-dropdown-item logout" onclick="window.realUserAuth.logout(); return false;">
                                 <i class="fas fa-sign-out-alt"></i>
                                 <span>Abmelden</span>
                             </a>
                         </div>
                     </div>
-                </div>
-                
-                <!-- Language Switcher - nur eine Auswahl -->
-                <div class="language-switcher">
-                    <a href="en/persoenlichkeitsentwicklung-uebersicht.html" class="lang-link" title="Switch to English">🇬🇧 EN</a>
                 </div>
             </div>
             
@@ -1802,71 +1803,28 @@
 <script src="js/persoenlichkeitsentwicklung-search.js?v=20241206"></script>
     <script>
 
-    // Integrated User System Functions
-    function toggleUserMenu() {
-        const dropdown = document.getElementById('userDropdown');
-        const loginBtn = document.getElementById('navLoginBtn');
-        
-        // Prüfe ob User eingeloggt ist
-        if (window.awsAuth && window.awsAuth.isLoggedIn()) {
-            // User ist eingeloggt - zeige Dropdown
-            if (dropdown.style.display === 'none' || dropdown.style.display === '') {
-                dropdown.style.display = 'block';
-                loginBtn.innerHTML = '<i class="fas fa-user-circle"></i><span>Manuel Weiss</span>';
-                loginBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
-            } else {
-                dropdown.style.display = 'none';
-            }
-        } else {
-            // User ist nicht eingeloggt - zeige Login Modal
-            showLoginModal();
-        }
-    }
-
-    // Show login modal
-    function showLoginModal() {
-        if (window.authModals) {
-            window.authModals.showLogin();
-        }
-    }
-
-    function logoutUser() {
-        // Verwende AWS Auth System für Logout
-        if (window.awsAuth) {
-            window.awsAuth.logout();
-        } else {
-            // Fallback für lokales Logout
-            const dropdown = document.getElementById('userDropdown');
-            const loginBtn = document.getElementById('navLoginBtn');
-            
-            dropdown.style.display = 'none';
-            loginBtn.innerHTML = '<i class="fas fa-user"></i><span>Anmelden</span>';
-            loginBtn.style.background = 'linear-gradient(135deg, #6366f1, #8b5cf6)';
-            
-            showNotification('Erfolgreich abgemeldet!', 'success');
-        }
-    }
-
-    // Dropdown Button Functions
     function openProfile() {
-        showNotification('Profil wird geöffnet...', 'info');
-        // Hier würde das Profil geöffnet werden
+        if (window.realUserAuth && window.realUserAuth.showNotification) {
+            window.realUserAuth.showNotification('Profil wird geöffnet...', 'info');
+        }
         setTimeout(() => {
             window.location.href = 'user-profile.html#personal';
         }, 500);
     }
 
     function openSettings() {
-        showNotification('Einstellungen werden geöffnet...', 'info');
-        // Hier würden die Einstellungen geöffnet werden
+        if (window.realUserAuth && window.realUserAuth.showNotification) {
+            window.realUserAuth.showNotification('Einstellungen werden geöffnet...', 'info');
+        }
         setTimeout(() => {
             window.location.href = 'user-profile.html#settings';
         }, 500);
     }
 
     function openProgress() {
-        showNotification('Fortschritt wird angezeigt...', 'info');
-        // Hier würde der Fortschritt angezeigt werden
+        if (window.realUserAuth && window.realUserAuth.showNotification) {
+            window.realUserAuth.showNotification('Fortschritt wird angezeigt...', 'info');
+        }
         setTimeout(() => {
             window.location.href = 'user-profile.html#progress';
         }, 500);
@@ -1874,22 +1832,18 @@
 
     // Close dropdown when clicking outside (mit Verzögerung für Button-Click)
     document.addEventListener('click', function(event) {
-        const userSystem = document.getElementById('navUser');
-        const dropdown = document.getElementById('userDropdown');
-        const loginBtn = document.getElementById('navLoginBtn');
-        
-        // Prüfe ob der Klick auf den Login-Button war
-        if (loginBtn && loginBtn.contains(event.target)) {
-            // Button-Click wird separat behandelt, nichts tun
+        const navUser = document.getElementById('navUser');
+        const userDropdown = document.getElementById('userDropdown');
+        const authButton = document.getElementById('realAuthButton');
+
+        if (authButton && authButton.contains(event.target)) {
             return;
         }
-        
-        // Prüfe ob der Klick außerhalb des User-Systems war
-        if (userSystem && dropdown && !userSystem.contains(event.target)) {
-            // Kleine Verzögerung, damit Button-Clicks zuerst verarbeitet werden
+
+        if (navUser && userDropdown && !navUser.contains(event.target)) {
             setTimeout(() => {
-                if (dropdown) {
-                    dropdown.style.display = 'none';
+                if (userDropdown) {
+                    userDropdown.style.display = 'none';
                 }
             }, 10);
         }
@@ -3078,15 +3032,6 @@
     <!-- Universal Navigation -->
     <script src="js/universal-navigation.js"></script>
     
-    <!-- Auth Modals Container -->
-    <div id="authModalsContainer"></div>
-    
-    <!-- Unified Auth System -->
-    <script src="js/unified-auth-loader.js"></script>
-    
-    <!-- Legacy Support (optional, kann später entfernt werden) -->
-    
-
     <!-- AWS Auth System - Einheitliche Implementierung -->
     <!-- AWS Config INLINE (um Cache-Probleme zu vermeiden) -->
     <script>
@@ -3148,7 +3093,7 @@
     <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js" 
             onerror="console.error('Fehler beim Laden von AWS SDK');"></script>
     <!-- Auth & Core - mit Cache-Busting -->
-    <script src="js/real-user-auth-system.js?v=20250112" 
+    <script src="js/real-user-auth-system.js?v=20250115" 
             onerror="console.error('Fehler beim Laden von real-user-auth-system.js');"></script>
 </body>
 </html>
