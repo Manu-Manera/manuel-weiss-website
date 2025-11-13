@@ -1,6 +1,6 @@
 /**
- * BEWERBUNGSAUTOMATISIERUNG - CORE JAVASCRIPT
- * Hauptfunktionalitäten für das Bewerbungsautomatisierungs-System
+ * BEWERBUNGSMANAGER - CORE JAVASCRIPT
+ * Hauptfunktionalitäten für das Bewerbungsmanager-System
  */
 
 class ApplicationsCore {
