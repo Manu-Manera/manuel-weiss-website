@@ -409,6 +409,136 @@ a:hover {
     font-size: var(--font-size-xl);
     color: white;
     margin-bottom: var(--spacing-xl);
+    line-height: 1.7;
+    opacity: 0.95;
+}
+
+/* Hero Badge */
+.hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-lg);
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius-full);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: white;
+    margin-bottom: var(--spacing-lg);
+    animation: heroBadgeFade 0.8s ease-out;
+}
+
+.hero-badge i {
+    font-size: var(--text-base);
+}
+
+@keyframes heroBadgeFade {
+    0% { opacity: 0; transform: translateY(-10px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Hero Mission */
+.hero-mission {
+    margin-bottom: var(--spacing-2xl);
+}
+
+.hero-mission .hero-subtitle {
+    font-size: var(--font-size-lg);
+    line-height: 1.8;
+    max-width: 700px;
+    color: rgba(255, 255, 255, 0.95);
+}
+
+/* Hero Values Grid */
+.hero-values {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-2xl);
+    animation: heroValuesFade 1s ease-out 0.2s both;
+}
+
+@keyframes heroValuesFade {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+.value-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: var(--radius-lg);
+    transition: all var(--transition-base);
+}
+
+.value-item:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.value-icon {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius-md);
+    font-size: var(--text-xl);
+    color: white;
+}
+
+.value-item:nth-child(1) .value-icon {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(139, 92, 246, 0.3));
+}
+
+.value-item:nth-child(2) .value-icon {
+    background: linear-gradient(135deg, rgba(236, 72, 153, 0.3), rgba(239, 68, 68, 0.3));
+}
+
+.value-item:nth-child(3) .value-icon {
+    background: linear-gradient(135deg, rgba(251, 146, 60, 0.3), rgba(245, 158, 11, 0.3));
+}
+
+.value-content h3 {
+    font-size: var(--text-lg);
+    font-weight: 600;
+    color: white;
+    margin: 0 0 var(--spacing-xs) 0;
+}
+
+.value-content p {
+    font-size: var(--text-sm);
+    color: rgba(255, 255, 255, 0.85);
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Hero Image Decoration */
+.hero-image-decoration {
+    position: absolute;
+    top: -20px;
+    right: -20px;
+    width: 200px;
+    height: 200px;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
+    border-radius: 50%;
+    filter: blur(40px);
+    z-index: -1;
+    animation: pulse 3s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.1); opacity: 0.7; }
 }
 
 .hero-actions {
@@ -1907,6 +2037,26 @@ a:hover {
     }
 }
 
+@media (max-width: 768px) {
+    .hero-values {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-md);
+    }
+    
+    .value-item {
+        padding: var(--spacing-md);
+    }
+    
+    .hero-mission .hero-subtitle {
+        font-size: var(--text-base);
+    }
+    
+    .hero-badge {
+        font-size: var(--text-xs);
+        padding: var(--spacing-xs) var(--spacing-md);
+    }
+}
+
 @media (max-width: 480px) {
     .container {
         padding: 0 var(--spacing-md);
@@ -1919,6 +2069,25 @@ a:hover {
     
     .btn {
         justify-content: center;
+    }
+    
+    .hero-values {
+        gap: var(--spacing-sm);
+    }
+    
+    .value-item {
+        flex-direction: column;
+        text-align: center;
+        padding: var(--spacing-md);
+    }
+    
+    .value-icon {
+        margin: 0 auto;
+    }
+    
+    .hero-mission .hero-subtitle {
+        font-size: var(--text-sm);
+        line-height: 1.6;
     }
     
     /* Service Cards Mobile Optimization */
