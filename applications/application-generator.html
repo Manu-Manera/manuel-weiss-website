@@ -408,11 +408,9 @@
         </div>
     </div>
 
-    <!-- Scripts -->
-    <script src="js/applications-core.js"></script>
-    <script src="js/ai-cover-letter-generator.js"></script>
-
-    <!-- AWS Config -->
+    <!-- Application Scripts ZULETZT laden -->
+    
+    <!-- AWS Config MUSS ZUERST kommen -->
     <script>
         window.AWS_CONFIG = {
             userPoolId: 'eu-central-1_8gP4gLK9r',
@@ -446,7 +444,7 @@
     <!-- AWS SDK -->
     <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
     
-    <!-- Auth System -->
+    <!-- Auth System MUSS VOR den Application Scripts kommen -->
     <script src="../js/real-user-auth-system.js?v=20250116"></script>
     
     <!-- Core APIs -->
@@ -455,18 +453,10 @@
     
     <!-- Workflow Integration -->
     <script src="../js/workflow-progress-integration.js"></script>
+    
+    <!-- Application Scripts ZULETZT laden -->
+    <script src="js/applications-core.js"></script>
+    <script src="js/ai-cover-letter-generator.js"></script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
 

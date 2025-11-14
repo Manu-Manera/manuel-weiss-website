@@ -350,11 +350,57 @@
 
     <!-- Scripts -->
     
+    
+    <!-- AWS Config MUSS ZUERST kommen -->
+    <script>
+        window.AWS_CONFIG = {
+            userPoolId: 'eu-central-1_8gP4gLK9r',
+            clientId: '7kc5tt6a23fgh53d60vkefm812',
+            region: 'eu-central-1',
+            apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod',
+            domain: {
+                name: 'manuel-weiss.ch',
+                email: 'mail@manuel-weiss.ch',
+                region: 'eu-central-1'
+            },
+            s3: {
+                bucket: 'mawps-user-files-1760106396',
+                region: 'eu-central-1'
+            },
+            dynamoDB: {
+                tableName: 'mawps-user-profiles',
+                region: 'eu-central-1'
+            },
+            apiGateway: {
+                baseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod',
+                endpoints: {
+                    userProfile: '/user/profile',
+                    userProgress: '/user/progress',
+                    userSettings: '/user/settings'
+                }
+            }
+        };
+    </script>
+    
+    <!-- AWS SDK -->
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    
+    <!-- Auth System MUSS VOR den Application Scripts kommen -->
+    <script src="../js/real-user-auth-system.js?v=20250116"></script>
+    
+    <!-- Core APIs -->
+    <script src="../js/aws-profile-api.js"></script>
+    <script src="../js/user-progress-tracker.js"></script>
+    
+    <!-- Workflow Integration -->
+    <script src="../js/workflow-progress-integration.js"></script>
+    
+    <!-- Application Scripts ZULETZT laden -->
     <script src="js/bewerbungsprofil-api.js"></script>
     <script src="js/profile-setup.js"></script>
 
     <!-- AWS Auth System - Einheitliche Implementierung -->
-    <!-- AWS Config INLINE (um Cache-Probleme zu vermeiden) -->
+    
     <script>
         // AWS Configuration for Production - INLINE
         window.AWS_CONFIG = {
@@ -430,56 +476,9 @@
             console.log('AWS SDK not loaded yet, will configure when loaded');
         }
     </script>
-    <!-- AWS SDK laden -->
-    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js" 
-            onerror="console.error('Fehler beim Laden von AWS SDK');"></script>
+
     <!-- Auth & Core - mit Cache-Busting -->
-    <script src="../js/real-user-auth-system.js?v=20250116" 
-            onerror="console.error('Fehler beim Laden von real-user-auth-system.js');"></script>
 
-    <!-- AWS Config -->
-    <script>
-        window.AWS_CONFIG = {
-            userPoolId: 'eu-central-1_8gP4gLK9r',
-            clientId: '7kc5tt6a23fgh53d60vkefm812',
-            region: 'eu-central-1',
-            apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod',
-            domain: {
-                name: 'manuel-weiss.ch',
-                email: 'mail@manuel-weiss.ch',
-                region: 'eu-central-1'
-            },
-            s3: {
-                bucket: 'mawps-user-files-1760106396',
-                region: 'eu-central-1'
-            },
-            dynamoDB: {
-                tableName: 'mawps-user-profiles',
-                region: 'eu-central-1'
-            },
-            apiGateway: {
-                baseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod',
-                endpoints: {
-                    userProfile: '/user/profile',
-                    userProgress: '/user/progress',
-                    userSettings: '/user/settings'
-                }
-            }
-        };
-    </script>
-
-    <!-- AWS SDK -->
-    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
-    
-    <!-- Auth System -->
-    <script src="../js/real-user-auth-system.js?v=20250116"></script>
-    
-    <!-- Core APIs -->
-    <script src="../js/aws-profile-api.js"></script>
-    <script src="../js/user-progress-tracker.js"></script>
-    
-    <!-- Workflow Integration -->
-    <script src="../js/workflow-progress-integration.js"></script>
 </body>
 </html>
 
