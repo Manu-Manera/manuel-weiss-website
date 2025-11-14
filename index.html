@@ -977,35 +977,38 @@
                         console.log('📸 WEBSITE: Profile image from profileImage:', profileImage ? 'Found' : 'Not found');
                     }
                     
-                    // 3. Profilbild anzeigen
-                    if (profileImage) {
-                        const profilePhotoDefault = document.getElementById('profile-photo-default');
-                        const profilePhotoHover = document.getElementById('profile-photo-hover');
-                        if (profilePhotoDefault) {
-                            profilePhotoDefault.src = profileImage;
-                            profilePhotoDefault.style.display = 'block';
-                            console.log('✅ WEBSITE: Profile image (default) displayed');
-                        }
-                        if (profilePhotoHover) {
-                            profilePhotoHover.src = profileImage;
-                            profilePhotoHover.style.display = 'block';
-                            console.log('✅ WEBSITE: Profile image (hover) displayed');
-                        }
-                        if (!profilePhotoDefault && !profilePhotoHover) {
-                            console.error('❌ WEBSITE: profile-photo elements not found');
-                        }
-                    } else {
-                        console.log('ℹ️ WEBSITE: No custom image, using fallback');
-                        const profilePhotoDefault = document.getElementById('profile-photo-default');
-                        const profilePhotoHover = document.getElementById('profile-photo-hover');
-                        if (profilePhotoDefault) {
-                            profilePhotoDefault.src = 'manuel-weiss-portrait.jpg';
-                            profilePhotoDefault.style.display = 'block';
-                        }
-                        if (profilePhotoHover) {
-                            profilePhotoHover.src = 'manuel-weiss-portrait.jpg';
-                            profilePhotoHover.style.display = 'block';
-                        }
+                    // 3. Profilbild anzeigen - Separate Bilder für Default & Hover
+                    const profilePhotoDefault = document.getElementById('profile-photo-default');
+                    const profilePhotoHover = document.getElementById('profile-photo-hover');
+                    
+                    // Separate Bilder aus localStorage laden
+                    let defaultImage = localStorage.getItem('profileImageDefault');
+                    let hoverImage = localStorage.getItem('profileImageHover');
+                    
+                    // Fallback auf das gemeinsame Profilbild
+                    if (!defaultImage) {
+                        defaultImage = profileImage || 'manuel-weiss-closed-smile.jpg';
+                    }
+                    if (!hoverImage) {
+                        hoverImage = profileImage || 'manuel-weiss-open-smile.jpg';
+                    }
+                    
+                    console.log('📸 WEBSITE: Loading dual images...');
+                    console.log('  Default:', defaultImage ? (defaultImage.startsWith('data:') ? 'Base64' : defaultImage) : 'None');
+                    console.log('  Hover:', hoverImage ? (hoverImage.startsWith('data:') ? 'Base64' : hoverImage) : 'None');
+                    
+                    if (profilePhotoDefault) {
+                        profilePhotoDefault.src = defaultImage;
+                        profilePhotoDefault.style.display = 'block';
+                        console.log('✅ WEBSITE: Profile image (default) displayed');
+                    }
+                    if (profilePhotoHover) {
+                        profilePhotoHover.src = hoverImage;
+                        profilePhotoHover.style.display = 'block';
+                        console.log('✅ WEBSITE: Profile image (hover) displayed');
+                    }
+                    if (!profilePhotoDefault && !profilePhotoHover) {
+                        console.error('❌ WEBSITE: profile-photo elements not found');
                     }
                     
                     // Button-Text aktualisieren
@@ -1357,19 +1360,22 @@
                 profileImage = localStorage.getItem('profileImage');
             }
             
-            if (profileImage) {
-                        const profilePhotoDefault = document.getElementById('profile-photo-default');
-                        const profilePhotoHover = document.getElementById('profile-photo-hover');
-                        if (profilePhotoDefault) {
-                    profilePhotoDefault.src = profileImage;
-                            profilePhotoDefault.style.display = 'block';
-                            console.log('🔄 WEBSITE: Profile image (default) updated from localStorage');
-                }
-                        if (profilePhotoHover) {
-                    profilePhotoHover.src = profileImage;
-                            profilePhotoHover.style.display = 'block';
-                            console.log('🔄 WEBSITE: Profile image (hover) updated from localStorage');
-                }
+            // Separate Bilder für Default & Hover laden
+            const defaultImageData = localStorage.getItem('profileImageDefault');
+            const hoverImageData = localStorage.getItem('profileImageHover');
+            
+            const profilePhotoDefault = document.getElementById('profile-photo-default');
+            const profilePhotoHover = document.getElementById('profile-photo-hover');
+            
+            if (profilePhotoDefault) {
+                profilePhotoDefault.src = defaultImageData || profileImage || 'manuel-weiss-closed-smile.jpg';
+                profilePhotoDefault.style.display = 'block';
+                console.log('🔄 WEBSITE: Profile image (default) updated from localStorage');
+            }
+            if (profilePhotoHover) {
+                profilePhotoHover.src = hoverImageData || profileImage || 'manuel-weiss-open-smile.jpg';
+                profilePhotoHover.style.display = 'block';
+                console.log('🔄 WEBSITE: Profile image (hover) updated from localStorage');
             }
         }
         
@@ -1398,16 +1404,25 @@
                 }
             }
             
-            if (storedImage) {
-                const profilePhotoDefault = document.getElementById('profile-photo-default');
-                const profilePhotoHover = document.getElementById('profile-photo-hover');
-                if (profilePhotoDefault && profilePhotoDefault.src !== storedImage) {
-                    profilePhotoDefault.src = storedImage;
+            // Separate Bilder für Default & Hover
+            const storedDefaultImage = localStorage.getItem('profileImageDefault');
+            const storedHoverImage = localStorage.getItem('profileImageHover');
+            
+            const profilePhotoDefault = document.getElementById('profile-photo-default');
+            const profilePhotoHover = document.getElementById('profile-photo-hover');
+            
+            if (profilePhotoDefault) {
+                const defaultSrc = storedDefaultImage || storedImage || 'manuel-weiss-closed-smile.jpg';
+                if (profilePhotoDefault.src !== defaultSrc) {
+                    profilePhotoDefault.src = defaultSrc;
                     profilePhotoDefault.style.display = 'block';
                     console.log('🔄 WEBSITE: Profile image (default) updated live');
                 }
-                if (profilePhotoHover && profilePhotoHover.src !== storedImage) {
-                    profilePhotoHover.src = storedImage;
+            }
+            if (profilePhotoHover) {
+                const hoverSrc = storedHoverImage || storedImage || 'manuel-weiss-open-smile.jpg';
+                if (profilePhotoHover.src !== hoverSrc) {
+                    profilePhotoHover.src = hoverSrc;
                     profilePhotoHover.style.display = 'block';
                     console.log('🔄 WEBSITE: Profile image (hover) updated live');
                 }

@@ -83,44 +83,50 @@ class WebsiteDataSync {
      * Profilbild synchronisieren
      */
     syncProfileImage() {
-        const imageData = localStorage.getItem(this.profileImageKey);
-        if (!imageData) return;
-
+        // Separate Bilder für Default und Hover laden
+        const defaultImageData = localStorage.getItem('profileImageDefault');
+        const hoverImageData = localStorage.getItem('profileImageHover');
+        const fallbackImageData = localStorage.getItem(this.profileImageKey);
+        
         // Hauptprofilbild aktualisieren (beide Varianten)
         const profilePhotoDefault = document.getElementById('profile-photo-default');
         const profilePhotoHover = document.getElementById('profile-photo-hover');
+        
         if (profilePhotoDefault) {
-            profilePhotoDefault.src = imageData;
+            profilePhotoDefault.src = defaultImageData || fallbackImageData || 'manuel-weiss-closed-smile.jpg';
             console.log('🖼️ Hauptprofilbild (default) aktualisiert');
         }
         if (profilePhotoHover) {
-            profilePhotoHover.src = imageData;
+            profilePhotoHover.src = hoverImageData || fallbackImageData || 'manuel-weiss-open-smile.jpg';
             console.log('🖼️ Hauptprofilbild (hover) aktualisiert');
         }
         
         // Fallback für alte ID
         const profilePhoto = document.getElementById('profile-photo');
-        if (profilePhoto) {
-            profilePhoto.src = imageData;
+        if (profilePhoto && fallbackImageData) {
+            profilePhoto.src = fallbackImageData;
             console.log('🖼️ Hauptprofilbild (fallback) aktualisiert');
         }
 
-        // Navigation-Logo aktualisieren
+        // Navigation-Logo aktualisieren (verwendet Default-Bild)
         const navLogo = document.querySelector('.nav-logo');
-        if (navLogo) {
-            navLogo.src = imageData;
+        if (navLogo && (defaultImageData || fallbackImageData)) {
+            navLogo.src = defaultImageData || fallbackImageData;
             console.log('🖼️ Navigation-Logo aktualisiert');
         }
 
-        // Weitere Profilbilder aktualisieren
+        // Weitere Profilbilder aktualisieren (verwenden default Bild)
         const profileImages = document.querySelectorAll('.profile-image, .avatar-image');
-        profileImages.forEach(img => {
-            if (img.tagName === 'IMG') {
-                img.src = imageData;
-            } else {
-                img.style.backgroundImage = `url(${imageData})`;
-            }
-        });
+        const imageToUse = defaultImageData || fallbackImageData;
+        if (imageToUse) {
+            profileImages.forEach(img => {
+                if (img.tagName === 'IMG' && img.id !== 'profile-photo-default' && img.id !== 'profile-photo-hover') {
+                    img.src = imageToUse;
+                } else if (img.style) {
+                    img.style.backgroundImage = `url(${imageToUse})`;
+                }
+            });
+        }
 
         console.log('🖼️ Profilbild synchronisiert');
     }

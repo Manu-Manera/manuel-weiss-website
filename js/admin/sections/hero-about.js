@@ -32,10 +32,18 @@ class HeroAboutSection {
             saveBtn: document.getElementById('heroSaveBtn'),
             applyBtn: document.getElementById('heroApplyBtn'),
             resetBtn: document.getElementById('heroResetBtn'),
-            // Profilbild-Elemente
+            // Profilbild-Elemente (Legacy)
             currentProfileImage: document.getElementById('current-profile-image'),
             changeProfileBtn: document.getElementById('change-profile-btn'),
             imageUpload: document.getElementById('image-upload'),
+            // Neue Dual-Image Upload Elemente
+            currentProfileImageDefault: document.getElementById('current-profile-image-default'),
+            currentProfileImageHover: document.getElementById('current-profile-image-hover'),
+            uploadDefaultBtn: document.getElementById('upload-default-btn'),
+            uploadHoverBtn: document.getElementById('upload-hover-btn'),
+            imageUploadDefault: document.getElementById('image-upload-default'),
+            imageUploadHover: document.getElementById('image-upload-hover'),
+            // Galerie
             galleryUploadInput: document.getElementById('gallery-upload-input'),
             selectGalleryImagesBtn: document.getElementById('select-gallery-images-btn'),
             profileGalleryGrid: document.getElementById('profile-gallery-grid'),
@@ -49,9 +57,17 @@ class HeroAboutSection {
         this.els.applyBtn?.addEventListener('click', () => this.applyToWebsite());
         this.els.resetBtn?.addEventListener('click', () => this.reset());
         
-        // Profilbild-Events
+        // Legacy Profilbild-Events
         this.els.changeProfileBtn?.addEventListener('click', () => this.els.imageUpload?.click());
-        this.els.imageUpload?.addEventListener('change', (e) => this.handleImageUpload(e));
+        this.els.imageUpload?.addEventListener('change', (e) => this.handleImageUpload(e, 'default'));
+        
+        // Neue Dual-Image Upload Events
+        this.els.uploadDefaultBtn?.addEventListener('click', () => this.els.imageUploadDefault?.click());
+        this.els.uploadHoverBtn?.addEventListener('click', () => this.els.imageUploadHover?.click());
+        this.els.imageUploadDefault?.addEventListener('change', (e) => this.handleDualImageUpload(e, 'default'));
+        this.els.imageUploadHover?.addEventListener('change', (e) => this.handleDualImageUpload(e, 'hover'));
+        
+        // Galerie-Events
         this.els.selectGalleryImagesBtn?.addEventListener('click', () => this.els.galleryUploadInput?.click());
         this.els.galleryUploadInput?.addEventListener('change', (e) => this.handleGalleryUpload(e));
         this.els.refreshGalleryBtn?.addEventListener('click', () => this.loadGallery());
@@ -231,23 +247,50 @@ class HeroAboutSection {
         
         try {
             this.toast('Profilbild wird hochgeladen...', 'info');
+            console.log('📤 Starting image upload:', file.name, file.type, `${(file.size / 1024).toFixed(2)} KB`);
             
             // 1) Versuche Upload nach S3 via Presigned URL, wenn konfiguriert
             let uploadedUrl = null;
+            let uploadMethod = 'Base64 (Fallback)';
+            
             try {
-                if (window.awsMedia && window.AWS_APP_CONFIG && window.AWS_APP_CONFIG.MEDIA_API_BASE) {
-                    const userId = 'owner';
-                    const result = await window.awsMedia.uploadProfileImage(file, userId);
-                    uploadedUrl = result.publicUrl;
+                // Check if AWS modules are loaded
+                if (!window.awsMedia) {
+                    console.warn('⚠️ window.awsMedia nicht verfügbar. AWS Skripte möglicherweise nicht geladen.');
+                    throw new Error('AWS Upload Module nicht geladen');
                 }
+                
+                if (!window.AWS_APP_CONFIG || !window.AWS_APP_CONFIG.MEDIA_API_BASE) {
+                    console.warn('⚠️ AWS_APP_CONFIG.MEDIA_API_BASE nicht konfiguriert.');
+                    throw new Error('AWS API nicht konfiguriert');
+                }
+                
+                console.log('✅ AWS Module verfügbar, starte S3 Upload...');
+                console.log('📍 API Endpoint:', window.AWS_APP_CONFIG.MEDIA_API_BASE);
+                
+                const userId = 'owner';
+                const result = await window.awsMedia.uploadProfileImage(file, userId);
+                uploadedUrl = result.publicUrl;
+                uploadMethod = 'AWS S3';
+                
+                console.log('✅ S3 Upload erfolgreich:', uploadedUrl);
+                console.log('📦 Upload Details:', {
+                    bucket: result.bucket,
+                    key: result.key,
+                    region: result.region
+                });
+                
             } catch (e) {
-                console.warn('S3 Upload via Presigned URL fehlgeschlagen, falle auf Base64 zurück:', e.message);
+                console.warn('❌ S3 Upload fehlgeschlagen, verwende Base64 Fallback:', e.message);
+                console.error('Upload Error Details:', e);
             }
             
             // 2) Fallback Base64 (sofortige Vorschau, lokale Persistenz)
             let previewSrc = uploadedUrl;
             if (!previewSrc) {
+                console.log('🔄 Konvertiere Bild zu Base64...');
                 previewSrc = await this.fileToBase64(file);
+                console.log('✅ Base64 Konvertierung erfolgreich');
             }
             
             // 3) Persistenz – wenn S3-URL vorhanden, diese speichern; sonst Base64
@@ -255,6 +298,12 @@ class HeroAboutSection {
             localStorage.setItem('adminProfileImage', finalSrc);
             localStorage.setItem('heroProfileImage', finalSrc);
             localStorage.setItem('profileImage', finalSrc);
+            
+            console.log('💾 Bild gespeichert in localStorage:', {
+                method: uploadMethod,
+                urlLength: finalSrc.length,
+                isS3: !!uploadedUrl
+            });
             
             // heroData updaten
             let heroData = {};
@@ -270,11 +319,137 @@ class HeroAboutSection {
             this.loadGallery();
             this.syncToWebsite();
             
-            this.toast('Profilbild erfolgreich hochgeladen!', 'success');
+            const successMsg = uploadedUrl 
+                ? `✅ Profilbild erfolgreich auf AWS S3 hochgeladen` 
+                : `✅ Profilbild lokal gespeichert (Base64)`;
+            
+            this.toast(successMsg, 'success');
+            console.log('🎉 Image upload completed:', uploadMethod);
+            
         } catch (error) {
-            console.error('Profilbild-Upload Fehler:', error);
-            this.toast('Fehler beim Hochladen des Profilbilds', 'error');
+            console.error('❌ Profilbild-Upload Fehler:', error);
+            this.toast('Fehler beim Hochladen des Profilbilds: ' + error.message, 'error');
         }
+    }
+    
+    /**
+     * Dual-Image Upload behandeln (für Default & Hover)
+     */
+    async handleDualImageUpload(event, type) {
+        const file = event.target.files[0];
+        if (!file) return;
+        if (!this.validateImageFile(file)) return;
+        
+        const imageLabel = type === 'default' ? 'Standard-Bild' : 'Hover-Bild';
+        const storageKey = type === 'default' ? 'profileImageDefault' : 'profileImageHover';
+        
+        try {
+            this.toast(`${imageLabel} wird hochgeladen...`, 'info');
+            console.log(`📤 Starting ${type} image upload:`, file.name, file.type, `${(file.size / 1024).toFixed(2)} KB`);
+            
+            // 1) Versuche Upload nach S3
+            let uploadedUrl = null;
+            let uploadMethod = 'Base64 (Fallback)';
+            
+            try {
+                if (!window.awsMedia) {
+                    throw new Error('AWS Upload Module nicht geladen');
+                }
+                
+                if (!window.AWS_APP_CONFIG || !window.AWS_APP_CONFIG.MEDIA_API_BASE) {
+                    throw new Error('AWS API nicht konfiguriert');
+                }
+                
+                console.log(`✅ AWS Module verfügbar, starte S3 Upload für ${type}...`);
+                
+                const userId = 'owner';
+                const result = await window.awsMedia.uploadProfileImage(file, userId);
+                uploadedUrl = result.publicUrl;
+                uploadMethod = 'AWS S3';
+                
+                console.log(`✅ S3 Upload erfolgreich (${type}):`, uploadedUrl);
+                
+            } catch (e) {
+                console.warn(`❌ S3 Upload fehlgeschlagen (${type}), verwende Base64:`, e.message);
+            }
+            
+            // 2) Fallback Base64
+            let finalSrc = uploadedUrl;
+            if (!finalSrc) {
+                console.log(`🔄 Konvertiere ${type} Bild zu Base64...`);
+                finalSrc = await this.fileToBase64(file);
+            }
+            
+            // 3) Speichern
+            localStorage.setItem(storageKey, finalSrc);
+            
+            // Auch in den legacy keys speichern (für Kompatibilität)
+            if (type === 'default') {
+                localStorage.setItem('adminProfileImage', finalSrc);
+                localStorage.setItem('heroProfileImage', finalSrc);
+                localStorage.setItem('profileImage', finalSrc);
+            }
+            
+            console.log(`💾 ${imageLabel} gespeichert:`, {
+                key: storageKey,
+                method: uploadMethod,
+                urlLength: finalSrc.length,
+                isS3: !!uploadedUrl
+            });
+            
+            // 4) Vorschau aktualisieren
+            const previewImg = type === 'default' ? this.els.currentProfileImageDefault : this.els.currentProfileImageHover;
+            if (previewImg) {
+                previewImg.src = finalSrc;
+                console.log(`🖼️ ${imageLabel} Vorschau aktualisiert`);
+            }
+            
+            // 5) Website aktualisieren
+            this.syncDualImagesToWebsite();
+            
+            const successMsg = uploadedUrl 
+                ? `✅ ${imageLabel} erfolgreich auf AWS S3 hochgeladen` 
+                : `✅ ${imageLabel} lokal gespeichert (Base64)`;
+            
+            this.toast(successMsg, 'success');
+            console.log(`🎉 ${type} image upload completed:`, uploadMethod);
+            
+        } catch (error) {
+            console.error(`❌ ${imageLabel}-Upload Fehler:`, error);
+            this.toast(`Fehler beim Hochladen des ${imageLabel}s: ` + error.message, 'error');
+        }
+    }
+    
+    /**
+     * Synchronisiert beide Bilder zur Website
+     */
+    syncDualImagesToWebsite() {
+        const defaultImg = localStorage.getItem('profileImageDefault');
+        const hoverImg = localStorage.getItem('profileImageHover');
+        
+        console.log('🔄 Synchronisiere Dual-Images zur Website...');
+        console.log('  Default:', defaultImg ? 'vorhanden' : 'nicht vorhanden');
+        console.log('  Hover:', hoverImg ? 'vorhanden' : 'nicht vorhanden');
+        
+        // Trigger website reload
+        if (window.loadWebsiteProfileImage) {
+            window.loadWebsiteProfileImage();
+        }
+        
+        // Dispatch storage event für Cross-Tab-Sync
+        window.dispatchEvent(new StorageEvent('storage', {
+            key: 'profileImageDefault',
+            newValue: defaultImg,
+            oldValue: null
+        }));
+        
+        window.dispatchEvent(new StorageEvent('storage', {
+            key: 'profileImageHover',
+            newValue: hoverImg,
+            oldValue: null
+        }));
+        
+        console.log('✅ Dual-Images zur Website synchronisiert');
     }
     
     /**

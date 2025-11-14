@@ -6,10 +6,49 @@
 <div class="hero-content-grid">
     <!-- Profilbild-Galerie -->
     <div class="hero-card">
-        <h3>📸 Profilbild-Galerie</h3>
+        <h3>📸 Profilbild-Verwaltung</h3>
         <div class="profile-gallery">
-            <!-- Aktuelles Profilbild -->
-            <div class="current-profile-section">
+            <!-- Zwei separate Bilder für Hover-Effekt -->
+            <div class="dual-image-section" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+                <!-- Standard Bild (geschlossener Mund) -->
+                <div class="image-upload-card" style="background: #f8f9fa; padding: 1.5rem; border-radius: 12px; border: 2px solid #e9ecef;">
+                    <h4 style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fas fa-image" style="color: #667eea;"></i>
+                        Standard-Bild
+                    </h4>
+                    <p style="font-size: 0.9rem; color: #6c757d; margin-bottom: 1rem;">Geschlossener Mund</p>
+                    <div class="current-image" style="margin-bottom: 1rem;">
+                        <img id="current-profile-image-default" src="manuel-weiss-closed-smile.jpg" alt="Standard Profilbild" style="width: 100%; max-width: 200px; height: 200px; border-radius: 12px; object-fit: cover; border: 3px solid #667eea; display: block; margin: 0 auto;" onerror="this.src='manuel-weiss-portrait.jpg';">
+                    </div>
+                    <div class="profile-actions" style="text-align: center;">
+                        <button type="button" id="upload-default-btn" class="btn btn-primary" style="width: 100%;">
+                            <i class="fas fa-upload"></i> Standard-Bild hochladen
+                        </button>
+                    </div>
+                    <input type="file" id="image-upload-default" accept="image/*" style="display: none;">
+                </div>
+                
+                <!-- Hover Bild (offener Mund) -->
+                <div class="image-upload-card" style="background: #f8f9fa; padding: 1.5rem; border-radius: 12px; border: 2px solid #e9ecef;">
+                    <h4 style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fas fa-smile" style="color: #10b981;"></i>
+                        Hover-Bild
+                    </h4>
+                    <p style="font-size: 0.9rem; color: #6c757d; margin-bottom: 1rem;">Offener Mund (bei Mouse-Over)</p>
+                    <div class="current-image" style="margin-bottom: 1rem;">
+                        <img id="current-profile-image-hover" src="manuel-weiss-open-smile.jpg" alt="Hover Profilbild" style="width: 100%; max-width: 200px; height: 200px; border-radius: 12px; object-fit: cover; border: 3px solid #10b981; display: block; margin: 0 auto;" onerror="this.src='manuel-weiss-portrait.jpg';">
+                    </div>
+                    <div class="profile-actions" style="text-align: center;">
+                        <button type="button" id="upload-hover-btn" class="btn btn-success" style="width: 100%; background: linear-gradient(135deg, #10b981, #059669);">
+                            <i class="fas fa-upload"></i> Hover-Bild hochladen
+                        </button>
+                    </div>
+                    <input type="file" id="image-upload-hover" accept="image/*" style="display: none;">
+                </div>
+            </div>
+            
+            <!-- Legacy: Aktuelles Profilbild (für Kompatibilität) -->
+            <div class="current-profile-section" style="display: none;">
                 <h4>Aktuelles Profilbild</h4>
                 <div class="current-image">
                     <img id="current-profile-image" src="manuel-weiss-photo.svg" alt="Aktuelles Profilbild" style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 3px solid #6366f1;">
