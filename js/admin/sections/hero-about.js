@@ -380,7 +380,7 @@ class HeroAboutSection {
                 finalSrc = await this.fileToBase64(file);
             }
             
-            // 3) Speichern
+            // 3) Speichern in localStorage
             localStorage.setItem(storageKey, finalSrc);
             
             // Auch in den legacy keys speichern (für Kompatibilität)
@@ -390,7 +390,7 @@ class HeroAboutSection {
                 localStorage.setItem('profileImage', finalSrc);
             }
             
-            console.log(`💾 ${imageLabel} gespeichert:`, {
+            console.log(`💾 ${imageLabel} in localStorage gespeichert:`, {
                 key: storageKey,
                 method: uploadMethod,
                 urlLength: finalSrc.length,
@@ -404,12 +404,32 @@ class HeroAboutSection {
                 console.log(`🖼️ ${imageLabel} Vorschau aktualisiert`);
             }
             
-            // 5) Website aktualisieren
+            // 5) In AWS DynamoDB speichern
+            try {
+                if (window.awsProfileAPI) {
+                    console.log('☁️ Speichere Bild-URLs in AWS DynamoDB...');
+                    
+                    const imageData = {
+                        profileImageDefault: localStorage.getItem('profileImageDefault'),
+                        profileImageHover: localStorage.getItem('profileImageHover')
+                    };
+                    
+                    await window.awsProfileAPI.saveWebsiteImages(imageData);
+                    console.log('✅ Bild-URLs in AWS DynamoDB gespeichert');
+                } else {
+                    console.warn('⚠️ awsProfileAPI nicht verfügbar, nur localStorage');
+                }
+            } catch (awsError) {
+                console.warn('⚠️ AWS DynamoDB Speicherung fehlgeschlagen:', awsError.message);
+                console.log('ℹ️ Bilder sind trotzdem in localStorage verfügbar');
+            }
+            
+            // 6) Website aktualisieren
             this.syncDualImagesToWebsite();
             
             const successMsg = uploadedUrl 
-                ? `✅ ${imageLabel} erfolgreich auf AWS S3 hochgeladen` 
-                : `✅ ${imageLabel} lokal gespeichert (Base64)`;
+                ? `✅ ${imageLabel} auf AWS S3 & DynamoDB gespeichert` 
+                : `✅ ${imageLabel} in localStorage gespeichert`;
             
             this.toast(successMsg, 'success');
             console.log(`🎉 ${type} image upload completed:`, uploadMethod);

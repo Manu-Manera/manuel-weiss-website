@@ -44,6 +44,17 @@ const verifyToken = (event) => {
     };
 };
 
+// Helper function to check if request is for owner/website data (no auth required)
+const isOwnerRequest = (path, body) => {
+    if (path.includes('/website-images')) {
+        return true;
+    }
+    if (body && body.userId === 'owner') {
+        return true;
+    }
+    return false;
+};
+
 exports.handler = async (event) => {
     console.log('Event:', JSON.stringify(event, null, 2));
     
@@ -59,13 +70,23 @@ exports.handler = async (event) => {
         };
     }
     
+    const path = event.path || event.rawPath || '';
+    const method = event.httpMethod || event.requestContext?.http?.method;
+    
     try {
-        // Verify authentication
-        const user = verifyToken(event);
-        console.log('Authenticated user:', user);
+        // Check if this is a website-images request (no auth required for owner)
+        const requestBody = event.body ? JSON.parse(event.body) : {};
+        const isOwner = isOwnerRequest(path, requestBody);
         
-        const path = event.path || event.rawPath || '';
-        const method = event.httpMethod || event.requestContext?.http?.method;
+        let user = null;
+        if (!isOwner) {
+            // Verify authentication for regular user requests
+            user = verifyToken(event);
+            console.log('Authenticated user:', user);
+        } else {
+            console.log('Owner/Website images request (no auth required)');
+            user = { userId: 'owner', email: 'owner@manuel-weiss.ch' };
+        }
         
         // Route based on HTTP method and path
         if (method === 'GET' && path.includes('/profile/')) {
@@ -175,6 +196,64 @@ exports.handler = async (event) => {
                     success: true, 
                     message: 'Profile image removed' 
                 })
+            };
+            
+        } else if (method === 'POST' && path.includes('/website-images')) {
+            // Save website images (owner only, no auth required)
+            const body = JSON.parse(event.body);
+            console.log('Saving website images:', body);
+            
+            const item = {
+                userId: 'owner',
+                profileImageDefault: body.profileImageDefault || null,
+                profileImageHover: body.profileImageHover || null,
+                updatedAt: new Date().toISOString(),
+                type: 'website-images'
+            };
+            
+            const params = {
+                TableName: TABLE_NAME,
+                Item: item
+            };
+            
+            await dynamoDB.put(params).promise();
+            console.log('✅ Website images saved to DynamoDB');
+            
+            return {
+                statusCode: 200,
+                headers,
+                body: JSON.stringify({ 
+                    success: true, 
+                    message: 'Website images saved successfully',
+                    data: item
+                })
+            };
+            
+        } else if (method === 'GET' && path.includes('/website-images/')) {
+            // Get website images (owner only, no auth required)
+            const userId = path.split('/').pop() || 'owner';
+            console.log('Loading website images for:', userId);
+            
+            const params = {
+                TableName: TABLE_NAME,
+                Key: { userId }
+            };
+            
+            const result = await dynamoDB.get(params).promise();
+            console.log('Website images from DynamoDB:', result.Item);
+            
+            if (!result.Item) {
+                return {
+                    statusCode: 404,
+                    headers,
+                    body: JSON.stringify({ message: 'Website images not found' })
+                };
+            }
+            
+            return {
+                statusCode: 200,
+                headers,
+                body: JSON.stringify(result.Item)
             };
             
         } else {

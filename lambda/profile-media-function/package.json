@@ -1,0 +1,10 @@
+{
+  "name": "profile-media-function",
+  "version": "1.0.0",
+  "description": "Combined Lambda for profile media uploads and website images",
+  "main": "index.js",
+  "dependencies": {
+    "aws-sdk": "^2.1498.0"
+  }
+}
+

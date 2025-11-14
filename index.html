@@ -869,7 +869,30 @@
         async function loadHeroDataFromAdmin() {
             console.log('📋 WEBSITE: Loading hero data from admin panel...');
             
-            // Erst versuchen von AWS zu laden
+            // 1. Bilder aus AWS DynamoDB laden
+            let awsImages = null;
+            try {
+                if (window.awsProfileAPI && window.awsProfileAPI.loadWebsiteImages) {
+                    console.log('☁️ WEBSITE: Loading images from AWS DynamoDB...');
+                    awsImages = await window.awsProfileAPI.loadWebsiteImages();
+                    
+                    if (awsImages) {
+                        // In localStorage cachen für schnelleren Zugriff
+                        if (awsImages.profileImageDefault) {
+                            localStorage.setItem('profileImageDefault', awsImages.profileImageDefault);
+                            console.log('✅ Default-Bild aus AWS geladen und gecacht');
+                        }
+                        if (awsImages.profileImageHover) {
+                            localStorage.setItem('profileImageHover', awsImages.profileImageHover);
+                            console.log('✅ Hover-Bild aus AWS geladen und gecacht');
+                        }
+                    }
+                }
+            } catch (awsError) {
+                console.warn('⚠️ AWS Bild-Laden fehlgeschlagen:', awsError.message);
+            }
+            
+            // 2. Hero-Daten von AWS laden
             let heroData = null;
             try {
                 if (window.smartAPI) {
@@ -1788,6 +1811,7 @@
     </script>
     <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
     <script src="js/real-user-auth-system.js?v=20250116"></script>
+    <script src="js/aws-profile-api.js?v=20250115"></script>
     
     <!-- Menü-Funktionen -->
     <script>
