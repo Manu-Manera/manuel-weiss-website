@@ -447,3 +447,5 @@ console.log('✅ Bewerbungsprofil API Integration geladen');
 
 
 
+
+
