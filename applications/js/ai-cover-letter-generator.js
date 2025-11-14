@@ -13,6 +13,10 @@ class AICoverLetterGenerator {
             'modern-it': this.getModernITTemplate(),
             'creative-marketing': this.getCreativeMarketingTemplate()
         };
+        this.contextMenu = null;
+        this.alternativesModal = null;
+        this.selectedText = '';
+        this.selectedRange = null;
         this.init();
     }
 
@@ -25,8 +29,15 @@ class AICoverLetterGenerator {
         // Setup event handlers
         this.setupEventHandlers();
         
+        // Create context menu and modal
+        this.createContextMenu();
+        this.createAlternativesModal();
+        
         // Load existing data
         this.loadExistingData();
+        
+        // Check for existing API key
+        this.checkAPIKey();
         
         console.log('✅ AI Cover Letter Generator initialized');
     }
@@ -75,6 +86,33 @@ class AICoverLetterGenerator {
         document.getElementById('jobInfoForm').addEventListener('input', () => {
             this.validateForm();
         });
+        
+        // Context menu for text selection
+        document.getElementById('generatedText').addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            this.handleContextMenu(e);
+        });
+        
+        // Hide context menu on click outside
+        document.addEventListener('click', (e) => {
+            if (this.contextMenu && !this.contextMenu.contains(e.target)) {
+                this.contextMenu.style.display = 'none';
+            }
+        });
+        
+        // Text selection handler
+        document.getElementById('generatedText').addEventListener('mouseup', () => {
+            const selection = window.getSelection();
+            if (selection.toString().trim()) {
+                this.selectedText = selection.toString();
+                // Save the selection range for later replacement
+                const range = selection.getRangeAt(0);
+                this.selectedRange = {
+                    start: document.getElementById('generatedText').selectionStart,
+                    end: document.getElementById('generatedText').selectionEnd
+                };
+            }
+        });
     }
 
     loadExistingData() {
@@ -105,8 +143,18 @@ class AICoverLetterGenerator {
             const profileData = this.applicationsCore.getProfileData() || {};
             const options = this.collectOptions();
             
-            // Generate cover letter using intelligent template
-            const coverLetter = await this.generateFromTemplate(jobData, profileData, options);
+            // Check API key
+            const apiKey = this.getAPIKey();
+            let coverLetter;
+            
+            if (apiKey) {
+                // Use ChatGPT
+                coverLetter = await this.callOpenAI(jobData, profileData, options);
+            } else {
+                // Fallback to template
+                this.showNotification('Kein API Key gefunden. Verwende Template-basierte Generierung.', 'info');
+                coverLetter = await this.generateFromTemplate(jobData, profileData, options);
+            }
             
             // Display result
             this.displayGeneratedContent(coverLetter);
@@ -120,7 +168,18 @@ class AICoverLetterGenerator {
             
         } catch (error) {
             console.error('❌ Error generating cover letter:', error);
-            this.showNotification('Fehler bei der Generierung. Bitte versuchen Sie es erneut.', 'error');
+            this.showNotification('Fehler bei der Generierung. Verwende Template als Fallback.', 'warning');
+            
+            // Fallback to template
+            try {
+                const jobData = this.collectJobData();
+                const profileData = this.applicationsCore.getProfileData() || {};
+                const options = this.collectOptions();
+                const coverLetter = await this.generateFromTemplate(jobData, profileData, options);
+                this.displayGeneratedContent(coverLetter);
+            } catch (fallbackError) {
+                this.showNotification('Fehler bei der Generierung. Bitte versuchen Sie es erneut.', 'error');
+            }
         } finally {
             this.isGenerating = false;
             this.hideLoading();
@@ -386,6 +445,464 @@ Erstelle nur das Anschreiben ohne zusätzliche Erklärungen.
             }
         }
         return template;
+    }
+    
+    getAPIKey() {
+        // Check for API key in localStorage or user profile
+        const localKey = localStorage.getItem('openai_api_key');
+        if (localKey) return localKey;
+        
+        // Check user profile for API key
+        const profile = this.applicationsCore.getProfileData();
+        if (profile && profile.openaiApiKey) return profile.openaiApiKey;
+        
+        return null;
+    }
+    
+    checkAPIKey() {
+        const apiKey = this.getAPIKey();
+        if (apiKey) {
+            // Set the value in the input field (masked)
+            const input = document.getElementById('apiKeyInput');
+            if (input) {
+                input.value = 'sk-...' + apiKey.slice(-4);
+            }
+        }
+    }
+    
+    async saveAPIKey() {
+        const input = document.getElementById('apiKeyInput');
+        const apiKey = input.value.trim();
+        
+        if (!apiKey || !apiKey.startsWith('sk-')) {
+            this.showNotification('Bitte geben Sie einen gültigen OpenAI API Key ein', 'error');
+            return;
+        }
+        
+        // Save to localStorage
+        localStorage.setItem('openai_api_key', apiKey);
+        
+        // Save to profile if possible
+        if (this.applicationsCore && this.applicationsCore.awsProfileAPI) {
+            const profile = this.applicationsCore.getProfileData() || {};
+            profile.openaiApiKey = apiKey;
+            await this.applicationsCore.awsProfileAPI.saveProfile(profile);
+        }
+        
+        this.showNotification('API Key wurde erfolgreich gespeichert', 'success');
+        
+        // Mask the input
+        input.value = 'sk-...' + apiKey.slice(-4);
+    }
+    
+    createContextMenu() {
+        // Create context menu element
+        const menu = document.createElement('div');
+        menu.className = 'ai-context-menu';
+        menu.innerHTML = `
+            <div class="context-menu-item" onclick="window.aiCoverLetterGenerator.generateAlternatives()">
+                <i class="fas fa-lightbulb"></i>
+                Formulierungsvorschläge
+            </div>
+            <div class="context-menu-item" onclick="window.aiCoverLetterGenerator.improveText()">
+                <i class="fas fa-magic"></i>
+                Text verbessern
+            </div>
+            <div class="context-menu-item" onclick="window.aiCoverLetterGenerator.shortenText()">
+                <i class="fas fa-compress-alt"></i>
+                Text kürzen
+            </div>
+            <div class="context-menu-item" onclick="window.aiCoverLetterGenerator.expandText()">
+                <i class="fas fa-expand-alt"></i>
+                Text erweitern
+            </div>
+        `;
+        
+        document.body.appendChild(menu);
+        this.contextMenu = menu;
+        
+        // Add styles
+        const style = document.createElement('style');
+        style.textContent = `
+            .ai-context-menu {
+                position: fixed;
+                background: white;
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                display: none;
+                z-index: 10000;
+                padding: 8px 0;
+                min-width: 200px;
+            }
+            
+            .context-menu-item {
+                padding: 8px 16px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                transition: background-color 0.2s;
+            }
+            
+            .context-menu-item:hover {
+                background-color: #f5f5f5;
+            }
+            
+            .context-menu-item i {
+                color: #4a90e2;
+                width: 16px;
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    
+    createAlternativesModal() {
+        // Create modal for alternatives
+        const modal = document.createElement('div');
+        modal.className = 'ai-alternatives-modal';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Formulierungsvorschläge</h3>
+                    <button class="modal-close" onclick="window.aiCoverLetterGenerator.closeAlternativesModal()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="original-text">
+                        <strong>Original:</strong>
+                        <p id="originalText"></p>
+                    </div>
+                    <div class="alternatives-list" id="alternativesList">
+                        <div class="loading-alternatives">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            Generiere Vorschläge...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        this.alternativesModal = modal;
+        
+        // Add styles
+        const style = document.createElement('style');
+        style.textContent = `
+            .ai-alternatives-modal {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                display: none;
+                z-index: 10001;
+                justify-content: center;
+                align-items: center;
+            }
+            
+            .modal-content {
+                background: white;
+                border-radius: 12px;
+                width: 90%;
+                max-width: 600px;
+                max-height: 80vh;
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+            }
+            
+            .modal-header {
+                padding: 20px;
+                border-bottom: 1px solid #eee;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            
+            .modal-header h3 {
+                margin: 0;
+                font-size: 20px;
+                color: #333;
+            }
+            
+            .modal-close {
+                background: none;
+                border: none;
+                font-size: 20px;
+                color: #666;
+                cursor: pointer;
+                padding: 4px 8px;
+            }
+            
+            .modal-close:hover {
+                color: #333;
+            }
+            
+            .modal-body {
+                padding: 20px;
+                overflow-y: auto;
+            }
+            
+            .original-text {
+                background: #f5f5f5;
+                padding: 16px;
+                border-radius: 8px;
+                margin-bottom: 20px;
+            }
+            
+            .original-text p {
+                margin: 8px 0 0 0;
+                color: #666;
+            }
+            
+            .alternatives-list {
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+            }
+            
+            .alternative-item {
+                padding: 16px;
+                border: 2px solid #e0e0e0;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: all 0.2s;
+                position: relative;
+            }
+            
+            .alternative-item:hover {
+                border-color: #4a90e2;
+                background: #f8fbff;
+            }
+            
+            .alternative-item.selected {
+                border-color: #4a90e2;
+                background: #e3f2fd;
+            }
+            
+            .alternative-text {
+                color: #333;
+                line-height: 1.6;
+            }
+            
+            .alternative-hint {
+                position: absolute;
+                top: 8px;
+                right: 8px;
+                font-size: 12px;
+                color: #999;
+            }
+            
+            .loading-alternatives {
+                text-align: center;
+                padding: 40px;
+                color: #666;
+            }
+            
+            .loading-alternatives i {
+                margin-right: 8px;
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    
+    handleContextMenu(e) {
+        // Only show if text is selected
+        if (!this.selectedText || !this.selectedText.trim()) return;
+        
+        // Position context menu
+        this.contextMenu.style.left = e.pageX + 'px';
+        this.contextMenu.style.top = e.pageY + 'px';
+        this.contextMenu.style.display = 'block';
+    }
+    
+    async generateAlternatives() {
+        this.contextMenu.style.display = 'none';
+        
+        if (!this.selectedText) {
+            this.showNotification('Bitte wählen Sie zuerst Text aus', 'warning');
+            return;
+        }
+        
+        const apiKey = this.getAPIKey();
+        if (!apiKey) {
+            this.showNotification('Kein API Key vorhanden. Bitte in den Einstellungen hinterlegen.', 'error');
+            return;
+        }
+        
+        // Show modal
+        this.alternativesModal.style.display = 'flex';
+        document.getElementById('originalText').textContent = this.selectedText;
+        document.getElementById('alternativesList').innerHTML = `
+            <div class="loading-alternatives">
+                <i class="fas fa-spinner fa-spin"></i>
+                Generiere Vorschläge...
+            </div>
+        `;
+        
+        try {
+            const alternatives = await this.callOpenAIForAlternatives(this.selectedText);
+            this.displayAlternatives(alternatives);
+        } catch (error) {
+            console.error('Error generating alternatives:', error);
+            this.showNotification('Fehler beim Generieren der Alternativen', 'error');
+            this.closeAlternativesModal();
+        }
+    }
+    
+    async callOpenAIForAlternatives(text) {
+        const apiKey = this.getAPIKey();
+        
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKey}`
+            },
+            body: JSON.stringify({
+                model: 'gpt-3.5-turbo',
+                messages: [
+                    {
+                        role: 'system',
+                        content: 'Du bist ein Experte für professionelle Bewerbungsschreiben. Generiere 3 alternative Formulierungen für den gegebenen Text. Die Alternativen sollten professionell, prägnant und aussagekräftig sein. Gib nur die 3 Alternativen zurück, nummeriert von 1-3.'
+                    },
+                    {
+                        role: 'user',
+                        content: `Generiere 3 alternative Formulierungen für: "${text}"`
+                    }
+                ],
+                temperature: 0.8,
+                max_tokens: 300
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error(`API Error: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        const content = data.choices[0].message.content;
+        
+        // Parse alternatives
+        const alternatives = content.split('\n')
+            .filter(line => line.match(/^[1-3]\./))
+            .map(line => line.replace(/^[1-3]\.\s*/, '').trim());
+        
+        return alternatives;
+    }
+    
+    displayAlternatives(alternatives) {
+        const container = document.getElementById('alternativesList');
+        container.innerHTML = '';
+        
+        alternatives.forEach((alt, index) => {
+            const item = document.createElement('div');
+            item.className = 'alternative-item';
+            item.innerHTML = `
+                <div class="alternative-text">${alt}</div>
+                <div class="alternative-hint">Doppelklick zum Übernehmen</div>
+            `;
+            
+            item.addEventListener('dblclick', () => {
+                this.applyAlternative(alt);
+            });
+            
+            container.appendChild(item);
+        });
+    }
+    
+    applyAlternative(newText) {
+        const textarea = document.getElementById('generatedText');
+        const currentText = textarea.value;
+        
+        if (this.selectedRange) {
+            // Replace the selected text
+            const newContent = currentText.substring(0, this.selectedRange.start) + 
+                              newText + 
+                              currentText.substring(this.selectedRange.end);
+            
+            textarea.value = newContent;
+            this.generatedContent = newContent;
+            
+            // Update stats
+            this.updateStats();
+            
+            // Close modal
+            this.closeAlternativesModal();
+            
+            this.showNotification('Text wurde erfolgreich ersetzt', 'success');
+        }
+    }
+    
+    closeAlternativesModal() {
+        this.alternativesModal.style.display = 'none';
+    }
+    
+    async improveText() {
+        this.contextMenu.style.display = 'none';
+        await this.processTextWithInstruction('Verbessere diesen Text und mache ihn professioneller');
+    }
+    
+    async shortenText() {
+        this.contextMenu.style.display = 'none';
+        await this.processTextWithInstruction('Kürze diesen Text auf das Wesentliche');
+    }
+    
+    async expandText() {
+        this.contextMenu.style.display = 'none';
+        await this.processTextWithInstruction('Erweitere diesen Text mit mehr Details');
+    }
+    
+    async processTextWithInstruction(instruction) {
+        if (!this.selectedText) return;
+        
+        const apiKey = this.getAPIKey();
+        if (!apiKey) {
+            this.showNotification('Kein API Key vorhanden', 'error');
+            return;
+        }
+        
+        this.showLoading();
+        
+        try {
+            const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${apiKey}`
+                },
+                body: JSON.stringify({
+                    model: 'gpt-3.5-turbo',
+                    messages: [
+                        {
+                            role: 'system',
+                            content: 'Du bist ein Experte für professionelle Bewerbungsschreiben.'
+                        },
+                        {
+                            role: 'user',
+                            content: `${instruction}: "${this.selectedText}"`
+                        }
+                    ],
+                    temperature: 0.7,
+                    max_tokens: 200
+                })
+            });
+            
+            const data = await response.json();
+            const improvedText = data.choices[0].message.content;
+            
+            // Apply the improved text
+            this.applyAlternative(improvedText);
+            
+        } catch (error) {
+            console.error('Error processing text:', error);
+            this.showNotification('Fehler bei der Textverarbeitung', 'error');
+        } finally {
+            this.hideLoading();
+        }
     }
 
     getFormalTemplate() {
