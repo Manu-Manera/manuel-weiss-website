@@ -710,6 +710,7 @@ a:hover {
     box-shadow: 
         0 8px 32px rgba(0, 0, 0, 0.1),
         inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    color: white;
 }
 
 .stat-item.glassmorphism:hover {
@@ -719,6 +720,17 @@ a:hover {
         0 12px 40px rgba(0, 0, 0, 0.15),
         inset 0 1px 0 rgba(255, 255, 255, 0.3);
     border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Explizit weiße Schrift für Glassmorphism-Kacheln */
+.stat-item.glassmorphism .stat-number {
+    color: white !important;
+    font-weight: 700;
+}
+
+.stat-item.glassmorphism .stat-label {
+    color: white !important;
+    opacity: 0.95;
 }
 
 .stat-item.glassmorphism:not(:last-child)::after {
