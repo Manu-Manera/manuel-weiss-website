@@ -671,9 +671,28 @@ class HeroAboutSection {
      * Aktuelles Profilbild laden
      */
     loadCurrentProfileImage() {
-        const storedImage = localStorage.getItem('adminProfileImage');
-        if (storedImage && this.els.currentProfileImage) {
-            this.els.currentProfileImage.src = storedImage;
+        // Lade beide Bilder (Default & Hover)
+        const storedDefaultImage = localStorage.getItem('profileImageDefault');
+        const storedHoverImage = localStorage.getItem('profileImageHover');
+        const storedFallbackImage = localStorage.getItem('adminProfileImage');
+        
+        // Default Bild laden
+        if (this.els.currentProfileImageDefault) {
+            const defaultSrc = storedDefaultImage || storedFallbackImage || 'manuel-weiss-closed-smile.jpg';
+            this.els.currentProfileImageDefault.src = defaultSrc;
+            console.log('🖼️ Admin: Default-Bild geladen:', defaultSrc.substring(0, 50) + '...');
+        }
+        
+        // Hover Bild laden
+        if (this.els.currentProfileImageHover) {
+            const hoverSrc = storedHoverImage || storedFallbackImage || 'manuel-weiss-open-smile.jpg';
+            this.els.currentProfileImageHover.src = hoverSrc;
+            console.log('🖼️ Admin: Hover-Bild geladen:', hoverSrc.substring(0, 50) + '...');
+        }
+        
+        // Legacy support
+        if (storedFallbackImage && this.els.currentProfileImage) {
+            this.els.currentProfileImage.src = storedFallbackImage;
         }
     }
 

@@ -1209,25 +1209,29 @@
 
                 // Beobachter: verhindert Zurücksetzen auf Platzhalter-Bild
                 (function pinProfileImage() {
-                    const stored = localStorage.getItem('adminProfileImage')
+                    const storedDefault = localStorage.getItem('profileImageDefault');
+                    const storedHover = localStorage.getItem('profileImageHover');
+                    const storedFallback = localStorage.getItem('adminProfileImage')
                         || localStorage.getItem('heroProfileImage')
                         || localStorage.getItem('profileImage');
+                    
                     const imgDefault = document.getElementById('profile-photo-default');
                     const imgHover = document.getElementById('profile-photo-hover');
-                    if ((!imgDefault && !imgHover) || !stored) return;
+                    if (!imgDefault && !imgHover) return;
 
-                    const desiredSrc = stored;
+                    const desiredDefaultSrc = storedDefault || storedFallback || 'manuel-weiss-closed-smile.jpg';
+                    const desiredHoverSrc = storedHover || storedFallback || 'manuel-weiss-open-smile.jpg';
+                    
                     const ensure = () => {
-                        if (imgDefault && imgDefault.src !== desiredSrc) {
-                            imgDefault.src = desiredSrc;
+                        if (imgDefault && imgDefault.src !== desiredDefaultSrc) {
+                            imgDefault.src = desiredDefaultSrc;
                             imgDefault.style.display = 'block';
+                            console.log('🔒 WEBSITE: Profile image (default) pinned');
                         }
-                        if (imgHover && imgHover.src !== desiredSrc) {
-                            imgHover.src = desiredSrc;
+                        if (imgHover && imgHover.src !== desiredHoverSrc) {
+                            imgHover.src = desiredHoverSrc;
                             imgHover.style.display = 'block';
-                        }
-                        if ((imgDefault && imgDefault.src === desiredSrc) || (imgHover && imgHover.src === desiredSrc)) {
-                            console.log('🔒 WEBSITE: Profile image pinned to stored value');
+                            console.log('🔒 WEBSITE: Profile image (hover) pinned');
                         }
                     };
 
@@ -1235,7 +1239,8 @@
 
                     try {
                         const observer = new MutationObserver(() => ensure());
-                        observer.observe(img, { attributes: true, attributeFilter: ['src'] });
+                        if (imgDefault) observer.observe(imgDefault, { attributes: true, attributeFilter: ['src'] });
+                        if (imgHover) observer.observe(imgHover, { attributes: true, attributeFilter: ['src'] });
                     } catch {}
                 })();
             } catch (error) {
@@ -1248,7 +1253,8 @@
         
         // Auch bei Storage-Änderungen reagieren (für Live-Updates)
         window.addEventListener('storage', function(e) {
-            if (e.key === 'heroData' || e.key === 'adminProfileData' || e.key === 'adminProfileImage') {
+            if (e.key === 'heroData' || e.key === 'adminProfileData' || e.key === 'adminProfileImage' || 
+                e.key === 'profileImageDefault' || e.key === 'profileImageHover') {
                 console.log('🔄 WEBSITE: Hero data updated, reloading...', e.key);
                 loadHeroDataFromAdmin();
             }
@@ -1258,7 +1264,8 @@
         const originalSetItem = Storage.prototype.setItem;
         Storage.prototype.setItem = function(key, value) {
             originalSetItem.apply(this, [key, value]);
-            if (key === 'heroData' || key === 'adminProfileData' || key === 'adminProfileImage') {
+            if (key === 'heroData' || key === 'adminProfileData' || key === 'adminProfileImage' || 
+                key === 'profileImageDefault' || key === 'profileImageHover') {
                 window.dispatchEvent(new StorageEvent('storage', {
                     key: key,
                     newValue: value,
