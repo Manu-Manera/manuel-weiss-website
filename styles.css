@@ -617,6 +617,23 @@ a:hover {
 
 .hero-image {
     position: relative;
+    z-index: 1;
+}
+
+/* Sicherstellen, dass kein CV-Preview das Profilbild überlagert */
+.hero-visual {
+    position: relative;
+    z-index: 1;
+}
+
+/* CV-Preview sollte nicht auf der Startseite angezeigt werden */
+#home .cv-container,
+#home .cv-preview-card,
+#home .curriculum-vitae,
+.hero .cv-container,
+.hero .cv-preview-card,
+.hero .curriculum-vitae {
+    display: none !important;
 }
 
 .profile-image-container {
@@ -631,8 +648,9 @@ a:hover {
     border: 2px solid rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(10px);
     transition: all 0.3s ease;
-    z-index: 10;
+    z-index: 100;
     background: transparent;
+    display: block !important;
 }
 
 .profile-image-container:hover {
@@ -656,8 +674,9 @@ a:hover {
     top: 0;
     left: 0;
     opacity: 1;
-    z-index: 2;
+    z-index: 102;
     display: block !important;
+    visibility: visible !important;
 }
 
 .profile-image-hover {
@@ -665,9 +684,10 @@ a:hover {
     top: 0;
     left: 0;
     opacity: 0;
-    z-index: 1;
+    z-index: 101;
     transform: scale(1.1);
     display: block !important;
+    visibility: visible !important;
 }
 
 .profile-image-container:hover .profile-image-default {
@@ -682,10 +702,10 @@ a:hover {
 
 .hero-stats {
     display: flex;
-    gap: var(--spacing-md);
+    gap: var(--spacing-lg);
     align-items: stretch;
-    flex-wrap: nowrap;
-    justify-content: stretch;
+    flex-wrap: wrap;
+    justify-content: center;
     width: 100%;
     max-width: 100%;
     min-width: 0;
@@ -721,9 +741,11 @@ a:hover {
         0 8px 32px rgba(0, 0, 0, 0.1),
         inset 0 1px 0 rgba(255, 255, 255, 0.2);
     color: white;
-    min-width: 200px;
-    padding: var(--spacing-xl) var(--spacing-lg);
+    min-width: 300px;
+    padding: var(--spacing-xl) var(--spacing-xl);
     flex: 1 1 auto;
+    width: auto;
+    max-width: none;
 }
 
 .stat-item.glassmorphism:hover {
@@ -2154,6 +2176,7 @@ a:hover {
     .stat-item.glassmorphism {
         min-width: calc(50% - var(--spacing-md));
         flex: 1 1 calc(50% - var(--spacing-md));
+        padding: var(--spacing-lg) var(--spacing-md);
     }
 }
 
@@ -2208,6 +2231,7 @@ a:hover {
         width: 100%;
         min-width: 100%;
         padding: var(--spacing-lg) var(--spacing-md);
+        max-width: 100%;
     }
     
     .stat-item.glassmorphism .stat-label {

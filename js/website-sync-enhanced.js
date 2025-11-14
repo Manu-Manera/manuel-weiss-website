@@ -86,11 +86,23 @@ class WebsiteDataSync {
         const imageData = localStorage.getItem(this.profileImageKey);
         if (!imageData) return;
 
-        // Hauptprofilbild aktualisieren
+        // Hauptprofilbild aktualisieren (beide Varianten)
+        const profilePhotoDefault = document.getElementById('profile-photo-default');
+        const profilePhotoHover = document.getElementById('profile-photo-hover');
+        if (profilePhotoDefault) {
+            profilePhotoDefault.src = imageData;
+            console.log('🖼️ Hauptprofilbild (default) aktualisiert');
+        }
+        if (profilePhotoHover) {
+            profilePhotoHover.src = imageData;
+            console.log('🖼️ Hauptprofilbild (hover) aktualisiert');
+        }
+        
+        // Fallback für alte ID
         const profilePhoto = document.getElementById('profile-photo');
         if (profilePhoto) {
             profilePhoto.src = imageData;
-            console.log('🖼️ Hauptprofilbild aktualisiert');
+            console.log('🖼️ Hauptprofilbild (fallback) aktualisiert');
         }
 
         // Navigation-Logo aktualisieren
