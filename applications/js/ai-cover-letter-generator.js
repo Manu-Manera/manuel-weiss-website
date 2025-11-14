@@ -96,30 +96,23 @@ class AICoverLetterGenerator {
             return;
         }
         
-        // Check API key
-        const apiKey = localStorage.getItem('openai_api_key');
-        if (!apiKey) {
-            this.showTemplateFallback();
-            return;
-        }
-        
         this.isGenerating = true;
         this.showLoading();
         
         try {
             // Collect form data
             const jobData = this.collectJobData();
-            const profileData = this.applicationsCore.getProfileData();
+            const profileData = this.applicationsCore.getProfileData() || {};
             const options = this.collectOptions();
             
-            // Generate cover letter
-            const coverLetter = await this.callOpenAI(jobData, profileData, options);
+            // Generate cover letter using intelligent template
+            const coverLetter = await this.generateFromTemplate(jobData, profileData, options);
             
             // Display result
             this.displayGeneratedContent(coverLetter);
             
             // Track progress
-            this.applicationsCore.trackProgress('cover-letter-generation', {
+            await this.applicationsCore.trackProgress('cover-letter-generation', {
                 jobData,
                 options,
                 generated: true
@@ -127,7 +120,7 @@ class AICoverLetterGenerator {
             
         } catch (error) {
             console.error('❌ Error generating cover letter:', error);
-            this.showTemplateFallback();
+            this.showNotification('Fehler bei der Generierung. Bitte versuchen Sie es erneut.', 'error');
         } finally {
             this.isGenerating = false;
             this.hideLoading();
@@ -298,14 +291,101 @@ Erstelle nur das Anschreiben ohne zusätzliche Erklärungen.
         document.getElementById('templateSection').style.display = 'none';
     }
 
+    async generateFromTemplate(jobData, profileData, options) {
+        // Wähle Template basierend auf Tonalität
+        let templateKey = 'formal'; // Default
+        if (options.tone === 'modern') {
+            templateKey = 'modern-it';
+        } else if (options.tone === 'creative') {
+            templateKey = 'creative-marketing';
+        }
+        
+        let template = this.templates[templateKey];
+        
+        // Erweitere das Template basierend auf den Optionen
+        template = this.enhanceTemplateBasedOnOptions(template, jobData, profileData, options);
+        
+        // Fülle das Template mit Daten
+        const filledTemplate = this.fillTemplate(template, jobData, profileData);
+        
+        // Simuliere eine kurze Generierungszeit für bessere UX
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
+        return filledTemplate;
+    }
+    
+    enhanceTemplateBasedOnOptions(template, jobData, profileData, options) {
+        // Passe die Länge an
+        if (options.length === 'short') {
+            // Kürze das Template
+            return template.split('\n\n').slice(0, 3).join('\n\n') + '\n\nMit freundlichen Grüßen\n{{firstName}} {{lastName}}';
+        } else if (options.length === 'long') {
+            // Erweitere das Template
+            const zusatz = `\n\nZusätzlich bringe ich folgende Qualifikationen mit:\n- Analytische Denkweise und strukturierte Arbeitsweise\n- Teamfähigkeit und Kommunikationsstärke\n- Flexibilität und Lernbereitschaft\n- Zuverlässigkeit und Eigeninitiative`;
+            return template.replace('Mit freundlichen Grüßen', zusatz + '\n\nMit freundlichen Grüßen');
+        }
+        
+        // Passe den Fokus an
+        if (options.focus === 'skills' && profileData.technicalSkills) {
+            const skillsText = `\n\nMeine technischen Fähigkeiten umfassen: ${profileData.technicalSkills.join(', ')}. Diese Kompetenzen habe ich in verschiedenen Projekten erfolgreich eingesetzt und kontinuierlich weiterentwickelt.`;
+            return template.replace('Mit freundlichen Grüßen', skillsText + '\n\nMit freundlichen Grüßen');
+        } else if (options.focus === 'motivation') {
+            const motivationText = `\n\nMeine Motivation für diese Position liegt in der Möglichkeit, meine Fähigkeiten in einem innovativen Umfeld einzusetzen und dabei kontinuierlich zu wachsen. Die Aussicht, bei {{companyName}} Teil eines dynamischen Teams zu sein, begeistert mich besonders.`;
+            return template.replace('Mit freundlichen Grüßen', motivationText + '\n\nMit freundlichen Grüßen');
+        }
+        
+        return template;
+    }
+    
     fillTemplate(template, jobData, profileData) {
-        return template
+        // Basis-Ersetzungen
+        let result = template
             .replace(/{{jobTitle}}/g, jobData.jobTitle || '[Jobtitel]')
             .replace(/{{companyName}}/g, jobData.companyName || '[Unternehmen]')
             .replace(/{{firstName}}/g, profileData.firstName || '[Vorname]')
             .replace(/{{lastName}}/g, profileData.lastName || '[Nachname]')
             .replace(/{{location}}/g, jobData.location || '[Standort]')
-            .replace(/{{contactPerson}}/g, jobData.contactPerson || '[Ansprechpartner]');
+            .replace(/{{contactPerson}}/g, jobData.contactPerson || 'Damen und Herren');
+        
+        // Intelligente Ersetzungen basierend auf Stellenbeschreibung
+        if (jobData.jobDescription) {
+            const keywords = this.extractKeywords(jobData.jobDescription);
+            result = this.insertRelevantSkills(result, keywords, profileData);
+        }
+        
+        // Datum hinzufügen
+        const heute = new Date().toLocaleDateString('de-DE', { day: 'numeric', month: 'long', year: 'numeric' });
+        result = `${heute}\n\n${result}`;
+        
+        return result;
+    }
+    
+    extractKeywords(description) {
+        // Einfache Keyword-Extraktion
+        const keywords = [];
+        const techTerms = ['JavaScript', 'React', 'Python', 'Java', 'SQL', 'AWS', 'Docker', 'Git', 'Agile', 'Scrum'];
+        
+        techTerms.forEach(term => {
+            if (description.toLowerCase().includes(term.toLowerCase())) {
+                keywords.push(term);
+            }
+        });
+        
+        return keywords;
+    }
+    
+    insertRelevantSkills(template, keywords, profileData) {
+        if (keywords.length > 0 && profileData.technicalSkills) {
+            const relevantSkills = profileData.technicalSkills.filter(skill => 
+                keywords.some(keyword => skill.toLowerCase().includes(keyword.toLowerCase()))
+            );
+            
+            if (relevantSkills.length > 0) {
+                const skillsText = `Besonders hervorheben möchte ich meine Erfahrung mit ${relevantSkills.slice(0, 3).join(', ')}, `;
+                return template.replace('In meiner bisherigen Tätigkeit', skillsText + 'die ich in meiner bisherigen Tätigkeit');
+            }
+        }
+        return template;
     }
 
     getFormalTemplate() {
@@ -353,7 +433,7 @@ Herzliche Grüße
 {{firstName}} {{lastName}}`;
     }
 
-    saveCoverLetter() {
+    async saveCoverLetter() {
         if (!this.generatedContent) {
             this.showNotification('Kein Anschreiben zum Speichern vorhanden', 'error');
             return;
@@ -368,7 +448,7 @@ Herzliche Grüße
         };
         
         // Save to applications core
-        this.applicationsCore.saveApplicationData(coverLetterData);
+        await this.applicationsCore.saveApplicationData(coverLetterData);
         
         this.showNotification('Anschreiben erfolgreich gespeichert!', 'success');
     }

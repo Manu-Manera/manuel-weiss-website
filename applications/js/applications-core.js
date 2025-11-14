@@ -7,6 +7,8 @@ class ApplicationsCore {
     constructor() {
         this.currentUser = null;
         this.isInitialized = false;
+        this.awsProfileAPI = null;
+        this.userProgressTracker = null;
         this.init();
     }
 
@@ -15,6 +17,12 @@ class ApplicationsCore {
         
         // Warten auf Auth-System
         await this.waitForAuth();
+        
+        // Warten auf AWS APIs
+        await this.waitForAWSAPIs();
+        
+        // Load profile data from AWS
+        await this.loadProfileDataFromAWS();
         
         // Event Listeners setup
         this.setupEventListeners();
@@ -37,6 +45,21 @@ class ApplicationsCore {
                 }
             };
             checkAuth();
+        });
+    }
+    
+    async waitForAWSAPIs() {
+        return new Promise((resolve) => {
+            const checkAPIs = () => {
+                if (window.awsProfileAPI && window.userProgressTracker) {
+                    this.awsProfileAPI = window.awsProfileAPI;
+                    this.userProgressTracker = window.userProgressTracker;
+                    resolve();
+                } else {
+                    setTimeout(checkAPIs, 100);
+                }
+            };
+            checkAPIs();
         });
     }
 
@@ -105,7 +128,7 @@ class ApplicationsCore {
     }
 
     // Progress tracking
-    trackProgress(step, data) {
+    async trackProgress(step, data) {
         if (!this.currentUser) return;
 
         const progressData = {
@@ -114,14 +137,22 @@ class ApplicationsCore {
             timestamp: new Date().toISOString()
         };
 
-        // Save to user progress
-        window.realUserAuth.updateProgress('applications', step, progressData);
+        // Save to AWS via userProgressTracker
+        if (this.userProgressTracker) {
+            await this.userProgressTracker.updateProgress('bewerbungsmanager', step, progressData);
+        }
+        
+        // Also save to localStorage as fallback
+        const key = `bewerbung_progress_${this.currentUser.id}`;
+        const allProgress = JSON.parse(localStorage.getItem(key) || '{}');
+        allProgress[step] = progressData;
+        localStorage.setItem(key, JSON.stringify(allProgress));
         
         console.log(`📊 Progress tracked: Step ${step}`, progressData);
     }
 
     // Application data management
-    saveApplicationData(data) {
+    async saveApplicationData(data) {
         if (!this.currentUser) return;
 
         const applicationData = {
@@ -131,7 +162,12 @@ class ApplicationsCore {
             id: 'app_' + Date.now()
         };
 
-        // Save to localStorage
+        // Save to AWS
+        if (this.userProgressTracker) {
+            await this.userProgressTracker.updateProgress('bewerbungsmanager', 'application-data', applicationData);
+        }
+
+        // Also save to localStorage as fallback
         const key = `applications_${this.currentUser.id}`;
         const applications = JSON.parse(localStorage.getItem(key) || '[]');
         applications.push(applicationData);
@@ -164,6 +200,25 @@ class ApplicationsCore {
 
         console.log('👤 Profile data saved:', profileData);
         return profileData;
+    }
+
+    async loadProfileDataFromAWS() {
+        if (!this.currentUser || !this.awsProfileAPI) return null;
+
+        try {
+            const awsProfile = await this.awsProfileAPI.loadProfile();
+            if (awsProfile) {
+                // Update local storage with AWS data
+                const key = `profile_${this.currentUser.id}`;
+                localStorage.setItem(key, JSON.stringify(awsProfile));
+                return awsProfile;
+            }
+        } catch (error) {
+            console.error('Error loading profile from AWS:', error);
+        }
+
+        // Fallback to localStorage
+        return this.getProfileData();
     }
 
     getProfileData() {
