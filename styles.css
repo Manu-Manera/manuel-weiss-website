@@ -609,33 +609,66 @@ a:hover {
     position: relative;
 }
 
-.profile-image {
+.profile-image-container {
+    position: relative;
     width: 300px;
     height: 300px;
     border-radius: var(--radius-2xl);
+    overflow: hidden;
     box-shadow: 
         0 20px 40px rgba(0,0,0,0.3),
         0 0 0 1px rgba(255,255,255,0.1);
-    object-fit: cover !important;
-    object-position: center top !important;
-    aspect-ratio: 1/1;
-    max-width: 300px;
-    max-height: 300px;
     border: 2px solid rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(10px);
     transition: all 0.3s ease;
 }
 
-.profile-image:hover {
+.profile-image-container:hover {
     transform: scale(1.05);
     box-shadow: 
         0 25px 50px rgba(0,0,0,0.4),
         0 0 0 1px rgba(255,255,255,0.3);
 }
 
+.profile-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover !important;
+    object-position: center top !important;
+    display: block;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.profile-image-default {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 1;
+    z-index: 2;
+}
+
+.profile-image-hover {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    z-index: 1;
+    transform: scale(1.1);
+}
+
+.profile-image-container:hover .profile-image-default {
+    opacity: 0;
+    transform: scale(0.95);
+}
+
+.profile-image-container:hover .profile-image-hover {
+    opacity: 1;
+    transform: scale(1);
+}
+
 .hero-stats {
     display: flex;
-    gap: 1px;
+    gap: var(--spacing-md);
     align-items: stretch;
     flex-wrap: nowrap;
     justify-content: stretch;
@@ -644,10 +677,7 @@ a:hover {
     min-width: 0;
     padding: 0;
     box-sizing: border-box;
-    margin: 0;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    overflow: hidden;
+    margin: var(--spacing-lg) 0 0 0;
 }
 
 .stat-item {
@@ -663,12 +693,32 @@ a:hover {
     align-items: center;
     box-sizing: border-box;
     background: rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(10px);
-    border-radius: 0;
-    flex-grow: 1;
-    flex-shrink: 1;
-    flex-basis: 0;
-    overflow: hidden;
+    transition: all var(--transition-base);
+}
+
+/* Glassmorphism für Statistik-Kacheln */
+.stat-item.glassmorphism {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius-lg);
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.stat-item.glassmorphism:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-4px);
+    box-shadow: 
+        0 12px 40px rgba(0, 0, 0, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.stat-item.glassmorphism:not(:last-child)::after {
+    display: none;
 }
 
 .stat-item:not(:last-child)::after {
@@ -2088,6 +2138,20 @@ a:hover {
     .hero-mission .hero-subtitle {
         font-size: var(--text-sm);
         line-height: 1.6;
+    }
+    
+    .profile-image-container {
+        width: 250px;
+        height: 250px;
+    }
+    
+    .hero-stats {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+    }
+    
+    .stat-item.glassmorphism {
+        width: 100%;
     }
     
     /* Service Cards Mobile Optimization */

@@ -165,19 +165,24 @@
             </div>
             <div class="hero-visual">
                 <div class="hero-image">
-                    <img src="manuel-weiss-portrait.jpg" alt="Manuel Weiss" class="profile-image" id="profile-photo" onerror="this.src='images/manuel-weiss-portrait.jpg'; this.onerror=null;">
+                    <div class="profile-image-container">
+                        <!-- Standard: Bild mit geschlossenem Mund -->
+                        <img src="manuel-weiss-portrait.jpg" alt="Manuel Weiss" class="profile-image profile-image-default" id="profile-photo-default" onerror="this.src='images/manuel-weiss-portrait.jpg'; this.onerror=null;">
+                        <!-- Hover: Bild mit offenem Mund (lächelnd) -->
+                        <img src="manuel-weiss-portrait.jpg" alt="Manuel Weiss lächelnd" class="profile-image profile-image-hover" id="profile-photo-hover" onerror="this.src='images/manuel-weiss-portrait.jpg'; this.onerror=null;">
+                    </div>
                     <div class="hero-image-decoration"></div>
                 </div>
                 <div class="hero-stats">
-                    <div class="stat-item">
+                    <div class="stat-item glassmorphism">
                         <span class="stat-number" id="stat1-number">6+</span>
                         <span class="stat-label" id="stat1-label">JAHRE IT PROJEKT ERFAHRUNG</span>
                     </div>
-                    <div class="stat-item">
+                    <div class="stat-item glassmorphism">
                         <span class="stat-number" id="stat2-number">60+</span>
                         <span class="stat-label" id="stat2-label">ERFOLGREICH IMPLEMENTIERTE PROJEKTE</span>
                     </div>
-                    <div class="stat-item">
+                    <div class="stat-item glassmorphism">
                         <span class="stat-number" id="stat3-number">100%</span>
                         <span class="stat-label" id="stat3-label">LERNKURVENEFFEKT ;)</span>
                     </div>
