@@ -10,6 +10,544 @@ class CVTailor {
         this.baselineCV = null;
         this.targetedCV = null;
         this.jobData = null;
+        this.contextMenu = null;
+        this.alternativesModal = null;
+        this.selectedText = '';
+        this.selectedRange = null;
+        this.init();
+    }
+    
+    async init() {
+        console.log('🎓 Initializing CV Tailor with advanced features...');
+        
+        // Create UI components
+        this.createContextMenu();
+        this.createAlternativesModal();
+        
+        // Setup global event handlers
+        this.setupGlobalEventHandlers();
+        
+        console.log('✅ CV Tailor initialized with advanced features');
+    }
+    
+    setupGlobalEventHandlers() {
+        // Hide context menu on click outside
+        document.addEventListener('click', (e) => {
+            if (this.contextMenu && !this.contextMenu.contains(e.target)) {
+                this.contextMenu.style.display = 'none';
+            }
+        });
+    }
+    
+    createContextMenu() {
+        // Create context menu element
+        const menu = document.createElement('div');
+        menu.className = 'cv-context-menu';
+        menu.innerHTML = `
+            <div class="context-menu-item" onclick="window.cvTailor.generateAlternatives()">
+                <i class="fas fa-lightbulb"></i>
+                Formulierungsvorschläge
+            </div>
+            <div class="context-menu-item" onclick="window.cvTailor.improveText()">
+                <i class="fas fa-magic"></i>
+                Text verbessern
+            </div>
+            <div class="context-menu-item" onclick="window.cvTailor.shortenText()">
+                <i class="fas fa-compress-alt"></i>
+                Text kürzen
+            </div>
+            <div class="context-menu-item" onclick="window.cvTailor.expandText()">
+                <i class="fas fa-expand-alt"></i>
+                Text erweitern
+            </div>
+            <div class="context-menu-item" onclick="window.cvTailor.makeMoreProfessional()">
+                <i class="fas fa-briefcase"></i>
+                Professioneller formulieren
+            </div>
+        `;
+        
+        document.body.appendChild(menu);
+        this.contextMenu = menu;
+        
+        // Add styles if not already added
+        if (!document.querySelector('#cv-tailor-context-styles')) {
+            const style = document.createElement('style');
+            style.id = 'cv-tailor-context-styles';
+            style.textContent = `
+                .cv-context-menu {
+                    position: fixed;
+                    background: white;
+                    border: 1px solid #ddd;
+                    border-radius: 8px;
+                    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                    display: none;
+                    z-index: 10000;
+                    padding: 8px 0;
+                    min-width: 220px;
+                }
+                
+                .context-menu-item {
+                    padding: 10px 16px;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    transition: background-color 0.2s;
+                    font-size: 14px;
+                }
+                
+                .context-menu-item:hover {
+                    background-color: #f5f5f5;
+                }
+                
+                .context-menu-item i {
+                    color: #4a90e2;
+                    width: 16px;
+                }
+            `;
+            document.head.appendChild(style);
+        }
+    }
+    
+    createAlternativesModal() {
+        // Create modal for alternatives
+        const modal = document.createElement('div');
+        modal.className = 'cv-alternatives-modal';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Formulierungsvorschläge für Lebenslauf</h3>
+                    <button class="modal-close" onclick="window.cvTailor.closeAlternativesModal()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="original-text">
+                        <strong>Original:</strong>
+                        <p id="cvOriginalText"></p>
+                    </div>
+                    <div class="alternatives-list" id="cvAlternativesList">
+                        <div class="loading-alternatives">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            Generiere Vorschläge...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        this.alternativesModal = modal;
+        
+        // Add styles if not already added
+        if (!document.querySelector('#cv-tailor-modal-styles')) {
+            const style = document.createElement('style');
+            style.id = 'cv-tailor-modal-styles';
+            style.textContent = `
+                .cv-alternatives-modal {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0,0,0,0.5);
+                    display: none;
+                    z-index: 10001;
+                    justify-content: center;
+                    align-items: center;
+                }
+                
+                .modal-content {
+                    background: white;
+                    border-radius: 12px;
+                    width: 90%;
+                    max-width: 600px;
+                    max-height: 80vh;
+                    overflow: hidden;
+                    display: flex;
+                    flex-direction: column;
+                }
+                
+                .modal-header {
+                    padding: 20px;
+                    border-bottom: 1px solid #eee;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                }
+                
+                .modal-header h3 {
+                    margin: 0;
+                    font-size: 20px;
+                    color: #333;
+                }
+                
+                .modal-close {
+                    background: none;
+                    border: none;
+                    font-size: 20px;
+                    color: #666;
+                    cursor: pointer;
+                    padding: 4px 8px;
+                }
+                
+                .modal-close:hover {
+                    color: #333;
+                }
+                
+                .modal-body {
+                    padding: 20px;
+                    overflow-y: auto;
+                }
+                
+                .original-text {
+                    background: #f5f5f5;
+                    padding: 16px;
+                    border-radius: 8px;
+                    margin-bottom: 20px;
+                }
+                
+                .original-text p {
+                    margin: 8px 0 0 0;
+                    color: #666;
+                }
+                
+                .alternatives-list {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 12px;
+                }
+                
+                .alternative-item {
+                    padding: 16px;
+                    border: 2px solid #e0e0e0;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    transition: all 0.2s;
+                    position: relative;
+                }
+                
+                .alternative-item:hover {
+                    border-color: #4a90e2;
+                    background: #f8fbff;
+                }
+                
+                .alternative-text {
+                    color: #333;
+                    line-height: 1.6;
+                }
+                
+                .alternative-hint {
+                    position: absolute;
+                    top: 8px;
+                    right: 8px;
+                    font-size: 12px;
+                    color: #999;
+                }
+                
+                .loading-alternatives {
+                    text-align: center;
+                    padding: 40px;
+                    color: #666;
+                }
+                
+                .loading-alternatives i {
+                    margin-right: 8px;
+                }
+            `;
+            document.head.appendChild(style);
+        }
+    }
+    
+    enableEditableFeatures(element) {
+        // Enable context menu for the element
+        element.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            this.handleContextMenu(e);
+        });
+        
+        // Text selection handler
+        element.addEventListener('mouseup', () => {
+            const selection = window.getSelection();
+            if (selection.toString().trim()) {
+                this.selectedText = selection.toString();
+                // Save the selection for later replacement
+                if (element.tagName === 'TEXTAREA' || element.tagName === 'INPUT') {
+                    this.selectedRange = {
+                        start: element.selectionStart,
+                        end: element.selectionEnd,
+                        element: element
+                    };
+                } else {
+                    this.selectedRange = {
+                        selection: selection.getRangeAt(0),
+                        element: element
+                    };
+                }
+            }
+        });
+    }
+    
+    handleContextMenu(e) {
+        // Only show if text is selected
+        if (!this.selectedText || !this.selectedText.trim()) return;
+        
+        // Position context menu
+        this.contextMenu.style.left = e.pageX + 'px';
+        this.contextMenu.style.top = e.pageY + 'px';
+        this.contextMenu.style.display = 'block';
+    }
+    
+    async generateAlternatives() {
+        this.contextMenu.style.display = 'none';
+        
+        if (!this.selectedText) {
+            alert('Bitte wählen Sie zuerst Text aus');
+            return;
+        }
+        
+        try {
+            const apiKey = await this.getAPIKey();
+            
+            // Show modal
+            this.alternativesModal.style.display = 'flex';
+            document.getElementById('cvOriginalText').textContent = this.selectedText;
+            document.getElementById('cvAlternativesList').innerHTML = `
+                <div class="loading-alternatives">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    Generiere Vorschläge...
+                </div>
+            `;
+            
+            const alternatives = await this.callOpenAIForAlternatives(this.selectedText);
+            this.displayAlternatives(alternatives);
+        } catch (error) {
+            console.error('Error generating alternatives:', error);
+            alert('Fehler beim Generieren der Alternativen: ' + error.message);
+            this.closeAlternativesModal();
+        }
+    }
+    
+    async callOpenAIForAlternatives(text) {
+        const apiKey = await this.getAPIKey();
+        
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKey}`
+            },
+            body: JSON.stringify({
+                model: 'gpt-3.5-turbo',
+                messages: [
+                    {
+                        role: 'system',
+                        content: 'Du bist ein Experte für professionelle Lebensläufe. Generiere 3 alternative Formulierungen für den gegebenen Text. Die Alternativen sollten professionell, prägnant und aussagekräftig sein. Gib nur die 3 Alternativen zurück, nummeriert von 1-3.'
+                    },
+                    {
+                        role: 'user',
+                        content: `Generiere 3 alternative Formulierungen für Lebenslauf: "${text}"`
+                    }
+                ],
+                temperature: 0.8,
+                max_tokens: 300
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error(`API Error: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        const content = data.choices[0].message.content;
+        
+        // Parse alternatives
+        const alternatives = content.split('\n')
+            .filter(line => line.match(/^[1-3]\./))
+            .map(line => line.replace(/^[1-3]\.\s*/, '').trim());
+        
+        return alternatives;
+    }
+    
+    displayAlternatives(alternatives) {
+        const container = document.getElementById('cvAlternativesList');
+        container.innerHTML = '';
+        
+        alternatives.forEach((alt, index) => {
+            const item = document.createElement('div');
+            item.className = 'alternative-item';
+            item.innerHTML = `
+                <div class="alternative-text">${alt}</div>
+                <div class="alternative-hint">Doppelklick zum Übernehmen</div>
+            `;
+            
+            item.addEventListener('dblclick', () => {
+                this.applyAlternative(alt);
+            });
+            
+            container.appendChild(item);
+        });
+    }
+    
+    applyAlternative(newText) {
+        if (this.selectedRange) {
+            if (this.selectedRange.element && (this.selectedRange.element.tagName === 'TEXTAREA' || this.selectedRange.element.tagName === 'INPUT')) {
+                // For text inputs/textareas
+                const element = this.selectedRange.element;
+                const currentText = element.value;
+                const newContent = currentText.substring(0, this.selectedRange.start) + 
+                                  newText + 
+                                  currentText.substring(this.selectedRange.end);
+                
+                element.value = newContent;
+                
+                // Trigger input event
+                element.dispatchEvent(new Event('input', { bubbles: true }));
+            } else if (this.selectedRange.selection) {
+                // For contenteditable or other elements
+                this.selectedRange.selection.deleteContents();
+                this.selectedRange.selection.insertNode(document.createTextNode(newText));
+            }
+            
+            // Close modal
+            this.closeAlternativesModal();
+            
+            // Show success message
+            this.showNotification('Text wurde erfolgreich ersetzt', 'success');
+        }
+    }
+    
+    closeAlternativesModal() {
+        this.alternativesModal.style.display = 'none';
+    }
+    
+    async improveText() {
+        this.contextMenu.style.display = 'none';
+        await this.processTextWithInstruction('Verbessere diesen Lebenslauf-Text und mache ihn professioneller und aussagekräftiger');
+    }
+    
+    async shortenText() {
+        this.contextMenu.style.display = 'none';
+        await this.processTextWithInstruction('Kürze diesen Lebenslauf-Text auf das Wesentliche ohne wichtige Informationen zu verlieren');
+    }
+    
+    async expandText() {
+        this.contextMenu.style.display = 'none';
+        await this.processTextWithInstruction('Erweitere diesen Lebenslauf-Text mit mehr relevanten Details und Erfolgen');
+    }
+    
+    async makeMoreProfessional() {
+        this.contextMenu.style.display = 'none';
+        await this.processTextWithInstruction('Formuliere diesen Lebenslauf-Text noch professioneller und verwende starke Aktionsverben');
+    }
+    
+    async processTextWithInstruction(instruction) {
+        if (!this.selectedText) return;
+        
+        try {
+            const apiKey = await this.getAPIKey();
+            
+            const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${apiKey}`
+                },
+                body: JSON.stringify({
+                    model: 'gpt-3.5-turbo',
+                    messages: [
+                        {
+                            role: 'system',
+                            content: 'Du bist ein Experte für professionelle Lebensläufe und Karriereberatung.'
+                        },
+                        {
+                            role: 'user',
+                            content: `${instruction}: "${this.selectedText}"`
+                        }
+                    ],
+                    temperature: 0.7,
+                    max_tokens: 200
+                })
+            });
+            
+            const data = await response.json();
+            const improvedText = data.choices[0].message.content;
+            
+            // Apply the improved text
+            this.applyAlternative(improvedText);
+            
+        } catch (error) {
+            console.error('Error processing text:', error);
+            alert('Fehler bei der Textverarbeitung: ' + error.message);
+        }
+    }
+    
+    showNotification(message, type = 'info') {
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = `cv-notification notification-${type}`;
+        notification.innerHTML = `
+            <div class="notification-content">
+                <i class="fas fa-${type === 'error' ? 'exclamation-circle' : type === 'success' ? 'check-circle' : 'info-circle'}"></i>
+                <span>${message}</span>
+            </div>
+        `;
+        
+        // Add styles if not already added
+        if (!document.querySelector('#cv-notification-styles')) {
+            const style = document.createElement('style');
+            style.id = 'cv-notification-styles';
+            style.textContent = `
+                .cv-notification {
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: white;
+                    padding: 16px 20px;
+                    border-radius: 8px;
+                    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                    z-index: 10002;
+                    animation: slideIn 0.3s ease-out;
+                }
+                
+                .cv-notification.notification-success {
+                    border-left: 4px solid #4caf50;
+                }
+                
+                .cv-notification.notification-error {
+                    border-left: 4px solid #f44336;
+                }
+                
+                .cv-notification.notification-info {
+                    border-left: 4px solid #2196f3;
+                }
+                
+                .notification-content {
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                }
+                
+                @keyframes slideIn {
+                    from {
+                        transform: translateX(100%);
+                        opacity: 0;
+                    }
+                    to {
+                        transform: translateX(0);
+                        opacity: 1;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
+        document.body.appendChild(notification);
+        
+        // Remove after 5 seconds
+        setTimeout(() => {
+            notification.remove();
+        }, 5000);
     }
 
     /**

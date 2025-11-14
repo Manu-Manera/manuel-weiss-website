@@ -258,6 +258,32 @@
                                 <span>Ihre Daten werden sicher verarbeitet</span>
                             </div>
                         </div>
+                        
+                        <!-- API Key Settings -->
+                        <div class="api-key-section" style="margin-top: 20px;">
+                            <details>
+                                <summary style="cursor: pointer; color: #666; font-size: 14px;">
+                                    <i class="fas fa-key"></i> OpenAI API Key Einstellungen
+                                </summary>
+                                <div style="margin-top: 10px; padding: 15px; background: #f5f5f5; border-radius: 8px;">
+                                    <p style="font-size: 14px; color: #666; margin-bottom: 10px;">
+                                        Für die KI-Generierung mit ChatGPT benötigen Sie einen OpenAI API Key.
+                                    </p>
+                                    <div style="display: flex; gap: 10px;">
+                                        <input type="password" id="apiKeyInput" 
+                                               placeholder="sk-..." 
+                                               style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                                        <button type="button" onclick="window.aiCoverLetterGenerator.saveAPIKey()" 
+                                                class="btn btn-outline" style="padding: 8px 16px;">
+                                            <i class="fas fa-save"></i> Speichern
+                                        </button>
+                                    </div>
+                                    <small style="display: block; margin-top: 8px; color: #888;">
+                                        Der API Key wird sicher in Ihrem Profil gespeichert.
+                                    </small>
+                                </div>
+                            </details>
+                        </div>
                     </div>
                 </section>
 
@@ -303,6 +329,17 @@
                             <span class="stat-label">Generiert:</span>
                             <span class="stat-value" id="generationTime">-</span>
                         </div>
+                    </div>
+                    
+                    <!-- Edit Tips -->
+                    <div class="edit-tips" style="margin-top: 20px; padding: 15px; background: #e3f2fd; border-radius: 8px; border-left: 4px solid #2196f3;">
+                        <h4 style="margin: 0 0 10px 0; color: #1976d2; font-size: 16px;">
+                            <i class="fas fa-lightbulb"></i> Tipp: Erweiterte Bearbeitungsfunktionen
+                        </h4>
+                        <p style="margin: 0; font-size: 14px; color: #555; line-height: 1.6;">
+                            <strong>Markieren Sie Text</strong> und klicken Sie mit der <strong>rechten Maustaste</strong> für:
+                            • Formulierungsvorschläge • Text verbessern • Text kürzen/erweitern • Professioneller formulieren
+                        </p>
                     </div>
                 </section>
 
