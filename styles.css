@@ -621,6 +621,8 @@ a:hover {
     border: 2px solid rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(10px);
     transition: all 0.3s ease;
+    z-index: 10;
+    background: transparent;
 }
 
 .profile-image-container:hover {
@@ -645,6 +647,7 @@ a:hover {
     left: 0;
     opacity: 1;
     z-index: 2;
+    display: block !important;
 }
 
 .profile-image-hover {
@@ -654,6 +657,7 @@ a:hover {
     opacity: 0;
     z-index: 1;
     transform: scale(1.1);
+    display: block !important;
 }
 
 .profile-image-container:hover .profile-image-default {

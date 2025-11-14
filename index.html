@@ -167,9 +167,9 @@
                 <div class="hero-image">
                     <div class="profile-image-container">
                         <!-- Standard: Bild mit geschlossenem Mund -->
-                        <img src="manuel-weiss-portrait.jpg" alt="Manuel Weiss" class="profile-image profile-image-default" id="profile-photo-default" onerror="this.src='images/manuel-weiss-portrait.jpg'; this.onerror=null;">
-                        <!-- Hover: Bild mit offenem Mund (lächelnd) -->
-                        <img src="manuel-weiss-portrait.jpg" alt="Manuel Weiss lächelnd" class="profile-image profile-image-hover" id="profile-photo-hover" onerror="this.src='images/manuel-weiss-portrait.jpg'; this.onerror=null;">
+                        <img src="manuel-weiss-portrait.jpg" alt="Manuel Weiss" class="profile-image profile-image-default" id="profile-photo-default" style="display: block;" onerror="console.error('❌ Fehler beim Laden des Standard-Bildes'); this.style.display='none';">
+                        <!-- Hover: Bild mit offenem Mund (lächelnd) - Bitte hier das lächelnde Bild einfügen -->
+                        <img src="manuel-weiss-portrait.jpg" alt="Manuel Weiss lächelnd" class="profile-image profile-image-hover" id="profile-photo-hover" style="display: none;" onerror="console.error('❌ Fehler beim Laden des Hover-Bildes'); this.style.display='none';">
                     </div>
                     <div class="hero-image-decoration"></div>
                 </div>
@@ -980,20 +980,32 @@
                     
                     // 3. Profilbild anzeigen
                     if (profileImage) {
-                        const profilePhoto = document.getElementById('profile-photo');
-                        if (profilePhoto) {
-                            profilePhoto.src = profileImage;
-                            profilePhoto.style.display = 'block';
-                            console.log('✅ WEBSITE: Profile image displayed');
-                        } else {
-                            console.error('❌ WEBSITE: profile-photo element not found');
+                        const profilePhotoDefault = document.getElementById('profile-photo-default');
+                        const profilePhotoHover = document.getElementById('profile-photo-hover');
+                        if (profilePhotoDefault) {
+                            profilePhotoDefault.src = profileImage;
+                            profilePhotoDefault.style.display = 'block';
+                            console.log('✅ WEBSITE: Profile image (default) displayed');
+                        }
+                        if (profilePhotoHover) {
+                            profilePhotoHover.src = profileImage;
+                            profilePhotoHover.style.display = 'block';
+                            console.log('✅ WEBSITE: Profile image (hover) displayed');
+                        }
+                        if (!profilePhotoDefault && !profilePhotoHover) {
+                            console.error('❌ WEBSITE: profile-photo elements not found');
                         }
                     } else {
                         console.log('ℹ️ WEBSITE: No custom image, using fallback');
-                        const profilePhoto = document.getElementById('profile-photo');
-                        if (profilePhoto) {
-                            profilePhoto.src = 'manuel-weiss-portrait.jpg';
-                            profilePhoto.style.display = 'block';
+                        const profilePhotoDefault = document.getElementById('profile-photo-default');
+                        const profilePhotoHover = document.getElementById('profile-photo-hover');
+                        if (profilePhotoDefault) {
+                            profilePhotoDefault.src = 'manuel-weiss-portrait.jpg';
+                            profilePhotoDefault.style.display = 'block';
+                        }
+                        if (profilePhotoHover) {
+                            profilePhotoHover.src = 'manuel-weiss-portrait.jpg';
+                            profilePhotoHover.style.display = 'block';
                         }
                     }
                     
@@ -1198,14 +1210,21 @@
                     const stored = localStorage.getItem('adminProfileImage')
                         || localStorage.getItem('heroProfileImage')
                         || localStorage.getItem('profileImage');
-                    const img = document.getElementById('profile-photo');
-                    if (!img || !stored) return;
+                    const imgDefault = document.getElementById('profile-photo-default');
+                    const imgHover = document.getElementById('profile-photo-hover');
+                    if ((!imgDefault && !imgHover) || !stored) return;
 
                     const desiredSrc = stored;
                     const ensure = () => {
-                        if (img.src !== desiredSrc) {
-                            img.src = desiredSrc;
-                            img.style.display = 'block';
+                        if (imgDefault && imgDefault.src !== desiredSrc) {
+                            imgDefault.src = desiredSrc;
+                            imgDefault.style.display = 'block';
+                        }
+                        if (imgHover && imgHover.src !== desiredSrc) {
+                            imgHover.src = desiredSrc;
+                            imgHover.style.display = 'block';
+                        }
+                        if ((imgDefault && imgDefault.src === desiredSrc) || (imgHover && imgHover.src === desiredSrc)) {
                             console.log('🔒 WEBSITE: Profile image pinned to stored value');
                         }
                     };
@@ -1340,11 +1359,17 @@
             }
             
             if (profileImage) {
-                        const profilePhoto = document.getElementById('profile-photo');
-                        if (profilePhoto) {
-                    profilePhoto.src = profileImage;
-                            profilePhoto.style.display = 'block';
-                            console.log('🔄 WEBSITE: Profile image updated from localStorage');
+                        const profilePhotoDefault = document.getElementById('profile-photo-default');
+                        const profilePhotoHover = document.getElementById('profile-photo-hover');
+                        if (profilePhotoDefault) {
+                    profilePhotoDefault.src = profileImage;
+                            profilePhotoDefault.style.display = 'block';
+                            console.log('🔄 WEBSITE: Profile image (default) updated from localStorage');
+                }
+                        if (profilePhotoHover) {
+                    profilePhotoHover.src = profileImage;
+                            profilePhotoHover.style.display = 'block';
+                            console.log('🔄 WEBSITE: Profile image (hover) updated from localStorage');
                 }
             }
         }
@@ -1375,11 +1400,17 @@
             }
             
             if (storedImage) {
-                const profilePhoto = document.getElementById('profile-photo');
-                if (profilePhoto && profilePhoto.src !== storedImage) {
-                    profilePhoto.src = storedImage;
-                    profilePhoto.style.display = 'block';
-                    console.log('🔄 WEBSITE: Profile image updated live');
+                const profilePhotoDefault = document.getElementById('profile-photo-default');
+                const profilePhotoHover = document.getElementById('profile-photo-hover');
+                if (profilePhotoDefault && profilePhotoDefault.src !== storedImage) {
+                    profilePhotoDefault.src = storedImage;
+                    profilePhotoDefault.style.display = 'block';
+                    console.log('🔄 WEBSITE: Profile image (default) updated live');
+                }
+                if (profilePhotoHover && profilePhotoHover.src !== storedImage) {
+                    profilePhotoHover.src = storedImage;
+                    profilePhotoHover.style.display = 'block';
+                    console.log('🔄 WEBSITE: Profile image (hover) updated live');
                 }
             }
         }
