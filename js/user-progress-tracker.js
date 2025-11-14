@@ -11,7 +11,7 @@ class UserProgressTracker {
         this.pendingChanges = false;
         this.isInitialized = false;
     }
-
+    
     /**
      * Initialize the progress tracker
      */
@@ -30,7 +30,7 @@ class UserProgressTracker {
         this.userId = user.userId;
         
         // Load existing progress data
-        await this.loadProgress();
+            await this.loadProgress();
         
         // Set up auto-save every 30 seconds if there are changes
         this.autoSaveInterval = setInterval(() => {
@@ -49,7 +49,7 @@ class UserProgressTracker {
         this.isInitialized = true;
         console.log('Progress tracker initialized for user:', this.userId);
     }
-
+    
     /**
      * Load progress data from AWS
      */
@@ -199,7 +199,7 @@ class UserProgressTracker {
         
         this.pendingChanges = true;
     }
-
+    
     /**
      * Track test results
      */
@@ -230,7 +230,7 @@ class UserProgressTracker {
         this.pendingChanges = true;
         this.updateOverallProgress();
     }
-
+    
     /**
      * Get progress for a specific page
      */
@@ -331,7 +331,7 @@ class UserProgressTracker {
             } catch (error) {
                 console.error('Error parsing local storage progress:', error);
                 this.progressData = this.getDefaultProgressData();
-            }
+    }
         } else {
             this.progressData = this.getDefaultProgressData();
         }
@@ -345,7 +345,7 @@ class UserProgressTracker {
         this.pendingChanges = true;
         this.saveProgress();
     }
-
+    
     /**
      * Export progress data
      */
@@ -390,8 +390,8 @@ class UserProgressTracker {
         this.pendingChanges = false;
         this.isInitialized = false;
     }
-}
-
+    }
+    
 // Create global instance
 window.userProgressTracker = new UserProgressTracker();
 
@@ -400,7 +400,7 @@ if (window.realUserAuth) {
     window.realUserAuth.onAuthStateChange((isAuthenticated) => {
         if (isAuthenticated) {
             window.userProgressTracker.init();
-        } else {
+} else {
             window.userProgressTracker.cleanup();
         }
     });

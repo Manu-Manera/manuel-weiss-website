@@ -46,7 +46,7 @@ class PersonalityAuthIntegration {
         console.log('Personality auth integration initialized for:', this.currentPageId);
         return true;
     }
-
+    
     /**
      * Wait for auth system to be ready
      */
@@ -62,7 +62,7 @@ class PersonalityAuthIntegration {
             throw new Error('Auth system not available');
         }
     }
-
+    
     /**
      * Extract page ID from URL or page content
      */
@@ -72,17 +72,17 @@ class PersonalityAuthIntegration {
         const match = path.match(/\/methods\/([^\/]+)/);
         if (match) {
             return match[1];
-        }
+                    }
         
         // Try to get from page title or data attribute
         const pageTitle = document.querySelector('[data-page-id]');
         if (pageTitle) {
             return pageTitle.getAttribute('data-page-id');
-        }
+            }
         
         // Use cleaned path as fallback
         return path.replace(/^\/|\.html$/g, '').replace(/\//g, '-');
-    }
+            }
 
     /**
      * Extract method name from page
@@ -134,10 +134,10 @@ class PersonalityAuthIntegration {
                     <div class="auth-prompt-actions">
                         <button class="btn btn-primary" onclick="window.realUserAuth.showLoginModal()">
                             <i class="fas fa-sign-in-alt"></i> Anmelden
-                        </button>
+                    </button>
                         <button class="btn btn-secondary" onclick="window.realUserAuth.showRegisterModal()">
                             <i class="fas fa-user-plus"></i> Registrieren
-                        </button>
+                    </button>
                     </div>
                     <button class="auth-prompt-close" onclick="document.getElementById('authPromptOverlay').remove()">
                         <i class="fas fa-times"></i>
@@ -151,14 +151,14 @@ class PersonalityAuthIntegration {
             const styles = `
                 <style id="authPromptStyles">
                     .auth-prompt-overlay {
-                        position: fixed;
+            position: fixed;
                         top: 0;
                         left: 0;
                         right: 0;
                         bottom: 0;
                         background: rgba(0, 0, 0, 0.8);
-                        display: flex;
-                        align-items: center;
+            display: flex;
+            align-items: center;
                         justify-content: center;
                         z-index: 10000;
                         animation: fadeIn 0.3s ease;
@@ -179,10 +179,10 @@ class PersonalityAuthIntegration {
                         width: 80px;
                         height: 80px;
                         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                        border-radius: 50%;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
                         margin: 0 auto 20px;
                     }
                     
@@ -194,7 +194,7 @@ class PersonalityAuthIntegration {
                     .auth-prompt-title {
                         text-align: center;
                         font-size: 24px;
-                        font-weight: 600;
+            font-weight: 600;
                         color: #1a202c;
                         margin-bottom: 10px;
                     }
@@ -231,7 +231,7 @@ class PersonalityAuthIntegration {
                     }
                     
                     .auth-prompt-actions {
-                        display: flex;
+            display: flex;
                         gap: 12px;
                     }
                     
@@ -240,8 +240,8 @@ class PersonalityAuthIntegration {
                         padding: 12px 20px;
                         border-radius: 6px;
                         font-weight: 500;
-                        display: flex;
-                        align-items: center;
+                display: flex;
+                align-items: center;
                         justify-content: center;
                         gap: 8px;
                         transition: all 0.2s ease;
@@ -273,10 +273,10 @@ class PersonalityAuthIntegration {
                         top: 20px;
                         right: 20px;
                         background: none;
-                        border: none;
+                border: none;
                         font-size: 20px;
                         color: #a0aec0;
-                        cursor: pointer;
+                cursor: pointer;
                         width: 32px;
                         height: 32px;
                         display: flex;
@@ -377,7 +377,7 @@ class PersonalityAuthIntegration {
             if (field) {
                 if (field.type === 'checkbox' || field.type === 'radio') {
                     field.checked = progress.formData[fieldName];
-                } else {
+        } else {
                     field.value = progress.formData[fieldName];
                 }
             }
@@ -389,14 +389,14 @@ class PersonalityAuthIntegration {
                 const stepEl = document.querySelector(`[data-step="${stepId}"]`);
                 if (stepEl) {
                     stepEl.classList.add('completed');
-                }
+        }
             });
         }
         
         // Show restore notification
         this.showNotification('Dein Fortschritt wurde wiederhergestellt', 'success');
     }
-
+    
     /**
      * Save form data automatically
      */
@@ -415,7 +415,7 @@ class PersonalityAuthIntegration {
                     saveTimeout = setTimeout(() => {
                         this.saveFormData(form);
                     }, 1000);
-                }
+    }
             });
         });
     }
@@ -435,7 +435,7 @@ class PersonalityAuthIntegration {
                     if (field.checked) {
                         formData[field.name] = field.value;
                     }
-                } else {
+            } else {
                     formData[field.name] = field.value;
                 }
             }
@@ -444,7 +444,7 @@ class PersonalityAuthIntegration {
         window.userProgressTracker.trackFormData(this.currentPageId, formData);
         console.log('Form data saved:', formData);
     }
-
+    
     /**
      * Track workflow step completion
      */
@@ -464,7 +464,7 @@ class PersonalityAuthIntegration {
         window.userProgressTracker.trackTestResult(this.currentPageId, results);
         this.showNotification('Test abgeschlossen und gespeichert', 'success');
     }
-
+    
     /**
      * Show notification
      */
@@ -473,7 +473,7 @@ class PersonalityAuthIntegration {
         notification.className = `progress-notification ${type}`;
         notification.innerHTML = `
             <i class="fas fa-${type === 'success' ? 'check-circle' : 'info-circle'}"></i>
-            <span>${message}</span>
+                <span>${message}</span>
         `;
         
         // Add styles if not present
@@ -481,9 +481,9 @@ class PersonalityAuthIntegration {
             const styles = `
                 <style id="progressNotificationStyles">
                     .progress-notification {
-                        position: fixed;
+            position: fixed;
                         bottom: 20px;
-                        right: 20px;
+            right: 20px;
                         background: white;
                         padding: 16px 24px;
                         border-radius: 8px;
@@ -493,15 +493,15 @@ class PersonalityAuthIntegration {
                         gap: 12px;
                         animation: slideIn 0.3s ease;
                         z-index: 9999;
-                    }
-                    
+        }
+        
                     .progress-notification.success {
                         border-left: 4px solid #48bb78;
                     }
                     
                     .progress-notification.success i {
                         color: #48bb78;
-                    }
+        }
                     
                     .progress-notification.info {
                         border-left: 4px solid #4299e1;
@@ -512,15 +512,15 @@ class PersonalityAuthIntegration {
                     }
                     
                     @keyframes slideIn {
-                        from {
-                            transform: translateX(100%);
-                            opacity: 0;
-                        }
-                        to {
-                            transform: translateX(0);
-                            opacity: 1;
-                        }
-                    }
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
                 </style>
             `;
             document.head.insertAdjacentHTML('beforeend', styles);
