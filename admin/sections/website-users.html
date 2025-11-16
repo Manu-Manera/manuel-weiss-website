@@ -122,6 +122,153 @@
     </div>
 </div>
 
+<!-- Modal: User bearbeiten -->
+<div class="modal" id="modal-edit-website-user">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>
+                <i class="fas fa-user-edit" style="margin-right: 0.5rem; color: #667eea;"></i>
+                User bearbeiten
+            </h3>
+            <button class="modal-close" data-dismiss="modal">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <form id="form-edit-website-user">
+                <input type="hidden" id="edit-user-username" name="username">
+                
+                <div class="form-group">
+                    <label for="edit-user-email">
+                        <i class="fas fa-envelope"></i> E-Mail-Adresse *
+                    </label>
+                    <input 
+                        type="email" 
+                        id="edit-user-email" 
+                        name="email" 
+                        required
+                        placeholder="user@example.com"
+                        autocomplete="email"
+                    >
+                    <small class="form-hint">Die E-Mail-Adresse wird als Username verwendet</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit-user-name">
+                        <i class="fas fa-user"></i> Name
+                    </label>
+                    <input 
+                        type="text" 
+                        id="edit-user-name" 
+                        name="name" 
+                        placeholder="Max Mustermann"
+                    >
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit-user-status">
+                        <i class="fas fa-info-circle"></i> Status
+                    </label>
+                    <select id="edit-user-status" name="status" class="form-control">
+                        <option value="CONFIRMED">Bestätigt</option>
+                        <option value="UNCONFIRMED">Nicht bestätigt</option>
+                        <option value="FORCE_CHANGE_PASSWORD">Passwort ändern erforderlich</option>
+                        <option value="RESET_REQUIRED">Reset erforderlich</option>
+                    </select>
+                    <small class="form-hint">Status des Benutzers im System</small>
+                </div>
+                
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input 
+                            type="checkbox" 
+                            id="edit-user-email-verified" 
+                            name="emailVerified"
+                        >
+                        <span>E-Mail-Adresse verifiziert</span>
+                    </label>
+                </div>
+                
+                <div class="info-box" style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 1rem; border-radius: 6px; margin: 1rem 0;">
+                    <p style="margin: 0; color: #92400e; font-size: 0.875rem;">
+                        <i class="fas fa-info-circle" style="margin-right: 0.5rem;"></i>
+                        <strong>Hinweis:</strong> Änderungen an der E-Mail-Adresse ändern auch den Username. Der User muss sich danach mit der neuen E-Mail-Adresse anmelden.
+                    </p>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" data-dismiss="modal">
+                        Abbrechen
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="btn-submit-edit-website-user">
+                        <i class="fas fa-save"></i>
+                        Änderungen speichern
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Passwort zurücksetzen -->
+<div class="modal" id="modal-reset-password-website-user">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>
+                <i class="fas fa-key" style="margin-right: 0.5rem; color: #667eea;"></i>
+                Passwort zurücksetzen
+            </h3>
+            <button class="modal-close" data-dismiss="modal">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <form id="form-reset-password-website-user">
+                <input type="hidden" id="reset-password-username" name="username">
+                
+                <p>Möchten Sie das Passwort für <strong id="reset-password-email"></strong> zurücksetzen?</p>
+                
+                <div class="form-group">
+                    <label for="reset-password-new">
+                        <i class="fas fa-lock"></i> Neues Passwort *
+                    </label>
+                    <input 
+                        type="password" 
+                        id="reset-password-new" 
+                        name="password" 
+                        required
+                        placeholder="Mindestens 8 Zeichen"
+                        autocomplete="new-password"
+                        minlength="8"
+                    >
+                    <small class="form-hint">Mindestens 8 Zeichen, Groß-/Kleinbuchstaben, Zahlen</small>
+                </div>
+                
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input 
+                            type="checkbox" 
+                            id="reset-password-temporary" 
+                            name="temporary"
+                        >
+                        <span>Temporäres Passwort (User muss es bei nächster Anmeldung ändern)</span>
+                    </label>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" data-dismiss="modal">
+                        Abbrechen
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="btn-submit-reset-password">
+                        <i class="fas fa-key"></i>
+                        Passwort zurücksetzen
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <!-- Modal: User löschen bestätigen -->
 <div class="modal" id="modal-delete-website-user">
     <div class="modal-content">
