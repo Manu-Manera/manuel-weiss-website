@@ -155,6 +155,65 @@ async function listUsers(params = {}) {
   const filter = params.filter;
   const status = params.status;
   const excludeAdmin = params.excludeAdmin === 'true' || params.excludeAdmin === true;
+  const onlyAdmin = params.onlyAdmin === 'true' || params.onlyAdmin === true;
+
+  // If onlyAdmin is true, directly get users from admin group
+  if (onlyAdmin) {
+    try {
+      const adminGroupResponse = await cognito.send(new ListUsersInGroupCommand({
+        UserPoolId: process.env.USER_POOL_ID,
+        GroupName: 'admin',
+        Limit: 60
+      }));
+      
+      const adminUsers = adminGroupResponse.Users || [];
+      console.log(`📋 Found ${adminUsers.length} admin users`);
+      
+      // Enrich with DynamoDB data
+      const enrichedUsers = await Promise.all(adminUsers.map(async (cognitoUser) => {
+        const userProfile = await getUserProfile(cognitoUser.Username);
+        const userProgress = await getUserProgress(cognitoUser.Username);
+        
+        return {
+          id: cognitoUser.Username,
+          email: getAttribute(cognitoUser.Attributes, 'email'),
+          name: getAttribute(cognitoUser.Attributes, 'name'),
+          phoneNumber: getAttribute(cognitoUser.Attributes, 'phone_number'),
+          emailVerified: getAttribute(cognitoUser.Attributes, 'email_verified') === 'true',
+          status: cognitoUser.UserStatus,
+          enabled: cognitoUser.Enabled,
+          createdAt: cognitoUser.UserCreateDate?.toISOString(),
+          lastModified: cognitoUser.UserLastModifiedDate?.toISOString(),
+          
+          // Enriched data from DynamoDB
+          profile: userProfile,
+          progress: {
+            totalMethods: Object.keys(userProgress?.methods || {}).length,
+            completedMethods: Object.values(userProgress?.methods || {}).filter(m => m.status === 'completed').length,
+            lastActivity: userProgress?.lastUpdated,
+            streakDays: userProgress?.streaks?.current || 0
+          },
+          
+          // Calculated metrics
+          completionRate: calculateCompletionRate(userProgress),
+          riskScore: calculateRiskScore(cognitoUser, userProgress),
+          lastLoginDays: calculateDaysSince(userProfile?.lastLogin)
+        };
+      }));
+
+      return {
+        users: enrichedUsers,
+        pagination: {
+          nextToken: adminGroupResponse.NextToken,
+          hasMore: !!adminGroupResponse.NextToken
+        },
+        stats: calculateUserStats(enrichedUsers)
+      };
+    } catch (error) {
+      console.error('❌ Error fetching admin users:', error);
+      throw error;
+    }
+  }
 
   // Get admin users if we need to exclude them
   let adminUsernames = new Set();

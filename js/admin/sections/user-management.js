@@ -230,7 +230,7 @@ class AdminUserManagement {
                         console.log('📡 Lade Admin-User über API-Endpoint...');
                         console.log('📡 API URL:', `${apiBaseUrl}/admin/users`);
                         
-                        const fetchPromise = fetch(`${apiBaseUrl}/admin/users`, {
+                        const fetchPromise = fetch(`${apiBaseUrl}/admin/users?onlyAdmin=true`, {
                             method: 'GET',
                             headers: {
                                 'Content-Type': 'application/json',
@@ -250,15 +250,8 @@ class AdminUserManagement {
                             const data = await response.json();
                             console.log('📡 API Response Data:', data);
                             
-                            // Filter for admin users only (users in admin group)
-                            // The API returns all users, but we only want admin users
-                            // We need to check which users are in the admin group
-                            const adminGroupUsers = await this.getAdminGroupUsers();
-                            const adminUsernames = new Set(adminGroupUsers.map(u => u.Username));
-                            
-                            allUsers = (data.users || []).filter(user => 
-                                adminUsernames.has(user.id || user.email || user.username)
-                            ).map(user => ({
+                            // API returns admin users directly (onlyAdmin=true)
+                            allUsers = (data.users || []).map(user => ({
                                 Username: user.id || user.email || user.username,
                                 Attributes: [
                                     { Name: 'email', Value: user.email },
