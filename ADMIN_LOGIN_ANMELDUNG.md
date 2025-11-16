@@ -1,78 +1,26 @@
 # Admin-Login Anmeldedaten
 
-## Aktueller Status
+## ✅ Admin-User ist eingerichtet!
 
-**⚠️ WICHTIG: Es gibt noch KEINEN Admin-User!**
+**Du kannst dich jetzt anmelden mit:**
 
-Es wurden User im Cognito Pool gefunden, aber **keiner ist in der Admin-Gruppe**.
-
-## Option 1: Bestehenden User zur Admin-Gruppe hinzufügen
-
-Wenn du einen der bestehenden User als Admin verwenden möchtest:
-
-```bash
-# Beispiel: weiss-manuel@gmx.de zur Admin-Gruppe hinzufügen
-aws cognito-idp admin-add-user-to-group \
-  --user-pool-id eu-central-1_8gP4gLK9r \
-  --username "weiss-manuel@gmx.de" \
-  --group-name admin \
-  --region eu-central-1
-```
-
-**Dann kannst du dich anmelden mit:**
-- **E-Mail:** weiss-manuel@gmx.de
+- **E-Mail:** `weiss-manuel@gmx.de`
 - **Passwort:** [dein aktuelles Passwort]
+- **Login-URL:** https://mawps.netlify.app/admin-login.html
 
-## Option 2: Neuen Admin-User erstellen (Empfohlen)
+## Status
 
-Führe das Setup-Script aus:
+✅ User `weiss-manuel@gmx.de` ist in der Admin-Gruppe  
+✅ User ist CONFIRMED (bestätigt)  
+✅ Login ist aktiviert  
 
-```bash
-./create-admin-user.sh
-```
+## Login-Schritte
 
-Das Script fragt nach:
-- E-Mail-Adresse (z.B. `admin@manuel-weiss.ch`)
-- Passwort (min. 8 Zeichen, Groß-/Kleinbuchstaben, Zahlen)
-
-**Nach dem Erstellen kannst du dich anmelden mit:**
-- **E-Mail:** [die eingegebene E-Mail]
-- **Passwort:** [das eingegebene Passwort]
-
-## Option 3: Schnell-Setup für bestehenden User
-
-Wenn du `weiss-manuel@gmx.de` als Admin verwenden möchtest:
-
-```bash
-# Zur Admin-Gruppe hinzufügen
-aws cognito-idp admin-add-user-to-group \
-  --user-pool-id eu-central-1_8gP4gLK9r \
-  --username "weiss-manuel@gmx.de" \
-  --group-name admin \
-  --region eu-central-1
-
-# Prüfen ob es funktioniert hat
-./check-admin-users.sh
-```
-
-## Login-URL
-
-Nach dem Setup kannst du dich hier anmelden:
-
-**🌐 https://mawps.netlify.app/admin-login.html**
-
-## Verfügbare User (nicht in Admin-Gruppe)
-
-Aktuell gefundene User:
-- ✅ `weiss-manuel@gmx.de` (CONFIRMED) - **Kann zur Admin-Gruppe hinzugefügt werden**
-- ⚠️ `test@mawps.netlify.app` (CONFIRMED)
-- ⚠️ Andere Test-User (UNCONFIRMED)
-
-## Nächste Schritte
-
-1. **Entscheide dich für eine Option** (bestehender User oder neuer User)
-2. **Führe das entsprechende Kommando aus**
-3. **Teste den Login** auf https://mawps.netlify.app/admin-login.html
+1. Öffne: https://mawps.netlify.app/admin-login.html
+2. Gib ein:
+   - E-Mail: `weiss-manuel@gmx.de`
+   - Passwort: [dein aktuelles Passwort]
+3. Nach erfolgreichem Login wirst du zum Admin-Panel weitergeleitet
 
 ## Hilfe
 
@@ -81,3 +29,18 @@ Bei Problemen:
 - Siehe: `ADMIN_LOGIN_SETUP.md`
 - Teste mit: `test-admin-login.html`
 
+## Weitere Admin-User hinzufügen
+
+Um weitere User zur Admin-Gruppe hinzuzufügen:
+
+```bash
+# Schnell-Script
+./quick-add-admin.sh
+
+# Oder manuell
+aws cognito-idp admin-add-user-to-group \
+  --user-pool-id eu-central-1_8gP4gLK9r \
+  --username "email@example.com" \
+  --group-name admin \
+  --region eu-central-1
+```
