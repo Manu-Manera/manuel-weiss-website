@@ -164,9 +164,12 @@ class AdminNavigation {
             setTimeout(() => {
                 if (window.WebsiteUsersManagement) {
                     const websiteUsers = window.AdminApp?.sections?.websiteUsers || new window.WebsiteUsersManagement();
-                    if (!websiteUsers.isInitialized) {
+                    if (!websiteUsers.isInitialized && !websiteUsers.isInitializing) {
                         console.log('Initializing WebsiteUsersManagement');
-                        websiteUsers.init();
+                        // Don't await - let it run in background
+                        websiteUsers.init().catch(err => {
+                            console.error('Error initializing WebsiteUsersManagement:', err);
+                        });
                     }
                     if (window.AdminApp && !window.AdminApp.sections.websiteUsers) {
                         window.AdminApp.sections.websiteUsers = websiteUsers;
@@ -180,9 +183,12 @@ class AdminNavigation {
             setTimeout(() => {
                 if (window.AdminUserManagement) {
                     const userManagement = window.AdminApp?.sections?.userManagement || new window.AdminUserManagement();
-                    if (!userManagement.isInitialized) {
+                    if (!userManagement.isInitialized && !userManagement.isInitializing) {
                         console.log('Initializing AdminUserManagement');
-                        userManagement.init();
+                        // Don't await - let it run in background
+                        userManagement.init().catch(err => {
+                            console.error('Error initializing AdminUserManagement:', err);
+                        });
                     }
                     if (window.AdminApp && !window.AdminApp.sections.userManagement) {
                         window.AdminApp.sections.userManagement = userManagement;

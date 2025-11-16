@@ -10,11 +10,27 @@ class AdminUserManagement {
         this.region = window.AWS_CONFIG?.region || 'eu-central-1';
         this.groupName = 'admin';
         this.cognitoIdentityServiceProvider = null;
+        this.isInitializing = false;
     }
     
     async init() {
-        if (this.isInitialized) return;
+        // Prevent multiple initializations
+        if (this.isInitialized) {
+            console.log('⚠️ Admin User Management already initialized, skipping...');
+            return;
+        }
         
+        // Mark as initializing to prevent concurrent calls
+        if (this.isInitializing) {
+            console.log('⚠️ Admin User Management is already initializing, waiting...');
+            // Wait for current initialization to complete
+            while (this.isInitializing) {
+                await new Promise(resolve => setTimeout(resolve, 100));
+            }
+            return;
+        }
+        
+        this.isInitializing = true;
         console.log('👥 Initializing Admin User Management...');
         
         // Show loading state immediately
@@ -28,8 +44,8 @@ class AdminUserManagement {
             `;
         }
         
+        // Initialize AWS SDK and setup event listeners immediately (non-blocking)
         try {
-            // Initialize AWS SDK if needed
             if (typeof AWS === 'undefined') {
                 throw new Error('AWS SDK not loaded');
             }
@@ -42,41 +58,65 @@ class AdminUserManagement {
             // Setup event listeners first (non-blocking)
             this.setupEventListeners();
             
-            // Load admin users (with timeout)
-            await Promise.race([
-                this.loadAdminUsers(),
-                new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout beim Laden der Admin-User')), 15000))
-            ]);
-            
-            this.isInitialized = true;
-            console.log('✅ Admin User Management initialized');
-            
         } catch (error) {
-            console.error('❌ Error initializing Admin User Management:', error);
-            const listEl = document.getElementById('admin-users-list');
+            console.error('❌ Error setting up Admin User Management:', error);
+            this.isInitializing = false;
             if (listEl) {
                 listEl.innerHTML = `
                     <div class="error-message" style="padding: 2rem; text-align: center; color: #ef4444;">
                         <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 1rem;"></i>
-                        <p><strong>Fehler beim Initialisieren</strong></p>
+                        <p><strong>Fehler beim Setup</strong></p>
                         <p style="font-size: 0.9rem; color: #64748b; margin-top: 0.5rem;">${error.message}</p>
-                        <details style="margin-top: 1rem; text-align: left; max-width: 500px; margin-left: auto; margin-right: auto;">
-                            <summary style="cursor: pointer; color: #667eea;">Technische Details</summary>
-                            <pre style="background: #f1f5f9; padding: 1rem; border-radius: 6px; margin-top: 0.5rem; font-size: 0.75rem; overflow-x: auto;">${error.stack || error.toString()}</pre>
-                        </details>
-                        <div style="margin-top: 1rem; display: flex; gap: 0.5rem; justify-content: center;">
-                            <button class="btn btn-outline" onclick="window.AdminApp?.sections?.userManagement?.init()">
-                                <i class="fas fa-sync"></i> Erneut versuchen
-                            </button>
-                            <button class="btn btn-outline" onclick="window.location.reload()">
-                                <i class="fas fa-redo"></i> Seite neu laden
-                            </button>
-                        </div>
                     </div>
                 `;
             }
-            this.showError('Fehler beim Initialisieren der User-Verwaltung');
+            return;
         }
+        
+        // Load data asynchronously (don't block)
+        this.loadDataAsync().then(() => {
+            this.isInitialized = true;
+            this.isInitializing = false;
+            console.log('✅ Admin User Management initialized');
+        }).catch((error) => {
+            this.isInitializing = false;
+            console.error('❌ Error initializing Admin User Management:', error);
+            this.handleInitializationError(error);
+        });
+    }
+    
+    async loadDataAsync() {
+        // Load admin users (with timeout)
+        await Promise.race([
+            this.loadAdminUsers(),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout beim Laden der Admin-User')), 15000))
+        ]);
+    }
+    
+    handleInitializationError(error) {
+        const listEl = document.getElementById('admin-users-list');
+        if (listEl) {
+            listEl.innerHTML = `
+                <div class="error-message" style="padding: 2rem; text-align: center; color: #ef4444;">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                    <p><strong>Fehler beim Initialisieren</strong></p>
+                    <p style="font-size: 0.9rem; color: #64748b; margin-top: 0.5rem;">${error.message}</p>
+                    <details style="margin-top: 1rem; text-align: left; max-width: 500px; margin-left: auto; margin-right: auto;">
+                        <summary style="cursor: pointer; color: #667eea;">Technische Details</summary>
+                        <pre style="background: #f1f5f9; padding: 1rem; border-radius: 6px; margin-top: 0.5rem; font-size: 0.75rem; overflow-x: auto;">${error.stack || error.toString()}</pre>
+                    </details>
+                    <div style="margin-top: 1rem; display: flex; gap: 0.5rem; justify-content: center;">
+                        <button class="btn btn-outline" onclick="window.AdminApp?.sections?.userManagement?.init()">
+                            <i class="fas fa-sync"></i> Erneut versuchen
+                        </button>
+                        <button class="btn btn-outline" onclick="window.location.reload()">
+                            <i class="fas fa-redo"></i> Seite neu laden
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        this.showError('Fehler beim Initialisieren der User-Verwaltung');
     }
     
     setupEventListeners() {
