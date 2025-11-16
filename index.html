@@ -869,12 +869,24 @@
         async function loadHeroDataFromAdmin() {
             console.log('📋 WEBSITE: Loading hero data from admin panel...');
             
-            // 1. Bilder aus AWS DynamoDB laden
+            // 1. Bilder aus AWS DynamoDB laden (mit Timeout, nicht-blockierend)
             let awsImages = null;
             try {
                 if (window.awsProfileAPI && window.awsProfileAPI.loadWebsiteImages) {
                     console.log('☁️ WEBSITE: Loading images from AWS DynamoDB...');
-                    awsImages = await window.awsProfileAPI.loadWebsiteImages();
+                    
+                    // Mit Timeout, damit die Seite nicht hängt
+                    const timeoutPromise = new Promise((_, reject) => 
+                        setTimeout(() => reject(new Error('Timeout')), 3000)
+                    );
+                    
+                    awsImages = await Promise.race([
+                        window.awsProfileAPI.loadWebsiteImages(),
+                        timeoutPromise
+                    ]).catch(err => {
+                        console.warn('⚠️ AWS Bild-Laden timeout oder fehler:', err.message);
+                        return null;
+                    });
                     
                     if (awsImages) {
                         // In localStorage cachen für schnelleren Zugriff
@@ -886,6 +898,8 @@
                             localStorage.setItem('profileImageHover', awsImages.profileImageHover);
                             console.log('✅ Hover-Bild aus AWS geladen und gecacht');
                         }
+                    } else {
+                        console.log('ℹ️ Keine AWS-Bilder gefunden, verwende localStorage Cache');
                     }
                 }
             } catch (awsError) {
