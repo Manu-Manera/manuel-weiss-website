@@ -304,6 +304,12 @@ class AdminSidebar extends HTMLElement {
                                 <span>Admin-User</span>
                             </a>
                         </li>
+                        <li class="nav-item" data-section="website-users" data-tooltip="Website-Benutzer Verwaltung">
+                            <a href="#website-users">
+                                <i class="fas fa-users"></i>
+                                <span>Website-Benutzer</span>
+                            </a>
+                        </li>
                         <li class="nav-item" data-section="ai-twin" data-tooltip="AI Twin">
                             <a href="#ai-twin">
                                 <i class="fas fa-user-robot"></i>

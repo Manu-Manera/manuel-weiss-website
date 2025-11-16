@@ -96,6 +96,7 @@ class AdminApplication {
             { id: 'dashboard', template: 'admin/sections/dashboard.html', script: 'js/admin/sections/dashboard.js' },
             { id: 'api-keys', template: 'admin/sections/api-keys.html', script: 'js/admin/sections/api-keys.js' },
             { id: 'user-management', template: 'admin/sections/user-management.html', script: 'js/admin/sections/user-management.js' },
+            { id: 'website-users', template: 'admin/sections/website-users.html', script: 'js/admin/sections/website-users.js' },
             { id: 'applications', template: 'admin/sections/applications.html', script: 'js/admin/sections/applications.js' },
             { id: 'media', template: 'admin/sections/media.html', script: 'js/admin/sections/media.js' },
             { id: 'content', template: 'admin/sections/content.html', script: 'js/admin/sections/content.js' },
@@ -187,6 +188,8 @@ class AdminApplication {
         createIfAvailable('personalTraining', 'PersonalTrainingSection');
         createIfAvailable('translations', 'TranslationsSection');
         createIfAvailable('apiKeys', 'ApiKeysSection');
+        createIfAvailable('userManagement', 'AdminUserManagement');
+        createIfAvailable('websiteUsers', 'WebsiteUsersManagement');
         createIfAvailable('applications', 'ApplicationsSection');
         createIfAvailable('media', 'MediaSection');
         createIfAvailable('personalityMethods', 'PersonalityMethodsSection');
