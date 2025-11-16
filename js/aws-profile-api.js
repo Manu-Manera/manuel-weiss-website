@@ -343,6 +343,86 @@ class AWSProfileAPI {
             console.error('❌ Failed to sync local data to AWS:', error);
         }
     }
+    
+    /**
+     * Speichert Website-Bilder (für Admin Panel ohne Authentifizierung)
+     */
+    async saveWebsiteImages(imageData) {
+        try {
+            console.log('💾 Saving website images to AWS...');
+            
+            if (!window.AWS_CONFIG?.apiBaseUrl) {
+                throw new Error('AWS API not configured');
+            }
+            
+            // Speichere unter speziellem "owner" Account für Website-Bilder
+            const response = await fetch(`${window.AWS_CONFIG.apiBaseUrl}/website-images`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    userId: 'owner',
+                    profileImageDefault: imageData.profileImageDefault || null,
+                    profileImageHover: imageData.profileImageHover || null,
+                    updatedAt: new Date().toISOString()
+                })
+            });
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`API error (${response.status}): ${errorText}`);
+            }
+            
+            const result = await response.json();
+            console.log('✅ Website images saved to AWS:', result);
+            return result;
+            
+        } catch (error) {
+            console.error('❌ Failed to save website images:', error);
+            throw error;
+        }
+    }
+    
+    /**
+     * Lädt Website-Bilder aus AWS
+     */
+    async loadWebsiteImages() {
+        try {
+            console.log('📥 Loading website images from AWS...');
+            
+            if (!window.AWS_CONFIG?.apiBaseUrl) {
+                throw new Error('AWS API not configured');
+            }
+            
+            const response = await fetch(`${window.AWS_CONFIG.apiBaseUrl}/website-images/owner`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            if (!response.ok) {
+                if (response.status === 404) {
+                    console.log('ℹ️ No website images found in AWS (using defaults)');
+                    return null;
+                }
+                throw new Error(`API error (${response.status})`);
+            }
+            
+            const result = await response.json();
+            console.log('✅ Website images loaded from AWS:', {
+                hasDefault: !!result.profileImageDefault,
+                hasHover: !!result.profileImageHover
+            });
+            
+            return result;
+            
+        } catch (error) {
+            console.error('❌ Failed to load website images:', error);
+            return null;
+        }
+    }
 }
 
 // Create global instance

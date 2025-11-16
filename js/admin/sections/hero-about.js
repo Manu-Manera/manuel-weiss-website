@@ -231,9 +231,9 @@ class HeroAboutSection {
         
         try {
             this.toast('Profilbild wird hochgeladen...', 'info');
-            console.log('📤 Starting image upload:', file.name, file.type, `${(file.size / 1024).toFixed(2)} KB`);
+            console.log('📤 Starting profile image upload:', file.name, file.type, `${(file.size / 1024).toFixed(2)} KB`);
             
-            // 1) PRIORITÄT: Upload nach S3 via Presigned URL
+            // 1) PRIORITÄT: Upload nach AWS S3 via Presigned URL
             let uploadedUrl = null;
             let uploadMethod = 'Base64 (Fallback)';
             
@@ -247,66 +247,30 @@ class HeroAboutSection {
                 }
                 
                 console.log('✅ AWS Module verfügbar, starte S3 Upload...');
-                console.log('📍 API Endpoint:', window.AWS_APP_CONFIG.MEDIA_API_BASE);
-                
                 const userId = 'owner';
                 const result = await window.awsMedia.uploadProfileImage(file, userId);
                 uploadedUrl = result.publicUrl;
                 uploadMethod = 'AWS S3';
                 
                 console.log('✅ S3 Upload erfolgreich:', uploadedUrl);
-                console.log('📦 Upload Details:', {
-                    bucket: result.bucket,
-                    key: result.key,
-                    region: result.region
-                });
                 
             } catch (e) {
                 console.warn('❌ S3 Upload fehlgeschlagen, verwende Base64 Fallback:', e.message);
-                // Nur wenn S3 wirklich fehlschlägt, Base64 verwenden
             }
             
-            // 2) Finale Quelle: S3 URL hat PRIORITÄT, nur bei Fehler Base64
+            // 2) Fallback Base64 (nur wenn S3 Upload fehlgeschlagen)
             let finalSrc = uploadedUrl;
             if (!finalSrc) {
-                console.log('🔄 Konvertiere Bild zu Base64 (Fallback)...');
+                console.log('🔄 Konvertiere Bild zu Base64...');
                 finalSrc = await this.fileToBase64(file);
             }
             
-            // 3) Speichern in localStorage - NUR S3 URL wenn vorhanden!
-            if (uploadedUrl) {
-                // S3 URL speichern (NICHT Base64!)
-                localStorage.setItem('adminProfileImage', uploadedUrl);
-                localStorage.setItem('heroProfileImage', uploadedUrl);
-                localStorage.setItem('profileImage', uploadedUrl);
-                localStorage.setItem('profileImageDefault', uploadedUrl); // Für Dual-Images
-                console.log('💾 S3 URL in localStorage gespeichert:', uploadedUrl.substring(0, 60) + '...');
-            } else {
-                // Nur bei Fehler: Base64
-                localStorage.setItem('adminProfileImage', finalSrc);
-                localStorage.setItem('heroProfileImage', finalSrc);
-                localStorage.setItem('profileImage', finalSrc);
-                console.log('💾 Base64 in localStorage gespeichert (Fallback)');
-            }
+            // 3) In localStorage speichern (als Cache)
+            localStorage.setItem('adminProfileImage', finalSrc);
+            localStorage.setItem('heroProfileImage', finalSrc);
+            localStorage.setItem('profileImage', finalSrc);
             
-            // 4) In AWS DynamoDB speichern (wenn S3 Upload erfolgreich)
-            if (uploadedUrl && window.awsProfileAPI) {
-                try {
-                    console.log('☁️ Speichere Bild-URL in AWS DynamoDB...');
-                    
-                    const imageData = {
-                        profileImageDefault: uploadedUrl,
-                        profileImageHover: localStorage.getItem('profileImageHover') || uploadedUrl
-                    };
-                    
-                    await window.awsProfileAPI.saveWebsiteImages(imageData);
-                    console.log('✅ Bild-URL in AWS DynamoDB gespeichert');
-                } catch (awsError) {
-                    console.warn('⚠️ AWS DynamoDB Speicherung fehlgeschlagen:', awsError.message);
-                }
-            }
-            
-            // 5) heroData updaten
+            // heroData updaten
             let heroData = {};
             try {
                 const stored = localStorage.getItem('heroData');
@@ -315,17 +279,36 @@ class HeroAboutSection {
             heroData.profileImage = finalSrc;
             localStorage.setItem('heroData', JSON.stringify(heroData));
             
-            // 6) Vorschau und Website aktualisieren
+            // 4) WICHTIG: Wenn S3 Upload erfolgreich war, in DynamoDB speichern
+            if (uploadedUrl && window.awsProfileAPI) {
+                try {
+                    console.log('☁️ Speichere S3 URL in AWS DynamoDB...');
+                    
+                    const imageData = {
+                        profileImageDefault: uploadedUrl, // S3 URL verwenden
+                        profileImageHover: localStorage.getItem('profileImageHover') || uploadedUrl
+                    };
+                    
+                    await window.awsProfileAPI.saveWebsiteImages(imageData);
+                    console.log('✅ S3 URL in AWS DynamoDB gespeichert');
+                } catch (awsError) {
+                    console.warn('⚠️ AWS DynamoDB Speicherung fehlgeschlagen:', awsError.message);
+                    console.log('ℹ️ Bild ist trotzdem in localStorage verfügbar');
+                }
+            }
+            
+            // 5) Vorschau und Website aktualisieren
             this.updateCurrentProfileImage(finalSrc);
             this.loadGallery();
             this.syncToWebsite();
             
             const successMsg = uploadedUrl 
                 ? `✅ Profilbild auf AWS S3 & DynamoDB gespeichert` 
-                : `✅ Profilbild in localStorage gespeichert (Base64)`;
+                : `✅ Profilbild in localStorage gespeichert (S3 Upload fehlgeschlagen)`;
             
             this.toast(successMsg, 'success');
-            console.log(`🎉 Image upload completed: ${uploadMethod}`);
+            console.log('🎉 Profile image upload completed:', uploadMethod);
+            
         } catch (error) {
             console.error('❌ Profilbild-Upload Fehler:', error);
             this.toast('Fehler beim Hochladen des Profilbilds: ' + error.message, 'error');
