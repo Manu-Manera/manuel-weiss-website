@@ -1157,6 +1157,33 @@
             }
         }
         
+        // Funktion um Profilbild direkt aus AWS DynamoDB zu laden (unabhängig von heroData)
+        async function loadProfileImageFromAWS() {
+            try {
+                if (!window.awsProfileAPI || !window.awsProfileAPI.loadWebsiteImages) {
+                    console.warn('⚠️ WEBSITE: awsProfileAPI nicht verfügbar für Profilbild-Laden');
+                    return null;
+                }
+                
+                console.log('☁️ WEBSITE: Loading profile image directly from AWS DynamoDB...');
+                const awsImages = await window.awsProfileAPI.loadWebsiteImages();
+                
+                if (awsImages && awsImages.profileImageDefault) {
+                    const profilePhoto = document.getElementById('profile-photo');
+                    if (profilePhoto) {
+                        profilePhoto.src = awsImages.profileImageDefault;
+                        profilePhoto.style.display = 'block';
+                        console.log('✅ WEBSITE: Profile image loaded from AWS DynamoDB and displayed');
+                        return awsImages.profileImageDefault;
+                    }
+                }
+                return null;
+            } catch (error) {
+                console.warn('⚠️ WEBSITE: Failed to load profile image from AWS:', error);
+                return null;
+            }
+        }
+        
         // Beim Laden der Seite Hero-Daten laden
         document.addEventListener('DOMContentLoaded', async function() {
             console.log('🚀 WEBSITE: Page loaded, loading hero data...');
@@ -1166,6 +1193,16 @@
             while (!window.awsProfileAPI && retries < 10) {
                 await new Promise(resolve => setTimeout(resolve, 100));
                 retries++;
+            }
+            
+            // PRIORITÄT: Profilbild SOFORT aus AWS laden (vor allem anderen)
+            const awsImage = await loadProfileImageFromAWS();
+            if (awsImage) {
+                // Bild in localStorage cachen
+                localStorage.setItem('profileImageDefault', awsImage);
+                localStorage.setItem('adminProfileImage', awsImage);
+                localStorage.setItem('heroProfileImage', awsImage);
+                localStorage.setItem('profileImage', awsImage);
             }
             
             // Sofort Standard-Statistiken garantieren
@@ -1187,29 +1224,32 @@
                 }
 
                 // Beobachter: verhindert Zurücksetzen auf Platzhalter-Bild
-                (function pinProfileImage() {
-                    const stored = localStorage.getItem('adminProfileImage')
-                        || localStorage.getItem('heroProfileImage')
-                        || localStorage.getItem('profileImage');
-                    const img = document.getElementById('profile-photo');
-                    if (!img || !stored) return;
+                // NUR wenn kein AWS-Bild geladen wurde
+                if (!awsImage) {
+                    (function pinProfileImage() {
+                        const stored = localStorage.getItem('adminProfileImage')
+                            || localStorage.getItem('heroProfileImage')
+                            || localStorage.getItem('profileImage');
+                        const img = document.getElementById('profile-photo');
+                        if (!img || !stored) return;
 
-                    const desiredSrc = stored;
-                    const ensure = () => {
-                        if (img.src !== desiredSrc) {
-                            img.src = desiredSrc;
-                            img.style.display = 'block';
-                            console.log('🔒 WEBSITE: Profile image pinned to stored value');
-                        }
-                    };
+                        const desiredSrc = stored;
+                        const ensure = () => {
+                            if (img.src !== desiredSrc) {
+                                img.src = desiredSrc;
+                                img.style.display = 'block';
+                                console.log('🔒 WEBSITE: Profile image pinned to stored value');
+                            }
+                        };
 
-                    ensure();
+                        ensure();
 
-                    try {
-                        const observer = new MutationObserver(() => ensure());
-                        observer.observe(img, { attributes: true, attributeFilter: ['src'] });
-                    } catch {}
-                })();
+                        try {
+                            const observer = new MutationObserver(() => ensure());
+                            observer.observe(img, { attributes: true, attributeFilter: ['src'] });
+                        } catch {}
+                    })();
+                }
             } catch (error) {
                 console.error('❌ WEBSITE: Failed to load hero data:', error);
                 // Bei Fehler trotzdem Standard-Werte garantieren

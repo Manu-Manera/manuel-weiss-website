@@ -251,10 +251,15 @@ class HeroAboutSection {
                 console.log('✅ AWS Module verfügbar, starte S3 Upload...');
                 const userId = 'owner';
                 const result = await window.awsMedia.uploadProfileImage(file, userId);
-                uploadedUrl = result.publicUrl;
-                uploadMethod = 'AWS S3';
+                console.log('📦 S3 Upload Result:', result);
                 
-                console.log('✅ S3 Upload erfolgreich:', uploadedUrl);
+                if (result && result.publicUrl) {
+                    uploadedUrl = result.publicUrl;
+                    uploadMethod = 'AWS S3';
+                    console.log('✅ S3 Upload erfolgreich:', uploadedUrl);
+                } else {
+                    throw new Error('S3 Upload erfolgreich, aber keine publicUrl zurückgegeben');
+                }
                 
             } catch (e) {
                 console.warn('❌ S3 Upload fehlgeschlagen, verwende Base64 Fallback:', e.message);
