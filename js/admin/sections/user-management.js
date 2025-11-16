@@ -68,15 +68,6 @@ class AdminUserManagement {
             });
         }
         
-        // Add existing user form
-        const formAddExisting = document.getElementById('form-add-existing-user');
-        if (formAddExisting) {
-            formAddExisting.addEventListener('submit', (e) => {
-                e.preventDefault();
-                this.handleAddExistingUser(e.target);
-            });
-        }
-        
         // Modal close buttons
         document.querySelectorAll('[data-dismiss="modal"]').forEach(btn => {
             btn.addEventListener('click', (e) => {
@@ -283,89 +274,111 @@ class AdminUserManagement {
         const name = formData.get('name').trim();
         const sendEmail = formData.get('sendEmail') === 'on';
         
+        // Validation
+        if (!email || !password) {
+            this.showError('Bitte fülle alle Pflichtfelder aus.');
+            return;
+        }
+        
+        if (password.length < 8) {
+            this.showError('Das Passwort muss mindestens 8 Zeichen lang sein.');
+            return;
+        }
+        
         const submitBtn = document.getElementById('btn-submit-create');
         const originalText = submitBtn.innerHTML;
         
         try {
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Erstelle User...';
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Erstelle neuen User...';
             
-            // Create user
-            const createParams = {
-                UserPoolId: this.userPoolId,
-                Username: email,
-                UserAttributes: [
-                    { Name: 'email', Value: email },
-                    { Name: 'email_verified', Value: 'true' }
-                ],
-                MessageAction: sendEmail ? 'SEND' : 'SUPPRESS'
-            };
+            console.log('👤 Erstelle neuen Admin-User:', email);
             
-            if (name) {
-                createParams.UserAttributes.push({ Name: 'name', Value: name });
+            // Prüfe ob User bereits existiert
+            let userExists = false;
+            try {
+                await this.cognitoIdentityServiceProvider.adminGetUser({
+                    UserPoolId: this.userPoolId,
+                    Username: email
+                }).promise();
+                userExists = true;
+            } catch (checkError) {
+                if (checkError.code !== 'UserNotFoundException') {
+                    throw checkError;
+                }
             }
             
-            const createResult = await this.cognitoIdentityServiceProvider.adminCreateUser(createParams).promise();
+            if (userExists) {
+                // User existiert bereits - füge nur zur Admin-Gruppe hinzu
+                console.log('ℹ️ User existiert bereits, füge zur Admin-Gruppe hinzu...');
+                await this.cognitoIdentityServiceProvider.adminAddUserToGroup({
+                    UserPoolId: this.userPoolId,
+                    Username: email,
+                    GroupName: this.groupName
+                }).promise();
+                
+                this.showSuccess(`User ${email} existiert bereits und wurde zur Admin-Gruppe hinzugefügt!`);
+            } else {
+                // Erstelle komplett neuen User
+                console.log('➕ Erstelle komplett neuen User...');
+                
+                const createParams = {
+                    UserPoolId: this.userPoolId,
+                    Username: email,
+                    UserAttributes: [
+                        { Name: 'email', Value: email },
+                        { Name: 'email_verified', Value: 'true' }
+                    ],
+                    MessageAction: sendEmail ? 'SEND' : 'SUPPRESS'
+                };
+                
+                if (name) {
+                    createParams.UserAttributes.push({ Name: 'name', Value: name });
+                }
+                
+                await this.cognitoIdentityServiceProvider.adminCreateUser(createParams).promise();
+                console.log('✅ User erstellt');
+                
+                // Setze Passwort
+                await this.cognitoIdentityServiceProvider.adminSetUserPassword({
+                    UserPoolId: this.userPoolId,
+                    Username: email,
+                    Password: password,
+                    Permanent: true
+                }).promise();
+                console.log('✅ Passwort gesetzt');
+                
+                // Füge zur Admin-Gruppe hinzu
+                await this.cognitoIdentityServiceProvider.adminAddUserToGroup({
+                    UserPoolId: this.userPoolId,
+                    Username: email,
+                    GroupName: this.groupName
+                }).promise();
+                console.log('✅ Zur Admin-Gruppe hinzugefügt');
+                
+                this.showSuccess(`✅ Neuer Admin-User ${email} wurde erfolgreich erstellt!`);
+            }
             
-            // Set password
-            await this.cognitoIdentityServiceProvider.adminSetUserPassword({
-                UserPoolId: this.userPoolId,
-                Username: email,
-                Password: password,
-                Permanent: true
-            }).promise();
-            
-            // Add to admin group
-            await this.cognitoIdentityServiceProvider.adminAddUserToGroup({
-                UserPoolId: this.userPoolId,
-                Username: email,
-                GroupName: this.groupName
-            }).promise();
-            
-            this.showSuccess(`Admin-User ${email} wurde erfolgreich erstellt!`);
             this.closeModal('modal-create-user');
             await this.loadAdminUsers();
             
         } catch (error) {
             console.error('❌ Error creating user:', error);
-            this.showError(`Fehler beim Erstellen des Users: ${error.message}`);
-        } finally {
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = originalText;
-        }
-    }
-    
-    async handleAddExistingUser(form) {
-        const formData = new FormData(form);
-        const email = formData.get('email').trim();
-        
-        const submitBtn = document.getElementById('btn-submit-add-existing');
-        const originalText = submitBtn.innerHTML;
-        
-        try {
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Füge hinzu...';
-            
-            // Add to admin group
-            await this.cognitoIdentityServiceProvider.adminAddUserToGroup({
-                UserPoolId: this.userPoolId,
-                Username: email,
-                GroupName: this.groupName
-            }).promise();
-            
-            this.showSuccess(`User ${email} wurde zur Admin-Gruppe hinzugefügt!`);
-            this.closeModal('modal-add-existing-user');
-            await this.loadAdminUsers();
-            
-        } catch (error) {
-            console.error('❌ Error adding user to group:', error);
             let errorMsg = error.message;
-            if (error.code === 'UserNotFoundException') {
-                errorMsg = 'User nicht gefunden. Bitte prüfe die E-Mail-Adresse.';
-            } else if (error.code === 'ResourceNotFoundException') {
-                errorMsg = 'User oder Gruppe nicht gefunden.';
+            
+            if (error.code === 'InvalidParameterException') {
+                if (error.message.includes('password')) {
+                    errorMsg = 'Das Passwort entspricht nicht den Anforderungen (min. 8 Zeichen, Groß-/Kleinbuchstaben, Zahlen).';
+                } else if (error.message.includes('email')) {
+                    errorMsg = 'Ungültige E-Mail-Adresse.';
+                }
+            } else if (error.code === 'UsernameExistsException') {
+                errorMsg = 'Ein User mit dieser E-Mail-Adresse existiert bereits.';
+            } else if (error.code === 'InvalidPasswordException') {
+                errorMsg = 'Das Passwort entspricht nicht den Sicherheitsanforderungen.';
             }
-            this.showError(`Fehler: ${errorMsg}`);
+            
+            this.showError(`Fehler beim Erstellen des Users: ${errorMsg}`);
         } finally {
             submitBtn.disabled = false;
             submitBtn.innerHTML = originalText;
