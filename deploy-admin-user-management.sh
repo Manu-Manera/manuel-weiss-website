@@ -82,7 +82,7 @@ if aws lambda get-function --function-name "$FUNCTION_NAME" --region "$REGION" &
     echo "   ⚙️  Update Environment Variables..."
     aws lambda update-function-configuration \
         --function-name "$FUNCTION_NAME" \
-        --environment "Variables={USER_POOL_ID=$USER_POOL_ID,TABLE_NAME=$TABLE_NAME,AWS_REGION=$REGION}" \
+        --environment "Variables={USER_POOL_ID=$USER_POOL_ID,TABLE_NAME=$TABLE_NAME}" \
         --region "$REGION" \
         --output json > /dev/null
     
@@ -90,12 +90,89 @@ if aws lambda get-function --function-name "$FUNCTION_NAME" --region "$REGION" &
 else
     echo -e "${YELLOW}   ⚠️  Function existiert nicht - erstelle sie...${NC}"
     
-    # Get IAM role (use existing role or create new)
-    ROLE_ARN=$(aws iam list-roles --query "Roles[?RoleName=='lambda-execution-role'].Arn" --output text 2>/dev/null || echo "")
+    # Get or create IAM role
+    ROLE_NAME="mawps-lambda-execution-role"
+    ROLE_ARN=$(aws iam get-role --role-name "$ROLE_NAME" --query 'Role.Arn' --output text 2>/dev/null || echo "")
     
     if [ -z "$ROLE_ARN" ]; then
-        echo -e "${RED}   ❌ IAM Role nicht gefunden. Bitte erstelle eine Lambda Execution Role.${NC}"
-        exit 1
+        echo -e "${YELLOW}   ⚠️  IAM Role nicht gefunden - erstelle sie...${NC}"
+        
+        # Create trust policy
+        cat > /tmp/trust-policy.json << EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "lambda.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+EOF
+        
+        # Create role
+        ROLE_ARN=$(aws iam create-role \
+            --role-name "$ROLE_NAME" \
+            --assume-role-policy-document file:///tmp/trust-policy.json \
+            --query 'Role.Arn' \
+            --output text)
+        
+        # Attach basic execution policy
+        aws iam attach-role-policy \
+            --role-name "$ROLE_NAME" \
+            --policy-arn arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        
+        # Add Cognito and DynamoDB permissions
+        cat > /tmp/lambda-policy.json << EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "cognito-idp:AdminCreateUser",
+        "cognito-idp:AdminDeleteUser",
+        "cognito-idp:AdminGetUser",
+        "cognito-idp:AdminListGroupsForUser",
+        "cognito-idp:AdminSetUserPassword",
+        "cognito-idp:AdminUpdateUserAttributes",
+        "cognito-idp:AdminEnableUser",
+        "cognito-idp:AdminDisableUser",
+        "cognito-idp:AdminConfirmSignUp",
+        "cognito-idp:ListUsers",
+        "cognito-idp:ListUsersInGroup"
+      ],
+      "Resource": "arn:aws:cognito-idp:${REGION}:*:userpool/${USER_POOL_ID}"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:GetItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:Query",
+        "dynamodb:Scan"
+      ],
+      "Resource": "arn:aws:dynamodb:${REGION}:*:table/${TABLE_NAME}*"
+    }
+  ]
+}
+EOF
+        
+        aws iam put-role-policy \
+            --role-name "$ROLE_NAME" \
+            --policy-name "CognitoDynamoDBAccess" \
+            --policy-document file:///tmp/lambda-policy.json
+        
+        rm -f /tmp/trust-policy.json /tmp/lambda-policy.json
+        
+        echo -e "${GREEN}   ✅ IAM Role erstellt: $ROLE_ARN${NC}"
+    else
+        echo -e "${GREEN}   ✅ IAM Role gefunden: $ROLE_ARN${NC}"
     fi
     
     # Create function
@@ -107,7 +184,7 @@ else
         --zip-file fileb://../admin-user-management.zip \
         --timeout 30 \
         --memory-size 256 \
-        --environment "Variables={USER_POOL_ID=$USER_POOL_ID,TABLE_NAME=$TABLE_NAME,AWS_REGION=$REGION}" \
+        --environment "Variables={USER_POOL_ID=$USER_POOL_ID,TABLE_NAME=$TABLE_NAME}" \
         --region "$REGION" \
         --output json > /dev/null
     
@@ -128,8 +205,8 @@ ROUTES=(
 )
 
 for route in "${ROUTES[@]}"; do
-    METHOD=$(echo $route | cut -d' ' -f1)
-    PATH=$(echo $route | cut -d' ' -f2-)
+    METHOD="${route%% *}"
+    PATH="${route#* }"
     echo "   📍 $METHOD $PATH"
 done
 
