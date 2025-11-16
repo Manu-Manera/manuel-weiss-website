@@ -457,26 +457,34 @@ class AdminSidebar extends HTMLElement {
     }
     
     /**
-     * Navigation zu Section
+     * Navigation zu Section (non-blocking)
      */
     navigateToSection(sectionId) {
         console.log('Sidebar navigation to:', sectionId);
         
-        // Direkte Navigation über AdminApp
+        // Navigation sofort starten (nicht warten)
         if (window.AdminApp && window.AdminApp.navigation) {
             console.log('Using AdminApp navigation');
-            window.AdminApp.navigation.navigateToSection(sectionId);
+            // Non-blocking - Navigation läuft im Hintergrund
+            window.AdminApp.navigation.navigateToSection(sectionId).catch(err => {
+                console.error('Navigation error:', err);
+            });
         } else if (this.navigation) {
             console.log('Using local navigation');
-            this.navigation.navigateToSection(sectionId);
+            // Non-blocking
+            this.navigation.navigateToSection(sectionId).catch(err => {
+                console.error('Navigation error:', err);
+            });
         } else {
             // Fallback: Direkte Hash-Änderung
             console.log('Using fallback navigation');
             window.location.hash = '#' + sectionId;
             
-            // Manuell Section laden falls AdminApp nicht verfügbar
+            // Manuell Section laden falls AdminApp nicht verfügbar (non-blocking)
             setTimeout(() => {
-                this.loadSectionManually(sectionId);
+                this.loadSectionManually(sectionId).catch(err => {
+                    console.error('Manual section load error:', err);
+                });
             }, 100);
         }
     }

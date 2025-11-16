@@ -72,29 +72,43 @@ class AdminNavigation {
         try {
             console.log('🚀 Navigating to section:', sectionId);
             
-            // Middleware ausführen
-            for (const middleware of this.middleware) {
-                const result = await middleware(sectionId);
-                if (result === false) return; // Navigation abgebrochen
-            }
-            
-            // Section laden
-            await this.loadSection(sectionId);
-            
-            // State aktualisieren (ohne automatisches Speichern)
+            // State sofort aktualisieren (UI reagiert sofort)
             this.stateManager.setState('currentSection', sectionId);
             this.currentSection = sectionId;
             
-            // URL aktualisieren (ohne Hash-Change zu triggern)
+            // URL sofort aktualisieren
             const newUrl = `${window.location.pathname}#${sectionId}`;
             if (window.location.href !== newUrl) {
                 window.history.pushState(null, '', newUrl);
             }
             
-            // Event dispatchen
+            // Middleware ausführen (non-blocking mit Timeout)
+            try {
+                const middlewarePromises = this.middleware.map(m => 
+                    Promise.race([
+                        m(sectionId),
+                        new Promise((_, reject) => setTimeout(() => reject(new Error('Middleware timeout')), 2000))
+                    ])
+                );
+                const results = await Promise.all(middlewarePromises);
+                if (results.some(r => r === false)) {
+                    console.log('⚠️ Navigation abgebrochen durch Middleware');
+                    return;
+                }
+            } catch (middlewareError) {
+                console.warn('⚠️ Middleware error (continuing):', middlewareError);
+            }
+            
+            // Section laden (non-blocking mit Timeout)
+            this.loadSection(sectionId).catch(error => {
+                console.error(`❌ Failed to load section ${sectionId}:`, error);
+                this.handleNavigationError(sectionId, error);
+            });
+            
+            // Event sofort dispatchen (nicht warten)
             this.dispatchNavigationEvent(sectionId);
             
-            console.log('✅ Navigation completed:', sectionId);
+            console.log('✅ Navigation started:', sectionId);
             
         } catch (error) {
             console.error(`❌ Failed to navigate to section ${sectionId}:`, error);
@@ -103,99 +117,125 @@ class AdminNavigation {
     }
     
     /**
-     * Section laden
+     * Section laden (mit Timeout-Protection)
      */
     async loadSection(sectionId) {
         console.log('Loading section:', sectionId);
         
-        if (!this.sectionLoader) {
-            throw new Error('Section loader not set');
+        try {
+            if (!this.sectionLoader) {
+                throw new Error('Section loader not set');
+            }
+            
+            const route = this.routes.get(sectionId);
+            if (!route) {
+                throw new Error(`Route not found for section: ${sectionId}`);
+            }
+            
+            console.log('Route found:', route);
+            
+            // Section laden mit Route (mit Timeout)
+            const loadPromise = this.sectionLoader.loadSection(sectionId, route);
+            const timeoutPromise = new Promise((_, reject) => 
+                setTimeout(() => reject(new Error('Section load timeout (5s)')), 5000)
+            );
+            
+            const result = await Promise.race([loadPromise, timeoutPromise]);
+            
+            console.log('Section loaded, template length:', result.template.length);
+            
+            // Content in DOM einfügen
+            const container = document.getElementById('admin-content');
+            if (container) {
+                container.innerHTML = result.template;
+                container.setAttribute('data-section', sectionId);
+                console.log('Content inserted into DOM');
+            } else {
+                console.error('Admin content container not found');
+                throw new Error('Admin content container not found');
+            }
+            
+            // Section-spezifische Initialisierung (non-blocking)
+            this.initializeSection(sectionId);
+            
+        } catch (error) {
+            console.error(`Error loading section ${sectionId}:`, error);
+            // Zeige Fehlermeldung im Container
+            const container = document.getElementById('admin-content');
+            if (container) {
+                container.innerHTML = `
+                    <div class="error-message" style="padding: 2rem; text-align: center; color: #ef4444;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                        <p><strong>Fehler beim Laden der Section</strong></p>
+                        <p style="font-size: 0.9rem; color: #64748b; margin-top: 0.5rem;">${error.message}</p>
+                        <button class="btn btn-outline" onclick="window.AdminApp?.navigation?.navigateToSection('${sectionId}')" style="margin-top: 1rem;">
+                            <i class="fas fa-sync"></i> Erneut versuchen
+                        </button>
+                    </div>
+                `;
+            }
+            throw error;
         }
-        
-        const route = this.routes.get(sectionId);
-        if (!route) {
-            throw new Error(`Route not found for section: ${sectionId}`);
-        }
-        
-        console.log('Route found:', route);
-        
-        // Section laden mit Route
-        const result = await this.sectionLoader.loadSection(sectionId, route);
-        
-        console.log('Section loaded, template length:', result.template.length);
-        
-        // Content in DOM einfügen
-        const container = document.getElementById('admin-content');
-        if (container) {
-            container.innerHTML = result.template;
-            container.setAttribute('data-section', sectionId);
-            console.log('Content inserted into DOM');
-        } else {
-            console.error('Admin content container not found');
-        }
-        
-        // Section als geladen markieren
-        this.stateManager.setState('currentSection', sectionId);
-        
-        // Section-spezifische Initialisierung
-        this.initializeSection(sectionId);
     }
     
     /**
-     * Section-spezifische Initialisierung
+     * Section-spezifische Initialisierung (komplett non-blocking)
      */
     initializeSection(sectionId) {
         console.log('Initializing section:', sectionId);
         
-        // Hero-About Section spezifische Initialisierung
-        if (sectionId === 'hero-about') {
-            // Warten auf DOM Update
-            setTimeout(() => {
-                if (window.HeroAboutSection && !window.heroAboutSection) {
-                    console.log('Initializing HeroAboutSection');
-                    window.heroAboutSection = new window.HeroAboutSection();
-                    window.heroAboutSection.init();
-                }
-            }, 100);
-        }
-        
-        // Website Users Section spezifische Initialisierung
-        if (sectionId === 'website-users') {
-            setTimeout(() => {
-                if (window.WebsiteUsersManagement) {
-                    const websiteUsers = window.AdminApp?.sections?.websiteUsers || new window.WebsiteUsersManagement();
-                    if (!websiteUsers.isInitialized && !websiteUsers.isInitializing) {
-                        console.log('Initializing WebsiteUsersManagement');
-                        // Don't await - let it run in background
-                        websiteUsers.init().catch(err => {
-                            console.error('Error initializing WebsiteUsersManagement:', err);
+        // Initialisierung mit längerer Verzögerung, um sicherzustellen, dass DOM bereit ist
+        setTimeout(() => {
+            try {
+                // Hero-About Section spezifische Initialisierung
+                if (sectionId === 'hero-about') {
+                    if (window.HeroAboutSection && !window.heroAboutSection) {
+                        console.log('Initializing HeroAboutSection');
+                        window.heroAboutSection = new window.HeroAboutSection();
+                        // Non-blocking
+                        window.heroAboutSection.init().catch(err => {
+                            console.error('Error initializing HeroAboutSection:', err);
                         });
                     }
-                    if (window.AdminApp && !window.AdminApp.sections.websiteUsers) {
-                        window.AdminApp.sections.websiteUsers = websiteUsers;
+                }
+                
+                // Website Users Section spezifische Initialisierung
+                if (sectionId === 'website-users') {
+                    if (window.WebsiteUsersManagement) {
+                        const websiteUsers = window.AdminApp?.sections?.websiteUsers || new window.WebsiteUsersManagement();
+                        if (!websiteUsers.isInitialized && !websiteUsers.isInitializing) {
+                            console.log('Initializing WebsiteUsersManagement');
+                            // Non-blocking - läuft komplett im Hintergrund
+                            websiteUsers.init().catch(err => {
+                                console.error('Error initializing WebsiteUsersManagement:', err);
+                            });
+                        }
+                        if (window.AdminApp && !window.AdminApp.sections.websiteUsers) {
+                            window.AdminApp.sections.websiteUsers = websiteUsers;
+                        }
                     }
                 }
-            }, 100);
-        }
-        
-        // User Management Section spezifische Initialisierung
-        if (sectionId === 'user-management') {
-            setTimeout(() => {
-                if (window.AdminUserManagement) {
-                    const userManagement = window.AdminApp?.sections?.userManagement || new window.AdminUserManagement();
-                    if (!userManagement.isInitialized && !userManagement.isInitializing) {
-                        console.log('Initializing AdminUserManagement');
-                        // Don't await - let it run in background
-                        userManagement.init().catch(err => {
-                            console.error('Error initializing AdminUserManagement:', err);
-                        });
-                    }
-                    if (window.AdminApp && !window.AdminApp.sections.userManagement) {
-                        window.AdminApp.sections.userManagement = userManagement;
+                
+                // User Management Section spezifische Initialisierung
+                if (sectionId === 'user-management') {
+                    if (window.AdminUserManagement) {
+                        const userManagement = window.AdminApp?.sections?.userManagement || new window.AdminUserManagement();
+                        if (!userManagement.isInitialized && !userManagement.isInitializing) {
+                            console.log('Initializing AdminUserManagement');
+                            // Non-blocking - läuft komplett im Hintergrund
+                            userManagement.init().catch(err => {
+                                console.error('Error initializing AdminUserManagement:', err);
+                            });
+                        }
+                        if (window.AdminApp && !window.AdminApp.sections.userManagement) {
+                            window.AdminApp.sections.userManagement = userManagement;
+                        }
                     }
                 }
-            }, 100);
-        }
+            } catch (error) {
+                console.error(`Error in initializeSection for ${sectionId}:`, error);
+            }
+        }, 200); // Längere Verzögerung für sichereres DOM-Rendering
     }
     
     /**
