@@ -875,41 +875,44 @@
         async function loadHeroDataFromAdmin() {
             console.log('📋 WEBSITE: Loading hero data from admin panel...');
             
-            // 1. Bilder aus AWS DynamoDB laden (NICHT-BLOCKIEREND, im Hintergrund)
-            setTimeout(async () => {
-                try {
-                    if (window.awsProfileAPI && window.awsProfileAPI.loadWebsiteImages) {
-                        console.log('☁️ WEBSITE: Loading images from AWS DynamoDB (background)...');
-                        
-                        // Mit kurzem Timeout, nicht blockierend
-                        const timeoutPromise = new Promise((_, reject) => 
-                            setTimeout(() => reject(new Error('Timeout')), 1000)
-                        );
-                        
-                        const awsImages = await Promise.race([
-                            window.awsProfileAPI.loadWebsiteImages(),
-                            timeoutPromise
-                        ]).catch(err => {
-                            console.warn('⚠️ AWS Bild-Laden timeout oder fehler:', err.message);
-                            return null;
-                        });
-                        
-                        if (awsImages) {
-                            // In localStorage cachen für schnelleren Zugriff
-                            if (awsImages.profileImageDefault) {
-                                localStorage.setItem('profileImageDefault', awsImages.profileImageDefault);
-                                console.log('✅ Default-Bild aus AWS geladen und gecacht');
-                            }
-                            if (awsImages.profileImageHover) {
-                                localStorage.setItem('profileImageHover', awsImages.profileImageHover);
-                                console.log('✅ Hover-Bild aus AWS geladen und gecacht');
-                            }
+            // 1. Bilder SOFORT aus AWS DynamoDB laden (PRIORITÄT!)
+            let awsImages = null;
+            try {
+                if (window.awsProfileAPI && window.awsProfileAPI.loadWebsiteImages) {
+                    console.log('☁️ WEBSITE: Loading images from AWS DynamoDB...');
+                    
+                    // Mit kurzem Timeout, aber SYNCHRON beim Laden
+                    const timeoutPromise = new Promise((_, reject) => 
+                        setTimeout(() => reject(new Error('Timeout')), 2000)
+                    );
+                    
+                    awsImages = await Promise.race([
+                        window.awsProfileAPI.loadWebsiteImages(),
+                        timeoutPromise
+                    ]).catch(err => {
+                        console.warn('⚠️ AWS Bild-Laden timeout oder fehler:', err.message);
+                        return null;
+                    });
+                    
+                    if (awsImages) {
+                        // AWS Daten haben PRIORITÄT - überschreibe localStorage
+                        if (awsImages.profileImageDefault) {
+                            localStorage.setItem('profileImageDefault', awsImages.profileImageDefault);
+                            console.log('✅ Default-Bild aus AWS geladen:', 
+                                awsImages.profileImageDefault.substring(0, 50) + '...');
                         }
+                        if (awsImages.profileImageHover) {
+                            localStorage.setItem('profileImageHover', awsImages.profileImageHover);
+                            console.log('✅ Hover-Bild aus AWS geladen:', 
+                                awsImages.profileImageHover.substring(0, 50) + '...');
+                        }
+                    } else {
+                        console.log('ℹ️ Keine AWS-Bilder gefunden, verwende localStorage Cache');
                     }
-                } catch (awsError) {
-                    console.warn('⚠️ AWS Bild-Laden fehlgeschlagen:', awsError.message);
                 }
-            }, 100); // Im Hintergrund nach 100ms
+            } catch (awsError) {
+                console.warn('⚠️ AWS Bild-Laden fehlgeschlagen:', awsError.message);
+            }
             
             // 2. Hero-Daten primär aus localStorage laden (schnell)
             let heroData = localStorage.getItem('heroData');
@@ -1006,21 +1009,24 @@
                     const profilePhotoDefault = document.getElementById('profile-photo-default');
                     const profilePhotoHover = document.getElementById('profile-photo-hover');
                     
-                    // Separate Bilder aus localStorage laden
+                    // Separate Bilder aus localStorage/AWS laden
+                    // WICHTIG: AWS Daten wurden bereits oben geladen und in localStorage gespeichert
                     let defaultImage = localStorage.getItem('profileImageDefault');
                     let hoverImage = localStorage.getItem('profileImageHover');
                     
-                    // Fallback auf das gemeinsame Profilbild
+                    // Fallback auf das gemeinsame Profilbild (nur wenn wirklich nichts da ist)
                     if (!defaultImage) {
-                        defaultImage = profileImage || 'manuel-weiss-closed-smile.jpg';
+                        defaultImage = profileImage || 'manuel-weiss-portrait.jpg';
                     }
                     if (!hoverImage) {
-                        hoverImage = profileImage || 'manuel-weiss-open-smile.jpg';
+                        hoverImage = profileImage || 'manuel-weiss-portrait.jpg';
                     }
                     
                     console.log('📸 WEBSITE: Loading dual images...');
-                    console.log('  Default:', defaultImage ? (defaultImage.startsWith('data:') ? 'Base64' : defaultImage) : 'None');
-                    console.log('  Hover:', hoverImage ? (hoverImage.startsWith('data:') ? 'Base64' : hoverImage) : 'None');
+                    console.log('  Default:', defaultImage ? (defaultImage.startsWith('data:') ? `Base64 (${(defaultImage.length / 1024).toFixed(2)} KB)` : 
+                        (defaultImage.startsWith('http') ? `AWS S3: ${defaultImage.substring(0, 60)}...` : defaultImage)) : 'None');
+                    console.log('  Hover:', hoverImage ? (hoverImage.startsWith('data:') ? `Base64 (${(hoverImage.length / 1024).toFixed(2)} KB)` : 
+                        (hoverImage.startsWith('http') ? `AWS S3: ${hoverImage.substring(0, 60)}...` : hoverImage)) : 'None');
                     
                     if (profilePhotoDefault) {
                         profilePhotoDefault.src = defaultImage;
