@@ -518,8 +518,47 @@ curl -X POST "https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod/pro
 ---
 
 **Letzte Aktualisierung:** 2025-11-16  
-**Version:** 2.0  
+**Version:** 2.1  
 **Status:** ✅ Aktiv & Vollständig
+
+---
+
+## 🔄 NEUESTE ÄNDERUNGEN (2025-11-16)
+
+### ✅ Lambda PresignFunction erweitert
+- **Datei:** `lambda-profile-image/index.js`
+- **Neue Funktionen:**
+  - DynamoDB Support für `/website-images` Endpoints
+  - `POST /website-images` → Speichert Website-Bilder in DynamoDB
+  - `GET /website-images/{userId}` → Lädt Website-Bilder aus DynamoDB
+- **Deployment:** ✅ Abgeschlossen
+
+### ✅ SAM Template aktualisiert
+- **Datei:** `infrastructure/profile-media-sam.yaml`
+- **Änderungen:**
+  - DynamoDB-Berechtigungen hinzugefügt
+  - `/website-images` Routes hinzugefügt
+  - `PROFILE_TABLE` Environment Variable hinzugefügt
+- **Status:** ⚠️ Muss noch deployed werden (siehe unten)
+
+### ⚠️ WICHTIG: SAM Template Deployment erforderlich
+Um die neuen `/website-images` Routes zu aktivieren, muss das SAM Template deployed werden:
+
+```bash
+cd infrastructure
+sam build --template-file profile-media-sam.yaml
+sam deploy \
+  --stack-name manuel-weiss-profile-media \
+  --region eu-central-1 \
+  --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM \
+  --resolve-s3 \
+  --no-confirm-changeset
+```
+
+**Oder:** Verwende das Deployment-Skript:
+```bash
+./deploy/deploy-profile-media.sh
+```
 
 ---
 
