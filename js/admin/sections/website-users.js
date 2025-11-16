@@ -90,6 +90,24 @@ class WebsiteUsersManagement {
             });
         }
         
+        // Edit user form
+        const formEdit = document.getElementById('form-edit-website-user');
+        if (formEdit) {
+            formEdit.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.handleEditUser(e.target);
+            });
+        }
+        
+        // Reset password form
+        const formResetPassword = document.getElementById('form-reset-password-website-user');
+        if (formResetPassword) {
+            formResetPassword.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.handleResetPassword(e.target);
+            });
+        }
+        
         // Confirm delete button
         const btnConfirmDelete = document.getElementById('btn-confirm-delete-website-user');
         if (btnConfirmDelete) {
@@ -187,7 +205,27 @@ class WebsiteUsersManagement {
             </div>
         `;
         
-        // Add event listeners for delete buttons
+        // Add event listeners for action buttons
+        listEl.querySelectorAll('[data-action="edit-user"]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const row = e.target.closest('tr');
+                const username = row.dataset.username;
+                const user = this.users.find(u => u.Username === username);
+                if (user) {
+                    this.showEditUserModal(user);
+                }
+            });
+        });
+        
+        listEl.querySelectorAll('[data-action="reset-password"]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const row = e.target.closest('tr');
+                const email = row.dataset.email;
+                const username = row.dataset.username;
+                this.showResetPasswordModal(email, username);
+            });
+        });
+        
         listEl.querySelectorAll('[data-action="delete-user"]').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const email = e.target.closest('tr').dataset.email;
@@ -203,13 +241,29 @@ class WebsiteUsersManagement {
         const created = user.UserCreateDate ? new Date(user.UserCreateDate).toLocaleDateString('de-DE') : '-';
         
         return `
-            <tr data-email="${email}">
+            <tr data-email="${email}" data-username="${user.Username}">
                 <td>${email}</td>
                 <td>${name}</td>
                 <td><span class="status-badge status-${user.UserStatus}">${status}</span></td>
                 <td>${created}</td>
                 <td>
                     <div class="action-buttons">
+                        <button 
+                            class="btn-icon" 
+                            data-action="edit-user"
+                            title="User bearbeiten"
+                            style="color: #667eea;"
+                        >
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button 
+                            class="btn-icon" 
+                            data-action="reset-password"
+                            title="Passwort zurücksetzen"
+                            style="color: #f59e0b;"
+                        >
+                            <i class="fas fa-key"></i>
+                        </button>
                         <button 
                             class="btn-icon btn-danger" 
                             data-action="delete-user"
@@ -433,6 +487,44 @@ class WebsiteUsersManagement {
         }
     }
     
+    showEditUserModal(user) {
+        const modal = document.getElementById('modal-edit-website-user');
+        if (!modal) return;
+        
+        const email = this.getUserAttribute(user, 'email') || user.Username;
+        const name = this.getUserAttribute(user, 'name') || '';
+        const emailVerified = this.getUserAttribute(user, 'email_verified') === 'true';
+        
+        // Form fields füllen
+        document.getElementById('edit-user-username').value = user.Username;
+        document.getElementById('edit-user-email').value = email;
+        document.getElementById('edit-user-name').value = name;
+        document.getElementById('edit-user-status').value = user.UserStatus;
+        document.getElementById('edit-user-email-verified').checked = emailVerified;
+        
+        modal.classList.add('show');
+        document.getElementById('edit-user-email')?.focus();
+        
+        // Setup close handlers
+        this.setupModalCloseHandlers(modal);
+    }
+    
+    showResetPasswordModal(email, username) {
+        const modal = document.getElementById('modal-reset-password-website-user');
+        if (!modal) return;
+        
+        document.getElementById('reset-password-username').value = username;
+        document.getElementById('reset-password-email').textContent = email;
+        document.getElementById('reset-password-new').value = '';
+        document.getElementById('reset-password-temporary').checked = false;
+        
+        modal.classList.add('show');
+        document.getElementById('reset-password-new')?.focus();
+        
+        // Setup close handlers
+        this.setupModalCloseHandlers(modal);
+    }
+    
     showDeleteConfirmModal(email) {
         this.userToDelete = email;
         const modal = document.getElementById('modal-delete-website-user');
@@ -444,6 +536,164 @@ class WebsiteUsersManagement {
             
             // Setup close handlers
             this.setupModalCloseHandlers(modal);
+        }
+    }
+    
+    async handleEditUser(form) {
+        const formData = new FormData(form);
+        const username = formData.get('username');
+        const newEmail = formData.get('email').trim();
+        const name = formData.get('name').trim();
+        const status = formData.get('status');
+        const emailVerified = formData.get('emailVerified') === 'on';
+        
+        if (!newEmail) {
+            this.showError('E-Mail-Adresse ist erforderlich.');
+            return;
+        }
+        
+        const submitBtn = document.getElementById('btn-submit-edit-website-user');
+        const originalText = submitBtn.innerHTML;
+        
+        try {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Speichere Änderungen...';
+            
+            console.log('✏️ Bearbeite Website-Benutzer:', username);
+            
+            // User-Attribute aktualisieren
+            const attributes = [];
+            
+            // E-Mail-Adresse aktualisieren (wenn geändert)
+            const currentUser = this.users.find(u => u.Username === username);
+            const currentEmail = this.getUserAttribute(currentUser, 'email') || currentUser.Username;
+            
+            if (newEmail !== currentEmail) {
+                attributes.push({ Name: 'email', Value: newEmail });
+                // Wenn E-Mail geändert wird, muss auch der Username geändert werden
+                // Das erfordert einen speziellen Prozess in Cognito
+                console.log('⚠️ E-Mail-Änderung erfordert Username-Update');
+            }
+            
+            // Name aktualisieren
+            const currentName = this.getUserAttribute(currentUser, 'name') || '';
+            if (name !== currentName) {
+                if (name) {
+                    attributes.push({ Name: 'name', Value: name });
+                } else {
+                    // Name entfernen (nicht direkt möglich, aber wir können es leer setzen)
+                    attributes.push({ Name: 'name', Value: '' });
+                }
+            }
+            
+            // E-Mail-Verifizierung aktualisieren
+            const currentEmailVerified = this.getUserAttribute(currentUser, 'email_verified') === 'true';
+            if (emailVerified !== currentEmailVerified) {
+                attributes.push({ Name: 'email_verified', Value: emailVerified ? 'true' : 'false' });
+            }
+            
+            // Attribute aktualisieren
+            if (attributes.length > 0) {
+                await this.cognitoIdentityServiceProvider.adminUpdateUserAttributes({
+                    UserPoolId: this.userPoolId,
+                    Username: username,
+                    UserAttributes: attributes
+                }).promise();
+                console.log('✅ User-Attribute aktualisiert');
+            }
+            
+            // Status aktualisieren (wenn geändert)
+            if (status !== currentUser.UserStatus) {
+                if (status === 'CONFIRMED' && currentUser.UserStatus !== 'CONFIRMED') {
+                    // User bestätigen
+                    await this.cognitoIdentityServiceProvider.adminConfirmSignUp({
+                        UserPoolId: this.userPoolId,
+                        Username: username
+                    }).promise();
+                    console.log('✅ User bestätigt');
+                } else if (status === 'FORCE_CHANGE_PASSWORD') {
+                    // Status auf "Passwort ändern erforderlich" setzen
+                    // Dies wird normalerweise durch Passwort-Reset erreicht
+                    console.log('ℹ️ Status FORCE_CHANGE_PASSWORD wird durch Passwort-Reset gesetzt');
+                }
+            }
+            
+            // Wenn E-Mail geändert wurde, müssen wir den Username auch ändern
+            // In Cognito muss der Username manuell geändert werden, was komplex ist
+            // Für jetzt zeigen wir eine Warnung
+            if (newEmail !== currentEmail) {
+                this.showSuccess(`✅ User-Daten aktualisiert! ⚠️ Hinweis: Die E-Mail-Adresse wurde geändert. Der User muss sich mit der neuen E-Mail-Adresse anmelden.`);
+            } else {
+                this.showSuccess(`✅ User-Daten wurden erfolgreich aktualisiert!`);
+            }
+            
+            this.closeModal('modal-edit-website-user');
+            await this.loadWebsiteUsers();
+            
+        } catch (error) {
+            console.error('❌ Error updating user:', error);
+            let errorMsg = error.message;
+            
+            if (error.code === 'InvalidParameterException') {
+                if (error.message.includes('email')) {
+                    errorMsg = 'Ungültige E-Mail-Adresse.';
+                }
+            } else if (error.code === 'AliasExistsException') {
+                errorMsg = 'Diese E-Mail-Adresse wird bereits von einem anderen User verwendet.';
+            }
+            
+            this.showError(`Fehler beim Aktualisieren des Users: ${errorMsg}`);
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+        }
+    }
+    
+    async handleResetPassword(form) {
+        const formData = new FormData(form);
+        const username = formData.get('username');
+        const password = formData.get('password');
+        const temporary = formData.get('temporary') === 'on';
+        
+        if (!password || password.length < 8) {
+            this.showError('Das Passwort muss mindestens 8 Zeichen lang sein.');
+            return;
+        }
+        
+        const submitBtn = document.getElementById('btn-submit-reset-password');
+        const originalText = submitBtn.innerHTML;
+        
+        try {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Setze Passwort...';
+            
+            console.log('🔑 Setze Passwort für Website-Benutzer:', username);
+            
+            await this.cognitoIdentityServiceProvider.adminSetUserPassword({
+                UserPoolId: this.userPoolId,
+                Username: username,
+                Password: password,
+                Permanent: !temporary
+            }).promise();
+            
+            console.log('✅ Passwort gesetzt');
+            
+            this.showSuccess(`✅ Passwort wurde erfolgreich ${temporary ? 'als temporäres Passwort' : ''} gesetzt!`);
+            
+            this.closeModal('modal-reset-password-website-user');
+            
+        } catch (error) {
+            console.error('❌ Error resetting password:', error);
+            let errorMsg = error.message;
+            
+            if (error.code === 'InvalidPasswordException') {
+                errorMsg = 'Das Passwort entspricht nicht den Sicherheitsanforderungen (min. 8 Zeichen, Groß-/Kleinbuchstaben, Zahlen).';
+            }
+            
+            this.showError(`Fehler beim Zurücksetzen des Passworts: ${errorMsg}`);
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
         }
     }
     
