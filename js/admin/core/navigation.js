@@ -158,6 +158,38 @@ class AdminNavigation {
                 }
             }, 100);
         }
+        
+        // Website Users Section spezifische Initialisierung
+        if (sectionId === 'website-users') {
+            setTimeout(() => {
+                if (window.WebsiteUsersManagement) {
+                    const websiteUsers = window.AdminApp?.sections?.websiteUsers || new window.WebsiteUsersManagement();
+                    if (!websiteUsers.isInitialized) {
+                        console.log('Initializing WebsiteUsersManagement');
+                        websiteUsers.init();
+                    }
+                    if (window.AdminApp && !window.AdminApp.sections.websiteUsers) {
+                        window.AdminApp.sections.websiteUsers = websiteUsers;
+                    }
+                }
+            }, 100);
+        }
+        
+        // User Management Section spezifische Initialisierung
+        if (sectionId === 'user-management') {
+            setTimeout(() => {
+                if (window.AdminUserManagement) {
+                    const userManagement = window.AdminApp?.sections?.userManagement || new window.AdminUserManagement();
+                    if (!userManagement.isInitialized) {
+                        console.log('Initializing AdminUserManagement');
+                        userManagement.init();
+                    }
+                    if (window.AdminApp && !window.AdminApp.sections.userManagement) {
+                        window.AdminApp.sections.userManagement = userManagement;
+                    }
+                }
+            }, 100);
+        }
     }
     
     /**
