@@ -745,7 +745,8 @@ class WebsiteUsersManagement {
                         status: status
                     };
                     
-                    const response = await fetch(`${apiBaseUrl}/admin/users/${encodeURIComponent(username)}`, {
+                    // Add timeout to fetch
+                    const fetchPromise = fetch(`${apiBaseUrl}/admin/users/${encodeURIComponent(username)}`, {
                         method: 'PUT',
                         headers: {
                             'Content-Type': 'application/json',
@@ -753,6 +754,12 @@ class WebsiteUsersManagement {
                         },
                         body: JSON.stringify(updateData)
                     });
+                    
+                    const timeoutPromise = new Promise((_, reject) => 
+                        setTimeout(() => reject(new Error('API-Request Timeout (10s)')), 10000)
+                    );
+                    
+                    const response = await Promise.race([fetchPromise, timeoutPromise]);
                     
                     if (response.ok) {
                         const updatedUser = await response.json();
