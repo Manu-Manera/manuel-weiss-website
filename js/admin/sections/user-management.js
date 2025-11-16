@@ -17,6 +17,17 @@ class AdminUserManagement {
         
         console.log('👥 Initializing Admin User Management...');
         
+        // Show loading state immediately
+        const listEl = document.getElementById('admin-users-list');
+        if (listEl) {
+            listEl.innerHTML = `
+                <div class="loading-placeholder" style="text-align: center; padding: 2rem;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: #667eea;"></i>
+                    <p>Initialisiere Admin-User-Verwaltung...</p>
+                </div>
+            `;
+        }
+        
         try {
             // Initialize AWS SDK if needed
             if (typeof AWS === 'undefined') {
@@ -28,14 +39,42 @@ class AdminUserManagement {
                 region: this.region
             });
             
+            // Setup event listeners first (non-blocking)
             this.setupEventListeners();
-            await this.loadAdminUsers();
+            
+            // Load admin users (with timeout)
+            await Promise.race([
+                this.loadAdminUsers(),
+                new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout beim Laden der Admin-User')), 15000))
+            ]);
             
             this.isInitialized = true;
             console.log('✅ Admin User Management initialized');
             
         } catch (error) {
             console.error('❌ Error initializing Admin User Management:', error);
+            const listEl = document.getElementById('admin-users-list');
+            if (listEl) {
+                listEl.innerHTML = `
+                    <div class="error-message" style="padding: 2rem; text-align: center; color: #ef4444;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                        <p><strong>Fehler beim Initialisieren</strong></p>
+                        <p style="font-size: 0.9rem; color: #64748b; margin-top: 0.5rem;">${error.message}</p>
+                        <details style="margin-top: 1rem; text-align: left; max-width: 500px; margin-left: auto; margin-right: auto;">
+                            <summary style="cursor: pointer; color: #667eea;">Technische Details</summary>
+                            <pre style="background: #f1f5f9; padding: 1rem; border-radius: 6px; margin-top: 0.5rem; font-size: 0.75rem; overflow-x: auto;">${error.stack || error.toString()}</pre>
+                        </details>
+                        <div style="margin-top: 1rem; display: flex; gap: 0.5rem; justify-content: center;">
+                            <button class="btn btn-outline" onclick="window.AdminApp?.sections?.userManagement?.init()">
+                                <i class="fas fa-sync"></i> Erneut versuchen
+                            </button>
+                            <button class="btn btn-outline" onclick="window.location.reload()">
+                                <i class="fas fa-redo"></i> Seite neu laden
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
             this.showError('Fehler beim Initialisieren der User-Verwaltung');
         }
     }
