@@ -16,9 +16,9 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://mawps.netlify.app">
     
-    <!-- Styles -->
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="css/persoenlichkeitsentwicklung-uebersicht.css">
+    <!-- Styles - mit Cache-Buster -->
+    <link rel="stylesheet" href="styles.css?v=20250116">
+    <link rel="stylesheet" href="css/persoenlichkeitsentwicklung-uebersicht.css?v=20250116">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
@@ -166,9 +166,9 @@
                 <div class="hero-image">
                     <div class="profile-image-container">
                         <!-- Standard: Bild mit geschlossenem Mund (lächelnd) -->
-                        <img src="manuel-weiss-closed-smile.jpg" alt="Manuel Weiss" class="profile-image profile-image-default" id="profile-photo-default" style="display: block;" onerror="console.error('❌ Fehler beim Laden des Standard-Bildes'); this.src='manuel-weiss-portrait.jpg';">
+                        <img src="manuel-weiss-portrait.jpg" alt="Manuel Weiss" class="profile-image profile-image-default" id="profile-photo-default" style="display: block;" onerror="this.style.display='none';">
                         <!-- Hover: Bild mit offenem Mund (lächelnd) -->
-                        <img src="manuel-weiss-open-smile.jpg" alt="Manuel Weiss lächelnd" class="profile-image profile-image-hover" id="profile-photo-hover" style="display: none;" onerror="console.error('❌ Fehler beim Laden des Hover-Bildes'); this.src='manuel-weiss-portrait.jpg';">
+                        <img src="manuel-weiss-portrait.jpg" alt="Manuel Weiss lächelnd" class="profile-image profile-image-hover" id="profile-photo-hover" style="display: none;" onerror="this.style.display='none';">
                     </div>
                     <div class="hero-image-decoration"></div>
                 </div>
@@ -523,23 +523,29 @@
     <!-- Translation Manager -->
     
     
-    <!-- Scripts -->
-    <script src="js/universal-navigation.js"></script>
-    <script src="script.js"></script>
+    <!-- Scripts - ASYNC/DEFER für bessere Performance -->
+    <script src="js/universal-navigation.js" defer></script>
+    <script src="script.js" defer></script>
     
-    <!-- Smart API für AWS-Integration -->
+    <!-- Smart API für AWS-Integration - ASYNC LADEN -->
     <script>
-        // Smart API laden für AWS-Integration
-        const smartApiScript = document.createElement('script');
-        smartApiScript.src = 'js/smart-api.js?v=1.0';
-        smartApiScript.onload = function() {
-            console.log('✅ WEBSITE: Smart API loaded for AWS integration');
-        };
-        document.head.appendChild(smartApiScript);
+        // Smart API laden für AWS-Integration (nicht-blockierend)
+        setTimeout(() => {
+            const smartApiScript = document.createElement('script');
+            smartApiScript.src = 'js/smart-api.js?v=1.0';
+            smartApiScript.async = true;
+            smartApiScript.onload = function() {
+                console.log('✅ WEBSITE: Smart API loaded for AWS integration');
+            };
+            smartApiScript.onerror = function() {
+                console.warn('⚠️ WEBSITE: Smart API could not be loaded');
+            };
+            document.head.appendChild(smartApiScript);
+        }, 200);
     </script>
     
-    <!-- Website Data Sync - KORRIGIERTE VERSION: zuletzt laden, damit es alles überschreibt -->
-    <script src="js/website-data-sync-fixed.js"></script>
+    <!-- Website Data Sync - ASYNC LADEN -->
+    <script src="js/website-data-sync-fixed.js" defer></script>
 
     <!-- Login Visibility Control -->
     <script>
@@ -869,62 +875,44 @@
         async function loadHeroDataFromAdmin() {
             console.log('📋 WEBSITE: Loading hero data from admin panel...');
             
-            // 1. Bilder aus AWS DynamoDB laden (mit Timeout, nicht-blockierend)
-            let awsImages = null;
-            try {
-                if (window.awsProfileAPI && window.awsProfileAPI.loadWebsiteImages) {
-                    console.log('☁️ WEBSITE: Loading images from AWS DynamoDB...');
-                    
-                    // Mit Timeout, damit die Seite nicht hängt
-                    const timeoutPromise = new Promise((_, reject) => 
-                        setTimeout(() => reject(new Error('Timeout')), 3000)
-                    );
-                    
-                    awsImages = await Promise.race([
-                        window.awsProfileAPI.loadWebsiteImages(),
-                        timeoutPromise
-                    ]).catch(err => {
-                        console.warn('⚠️ AWS Bild-Laden timeout oder fehler:', err.message);
-                        return null;
-                    });
-                    
-                    if (awsImages) {
-                        // In localStorage cachen für schnelleren Zugriff
-                        if (awsImages.profileImageDefault) {
-                            localStorage.setItem('profileImageDefault', awsImages.profileImageDefault);
-                            console.log('✅ Default-Bild aus AWS geladen und gecacht');
+            // 1. Bilder aus AWS DynamoDB laden (NICHT-BLOCKIEREND, im Hintergrund)
+            setTimeout(async () => {
+                try {
+                    if (window.awsProfileAPI && window.awsProfileAPI.loadWebsiteImages) {
+                        console.log('☁️ WEBSITE: Loading images from AWS DynamoDB (background)...');
+                        
+                        // Mit kurzem Timeout, nicht blockierend
+                        const timeoutPromise = new Promise((_, reject) => 
+                            setTimeout(() => reject(new Error('Timeout')), 1000)
+                        );
+                        
+                        const awsImages = await Promise.race([
+                            window.awsProfileAPI.loadWebsiteImages(),
+                            timeoutPromise
+                        ]).catch(err => {
+                            console.warn('⚠️ AWS Bild-Laden timeout oder fehler:', err.message);
+                            return null;
+                        });
+                        
+                        if (awsImages) {
+                            // In localStorage cachen für schnelleren Zugriff
+                            if (awsImages.profileImageDefault) {
+                                localStorage.setItem('profileImageDefault', awsImages.profileImageDefault);
+                                console.log('✅ Default-Bild aus AWS geladen und gecacht');
+                            }
+                            if (awsImages.profileImageHover) {
+                                localStorage.setItem('profileImageHover', awsImages.profileImageHover);
+                                console.log('✅ Hover-Bild aus AWS geladen und gecacht');
+                            }
                         }
-                        if (awsImages.profileImageHover) {
-                            localStorage.setItem('profileImageHover', awsImages.profileImageHover);
-                            console.log('✅ Hover-Bild aus AWS geladen und gecacht');
-                        }
-                    } else {
-                        console.log('ℹ️ Keine AWS-Bilder gefunden, verwende localStorage Cache');
                     }
+                } catch (awsError) {
+                    console.warn('⚠️ AWS Bild-Laden fehlgeschlagen:', awsError.message);
                 }
-            } catch (awsError) {
-                console.warn('⚠️ AWS Bild-Laden fehlgeschlagen:', awsError.message);
-            }
+            }, 100); // Im Hintergrund nach 100ms
             
-            // 2. Hero-Daten von AWS laden
-            let heroData = null;
-            try {
-                if (window.smartAPI) {
-                    console.log('☁️ WEBSITE: Trying to load hero data from AWS...');
-                    const awsData = await window.smartAPI.getDocument('hero-data', 'default-user');
-                    if (awsData && awsData.data) {
-                        heroData = JSON.stringify(awsData.data);
-                        console.log('✅ WEBSITE: Hero data loaded from AWS');
-                    }
-                }
-            } catch (error) {
-                console.log('⚠️ WEBSITE: AWS not available, using localStorage');
-            }
-            
-            // Falls AWS nicht verfügbar, localStorage verwenden
-            if (!heroData) {
-                heroData = localStorage.getItem('heroData');
-            }
+            // 2. Hero-Daten primär aus localStorage laden (schnell)
+            let heroData = localStorage.getItem('heroData');
             
             // Auch aus adminProfileData laden (für Kompatibilität)
             let adminProfileData = null;
@@ -1373,8 +1361,8 @@
             if (stat3Label && !stat3Label.textContent) stat3Label.textContent = 'LERNKURVENEFFEKT ;)';
         }
         
-        // Polling für Live-Updates (falls Storage-Events nicht funktionieren)
-        setInterval(updateHeroStatistics, 2000);
+        // Polling für Live-Updates (nur alle 10 Sekunden, um Performance zu verbessern)
+        setInterval(updateHeroStatistics, 10000);
         
         // Sofortige Website-Aktualisierung bei Profilbild-Änderungen
         function updateWebsiteProfileImage() {
@@ -1473,8 +1461,8 @@
             }
         }
         
-        // Polling für Live-Updates
-        setInterval(updateProfileImageLive, 2000);
+        // Polling für Live-Updates (nur alle 10 Sekunden, um Performance zu verbessern)
+        setInterval(updateProfileImageLive, 10000);
         
         // Globale Funktionen exportieren für Admin-Panel Zugriff
         window.updateProfileImageLive = updateProfileImageLive;
@@ -1767,11 +1755,11 @@
         }
     </style>
 
-    <!-- Enhanced Website Data Sync -->
-    <script src="js/website-sync-enhanced.js?v=20250120"></script>
+    <!-- Enhanced Website Data Sync - ASYNC -->
+    <script src="js/website-sync-enhanced.js?v=20250120" defer></script>
     
     <!-- AWS Auth System -->
-    <script>
+    <script defer>
         // AWS Config INLINE (um Cache-Probleme zu vermeiden)
         window.AWS_CONFIG = {
             userPoolId: 'eu-central-1_8gP4gLK9r',
@@ -1786,29 +1774,14 @@
                 name: 'manuel-weiss.ch',
                 email: 'mail@manuel-weiss.ch',
                 region: 'eu-central-1'
-            apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod',
-            dynamoDB: {
-                tableName: 'mawps-user-profiles',
-                region: 'eu-central-1'
-            },
             },
             s3: {
                 bucket: 'mawps-user-files-1760106396',
                 region: 'eu-central-1'
-            apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod',
-            dynamoDB: {
-                tableName: 'mawps-user-profiles',
-                region: 'eu-central-1'
-            },
             },
             dynamodb: {
                 tableName: 'mawps-user-profiles',
                 region: 'eu-central-1'
-            apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod',
-            dynamoDB: {
-                tableName: 'mawps-user-profiles',
-                region: 'eu-central-1'
-            },
             }
         };
         
@@ -1823,9 +1796,9 @@
             };
         }
     </script>
-    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
-    <script src="js/real-user-auth-system.js?v=20250116"></script>
-    <script src="js/aws-profile-api.js?v=20250115"></script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js" defer></script>
+    <script src="js/real-user-auth-system.js?v=20250116" defer></script>
+    <script src="js/aws-profile-api.js?v=20250115" defer></script>
     
     <!-- Menü-Funktionen -->
     <script>
