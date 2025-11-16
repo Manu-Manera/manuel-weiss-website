@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login Test - Manuel Weiss</title>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .test-container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 6px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .test-section h2 {
+            margin-top: 0;
+            color: #667eea;
+            font-size: 1.2em;
+        }
+        
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 5px;
+        }
+        
+        button:hover {
+            background: #5568d3;
+        }
+        
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .log {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+        
+        .log-entry {
+            margin: 5px 0;
+        }
+        
+        .log-entry.success {
+            color: #4ec9b0;
+        }
+        
+        .log-entry.error {
+            color: #f48771;
+        }
+        
+        .log-entry.info {
+            color: #569cd6;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🔐 Admin Login System Test</h1>
+        
+        <div class="test-section">
+            <h2>1. System-Initialisierung</h2>
+            <div id="init-status" class="status info">Initialisiere...</div>
+            <button onclick="testInit()">System initialisieren</button>
+            <div id="init-log" class="log" style="display:none;"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>2. Login-Test</h2>
+            <div id="login-status" class="status info">Bereit für Login-Test</div>
+            <div style="margin: 15px 0;">
+                <input type="email" id="test-email" placeholder="E-Mail-Adresse" style="padding: 8px; width: 200px; margin-right: 10px;">
+                <input type="password" id="test-password" placeholder="Passwort" style="padding: 8px; width: 200px; margin-right: 10px;">
+                <button onclick="testLogin()">Login testen</button>
+            </div>
+            <div id="login-log" class="log" style="display:none;"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>3. Session-Check</h2>
+            <div id="session-status" class="status info">Prüfe Session...</div>
+            <button onclick="testSession()">Session prüfen</button>
+            <div id="session-log" class="log" style="display:none;"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>4. Admin-Gruppen-Prüfung</h2>
+            <div id="group-status" class="status info">Bereit</div>
+            <button onclick="testAdminGroup()">Admin-Gruppe prüfen</button>
+            <div id="group-log" class="log" style="display:none;"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>5. Vollständiger Test</h2>
+            <button onclick="runFullTest()" style="background: #10b981;">Vollständigen Test ausführen</button>
+            <div id="full-test-log" class="log" style="display:none; margin-top: 15px;"></div>
+        </div>
+    </div>
+    
+    <!-- AWS SDK -->
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    
+    <!-- AWS Config -->
+    <script src="js/aws-config.js"></script>
+    
+    <!-- Admin Auth System -->
+    <script src="js/admin-auth-system.js"></script>
+    
+    <script>
+        let adminAuth = null;
+        
+        function log(elementId, message, type = 'info') {
+            const logEl = document.getElementById(elementId);
+            if (logEl) {
+                logEl.style.display = 'block';
+                const entry = document.createElement('div');
+                entry.className = `log-entry ${type}`;
+                entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+                logEl.appendChild(entry);
+                logEl.scrollTop = logEl.scrollHeight;
+            }
+        }
+        
+        function updateStatus(elementId, message, type = 'info') {
+            const statusEl = document.getElementById(elementId);
+            if (statusEl) {
+                statusEl.className = `status ${type}`;
+                statusEl.textContent = message;
+            }
+        }
+        
+        async function testInit() {
+            updateStatus('init-status', 'Initialisiere...', 'info');
+            log('init-log', 'Starte System-Initialisierung...', 'info');
+            
+            try {
+                if (typeof AdminAuthSystem === 'undefined') {
+                    throw new Error('AdminAuthSystem nicht gefunden');
+                }
+                
+                adminAuth = new AdminAuthSystem();
+                await adminAuth.init();
+                
+                updateStatus('init-status', '✅ System erfolgreich initialisiert', 'success');
+                log('init-log', '✅ AdminAuthSystem initialisiert', 'success');
+                log('init-log', `User Pool ID: ${adminAuth.userPoolId}`, 'info');
+                log('init-log', `Client ID: ${adminAuth.clientId}`, 'info');
+                log('init-log', `Region: ${adminAuth.region}`, 'info');
+                
+            } catch (error) {
+                updateStatus('init-status', `❌ Fehler: ${error.message}`, 'error');
+                log('init-log', `❌ Fehler: ${error.message}`, 'error');
+                console.error('Init error:', error);
+            }
+        }
+        
+        async function testLogin() {
+            const email = document.getElementById('test-email').value;
+            const password = document.getElementById('test-password').value;
+            
+            if (!email || !password) {
+                updateStatus('login-status', '⚠️ Bitte E-Mail und Passwort eingeben', 'error');
+                return;
+            }
+            
+            updateStatus('login-status', 'Login läuft...', 'info');
+            log('login-log', `Starte Login für: ${email}`, 'info');
+            
+            try {
+                if (!adminAuth) {
+                    adminAuth = new AdminAuthSystem();
+                    await adminAuth.init();
+                }
+                
+                const result = await adminAuth.login(email, password);
+                
+                if (result.success) {
+                    updateStatus('login-status', '✅ Login erfolgreich!', 'success');
+                    log('login-log', '✅ Login erfolgreich', 'success');
+                    log('login-log', `User: ${result.user.email}`, 'info');
+                    log('login-log', `Username: ${result.user.username}`, 'info');
+                    log('login-log', `Admin: ${result.user.isAdmin || 'N/A'}`, 'info');
+                    
+                    // Prüfe Session
+                    await testSession();
+                } else {
+                    updateStatus('login-status', `❌ Login fehlgeschlagen: ${result.error}`, 'error');
+                    log('login-log', `❌ Login fehlgeschlagen: ${result.error}`, 'error');
+                }
+                
+            } catch (error) {
+                updateStatus('login-status', `❌ Fehler: ${error.message}`, 'error');
+                log('login-log', `❌ Fehler: ${error.message}`, 'error');
+                console.error('Login error:', error);
+            }
+        }
+        
+        async function testSession() {
+            updateStatus('session-status', 'Prüfe Session...', 'info');
+            log('session-log', 'Starte Session-Prüfung...', 'info');
+            
+            try {
+                if (!adminAuth) {
+                    adminAuth = new AdminAuthSystem();
+                    await adminAuth.init();
+                }
+                
+                const user = adminAuth.getCurrentUser();
+                const userData = adminAuth.getUserData();
+                const isAuthenticated = adminAuth.isAuthenticatedUser();
+                
+                if (isAuthenticated && user) {
+                    updateStatus('session-status', '✅ Session aktiv', 'success');
+                    log('session-log', '✅ Session gefunden', 'success');
+                    log('session-log', `Email: ${user.email}`, 'info');
+                    log('session-log', `Username: ${user.username}`, 'info');
+                    log('session-log', `Expires: ${user.expiresAt || 'N/A'}`, 'info');
+                    log('session-log', `User Data: ${userData ? 'Vorhanden' : 'Nicht vorhanden'}`, 'info');
+                } else {
+                    updateStatus('session-status', '⚠️ Keine aktive Session', 'info');
+                    log('session-log', '⚠️ Keine aktive Session gefunden', 'info');
+                }
+                
+            } catch (error) {
+                updateStatus('session-status', `❌ Fehler: ${error.message}`, 'error');
+                log('session-log', `❌ Fehler: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testAdminGroup() {
+            updateStatus('group-status', 'Prüfe Admin-Gruppe...', 'info');
+            log('group-log', 'Starte Admin-Gruppen-Prüfung...', 'info');
+            
+            try {
+                if (!adminAuth) {
+                    adminAuth = new AdminAuthSystem();
+                    await adminAuth.init();
+                }
+                
+                const user = adminAuth.getCurrentUser();
+                if (!user || !user.username) {
+                    updateStatus('group-status', '⚠️ Bitte zuerst einloggen', 'info');
+                    log('group-log', '⚠️ Kein eingeloggter User', 'info');
+                    return;
+                }
+                
+                const groups = await adminAuth.getUserGroups(user.username);
+                
+                if (groups.includes('admin')) {
+                    updateStatus('group-status', '✅ User ist in Admin-Gruppe', 'success');
+                    log('group-log', '✅ User ist in Admin-Gruppe', 'success');
+                    log('group-log', `Gruppen: ${groups.join(', ')}`, 'info');
+                } else {
+                    updateStatus('group-status', '❌ User ist NICHT in Admin-Gruppe', 'error');
+                    log('group-log', '❌ User ist NICHT in Admin-Gruppe', 'error');
+                    log('group-log', `Aktuelle Gruppen: ${groups.join(', ') || 'Keine'}`, 'info');
+                }
+                
+            } catch (error) {
+                updateStatus('group-status', `❌ Fehler: ${error.message}`, 'error');
+                log('group-log', `❌ Fehler: ${error.message}`, 'error');
+                console.error('Group check error:', error);
+            }
+        }
+        
+        async function runFullTest() {
+            const logEl = document.getElementById('full-test-log');
+            logEl.style.display = 'block';
+            logEl.innerHTML = '';
+            
+            log('full-test-log', '🚀 Starte vollständigen Test...', 'info');
+            
+            // 1. Init
+            log('full-test-log', '1️⃣ Initialisiere System...', 'info');
+            try {
+                if (typeof AdminAuthSystem === 'undefined') {
+                    throw new Error('AdminAuthSystem nicht gefunden');
+                }
+                adminAuth = new AdminAuthSystem();
+                await adminAuth.init();
+                log('full-test-log', '✅ System initialisiert', 'success');
+            } catch (error) {
+                log('full-test-log', `❌ Init fehlgeschlagen: ${error.message}`, 'error');
+                return;
+            }
+            
+            // 2. Session Check
+            log('full-test-log', '2️⃣ Prüfe Session...', 'info');
+            const user = adminAuth.getCurrentUser();
+            if (user) {
+                log('full-test-log', `✅ Session gefunden: ${user.email}`, 'success');
+            } else {
+                log('full-test-log', '⚠️ Keine Session - Login erforderlich', 'info');
+            }
+            
+            // 3. Admin Group Check (wenn eingeloggt)
+            if (user) {
+                log('full-test-log', '3️⃣ Prüfe Admin-Gruppe...', 'info');
+                try {
+                    const groups = await adminAuth.getUserGroups(user.username);
+                    if (groups.includes('admin')) {
+                        log('full-test-log', '✅ User ist in Admin-Gruppe', 'success');
+                    } else {
+                        log('full-test-log', '❌ User ist NICHT in Admin-Gruppe', 'error');
+                    }
+                } catch (error) {
+                    log('full-test-log', `❌ Gruppen-Prüfung fehlgeschlagen: ${error.message}`, 'error');
+                }
+            }
+            
+            log('full-test-log', '✅ Vollständiger Test abgeschlossen', 'success');
+        }
+        
+        // Auto-init beim Laden
+        window.addEventListener('DOMContentLoaded', () => {
+            testInit();
+            testSession();
+        });
+    </script>
+</body>
+</html>
+
