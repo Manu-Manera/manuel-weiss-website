@@ -35,6 +35,7 @@ class HeroAboutSection {
             // Profilbild-Elemente
             currentProfileImage: document.getElementById('current-profile-image'),
             changeProfileBtn: document.getElementById('change-profile-btn'),
+            uploadImageBtn: document.getElementById('upload-image-btn'),
             imageUpload: document.getElementById('image-upload'),
             galleryUploadInput: document.getElementById('gallery-upload-input'),
             selectGalleryImagesBtn: document.getElementById('select-gallery-images-btn'),
@@ -51,6 +52,7 @@ class HeroAboutSection {
         
         // Profilbild-Events
         this.els.changeProfileBtn?.addEventListener('click', () => this.els.imageUpload?.click());
+        this.els.uploadImageBtn?.addEventListener('click', () => this.els.imageUpload?.click());
         this.els.imageUpload?.addEventListener('change', (e) => this.handleImageUpload(e));
         this.els.selectGalleryImagesBtn?.addEventListener('click', () => this.els.galleryUploadInput?.click());
         this.els.galleryUploadInput?.addEventListener('change', (e) => this.handleGalleryUpload(e));
