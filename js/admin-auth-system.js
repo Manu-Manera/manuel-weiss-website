@@ -451,8 +451,11 @@ class AdminAuthSystem {
         try {
             const session = {
                 user: this.currentUser,
-                expiresAt: this.currentUser.expiresAt,
-                isAdmin: this.isAdmin
+                expiresAt: this.currentUser?.expiresAt,
+                isAdmin: this.isAdmin,
+                idToken: this.currentUser?.idToken,
+                accessToken: this.currentUser?.accessToken,
+                refreshToken: this.currentUser?.refreshToken
             };
             
             localStorage.setItem(this.SESSION_KEY, JSON.stringify(session));
@@ -460,6 +463,29 @@ class AdminAuthSystem {
             
         } catch (error) {
             console.error('❌ Error saving session:', error);
+        }
+    }
+    
+    getSession() {
+        try {
+            const storedSession = localStorage.getItem(this.SESSION_KEY);
+            if (!storedSession) {
+                return null;
+            }
+            
+            const session = JSON.parse(storedSession);
+            const expiresAt = session.expiresAt ? new Date(session.expiresAt) : null;
+            
+            // Check if session is still valid
+            if (expiresAt && expiresAt < new Date()) {
+                console.log('⏰ Session expired');
+                return null;
+            }
+            
+            return session;
+        } catch (error) {
+            console.error('❌ Error getting session:', error);
+            return null;
         }
     }
     
