@@ -136,6 +136,37 @@ class AdminTopbar extends HTMLElement {
             });
         }
         
+        // User Menu Items (especially logout)
+        this.querySelectorAll('.user-menu-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                const href = item.getAttribute('href');
+                if (href === '#logout') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    // Logout Handler - Use Admin Auth System
+                    if (window.adminAuth && typeof window.adminAuth.logout === 'function') {
+                        console.log('🔐 Logging out via Admin Auth System...');
+                        window.adminAuth.logout();
+                    } else {
+                        // Fallback: Clear session and redirect to login
+                        console.warn('⚠️ Admin Auth System not available, using fallback logout');
+                        localStorage.removeItem('admin_auth_session');
+                        localStorage.removeItem('admin_user_data');
+                        window.location.href = '/admin-login.html';
+                    }
+                    this.toggleUserMenu();
+                } else if (href === '#profile') {
+                    e.preventDefault();
+                    this.navigateToSection('profile');
+                    this.toggleUserMenu();
+                } else if (href === '#settings') {
+                    e.preventDefault();
+                    this.navigateToSection('settings');
+                    this.toggleUserMenu();
+                }
+            });
+        });
+        
         // Notifications
         const notificationsBtn = this.querySelector('[data-action="show-notifications"]');
         const notificationsDropdown = this.querySelector('#notificationsDropdown');
@@ -209,6 +240,11 @@ class AdminTopbar extends HTMLElement {
         
         // Initial Notifications laden
         this.updateNotifications(this.stateManager?.getState('notifications') || []);
+        
+        // Update user info from auth system after a short delay (to ensure auth is initialized)
+        setTimeout(() => {
+            this.updateUserInfo();
+        }, 500);
     }
     
     /**
@@ -531,6 +567,38 @@ class AdminTopbar extends HTMLElement {
     showHelp() {
         // Help Modal oder Tooltip anzeigen
         console.log('Help requested');
+    }
+    
+    /**
+     * User Info aus Auth System aktualisieren
+     */
+    updateUserInfo() {
+        if (window.adminAuth && window.adminAuth.getCurrentUser) {
+            const user = window.adminAuth.getCurrentUser();
+            if (user) {
+                const userNameEl = this.querySelector('.user-name');
+                const avatarEl = this.querySelector('.avatar-text');
+                
+                if (userNameEl) {
+                    // Use email or username
+                    const displayName = user.userInfo?.Attributes?.name || 
+                                       user.userInfo?.Attributes?.given_name || 
+                                       user.email || 
+                                       'Admin';
+                    userNameEl.textContent = displayName;
+                }
+                
+                if (avatarEl) {
+                    // Use initials from name or email
+                    const name = user.userInfo?.Attributes?.name || 
+                                user.userInfo?.Attributes?.given_name || 
+                                user.email || 
+                                'A';
+                    const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+                    avatarEl.textContent = initials;
+                }
+            }
+        }
     }
     
     /**
