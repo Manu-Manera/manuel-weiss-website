@@ -1,4 +1,4 @@
-import { CognitoIdentityProviderClient, ListUsersCommand, AdminCreateUserCommand, AdminDeleteUserCommand, AdminUpdateUserAttributesCommand, AdminSetUserPasswordCommand, AdminEnableUserCommand, AdminDisableUserCommand, AdminGetUserCommand } from "@aws-sdk/client-cognito-identity-provider";
+import { CognitoIdentityProviderClient, ListUsersCommand, AdminCreateUserCommand, AdminDeleteUserCommand, AdminUpdateUserAttributesCommand, AdminSetUserPasswordCommand, AdminEnableUserCommand, AdminDisableUserCommand, AdminGetUserCommand, ListUsersInGroupCommand } from "@aws-sdk/client-cognito-identity-provider";
 import { DynamoDBClient, QueryCommand, PutItemCommand, UpdateItemCommand, DeleteItemCommand, ScanCommand } from "@aws-sdk/client-dynamodb";
 
 const cognito = new CognitoIdentityProviderClient({ region: process.env.AWS_REGION || "eu-central-1" });
@@ -137,6 +137,23 @@ async function listUsers(params = {}) {
   const paginationToken = params.paginationToken;
   const filter = params.filter;
   const status = params.status;
+  const excludeAdmin = params.excludeAdmin === 'true' || params.excludeAdmin === true;
+
+  // Get admin users if we need to exclude them
+  let adminUsernames = new Set();
+  if (excludeAdmin) {
+    try {
+      const adminGroupResponse = await cognito.send(new ListUsersInGroupCommand({
+        UserPoolId: process.env.USER_POOL_ID,
+        GroupName: 'admin',
+        Limit: 60
+      }));
+      adminUsernames = new Set((adminGroupResponse.Users || []).map(u => u.Username));
+      console.log(`📋 Found ${adminUsernames.size} admin users to exclude`);
+    } catch (error) {
+      console.warn('⚠️ Could not fetch admin users, continuing without exclusion:', error);
+    }
+  }
 
   const command = new ListUsersCommand({
     UserPoolId: process.env.USER_POOL_ID,
@@ -147,7 +164,13 @@ async function listUsers(params = {}) {
   });
 
   const response = await cognito.send(command);
-  const users = response.Users || [];
+  let users = response.Users || [];
+
+  // Filter out admin users if requested
+  if (excludeAdmin && adminUsernames.size > 0) {
+    users = users.filter(user => !adminUsernames.has(user.Username));
+    console.log(`📊 Filtered to ${users.length} non-admin users (from ${response.Users?.length || 0} total)`);
+  }
 
   // Enrich with DynamoDB data
   const enrichedUsers = await Promise.all(users.map(async (cognitoUser) => {
@@ -745,11 +768,34 @@ async function getSystemHealth() {
 }
 
 async function isAdmin(userId, email) {
-  // Check admin privileges - extend this based on your requirements
+  // Check if user is in admin group
+  try {
+    const adminGroupResponse = await cognito.send(new ListUsersInGroupCommand({
+      UserPoolId: process.env.USER_POOL_ID,
+      GroupName: 'admin',
+      Limit: 60
+    }));
+    
+    const adminUsers = adminGroupResponse.Users || [];
+    const isInAdminGroup = adminUsers.some(u => 
+      u.Username === userId || 
+      u.Username === email ||
+      getAttribute(u.Attributes, 'email')?.toLowerCase() === email?.toLowerCase()
+    );
+    
+    if (isInAdminGroup) {
+      return true;
+    }
+  } catch (error) {
+    console.warn('⚠️ Could not check admin group, falling back to email list:', error);
+  }
+  
+  // Fallback: Check admin email list
   const adminEmails = [
     'manuel@manuel-weiss.com',
     'admin@manuel-weiss.com',
-    'manumanera@gmail.com' // Add your email
+    'manumanera@gmail.com',
+    'weiss-manuel@gmx.de' // Add your email
   ];
   
   return adminEmails.includes(email?.toLowerCase());

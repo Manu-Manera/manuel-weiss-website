@@ -66,54 +66,73 @@ class AdminNavigation {
     }
     
     /**
-     * Navigation zu Section - Cookie-sichere Version
+     * Navigation zu Section - KOMPLETT NON-BLOCKING
      */
-    async navigateToSection(sectionId) {
-        try {
-            console.log('🚀 Navigating to section:', sectionId);
-            
-            // State sofort aktualisieren (UI reagiert sofort)
-            this.stateManager.setState('currentSection', sectionId);
-            this.currentSection = sectionId;
-            
-            // URL sofort aktualisieren
-            const newUrl = `${window.location.pathname}#${sectionId}`;
-            if (window.location.href !== newUrl) {
-                window.history.pushState(null, '', newUrl);
-            }
-            
-            // Middleware ausführen (non-blocking mit Timeout)
-            try {
-                const middlewarePromises = this.middleware.map(m => 
-                    Promise.race([
-                        m(sectionId),
-                        new Promise((_, reject) => setTimeout(() => reject(new Error('Middleware timeout')), 2000))
-                    ])
-                );
-                const results = await Promise.all(middlewarePromises);
-                if (results.some(r => r === false)) {
-                    console.log('⚠️ Navigation abgebrochen durch Middleware');
-                    return;
-                }
-            } catch (middlewareError) {
-                console.warn('⚠️ Middleware error (continuing):', middlewareError);
-            }
-            
-            // Section laden (non-blocking mit Timeout)
-            this.loadSection(sectionId).catch(error => {
-                console.error(`❌ Failed to load section ${sectionId}:`, error);
-                this.handleNavigationError(sectionId, error);
-            });
-            
-            // Event sofort dispatchen (nicht warten)
-            this.dispatchNavigationEvent(sectionId);
-            
-            console.log('✅ Navigation started:', sectionId);
-            
-        } catch (error) {
-            console.error(`❌ Failed to navigate to section ${sectionId}:`, error);
-            this.handleNavigationError(sectionId, error);
+    navigateToSection(sectionId) {
+        // SOFORT - keine async/await, keine Blockierung
+        console.log('🚀 Navigating to section:', sectionId);
+        
+        // State sofort aktualisieren (UI reagiert sofort)
+        this.stateManager.setState('currentSection', sectionId);
+        this.currentSection = sectionId;
+        
+        // URL sofort aktualisieren
+        const newUrl = `${window.location.pathname}#${sectionId}`;
+        if (window.location.href !== newUrl) {
+            window.history.pushState(null, '', newUrl);
         }
+        
+        // Event sofort dispatchen
+        this.dispatchNavigationEvent(sectionId);
+        
+        // ALLES ANDERE im Hintergrund (setTimeout 0 = nächster Event Loop)
+        setTimeout(() => {
+            // Middleware im Hintergrund (ignoriere Fehler)
+            if (this.middleware.length > 0) {
+                Promise.allSettled(
+                    this.middleware.map(m => 
+                        Promise.race([
+                            m(sectionId),
+                            new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 2000))
+                        ]).catch(() => true) // Ignoriere Fehler
+                    )
+                ).then(results => {
+                    if (results.some(r => r.status === 'fulfilled' && r.value === false)) {
+                        console.log('⚠️ Navigation abgebrochen durch Middleware');
+                        return;
+                    }
+                    // Section laden nach Middleware
+                    this.loadSectionInBackground(sectionId);
+                });
+            } else {
+                // Direkt Section laden
+                this.loadSectionInBackground(sectionId);
+            }
+        }, 0);
+        
+        console.log('✅ Navigation started (non-blocking):', sectionId);
+    }
+    
+    /**
+     * Section im Hintergrund laden (komplett non-blocking)
+     */
+    loadSectionInBackground(sectionId) {
+        // Zeige Loading-State sofort
+        const container = document.getElementById('admin-content');
+        if (container) {
+            container.innerHTML = `
+                <div style="padding: 2rem; text-align: center;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: #667eea;"></i>
+                    <p>Lade Section...</p>
+                </div>
+            `;
+        }
+        
+        // Lade Section im Hintergrund
+        this.loadSection(sectionId).catch(error => {
+            console.error(`❌ Failed to load section ${sectionId}:`, error);
+            this.handleNavigationError(sectionId, error);
+        });
     }
     
     /**
