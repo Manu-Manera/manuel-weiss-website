@@ -66,73 +66,42 @@ class AdminNavigation {
     }
     
     /**
-     * Navigation zu Section - KOMPLETT NON-BLOCKING
+     * Navigation zu Section
      */
-    navigateToSection(sectionId) {
-        // SOFORT - keine async/await, keine Blockierung
-        console.log('🚀 Navigating to section:', sectionId);
-        
-        // State sofort aktualisieren (UI reagiert sofort)
-        this.stateManager.setState('currentSection', sectionId);
-        this.currentSection = sectionId;
-        
-        // URL sofort aktualisieren
-        const newUrl = `${window.location.pathname}#${sectionId}`;
-        if (window.location.href !== newUrl) {
-            window.history.pushState(null, '', newUrl);
-        }
-        
-        // Event sofort dispatchen
-        this.dispatchNavigationEvent(sectionId);
-        
-        // ALLES ANDERE im Hintergrund (setTimeout 0 = nächster Event Loop)
-        setTimeout(() => {
-            // Middleware im Hintergrund (ignoriere Fehler)
-            if (this.middleware.length > 0) {
-                Promise.allSettled(
-                    this.middleware.map(m => 
-                        Promise.race([
-                            m(sectionId),
-                            new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 2000))
-                        ]).catch(() => true) // Ignoriere Fehler
-                    )
-                ).then(results => {
-                    if (results.some(r => r.status === 'fulfilled' && r.value === false)) {
-                        console.log('⚠️ Navigation abgebrochen durch Middleware');
-                        return;
-                    }
-                    // Section laden nach Middleware
-                    this.loadSectionInBackground(sectionId);
-                });
-            } else {
-                // Direkt Section laden
-                this.loadSectionInBackground(sectionId);
+    async navigateToSection(sectionId) {
+        try {
+            console.log('🚀 Navigating to section:', sectionId);
+            
+            // State sofort aktualisieren
+            this.stateManager.setState('currentSection', sectionId);
+            this.currentSection = sectionId;
+            
+            // URL sofort aktualisieren
+            const newUrl = `${window.location.pathname}#${sectionId}`;
+            if (window.location.href !== newUrl) {
+                window.history.pushState(null, '', newUrl);
             }
-        }, 0);
-        
-        console.log('✅ Navigation started (non-blocking):', sectionId);
-    }
-    
-    /**
-     * Section im Hintergrund laden (komplett non-blocking)
-     */
-    loadSectionInBackground(sectionId) {
-        // Zeige Loading-State sofort
-        const container = document.getElementById('admin-content');
-        if (container) {
-            container.innerHTML = `
-                <div style="padding: 2rem; text-align: center;">
-                    <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: #667eea;"></i>
-                    <p>Lade Section...</p>
-                </div>
-            `;
-        }
-        
-        // Lade Section im Hintergrund
-        this.loadSection(sectionId).catch(error => {
-            console.error(`❌ Failed to load section ${sectionId}:`, error);
+            
+            // Event dispatchen
+            this.dispatchNavigationEvent(sectionId);
+            
+            // Section laden (mit Timeout)
+            try {
+                await Promise.race([
+                    this.loadSection(sectionId),
+                    new Promise((_, reject) => setTimeout(() => reject(new Error('Navigation timeout (5s)')), 5000))
+                ]);
+            } catch (loadError) {
+                console.error(`Error loading section ${sectionId}:`, loadError);
+                this.handleNavigationError(sectionId, loadError);
+            }
+            
+            console.log('✅ Navigation completed:', sectionId);
+            
+        } catch (error) {
+            console.error(`❌ Failed to navigate to section ${sectionId}:`, error);
             this.handleNavigationError(sectionId, error);
-        });
+        }
     }
     
     /**
