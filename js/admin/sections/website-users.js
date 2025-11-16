@@ -482,6 +482,49 @@ class WebsiteUsersManagement {
             
             console.log('👤 Erstelle neuen Website-Benutzer:', email);
             
+            // Try API endpoint first
+            const apiBaseUrl = window.AWS_CONFIG?.apiBaseUrl || window.AWS_CONFIG?.apiGateway?.baseUrl;
+            const session = window.adminAuth?.getSession();
+            
+            if (apiBaseUrl && session && session.idToken) {
+                try {
+                    console.log('📡 Erstelle User über API-Endpoint...');
+                    
+                    const response = await fetch(`${apiBaseUrl}/admin/users`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${session.idToken}`
+                        },
+                        body: JSON.stringify({
+                            email: email,
+                            name: name || null,
+                            password: password,
+                            sendWelcomeEmail: sendEmail
+                        })
+                    });
+                    
+                    if (response.ok || response.status === 201) {
+                        const newUser = await response.json();
+                        console.log('✅ User über API erstellt');
+                        this.showSuccess(`✅ Neuer Website-Benutzer ${email} wurde erfolgreich erstellt!`);
+                        this.closeModal('modal-create-website-user');
+                        await this.loadWebsiteUsers();
+                        return;
+                    } else {
+                        const errorText = await response.text();
+                        console.error('❌ API Error:', response.status, errorText);
+                        throw new Error(`API Error: ${response.status} ${response.statusText}`);
+                    }
+                } catch (apiError) {
+                    console.warn('⚠️ API-Endpoint nicht verfügbar, verwende direkten Cognito-Zugriff:', apiError);
+                    // Fall through to direct Cognito access
+                }
+            }
+            
+            // Fallback: Direct Cognito access
+            console.log('📡 Erstelle User direkt über Cognito...');
+            
             // Check if user already exists
             let userExists = false;
             try {
@@ -630,6 +673,57 @@ class WebsiteUsersManagement {
             
             console.log('✏️ Bearbeite Website-Benutzer:', username);
             
+            // Try API endpoint first
+            const apiBaseUrl = window.AWS_CONFIG?.apiBaseUrl || window.AWS_CONFIG?.apiGateway?.baseUrl;
+            const session = window.adminAuth?.getSession();
+            
+            if (apiBaseUrl && session && session.idToken) {
+                try {
+                    console.log('📡 Aktualisiere User über API-Endpoint...');
+                    
+                    const updateData = {
+                        email: newEmail,
+                        name: name || null,
+                        emailVerified: emailVerified,
+                        status: status
+                    };
+                    
+                    const response = await fetch(`${apiBaseUrl}/admin/users/${encodeURIComponent(username)}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${session.idToken}`
+                        },
+                        body: JSON.stringify(updateData)
+                    });
+                    
+                    if (response.ok) {
+                        const updatedUser = await response.json();
+                        console.log('✅ User über API aktualisiert');
+                        
+                        if (newEmail !== (this.getUserAttribute(this.users.find(u => u.Username === username), 'email') || username)) {
+                            this.showSuccess(`✅ User-Daten aktualisiert! ⚠️ Hinweis: Die E-Mail-Adresse wurde geändert. Der User muss sich mit der neuen E-Mail-Adresse anmelden.`);
+                        } else {
+                            this.showSuccess(`✅ User-Daten wurden erfolgreich aktualisiert!`);
+                        }
+                        
+                        this.closeModal('modal-edit-website-user');
+                        await this.loadWebsiteUsers();
+                        return;
+                    } else {
+                        const errorText = await response.text();
+                        console.error('❌ API Error:', response.status, errorText);
+                        throw new Error(`API Error: ${response.status} ${response.statusText}`);
+                    }
+                } catch (apiError) {
+                    console.warn('⚠️ API-Endpoint nicht verfügbar, verwende direkten Cognito-Zugriff:', apiError);
+                    // Fall through to direct Cognito access
+                }
+            }
+            
+            // Fallback: Direct Cognito access
+            console.log('📡 Aktualisiere User direkt über Cognito...');
+            
             // User-Attribute aktualisieren
             const attributes = [];
             
@@ -639,8 +733,6 @@ class WebsiteUsersManagement {
             
             if (newEmail !== currentEmail) {
                 attributes.push({ Name: 'email', Value: newEmail });
-                // Wenn E-Mail geändert wird, muss auch der Username geändert werden
-                // Das erfordert einen speziellen Prozess in Cognito
                 console.log('⚠️ E-Mail-Änderung erfordert Username-Update');
             }
             
@@ -650,7 +742,6 @@ class WebsiteUsersManagement {
                 if (name) {
                     attributes.push({ Name: 'name', Value: name });
                 } else {
-                    // Name entfernen (nicht direkt möglich, aber wir können es leer setzen)
                     attributes.push({ Name: 'name', Value: '' });
                 }
             }
@@ -674,22 +765,16 @@ class WebsiteUsersManagement {
             // Status aktualisieren (wenn geändert)
             if (status !== currentUser.UserStatus) {
                 if (status === 'CONFIRMED' && currentUser.UserStatus !== 'CONFIRMED') {
-                    // User bestätigen
                     await this.cognitoIdentityServiceProvider.adminConfirmSignUp({
                         UserPoolId: this.userPoolId,
                         Username: username
                     }).promise();
                     console.log('✅ User bestätigt');
                 } else if (status === 'FORCE_CHANGE_PASSWORD') {
-                    // Status auf "Passwort ändern erforderlich" setzen
-                    // Dies wird normalerweise durch Passwort-Reset erreicht
                     console.log('ℹ️ Status FORCE_CHANGE_PASSWORD wird durch Passwort-Reset gesetzt');
                 }
             }
             
-            // Wenn E-Mail geändert wurde, müssen wir den Username auch ändern
-            // In Cognito muss der Username manuell geändert werden, was komplex ist
-            // Für jetzt zeigen wir eine Warnung
             if (newEmail !== currentEmail) {
                 this.showSuccess(`✅ User-Daten aktualisiert! ⚠️ Hinweis: Die E-Mail-Adresse wurde geändert. Der User muss sich mit der neuen E-Mail-Adresse anmelden.`);
             } else {
@@ -738,6 +823,45 @@ class WebsiteUsersManagement {
             
             console.log('🔑 Setze Passwort für Website-Benutzer:', username);
             
+            // Try API endpoint first
+            const apiBaseUrl = window.AWS_CONFIG?.apiBaseUrl || window.AWS_CONFIG?.apiGateway?.baseUrl;
+            const session = window.adminAuth?.getSession();
+            
+            if (apiBaseUrl && session && session.idToken) {
+                try {
+                    console.log('📡 Setze Passwort über API-Endpoint...');
+                    
+                    const response = await fetch(`${apiBaseUrl}/admin/users/${encodeURIComponent(username)}/reset-password`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${session.idToken}`
+                        },
+                        body: JSON.stringify({
+                            temporaryPassword: password,
+                            permanent: !temporary
+                        })
+                    });
+                    
+                    if (response.ok) {
+                        console.log('✅ Passwort über API gesetzt');
+                        this.showSuccess(`✅ Passwort wurde erfolgreich ${temporary ? 'als temporäres Passwort' : ''} gesetzt!`);
+                        this.closeModal('modal-reset-password-website-user');
+                        return;
+                    } else {
+                        const errorText = await response.text();
+                        console.error('❌ API Error:', response.status, errorText);
+                        throw new Error(`API Error: ${response.status} ${response.statusText}`);
+                    }
+                } catch (apiError) {
+                    console.warn('⚠️ API-Endpoint nicht verfügbar, verwende direkten Cognito-Zugriff:', apiError);
+                    // Fall through to direct Cognito access
+                }
+            }
+            
+            // Fallback: Direct Cognito access
+            console.log('📡 Setze Passwort direkt über Cognito...');
+            
             await this.cognitoIdentityServiceProvider.adminSetUserPassword({
                 UserPoolId: this.userPoolId,
                 Username: username,
@@ -777,6 +901,43 @@ class WebsiteUsersManagement {
             confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Lösche User...';
             
             console.log('🗑️ Lösche Website-Benutzer:', this.userToDelete);
+            
+            // Try API endpoint first
+            const apiBaseUrl = window.AWS_CONFIG?.apiBaseUrl || window.AWS_CONFIG?.apiGateway?.baseUrl;
+            const session = window.adminAuth?.getSession();
+            
+            if (apiBaseUrl && session && session.idToken) {
+                try {
+                    console.log('📡 Lösche User über API-Endpoint...');
+                    
+                    const response = await fetch(`${apiBaseUrl}/admin/users/${encodeURIComponent(this.userToDelete)}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${session.idToken}`
+                        }
+                    });
+                    
+                    if (response.ok || response.status === 204) {
+                        console.log('✅ User über API gelöscht');
+                        this.showSuccess(`✅ Website-Benutzer ${this.userToDelete} wurde erfolgreich gelöscht!`);
+                        this.closeModal('modal-delete-website-user');
+                        this.userToDelete = null;
+                        await this.loadWebsiteUsers();
+                        return;
+                    } else {
+                        const errorText = await response.text();
+                        console.error('❌ API Error:', response.status, errorText);
+                        throw new Error(`API Error: ${response.status} ${response.statusText}`);
+                    }
+                } catch (apiError) {
+                    console.warn('⚠️ API-Endpoint nicht verfügbar, verwende direkten Cognito-Zugriff:', apiError);
+                    // Fall through to direct Cognito access
+                }
+            }
+            
+            // Fallback: Direct Cognito access
+            console.log('📡 Lösche User direkt über Cognito...');
             
             await this.cognitoIdentityServiceProvider.adminDeleteUser({
                 UserPoolId: this.userPoolId,
