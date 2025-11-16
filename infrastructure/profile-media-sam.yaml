@@ -70,11 +70,14 @@ Resources:
           REGION: !Ref AWS::Region
           PROFILE_PREFIX: !Ref ProfilePrefix
           DOCUMENTS_PREFIX: !Ref DocumentsPrefix
+          PROFILE_TABLE: mawps-user-profiles
       Policies:
         - S3WritePolicy:
             BucketName: !Ref MediaBucket
         - S3ReadPolicy:
             BucketName: !Ref MediaBucket
+        - DynamoDBCrudPolicy:
+            TableName: mawps-user-profiles
       Events:
         Presign:
           Type: Api
@@ -99,6 +102,30 @@ Resources:
           Properties:
             RestApiId: !Ref MediaApi
             Path: /document/upload-url
+            Method: OPTIONS
+        WebsiteImagesSave:
+          Type: Api
+          Properties:
+            RestApiId: !Ref MediaApi
+            Path: /website-images
+            Method: POST
+        WebsiteImagesSaveOptions:
+          Type: Api
+          Properties:
+            RestApiId: !Ref MediaApi
+            Path: /website-images
+            Method: OPTIONS
+        WebsiteImagesGet:
+          Type: Api
+          Properties:
+            RestApiId: !Ref MediaApi
+            Path: /website-images/{userId}
+            Method: GET
+        WebsiteImagesGetOptions:
+          Type: Api
+          Properties:
+            RestApiId: !Ref MediaApi
+            Path: /website-images/{userId}
             Method: OPTIONS
 
 Outputs:

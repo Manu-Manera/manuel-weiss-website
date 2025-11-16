@@ -1,12 +1,14 @@
 'use strict';
 
 // Lambda: returns a presigned PUT URL for uploading files to S3
+// Also handles website-images DynamoDB operations
 // Supports: profile images, CV documents (PDF/DOCX), certificates
 // Env:
 //   BUCKET_NAME: target S3 bucket
 //   REGION: aws region (e.g. eu-central-1)
 //   PROFILE_PREFIX: optional key prefix (default: public/profile-images/)
 //   DOCUMENTS_PREFIX: optional key prefix for documents (default: public/documents/)
+//   PROFILE_TABLE: DynamoDB table name (default: mawps-user-profiles)
 
 const AWS = require('aws-sdk');
 
@@ -14,6 +16,8 @@ const REGION = process.env.REGION || process.env.AWS_REGION || 'eu-central-1';
 AWS.config.update({ region: REGION });
 
 const s3 = new AWS.S3({ signatureVersion: 'v4' });
+const dynamoDB = new AWS.DynamoDB.DocumentClient();
+const PROFILE_TABLE = process.env.PROFILE_TABLE || 'mawps-user-profiles';
 
 exports.handler = async (event) => {
   // Handle CORS preflight (OPTIONS)
@@ -22,6 +26,15 @@ exports.handler = async (event) => {
   }
   
   try {
+    const path = event.path || event.rawPath || '';
+    const method = event.httpMethod || event.requestContext?.http?.method || 'POST';
+    
+    // Handle website-images endpoints (DynamoDB operations)
+    if (path.includes('/website-images')) {
+      return await handleWebsiteImages(event, method, path);
+    }
+    
+    // Handle presigned URL requests (S3 operations)
     const body = parseBody(event);
     const bucket = process.env.BUCKET_NAME;
     if (!bucket) {
@@ -69,9 +82,66 @@ exports.handler = async (event) => {
       fileType,
     });
   } catch (error) {
+    console.error('Error:', error);
     return json(500, { error: error.message });
   }
 };
+
+// Handle website-images DynamoDB operations
+async function handleWebsiteImages(event, method, path) {
+  try {
+    if (method === 'POST' && path.includes('/website-images')) {
+      // Save website images
+      const body = parseBody(event);
+      if (!body || !body.userId) {
+        return json(400, { error: 'Missing userId' });
+      }
+      
+      const item = {
+        userId: body.userId,
+        profileImageDefault: body.profileImageDefault || null,
+        profileImageHover: body.profileImageHover || null,
+        type: 'website-images',
+        updatedAt: new Date().toISOString()
+      };
+      
+      await dynamoDB.put({
+        TableName: PROFILE_TABLE,
+        Item: item
+      }).promise();
+      
+      return json(200, { success: true, item });
+      
+    } else if (method === 'GET' && path.includes('/website-images/')) {
+      // Get website images
+      const userId = path.split('/').pop();
+      if (!userId) {
+        return json(400, { error: 'Missing userId in path' });
+      }
+      
+      const result = await dynamoDB.get({
+        TableName: PROFILE_TABLE,
+        Key: { userId }
+      }).promise();
+      
+      if (!result.Item || result.Item.type !== 'website-images') {
+        return json(404, { error: 'Website images not found' });
+      }
+      
+      return json(200, {
+        userId: result.Item.userId,
+        profileImageDefault: result.Item.profileImageDefault || null,
+        profileImageHover: result.Item.profileImageHover || null,
+        updatedAt: result.Item.updatedAt
+      });
+    } else {
+      return json(405, { error: 'Method not allowed' });
+    }
+  } catch (error) {
+    console.error('Website images error:', error);
+    return json(500, { error: error.message });
+  }
+}
 
 function parseBody(event) {
   try {
