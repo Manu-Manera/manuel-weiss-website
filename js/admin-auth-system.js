@@ -122,13 +122,23 @@ class AdminAuthSystem {
                 return false;
             }
             
-            // Decode JWT token to get user info
+            // Decode JWT token to get user info und Gruppen
             const tokenPayload = this.decodeJWT(this.currentUser.idToken);
             const username = tokenPayload['cognito:username'] || tokenPayload.sub;
             
-            // Check if user is in admin group
-            const groups = await this.getUserGroups(username);
+            // Gruppen aus ID Token extrahieren (Cognito fügt sie automatisch hinzu)
+            const groups = tokenPayload['cognito:groups'] || [];
             this.isAdmin = groups.includes('admin');
+            
+            // Fallback: Versuche über Admin-API wenn nicht im Token
+            if (!this.isAdmin) {
+                try {
+                    const apiGroups = await this.getUserGroups(username);
+                    this.isAdmin = apiGroups.includes('admin');
+                } catch (apiError) {
+                    console.warn('⚠️ Admin-API nicht verfügbar für Status-Prüfung:', apiError);
+                }
+            }
             
             if (!this.isAdmin) {
                 console.warn('⚠️ User is not in admin group');
@@ -276,12 +286,31 @@ class AdminAuthSystem {
             // Get user details
             const userInfo = await this.getUserInfo(accessToken);
             
-            // Verify user is admin
+            // Verify user is admin - Gruppen aus ID Token extrahieren (nicht über Admin-API)
             const username = userInfo.Username;
-            const groups = await this.getUserGroups(username);
+            
+            // Gruppen aus ID Token extrahieren (Cognito fügt sie automatisch hinzu)
+            const tokenPayload = this.decodeJWT(idToken);
+            const groups = tokenPayload['cognito:groups'] || [];
+            
+            console.log('🔍 Gruppen aus ID Token:', groups);
             
             if (!groups.includes('admin')) {
-                throw new Error('Zugriff verweigert: Sie sind kein Administrator');
+                // Fallback: Versuche über Admin-API (kann fehlschlagen ohne Admin-Rechte)
+                try {
+                    const apiGroups = await this.getUserGroups(username);
+                    console.log('🔍 Gruppen aus Admin-API:', apiGroups);
+                    if (apiGroups.includes('admin')) {
+                        console.log('✅ Admin-Gruppe über API gefunden');
+                    } else {
+                        throw new Error('Zugriff verweigert: Sie sind kein Administrator');
+                    }
+                } catch (apiError) {
+                    console.warn('⚠️ Admin-API nicht verfügbar, verwende ID Token:', apiError);
+                    if (!groups.includes('admin')) {
+                        throw new Error('Zugriff verweigert: Sie sind kein Administrator');
+                    }
+                }
             }
             
             // Create session
