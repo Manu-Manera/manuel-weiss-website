@@ -200,7 +200,10 @@ class AdminUserManagement {
     
     async loadAdminUsers() {
         const listEl = document.getElementById('admin-users-list');
-        if (!listEl) return;
+        if (!listEl) {
+            console.error('❌ admin-users-list Element nicht gefunden');
+            return;
+        }
         
         try {
             listEl.innerHTML = `
@@ -210,6 +213,11 @@ class AdminUserManagement {
                 </div>
             `;
             
+            console.log('📡 Lade Admin-User über Cognito...');
+            console.log('📡 User Pool ID:', this.userPoolId);
+            console.log('📡 Group Name:', this.groupName);
+            console.log('📡 Cognito Service Provider:', !!this.cognitoIdentityServiceProvider);
+            
             // Get all users in admin group
             const params = {
                 UserPoolId: this.userPoolId,
@@ -217,20 +225,44 @@ class AdminUserManagement {
                 Limit: 60
             };
             
-            const result = await this.cognitoIdentityServiceProvider.listUsersInGroup(params).promise();
+            const result = await Promise.race([
+                this.cognitoIdentityServiceProvider.listUsersInGroup(params).promise(),
+                new Promise((_, reject) => setTimeout(() => reject(new Error('Cognito Timeout (10s)')), 10000))
+            ]);
+            
+            console.log('✅ Cognito Response:', result);
             
             this.users = result.Users || [];
             this.filteredUsers = [...this.users];
+            
+            console.log(`📊 Admin-User geladen: ${this.users.length}`);
             
             this.renderUsersList();
             
         } catch (error) {
             console.error('❌ Error loading admin users:', error);
+            console.error('❌ Error stack:', error.stack);
+            console.error('❌ Error details:', {
+                message: error.message,
+                name: error.name,
+                code: error.code
+            });
+            
             listEl.innerHTML = `
                 <div class="error-message" style="padding: 2rem; text-align: center; color: #ef4444;">
                     <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 1rem;"></i>
-                    <p>Fehler beim Laden der Admin-User</p>
-                    <p style="font-size: 0.9rem; color: #64748b;">${error.message}</p>
+                    <p><strong>Fehler beim Laden der Admin-User</strong></p>
+                    <p style="font-size: 0.9rem; color: #64748b; margin-top: 0.5rem;">${error.message}</p>
+                    <details style="margin-top: 1rem; text-align: left; max-width: 600px; margin-left: auto; margin-right: auto;">
+                        <summary style="cursor: pointer; color: #667eea; font-weight: bold;">🔍 Debug-Informationen</summary>
+                        <div style="background: #f1f5f9; padding: 1rem; border-radius: 6px; margin-top: 0.5rem; font-size: 0.75rem;">
+                            <p><strong>User Pool ID:</strong> ${this.userPoolId}</p>
+                            <p><strong>Group Name:</strong> ${this.groupName}</p>
+                            <p><strong>Cognito Service Provider:</strong> ${this.cognitoIdentityServiceProvider ? 'Verfügbar' : 'NICHT VERFÜGBAR'}</p>
+                            <p><strong>AWS SDK:</strong> ${typeof AWS !== 'undefined' ? 'Geladen' : 'NICHT GELADEN'}</p>
+                            <pre style="background: #fff; padding: 0.5rem; border-radius: 4px; margin-top: 0.5rem; overflow-x: auto; white-space: pre-wrap;">${error.stack || error.toString()}</pre>
+                        </div>
+                    </details>
                     <button class="btn btn-outline" onclick="window.AdminApp?.sections?.userManagement?.loadAdminUsers()" style="margin-top: 1rem;">
                         <i class="fas fa-sync"></i> Erneut versuchen
                     </button>

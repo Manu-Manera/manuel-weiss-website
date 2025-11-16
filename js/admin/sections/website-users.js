@@ -221,10 +221,17 @@ class WebsiteUsersManagement {
             try {
                 // Try to use API endpoint if available (with timeout)
                 const apiBaseUrl = window.AWS_CONFIG?.apiBaseUrl || window.AWS_CONFIG?.apiGateway?.baseUrl;
+                console.log('🔍 API Base URL:', apiBaseUrl);
+                console.log('🔍 Admin Auth verfügbar:', !!window.adminAuth);
+                
                 if (apiBaseUrl && window.adminAuth) {
                     const session = window.adminAuth.getSession();
+                    console.log('🔍 Session vorhanden:', !!session);
+                    console.log('🔍 Session Details:', session ? { hasIdToken: !!session.idToken, hasAccessToken: !!session.accessToken } : 'null');
+                    
                     if (session && session.idToken) {
                         console.log('📡 Lade Website-Benutzer über API-Endpoint...');
+                        console.log('📡 API URL:', `${apiBaseUrl}/admin/users?excludeAdmin=true`);
                         
                         const fetchPromise = fetch(`${apiBaseUrl}/admin/users?excludeAdmin=true`, {
                             method: 'GET',
@@ -240,9 +247,11 @@ class WebsiteUsersManagement {
                         );
                         
                         const response = await Promise.race([fetchPromise, timeoutPromise]);
+                        console.log('📡 API Response Status:', response.status, response.statusText);
                         
                         if (response.ok) {
                             const data = await response.json();
+                            console.log('📡 API Response Data:', data);
                             allUsers = (data.users || []).map(user => ({
                                 Username: user.id || user.email || user.username,
                                 Attributes: [
@@ -258,16 +267,24 @@ class WebsiteUsersManagement {
                         } else {
                             const errorText = await response.text();
                             console.error('❌ API Error:', response.status, errorText);
-                            throw new Error(`API Error: ${response.status} ${response.statusText}`);
+                            throw new Error(`API Error: ${response.status} ${response.statusText} - ${errorText}`);
                         }
                     } else {
-                        throw new Error('Keine gültige Session gefunden');
+                        const errorMsg = !session ? 'Keine Session gefunden' : 'Kein idToken in Session';
+                        console.error('❌', errorMsg);
+                        throw new Error(errorMsg);
                     }
                 } else {
-                    throw new Error('API-Endpoint oder Admin-Auth nicht verfügbar');
+                    const errorMsg = !apiBaseUrl ? 'API Base URL nicht konfiguriert' : 'Admin Auth nicht verfügbar';
+                    console.error('❌', errorMsg);
+                    throw new Error(errorMsg);
                 }
             } catch (apiError) {
                 console.warn('⚠️ API-Endpoint nicht verfügbar, verwende direkten Cognito-Zugriff:', apiError);
+                console.warn('⚠️ API Error Details:', {
+                    message: apiError.message,
+                    stack: apiError.stack
+                });
                 
                 // Fallback: Direct Cognito access (requires AWS credentials in browser)
                 // This will likely fail in browser, but we try anyway
@@ -311,20 +328,41 @@ class WebsiteUsersManagement {
             
         } catch (error) {
             console.error('❌ Error loading website users:', error);
-            listEl.innerHTML = `
+            console.error('❌ Error stack:', error.stack);
+            console.error('❌ Error details:', {
+                message: error.message,
+                name: error.name,
+                code: error.code
+            });
+            
+            // Zeige detaillierte Fehlermeldung
+            const errorDetails = `
                 <div class="error-message" style="padding: 2rem; text-align: center; color: #ef4444;">
                     <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 1rem;"></i>
-                    <p>Fehler beim Laden der Website-Benutzer</p>
-                    <p style="font-size: 0.9rem; color: #64748b;">${error.message}</p>
-                    <details style="margin-top: 1rem; text-align: left; max-width: 500px; margin-left: auto; margin-right: auto;">
-                        <summary style="cursor: pointer; color: #667eea;">Technische Details</summary>
-                        <pre style="background: #f1f5f9; padding: 1rem; border-radius: 6px; margin-top: 0.5rem; font-size: 0.75rem; overflow-x: auto;">${error.stack || error.toString()}</pre>
+                    <p><strong>Fehler beim Laden der Website-Benutzer</strong></p>
+                    <p style="font-size: 0.9rem; color: #64748b; margin-top: 0.5rem;">${error.message}</p>
+                    <details style="margin-top: 1rem; text-align: left; max-width: 600px; margin-left: auto; margin-right: auto;">
+                        <summary style="cursor: pointer; color: #667eea; font-weight: bold;">🔍 Debug-Informationen</summary>
+                        <div style="background: #f1f5f9; padding: 1rem; border-radius: 6px; margin-top: 0.5rem; font-size: 0.75rem;">
+                            <p><strong>API Base URL:</strong> ${window.AWS_CONFIG?.apiBaseUrl || window.AWS_CONFIG?.apiGateway?.baseUrl || 'NICHT KONFIGURIERT'}</p>
+                            <p><strong>Admin Auth:</strong> ${window.adminAuth ? 'Verfügbar' : 'NICHT VERFÜGBAR'}</p>
+                            <p><strong>Session:</strong> ${window.adminAuth?.getSession() ? 'Vorhanden' : 'NICHT VORHANDEN'}</p>
+                            <p><strong>idToken:</strong> ${window.adminAuth?.getSession()?.idToken ? 'Vorhanden' : 'NICHT VORHANDEN'}</p>
+                            <pre style="background: #fff; padding: 0.5rem; border-radius: 4px; margin-top: 0.5rem; overflow-x: auto; white-space: pre-wrap;">${error.stack || error.toString()}</pre>
+                        </div>
                     </details>
-                    <button class="btn btn-outline" onclick="window.AdminApp?.sections?.websiteUsers?.loadWebsiteUsers()" style="margin-top: 1rem;">
-                        <i class="fas fa-sync"></i> Erneut versuchen
-                    </button>
+                    <div style="margin-top: 1rem; display: flex; gap: 0.5rem; justify-content: center;">
+                        <button class="btn btn-outline" onclick="window.AdminApp?.sections?.websiteUsers?.loadWebsiteUsers()">
+                            <i class="fas fa-sync"></i> Erneut versuchen
+                        </button>
+                        <button class="btn btn-outline" onclick="console.log('API Base URL:', window.AWS_CONFIG?.apiBaseUrl); console.log('Admin Auth:', window.adminAuth); console.log('Session:', window.adminAuth?.getSession());">
+                            <i class="fas fa-bug"></i> Debug Info
+                        </button>
+                    </div>
                 </div>
             `;
+            
+            listEl.innerHTML = errorDetails;
         }
     }
     
