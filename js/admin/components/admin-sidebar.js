@@ -386,7 +386,7 @@ class AdminSidebar extends HTMLElement {
             toggleBtn.addEventListener('click', () => this.toggle());
         }
         
-        // Navigation Items - KOMPLETT NON-BLOCKING
+        // Navigation Items
         const navItems = this.querySelectorAll('.nav-item[data-section]');
         navItems.forEach(item => {
             item.addEventListener('click', (e) => {
@@ -394,15 +394,11 @@ class AdminSidebar extends HTMLElement {
                 e.stopPropagation();
                 const sectionId = item.dataset.section;
                 console.log('Nav item clicked:', sectionId);
-                
-                // Navigation SOFORT starten (nicht warten)
-                setTimeout(() => {
-                    this.navigateToSection(sectionId);
-                }, 0);
-            }, { passive: true });
+                this.navigateToSection(sectionId);
+            });
         });
         
-        // Auch Links in den Nav Items - KOMPLETT NON-BLOCKING
+        // Auch Links in den Nav Items
         const navLinks = this.querySelectorAll('.nav-item a[href^="#"]');
         navLinks.forEach(link => {
             link.addEventListener('click', (e) => {
@@ -411,12 +407,8 @@ class AdminSidebar extends HTMLElement {
                 const href = link.getAttribute('href');
                 const sectionId = href.substring(1); // Remove #
                 console.log('Nav link clicked:', sectionId);
-                
-                // Navigation SOFORT starten (nicht warten)
-                setTimeout(() => {
-                    this.navigateToSection(sectionId);
-                }, 0);
-            }, { passive: true });
+                this.navigateToSection(sectionId);
+            });
         });
         
         // Submenu Toggle
@@ -465,26 +457,23 @@ class AdminSidebar extends HTMLElement {
     }
     
     /**
-     * Navigation zu Section - KOMPLETT NON-BLOCKING (kein async/await)
+     * Navigation zu Section
      */
     navigateToSection(sectionId) {
         console.log('Sidebar navigation to:', sectionId);
         
-        // Navigation SOFORT starten (kein await, kein async)
         if (window.AdminApp && window.AdminApp.navigation) {
             console.log('Using AdminApp navigation');
-            // Direkt aufrufen - keine Promise-Kette
             window.AdminApp.navigation.navigateToSection(sectionId);
         } else if (this.navigation) {
             console.log('Using local navigation');
-            // Direkt aufrufen
             this.navigation.navigateToSection(sectionId);
         } else {
             // Fallback: Direkte Hash-Änderung
             console.log('Using fallback navigation');
             window.location.hash = '#' + sectionId;
             
-            // Manuell Section laden falls AdminApp nicht verfügbar (non-blocking)
+            // Manuell Section laden falls AdminApp nicht verfügbar
             setTimeout(() => {
                 this.loadSectionManually(sectionId).catch(err => {
                     console.error('Manual section load error:', err);
