@@ -19,6 +19,17 @@ class WebsiteUsersManagement {
         
         console.log('👤 Initializing Website Users Management...');
         
+        // Show loading state immediately
+        const listEl = document.getElementById('website-users-list');
+        if (listEl) {
+            listEl.innerHTML = `
+                <div class="loading-placeholder" style="text-align: center; padding: 2rem;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: #667eea;"></i>
+                    <p>Initialisiere Website-Benutzer-Verwaltung...</p>
+                </div>
+            `;
+        }
+        
         try {
             // Initialize AWS SDK if needed
             if (typeof AWS === 'undefined') {
@@ -30,16 +41,25 @@ class WebsiteUsersManagement {
                 region: this.region
             });
             
-            // Load admin users first to exclude them (only if we have access)
+            // Setup event listeners first (non-blocking)
+            this.setupEventListeners();
+            
+            // Load admin users first to exclude them (with timeout)
             try {
-                await this.loadAdminUsersList();
+                await Promise.race([
+                    this.loadAdminUsersList(),
+                    new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 10000))
+                ]);
             } catch (adminError) {
                 console.warn('⚠️ Could not load admin users list:', adminError);
                 this.adminUsers = [];
             }
             
-            this.setupEventListeners();
-            await this.loadWebsiteUsers();
+            // Load website users (with timeout)
+            await Promise.race([
+                this.loadWebsiteUsers(),
+                new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout beim Laden der User')), 15000))
+            ]);
             
             this.isInitialized = true;
             console.log('✅ Website Users Management initialized');
@@ -51,11 +71,20 @@ class WebsiteUsersManagement {
                 listEl.innerHTML = `
                     <div class="error-message" style="padding: 2rem; text-align: center; color: #ef4444;">
                         <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 1rem;"></i>
-                        <p>Fehler beim Initialisieren</p>
-                        <p style="font-size: 0.9rem; color: #64748b;">${error.message}</p>
-                        <button class="btn btn-outline" onclick="window.AdminApp?.sections?.websiteUsers?.init()" style="margin-top: 1rem;">
-                            <i class="fas fa-sync"></i> Erneut versuchen
-                        </button>
+                        <p><strong>Fehler beim Initialisieren</strong></p>
+                        <p style="font-size: 0.9rem; color: #64748b; margin-top: 0.5rem;">${error.message}</p>
+                        <details style="margin-top: 1rem; text-align: left; max-width: 500px; margin-left: auto; margin-right: auto;">
+                            <summary style="cursor: pointer; color: #667eea;">Technische Details</summary>
+                            <pre style="background: #f1f5f9; padding: 1rem; border-radius: 6px; margin-top: 0.5rem; font-size: 0.75rem; overflow-x: auto;">${error.stack || error.toString()}</pre>
+                        </details>
+                        <div style="margin-top: 1rem; display: flex; gap: 0.5rem; justify-content: center;">
+                            <button class="btn btn-outline" onclick="window.AdminApp?.sections?.websiteUsers?.init()">
+                                <i class="fas fa-sync"></i> Erneut versuchen
+                            </button>
+                            <button class="btn btn-outline" onclick="window.location.reload()">
+                                <i class="fas fa-redo"></i> Seite neu laden
+                            </button>
+                        </div>
                     </div>
                 `;
             }
@@ -150,13 +179,14 @@ class WebsiteUsersManagement {
             let allUsers = [];
             
             try {
-                // Try to use API endpoint if available
+                // Try to use API endpoint if available (with timeout)
                 const apiBaseUrl = window.AWS_CONFIG?.apiBaseUrl || window.AWS_CONFIG?.apiGateway?.baseUrl;
                 if (apiBaseUrl && window.adminAuth) {
                     const session = window.adminAuth.getSession();
                     if (session && session.idToken) {
                         console.log('📡 Lade Website-Benutzer über API-Endpoint...');
-                        const response = await fetch(`${apiBaseUrl}/admin/users?excludeAdmin=true`, {
+                        
+                        const fetchPromise = fetch(`${apiBaseUrl}/admin/users?excludeAdmin=true`, {
                             method: 'GET',
                             headers: {
                                 'Content-Type': 'application/json',
@@ -164,10 +194,17 @@ class WebsiteUsersManagement {
                             }
                         });
                         
+                        // Add timeout to fetch
+                        const timeoutPromise = new Promise((_, reject) => 
+                            setTimeout(() => reject(new Error('API-Request Timeout (10s)')), 10000)
+                        );
+                        
+                        const response = await Promise.race([fetchPromise, timeoutPromise]);
+                        
                         if (response.ok) {
                             const data = await response.json();
                             allUsers = (data.users || []).map(user => ({
-                                Username: user.id || user.email,
+                                Username: user.id || user.email || user.username,
                                 Attributes: [
                                     { Name: 'email', Value: user.email },
                                     { Name: 'name', Value: user.name || '' },
@@ -193,22 +230,35 @@ class WebsiteUsersManagement {
                 console.warn('⚠️ API-Endpoint nicht verfügbar, verwende direkten Cognito-Zugriff:', apiError);
                 
                 // Fallback: Direct Cognito access (requires AWS credentials in browser)
-                const params = {
-                    UserPoolId: this.userPoolId,
-                    Limit: 60
-                };
-                
-                let paginationToken = null;
-                
-                do {
-                    if (paginationToken) {
-                        params.PaginationToken = paginationToken;
-                    }
+                // This will likely fail in browser, but we try anyway
+                try {
+                    const params = {
+                        UserPoolId: this.userPoolId,
+                        Limit: 60
+                    };
                     
-                    const result = await this.cognitoIdentityServiceProvider.listUsers(params).promise();
-                    allUsers = allUsers.concat(result.Users || []);
-                    paginationToken = result.PaginationToken;
-                } while (paginationToken);
+                    let paginationToken = null;
+                    const maxIterations = 10; // Prevent infinite loop
+                    let iterations = 0;
+                    
+                    do {
+                        if (paginationToken) {
+                            params.PaginationToken = paginationToken;
+                        }
+                        
+                        const result = await Promise.race([
+                            this.cognitoIdentityServiceProvider.listUsers(params).promise(),
+                            new Promise((_, reject) => setTimeout(() => reject(new Error('Cognito Timeout')), 10000))
+                        ]);
+                        
+                        allUsers = allUsers.concat(result.Users || []);
+                        paginationToken = result.PaginationToken;
+                        iterations++;
+                    } while (paginationToken && iterations < maxIterations);
+                } catch (cognitoError) {
+                    console.error('❌ Cognito-Zugriff fehlgeschlagen:', cognitoError);
+                    throw new Error('Weder API noch direkter Cognito-Zugriff funktioniert. Bitte API-Endpoint deployen oder AWS-Credentials konfigurieren.');
+                }
             }
             
             // Filter out admin users
@@ -490,7 +540,8 @@ class WebsiteUsersManagement {
                 try {
                     console.log('📡 Erstelle User über API-Endpoint...');
                     
-                    const response = await fetch(`${apiBaseUrl}/admin/users`, {
+                    // Add timeout to fetch
+                    const fetchPromise = fetch(`${apiBaseUrl}/admin/users`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -503,6 +554,12 @@ class WebsiteUsersManagement {
                             sendWelcomeEmail: sendEmail
                         })
                     });
+                    
+                    const timeoutPromise = new Promise((_, reject) => 
+                        setTimeout(() => reject(new Error('API-Request Timeout (10s)')), 10000)
+                    );
+                    
+                    const response = await Promise.race([fetchPromise, timeoutPromise]);
                     
                     if (response.ok || response.status === 201) {
                         const newUser = await response.json();
@@ -831,7 +888,8 @@ class WebsiteUsersManagement {
                 try {
                     console.log('📡 Setze Passwort über API-Endpoint...');
                     
-                    const response = await fetch(`${apiBaseUrl}/admin/users/${encodeURIComponent(username)}/reset-password`, {
+                    // Add timeout to fetch
+                    const fetchPromise = fetch(`${apiBaseUrl}/admin/users/${encodeURIComponent(username)}/reset-password`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -842,6 +900,12 @@ class WebsiteUsersManagement {
                             permanent: !temporary
                         })
                     });
+                    
+                    const timeoutPromise = new Promise((_, reject) => 
+                        setTimeout(() => reject(new Error('API-Request Timeout (10s)')), 10000)
+                    );
+                    
+                    const response = await Promise.race([fetchPromise, timeoutPromise]);
                     
                     if (response.ok) {
                         console.log('✅ Passwort über API gesetzt');
@@ -910,13 +974,20 @@ class WebsiteUsersManagement {
                 try {
                     console.log('📡 Lösche User über API-Endpoint...');
                     
-                    const response = await fetch(`${apiBaseUrl}/admin/users/${encodeURIComponent(this.userToDelete)}`, {
+                    // Add timeout to fetch
+                    const fetchPromise = fetch(`${apiBaseUrl}/admin/users/${encodeURIComponent(this.userToDelete)}`, {
                         method: 'DELETE',
                         headers: {
                             'Content-Type': 'application/json',
                             'Authorization': `Bearer ${session.idToken}`
                         }
                     });
+                    
+                    const timeoutPromise = new Promise((_, reject) => 
+                        setTimeout(() => reject(new Error('API-Request Timeout (10s)')), 10000)
+                    );
+                    
+                    const response = await Promise.race([fetchPromise, timeoutPromise]);
                     
                     if (response.ok || response.status === 204) {
                         console.log('✅ User über API gelöscht');
