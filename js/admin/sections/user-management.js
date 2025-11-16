@@ -213,26 +213,100 @@ class AdminUserManagement {
                 </div>
             `;
             
-            console.log('📡 Lade Admin-User über Cognito...');
-            console.log('📡 User Pool ID:', this.userPoolId);
-            console.log('📡 Group Name:', this.groupName);
-            console.log('📡 Cognito Service Provider:', !!this.cognitoIdentityServiceProvider);
+            // Try API endpoint first, fallback to direct Cognito
+            let allUsers = [];
             
-            // Get all users in admin group
-            const params = {
-                UserPoolId: this.userPoolId,
-                GroupName: this.groupName,
-                Limit: 60
-            };
+            try {
+                // Try to use API endpoint if available (with timeout)
+                const apiBaseUrl = window.AWS_CONFIG?.apiBaseUrl || window.AWS_CONFIG?.apiGateway?.baseUrl;
+                console.log('🔍 API Base URL:', apiBaseUrl);
+                console.log('🔍 Admin Auth verfügbar:', !!window.adminAuth);
+                
+                if (apiBaseUrl && window.adminAuth) {
+                    const session = window.adminAuth.getSession();
+                    console.log('🔍 Session vorhanden:', !!session);
+                    
+                    if (session && session.idToken) {
+                        console.log('📡 Lade Admin-User über API-Endpoint...');
+                        console.log('📡 API URL:', `${apiBaseUrl}/admin/users`);
+                        
+                        const fetchPromise = fetch(`${apiBaseUrl}/admin/users`, {
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${session.idToken}`
+                            }
+                        });
+                        
+                        // Add timeout to fetch
+                        const timeoutPromise = new Promise((_, reject) => 
+                            setTimeout(() => reject(new Error('API-Request Timeout (10s)')), 10000)
+                        );
+                        
+                        const response = await Promise.race([fetchPromise, timeoutPromise]);
+                        console.log('📡 API Response Status:', response.status, response.statusText);
+                        
+                        if (response.ok) {
+                            const data = await response.json();
+                            console.log('📡 API Response Data:', data);
+                            
+                            // Filter for admin users only (users in admin group)
+                            // The API returns all users, but we only want admin users
+                            // We need to check which users are in the admin group
+                            const adminGroupUsers = await this.getAdminGroupUsers();
+                            const adminUsernames = new Set(adminGroupUsers.map(u => u.Username));
+                            
+                            allUsers = (data.users || []).filter(user => 
+                                adminUsernames.has(user.id || user.email || user.username)
+                            ).map(user => ({
+                                Username: user.id || user.email || user.username,
+                                Attributes: [
+                                    { Name: 'email', Value: user.email },
+                                    { Name: 'name', Value: user.name || '' },
+                                    { Name: 'email_verified', Value: user.emailVerified ? 'true' : 'false' }
+                                ],
+                                UserStatus: user.status,
+                                Enabled: user.enabled !== false,
+                                UserCreateDate: user.createdAt ? new Date(user.createdAt) : new Date()
+                            }));
+                            
+                            console.log('✅ Admin-User über API geladen:', allUsers.length);
+                        } else {
+                            const errorText = await response.text();
+                            console.error('❌ API Error:', response.status, errorText);
+                            throw new Error(`API Error: ${response.status} ${response.statusText} - ${errorText}`);
+                        }
+                    } else {
+                        const errorMsg = !session ? 'Keine Session gefunden' : 'Kein idToken in Session';
+                        console.error('❌', errorMsg);
+                        throw new Error(errorMsg);
+                    }
+                } else {
+                    const errorMsg = !apiBaseUrl ? 'API Base URL nicht konfiguriert' : 'Admin Auth nicht verfügbar';
+                    console.error('❌', errorMsg);
+                    throw new Error(errorMsg);
+                }
+            } catch (apiError) {
+                console.warn('⚠️ API-Endpoint nicht verfügbar, verwende direkten Cognito-Zugriff:', apiError);
+                
+                // Fallback: Direct Cognito access
+                console.log('📡 Lade Admin-User direkt über Cognito...');
+                const params = {
+                    UserPoolId: this.userPoolId,
+                    GroupName: this.groupName,
+                    Limit: 60
+                };
+                
+                const result = await Promise.race([
+                    this.cognitoIdentityServiceProvider.listUsersInGroup(params).promise(),
+                    new Promise((_, reject) => setTimeout(() => reject(new Error('Cognito Timeout (10s)')), 10000))
+                ]);
+                
+                allUsers = result.Users || [];
+                console.log('✅ Admin-User über Cognito geladen:', allUsers.length);
+            }
             
-            const result = await Promise.race([
-                this.cognitoIdentityServiceProvider.listUsersInGroup(params).promise(),
-                new Promise((_, reject) => setTimeout(() => reject(new Error('Cognito Timeout (10s)')), 10000))
-            ]);
-            
-            console.log('✅ Cognito Response:', result);
-            
-            this.users = result.Users || [];
+            this.users = allUsers;
             this.filteredUsers = [...this.users];
             
             console.log(`📊 Admin-User geladen: ${this.users.length}`);
@@ -256,10 +330,11 @@ class AdminUserManagement {
                     <details style="margin-top: 1rem; text-align: left; max-width: 600px; margin-left: auto; margin-right: auto;">
                         <summary style="cursor: pointer; color: #667eea; font-weight: bold;">🔍 Debug-Informationen</summary>
                         <div style="background: #f1f5f9; padding: 1rem; border-radius: 6px; margin-top: 0.5rem; font-size: 0.75rem;">
+                            <p><strong>API Base URL:</strong> ${window.AWS_CONFIG?.apiBaseUrl || window.AWS_CONFIG?.apiGateway?.baseUrl || 'NICHT KONFIGURIERT'}</p>
+                            <p><strong>Admin Auth:</strong> ${window.adminAuth ? 'Verfügbar' : 'NICHT VERFÜGBAR'}</p>
+                            <p><strong>Session:</strong> ${window.adminAuth?.getSession() ? 'Vorhanden' : 'NICHT VORHANDEN'}</p>
                             <p><strong>User Pool ID:</strong> ${this.userPoolId}</p>
                             <p><strong>Group Name:</strong> ${this.groupName}</p>
-                            <p><strong>Cognito Service Provider:</strong> ${this.cognitoIdentityServiceProvider ? 'Verfügbar' : 'NICHT VERFÜGBAR'}</p>
-                            <p><strong>AWS SDK:</strong> ${typeof AWS !== 'undefined' ? 'Geladen' : 'NICHT GELADEN'}</p>
                             <pre style="background: #fff; padding: 0.5rem; border-radius: 4px; margin-top: 0.5rem; overflow-x: auto; white-space: pre-wrap;">${error.stack || error.toString()}</pre>
                         </div>
                     </details>
@@ -268,6 +343,26 @@ class AdminUserManagement {
                     </button>
                 </div>
             `;
+        }
+    }
+    
+    async getAdminGroupUsers() {
+        try {
+            const params = {
+                UserPoolId: this.userPoolId,
+                GroupName: this.groupName,
+                Limit: 60
+            };
+            
+            const result = await Promise.race([
+                this.cognitoIdentityServiceProvider.listUsersInGroup(params).promise(),
+                new Promise((_, reject) => setTimeout(() => reject(new Error('Cognito Timeout')), 5000))
+            ]);
+            
+            return result.Users || [];
+        } catch (error) {
+            console.warn('⚠️ Could not get admin group users:', error);
+            return [];
         }
     }
     

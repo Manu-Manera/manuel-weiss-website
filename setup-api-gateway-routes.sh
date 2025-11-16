@@ -1,0 +1,178 @@
+#!/bin/bash
+# Setup API Gateway Routes for Admin User Management
+
+set -e
+
+REGION="eu-central-1"
+API_ID="of2iwj7h2c"
+STAGE="prod"
+LAMBDA_FUNCTION_NAME="mawps-admin-user-management"
+LAMBDA_ARN=$(aws lambda get-function --function-name "$LAMBDA_FUNCTION_NAME" --region "$REGION" --query "Configuration.FunctionArn" --output text)
+
+echo "🚀 Setup API Gateway Routes für Admin User Management"
+echo "   API Gateway ID: $API_ID"
+echo "   Lambda Function: $LAMBDA_FUNCTION_NAME"
+echo "   Lambda ARN: $LAMBDA_ARN"
+echo ""
+
+# Get root resource ID
+ROOT_RESOURCE_ID=$(aws apigateway get-resources --rest-api-id "$API_ID" --region "$REGION" --query "items[?path=='/'].id" --output text)
+echo "✅ Root Resource ID: $ROOT_RESOURCE_ID"
+
+# Create /admin resource if it doesn't exist
+ADMIN_RESOURCE_ID=$(aws apigateway get-resources --rest-api-id "$API_ID" --region "$REGION" --query "items[?path=='/admin'].id" --output text)
+
+if [ -z "$ADMIN_RESOURCE_ID" ]; then
+    echo "📝 Erstelle /admin Resource..."
+    ADMIN_RESOURCE_ID=$(aws apigateway create-resource \
+        --rest-api-id "$API_ID" \
+        --parent-id "$ROOT_RESOURCE_ID" \
+        --path-part "admin" \
+        --region "$REGION" \
+        --query "id" \
+        --output text)
+    echo "✅ /admin Resource erstellt: $ADMIN_RESOURCE_ID"
+else
+    echo "✅ /admin Resource existiert bereits: $ADMIN_RESOURCE_ID"
+fi
+
+# Create /admin/users resource if it doesn't exist
+USERS_RESOURCE_ID=$(aws apigateway get-resources --rest-api-id "$API_ID" --region "$REGION" --query "items[?path=='/admin/users'].id" --output text)
+
+if [ -z "$USERS_RESOURCE_ID" ]; then
+    echo "📝 Erstelle /admin/users Resource..."
+    USERS_RESOURCE_ID=$(aws apigateway create-resource \
+        --rest-api-id "$API_ID" \
+        --parent-id "$ADMIN_RESOURCE_ID" \
+        --path-part "users" \
+        --region "$REGION" \
+        --query "id" \
+        --output text)
+    echo "✅ /admin/users Resource erstellt: $USERS_RESOURCE_ID"
+else
+    echo "✅ /admin/users Resource existiert bereits: $USERS_RESOURCE_ID"
+fi
+
+# Create /admin/users/{userId} resource
+USER_ID_RESOURCE_ID=$(aws apigateway get-resources --rest-api-id "$API_ID" --region "$REGION" --query "items[?path=='/admin/users/{userId}'].id" --output text)
+
+if [ -z "$USER_ID_RESOURCE_ID" ]; then
+    echo "📝 Erstelle /admin/users/{userId} Resource..."
+    USER_ID_RESOURCE_ID=$(aws apigateway create-resource \
+        --rest-api-id "$API_ID" \
+        --parent-id "$USERS_RESOURCE_ID" \
+        --path-part "{userId}" \
+        --region "$REGION" \
+        --query "id" \
+        --output text)
+    echo "✅ /admin/users/{userId} Resource erstellt: $USER_ID_RESOURCE_ID"
+else
+    echo "✅ /admin/users/{userId} Resource existiert bereits: $USER_ID_RESOURCE_ID"
+fi
+
+# Create /admin/users/{userId}/reset-password resource
+RESET_PASSWORD_RESOURCE_ID=$(aws apigateway get-resources --rest-api-id "$API_ID" --region "$REGION" --query "items[?path=='/admin/users/{userId}/reset-password'].id" --output text)
+
+if [ -z "$RESET_PASSWORD_RESOURCE_ID" ]; then
+    echo "📝 Erstelle /admin/users/{userId}/reset-password Resource..."
+    RESET_PASSWORD_RESOURCE_ID=$(aws apigateway create-resource \
+        --rest-api-id "$API_ID" \
+        --parent-id "$USER_ID_RESOURCE_ID" \
+        --path-part "reset-password" \
+        --region "$REGION" \
+        --query "id" \
+        --output text)
+    echo "✅ /admin/users/{userId}/reset-password Resource erstellt: $RESET_PASSWORD_RESOURCE_ID"
+else
+    echo "✅ /admin/users/{userId}/reset-password Resource existiert bereits: $RESET_PASSWORD_RESOURCE_ID"
+fi
+
+# Grant API Gateway permission to invoke Lambda
+echo ""
+echo "🔐 Erteile API Gateway Permission für Lambda..."
+aws lambda add-permission \
+    --function-name "$LAMBDA_FUNCTION_NAME" \
+    --statement-id "apigateway-invoke-$(date +%s)" \
+    --action "lambda:InvokeFunction" \
+    --principal "apigateway.amazonaws.com" \
+    --source-arn "arn:aws:execute-api:$REGION:*:$API_ID/*/*" \
+    --region "$REGION" 2>/dev/null || echo "⚠️  Permission existiert bereits oder Fehler (ignoriert)"
+
+# Create Lambda Integration
+INTEGRATION_URI="arn:aws:apigateway:$REGION:lambda:path/2015-03-31/functions/$LAMBDA_ARN/invocations"
+
+echo ""
+echo "🔗 Erstelle Lambda Integration..."
+
+# Helper function to create method if it doesn't exist
+create_method() {
+    local resource_id=$1
+    local method=$2
+    local method_exists=$(aws apigateway get-method --rest-api-id "$API_ID" --resource-id "$resource_id" --http-method "$method" --region "$REGION" 2>/dev/null && echo "yes" || echo "no")
+    
+    if [ "$method_exists" = "no" ]; then
+        echo "   📍 Erstelle $method $resource_id"
+        aws apigateway put-method \
+            --rest-api-id "$API_ID" \
+            --resource-id "$resource_id" \
+            --http-method "$method" \
+            --authorization-type "NONE" \
+            --region "$REGION" > /dev/null
+        
+        aws apigateway put-integration \
+            --rest-api-id "$API_ID" \
+            --resource-id "$resource_id" \
+            --http-method "$method" \
+            --type "AWS_PROXY" \
+            --integration-http-method "POST" \
+            --uri "$INTEGRATION_URI" \
+            --region "$REGION" > /dev/null
+        
+        echo "   ✅ $method erstellt"
+    else
+        echo "   ✅ $method existiert bereits"
+    fi
+}
+
+# Create OPTIONS methods for CORS
+create_method "$USERS_RESOURCE_ID" "OPTIONS"
+create_method "$USER_ID_RESOURCE_ID" "OPTIONS"
+create_method "$RESET_PASSWORD_RESOURCE_ID" "OPTIONS"
+
+# Create GET /admin/users
+create_method "$USERS_RESOURCE_ID" "GET"
+
+# Create POST /admin/users
+create_method "$USERS_RESOURCE_ID" "POST"
+
+# Create PUT /admin/users/{userId}
+create_method "$USER_ID_RESOURCE_ID" "PUT"
+
+# Create DELETE /admin/users/{userId}
+create_method "$USER_ID_RESOURCE_ID" "DELETE"
+
+# Create POST /admin/users/{userId}/reset-password
+create_method "$RESET_PASSWORD_RESOURCE_ID" "POST"
+
+# Deploy to stage
+echo ""
+echo "🚀 Deploye API Gateway zu Stage '$STAGE'..."
+aws apigateway create-deployment \
+    --rest-api-id "$API_ID" \
+    --stage-name "$STAGE" \
+    --region "$REGION" > /dev/null 2>&1 || \
+aws apigateway update-deployment \
+    --rest-api-id "$API_ID" \
+    --deployment-id $(aws apigateway get-deployments --rest-api-id "$API_ID" --region "$REGION" --query "items[0].id" --output text) \
+    --region "$REGION" > /dev/null
+
+echo ""
+echo "✅ API Gateway Routes erfolgreich konfiguriert!"
+echo ""
+echo "📋 API Base URL: https://${API_ID}.execute-api.${REGION}.amazonaws.com/${STAGE}"
+echo "   GET    /admin/users"
+echo "   POST   /admin/users"
+echo "   PUT    /admin/users/{userId}"
+echo "   DELETE /admin/users/{userId}"
+echo "   POST   /admin/users/{userId}/reset-password"
+
