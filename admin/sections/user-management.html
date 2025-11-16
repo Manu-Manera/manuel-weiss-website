@@ -1,0 +1,154 @@
+<div class="section-header">
+    <h2>👥 Admin-User Verwaltung</h2>
+    <p>Verwalte Admin-User und deren Berechtigungen</p>
+</div>
+
+<div class="section-toolbar">
+    <div class="toolbar-left">
+        <button class="btn btn-primary" id="btn-create-admin-user">
+            <i class="fas fa-user-plus"></i>
+            Neuen Admin-User erstellen
+        </button>
+        <button class="btn btn-outline" id="btn-refresh-users">
+            <i class="fas fa-sync"></i>
+            Liste aktualisieren
+        </button>
+    </div>
+    <div class="toolbar-right">
+        <input type="search" class="search-input" id="search-users" placeholder="User suchen...">
+    </div>
+</div>
+
+<!-- Admin-User Liste -->
+<div class="admin-users-section" style="margin-top: 2rem;">
+    <div class="section-card">
+        <h3>Admin-User Liste</h3>
+        <div id="admin-users-list" class="users-list">
+            <div class="loading-placeholder" style="text-align: center; padding: 2rem;">
+                <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: #667eea;"></i>
+                <p>Lade Admin-User...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Neuen Admin-User erstellen -->
+<div class="modal" id="modal-create-user">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Neuen Admin-User erstellen</h3>
+            <button class="modal-close" data-dismiss="modal">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <form id="form-create-user">
+                <div class="form-group">
+                    <label for="new-user-email">
+                        <i class="fas fa-envelope"></i> E-Mail-Adresse *
+                    </label>
+                    <input 
+                        type="email" 
+                        id="new-user-email" 
+                        name="email" 
+                        required
+                        placeholder="admin@example.com"
+                        autocomplete="email"
+                    >
+                    <small class="form-hint">Die E-Mail-Adresse wird als Username verwendet</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="new-user-password">
+                        <i class="fas fa-lock"></i> Passwort *
+                    </label>
+                    <input 
+                        type="password" 
+                        id="new-user-password" 
+                        name="password" 
+                        required
+                        placeholder="Mindestens 8 Zeichen"
+                        autocomplete="new-password"
+                        minlength="8"
+                    >
+                    <small class="form-hint">Mindestens 8 Zeichen, Groß-/Kleinbuchstaben, Zahlen</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="new-user-name">
+                        <i class="fas fa-user"></i> Name (optional)
+                    </label>
+                    <input 
+                        type="text" 
+                        id="new-user-name" 
+                        name="name" 
+                        placeholder="Max Mustermann"
+                    >
+                </div>
+                
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input 
+                            type="checkbox" 
+                            id="new-user-send-email" 
+                            name="sendEmail"
+                            checked
+                        >
+                        <span>Willkommens-E-Mail senden</span>
+                    </label>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" data-dismiss="modal">
+                        Abbrechen
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="btn-submit-create">
+                        <i class="fas fa-user-plus"></i>
+                        User erstellen
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Bestehenden User zur Admin-Gruppe hinzufügen -->
+<div class="modal" id="modal-add-existing-user">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Bestehenden User hinzufügen</h3>
+            <button class="modal-close" data-dismiss="modal">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <form id="form-add-existing-user">
+                <div class="form-group">
+                    <label for="existing-user-email">
+                        <i class="fas fa-envelope"></i> E-Mail-Adresse *
+                    </label>
+                    <input 
+                        type="email" 
+                        id="existing-user-email" 
+                        name="email" 
+                        required
+                        placeholder="user@example.com"
+                        autocomplete="email"
+                    >
+                    <small class="form-hint">E-Mail-Adresse des bestehenden Users</small>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" data-dismiss="modal">
+                        Abbrechen
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="btn-submit-add-existing">
+                        <i class="fas fa-user-plus"></i>
+                        Zur Admin-Gruppe hinzufügen
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+

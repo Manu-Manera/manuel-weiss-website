@@ -95,6 +95,7 @@ class AdminApplication {
         const routes = [
             { id: 'dashboard', template: 'admin/sections/dashboard.html', script: 'js/admin/sections/dashboard.js' },
             { id: 'api-keys', template: 'admin/sections/api-keys.html', script: 'js/admin/sections/api-keys.js' },
+            { id: 'user-management', template: 'admin/sections/user-management.html', script: 'js/admin/sections/user-management.js' },
             { id: 'applications', template: 'admin/sections/applications.html', script: 'js/admin/sections/applications.js' },
             { id: 'media', template: 'admin/sections/media.html', script: 'js/admin/sections/media.js' },
             { id: 'content', template: 'admin/sections/content.html', script: 'js/admin/sections/content.js' },
