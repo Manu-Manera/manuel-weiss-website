@@ -626,6 +626,18 @@
         </div>
     </div>
     
+    <!-- AWS SDK -->
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    
+    <!-- AWS Config -->
+    <script src="js/aws-config.js"></script>
+    
+    <!-- AWS Profile API (needed for admin profile loading) -->
+    <script src="js/aws-profile-api.js?v=20250116"></script>
+    
+    <!-- Admin Auth System (MUST BE LOADED FIRST) -->
+    <script src="js/admin-auth-system.js?v=20250116"></script>
+    
     <!-- Core Scripts -->
     <script src="js/admin/core/utils.js?v=20251020"></script>
     <script src="js/admin/core/state-manager.js?v=20251020"></script>
@@ -662,9 +674,24 @@
     
     <!-- Initialize -->
     <script>
-        // App Initialization with Error Handling
-        document.addEventListener('DOMContentLoaded', () => {
+        // App Initialization with Error Handling and Auth Check
+        document.addEventListener('DOMContentLoaded', async () => {
             try {
+                // Initialize Admin Auth System first
+                if (typeof AdminAuthSystem === 'undefined') {
+                    throw new Error('AdminAuthSystem class not found');
+                }
+                
+                window.adminAuth = new AdminAuthSystem();
+                await window.adminAuth.init();
+                
+                // Verify admin access
+                const hasAccess = await window.adminAuth.verifyAdminAccess();
+                if (!hasAccess) {
+                    // Redirect will happen in verifyAdminAccess
+                    return;
+                }
+                
                 // Check if all required classes are available
                 if (typeof AdminApplication === 'undefined') {
                     throw new Error('AdminApplication class not found');
@@ -685,6 +712,14 @@
                 // Initialize Admin App
                 window.AdminApp = new AdminApplication();
                 window.AdminApp.init();
+                
+                // Add logout functionality to topbar if available
+                if (window.AdminApp && window.AdminApp.topbar) {
+                    // Logout button will be added by topbar component
+                    window.addEventListener('admin-logout', () => {
+                        window.adminAuth.logout();
+                    });
+                }
                 
             } catch (error) {
                 console.error('Admin Panel initialization failed:', error);
