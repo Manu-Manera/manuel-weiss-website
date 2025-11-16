@@ -146,24 +146,70 @@ class WebsiteUsersManagement {
                 </div>
             `;
             
-            // Get all users from the user pool
-            const params = {
-                UserPoolId: this.userPoolId,
-                Limit: 60
-            };
-            
+            // Try API endpoint first, fallback to direct Cognito
             let allUsers = [];
-            let paginationToken = null;
             
-            do {
-                if (paginationToken) {
-                    params.PaginationToken = paginationToken;
+            try {
+                // Try to use API endpoint if available
+                const apiBaseUrl = window.AWS_CONFIG?.apiBaseUrl || window.AWS_CONFIG?.apiGateway?.baseUrl;
+                if (apiBaseUrl && window.adminAuth) {
+                    const session = window.adminAuth.getSession();
+                    if (session && session.idToken) {
+                        console.log('📡 Lade Website-Benutzer über API-Endpoint...');
+                        const response = await fetch(`${apiBaseUrl}/admin/users?excludeAdmin=true`, {
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${session.idToken}`
+                            }
+                        });
+                        
+                        if (response.ok) {
+                            const data = await response.json();
+                            allUsers = (data.users || []).map(user => ({
+                                Username: user.id || user.email,
+                                Attributes: [
+                                    { Name: 'email', Value: user.email },
+                                    { Name: 'name', Value: user.name || '' },
+                                    { Name: 'email_verified', Value: user.emailVerified ? 'true' : 'false' }
+                                ],
+                                UserStatus: user.status,
+                                Enabled: user.enabled !== false,
+                                UserCreateDate: user.createdAt ? new Date(user.createdAt) : new Date()
+                            }));
+                            console.log('✅ Website-Benutzer über API geladen:', allUsers.length);
+                        } else {
+                            const errorText = await response.text();
+                            console.error('❌ API Error:', response.status, errorText);
+                            throw new Error(`API Error: ${response.status} ${response.statusText}`);
+                        }
+                    } else {
+                        throw new Error('Keine gültige Session gefunden');
+                    }
+                } else {
+                    throw new Error('API-Endpoint oder Admin-Auth nicht verfügbar');
                 }
+            } catch (apiError) {
+                console.warn('⚠️ API-Endpoint nicht verfügbar, verwende direkten Cognito-Zugriff:', apiError);
                 
-                const result = await this.cognitoIdentityServiceProvider.listUsers(params).promise();
-                allUsers = allUsers.concat(result.Users || []);
-                paginationToken = result.PaginationToken;
-            } while (paginationToken);
+                // Fallback: Direct Cognito access (requires AWS credentials in browser)
+                const params = {
+                    UserPoolId: this.userPoolId,
+                    Limit: 60
+                };
+                
+                let paginationToken = null;
+                
+                do {
+                    if (paginationToken) {
+                        params.PaginationToken = paginationToken;
+                    }
+                    
+                    const result = await this.cognitoIdentityServiceProvider.listUsers(params).promise();
+                    allUsers = allUsers.concat(result.Users || []);
+                    paginationToken = result.PaginationToken;
+                } while (paginationToken);
+            }
             
             // Filter out admin users
             this.users = allUsers.filter(user => !this.adminUsers.includes(user.Username));
@@ -180,6 +226,10 @@ class WebsiteUsersManagement {
                     <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 1rem;"></i>
                     <p>Fehler beim Laden der Website-Benutzer</p>
                     <p style="font-size: 0.9rem; color: #64748b;">${error.message}</p>
+                    <details style="margin-top: 1rem; text-align: left; max-width: 500px; margin-left: auto; margin-right: auto;">
+                        <summary style="cursor: pointer; color: #667eea;">Technische Details</summary>
+                        <pre style="background: #f1f5f9; padding: 1rem; border-radius: 6px; margin-top: 0.5rem; font-size: 0.75rem; overflow-x: auto;">${error.stack || error.toString()}</pre>
+                    </details>
                     <button class="btn btn-outline" onclick="window.AdminApp?.sections?.websiteUsers?.loadWebsiteUsers()" style="margin-top: 1rem;">
                         <i class="fas fa-sync"></i> Erneut versuchen
                     </button>
