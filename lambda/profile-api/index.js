@@ -60,12 +60,15 @@ exports.handler = async (event) => {
     }
     
     try {
-        // Verify authentication
-        const user = verifyToken(event);
-        console.log('Authenticated user:', user);
-        
         const path = event.path || event.rawPath || '';
         const method = event.httpMethod || event.requestContext?.http?.method;
+        
+        // Website images endpoints don't require authentication
+        let user = null;
+        if (!path.includes('/website-images')) {
+            user = verifyToken(event);
+            console.log('Authenticated user:', user);
+        }
         
         // Route based on HTTP method and path
         if (method === 'GET' && path.includes('/profile/')) {
@@ -176,6 +179,75 @@ exports.handler = async (event) => {
                     message: 'Profile image removed' 
                 })
             };
+            
+        } else if (method === 'POST' && path.includes('/website-images')) {
+            // Save website images (owner only, no auth required for public website)
+            const body = JSON.parse(event.body);
+            console.log('Saving website images:', body);
+            
+            const item = {
+                userId: 'owner',
+                profileImageDefault: body.profileImageDefault || null,
+                profileImageHover: body.profileImageHover || null,
+                updatedAt: new Date().toISOString(),
+                type: 'website-images'
+            };
+            
+            const params = {
+                TableName: TABLE_NAME,
+                Item: item
+            };
+            
+            await dynamoDB.put(params).promise();
+            console.log('✅ Website images saved to DynamoDB');
+            
+            return {
+                statusCode: 200,
+                headers,
+                body: JSON.stringify({ 
+                    success: true, 
+                    message: 'Website images saved successfully',
+                    data: item
+                })
+            };
+            
+        } else if (method === 'GET' && path.includes('/website-images/')) {
+            // Get website images (owner only, no auth required)
+            const userId = path.split('/').pop() || 'owner';
+            
+            if (userId !== 'owner') {
+                return {
+                    statusCode: 403,
+                    headers,
+                    body: JSON.stringify({ error: 'Access denied' })
+                };
+            }
+            
+            const params = {
+                TableName: TABLE_NAME,
+                Key: { userId: 'owner' }
+            };
+            
+            const result = await dynamoDB.get(params).promise();
+            
+            if (result.Item && result.Item.type === 'website-images') {
+                return {
+                    statusCode: 200,
+                    headers,
+                    body: JSON.stringify({
+                        userId: result.Item.userId,
+                        profileImageDefault: result.Item.profileImageDefault || null,
+                        profileImageHover: result.Item.profileImageHover || null,
+                        updatedAt: result.Item.updatedAt
+                    })
+                };
+            } else {
+                return {
+                    statusCode: 404,
+                    headers,
+                    body: JSON.stringify({ message: 'No website images found' })
+                };
+            }
             
         } else {
             return {

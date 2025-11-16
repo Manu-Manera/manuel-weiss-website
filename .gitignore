@@ -49,3 +49,4 @@ tmp/
 temp/
 # Local Netlify folder
 .netlify
+lambda/profile-api-update.zip
