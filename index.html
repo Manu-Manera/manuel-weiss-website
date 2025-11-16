@@ -911,7 +911,7 @@
                         if (window.awsProfileAPI && window.awsProfileAPI.loadWebsiteImages) {
                             console.log('☁️ WEBSITE: Loading images from AWS DynamoDB...');
                             const timeoutPromise = new Promise((_, reject) =>
-                                setTimeout(() => reject(new Error('Timeout')), 2000)
+                                setTimeout(() => reject(new Error('Timeout')), 5000)
                             );
                             const awsImages = await Promise.race([
                                 window.awsProfileAPI.loadWebsiteImages(),
@@ -932,6 +932,11 @@
                             } else {
                                 console.log('ℹ️ WEBSITE: Keine AWS-Bilder gefunden, verwende localStorage Cache');
                             }
+                        } else {
+                            console.warn('⚠️ WEBSITE: awsProfileAPI nicht verfügbar:', {
+                                exists: !!window.awsProfileAPI,
+                                hasMethod: !!(window.awsProfileAPI && window.awsProfileAPI.loadWebsiteImages)
+                            });
                         }
                     } catch (awsError) {
                         console.warn('⚠️ AWS Bild-Laden fehlgeschlagen:', awsError.message);
@@ -1155,6 +1160,13 @@
         // Beim Laden der Seite Hero-Daten laden
         document.addEventListener('DOMContentLoaded', async function() {
             console.log('🚀 WEBSITE: Page loaded, loading hero data...');
+            
+            // Warte auf awsProfileAPI falls es noch nicht geladen ist
+            let retries = 0;
+            while (!window.awsProfileAPI && retries < 10) {
+                await new Promise(resolve => setTimeout(resolve, 100));
+                retries++;
+            }
             
             // Sofort Standard-Statistiken garantieren
             ensureDefaultStatistics();
