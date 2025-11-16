@@ -5,7 +5,7 @@
 **Du kannst dich jetzt anmelden mit:**
 
 - **E-Mail:** `weiss-manuel@gmx.de`
-- **Passwort:** [dein aktuelles Passwort]
+- **Passwort:** `TempPassw0rd!`
 - **Login-URL:** https://mawps.netlify.app/admin-login.html
 
 ## Status
