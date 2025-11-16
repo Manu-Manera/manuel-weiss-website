@@ -285,17 +285,28 @@ class HeroAboutSection {
             if (uploadedUrl && window.awsProfileAPI) {
                 try {
                     console.log('☁️ Speichere S3 URL in AWS DynamoDB...');
+                    console.log('📤 S3 URL:', uploadedUrl);
                     
                     const imageData = {
+                        userId: 'owner', // WICHTIG: userId muss explizit gesetzt sein
                         profileImageDefault: uploadedUrl, // S3 URL verwenden
                         profileImageHover: localStorage.getItem('profileImageHover') || uploadedUrl
                     };
                     
-                    await window.awsProfileAPI.saveWebsiteImages(imageData);
-                    console.log('✅ S3 URL in AWS DynamoDB gespeichert');
+                    console.log('📦 Image Data für DynamoDB:', imageData);
+                    const result = await window.awsProfileAPI.saveWebsiteImages(imageData);
+                    console.log('✅ S3 URL in AWS DynamoDB gespeichert:', result);
                 } catch (awsError) {
-                    console.warn('⚠️ AWS DynamoDB Speicherung fehlgeschlagen:', awsError.message);
+                    console.error('❌ AWS DynamoDB Speicherung fehlgeschlagen:', awsError);
+                    console.warn('⚠️ Fehler-Details:', awsError.message, awsError.stack);
                     console.log('ℹ️ Bild ist trotzdem in localStorage verfügbar');
+                }
+            } else {
+                if (!uploadedUrl) {
+                    console.warn('⚠️ Keine S3 URL verfügbar - DynamoDB Speicherung übersprungen');
+                }
+                if (!window.awsProfileAPI) {
+                    console.warn('⚠️ awsProfileAPI nicht verfügbar - DynamoDB Speicherung übersprungen');
                 }
             }
             
