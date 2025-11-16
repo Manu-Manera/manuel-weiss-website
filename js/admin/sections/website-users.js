@@ -30,8 +30,13 @@ class WebsiteUsersManagement {
                 region: this.region
             });
             
-            // Load admin users first to exclude them
-            await this.loadAdminUsers();
+            // Load admin users first to exclude them (only if we have access)
+            try {
+                await this.loadAdminUsersList();
+            } catch (adminError) {
+                console.warn('⚠️ Could not load admin users list:', adminError);
+                this.adminUsers = [];
+            }
             
             this.setupEventListeners();
             await this.loadWebsiteUsers();
@@ -41,11 +46,24 @@ class WebsiteUsersManagement {
             
         } catch (error) {
             console.error('❌ Error initializing Website Users Management:', error);
+            const listEl = document.getElementById('website-users-list');
+            if (listEl) {
+                listEl.innerHTML = `
+                    <div class="error-message" style="padding: 2rem; text-align: center; color: #ef4444;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                        <p>Fehler beim Initialisieren</p>
+                        <p style="font-size: 0.9rem; color: #64748b;">${error.message}</p>
+                        <button class="btn btn-outline" onclick="window.AdminApp?.sections?.websiteUsers?.init()" style="margin-top: 1rem;">
+                            <i class="fas fa-sync"></i> Erneut versuchen
+                        </button>
+                    </div>
+                `;
+            }
             this.showError('Fehler beim Initialisieren der Website-Benutzer-Verwaltung');
         }
     }
     
-    async loadAdminUsers() {
+    async loadAdminUsersList() {
         try {
             const params = {
                 UserPoolId: this.userPoolId,
@@ -59,6 +77,7 @@ class WebsiteUsersManagement {
         } catch (error) {
             console.error('❌ Error loading admin users:', error);
             this.adminUsers = [];
+            throw error;
         }
     }
     

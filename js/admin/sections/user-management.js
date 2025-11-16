@@ -68,7 +68,55 @@ class AdminUserManagement {
             });
         }
         
-        // Modal close handlers werden beim Öffnen des Modals registriert (in showCreateUserModal)
+        // Setup modal close handlers for all modals (using event delegation)
+        this.setupGlobalModalHandlers();
+    }
+    
+    setupGlobalModalHandlers() {
+        // Use event delegation for modal close buttons
+        document.addEventListener('click', (e) => {
+            // Close button (X) - check if clicked element or parent has modal-close class
+            if (e.target.closest('.modal-close')) {
+                e.preventDefault();
+                e.stopPropagation();
+                const modal = e.target.closest('.modal');
+                if (modal) {
+                    this.closeModal(modal.id);
+                }
+                return;
+            }
+            
+            // Cancel/Abbrechen button with data-dismiss
+            if (e.target.closest('[data-dismiss="modal"]') && !e.target.closest('.modal-close')) {
+                e.preventDefault();
+                e.stopPropagation();
+                const modal = e.target.closest('.modal');
+                if (modal) {
+                    this.closeModal(modal.id);
+                }
+                return;
+            }
+        });
+        
+        // Close modal on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const openModal = document.querySelector('.modal.show');
+                if (openModal) {
+                    this.closeModal(openModal.id);
+                }
+            }
+        });
+        
+        // Close modal on backdrop click
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal') && e.target.classList.contains('show')) {
+                // Only close if clicking directly on the modal backdrop, not on modal-content
+                if (e.target === e.currentTarget || !e.target.closest('.modal-content')) {
+                    this.closeModal(e.target.id);
+                }
+            }
+        });
     }
     
     async loadAdminUsers() {
@@ -235,56 +283,7 @@ class AdminUserManagement {
         if (modal) {
             modal.classList.add('show');
             document.getElementById('new-user-email')?.focus();
-            
-            // Setup close handlers when modal is shown
-            this.setupModalCloseHandlers(modal);
         }
-    }
-    
-    setupModalCloseHandlers(modal) {
-        // Close button (X)
-        const closeBtn = modal.querySelector('.modal-close');
-        if (closeBtn) {
-            // Remove existing listeners
-            const newCloseBtn = closeBtn.cloneNode(true);
-            closeBtn.parentNode.replaceChild(newCloseBtn, closeBtn);
-            
-            newCloseBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                this.closeModal(modal.id);
-            });
-        }
-        
-        // Cancel/Abbrechen button
-        const cancelBtn = modal.querySelector('[data-dismiss="modal"]');
-        if (cancelBtn && cancelBtn !== closeBtn) {
-            // Remove existing listeners
-            const newCancelBtn = cancelBtn.cloneNode(true);
-            cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
-            
-            newCancelBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                this.closeModal(modal.id);
-            });
-        }
-        
-        // Close on backdrop click
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                this.closeModal(modal.id);
-            }
-        }, { once: false });
-        
-        // Close on Escape key
-        const escapeHandler = (e) => {
-            if (e.key === 'Escape' && modal.classList.contains('show')) {
-                this.closeModal(modal.id);
-                document.removeEventListener('keydown', escapeHandler);
-            }
-        };
-        document.addEventListener('keydown', escapeHandler);
     }
     
     closeModal(modalId) {
