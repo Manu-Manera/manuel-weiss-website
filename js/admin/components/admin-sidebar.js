@@ -298,6 +298,12 @@ class AdminSidebar extends HTMLElement {
                                 <span>API Keys</span>
                             </a>
                         </li>
+                        <li class="nav-item" data-section="user-management" data-tooltip="Admin-User Verwaltung">
+                            <a href="#user-management">
+                                <i class="fas fa-users-cog"></i>
+                                <span>Admin-User</span>
+                            </a>
+                        </li>
                         <li class="nav-item" data-section="ai-twin" data-tooltip="AI Twin">
                             <a href="#ai-twin">
                                 <i class="fas fa-user-robot"></i>
