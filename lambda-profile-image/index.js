@@ -26,11 +26,19 @@ exports.handler = async (event) => {
   }
   
   try {
-    const path = event.path || event.rawPath || '';
+    // Path kann /prod/website-images oder /website-images sein
+    let path = event.path || event.rawPath || '';
+    // Entferne /prod prefix falls vorhanden
+    if (path.startsWith('/prod/')) {
+      path = path.substring(5);
+    }
     const method = event.httpMethod || event.requestContext?.http?.method || 'POST';
+    
+    console.log('🔍 Lambda Event:', { path, method, hasBody: !!event.body });
     
     // Handle website-images endpoints (DynamoDB operations)
     if (path.includes('/website-images')) {
+      console.log('📸 Handling website-images request:', { path, method });
       return await handleWebsiteImages(event, method, path);
     }
     
@@ -159,7 +167,7 @@ function json(statusCode, body) {
       'Content-Type': 'application/json',
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Headers': 'Content-Type,Authorization',
-      'Access-Control-Allow-Methods': 'POST,OPTIONS',
+      'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
     },
     body: JSON.stringify(body),
   };
