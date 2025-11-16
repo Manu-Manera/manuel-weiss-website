@@ -981,7 +981,7 @@ class WebsiteUsersManagement {
                             'Authorization': `Bearer ${session.idToken}`
                         },
                         body: JSON.stringify({
-                            temporaryPassword: password,
+                            password: password,
                             permanent: !temporary
                         })
                     });

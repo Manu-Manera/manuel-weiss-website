@@ -1,5 +1,5 @@
-import { CognitoIdentityProviderClient, ListUsersCommand, AdminCreateUserCommand, AdminDeleteUserCommand, AdminUpdateUserAttributesCommand, AdminSetUserPasswordCommand, AdminEnableUserCommand, AdminDisableUserCommand, AdminGetUserCommand, ListUsersInGroupCommand } from "@aws-sdk/client-cognito-identity-provider";
-import { DynamoDBClient, QueryCommand, PutItemCommand, UpdateItemCommand, DeleteItemCommand, ScanCommand } from "@aws-sdk/client-dynamodb";
+import { CognitoIdentityProviderClient, ListUsersCommand, AdminCreateUserCommand, AdminDeleteUserCommand, AdminUpdateUserAttributesCommand, AdminSetUserPasswordCommand, AdminEnableUserCommand, AdminDisableUserCommand, AdminGetUserCommand, ListUsersInGroupCommand, AdminConfirmSignUpCommand } from "@aws-sdk/client-cognito-identity-provider";
+import { DynamoDBClient, QueryCommand, PutItemCommand, UpdateItemCommand, DeleteItemCommand, ScanCommand, GetItemCommand } from "@aws-sdk/client-dynamodb";
 
 const cognito = new CognitoIdentityProviderClient({ region: process.env.AWS_REGION || "eu-central-1" });
 const ddb = new DynamoDBClient({ region: process.env.AWS_REGION || "eu-central-1" });
@@ -31,8 +31,23 @@ export const handler = async (event) => {
       return json(403, { message: 'Admin access required' }, hdr);
     }
 
-    const path = event.path || event.resource || '';
-    const method = event.httpMethod;
+    // Handle different event formats (API Gateway v1 vs v2)
+    let path = event.path || event.resource || '';
+    const method = event.httpMethod || event.requestContext?.http?.method;
+    
+    // Remove /prod/ prefix if present (API Gateway stage)
+    if (path.startsWith('/prod/')) {
+      path = path.substring(6);
+    } else if (path.startsWith('/dev/')) {
+      path = path.substring(5);
+    } else if (path.startsWith('/staging/')) {
+      path = path.substring(9);
+    }
+    
+    // Ensure path starts with /
+    if (!path.startsWith('/')) {
+      path = '/' + path;
+    }
     
     console.log(`👨‍💼 Admin API: ${method} ${path} - Admin: ${user.email}`);
 
@@ -90,7 +105,9 @@ export const handler = async (event) => {
     if (path.includes('/reset-password') && method === 'POST') {
       const userId = path.split('/')[3];
       const body = JSON.parse(event.body || '{}');
-      await resetUserPassword(userId, body.temporaryPassword);
+      const password = body.temporaryPassword || body.password;
+      const permanent = body.permanent !== false; // Default to permanent if not specified
+      await resetUserPassword(userId, password, permanent);
       await logAdminAction(user.userId, 'password_reset', { targetUser: userId });
       return json(200, { message: 'Password reset' }, hdr);
     }
@@ -215,7 +232,9 @@ async function listUsers(params = {}) {
 }
 
 async function createUser(userData) {
-  const temporaryPassword = generateTemporaryPassword();
+  // Use provided password or generate temporary one
+  const password = userData.password || generateTemporaryPassword();
+  const isTemporary = !userData.password;
   
   const command = new AdminCreateUserCommand({
     UserPoolId: process.env.USER_POOL_ID,
@@ -225,11 +244,21 @@ async function createUser(userData) {
       { Name: 'name', Value: userData.name || '' },
       { Name: 'email_verified', Value: 'true' }
     ],
-    TemporaryPassword: temporaryPassword,
+    TemporaryPassword: isTemporary ? password : undefined,
     MessageAction: userData.sendWelcomeEmail ? 'SEND' : 'SUPPRESS'
   });
 
   const response = await cognito.send(command);
+  
+  // Set password if provided (permanent)
+  if (!isTemporary && password) {
+    await cognito.send(new AdminSetUserPasswordCommand({
+      UserPoolId: process.env.USER_POOL_ID,
+      Username: response.User.Username,
+      Password: password,
+      Permanent: true
+    }));
+  }
   
   // Create default profile in DynamoDB
   await createDefaultUserProfile(response.User.Username, userData);
@@ -238,7 +267,7 @@ async function createUser(userData) {
     id: response.User.Username,
     email: userData.email,
     name: userData.name,
-    temporaryPassword: userData.sendWelcomeEmail ? null : temporaryPassword,
+    temporaryPassword: (isTemporary && !userData.sendWelcomeEmail) ? password : null,
     status: response.User.UserStatus,
     createdAt: response.User.UserCreateDate?.toISOString()
   };
@@ -247,14 +276,17 @@ async function createUser(userData) {
 async function updateUser(userId, updateData) {
   const attributes = [];
   
-  if (updateData.name) {
-    attributes.push({ Name: 'name', Value: updateData.name });
+  if (updateData.name !== undefined) {
+    attributes.push({ Name: 'name', Value: updateData.name || '' });
   }
   if (updateData.email) {
     attributes.push({ Name: 'email', Value: updateData.email });
   }
-  if (updateData.phoneNumber) {
-    attributes.push({ Name: 'phone_number', Value: updateData.phoneNumber });
+  if (updateData.phoneNumber !== undefined) {
+    attributes.push({ Name: 'phone_number', Value: updateData.phoneNumber || '' });
+  }
+  if (updateData.emailVerified !== undefined) {
+    attributes.push({ Name: 'email_verified', Value: updateData.emailVerified ? 'true' : 'false' });
   }
 
   if (attributes.length > 0) {
@@ -263,6 +295,23 @@ async function updateUser(userId, updateData) {
       Username: userId,
       UserAttributes: attributes
     }));
+  }
+
+  // Update status if provided
+  if (updateData.status) {
+    // Get current user to check status
+    const currentUser = await cognito.send(new AdminGetUserCommand({
+      UserPoolId: process.env.USER_POOL_ID,
+      Username: userId
+    }));
+    
+    // Confirm user if status is CONFIRMED and currently not confirmed
+    if (updateData.status === 'CONFIRMED' && currentUser.UserStatus !== 'CONFIRMED') {
+      await cognito.send(new AdminConfirmSignUpCommand({
+        UserPoolId: process.env.USER_POOL_ID,
+        Username: userId
+      }));
+    }
   }
 
   // Update profile in DynamoDB
@@ -298,12 +347,12 @@ async function enableUser(userId) {
   }));
 }
 
-async function resetUserPassword(userId, temporaryPassword) {
+async function resetUserPassword(userId, password, permanent = true) {
   await cognito.send(new AdminSetUserPasswordCommand({
     UserPoolId: process.env.USER_POOL_ID,
     Username: userId,
-    Password: temporaryPassword,
-    Permanent: false
+    Password: password,
+    Permanent: permanent
   }));
 }
 
@@ -558,22 +607,68 @@ async function getUserProgress(userId) {
 }
 
 async function createDefaultUserProfile(userId, userData) {
-  const timestamp = new Date().toISOString();
-  
-  await ddb.send(new PutItemCommand({
-    TableName: process.env.TABLE_NAME,
-    Item: {
-      pk: { S: `user#${userId}` },
-      sk: { S: 'profile' },
-      userId: { S: userId },
-      email: { S: userData.email },
-      name: { S: userData.name || '' },
-      preferences: { S: JSON.stringify({ language: 'de', theme: 'light' }) },
-      settings: { S: JSON.stringify({ notifications: true, autoSave: true }) },
-      createdAt: { S: timestamp },
-      lastLogin: { S: timestamp }
-    }
-  }));
+  try {
+    const timestamp = new Date().toISOString();
+    
+    await ddb.send(new PutItemCommand({
+      TableName: process.env.TABLE_NAME,
+      Item: {
+        pk: { S: `user#${userId}` },
+        sk: { S: 'profile' },
+        userId: { S: userId },
+        email: { S: userData.email },
+        name: { S: userData.name || '' },
+        preferences: { S: JSON.stringify({ language: 'de', theme: 'light' }) },
+        settings: { S: JSON.stringify({ notifications: true, autoSave: true }) },
+        createdAt: { S: timestamp },
+        lastLogin: { S: timestamp }
+      }
+    }));
+  } catch (error) {
+    console.warn('⚠️ Could not create default user profile in DynamoDB:', error);
+    // Don't fail user creation if profile creation fails
+  }
+}
+
+async function updateUserProfile(userId, profileData) {
+  try {
+    const timestamp = new Date().toISOString();
+    
+    // Get existing profile
+    const existing = await ddb.send(new GetItemCommand({
+      TableName: process.env.TABLE_NAME,
+      Key: {
+        pk: { S: `user#${userId}` },
+        sk: { S: 'profile' }
+      }
+    }));
+    
+    // Merge with existing data
+    const existingProfile = existing.Item ? {
+      preferences: existing.Item.preferences?.S ? JSON.parse(existing.Item.preferences.S) : {},
+      settings: existing.Item.settings?.S ? JSON.parse(existing.Item.settings.S) : {},
+      lastLogin: existing.Item.lastLogin?.S
+    } : {};
+    
+    await ddb.send(new PutItemCommand({
+      TableName: process.env.TABLE_NAME,
+      Item: {
+        pk: { S: `user#${userId}` },
+        sk: { S: 'profile' },
+        userId: { S: userId },
+        email: { S: profileData.email || existing.Item?.email?.S || '' },
+        name: { S: profileData.name || existing.Item?.name?.S || '' },
+        preferences: { S: JSON.stringify({ ...existingProfile.preferences, ...(profileData.preferences || {}) }) },
+        settings: { S: JSON.stringify({ ...existingProfile.settings, ...(profileData.settings || {}) }) },
+        createdAt: { S: existing.Item?.createdAt?.S || timestamp },
+        lastLogin: { S: profileData.lastLogin || existingProfile.lastLogin || timestamp },
+        updatedAt: { S: timestamp }
+      }
+    }));
+  } catch (error) {
+    console.warn('⚠️ Could not update user profile in DynamoDB:', error);
+    // Don't fail user update if profile update fails
+  }
 }
 
 async function deleteAllUserData(userId) {
