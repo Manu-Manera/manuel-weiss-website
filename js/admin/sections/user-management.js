@@ -68,24 +68,7 @@ class AdminUserManagement {
             });
         }
         
-        // Modal close buttons
-        document.querySelectorAll('[data-dismiss="modal"]').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const modal = e.target.closest('.modal');
-                if (modal) {
-                    this.closeModal(modal.id);
-                }
-            });
-        });
-        
-        // Close modal on outside click
-        document.querySelectorAll('.modal').forEach(modal => {
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    this.closeModal(modal.id);
-                }
-            });
-        });
+        // Modal close handlers werden beim Öffnen des Modals registriert (in showCreateUserModal)
     }
     
     async loadAdminUsers() {
@@ -252,18 +235,83 @@ class AdminUserManagement {
         if (modal) {
             modal.classList.add('show');
             document.getElementById('new-user-email')?.focus();
+            
+            // Setup close handlers when modal is shown
+            this.setupModalCloseHandlers(modal);
         }
+    }
+    
+    setupModalCloseHandlers(modal) {
+        // Close button (X)
+        const closeBtn = modal.querySelector('.modal-close');
+        if (closeBtn) {
+            // Remove existing listeners
+            const newCloseBtn = closeBtn.cloneNode(true);
+            closeBtn.parentNode.replaceChild(newCloseBtn, closeBtn);
+            
+            newCloseBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                this.closeModal(modal.id);
+            });
+        }
+        
+        // Cancel/Abbrechen button
+        const cancelBtn = modal.querySelector('[data-dismiss="modal"]');
+        if (cancelBtn && cancelBtn !== closeBtn) {
+            // Remove existing listeners
+            const newCancelBtn = cancelBtn.cloneNode(true);
+            cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
+            
+            newCancelBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                this.closeModal(modal.id);
+            });
+        }
+        
+        // Close on backdrop click
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                this.closeModal(modal.id);
+            }
+        }, { once: false });
+        
+        // Close on Escape key
+        const escapeHandler = (e) => {
+            if (e.key === 'Escape' && modal.classList.contains('show')) {
+                this.closeModal(modal.id);
+                document.removeEventListener('keydown', escapeHandler);
+            }
+        };
+        document.addEventListener('keydown', escapeHandler);
     }
     
     closeModal(modalId) {
         const modal = document.getElementById(modalId);
         if (modal) {
+            console.log('🔒 Schließe Modal:', modalId);
             modal.classList.remove('show');
+            
             // Reset forms
             const form = modal.querySelector('form');
             if (form) {
                 form.reset();
+                // Clear any error states
+                form.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
+                form.querySelectorAll('.error-message').forEach(el => {
+                    el.classList.remove('show');
+                    el.textContent = '';
+                });
             }
+            
+            // Re-enable submit button if it was disabled
+            const submitBtn = modal.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = false;
+            }
+        } else {
+            console.warn('⚠️ Modal nicht gefunden:', modalId);
         }
     }
     
