@@ -711,7 +711,7 @@
             const tokenStatus = document.getElementById('tokenStatus');
             
             try {
-                if (window.realUserAuth && window.realUserAuth.isAuthenticated()) {
+                if (window.realUserAuth && window.realUserAuth.isLoggedIn && window.realUserAuth.isLoggedIn()) {
                     const user = window.realUserAuth.getCurrentUser();
                     const token = await window.realUserAuth.getAuthToken();
                     
@@ -809,7 +809,7 @@
                 console.log('🔐 Teste Authentifizierung...');
                 
                 if (window.realUserAuth) {
-                    if (window.realUserAuth.isAuthenticated()) {
+                    if (window.realUserAuth.isLoggedIn && window.realUserAuth.isLoggedIn()) {
                         const user = window.realUserAuth.getCurrentUser();
                         alert(`✅ Auth Test erfolgreich!\n\nAngemeldet als: ${user.name || user.email}\nRolle: ${user.role}`);
                     } else {

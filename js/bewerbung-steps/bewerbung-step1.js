@@ -228,7 +228,7 @@ function updateAuthStatus() {
     if (!authStatusContent) return;
     
     // Prüfe Auth Status
-    if (window.realUserAuth && window.realUserAuth.isAuthenticated()) {
+    if (window.realUserAuth && window.realUserAuth.isLoggedIn && window.realUserAuth.isLoggedIn()) {
         const user = window.realUserAuth.getCurrentUser();
         authStatusContent.innerHTML = `
             <div style="display: flex; align-items: center; gap: 1rem;">

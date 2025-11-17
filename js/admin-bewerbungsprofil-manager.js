@@ -26,7 +26,7 @@ class AdminBewerbungsprofilManager {
 
     async checkAuthStatus() {
         try {
-            if (window.realUserAuth && window.realUserAuth.isAuthenticated()) {
+            if (window.realUserAuth && window.realUserAuth.isLoggedIn && window.realUserAuth.isLoggedIn()) {
                 this.currentUser = window.realUserAuth.getCurrentUser();
                 this.isAuthenticated = true;
                 console.log('✅ Admin User ist authentifiziert:', this.currentUser);
@@ -641,6 +641,7 @@ if (window.AdminUserManagementUI) {
 }
 
 console.log('✅ Admin Bewerbungsprofil Manager geladen');
+
 
 
 
