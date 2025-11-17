@@ -124,7 +124,16 @@ class AdminNavigation {
         
         try {
             if (!this.sectionLoader) {
-                throw new Error('Section loader not set');
+                console.warn('⚠️ Section loader not set, waiting...');
+                // Wait a bit for section loader to be set
+                let attempts = 0;
+                while (!this.sectionLoader && attempts < 10) {
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                    attempts++;
+                }
+                if (!this.sectionLoader) {
+                    throw new Error('Section loader not set after waiting');
+                }
             }
             
             const route = this.routes.get(sectionId);
