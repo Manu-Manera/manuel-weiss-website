@@ -9,26 +9,33 @@ class AdminNavigation {
         this.sectionLoader = null;
         this.routes = new Map();
         this.middleware = [];
+        this.initialized = false;
         
-        this.init();
+        // Don't call init() here - wait for setSectionLoader()
     }
     
     /**
      * Navigation initialisieren
      */
     init() {
+        if (this.initialized) return;
+        
         // Hash change listener
         window.addEventListener('hashchange', () => {
             this.handleHashChange();
         });
         
-        // Initial load
-        this.handleHashChange();
+        // Initial load (only if sectionLoader is set)
+        if (this.sectionLoader) {
+            this.handleHashChange();
+        }
         
         // Legacy function support
         window.navigateToSection = (sectionId) => {
             this.navigateToSection(sectionId);
         };
+        
+        this.initialized = true;
     }
     
     /**
@@ -36,6 +43,11 @@ class AdminNavigation {
      */
     setSectionLoader(loader) {
         this.sectionLoader = loader;
+        
+        // Initialize navigation if not already done
+        if (!this.initialized) {
+            this.init();
+        }
     }
     
     /**
