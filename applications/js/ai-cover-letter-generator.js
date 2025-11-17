@@ -448,15 +448,50 @@ Erstelle nur das Anschreiben ohne zusätzliche Erklärungen.
     }
     
     getAPIKey() {
-        // Check for API key in localStorage or user profile
-        const localKey = localStorage.getItem('openai_api_key');
-        if (localKey) return localKey;
+        const sources = [
+            { name: 'localStorage.openai_api_key', value: localStorage.getItem('openai_api_key') },
+            { name: 'sessionStorage.openai_api_key', value: sessionStorage?.getItem('openai_api_key') },
+            { 
+                name: 'ki_settings.apiKey', 
+                value: (() => {
+                    try {
+                        const settings = JSON.parse(localStorage.getItem('ki_settings') || '{}');
+                        return settings.apiKey || null;
+                    } catch (error) {
+                        console.warn('⚠️ Konnte ki_settings nicht lesen:', error);
+                        return null;
+                    }
+                })()
+            },
+            { 
+                name: 'profile.openaiApiKey', 
+                value: (() => {
+                    try {
+                        const profile = this.applicationsCore?.getProfileData();
+                        return profile?.openaiApiKey || null;
+                    } catch (error) {
+                        console.warn('⚠️ Fehler beim Lesen des Profils:', error);
+                        return null;
+                    }
+                })()
+            }
+        ];
         
-        // Check user profile for API key
-        const profile = this.applicationsCore.getProfileData();
-        if (profile && profile.openaiApiKey) return profile.openaiApiKey;
+        for (const source of sources) {
+            if (this.isValidAPIKey(source.value)) {
+                console.log(`✅ OpenAI API Key geladen aus: ${source.name}`);
+                return source.value.trim();
+            }
+        }
         
+        console.warn('❌ Kein gültiger OpenAI API Key gefunden. Quellen überprüft:', sources.map(s => `${s.name}: ${s.value ? 'gefunden' : 'leer'}`).join(' | '));
         return null;
+    }
+    
+    isValidAPIKey(key) {
+        if (!key || typeof key !== 'string') return false;
+        const trimmed = key.trim();
+        return trimmed.length > 20 && (trimmed.startsWith('sk-') || trimmed.startsWith('rk-') || trimmed.startsWith('oai-'));
     }
     
     checkAPIKey() {
@@ -474,13 +509,22 @@ Erstelle nur das Anschreiben ohne zusätzliche Erklärungen.
         const input = document.getElementById('apiKeyInput');
         const apiKey = input.value.trim();
         
-        if (!apiKey || !apiKey.startsWith('sk-')) {
-            this.showNotification('Bitte geben Sie einen gültigen OpenAI API Key ein', 'error');
+        if (!this.isValidAPIKey(apiKey)) {
+            this.showNotification('Bitte geben Sie einen gültigen OpenAI API Key ein (beginnt mit "sk-")', 'error');
             return;
         }
         
         // Save to localStorage
         localStorage.setItem('openai_api_key', apiKey);
+        
+        // Synchronisiere auch die Admin-Einstellungen, damit alle Seiten denselben Key sehen
+        try {
+            const settings = JSON.parse(localStorage.getItem('ki_settings') || '{}');
+            settings.apiKey = apiKey;
+            localStorage.setItem('ki_settings', JSON.stringify(settings));
+        } catch (error) {
+            console.warn('⚠️ Konnte ki_settings nicht aktualisieren:', error);
+        }
         
         // Save to profile if possible
         if (this.applicationsCore && this.applicationsCore.awsProfileAPI) {
