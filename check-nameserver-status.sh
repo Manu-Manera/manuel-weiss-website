@@ -71,16 +71,22 @@ echo ""
 
 # 4. Zusammenfassung
 echo -e "${BLUE}4. Status-Zusammenfassung:${NC}"
-ROUTE53_COUNT=$(echo "$PUBLIC_NS" | grep -c "awsdns" 2>/dev/null || echo "0")
-ROUTE53_COUNT=${ROUTE53_COUNT:-0}
+if [ -n "$PUBLIC_NS" ]; then
+    ROUTE53_COUNT=$(echo "$PUBLIC_NS" | grep -c "awsdns" 2>/dev/null || echo "0")
+    # Entferne Leerzeichen und Zeilenumbrüche
+    ROUTE53_COUNT=$(echo "$ROUTE53_COUNT" | tr -d '[:space:]')
+    ROUTE53_COUNT=${ROUTE53_COUNT:-0}
+else
+    ROUTE53_COUNT=0
+fi
 
-if [ "$ROUTE53_COUNT" -eq "4" ]; then
+if [ "$ROUTE53_COUNT" = "4" ] || [ "$ROUTE53_COUNT" -eq 4 ] 2>/dev/null; then
     echo -e "${GREEN}✅ ALLE Route53 Nameserver sind gesetzt!${NC}"
     echo ""
     echo "   → DNS-Propagierung kann 24-48h dauern"
     echo "   → Prüfen Sie Domain-Verifizierung:"
     echo "     aws ses get-identity-verification-attributes --identities $DOMAIN --region eu-central-1"
-elif [ "$ROUTE53_COUNT" -gt "0" ]; then
+elif [ "$ROUTE53_COUNT" -gt "0" ] 2>/dev/null; then
     echo -e "${YELLOW}⚠️  Teilweise Route53 Nameserver gesetzt ($ROUTE53_COUNT/4)${NC}"
     echo "   → Setzen Sie ALLE 4 Nameserver beim Domain-Registrar"
 elif [ -z "$PUBLIC_NS" ]; then
@@ -95,7 +101,7 @@ fi
 echo ""
 
 # 5. Anleitung
-if [ "$ROUTE53_COUNT" -ne "4" ]; then
+if [ "$ROUTE53_COUNT" != "4" ] && [ "$ROUTE53_COUNT" -ne 4 ] 2>/dev/null; then
     echo -e "${YELLOW}📋 SO SETZEN SIE DIE NAMESERVER:${NC}"
     echo ""
     echo "1. Gehen Sie zu Ihrem Domain-Registrar: $REGISTRAR"
