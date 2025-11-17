@@ -75,16 +75,13 @@ class WebsiteUsersManagement {
             return;
         }
         
-        // Load data asynchronously (don't block)
-        this.loadDataAsync().then(() => {
-            this.isInitialized = true;
-            this.isInitializing = false;
-            console.log('✅ Website Users Management initialized');
-        }).catch((error) => {
-            this.isInitializing = false;
-            console.error('❌ Error initializing Website Users Management:', error);
-            this.handleInitializationError(error);
-        });
+        // Mark as initialized immediately (non-blocking)
+        this.isInitialized = true;
+        this.isInitializing = false;
+        console.log('✅ Website Users Management initialized');
+        
+        // Load data in background (don't block)
+        this.loadDataAsync();
     }
     
     async loadDataAsync() {
