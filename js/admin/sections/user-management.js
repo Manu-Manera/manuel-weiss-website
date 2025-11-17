@@ -260,44 +260,43 @@ class AdminUserManagement {
                 
                 clearTimeout(timeoutId);
                 console.log('📡 API Response Status:', response.status, response.statusText);
-                        
-                        if (response.ok) {
-                            const data = await response.json();
-                            console.log('📡 API Response Data:', data);
-                            
-                            // API returns admin users directly (onlyAdmin=true)
-                            allUsers = (data.users || []).map(user => ({
-                                Username: user.id || user.email || user.username,
-                                Attributes: [
-                                    { Name: 'email', Value: user.email },
-                                    { Name: 'name', Value: user.name || '' },
-                                    { Name: 'email_verified', Value: user.emailVerified ? 'true' : 'false' }
-                                ],
-                                UserStatus: user.status,
-                                Enabled: user.enabled !== false,
-                                UserCreateDate: user.createdAt ? new Date(user.createdAt) : new Date()
-                            }));
-                            
-                            console.log('✅ Admin-User über API geladen:', allUsers.length);
-                        } else {
-                            const errorText = await response.text();
-                            console.error('❌ API Error:', response.status, errorText);
-                            throw new Error(`API Error: ${response.status} ${response.statusText} - ${errorText}`);
-                        }
-                    } else {
-                        const errorMsg = !session ? 'Keine Session gefunden' : 'Kein idToken in Session';
-                        console.error('❌', errorMsg);
-                        throw new Error(errorMsg);
-                    }
-                } else {
-                    const errorMsg = !apiBaseUrl ? 'API Base URL nicht konfiguriert' : 'Admin Auth nicht verfügbar';
-                    console.error('❌', errorMsg);
-                    throw new Error(errorMsg);
-                }
-            } catch (apiError) {
-                console.warn('⚠️ API-Endpoint nicht verfügbar, verwende direkten Cognito-Zugriff:', apiError);
                 
-                // Fallback: Direct Cognito access
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('📡 API Response Data:', data);
+                    
+                    // API returns admin users directly (onlyAdmin=true)
+                    allUsers = (data.users || []).map(user => ({
+                        Username: user.id || user.email || user.username,
+                        Attributes: [
+                            { Name: 'email', Value: user.email },
+                            { Name: 'name', Value: user.name || '' },
+                            { Name: 'email_verified', Value: user.emailVerified ? 'true' : 'false' }
+                        ],
+                        UserStatus: user.status,
+                        Enabled: user.enabled !== false,
+                        UserCreateDate: user.createdAt ? new Date(user.createdAt) : new Date()
+                    }));
+                    
+                    console.log('✅ Admin-User über API geladen:', allUsers.length);
+                } else {
+                    const errorText = await response.text();
+                    console.error('❌ API Error:', response.status, errorText);
+                    throw new Error(`API Error: ${response.status} ${response.statusText} - ${errorText}`);
+                }
+            } catch (fetchError) {
+                clearTimeout(timeoutId);
+                if (fetchError.name === 'AbortError') {
+                    throw new Error('API-Request Timeout (8s)');
+                }
+                throw fetchError;
+            }
+            
+        } catch (apiError) {
+            console.warn('⚠️ API-Endpoint nicht verfügbar, verwende direkten Cognito-Zugriff:', apiError);
+            
+            // Fallback: Direct Cognito access
+            try {
                 console.log('📡 Lade Admin-User direkt über Cognito...');
                 const params = {
                     UserPoolId: this.userPoolId,
@@ -307,12 +306,16 @@ class AdminUserManagement {
                 
                 const result = await Promise.race([
                     this.cognitoIdentityServiceProvider.listUsersInGroup(params).promise(),
-                    new Promise((_, reject) => setTimeout(() => reject(new Error('Cognito Timeout (10s)')), 10000))
+                    new Promise((_, reject) => setTimeout(() => reject(new Error('Cognito Timeout (8s)')), 8000))
                 ]);
                 
                 allUsers = result.Users || [];
                 console.log('✅ Admin-User über Cognito geladen:', allUsers.length);
+            } catch (cognitoError) {
+                console.error('❌ Cognito-Zugriff fehlgeschlagen:', cognitoError);
+                throw cognitoError;
             }
+        }
             
             this.users = allUsers;
             this.filteredUsers = [...this.users];
