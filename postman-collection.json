@@ -1,0 +1,424 @@
+{
+	"info": {
+		"_postman_id": "manuel-weiss-admin-api",
+		"name": "Manuel Weiss Admin API",
+		"description": "API Collection für das Admin-Panel von Manuel Weiss",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "🔑 Token setzen (aus Browser)",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"// Token aus Browser localStorage holen",
+							"// Führen Sie diesen Befehl im Browser aus:",
+							"// JSON.parse(localStorage.getItem('admin_session')).idToken",
+							"",
+							"// Oder setzen Sie den Token manuell in der Environment Variable 'idToken'",
+							"const token = pm.environment.get('idToken');",
+							"",
+							"if (!token) {",
+							"    console.log('⚠️ Kein Token gefunden!');",
+							"    console.log('Bitte Token in Environment Variable setzen oder aus Browser holen:');",
+							"    console.log('JSON.parse(localStorage.getItem(\\'admin_session\\')).idToken');",
+							"} else {",
+							"    // Token validieren (prüfen ob JWT Format)",
+							"    const parts = token.split('.');",
+							"    if (parts.length === 3) {",
+							"        try {",
+							"            const payload = JSON.parse(atob(parts[1]));",
+							"            const exp = payload.exp;",
+							"            const now = Math.floor(Date.now() / 1000);",
+							"            const expiresIn = exp - now;",
+							"            ",
+							"            if (expiresIn > 0) {",
+							"                console.log(`✅ Token gültig für ${expiresIn} Sekunden (${Math.floor(expiresIn / 60)} Minuten)`);",
+							"                pm.environment.set('tokenExpiresIn', expiresIn);",
+							"                pm.environment.set('tokenExpiresAt', new Date(exp * 1000).toISOString());",
+							"            } else {",
+							"                console.log('❌ Token ist abgelaufen! Bitte neuen Token holen.');",
+							"            }",
+							"        } catch (e) {",
+							"            console.log('⚠️ Token konnte nicht validiert werden:', e.message);",
+							"        }",
+							"    } else {",
+							"        console.log('⚠️ Token hat falsches Format (sollte JWT sein)');",
+							"    }",
+							"}"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"// Token-Info anzeigen",
+							"const token = pm.environment.get('idToken');",
+							"const expiresIn = pm.environment.get('tokenExpiresIn');",
+							"const expiresAt = pm.environment.get('tokenExpiresAt');",
+							"",
+							"if (token && expiresIn) {",
+							"    pm.test('Token gesetzt', function () {",
+							"        pm.expect(token).to.not.be.empty;",
+							"    });",
+							"    ",
+							"    pm.test('Token gültig', function () {",
+							"        pm.expect(parseInt(expiresIn)).to.be.above(0);",
+							"    });",
+							"    ",
+							"    console.log('✅ Token erfolgreich gesetzt!');",
+							"    console.log(`Token gültig für: ${expiresIn} Sekunden (${Math.floor(expiresIn / 60)} Minuten)`);",
+							"    console.log(`Token läuft ab um: ${expiresAt}`);",
+							"} else {",
+							"    pm.test('Token gesetzt', function () {",
+							"        pm.expect.fail('Token nicht gesetzt! Bitte in Environment Variable eintragen.');",
+							"    });",
+							"}"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/admin/users?onlyAdmin=true",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"admin",
+						"users"
+					],
+					"query": [
+						{
+							"key": "onlyAdmin",
+							"value": "true"
+						}
+					]
+				},
+				"description": "Setzt den Token aus der Environment Variable und validiert ihn.\n\n**Anleitung:**\n1. Melden Sie sich im Admin-Panel an: https://mawps.netlify.app/admin-login.html\n2. Öffnen Sie die Browser Console (F12)\n3. Führen Sie aus: `JSON.parse(localStorage.getItem('admin_session')).idToken`\n4. Kopieren Sie den Token\n5. Fügen Sie ihn in Postman Environment Variable 'idToken' ein\n6. Führen Sie diesen Request aus, um den Token zu validieren\n\n**Token-Gültigkeit:**\n- Standard: 3600 Sekunden (1 Stunde)\n- Wird automatisch validiert beim Ausführen dieses Requests"
+			},
+			"response": []
+		},
+		{
+			"name": "Admin-User auflisten",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{idToken}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/admin/users?onlyAdmin=true",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"admin",
+						"users"
+					],
+					"query": [
+						{
+							"key": "onlyAdmin",
+							"value": "true"
+						}
+					]
+				},
+				"description": "Listet alle Admin-User auf"
+			},
+			"response": []
+		},
+		{
+			"name": "Website-User auflisten",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{idToken}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/admin/users?excludeAdmin=true",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"admin",
+						"users"
+					],
+					"query": [
+						{
+							"key": "excludeAdmin",
+							"value": "true"
+						}
+					]
+				},
+				"description": "Listet alle Website-User auf (ohne Admin-User)"
+			},
+			"response": []
+		},
+		{
+			"name": "Neuen User erstellen",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{idToken}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"TempPassw0rd!\",\n  \"name\": \"Test User\",\n  \"emailVerified\": true\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/admin/users",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"admin",
+						"users"
+					]
+				},
+				"description": "Erstellt einen neuen User"
+			},
+			"response": []
+		},
+		{
+			"name": "User aktualisieren",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{idToken}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Updated Name\",\n  \"email\": \"newemail@example.com\",\n  \"emailVerified\": true\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/admin/users/{{userId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"admin",
+						"users",
+						"{{userId}}"
+					]
+				},
+				"description": "Aktualisiert einen bestehenden User"
+			},
+			"response": []
+		},
+		{
+			"name": "User löschen",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{idToken}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/admin/users/{{userId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"admin",
+						"users",
+						"{{userId}}"
+					]
+				},
+				"description": "Löscht einen User"
+			},
+			"response": []
+		},
+		{
+			"name": "Passwort zurücksetzen",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{idToken}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"password\": \"NewPassw0rd!\",\n  \"permanent\": true\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/admin/users/{{userId}}/reset-password",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"admin",
+						"users",
+						"{{userId}}",
+						"reset-password"
+					]
+				},
+				"description": "Setzt das Passwort eines Users zurück"
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Prüfe Token-Gültigkeit vor jedem Request",
+					"const token = pm.environment.get('idToken');",
+					"",
+					"if (token) {",
+					"    const parts = token.split('.');",
+					"    if (parts.length === 3) {",
+					"        try {",
+					"            const payload = JSON.parse(atob(parts[1]));",
+					"            const exp = payload.exp;",
+					"            const now = Math.floor(Date.now() / 1000);",
+					"            const expiresIn = exp - now;",
+					"            ",
+					"            if (expiresIn <= 0) {",
+					"                console.log('⚠️ Token ist abgelaufen! Bitte neuen Token holen.');",
+					"                console.log('Token läuft ab um:', new Date(exp * 1000).toISOString());",
+					"            } else if (expiresIn < 300) {",
+					"                console.log(`⚠️ Token läuft in ${Math.floor(expiresIn / 60)} Minuten ab!`);",
+					"            }",
+					"        } catch (e) {",
+					"            // Token-Validierung fehlgeschlagen, aber Request trotzdem ausführen",
+					"        }",
+					"    }",
+					"} else {",
+					"    console.log('⚠️ Kein Token in Environment Variable gefunden!');",
+					"}"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Token-Info nach Request anzeigen",
+					"const token = pm.environment.get('idToken');",
+					"",
+					"if (token) {",
+					"    const parts = token.split('.');",
+					"    if (parts.length === 3) {",
+					"        try {",
+					"            const payload = JSON.parse(atob(parts[1]));",
+					"            const exp = payload.exp;",
+					"            const now = Math.floor(Date.now() / 1000);",
+					"            const expiresIn = exp - now;",
+					"            ",
+					"            if (expiresIn > 0) {",
+					"                console.log(`✅ Token noch gültig für ${expiresIn} Sekunden (${Math.floor(expiresIn / 60)} Minuten)`);",
+					"            }",
+					"        } catch (e) {",
+					"            // Ignore",
+					"        }",
+					"    }",
+					"}"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod",
+			"type": "string"
+		},
+		{
+			"key": "idToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "userId",
+			"value": "weiss-manuel@gmx.de",
+			"type": "string"
+		},
+		{
+			"key": "tokenExpiresIn",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "tokenExpiresAt",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
+

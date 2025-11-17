@@ -1,0 +1,40 @@
+{
+	"id": "manuel-weiss-api-env",
+	"name": "Manuel Weiss API",
+	"values": [
+		{
+			"key": "baseUrl",
+			"value": "https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "idToken",
+			"value": "",
+			"type": "secret",
+			"enabled": true
+		},
+		{
+			"key": "userId",
+			"value": "weiss-manuel@gmx.de",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "tokenExpiresIn",
+			"value": "",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "tokenExpiresAt",
+			"value": "",
+			"type": "default",
+			"enabled": true
+		}
+	],
+	"_postman_variable_scope": "environment",
+	"_postman_exported_at": "2025-11-17T00:00:00.000Z",
+	"_postman_exported_using": "Postman/10.0.0"
+}
+
