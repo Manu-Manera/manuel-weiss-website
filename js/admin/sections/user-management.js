@@ -73,27 +73,22 @@ class AdminUserManagement {
             return;
         }
         
-        // Load data asynchronously (don't block)
-        this.loadDataAsync().then(() => {
-            this.isInitialized = true;
-            this.isInitializing = false;
-            console.log('✅ Admin User Management initialized');
-        }).catch((error) => {
-            this.isInitializing = false;
-            console.error('❌ Error initializing Admin User Management:', error);
-            this.handleInitializationError(error);
-        });
+        // Mark as initialized immediately (non-blocking)
+        this.isInitialized = true;
+        this.isInitializing = false;
+        console.log('✅ Admin User Management initialized');
+        
+        // Load data in background (don't block)
+        this.loadDataAsync();
     }
     
     async loadDataAsync() {
-        // Load admin users (with timeout) - NON-BLOCKING
+        // Load admin users immediately - NON-BLOCKING
         // Don't await - let it run in background
-        setTimeout(() => {
-            this.loadAdminUsers().catch(error => {
-                console.error('❌ Error in loadAdminUsers:', error);
-                this.handleInitializationError(error);
-            });
-        }, 100);
+        this.loadAdminUsers().catch(error => {
+            console.error('❌ Error in loadAdminUsers:', error);
+            this.handleInitializationError(error);
+        });
     }
     
     handleInitializationError(error) {
@@ -290,8 +285,10 @@ class AdminUserManagement {
             } catch (fetchError) {
                 clearTimeout(timeoutId);
                 if (fetchError.name === 'AbortError') {
-                    throw new Error('API-Request Timeout (8s)');
+                    console.warn('⏱️ API Request timed out, using Cognito fallback');
+                    throw new Error('API-Request Timeout (5s) - using Cognito fallback');
                 }
+                console.error('❌ Fetch error:', fetchError);
                 throw fetchError;
             }
             
