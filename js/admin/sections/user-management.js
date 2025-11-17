@@ -334,7 +334,9 @@ class AdminUserManagement {
                 code: error.code
             });
             
-            listEl.innerHTML = `
+            const listEl = document.getElementById('admin-users-list');
+            if (listEl) {
+                listEl.innerHTML = `
                 <div class="error-message" style="padding: 2rem; text-align: center; color: #ef4444;">
                     <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 1rem;"></i>
                     <p><strong>Fehler beim Laden der Admin-User</strong></p>
