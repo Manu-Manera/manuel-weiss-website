@@ -86,11 +86,11 @@ class AdminUserManagement {
     }
     
     async loadDataAsync() {
-        // Load admin users (with timeout)
-        await Promise.race([
-            this.loadAdminUsers(),
-            new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout beim Laden der Admin-User')), 15000))
-        ]);
+        // Load admin users (with timeout) - NON-BLOCKING
+        this.loadAdminUsers().catch(error => {
+            console.error('❌ Error in loadAdminUsers:', error);
+            this.handleInitializationError(error);
+        });
     }
     
     handleInitializationError(error) {
@@ -205,46 +205,61 @@ class AdminUserManagement {
             return;
         }
         
+        // Show loading immediately
+        listEl.innerHTML = `
+            <div class="loading-placeholder" style="text-align: center; padding: 2rem;">
+                <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: #667eea;"></i>
+                <p>Lade Admin-User...</p>
+            </div>
+        `;
+        
         try {
-            listEl.innerHTML = `
-                <div class="loading-placeholder" style="text-align: center; padding: 2rem;">
-                    <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: #667eea;"></i>
-                    <p>Lade Admin-User...</p>
-                </div>
-            `;
-            
             // Try API endpoint first, fallback to direct Cognito
             let allUsers = [];
             
+            // Check prerequisites
+            const apiBaseUrl = window.AWS_CONFIG?.apiBaseUrl || window.AWS_CONFIG?.apiGateway?.baseUrl;
+            console.log('🔍 API Base URL:', apiBaseUrl);
+            console.log('🔍 Admin Auth verfügbar:', !!window.adminAuth);
+            
+            if (!apiBaseUrl) {
+                throw new Error('API Base URL nicht konfiguriert');
+            }
+            
+            if (!window.adminAuth) {
+                throw new Error('Admin Auth nicht verfügbar');
+            }
+            
+            const session = window.adminAuth.getSession();
+            console.log('🔍 Session vorhanden:', !!session);
+            
+            if (!session) {
+                throw new Error('Keine Session gefunden - bitte neu einloggen');
+            }
+            
+            if (!session.idToken) {
+                throw new Error('Kein idToken in Session - bitte neu einloggen');
+            }
+            
+            console.log('📡 Lade Admin-User über API-Endpoint...');
+            console.log('📡 API URL:', `${apiBaseUrl}/admin/users?onlyAdmin=true`);
+            
+            // API Call with timeout
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 8000);
+            
             try {
-                // Try to use API endpoint if available (with timeout)
-                const apiBaseUrl = window.AWS_CONFIG?.apiBaseUrl || window.AWS_CONFIG?.apiGateway?.baseUrl;
-                console.log('🔍 API Base URL:', apiBaseUrl);
-                console.log('🔍 Admin Auth verfügbar:', !!window.adminAuth);
+                const response = await fetch(`${apiBaseUrl}/admin/users?onlyAdmin=true`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${session.idToken}`
+                    },
+                    signal: controller.signal
+                });
                 
-                if (apiBaseUrl && window.adminAuth) {
-                    const session = window.adminAuth.getSession();
-                    console.log('🔍 Session vorhanden:', !!session);
-                    
-                    if (session && session.idToken) {
-                        console.log('📡 Lade Admin-User über API-Endpoint...');
-                        console.log('📡 API URL:', `${apiBaseUrl}/admin/users`);
-                        
-                        const fetchPromise = fetch(`${apiBaseUrl}/admin/users?onlyAdmin=true`, {
-                            method: 'GET',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Authorization': `Bearer ${session.idToken}`
-                            }
-                        });
-                        
-                        // Add timeout to fetch
-                        const timeoutPromise = new Promise((_, reject) => 
-                            setTimeout(() => reject(new Error('API-Request Timeout (10s)')), 10000)
-                        );
-                        
-                        const response = await Promise.race([fetchPromise, timeoutPromise]);
-                        console.log('📡 API Response Status:', response.status, response.statusText);
+                clearTimeout(timeoutId);
+                console.log('📡 API Response Status:', response.status, response.statusText);
                         
                         if (response.ok) {
                             const data = await response.json();
