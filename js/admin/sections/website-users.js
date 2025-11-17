@@ -212,108 +212,35 @@ class WebsiteUsersManagement {
                 </div>
             `;
             
-            // Try API endpoint first, fallback to direct Cognito
+            // Direct Cognito access only (no API calls)
             let allUsers = [];
             
-            try {
-                // Try to use API endpoint if available (with timeout)
-                const apiBaseUrl = window.AWS_CONFIG?.apiBaseUrl || window.AWS_CONFIG?.apiGateway?.baseUrl;
-                console.log('🔍 API Base URL:', apiBaseUrl);
-                console.log('🔍 Admin Auth verfügbar:', !!window.adminAuth);
-                
-                if (apiBaseUrl && window.adminAuth) {
-                    const session = window.adminAuth.getSession();
-                    console.log('🔍 Session vorhanden:', !!session);
-                    console.log('🔍 Session Details:', session ? { hasIdToken: !!session.idToken, hasAccessToken: !!session.accessToken } : 'null');
-                    
-                    if (session && session.idToken) {
-                        console.log('📡 Lade Website-Benutzer über API-Endpoint...');
-                        console.log('📡 API URL:', `${apiBaseUrl}/admin/users?excludeAdmin=true`);
-                        
-                        const fetchPromise = fetch(`${apiBaseUrl}/admin/users?excludeAdmin=true`, {
-                            method: 'GET',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Authorization': `Bearer ${session.idToken}`
-                            }
-                        });
-                        
-                        // Add timeout to fetch
-                        const timeoutPromise = new Promise((_, reject) => 
-                            setTimeout(() => reject(new Error('API-Request Timeout (10s)')), 10000)
-                        );
-                        
-                        const response = await Promise.race([fetchPromise, timeoutPromise]);
-                        console.log('📡 API Response Status:', response.status, response.statusText);
-                        
-                        if (response.ok) {
-                            const data = await response.json();
-                            console.log('📡 API Response Data:', data);
-                            allUsers = (data.users || []).map(user => ({
-                                Username: user.id || user.email || user.username,
-                                Attributes: [
-                                    { Name: 'email', Value: user.email },
-                                    { Name: 'name', Value: user.name || '' },
-                                    { Name: 'email_verified', Value: user.emailVerified ? 'true' : 'false' }
-                                ],
-                                UserStatus: user.status,
-                                Enabled: user.enabled !== false,
-                                UserCreateDate: user.createdAt ? new Date(user.createdAt) : new Date()
-                            }));
-                            console.log('✅ Website-Benutzer über API geladen:', allUsers.length);
-                        } else {
-                            const errorText = await response.text();
-                            console.error('❌ API Error:', response.status, errorText);
-                            throw new Error(`API Error: ${response.status} ${response.statusText} - ${errorText}`);
-                        }
-                    } else {
-                        const errorMsg = !session ? 'Keine Session gefunden' : 'Kein idToken in Session';
-                        console.error('❌', errorMsg);
-                        throw new Error(errorMsg);
-                    }
-                } else {
-                    const errorMsg = !apiBaseUrl ? 'API Base URL nicht konfiguriert' : 'Admin Auth nicht verfügbar';
-                    console.error('❌', errorMsg);
-                    throw new Error(errorMsg);
+            console.log('📡 Lade Website-Benutzer direkt über Cognito...');
+            const params = {
+                UserPoolId: this.userPoolId,
+                Limit: 60
+            };
+            
+            let paginationToken = null;
+            const maxIterations = 10; // Prevent infinite loop
+            let iterations = 0;
+            
+            do {
+                if (paginationToken) {
+                    params.PaginationToken = paginationToken;
                 }
-            } catch (apiError) {
-                console.warn('⚠️ API-Endpoint nicht verfügbar, verwende direkten Cognito-Zugriff:', apiError);
-                console.warn('⚠️ API Error Details:', {
-                    message: apiError.message,
-                    stack: apiError.stack
-                });
                 
-                // Fallback: Direct Cognito access (requires AWS credentials in browser)
-                // This will likely fail in browser, but we try anyway
-                try {
-                    const params = {
-                        UserPoolId: this.userPoolId,
-                        Limit: 60
-                    };
-                    
-                    let paginationToken = null;
-                    const maxIterations = 10; // Prevent infinite loop
-                    let iterations = 0;
-                    
-                    do {
-                        if (paginationToken) {
-                            params.PaginationToken = paginationToken;
-                        }
-                        
-                        const result = await Promise.race([
-                            this.cognitoIdentityServiceProvider.listUsers(params).promise(),
-                            new Promise((_, reject) => setTimeout(() => reject(new Error('Cognito Timeout')), 10000))
-                        ]);
-                        
-                        allUsers = allUsers.concat(result.Users || []);
-                        paginationToken = result.PaginationToken;
-                        iterations++;
-                    } while (paginationToken && iterations < maxIterations);
-                } catch (cognitoError) {
-                    console.error('❌ Cognito-Zugriff fehlgeschlagen:', cognitoError);
-                    throw new Error('Weder API noch direkter Cognito-Zugriff funktioniert. Bitte API-Endpoint deployen oder AWS-Credentials konfigurieren.');
-                }
-            }
+                const result = await Promise.race([
+                    this.cognitoIdentityServiceProvider.listUsers(params).promise(),
+                    new Promise((_, reject) => setTimeout(() => reject(new Error('Cognito Timeout (10s)')), 10000))
+                ]);
+                
+                allUsers = allUsers.concat(result.Users || []);
+                paginationToken = result.PaginationToken;
+                iterations++;
+            } while (paginationToken && iterations < maxIterations);
+            
+            console.log('✅ Website-Benutzer über Cognito geladen:', allUsers.length);
             
             // Filter out admin users
             this.users = allUsers.filter(user => !this.adminUsers.includes(user.Username));
@@ -607,54 +534,7 @@ class WebsiteUsersManagement {
             
             console.log('👤 Erstelle neuen Website-Benutzer:', email);
             
-            // Try API endpoint first
-            const apiBaseUrl = window.AWS_CONFIG?.apiBaseUrl || window.AWS_CONFIG?.apiGateway?.baseUrl;
-            const session = window.adminAuth?.getSession();
-            
-            if (apiBaseUrl && session && session.idToken) {
-                try {
-                    console.log('📡 Erstelle User über API-Endpoint...');
-                    
-                    // Add timeout to fetch
-                    const fetchPromise = fetch(`${apiBaseUrl}/admin/users`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${session.idToken}`
-                        },
-                        body: JSON.stringify({
-                            email: email,
-                            name: name || null,
-                            password: password,
-                            sendWelcomeEmail: sendEmail
-                        })
-                    });
-                    
-                    const timeoutPromise = new Promise((_, reject) => 
-                        setTimeout(() => reject(new Error('API-Request Timeout (10s)')), 10000)
-                    );
-                    
-                    const response = await Promise.race([fetchPromise, timeoutPromise]);
-                    
-                    if (response.ok || response.status === 201) {
-                        const newUser = await response.json();
-                        console.log('✅ User über API erstellt');
-                        this.showSuccess(`✅ Neuer Website-Benutzer ${email} wurde erfolgreich erstellt!`);
-                        this.closeModal('modal-create-website-user');
-                        await this.loadWebsiteUsers();
-                        return;
-                    } else {
-                        const errorText = await response.text();
-                        console.error('❌ API Error:', response.status, errorText);
-                        throw new Error(`API Error: ${response.status} ${response.statusText}`);
-                    }
-                } catch (apiError) {
-                    console.warn('⚠️ API-Endpoint nicht verfügbar, verwende direkten Cognito-Zugriff:', apiError);
-                    // Fall through to direct Cognito access
-                }
-            }
-            
-            // Fallback: Direct Cognito access
+            // Direct Cognito access only (no API calls)
             console.log('📡 Erstelle User direkt über Cognito...');
             
             // Check if user already exists
@@ -805,62 +685,7 @@ class WebsiteUsersManagement {
             
             console.log('✏️ Bearbeite Website-Benutzer:', username);
             
-            // Try API endpoint first
-            const apiBaseUrl = window.AWS_CONFIG?.apiBaseUrl || window.AWS_CONFIG?.apiGateway?.baseUrl;
-            const session = window.adminAuth?.getSession();
-            
-            if (apiBaseUrl && session && session.idToken) {
-                try {
-                    console.log('📡 Aktualisiere User über API-Endpoint...');
-                    
-                    const updateData = {
-                        email: newEmail,
-                        name: name || null,
-                        emailVerified: emailVerified,
-                        status: status
-                    };
-                    
-                    // Add timeout to fetch
-                    const fetchPromise = fetch(`${apiBaseUrl}/admin/users/${encodeURIComponent(username)}`, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${session.idToken}`
-                        },
-                        body: JSON.stringify(updateData)
-                    });
-                    
-                    const timeoutPromise = new Promise((_, reject) => 
-                        setTimeout(() => reject(new Error('API-Request Timeout (10s)')), 10000)
-                    );
-                    
-                    const response = await Promise.race([fetchPromise, timeoutPromise]);
-                    
-                    if (response.ok) {
-                        const updatedUser = await response.json();
-                        console.log('✅ User über API aktualisiert');
-                        
-                        if (newEmail !== (this.getUserAttribute(this.users.find(u => u.Username === username), 'email') || username)) {
-                            this.showSuccess(`✅ User-Daten aktualisiert! ⚠️ Hinweis: Die E-Mail-Adresse wurde geändert. Der User muss sich mit der neuen E-Mail-Adresse anmelden.`);
-                        } else {
-                            this.showSuccess(`✅ User-Daten wurden erfolgreich aktualisiert!`);
-                        }
-                        
-                        this.closeModal('modal-edit-website-user');
-                        await this.loadWebsiteUsers();
-                        return;
-                    } else {
-                        const errorText = await response.text();
-                        console.error('❌ API Error:', response.status, errorText);
-                        throw new Error(`API Error: ${response.status} ${response.statusText}`);
-                    }
-                } catch (apiError) {
-                    console.warn('⚠️ API-Endpoint nicht verfügbar, verwende direkten Cognito-Zugriff:', apiError);
-                    // Fall through to direct Cognito access
-                }
-            }
-            
-            // Fallback: Direct Cognito access
+            // Direct Cognito access only (no API calls)
             console.log('📡 Aktualisiere User direkt über Cognito...');
             
             // User-Attribute aktualisieren
@@ -962,50 +787,7 @@ class WebsiteUsersManagement {
             
             console.log('🔑 Setze Passwort für Website-Benutzer:', username);
             
-            // Try API endpoint first
-            const apiBaseUrl = window.AWS_CONFIG?.apiBaseUrl || window.AWS_CONFIG?.apiGateway?.baseUrl;
-            const session = window.adminAuth?.getSession();
-            
-            if (apiBaseUrl && session && session.idToken) {
-                try {
-                    console.log('📡 Setze Passwort über API-Endpoint...');
-                    
-                    // Add timeout to fetch
-                    const fetchPromise = fetch(`${apiBaseUrl}/admin/users/${encodeURIComponent(username)}/reset-password`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${session.idToken}`
-                        },
-                        body: JSON.stringify({
-                            password: password,
-                            permanent: !temporary
-                        })
-                    });
-                    
-                    const timeoutPromise = new Promise((_, reject) => 
-                        setTimeout(() => reject(new Error('API-Request Timeout (10s)')), 10000)
-                    );
-                    
-                    const response = await Promise.race([fetchPromise, timeoutPromise]);
-                    
-                    if (response.ok) {
-                        console.log('✅ Passwort über API gesetzt');
-                        this.showSuccess(`✅ Passwort wurde erfolgreich ${temporary ? 'als temporäres Passwort' : ''} gesetzt!`);
-                        this.closeModal('modal-reset-password-website-user');
-                        return;
-                    } else {
-                        const errorText = await response.text();
-                        console.error('❌ API Error:', response.status, errorText);
-                        throw new Error(`API Error: ${response.status} ${response.statusText}`);
-                    }
-                } catch (apiError) {
-                    console.warn('⚠️ API-Endpoint nicht verfügbar, verwende direkten Cognito-Zugriff:', apiError);
-                    // Fall through to direct Cognito access
-                }
-            }
-            
-            // Fallback: Direct Cognito access
+            // Direct Cognito access only (no API calls)
             console.log('📡 Setze Passwort direkt über Cognito...');
             
             await this.cognitoIdentityServiceProvider.adminSetUserPassword({
@@ -1048,48 +830,7 @@ class WebsiteUsersManagement {
             
             console.log('🗑️ Lösche Website-Benutzer:', this.userToDelete);
             
-            // Try API endpoint first
-            const apiBaseUrl = window.AWS_CONFIG?.apiBaseUrl || window.AWS_CONFIG?.apiGateway?.baseUrl;
-            const session = window.adminAuth?.getSession();
-            
-            if (apiBaseUrl && session && session.idToken) {
-                try {
-                    console.log('📡 Lösche User über API-Endpoint...');
-                    
-                    // Add timeout to fetch
-                    const fetchPromise = fetch(`${apiBaseUrl}/admin/users/${encodeURIComponent(this.userToDelete)}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${session.idToken}`
-                        }
-                    });
-                    
-                    const timeoutPromise = new Promise((_, reject) => 
-                        setTimeout(() => reject(new Error('API-Request Timeout (10s)')), 10000)
-                    );
-                    
-                    const response = await Promise.race([fetchPromise, timeoutPromise]);
-                    
-                    if (response.ok || response.status === 204) {
-                        console.log('✅ User über API gelöscht');
-                        this.showSuccess(`✅ Website-Benutzer ${this.userToDelete} wurde erfolgreich gelöscht!`);
-                        this.closeModal('modal-delete-website-user');
-                        this.userToDelete = null;
-                        await this.loadWebsiteUsers();
-                        return;
-                    } else {
-                        const errorText = await response.text();
-                        console.error('❌ API Error:', response.status, errorText);
-                        throw new Error(`API Error: ${response.status} ${response.statusText}`);
-                    }
-                } catch (apiError) {
-                    console.warn('⚠️ API-Endpoint nicht verfügbar, verwende direkten Cognito-Zugriff:', apiError);
-                    // Fall through to direct Cognito access
-                }
-            }
-            
-            // Fallback: Direct Cognito access
+            // Direct Cognito access only (no API calls)
             console.log('📡 Lösche User direkt über Cognito...');
             
             await this.cognitoIdentityServiceProvider.adminDeleteUser({
