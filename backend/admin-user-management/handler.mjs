@@ -949,10 +949,13 @@ async function isAdmin(userId, email) {
     'manuel@manuel-weiss.com',
     'admin@manuel-weiss.com',
     'manumanera@gmail.com',
-    'weiss-manuel@gmx.de' // Add your email
+    'weiss-manuel@gmx.de' // ✅ Haupt-Admin-Email
   ];
   
-  return adminEmails.includes(email?.toLowerCase());
+  const isInList = adminEmails.includes(email?.toLowerCase());
+  console.log(`🔐 Admin check for ${email}: Cognito group=${isInAdminGroup}, Email list=${isInList}`);
+  
+  return isInAdminGroup || isInList;
 }
 
 function authUser(event) {
