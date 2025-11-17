@@ -957,17 +957,29 @@ async function isAdmin(userId, email) {
 
 function authUser(event) {
   const token = (event.headers?.authorization || event.headers?.Authorization || '').replace(/^Bearer\s+/, '');
-  if (!token) throw new Error('Unauthorized - No token provided');
+  if (!token) {
+    console.error('❌ No token provided in headers:', Object.keys(event.headers || {}));
+    throw new Error('Unauthorized - No token provided');
+  }
   
   try {
-    const payload = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString('utf8'));
+    // Decode JWT token (skip signature verification for now)
+    const parts = token.split('.');
+    if (parts.length !== 3) {
+      throw new Error('Invalid token format');
+    }
+    
+    const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf8'));
+    console.log('✅ Token decoded successfully, user:', payload.email || payload['cognito:username']);
+    
     return { 
       userId: payload.sub, 
       email: payload.email || payload['cognito:username'],
       username: payload['cognito:username'] || payload.email
     };
   } catch (error) {
-    throw new Error('Unauthorized - Invalid token');
+    console.error('❌ Token decode error:', error.message);
+    throw new Error('Unauthorized - Invalid token: ' + error.message);
   }
 }
 
