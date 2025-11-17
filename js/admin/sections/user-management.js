@@ -212,114 +212,23 @@ class AdminUserManagement {
         `;
         
         try {
-            // Try API endpoint first, fallback to direct Cognito
+            // Direct Cognito access only (no API calls)
             let allUsers = [];
             
-            // Check prerequisites
-            const apiBaseUrl = window.AWS_CONFIG?.apiBaseUrl || window.AWS_CONFIG?.apiGateway?.baseUrl;
-            console.log('🔍 API Base URL:', apiBaseUrl);
-            console.log('🔍 Admin Auth verfügbar:', !!window.adminAuth);
+            console.log('📡 Lade Admin-User direkt über Cognito...');
+            const params = {
+                UserPoolId: this.userPoolId,
+                GroupName: this.groupName,
+                Limit: 60
+            };
             
-            if (!apiBaseUrl) {
-                throw new Error('API Base URL nicht konfiguriert');
-            }
+            const result = await Promise.race([
+                this.cognitoIdentityServiceProvider.listUsersInGroup(params).promise(),
+                new Promise((_, reject) => setTimeout(() => reject(new Error('Cognito Timeout (10s)')), 10000))
+            ]);
             
-            if (!window.adminAuth) {
-                throw new Error('Admin Auth nicht verfügbar');
-            }
-            
-            const session = window.adminAuth.getSession();
-            console.log('🔍 Session vorhanden:', !!session);
-            
-            if (!session) {
-                throw new Error('Keine Session gefunden - bitte neu einloggen');
-            }
-            
-            if (!session.idToken) {
-                throw new Error('Kein idToken in Session - bitte neu einloggen');
-            }
-            
-            console.log('📡 Lade Admin-User über API-Endpoint...');
-            console.log('📡 API URL:', `${apiBaseUrl}/admin/users?onlyAdmin=true`);
-            
-            // API Call with timeout (5 seconds)
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => {
-                controller.abort();
-                console.warn('⏱️ API Request aborted after 5s timeout');
-            }, 5000);
-            
-            let response;
-            try {
-                response = await fetch(`${apiBaseUrl}/admin/users?onlyAdmin=true`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${session.idToken}`
-                    },
-                    signal: controller.signal
-                });
-                
-                clearTimeout(timeoutId);
-                console.log('📡 API Response Status:', response.status, response.statusText);
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log('📡 API Response Data:', data);
-                    
-                    // API returns admin users directly (onlyAdmin=true)
-                    allUsers = (data.users || []).map(user => ({
-                        Username: user.id || user.email || user.username,
-                        Attributes: [
-                            { Name: 'email', Value: user.email },
-                            { Name: 'name', Value: user.name || '' },
-                            { Name: 'email_verified', Value: user.emailVerified ? 'true' : 'false' }
-                        ],
-                        UserStatus: user.status,
-                        Enabled: user.enabled !== false,
-                        UserCreateDate: user.createdAt ? new Date(user.createdAt) : new Date()
-                    }));
-                    
-                    console.log('✅ Admin-User über API geladen:', allUsers.length);
-                } else {
-                    const errorText = await response.text();
-                    console.error('❌ API Error:', response.status, errorText);
-                    throw new Error(`API Error: ${response.status} ${response.statusText} - ${errorText}`);
-                }
-            } catch (fetchError) {
-                clearTimeout(timeoutId);
-                if (fetchError.name === 'AbortError') {
-                    console.warn('⏱️ API Request timed out, using Cognito fallback');
-                    throw new Error('API-Request Timeout (5s) - using Cognito fallback');
-                }
-                console.error('❌ Fetch error:', fetchError);
-                throw fetchError;
-            }
-            
-        } catch (apiError) {
-            console.warn('⚠️ API-Endpoint nicht verfügbar, verwende direkten Cognito-Zugriff:', apiError);
-            
-            // Fallback: Direct Cognito access
-            try {
-                console.log('📡 Lade Admin-User direkt über Cognito...');
-                const params = {
-                    UserPoolId: this.userPoolId,
-                    GroupName: this.groupName,
-                    Limit: 60
-                };
-                
-                const result = await Promise.race([
-                    this.cognitoIdentityServiceProvider.listUsersInGroup(params).promise(),
-                    new Promise((_, reject) => setTimeout(() => reject(new Error('Cognito Timeout (8s)')), 8000))
-                ]);
-                
-                allUsers = result.Users || [];
-                console.log('✅ Admin-User über Cognito geladen:', allUsers.length);
-            } catch (cognitoError) {
-                console.error('❌ Cognito-Zugriff fehlgeschlagen:', cognitoError);
-                throw cognitoError;
-            }
-        }
+            allUsers = result.Users || [];
+            console.log('✅ Admin-User über Cognito geladen:', allUsers.length);
         
         // Update users list
         this.users = allUsers;
