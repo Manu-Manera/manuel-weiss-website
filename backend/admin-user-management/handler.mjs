@@ -922,6 +922,8 @@ async function getSystemHealth() {
 }
 
 async function isAdmin(userId, email) {
+  let isInAdminGroup = false;
+  
   // Check if user is in admin group
   try {
     const adminGroupResponse = await cognito.send(new ListUsersInGroupCommand({
@@ -931,17 +933,18 @@ async function isAdmin(userId, email) {
     }));
     
     const adminUsers = adminGroupResponse.Users || [];
-    const isInAdminGroup = adminUsers.some(u => 
+    isInAdminGroup = adminUsers.some(u => 
       u.Username === userId || 
       u.Username === email ||
       getAttribute(u.Attributes, 'email')?.toLowerCase() === email?.toLowerCase()
     );
     
     if (isInAdminGroup) {
+      console.log(`✅ User ${email} found in Cognito admin group`);
       return true;
     }
   } catch (error) {
-    console.warn('⚠️ Could not check admin group, falling back to email list:', error);
+    console.warn('⚠️ Could not check admin group, falling back to email list:', error.message);
   }
   
   // Fallback: Check admin email list
@@ -954,6 +957,10 @@ async function isAdmin(userId, email) {
   
   const isInList = adminEmails.includes(email?.toLowerCase());
   console.log(`🔐 Admin check for ${email}: Cognito group=${isInAdminGroup}, Email list=${isInList}`);
+  
+  if (isInList) {
+    console.log(`✅ User ${email} found in admin email list`);
+  }
   
   return isInAdminGroup || isInList;
 }
