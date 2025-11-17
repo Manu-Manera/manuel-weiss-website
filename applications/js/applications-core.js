@@ -50,10 +50,17 @@ class ApplicationsCore {
     
     async waitForAWSAPIs() {
         return new Promise((resolve) => {
-            const checkAPIs = () => {
+            const checkAPIs = async () => {
                 if (window.awsProfileAPI && window.userProgressTracker) {
                     this.awsProfileAPI = window.awsProfileAPI;
                     this.userProgressTracker = window.userProgressTracker;
+                    if (this.userProgressTracker && !this.userProgressTracker.isInitialized) {
+                        try {
+                            await this.userProgressTracker.init();
+                        } catch (error) {
+                            console.error('❌ Failed to initialize progress tracker:', error);
+                        }
+                    }
                     resolve();
                 } else {
                     setTimeout(checkAPIs, 100);
@@ -139,6 +146,7 @@ class ApplicationsCore {
 
         // Save to AWS via userProgressTracker
         if (this.userProgressTracker) {
+            await this.ensureProgressTracker();
             await this.userProgressTracker.updateProgress('bewerbungsmanager', step, progressData);
         }
         
@@ -164,6 +172,7 @@ class ApplicationsCore {
 
         // Save to AWS
         if (this.userProgressTracker) {
+            await this.ensureProgressTracker();
             await this.userProgressTracker.updateProgress('bewerbungsmanager', 'application-data', applicationData);
         }
 
@@ -175,6 +184,17 @@ class ApplicationsCore {
 
         console.log('💾 Application data saved:', applicationData);
         return applicationData;
+    }
+
+    async ensureProgressTracker() {
+        if (!this.userProgressTracker) return;
+        if (!this.userProgressTracker.isInitialized) {
+            try {
+                await this.userProgressTracker.init();
+            } catch (error) {
+                console.error('❌ Progress tracker init failed:', error);
+            }
+        }
     }
 
     getApplicationData() {

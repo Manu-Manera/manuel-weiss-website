@@ -19,15 +19,19 @@ class UserProgressTracker {
         if (this.isInitialized) return;
         
         // Check if user is authenticated
-        if (!window.realUserAuth || !window.realUserAuth.isAuthenticated()) {
+        if (!window.realUserAuth || !window.realUserAuth.isLoggedIn || !window.realUserAuth.isLoggedIn()) {
             console.log('Progress tracker: User not authenticated');
             return;
         }
 
-        const user = window.realUserAuth.getUser();
+        const user = window.realUserAuth.getCurrentUser ? window.realUserAuth.getCurrentUser() : null;
         if (!user) return;
         
-        this.userId = user.userId;
+        this.userId = user.id || user.userId || user.email || null;
+        if (!this.userId) {
+            console.warn('Progress tracker: could not determine userId');
+            return;
+        }
         
         // Load existing progress data
         await this.loadProgress();
@@ -107,6 +111,42 @@ class UserProgressTracker {
             console.error('Error saving progress:', error);
             // Fallback to local storage
             this.saveToLocalStorage();
+        }
+    }
+
+    /**
+     * Generic progress update helper for workflows
+     */
+    async updateProgress(sectionId, stepId, data) {
+        if (!sectionId || !stepId) return;
+
+        if (!this.isInitialized) {
+            await this.init();
+        }
+
+        if (!this.userId) {
+            console.warn('Progress tracker: Cannot update progress without userId');
+            return;
+        }
+
+        if (!this.progressData.sections) {
+            this.progressData.sections = {};
+        }
+
+        if (!this.progressData.sections[sectionId]) {
+            this.progressData.sections[sectionId] = {};
+        }
+
+        this.progressData.sections[sectionId][stepId] = {
+            data,
+            updatedAt: new Date().toISOString()
+        };
+
+        this.pendingChanges = true;
+        try {
+            await this.saveProgress();
+        } catch (error) {
+            console.error('Error updating progress section:', error);
         }
     }
 
@@ -396,7 +436,7 @@ class UserProgressTracker {
 window.userProgressTracker = new UserProgressTracker();
 
 // Initialize on auth state change
-if (window.realUserAuth) {
+if (window.realUserAuth && typeof window.realUserAuth.onAuthStateChange === 'function') {
     window.realUserAuth.onAuthStateChange((isAuthenticated) => {
         if (isAuthenticated) {
             window.userProgressTracker.init();
@@ -408,7 +448,7 @@ if (window.realUserAuth) {
 
 // Auto-initialize if user is already authenticated
 document.addEventListener('DOMContentLoaded', () => {
-    if (window.realUserAuth && window.realUserAuth.isAuthenticated()) {
+    if (window.realUserAuth && window.realUserAuth.isLoggedIn && window.realUserAuth.isLoggedIn()) {
         window.userProgressTracker.init();
     }
 });

@@ -9,6 +9,8 @@ class RealUserAuthSystem {
         this.progressData = {};
         this.achievements = [];
         this.goals = [];
+        this.authStateListeners = [];
+        this.lastAuthState = null;
         
         // AWS Cognito Configuration
         this.userPoolId = window.AWS_CONFIG?.userPoolId || 'eu-central-1_8gP4gLK9r';
@@ -121,6 +123,7 @@ class RealUserAuthSystem {
                     
                     // Update UI immediately
                     this.updateAuthUI();
+                    this.notifyAuthStateChange(true);
                     
                     console.log('✅ Existing AWS Cognito session restored:', userInfo.email);
                     return;
@@ -133,24 +136,25 @@ class RealUserAuthSystem {
                     }
                     
                     // Versuche aus gespeicherten Benutzerdaten wiederherzustellen
-                            const storedUser = localStorage.getItem('realUser');
-                            if (storedUser) {
-                                try {
-                                    this.currentUser = JSON.parse(storedUser);
-                                    this.isAuthenticated = true;
-                                    this.userData = this.currentUser;
-                                    this.updateAuthUI();
+                    const storedUser = localStorage.getItem('realUser');
+                    if (storedUser) {
+                        try {
+                            this.currentUser = JSON.parse(storedUser);
+                            this.isAuthenticated = true;
+                            this.userData = this.currentUser;
+                            this.updateAuthUI();
                             console.log('✅ Session aus gespeicherten Daten wiederhergestellt:', this.currentUser.email);
+                            this.notifyAuthStateChange(true);
                             
                             // Versuche Token-Refresh im Hintergrund
                             if (session.refreshToken) {
                                 this.refreshSessionInBackground(session.refreshToken);
                             }
                             return;
-                                } catch (e) {
+                        } catch (e) {
                             console.warn('⚠️ Konnte nicht aus gespeicherten Daten wiederherstellen');
-                                }
-                            }
+                        }
+                    }
                     
                     // Nur bei definitiven Auth-Fehlern Session löschen
                     if (error.code === 'NotAuthorizedException') {
@@ -187,6 +191,7 @@ class RealUserAuthSystem {
                     this.userData = this.currentUser;
                     this.updateAuthUI();
                     console.log('✅ Restored from stored user data (fallback):', this.currentUser.email);
+                    this.notifyAuthStateChange(true);
                 } catch (e) {
                     console.warn('⚠️ Could not restore from stored user data');
                 }
@@ -245,6 +250,7 @@ class RealUserAuthSystem {
             // Load user data and update UI
             await this.loadUserData();
             this.updateAuthUI();
+            this.notifyAuthStateChange(true);
             
             console.log('✅ Session refreshed successfully');
         } catch (error) {
@@ -342,6 +348,32 @@ class RealUserAuthSystem {
             this.attachButtonListeners();
         });
     }
+
+    getUserDropdownElement() {
+        return document.getElementById('userDropdown') || document.getElementById('realUserMenu');
+    }
+
+    ensureAuthButtonLabel(authButton) {
+        if (!authButton) {
+            return null;
+        }
+
+        let buttonSpan = authButton.querySelector('.auth-btn-label') || authButton.querySelector('span');
+        if (!buttonSpan) {
+            // Remove standalone text nodes (e.g., legacy markup without span)
+            Array.from(authButton.childNodes).forEach((node) => {
+                if (node.nodeType === Node.TEXT_NODE && node.textContent.trim()) {
+                    authButton.removeChild(node);
+                }
+            });
+
+            buttonSpan = document.createElement('span');
+            buttonSpan.className = 'auth-btn-label';
+            authButton.appendChild(buttonSpan);
+        }
+
+        return buttonSpan;
+    }
     
     attachButtonListeners() {
         const authButton = document.getElementById('realAuthButton');
@@ -365,7 +397,7 @@ class RealUserAuthSystem {
                     if (this.isAuthenticated) {
                         console.log('👤 User is authenticated - showing dropdown');
                         // Toggle user dropdown
-                        const userDropdown = document.getElementById('userDropdown');
+                        const userDropdown = this.getUserDropdownElement();
                         if (userDropdown) {
                             const isVisible = userDropdown.style.display === 'block';
                             userDropdown.style.display = isVisible ? 'none' : 'block';
@@ -564,6 +596,7 @@ class RealUserAuthSystem {
                 this.currentUser = result.user;
                 this.isAuthenticated = true;
                 this.userData = result.user;
+                this.notifyAuthStateChange(true);
 
                 // Save session with rememberMe option
                 // Bei neuem Login: Session ohne expiresAt übergeben, damit es basierend auf rememberMe berechnet wird
@@ -1194,6 +1227,7 @@ class RealUserAuthSystem {
         this.currentUser = null;
         this.isAuthenticated = false;
         this.userData = null;
+        this.notifyAuthStateChange(false);
     }
 
     async logout() {
@@ -1298,37 +1332,27 @@ class RealUserAuthSystem {
 
     updateAuthUI() {
         const authButton = document.getElementById('realAuthButton');
-        const userDropdown = document.getElementById('userDropdown');
+        const userDropdown = this.getUserDropdownElement();
         const userName = document.getElementById('userName');
         const userEmail = document.getElementById('userEmail');
         const userAvatarImg = document.getElementById('userAvatarImg');
+        const buttonSpan = this.ensureAuthButtonLabel(authButton);
 
         if (this.isAuthenticated && this.currentUser) {
-            // Update button to show user name
-            if (authButton) {
-                const buttonSpan = authButton.querySelector('span');
-                if (buttonSpan) {
-                    buttonSpan.textContent = this.currentUser.firstName || this.currentUser.email || 'Benutzer';
-                }
+            if (authButton && buttonSpan) {
+                buttonSpan.textContent = this.currentUser.firstName || this.currentUser.email || 'Benutzer';
                 authButton.style.background = 'linear-gradient(135deg, #10b981, #059669)';
             }
             
-            // Update dropdown info
             if (userName) {
                 userName.textContent = `${this.currentUser.firstName || ''} ${this.currentUser.lastName || ''}`.trim() || this.currentUser.email || 'Benutzer';
             }
             if (userEmail) {
                 userEmail.textContent = this.currentUser.email || '';
             }
-            
-            // Dropdown wird beim Klick auf Button angezeigt (siehe attachButtonListeners)
         } else {
-            // Show login button
-            if (authButton) {
-                const buttonSpan = authButton.querySelector('span');
-                if (buttonSpan) {
-                    buttonSpan.textContent = 'Anmelden';
-                }
+            if (authButton && buttonSpan) {
+                buttonSpan.textContent = 'Anmelden';
                 authButton.style.background = '';
             }
             if (userDropdown) {
@@ -1383,6 +1407,42 @@ class RealUserAuthSystem {
             notification.classList.remove('show');
             setTimeout(() => notification.remove(), 300);
         }, 3000);
+    }
+
+    onAuthStateChange(callback) {
+        if (typeof callback !== 'function') {
+            return;
+        }
+        this.authStateListeners.push(callback);
+        if (this.lastAuthState !== null) {
+            try {
+                callback(this.lastAuthState, this.currentUser);
+            } catch (error) {
+                console.error('Auth state listener error:', error);
+            }
+        }
+    }
+
+    notifyAuthStateChange(isAuthenticated) {
+        if (this.lastAuthState === isAuthenticated) {
+            return;
+        }
+        this.lastAuthState = isAuthenticated;
+        this.authStateListeners.forEach((listener) => {
+            try {
+                listener(isAuthenticated, this.currentUser);
+            } catch (error) {
+                console.error('Auth state listener callback failed:', error);
+            }
+        });
+
+        // Broadcast global event for legacy listeners
+        document.dispatchEvent(new CustomEvent('authStateChange', {
+            detail: {
+                isAuthenticated,
+                user: this.currentUser
+            }
+        }));
     }
 
     // Public API
@@ -1471,11 +1531,13 @@ class RealUserAuthSystem {
     handleUserLogin(user) {
         console.log('User logged in:', user);
         this.updateAuthUI();
+        this.notifyAuthStateChange(true);
     }
 
     handleUserLogout() {
         console.log('User logged out');
         this.updateAuthUI();
+        this.notifyAuthStateChange(false);
     }
 
     handleUserDataUpdate(data) {

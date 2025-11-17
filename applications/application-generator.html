@@ -33,23 +33,42 @@
             </div>
             
             <div class="auth-section">
-                <button id="realAuthButton" class="btn-auth">
-                    <i class="fas fa-user"></i>
-                    Anmelden
-                </button>
-                <div id="realUserMenu" class="user-menu" style="display: none;">
-                    <div class="user-info">
-                        <img id="userAvatarImg" src="../images/manuel-weiss-portrait.jpg" alt="User Avatar" class="user-avatar-img">
-                        <span id="userName">Benutzer</span>
+                <div class="nav-user" id="navUser">
+                    <button id="realAuthButton" class="nav-login-btn btn-auth">
+                        <i class="fas fa-user"></i>
+                        <span>Anmelden</span>
+                    </button>
+                    
+                    <div class="user-dropdown" id="userDropdown" style="display: none;">
+                        <div class="user-dropdown-header">
+                            <div class="user-avatar-small">
+                                <img id="userAvatarImg" src="../images/manuel-weiss-portrait.jpg" alt="User" class="user-avatar-img">
+                            </div>
+                            <div class="user-info-small">
+                                <div class="user-name-small" id="userName">Benutzer</div>
+                                <div class="user-email-small" id="userEmail">weiss-manuel@gmx.de</div>
+                            </div>
+                        </div>
+                        <div class="user-dropdown-content">
+                            <a href="../user-profile.html#personal" class="user-dropdown-item">
+                                <i class="fas fa-user-circle"></i>
+                                <span>Profil</span>
+                            </a>
+                            <a href="../user-profile.html#settings" class="user-dropdown-item">
+                                <i class="fas fa-cog"></i>
+                                <span>Einstellungen</span>
+                            </a>
+                            <a href="../user-profile.html#progress" class="user-dropdown-item">
+                                <i class="fas fa-chart-line"></i>
+                                <span>Fortschritt</span>
+                            </a>
+                            <div class="user-dropdown-divider"></div>
+                            <a href="#" class="user-dropdown-item logout" onclick="window.realUserAuth.logout(); return false;">
+                                <i class="fas fa-sign-out-alt"></i>
+                                <span>Abmelden</span>
+                            </a>
+                        </div>
                     </div>
-                    <a href="../user-profile-dashboard.html" class="user-menu-link">
-                        <i class="fas fa-chart-line"></i>
-                        Dashboard
-                    </a>
-                    <a href="#" class="user-menu-link" onclick="window.realUserAuth.logout()">
-                        <i class="fas fa-sign-out-alt"></i>
-                        Abmelden
-                    </a>
                 </div>
             </div>
         </div>

@@ -30,15 +30,19 @@ class BewerbungDocumentsManager {
         if (this.isInitialized) return;
         
         // Wait for auth
-        if (!window.realUserAuth || !window.realUserAuth.isAuthenticated()) {
+        if (!window.realUserAuth || !window.realUserAuth.isLoggedIn || !window.realUserAuth.isLoggedIn()) {
             console.error('Documents manager: User not authenticated');
             return false;
         }
         
-        const user = window.realUserAuth.getUser();
+        const user = window.realUserAuth.getCurrentUser ? window.realUserAuth.getCurrentUser() : null;
         if (!user) return false;
         
-        this.userId = user.userId;
+        this.userId = user.id || user.userId || user.email || null;
+        if (!this.userId) {
+            console.error('Documents manager: Unable to determine userId');
+            return false;
+        }
         
         // Load existing documents
         await this.loadDocuments();

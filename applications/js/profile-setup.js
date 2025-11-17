@@ -27,7 +27,7 @@ class BewerbungsprofilManager {
     async checkAuthStatus() {
         try {
             // Prüfe ob real-user-auth-system verfügbar ist
-            if (window.realUserAuth && window.realUserAuth.isAuthenticated()) {
+            if (window.realUserAuth && window.realUserAuth.isLoggedIn && window.realUserAuth.isLoggedIn()) {
                 this.currentUser = window.realUserAuth.getCurrentUser();
                 this.isAuthenticated = true;
                 console.log('✅ User ist authentifiziert:', this.currentUser);

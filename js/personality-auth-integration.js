@@ -25,7 +25,7 @@ class PersonalityAuthIntegration {
         await this.waitForAuth();
         
         // Check if user is authenticated
-        if (!window.realUserAuth || !window.realUserAuth.isAuthenticated()) {
+        if (!window.realUserAuth || !window.realUserAuth.isLoggedIn || !window.realUserAuth.isLoggedIn()) {
             this.showLoginPrompt();
             return false;
         }
@@ -424,7 +424,7 @@ class PersonalityAuthIntegration {
      * Save form data
      */
     saveFormData(form) {
-        if (!window.userProgressTracker || !window.realUserAuth.isAuthenticated()) return;
+        if (!window.userProgressTracker || !window.realUserAuth.isLoggedIn || !window.realUserAuth.isLoggedIn()) return;
         
         const formData = {};
         const fields = form.querySelectorAll('input, textarea, select');
@@ -449,7 +449,7 @@ class PersonalityAuthIntegration {
      * Track workflow step completion
      */
     completeStep(stepId, totalSteps) {
-        if (!window.userProgressTracker || !window.realUserAuth.isAuthenticated()) return;
+        if (!window.userProgressTracker || !window.realUserAuth.isLoggedIn || !window.realUserAuth.isLoggedIn()) return;
         
         window.userProgressTracker.trackStepCompletion(this.currentPageId, stepId, totalSteps);
         this.showNotification('Schritt abgeschlossen und gespeichert', 'success');
@@ -459,7 +459,7 @@ class PersonalityAuthIntegration {
      * Track test completion
      */
     completeTest(results) {
-        if (!window.userProgressTracker || !window.realUserAuth.isAuthenticated()) return;
+        if (!window.userProgressTracker || !window.realUserAuth.isLoggedIn || !window.realUserAuth.isLoggedIn()) return;
         
         window.userProgressTracker.trackTestResult(this.currentPageId, results);
         this.showNotification('Test abgeschlossen und gespeichert', 'success');
