@@ -87,10 +87,13 @@ class AdminUserManagement {
     
     async loadDataAsync() {
         // Load admin users (with timeout) - NON-BLOCKING
-        this.loadAdminUsers().catch(error => {
-            console.error('❌ Error in loadAdminUsers:', error);
-            this.handleInitializationError(error);
-        });
+        // Don't await - let it run in background
+        setTimeout(() => {
+            this.loadAdminUsers().catch(error => {
+                console.error('❌ Error in loadAdminUsers:', error);
+                this.handleInitializationError(error);
+            });
+        }, 100);
     }
     
     handleInitializationError(error) {
