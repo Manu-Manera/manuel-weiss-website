@@ -316,13 +316,14 @@ class AdminUserManagement {
                 throw cognitoError;
             }
         }
-            
-            this.users = allUsers;
-            this.filteredUsers = [...this.users];
-            
-            console.log(`📊 Admin-User geladen: ${this.users.length}`);
-            
-            this.renderUsersList();
+        
+        // Update users list
+        this.users = allUsers;
+        this.filteredUsers = [...this.users];
+        
+        console.log(`📊 Admin-User geladen: ${this.users.length}`);
+        
+        this.renderUsersList();
             
         } catch (error) {
             console.error('❌ Error loading admin users:', error);
