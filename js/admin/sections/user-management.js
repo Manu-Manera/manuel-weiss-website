@@ -212,23 +212,70 @@ class AdminUserManagement {
         `;
         
         try {
-            // Direct Cognito access only (no API calls)
+            // Try API endpoint first, fallback to direct Cognito
             let allUsers = [];
             
-            console.log('📡 Lade Admin-User direkt über Cognito...');
-            const params = {
-                UserPoolId: this.userPoolId,
-                GroupName: this.groupName,
-                Limit: 60
-            };
+            const apiBaseUrl = window.AWS_CONFIG?.apiBaseUrl || window.AWS_CONFIG?.apiGateway?.baseUrl;
+            const session = window.adminAuth?.getSession();
             
-            const result = await Promise.race([
-                this.cognitoIdentityServiceProvider.listUsersInGroup(params).promise(),
-                new Promise((_, reject) => setTimeout(() => reject(new Error('Cognito Timeout (10s)')), 10000))
-            ]);
+            if (apiBaseUrl && session && session.idToken) {
+                try {
+                    console.log('📡 Lade Admin-User über API-Endpoint...');
+                    
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 5000);
+                    
+                    const response = await fetch(`${apiBaseUrl}/admin/users?onlyAdmin=true`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${session.idToken}`
+                        },
+                        signal: controller.signal
+                    });
+                    
+                    clearTimeout(timeoutId);
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        allUsers = (data.users || []).map(user => ({
+                            Username: user.id || user.email || user.username,
+                            Attributes: [
+                                { Name: 'email', Value: user.email },
+                                { Name: 'name', Value: user.name || '' },
+                                { Name: 'email_verified', Value: user.emailVerified ? 'true' : 'false' }
+                            ],
+                            UserStatus: user.status,
+                            Enabled: user.enabled !== false,
+                            UserCreateDate: user.createdAt ? new Date(user.createdAt) : new Date()
+                        }));
+                        console.log('✅ Admin-User über API geladen:', allUsers.length);
+                    } else {
+                        throw new Error(`API Error: ${response.status}`);
+                    }
+                } catch (apiError) {
+                    console.warn('⚠️ API-Endpoint fehlgeschlagen, verwende Cognito-Fallback:', apiError);
+                    throw apiError; // Fall through to Cognito
+                }
+            }
             
-            allUsers = result.Users || [];
-            console.log('✅ Admin-User über Cognito geladen:', allUsers.length);
+            // Fallback: Direct Cognito access
+            if (allUsers.length === 0) {
+                console.log('📡 Lade Admin-User direkt über Cognito...');
+                const params = {
+                    UserPoolId: this.userPoolId,
+                    GroupName: this.groupName,
+                    Limit: 60
+                };
+                
+                const result = await Promise.race([
+                    this.cognitoIdentityServiceProvider.listUsersInGroup(params).promise(),
+                    new Promise((_, reject) => setTimeout(() => reject(new Error('Cognito Timeout (10s)')), 10000))
+                ]);
+                
+                allUsers = result.Users || [];
+                console.log('✅ Admin-User über Cognito geladen:', allUsers.length);
+            }
         
         // Update users list
         this.users = allUsers;
