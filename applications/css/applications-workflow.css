@@ -797,7 +797,8 @@
 
 /* Generator Styles */
 .generator-container {
-    max-width: 900px;
+    max-width: 1200px;
+    width: 100%;
     margin: 0 auto;
     background: white;
     border-radius: var(--radius-xl);
@@ -936,6 +937,15 @@
 
 .generated-text {
     margin-bottom: 1.5rem;
+    width: 100%;
+}
+
+.generated-text .form-textarea {
+    width: 100%;
+    min-height: 420px;
+    font-size: 1rem;
+    line-height: 1.6;
+    resize: vertical;
 }
 
 .generation-stats {
