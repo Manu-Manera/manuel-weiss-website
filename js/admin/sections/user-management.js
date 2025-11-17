@@ -242,12 +242,16 @@ class AdminUserManagement {
             console.log('📡 Lade Admin-User über API-Endpoint...');
             console.log('📡 API URL:', `${apiBaseUrl}/admin/users?onlyAdmin=true`);
             
-            // API Call with timeout
+            // API Call with timeout (5 seconds)
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 8000);
+            const timeoutId = setTimeout(() => {
+                controller.abort();
+                console.warn('⏱️ API Request aborted after 5s timeout');
+            }, 5000);
             
+            let response;
             try {
-                const response = await fetch(`${apiBaseUrl}/admin/users?onlyAdmin=true`, {
+                response = await fetch(`${apiBaseUrl}/admin/users?onlyAdmin=true`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
