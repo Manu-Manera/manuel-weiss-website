@@ -95,46 +95,53 @@ class AWSProfileAPI {
 
             // Use API Gateway endpoint if available
             if (window.AWS_CONFIG?.apiBaseUrl) {
-                // Call API Gateway Lambda function
-                const response = await fetch(`${window.AWS_CONFIG.apiBaseUrl}/profile`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${idToken}`
-                    },
-                    body: JSON.stringify(item)
-                });
+                try {
+                    const response = await fetch(`${window.AWS_CONFIG.apiBaseUrl}/profile`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${idToken}`
+                        },
+                        body: JSON.stringify(item)
+                    });
 
-                if (!response.ok) {
-                    // Try to get error details
-                    let errorMessage = `API Error: ${response.status} ${response.statusText}`;
-                    try {
-                        const errorData = await response.json();
-                        errorMessage = errorData.error || errorData.message || errorMessage;
-                    } catch (e) {
-                        // If response is not JSON, use status text
+                    if (!response.ok) {
+                        let errorMessage = `API Error: ${response.status} ${response.statusText}`;
+                        try {
+                            const errorData = await response.json();
+                            errorMessage = errorData.error || errorData.message || errorMessage;
+                        } catch (e) {
+                            // ignore JSON parse error
+                        }
+                        throw new Error(errorMessage);
                     }
-                    throw new Error(errorMessage);
+
+                    const result = await response.json();
+                    console.log('✅ Profile saved successfully via API');
+                    return result;
+                } catch (apiError) {
+                    console.warn('⚠️ API save failed, falling back to DynamoDB:', apiError.message);
                 }
-
-                const result = await response.json();
-                console.log('✅ Profile saved successfully via API');
-                return result;
-            } else {
-                // Direct DynamoDB call (requires proper IAM permissions)
-                const params = {
-                    TableName: this.tableName,
-                    Item: item
-                };
-
-                await this.dynamoDB.put(params).promise();
-                console.log('✅ Profile saved successfully to DynamoDB');
-                return { success: true };
             }
+
+            // Direct DynamoDB call (requires proper IAM permissions)
+            return await this.saveProfileDirect(item);
+
         } catch (error) {
             console.error('❌ Failed to save profile:', error);
             throw error;
         }
+    }
+
+    async saveProfileDirect(item) {
+        const params = {
+            TableName: this.tableName,
+            Item: item
+        };
+
+        await this.dynamoDB.put(params).promise();
+        console.log('✅ Profile saved successfully to DynamoDB (direct fallback)');
+        return item;
     }
 
     /**
@@ -152,49 +159,55 @@ class AWSProfileAPI {
 
             // Use API Gateway endpoint if available
             if (window.AWS_CONFIG?.apiBaseUrl) {
-                // Call API Gateway Lambda function
-                const response = await fetch(`${window.AWS_CONFIG.apiBaseUrl}/profile`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${idToken}`
-                    }
-                });
+                try {
+                    const response = await fetch(`${window.AWS_CONFIG.apiBaseUrl}/profile`, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${idToken}`
+                        }
+                    });
 
-                if (!response.ok) {
-                    if (response.status === 404) {
-                        console.log('ℹ️ No profile found, returning empty data');
-                        return null;
+                    if (!response.ok) {
+                        if (response.status === 404) {
+                            console.log('ℹ️ No profile found, returning empty data');
+                            return null;
+                        }
+                        throw new Error(`API Error: ${response.statusText}`);
                     }
-                    throw new Error(`API Error: ${response.statusText}`);
+
+                    const result = await response.json();
+                    console.log('✅ Profile loaded successfully from API');
+                    return result;
+                } catch (apiError) {
+                    console.warn('⚠️ API load failed, falling back to DynamoDB:', apiError.message);
                 }
-
-                const result = await response.json();
-                console.log('✅ Profile loaded successfully from API');
-                return result;
-            } else {
-                // Direct DynamoDB call (requires proper IAM permissions)
-                const params = {
-                    TableName: this.tableName,
-                    Key: {
-                        userId: userId
-                    }
-                };
-
-                const result = await this.dynamoDB.get(params).promise();
-                
-                if (!result.Item) {
-                    console.log('ℹ️ No profile found, returning empty data');
-                    return null;
-                }
-
-                console.log('✅ Profile loaded successfully from DynamoDB');
-                return result.Item;
             }
+
+            const directProfile = await this.loadProfileDirect(userId);
+            if (directProfile) {
+                console.log('✅ Profile loaded successfully from DynamoDB (fallback)');
+            } else {
+                console.log('ℹ️ No profile found in DynamoDB fallback');
+            }
+            return directProfile;
+
         } catch (error) {
             console.error('❌ Failed to load profile:', error);
             // Return null instead of throwing to allow graceful degradation
             return null;
         }
+    }
+
+    async loadProfileDirect(userId) {
+        const params = {
+            TableName: this.tableName,
+            Key: {
+                userId: userId
+            }
+        };
+
+        const result = await this.dynamoDB.get(params).promise();
+        return result.Item || null;
     }
 
     /**
