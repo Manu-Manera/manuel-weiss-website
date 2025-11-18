@@ -217,6 +217,7 @@ class AICoverLetterGenerator {
         const openAIKey = this.getAPIKey();
         if (this.isValidAPIKey(openAIKey)) {
             const openAIConfig = window.GlobalAPIManager?.getServiceConfig?.('openai');
+            console.log('✅ Nutze OpenAI API Key aus', openAIConfig ? 'GlobalAPIManager' : 'localStorage');
             return {
                 type: 'openai',
                 key: openAIKey,
@@ -228,12 +229,35 @@ class AICoverLetterGenerator {
         if (manager?.isServiceEnabled?.('google')) {
             const googleConfig = manager.getServiceConfig('google');
             if (googleConfig?.key) {
+                console.log('✅ Google AI aktiviert via GlobalAPIManager');
                 return {
                     type: 'google',
                     key: googleConfig.key,
                     config: googleConfig
                 };
             }
+        }
+        
+        // Fallback: direkt aus localStorage.global_api_keys lesen (falls Manager nicht verfügbar oder deaktiviert)
+        try {
+            const raw = localStorage.getItem('global_api_keys');
+            if (raw) {
+                const parsed = JSON.parse(raw);
+                const googleConfig = parsed?.google;
+                if (googleConfig?.key) {
+                    console.log('✅ Google AI via localStorage Fallback aktiviert');
+                    return {
+                        type: 'google',
+                        key: googleConfig.key,
+                        config: googleConfig
+                    };
+                }
+                console.warn('ℹ️ global_api_keys gefunden, aber ohne Google-Key oder disabled:', parsed);
+            } else {
+                console.warn('ℹ️ Kein global_api_keys Eintrag im localStorage gefunden');
+            }
+        } catch (error) {
+            console.warn('⚠️ Konnte global_api_keys nicht lesen:', error);
         }
         
         return null;
