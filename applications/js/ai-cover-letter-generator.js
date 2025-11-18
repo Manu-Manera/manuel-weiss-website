@@ -143,16 +143,20 @@ class AICoverLetterGenerator {
             const profileData = this.applicationsCore.getProfileData() || {};
             const options = this.collectOptions();
             
-            // Check API key
-            const apiKey = this.getAPIKey();
+            // Wähle verfügbaren KI-Provider (OpenAI > Google > Template)
+            const provider = this.getActiveAIProvider();
             let coverLetter;
             
-            if (apiKey) {
-                // Use ChatGPT
-                coverLetter = await this.callOpenAI(jobData, profileData, options);
+            if (provider) {
+                if (provider.type === 'openai') {
+                    coverLetter = await this.callOpenAI(jobData, profileData, options, provider);
+                } else if (provider.type === 'google') {
+                    coverLetter = await this.callGoogleAI(jobData, profileData, options, provider);
+                } else {
+                    throw new Error(`Unbekannter Provider: ${provider.type}`);
+                }
             } else {
-                // Fallback to template
-                this.showNotification('Kein API Key gefunden. Verwende Template-basierte Generierung.', 'info');
+                this.showNotification('Keine KI-Konfiguration gefunden. Verwende Template-basierte Generierung.', 'info');
                 coverLetter = await this.generateFromTemplate(jobData, profileData, options);
             }
             
@@ -209,10 +213,40 @@ class AICoverLetterGenerator {
         };
     }
 
-    async callOpenAI(jobData, profileData, options) {
-        const apiKey = localStorage.getItem('openai_api_key');
+    getActiveAIProvider() {
+        const openAIKey = this.getAPIKey();
+        if (this.isValidAPIKey(openAIKey)) {
+            const openAIConfig = window.GlobalAPIManager?.getServiceConfig?.('openai');
+            return {
+                type: 'openai',
+                key: openAIKey,
+                config: openAIConfig
+            };
+        }
+        
+        const manager = window.GlobalAPIManager;
+        if (manager?.isServiceEnabled?.('google')) {
+            const googleConfig = manager.getServiceConfig('google');
+            if (googleConfig?.key) {
+                return {
+                    type: 'google',
+                    key: googleConfig.key,
+                    config: googleConfig
+                };
+            }
+        }
+        
+        return null;
+    }
+    
+    async callOpenAI(jobData, profileData, options, provider) {
+        const apiKey = provider?.key || this.getAPIKey();
+        if (!apiKey) {
+            throw new Error('Kein OpenAI API Key vorhanden');
+        }
         
         const prompt = this.constructPrompt(jobData, profileData, options);
+        const serviceOptions = provider?.config || {};
         
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
@@ -221,7 +255,7 @@ class AICoverLetterGenerator {
                 'Authorization': `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-                model: 'gpt-3.5-turbo',
+                model: serviceOptions?.model || 'gpt-4o-mini',
                 messages: [
                     {
                         role: 'system',
@@ -232,8 +266,8 @@ class AICoverLetterGenerator {
                         content: prompt
                     }
                 ],
-                temperature: 0.7,
-                max_tokens: 800
+                temperature: serviceOptions?.temperature ?? 0.7,
+                max_tokens: serviceOptions?.maxTokens || 800
             })
         });
         
@@ -243,6 +277,45 @@ class AICoverLetterGenerator {
         
         const data = await response.json();
         return data.choices[0].message.content;
+    }
+    
+    async callGoogleAI(jobData, profileData, options, provider) {
+        const config = provider?.config || {};
+        const model = options?.model || config.model || 'gemini-pro';
+        const prompt = this.constructPrompt(jobData, profileData, options);
+        const systemPrompt = 'Du bist ein professioneller Bewerbungsberater aus dem DACH-Raum. Erstelle hochwertige Bewerbungsanschreiben auf Deutsch.';
+        
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${provider.key}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                contents: [{
+                    parts: [
+                        { text: systemPrompt },
+                        { text: prompt }
+                    ]
+                }],
+                generationConfig: {
+                    maxOutputTokens: config.maxTokens || 800,
+                    temperature: config.temperature ?? 0.7
+                }
+            })
+        });
+        
+        if (!response.ok) {
+            const error = await response.json().catch(() => ({}));
+            throw new Error(`Google AI Fehler: ${error.error?.message || response.statusText}`);
+        }
+        
+        const data = await response.json();
+        const contentParts = data.candidates?.[0]?.content?.parts || [];
+        const text = contentParts.map(part => part.text || '').join('\n').trim();
+        if (!text) {
+            throw new Error('Google AI lieferte keinen Text zurück');
+        }
+        return text;
     }
 
     constructPrompt(jobData, profileData, options) {
