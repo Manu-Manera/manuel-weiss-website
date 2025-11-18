@@ -43,13 +43,14 @@ function getAdminPanelApiKey() {
 function validateApiKey(apiKey) {
     if (!apiKey) return false;
     
-    // OpenAI API Keys beginnen mit 'sk-'
-    if (!apiKey.startsWith('sk-')) {
-        console.error('❌ Ungültiges API Key Format');
-        return false;
+    const pattern = /^sk-[A-Za-z0-9_\-]{20,}$/;
+    const isValid = pattern.test(apiKey.trim());
+    
+    if (!isValid) {
+        console.error('❌ Ungültiges API Key Format (erlaubt: sk- / sk-proj- / sk-live- etc.)');
     }
     
-    return true;
+    return isValid;
 }
 
 // =================== AI SERVICE INTEGRATION ===================

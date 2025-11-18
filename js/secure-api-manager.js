@@ -22,15 +22,15 @@ class SecureAPIManager {
         }
         
         if (!apiKey.startsWith('sk-')) {
-            throw new Error('OpenAI API Keys beginnen mit "sk-"');
+            throw new Error('OpenAI API Keys beginnen mit \"sk-\"');
         }
         
-        if (apiKey.length < 50) {
+        if (apiKey.length < 30) {
             throw new Error('API Key scheint unvollständig zu sein');
         }
         
-        // Weitere Validierung für bekannte Patterns
-        if (!apiKey.match(/^sk-[a-zA-Z0-9\-_]{40,}$/)) {
+        // Weitere Validierung für bekannte Patterns (inklusive sk-proj, sk-live etc.)
+        if (!apiKey.match(/^sk-[a-zA-Z0-9_\-]{20,}$/)) {
             throw new Error('Ungültiges API Key Format');
         }
         

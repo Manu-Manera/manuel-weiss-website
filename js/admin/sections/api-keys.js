@@ -234,9 +234,9 @@ class ApiKeysSection {
     async performFallbackTest(service, apiKey) {
         // Einfacher Format-Test
         const patterns = {
-            'openai': /^sk-[A-Za-z0-9]{48}$/,
-            'anthropic': /^sk-ant-[A-Za-z0-9]{48}$/,
-            'google': /^AIza[0-9A-Za-z-_]{35}$/
+            openai: /^sk-[A-Za-z0-9_\-]{20,}$/,
+            anthropic: /^sk-ant-[A-Za-z0-9_\-]{20,}$/,
+            google: /^AIza[0-9A-Za-z_\-]{20,}$/
         };
         
         const pattern = patterns[service];
