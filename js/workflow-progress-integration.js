@@ -194,6 +194,25 @@ class WorkflowProgressIntegration {
      * Go to next step
      */
     async nextStep() {
+        // Prüfe Auth beim ersten "Weiter"-Klick
+        const canProceed = await window.authRequiredAction.handleNextButton(async () => {
+            // Diese Aktion wird ausgeführt, wenn User angemeldet ist
+            await this.executeNextStep();
+        }, {
+            message: 'Bitte melde dich an, um fortzufahren. Dein Fortschritt wird automatisch gespeichert.'
+        });
+
+        // Wenn nicht angemeldet, wird Login-Prompt angezeigt
+        // Die Aktion wird nach erfolgreicher Anmeldung automatisch ausgeführt
+        if (!canProceed) {
+            return;
+        }
+    }
+
+    /**
+     * Führt den eigentlichen "Weiter"-Schritt aus
+     */
+    async executeNextStep() {
         // Save current step data first
         await this.saveStepData();
         
@@ -203,6 +222,11 @@ class WorkflowProgressIntegration {
                 `step-${this.currentStep}`, 
                 this.totalSteps
             );
+        }
+        
+        // Ensure progress tracker is initialized
+        if (window.userProgressTracker && !window.userProgressTracker.isInitialized) {
+            await window.userProgressTracker.init();
         }
         
         if (this.currentStep < this.totalSteps) {
