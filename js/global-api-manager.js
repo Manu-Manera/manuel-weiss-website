@@ -75,9 +75,7 @@ class GlobalAPIManager {
                 ...storedConfig
             };
             
-            if (typeof this.keys[service].enabled === 'undefined') {
-                this.keys[service].enabled = !!this.keys[service].key;
-            }
+            this.keys[service].enabled = !!this.keys[service].key;
         });
     }
     
