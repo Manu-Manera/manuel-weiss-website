@@ -82,7 +82,28 @@ class UserProgressTracker {
      * Save progress data to AWS
      */
     async saveProgress() {
-        if (!this.userId || !this.pendingChanges) return;
+        // WICHTIG: Prüfe ob User angemeldet ist
+        if (!window.realUserAuth || !window.realUserAuth.isLoggedIn || !window.realUserAuth.isLoggedIn()) {
+            console.warn('Cannot save progress: User not authenticated');
+            // Speichere trotzdem lokal als Fallback
+            this.saveToLocalStorage();
+            return;
+        }
+
+        // Stelle sicher, dass userId gesetzt ist
+        if (!this.userId) {
+            const user = window.realUserAuth.getCurrentUser ? window.realUserAuth.getCurrentUser() : null;
+            if (user) {
+                this.userId = user.id || user.userId || user.email || null;
+            }
+        }
+
+        if (!this.userId || !this.pendingChanges) {
+            if (!this.userId) {
+                console.warn('Cannot save progress: No userId available');
+            }
+            return;
+        }
         
         try {
             if (!window.awsProfileAPI) {
@@ -91,10 +112,16 @@ class UserProgressTracker {
                 return;
             }
 
+            // Stelle sicher, dass progressData userId enthält
+            if (!this.progressData.userId) {
+                this.progressData.userId = this.userId;
+            }
+
             // Get current profile data
             const profile = await window.awsProfileAPI.loadProfile();
             const updatedProfile = {
                 ...profile,
+                userId: this.userId, // Stelle sicher, dass userId gesetzt ist
                 progressData: this.progressData,
                 lastProgressUpdate: new Date().toISOString()
             };
@@ -103,7 +130,7 @@ class UserProgressTracker {
             await window.awsProfileAPI.saveProfile(updatedProfile);
             
             this.pendingChanges = false;
-            console.log('Progress saved to AWS');
+            console.log('✅ Progress saved to AWS for user:', this.userId);
             
             // Also save to local storage as backup
             this.saveToLocalStorage();
@@ -120,8 +147,22 @@ class UserProgressTracker {
     async updateProgress(sectionId, stepId, data) {
         if (!sectionId || !stepId) return;
 
+        // Prüfe ob User angemeldet ist
+        if (!window.realUserAuth || !window.realUserAuth.isLoggedIn || !window.realUserAuth.isLoggedIn()) {
+            console.warn('Cannot update progress: User not authenticated');
+            return;
+        }
+
         if (!this.isInitialized) {
             await this.init();
+        }
+
+        // Stelle sicher, dass userId gesetzt ist
+        if (!this.userId) {
+            const user = window.realUserAuth.getCurrentUser ? window.realUserAuth.getCurrentUser() : null;
+            if (user) {
+                this.userId = user.id || user.userId || user.email || null;
+            }
         }
 
         if (!this.userId) {
@@ -141,6 +182,11 @@ class UserProgressTracker {
             data,
             updatedAt: new Date().toISOString()
         };
+
+        // Stelle sicher, dass userId im progressData enthalten ist
+        if (!this.progressData.userId) {
+            this.progressData.userId = this.userId;
+        }
 
         this.pendingChanges = true;
         try {
