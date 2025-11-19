@@ -36,6 +36,8 @@ class GlobalAPIManager {
             }
         };
         
+        };
+        
         this.loadKeys();
     }
     
@@ -54,6 +56,31 @@ class GlobalAPIManager {
             console.error('Fehler beim Laden der API Keys:', error);
             this.keys = { ...this.defaultKeys };
         }
+        
+        this.normalizeKeys();
+        this.saveKeys();
+    }
+
+    normalizeKeys() {
+        this.keys = this.keys || {};
+        Object.keys(this.defaultKeys).forEach(service => {
+            const defaultConfig = this.defaultKeys[service];
+            const storedConfig = this.keys[service];
+            
+            if (!storedConfig) {
+                this.keys[service] = { ...defaultConfig };
+                return;
+            }
+            
+            this.keys[service] = {
+                ...defaultConfig,
+                ...storedConfig
+            };
+            
+            if (typeof this.keys[service].enabled === 'undefined') {
+                this.keys[service].enabled = !!this.keys[service].key;
+            }
+        });
     }
     
     /**
@@ -74,7 +101,12 @@ class GlobalAPIManager {
      */
     setAPIKey(service, key, options = {}) {
         if (!this.keys[service]) {
-            this.keys[service] = { ...this.defaultKeys.openai };
+            this.keys[service] = { ...(this.defaultKeys[service] || {}) };
+        } else {
+            this.keys[service] = {
+                ...(this.defaultKeys[service] || {}),
+                ...this.keys[service]
+            };
         }
         
         this.keys[service].key = key;
