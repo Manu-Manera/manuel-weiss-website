@@ -36,8 +36,6 @@ class GlobalAPIManager {
             }
         };
         
-        };
-        
         this.loadKeys();
     }
     
@@ -124,7 +122,8 @@ class GlobalAPIManager {
      * Hole API Key für einen Service
      */
     getAPIKey(service) {
-        return this.keys[service]?.key || '';
+        const config = this.keys[service];
+        return (config && config.key) || '';
     }
     
     /**
@@ -138,7 +137,8 @@ class GlobalAPIManager {
      * Prüfe ob ein Service aktiviert ist
      */
     isServiceEnabled(service) {
-        return this.keys[service]?.enabled || false;
+        const config = this.keys[service];
+        return !!(config && config.enabled);
     }
     
     /**
@@ -185,7 +185,8 @@ class GlobalAPIManager {
                 return { success: true, data };
             } else {
                 const error = await response.json();
-                return { success: false, error: error.error?.message || 'API Fehler' };
+                const errMsg = error && error.error && error.error.message ? error.error.message : 'API Fehler';
+                return { success: false, error: errMsg };
             }
         } catch (error) {
             return { success: false, error: error.message };
@@ -216,7 +217,8 @@ class GlobalAPIManager {
                 return { success: true, data };
             } else {
                 const error = await response.json();
-                return { success: false, error: error.error?.message || 'API Fehler' };
+                const errMsg = error && error.error && error.error.message ? error.error.message : 'API Fehler';
+                return { success: false, error: errMsg };
             }
         } catch (error) {
             return { success: false, error: error.message };
@@ -249,7 +251,8 @@ class GlobalAPIManager {
                 return { success: true, data };
             } else {
                 const error = await response.json();
-                return { success: false, error: error.error?.message || 'API Fehler' };
+                const errMsg = error && error.error && error.error.message ? error.error.message : 'API Fehler';
+                return { success: false, error: errMsg };
             }
         } catch (error) {
             return { success: false, error: error.message };
@@ -326,7 +329,8 @@ class GlobalAPIManager {
         
         if (!response.ok) {
             const error = await response.json();
-            throw new Error(`OpenAI API Fehler: ${error.error?.message || response.statusText}`);
+            const errMsg = error && error.error && error.error.message ? error.error.message : response.statusText;
+            throw new Error(`OpenAI API Fehler: ${errMsg}`);
         }
         
         const data = await response.json();
@@ -356,7 +360,8 @@ class GlobalAPIManager {
         
         if (!response.ok) {
             const error = await response.json();
-            throw new Error(`Anthropic API Fehler: ${error.error?.message || response.statusText}`);
+            const errMsg = error && error.error && error.error.message ? error.error.message : response.statusText;
+            throw new Error(`Anthropic API Fehler: ${errMsg}`);
         }
         
         const data = await response.json();
@@ -385,7 +390,8 @@ class GlobalAPIManager {
         
         if (!response.ok) {
             const error = await response.json();
-            throw new Error(`Google AI API Fehler: ${error.error?.message || response.statusText}`);
+            const errMsg = error && error.error && error.error.message ? error.error.message : response.statusText;
+            throw new Error(`Google AI API Fehler: ${errMsg}`);
         }
         
         const data = await response.json();
