@@ -262,7 +262,69 @@ a:hover {
     display: flex;
     align-items: center;
     gap: var(--spacing-2xl);
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    width: 100%;
+}
+
+.nav-menu > .auth-section {
+    margin-left: auto;
+}
+
+.nav-user {
+    display: flex;
+    align-items: center;
+}
+
+@media (max-width: 1200px) {
+    .nav-menu {
+        flex-wrap: wrap;
+    }
+    
+    .nav-menu > .auth-section {
+        width: 100%;
+        justify-content: flex-start;
+        margin-left: 0;
+    }
+}
+
+.auth-section {
+    display: flex;
+    align-items: center;
+}
+
+.nav-login-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.65rem 1.5rem;
+    border-radius: 999px;
+    border: 1px solid rgba(118, 75, 162, 0.45);
+    background: linear-gradient(135deg, rgba(118, 75, 162, 0.25), rgba(99, 102, 241, 0.25));
+    color: #4f46e5;
+    font-weight: 600;
+    box-shadow:
+        0 15px 35px rgba(79, 70, 229, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.35);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    transition: all var(--transition-fast);
+}
+
+.nav-login-btn i {
+    font-size: 0.95rem;
+}
+
+.nav-login-btn:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.6);
+    color: #ffffff;
+    box-shadow:
+        0 20px 45px rgba(79, 70, 229, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.nav-login-btn:active {
+    transform: translateY(0);
 }
 
 @media (max-width: 1024px) {
@@ -533,25 +595,6 @@ a:hover {
 .hero-about-stats {
     width: 100%;
     max-width: 520px;
-}
-
-.hero-about-stats .stat-card {
-    background: rgba(255, 255, 255, 0.12);
-    border: 1px solid rgba(255, 255, 255, 0.35);
-    box-shadow: 0 25px 55px rgba(15, 23, 42, 0.25);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-}
-
-.hero-about-stats .stat-number {
-    color: #ffffff;
-    text-shadow: 0 5px 12px rgba(15, 23, 42, 0.25);
-}
-
-.hero-about-stats .stat-label {
-    color: rgba(255, 255, 255, 0.85);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
 }
 
 @keyframes heroVisualFade {
