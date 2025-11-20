@@ -1,6 +1,14 @@
 (() => {
+    function getCurrentLanguage() {
+        const htmlLang = document.documentElement.lang || 'de';
+        const pathLang = window.location.pathname.includes('/en/') ? 'en' : htmlLang;
+        return pathLang === 'en' ? 'en' : 'de';
+    }
+    
     function downloadBeraterprofil() {
-        console.log('📄 Beraterprofil wird heruntergeladen...');
+        const lang = getCurrentLanguage();
+        const logMessage = lang === 'en' ? '📄 Downloading consultant profile...' : '📄 Beraterprofil wird heruntergeladen...';
+        console.log(logMessage);
         
         const profileData = {
             name: 'Manuel Alexander Weiss',
@@ -193,9 +201,13 @@
     }
     
     function createAndDownloadPDF(htmlContent, filename) {
+        const lang = getCurrentLanguage();
         const printWindow = window.open('', '_blank');
         if (!printWindow) {
-            alert('Bitte Pop-ups für diese Seite erlauben, um das Profil herunterzuladen.');
+            const alertMessage = lang === 'en' 
+                ? 'Please allow pop-ups for this page to download the profile.'
+                : 'Bitte Pop-ups für diese Seite erlauben, um das Profil herunterzuladen.';
+            alert(alertMessage);
             return;
         }
         printWindow.document.write(htmlContent);
