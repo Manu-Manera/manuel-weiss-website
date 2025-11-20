@@ -119,3 +119,4 @@ Die Website sollte dann erreichbar sein über:
 
 **Wichtig:** Nach dem Hinzufügen der Domain in Netlify kann es 1-24 Stunden dauern, bis alles funktioniert. Die DNS-Records sind bereits korrekt, es fehlt nur die Netlify-Konfiguration.
 
+

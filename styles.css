@@ -505,12 +505,12 @@ a:hover {
 
 .hero-stats {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: var(--spacing-sm);
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: var(--spacing-md);
     width: 100%;
-    max-width: 420px;
+    max-width: 600px;
     min-width: 0;
-    padding: var(--spacing-sm);
+    padding: var(--spacing-md);
     box-sizing: border-box;
     margin: var(--spacing-lg) auto 0;
     background: rgba(255, 255, 255, 0.05);
@@ -520,7 +520,7 @@ a:hover {
 
 .stat-item {
     text-align: center;
-    padding: var(--spacing-lg);
+    padding: var(--spacing-lg) var(--spacing-md);
     min-width: 0;
     display: flex;
     flex-direction: column;
@@ -531,7 +531,7 @@ a:hover {
     border-radius: var(--radius-lg);
     border: 1px solid rgba(255, 255, 255, 0.15);
     box-shadow: 0 10px 25px rgba(0,0,0,0.25);
-    min-height: 120px;
+    min-height: 140px;
 }
 
 .stat-item:not(:last-child)::after {
@@ -548,17 +548,20 @@ a:hover {
 }
 
 .stat-label {
-    font-size: calc(var(--font-size-sm) * 0.85);
+    font-size: var(--font-size-sm);
     color: rgba(255,255,255,0.95);
-    line-height: 1.4;
+    line-height: 1.5;
     font-weight: 500;
     letter-spacing: 0.01em;
     margin: 0;
     word-wrap: break-word;
-    word-break: break-word;
+    word-break: normal;
     hyphens: auto;
     padding: 0 var(--spacing-xs);
     width: 100%;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
 }
 
 /* Bessere Lesbarkeit: keine Silbentrennung im Hero-Subtext */
@@ -1852,13 +1855,20 @@ a:hover {
     }
     
     .hero-stats {
-        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         max-width: 100%;
         margin: var(--spacing-lg) 0 0;
+        gap: var(--spacing-md);
     }
     
     .stat-item {
         min-width: auto;
+        min-height: 130px;
+        padding: var(--spacing-md);
+    }
+    
+    .stat-label {
+        font-size: var(--font-size-sm);
     }
     
     .services-grid {

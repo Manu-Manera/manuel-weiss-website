@@ -121,7 +121,7 @@
             </div>
             <div class="hero-visual">
                 <div class="hero-image">
-                    <img src="manuel-weiss-portrait.jpg" alt="Manuel Weiss" class="profile-image" id="profile-photo" onerror="this.src='images/manuel-weiss-portrait.jpg'; this.onerror=null;">
+                    <img src="manuel-weiss-portrait.jpg" alt="Manuel Weiss" class="profile-image" id="profile-photo" onerror="this.onerror=null; this.src='manuel-weiss-portrait.jpg';">
                 </div>
                 <div class="hero-stats">
                     <div class="stat-item">
@@ -1164,11 +1164,33 @@
             try {
                 if (!window.awsProfileAPI || !window.awsProfileAPI.loadWebsiteImages) {
                     console.warn('⚠️ WEBSITE: awsProfileAPI nicht verfügbar für Profilbild-Laden');
+                    // Fallback: Versuche aus localStorage zu laden
+                    const cachedImage = localStorage.getItem('adminProfileImage') || 
+                                       localStorage.getItem('heroProfileImage') || 
+                                       localStorage.getItem('profileImage');
+                    if (cachedImage) {
+                        const profilePhoto = document.getElementById('profile-photo');
+                        if (profilePhoto) {
+                            profilePhoto.src = cachedImage;
+                            profilePhoto.style.display = 'block';
+                            console.log('✅ WEBSITE: Profile image loaded from localStorage cache');
+                            return cachedImage;
+                        }
+                    }
                     return null;
                 }
                 
                 console.log('☁️ WEBSITE: Loading profile image directly from AWS DynamoDB...');
-                const awsImages = await window.awsProfileAPI.loadWebsiteImages();
+                const timeoutPromise = new Promise((_, reject) =>
+                    setTimeout(() => reject(new Error('Timeout')), 5000)
+                );
+                const awsImages = await Promise.race([
+                    window.awsProfileAPI.loadWebsiteImages(),
+                    timeoutPromise
+                ]).catch(err => {
+                    console.warn('⚠️ AWS Bild-Laden timeout oder fehler:', err.message);
+                    return null;
+                });
                 
                 if (awsImages && awsImages.profileImageDefault) {
                     const profilePhoto = document.getElementById('profile-photo');
@@ -1176,12 +1198,45 @@
                         profilePhoto.src = awsImages.profileImageDefault;
                         profilePhoto.style.display = 'block';
                         console.log('✅ WEBSITE: Profile image loaded from AWS DynamoDB and displayed');
+                        // Cache in localStorage
+                        localStorage.setItem('profileImageDefault', awsImages.profileImageDefault);
+                        localStorage.setItem('adminProfileImage', awsImages.profileImageDefault);
+                        localStorage.setItem('heroProfileImage', awsImages.profileImageDefault);
+                        localStorage.setItem('profileImage', awsImages.profileImageDefault);
                         return awsImages.profileImageDefault;
                     }
                 }
+                
+                // Fallback: Versuche aus localStorage zu laden
+                const cachedImage = localStorage.getItem('adminProfileImage') || 
+                                   localStorage.getItem('heroProfileImage') || 
+                                   localStorage.getItem('profileImage');
+                if (cachedImage) {
+                    const profilePhoto = document.getElementById('profile-photo');
+                    if (profilePhoto) {
+                        profilePhoto.src = cachedImage;
+                        profilePhoto.style.display = 'block';
+                        console.log('✅ WEBSITE: Profile image loaded from localStorage cache (AWS failed)');
+                        return cachedImage;
+                    }
+                }
+                
                 return null;
             } catch (error) {
                 console.warn('⚠️ WEBSITE: Failed to load profile image from AWS:', error);
+                // Fallback: Versuche aus localStorage zu laden
+                const cachedImage = localStorage.getItem('adminProfileImage') || 
+                                   localStorage.getItem('heroProfileImage') || 
+                                   localStorage.getItem('profileImage');
+                if (cachedImage) {
+                    const profilePhoto = document.getElementById('profile-photo');
+                    if (profilePhoto) {
+                        profilePhoto.src = cachedImage;
+                        profilePhoto.style.display = 'block';
+                        console.log('✅ WEBSITE: Profile image loaded from localStorage cache (after error)');
+                        return cachedImage;
+                    }
+                }
                 return null;
             }
         }

@@ -72,3 +72,4 @@ echo "3. Prüfe ob SSL-Zertifikat ausgestellt wurde (kann 1-24 Stunden dauern)"
 echo "4. Falls nicht, klicke auf 'Verify DNS configuration'"
 echo "5. Warte bis Netlify das SSL-Zertifikat ausstellt"
 
+
