@@ -121,7 +121,7 @@
             </div>
             <div class="hero-visual">
                 <div class="hero-image">
-                    <img src="manuel-weiss-portrait.jpg" alt="Manuel Weiss" class="profile-image" id="profile-photo" onerror="this.onerror=null; this.src='manuel-weiss-portrait.jpg';">
+                    <img src="manuel-weiss-portrait.jpg" alt="Manuel Weiss" class="profile-image" id="profile-photo" onerror="handleProfileImageError(this);">
                 </div>
                 <div class="hero-stats">
                     <div class="stat-item">
@@ -818,6 +818,23 @@
         
         // Hero-Daten aus Admin-Panel laden und anwenden
         const DEFAULT_PROFILE_IMAGE_URL = 'manuel-weiss-portrait.jpg';
+        let profileImageErrorRetries = 0;
+
+        function setHeroProfileImage(src) {
+            const targetSrc = src || DEFAULT_PROFILE_IMAGE_URL;
+            const profilePhoto = document.getElementById('profile-photo');
+            if (!profilePhoto) {
+                console.warn('⚠️ WEBSITE: profile-photo element not found');
+                return;
+            }
+            if (profilePhoto.src !== targetSrc) {
+                profilePhoto.src = targetSrc;
+            }
+            profilePhoto.style.display = 'block';
+            profilePhoto.style.visibility = 'visible';
+            profilePhoto.style.opacity = '1';
+            window.currentProfileImageSrc = targetSrc;
+        }
 
         async function loadHeroDataFromAdmin() {
             console.log('📋 WEBSITE: Loading hero data from admin panel...');
@@ -903,87 +920,27 @@
                         }
                     }
                     
-                    // PROFILBILD LADEN - GARANTIERT FUNKTIONIEREND
-                    console.log('📸 WEBSITE: Loading profile image...');
-                    
-                    let profileImage = null;
-                    
-                    // 1. PRIORITÄT: Aus AWS DynamoDB laden (für neue Browser ohne localStorage)
-                    try {
-                        if (window.awsProfileAPI && window.awsProfileAPI.loadWebsiteImages) {
-                            console.log('☁️ WEBSITE: Loading images from AWS DynamoDB...');
-                            const timeoutPromise = new Promise((_, reject) =>
-                                setTimeout(() => reject(new Error('Timeout')), 5000)
-                            );
-                            const awsImages = await Promise.race([
-                                window.awsProfileAPI.loadWebsiteImages(),
-                                timeoutPromise
-                            ]).catch(err => {
-                                console.warn('⚠️ AWS Bild-Laden timeout oder fehler:', err.message);
-                                return null;
-                            });
-                            
-                            if (awsImages && awsImages.profileImageDefault) {
-                                profileImage = awsImages.profileImageDefault;
-                                console.log('✅ WEBSITE: Profile image from AWS DynamoDB:', profileImage.substring(0, 60) + '...');
-                                // Auch in localStorage speichern als Cache
-                                localStorage.setItem('profileImageDefault', profileImage);
-                                localStorage.setItem('adminProfileImage', profileImage);
-                                localStorage.setItem('heroProfileImage', profileImage);
-                                localStorage.setItem('profileImage', profileImage);
-                            } else {
-                                console.log('ℹ️ WEBSITE: Keine AWS-Bilder gefunden, verwende localStorage Cache');
-                            }
-                        } else {
-                            console.warn('⚠️ WEBSITE: awsProfileAPI nicht verfügbar:', {
-                                exists: !!window.awsProfileAPI,
-                                hasMethod: !!(window.awsProfileAPI && window.awsProfileAPI.loadWebsiteImages)
-                            });
-                        }
-                    } catch (awsError) {
-                        console.warn('⚠️ AWS Bild-Laden fehlgeschlagen:', awsError.message);
+                    // PROFILBILD: immer aus AWS (mit Fallback)
+                    console.log('📸 WEBSITE: Applying profile image...');
+                    let profileImage = window.latestAWSProfileImage || null;
+
+                    // Falls AWS noch nicht geladen wurde, einmal versuchen
+                    if (!profileImage) {
+                        profileImage = await loadProfileImageFromAWS(true);
                     }
-                    
-                    // 2. Aus heroData laden (wenn AWS nicht verfügbar)
-                    if (!profileImage && data.profileImage) {
+
+                    // Letzte Option: heroData liefert evtl. direkte URL
+                    if (!profileImage && data.profileImage && data.profileImage.startsWith('http')) {
                         profileImage = data.profileImage;
                         console.log('✅ WEBSITE: Profile image from heroData');
                     }
-                    
-                    // 3. Aus localStorage laden - MEHRERE KEYS prüfen für Kompatibilität
+
                     if (!profileImage) {
-                        profileImage = localStorage.getItem('adminProfileImage');
-                        console.log('📸 WEBSITE: Profile image from adminProfileImage:', profileImage ? 'Found' : 'Not found');
+                        profileImage = DEFAULT_PROFILE_IMAGE_URL;
+                        console.log('ℹ️ WEBSITE: Using default profile image');
                     }
-                    
-                    if (!profileImage) {
-                        profileImage = localStorage.getItem('heroProfileImage');
-                        console.log('📸 WEBSITE: Profile image from heroProfileImage:', profileImage ? 'Found' : 'Not found');
-                    }
-                    
-                    if (!profileImage) {
-                        profileImage = localStorage.getItem('profileImage');
-                        console.log('📸 WEBSITE: Profile image from profileImage:', profileImage ? 'Found' : 'Not found');
-                    }
-                    
-                    // 3. Profilbild anzeigen
-                    if (profileImage) {
-                        const profilePhoto = document.getElementById('profile-photo');
-                        if (profilePhoto) {
-                            profilePhoto.src = profileImage;
-                            profilePhoto.style.display = 'block';
-                            console.log('✅ WEBSITE: Profile image displayed');
-                        } else {
-                            console.error('❌ WEBSITE: profile-photo element not found');
-                        }
-                    } else {
-                        console.log('ℹ️ WEBSITE: No custom image, using fallback');
-                        const profilePhoto = document.getElementById('profile-photo');
-                        if (profilePhoto) {
-                            profilePhoto.src = DEFAULT_PROFILE_IMAGE_URL;
-                            profilePhoto.style.display = 'block';
-                        }
-                    }
+
+                    setHeroProfileImage(profileImage);
                     
                     // Button-Text aktualisieren
                     if (data.buttonText) {
@@ -1160,24 +1117,10 @@
         }
         
         // Funktion um Profilbild direkt aus AWS DynamoDB zu laden (unabhängig von heroData)
-        async function loadProfileImageFromAWS() {
+        async function loadProfileImageFromAWS(silentFallback = false) {
             try {
                 if (!window.awsProfileAPI || !window.awsProfileAPI.loadWebsiteImages) {
-                    console.warn('⚠️ WEBSITE: awsProfileAPI nicht verfügbar für Profilbild-Laden');
-                    // Fallback: Versuche aus localStorage zu laden
-                    const cachedImage = localStorage.getItem('adminProfileImage') || 
-                                       localStorage.getItem('heroProfileImage') || 
-                                       localStorage.getItem('profileImage');
-                    if (cachedImage) {
-                        const profilePhoto = document.getElementById('profile-photo');
-                        if (profilePhoto) {
-                            profilePhoto.src = cachedImage;
-                            profilePhoto.style.display = 'block';
-                            console.log('✅ WEBSITE: Profile image loaded from localStorage cache');
-                            return cachedImage;
-                        }
-                    }
-                    return null;
+                    throw new Error('awsProfileAPI nicht verfügbar für Profilbild-Laden');
                 }
                 
                 console.log('☁️ WEBSITE: Loading profile image directly from AWS DynamoDB...');
@@ -1193,52 +1136,35 @@
                 });
                 
                 if (awsImages && awsImages.profileImageDefault) {
-                    const profilePhoto = document.getElementById('profile-photo');
-                    if (profilePhoto) {
-                        profilePhoto.src = awsImages.profileImageDefault;
-                        profilePhoto.style.display = 'block';
-                        console.log('✅ WEBSITE: Profile image loaded from AWS DynamoDB and displayed');
-                        // Cache in localStorage
-                        localStorage.setItem('profileImageDefault', awsImages.profileImageDefault);
-                        localStorage.setItem('adminProfileImage', awsImages.profileImageDefault);
-                        localStorage.setItem('heroProfileImage', awsImages.profileImageDefault);
-                        localStorage.setItem('profileImage', awsImages.profileImageDefault);
-                        return awsImages.profileImageDefault;
-                    }
+                    window.latestAWSProfileImage = awsImages.profileImageDefault;
+                    setHeroProfileImage(window.latestAWSProfileImage);
+                    console.log('✅ WEBSITE: Profile image loaded from AWS DynamoDB and displayed');
+                    return window.latestAWSProfileImage;
                 }
                 
-                // Fallback: Versuche aus localStorage zu laden
-                const cachedImage = localStorage.getItem('adminProfileImage') || 
-                                   localStorage.getItem('heroProfileImage') || 
-                                   localStorage.getItem('profileImage');
-                if (cachedImage) {
-                    const profilePhoto = document.getElementById('profile-photo');
-                    if (profilePhoto) {
-                        profilePhoto.src = cachedImage;
-                        profilePhoto.style.display = 'block';
-                        console.log('✅ WEBSITE: Profile image loaded from localStorage cache (AWS failed)');
-                        return cachedImage;
-                    }
-                }
-                
-                return null;
+                throw new Error('Kein Profilbild in AWS gefunden');
             } catch (error) {
                 console.warn('⚠️ WEBSITE: Failed to load profile image from AWS:', error);
-                // Fallback: Versuche aus localStorage zu laden
-                const cachedImage = localStorage.getItem('adminProfileImage') || 
-                                   localStorage.getItem('heroProfileImage') || 
-                                   localStorage.getItem('profileImage');
-                if (cachedImage) {
-                    const profilePhoto = document.getElementById('profile-photo');
-                    if (profilePhoto) {
-                        profilePhoto.src = cachedImage;
-                        profilePhoto.style.display = 'block';
-                        console.log('✅ WEBSITE: Profile image loaded from localStorage cache (after error)');
-                        return cachedImage;
-                    }
+                if (!silentFallback) {
+                    setHeroProfileImage(DEFAULT_PROFILE_IMAGE_URL);
                 }
                 return null;
             }
+        }
+        
+        // Error-Handler für Profilbild
+        async function handleProfileImageError(img) {
+            console.warn('⚠️ WEBSITE: Profile image failed to load, retrying via AWS...');
+            img.onerror = null;
+            if (profileImageErrorRetries < 1) {
+                profileImageErrorRetries++;
+                const awsImage = await loadProfileImageFromAWS(true);
+                if (awsImage) {
+                    img.src = awsImage;
+                    return;
+                }
+            }
+            setHeroProfileImage(DEFAULT_PROFILE_IMAGE_URL);
         }
         
         // Beim Laden der Seite Hero-Daten laden
@@ -1254,12 +1180,8 @@
             
             // PRIORITÄT: Profilbild SOFORT aus AWS laden (vor allem anderen)
             const awsImage = await loadProfileImageFromAWS();
-            if (awsImage) {
-                // Bild in localStorage cachen
-                localStorage.setItem('profileImageDefault', awsImage);
-                localStorage.setItem('adminProfileImage', awsImage);
-                localStorage.setItem('heroProfileImage', awsImage);
-                localStorage.setItem('profileImage', awsImage);
+            if (!awsImage) {
+                setHeroProfileImage(DEFAULT_PROFILE_IMAGE_URL);
             }
             
             // Sofort Standard-Statistiken garantieren
@@ -1275,37 +1197,9 @@
                     }, 500);
                 }
 
-                // Profilbild sofort synchronisieren und an Quelle "pinnen"
-                if (window.loadWebsiteProfileImage) {
-                    window.loadWebsiteProfileImage();
-                }
-
-                // Beobachter: verhindert Zurücksetzen auf Platzhalter-Bild
-                // NUR wenn kein AWS-Bild geladen wurde
-                if (!awsImage) {
-                    (function pinProfileImage() {
-                        const stored = localStorage.getItem('adminProfileImage')
-                            || localStorage.getItem('heroProfileImage')
-                            || localStorage.getItem('profileImage');
-                        const img = document.getElementById('profile-photo');
-                        if (!img || !stored) return;
-
-                        const desiredSrc = stored;
-                        const ensure = () => {
-                            if (img.src !== desiredSrc) {
-                                img.src = desiredSrc;
-                                img.style.display = 'block';
-                                console.log('🔒 WEBSITE: Profile image pinned to stored value');
-                            }
-                        };
-
-                        ensure();
-
-                        try {
-                            const observer = new MutationObserver(() => ensure());
-                            observer.observe(img, { attributes: true, attributeFilter: ['src'] });
-                        } catch {}
-                    })();
+                // Profilbild ggf. erneut anwenden
+                if (window.latestAWSProfileImage) {
+                    setHeroProfileImage(window.latestAWSProfileImage);
                 }
             } catch (error) {
                 console.error('❌ WEBSITE: Failed to load hero data:', error);
@@ -1320,6 +1214,7 @@
             if (e.key === 'heroData' || e.key === 'adminProfileData' || e.key === 'adminProfileImage') {
                 console.log('🔄 WEBSITE: Hero data updated, reloading...', e.key);
                 loadHeroDataFromAdmin();
+                loadProfileImageFromAWS(true);
             }
         });
         
@@ -1403,79 +1298,23 @@
         
         // Sofortige Website-Aktualisierung bei Profilbild-Änderungen
         function updateWebsiteProfileImage() {
-            let profileImage = null;
-            
-            // Prüfe mehrere Quellen
-            try {
-            const heroData = localStorage.getItem('heroData');
-            if (heroData) {
-                    const data = JSON.parse(heroData);
-                    if (data.profileImage) {
-                        profileImage = data.profileImage;
-                    }
-                }
-            } catch (error) {
-                console.error('❌ WEBSITE: Error parsing heroData:', error);
-            }
-            
-            // Falls nicht in heroData, andere Keys prüfen
-            if (!profileImage) {
-                profileImage = localStorage.getItem('adminProfileImage');
-            }
-            if (!profileImage) {
-                profileImage = localStorage.getItem('heroProfileImage');
-            }
-            if (!profileImage) {
-                profileImage = localStorage.getItem('profileImage');
-            }
-            
-            if (profileImage) {
-                        const profilePhoto = document.getElementById('profile-photo');
-                        if (profilePhoto) {
-                    profilePhoto.src = profileImage;
-                            profilePhoto.style.display = 'block';
-                            console.log('🔄 WEBSITE: Profile image updated from localStorage');
-                }
+            if (window.latestAWSProfileImage) {
+                setHeroProfileImage(window.latestAWSProfileImage);
             }
         }
         
-        // Profilbild-Updates alle 3 Sekunden prüfen
-        // Live-Update für Profilbild - MEHRERE KEYS prüfen
         function updateProfileImageLive() {
-            let storedImage = localStorage.getItem('adminProfileImage');
-            if (!storedImage) {
-                storedImage = localStorage.getItem('heroProfileImage');
-            }
-            if (!storedImage) {
-                storedImage = localStorage.getItem('profileImage');
-            }
-            if (!storedImage) {
-                // Auch heroData prüfen
-                try {
-                    const heroData = localStorage.getItem('heroData');
-                    if (heroData) {
-                        const data = JSON.parse(heroData);
-                        if (data.profileImage) {
-                            storedImage = data.profileImage;
-                        }
-                    }
-                } catch (e) {
-                    // Ignorieren
+            if (window.latestAWSProfileImage) {
+                if (window.currentProfileImageSrc !== window.latestAWSProfileImage) {
+                    setHeroProfileImage(window.latestAWSProfileImage);
                 }
-            }
-            
-            if (storedImage) {
-                const profilePhoto = document.getElementById('profile-photo');
-                if (profilePhoto && profilePhoto.src !== storedImage) {
-                    profilePhoto.src = storedImage;
-                    profilePhoto.style.display = 'block';
-                    console.log('🔄 WEBSITE: Profile image updated live');
-                }
+            } else {
+                loadProfileImageFromAWS(true);
             }
         }
         
         // Polling für Live-Updates
-        setInterval(updateProfileImageLive, 2000);
+        setInterval(updateProfileImageLive, 5000);
         
         // Globale Funktionen exportieren für Admin-Panel Zugriff
         window.updateProfileImageLive = updateProfileImageLive;
@@ -1861,4 +1700,5 @@
     </script>
 
 </body>
+</html>
 </html>
