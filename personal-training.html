@@ -26,7 +26,42 @@
                 <a href="index.html#about" class="nav-link">Über mich</a>
                 <a href="index.html#services" class="nav-link">Services</a>
                 <a href="index.html#contact" class="nav-link">Kontakt</a>
-        </div>
+                <!-- Auth Buttons -->
+                <div class="auth-section">
+                    <div class="nav-user" id="navUser">
+                        <button id="realAuthButton" class="nav-login-btn">
+                            <i class="fas fa-user"></i>
+                            <span>Anmelden</span>
+                        </button>
+                        <div class="user-dropdown" id="userDropdown" style="display: none;">
+                            <div class="user-dropdown-header">
+                                <div class="user-avatar-small">
+                                    <img id="userAvatarImg" src="manuel-weiss-portrait.jpg" alt="User" class="user-avatar-img">
+                                </div>
+                                <div class="user-info-small">
+                                    <div class="user-name-small" id="userName">Benutzer</div>
+                                    <div class="user-email-small" id="userEmail"></div>
+                                </div>
+                            </div>
+                            <div class="user-dropdown-content">
+                                <a href="#" class="user-dropdown-item" onclick="window.location.href='user-profile.html#personal'; return false;">
+                                    <i class="fas fa-user-circle"></i>
+                                    <span>Profil</span>
+                                </a>
+                                <a href="#" class="user-dropdown-item" onclick="window.location.href='personal-training-dashboard.html'; return false;">
+                                    <i class="fas fa-chart-line"></i>
+                                    <span>Trainings-Dashboard</span>
+                                </a>
+                                <div class="user-dropdown-divider"></div>
+                                <a href="#" class="user-dropdown-item logout" onclick="window.realUserAuth?.logout(); return false;">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    <span>Abmelden</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
     </nav>
 
     <!-- Hero Section -->
@@ -43,10 +78,14 @@
                         <span class="stat-number">500+</span>
                         <span class="stat-label">Übungen</span>
                     </div>
+                    <div class="stat">
                         <span class="stat-number">50+</span>
                         <span class="stat-label">Trainingspläne</span>
+                    </div>
+                    <div class="stat">
                         <span class="stat-number">100%</span>
                         <span class="stat-label">Personalisierung</span>
+                    </div>
                 </div>
     </section>
     <!-- Training Planner Section -->
@@ -439,26 +478,70 @@
             <p>&copy; 2024 Manuel Weiss. Alle Rechte vorbehalten.</p>
     </footer>
     <!-- Scripts -->
+    <script>
+        // AWS Config
+        window.AWS_CONFIG = {
+            userPoolId: 'eu-central-1_8gP4gLK9r',
+            clientId: '7kc5tt6a23fgh53d60vkefm812',
+            region: 'eu-central-1',
+            apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod',
+            dynamoDB: {
+                tableName: 'mawps-user-profiles',
+                region: 'eu-central-1'
+            }
+        };
+    </script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="js/aws-profile-api.js"></script>
+    <script src="js/real-user-auth-system.js"></script>
+    <script src="js/auth-required-action.js"></script>
     <script src="js/personal-training.js"></script>
-    <!-- Auth Modals Container -->
-    <div id="authModalsContainer"></div>
-</body>
-</html>
     
     <script>
-        // Load auth modals
-        async function loadAuthModals() {
-            try {
-                const response = await fetch('components/unified-auth-modals.html');
-                const html = await response.text();
-                document.getElementById('authModalsContainer').innerHTML = html;
-            } catch (error) {
-                console.error('Error loading auth modals:', error);
-            }
-        }
-        
-        // Initialize on page load
+        // Auth-Integration für "Weiter"-Button
         document.addEventListener('DOMContentLoaded', () => {
-            loadAuthModals();
+            const nextBtn = document.getElementById('next-step');
+            if (nextBtn) {
+                nextBtn.addEventListener('click', (e) => {
+                    // Prüfe ob Benutzer angemeldet ist
+                    if (!window.realUserAuth || !window.realUserAuth.isLoggedIn()) {
+                        e.preventDefault();
+                        // Zeige Login-Prompt
+                        if (window.authRequiredAction) {
+                            window.authRequiredAction.showLoginPrompt(() => {
+                                // Nach erfolgreichem Login, weiter zum nächsten Schritt
+                                if (window.trainingPlanner) {
+                                    window.trainingPlanner.nextStep();
+                                }
+                            });
+                        } else {
+                            // Fallback: Direkt Login-Modal öffnen
+                            if (window.realUserAuth && window.realUserAuth.showLoginModal) {
+                                window.realUserAuth.showLoginModal();
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // Nach erfolgreichem Login: Weiterleitung zum Dashboard
+            if (window.realUserAuth) {
+                window.realUserAuth.onAuthStateChange((isLoggedIn) => {
+                    if (isLoggedIn) {
+                        // Prüfe ob ein Trainingsplan generiert wurde
+                        const generatedPlan = localStorage.getItem('generatedTrainingPlan');
+                        if (generatedPlan) {
+                            // Speichere Plan für angemeldeten Benutzer
+                            const plan = JSON.parse(generatedPlan);
+                            if (window.trainingDashboard) {
+                                window.trainingDashboard.trainingData.currentPlan = plan;
+                                window.trainingDashboard.saveTrainingData();
+                            }
+                        }
+                    }
+                });
+            }
         });
     </script>
+</body>
+</html>

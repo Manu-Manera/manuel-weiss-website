@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trainings-Dashboard | Manuel Weiss</title>
+    <meta name="description" content="Dein persönliches Trainings-Dashboard mit Fortschritts-Tracking und Trainingsplan-Übersicht.">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/personal-training.css">
+    <link rel="stylesheet" href="css/unified-auth-system.css">
+    
+    <style>
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .dashboard-header {
+            margin-bottom: 2rem;
+        }
+        
+        .dashboard-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+        
+        .dashboard-header p {
+            color: #64748b;
+            font-size: 1.125rem;
+        }
+        
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+        }
+        
+        .stat-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+        
+        .stat-card-icon.primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .stat-card-icon.success { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+        .stat-card-icon.warning { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+        .stat-card-icon.info { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); }
+        
+        .stat-card-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+        }
+        
+        .stat-card-label {
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+        
+        .stat-card-change {
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+        
+        .stat-card-change.positive { color: #10b981; }
+        .stat-card-change.negative { color: #ef4444; }
+        
+        .dashboard-sections {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .dashboard-section {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+        }
+        
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .training-plan-overview {
+            margin-bottom: 1.5rem;
+        }
+        
+        .plan-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            padding: 1.5rem;
+            color: white;
+            margin-bottom: 1rem;
+        }
+        
+        .plan-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+        
+        .plan-card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .plan-card-meta {
+            font-size: 0.875rem;
+            opacity: 0.9;
+        }
+        
+        .plan-card-stats {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+        
+        .plan-stat {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .plan-stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .plan-stat-label {
+            font-size: 0.75rem;
+            opacity: 0.8;
+        }
+        
+        .recent-workouts {
+            margin-top: 1.5rem;
+        }
+        
+        .workout-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .workout-item:last-child {
+            border-bottom: none;
+        }
+        
+        .workout-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .workout-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        
+        .workout-details h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+        }
+        
+        .workout-details p {
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+        
+        .workout-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .workout-status.completed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .workout-status.pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .exercise-progress {
+            margin-top: 1.5rem;
+        }
+        
+        .exercise-item {
+            margin-bottom: 1rem;
+        }
+        
+        .exercise-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .exercise-name {
+            font-weight: 600;
+            color: #1e293b;
+        }
+        
+        .exercise-progress-bar {
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+        
+        .exercise-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        
+        .dashboard-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+        
+        .btn-secondary:hover {
+            background: #667eea;
+            color: white;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #64748b;
+        }
+        
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+        
+        .empty-state h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #1e293b;
+        }
+        
+        .empty-state p {
+            margin-bottom: 1.5rem;
+        }
+        
+        @media (max-width: 1024px) {
+            .dashboard-sections {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="index.html">Manuel Weiss</a>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="personal-training.html" class="nav-link">Trainingsplan erstellen</a>
+                <a href="personal-training-dashboard.html" class="nav-link active">Dashboard</a>
+                <!-- Auth Buttons -->
+                <div class="auth-section">
+                    <div class="nav-user" id="navUser">
+                        <button id="realAuthButton" class="nav-login-btn">
+                            <i class="fas fa-user"></i>
+                            <span>Anmelden</span>
+                        </button>
+                        <div class="user-dropdown" id="userDropdown" style="display: none;">
+                            <div class="user-dropdown-header">
+                                <div class="user-avatar-small">
+                                    <img id="userAvatarImg" src="manuel-weiss-portrait.jpg" alt="User" class="user-avatar-img">
+                                </div>
+                                <div class="user-info-small">
+                                    <div class="user-name-small" id="userName">Benutzer</div>
+                                    <div class="user-email-small" id="userEmail"></div>
+                                </div>
+                            </div>
+                            <div class="user-dropdown-content">
+                                <a href="#" class="user-dropdown-item" onclick="window.location.href='user-profile.html#personal'; return false;">
+                                    <i class="fas fa-user-circle"></i>
+                                    <span>Profil</span>
+                                </a>
+                                <a href="#" class="user-dropdown-item" onclick="window.location.href='personal-training-dashboard.html'; return false;">
+                                    <i class="fas fa-chart-line"></i>
+                                    <span>Trainings-Dashboard</span>
+                                </a>
+                                <div class="user-dropdown-divider"></div>
+                                <a href="#" class="user-dropdown-item logout" onclick="window.realUserAuth?.logout(); return false;">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    <span>Abmelden</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dashboard Container -->
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <h1>🏋️ Trainings-Dashboard</h1>
+            <p>Übersicht über deine Trainingsfortschritte und Statistiken</p>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="dashboard-stats">
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div class="stat-card-icon primary">
+                        <i class="fas fa-dumbbell"></i>
+                    </div>
+                </div>
+                <div class="stat-card-value" id="total-workouts">0</div>
+                <div class="stat-card-label">Trainings gesamt</div>
+                <div class="stat-card-change positive" id="workouts-change">+0 diese Woche</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div class="stat-card-icon success">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                </div>
+                <div class="stat-card-value" id="workouts-this-week">0</div>
+                <div class="stat-card-label">Diese Woche</div>
+                <div class="stat-card-change" id="week-progress">0% des Ziels</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div class="stat-card-icon warning">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                </div>
+                <div class="stat-card-value" id="last-workout">-</div>
+                <div class="stat-card-label">Letztes Training</div>
+                <div class="stat-card-change" id="days-since">Vor 0 Tagen</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-card-header">
+                    <div class="stat-card-icon info">
+                        <i class="fas fa-fire"></i>
+                    </div>
+                </div>
+                <div class="stat-card-value" id="streak">0</div>
+                <div class="stat-card-label">Tage in Folge</div>
+                <div class="stat-card-change positive" id="streak-status">🔥 Aktive Serie</div>
+            </div>
+        </div>
+
+        <!-- Main Dashboard Sections -->
+        <div class="dashboard-sections">
+            <!-- Training Plan Overview -->
+            <div class="dashboard-section">
+                <div class="section-title">
+                    <i class="fas fa-clipboard-list"></i>
+                    Aktueller Trainingsplan
+                </div>
+                <div id="training-plan-container">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📋</div>
+                        <h3>Noch kein Trainingsplan</h3>
+                        <p>Erstelle deinen ersten personalisierten Trainingsplan</p>
+                        <a href="personal-training.html" class="btn btn-primary">
+                            <i class="fas fa-plus"></i>
+                            Trainingsplan erstellen
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Workouts -->
+            <div class="dashboard-section">
+                <div class="section-title">
+                    <i class="fas fa-history"></i>
+                    Letzte Trainings
+                </div>
+                <div id="recent-workouts-container">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">💪</div>
+                        <h3>Noch keine Trainings</h3>
+                        <p>Beginne mit deinem ersten Training</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exercise Progress -->
+        <div class="dashboard-section">
+            <div class="section-title">
+                <i class="fas fa-chart-line"></i>
+                Übungsfortschritt
+            </div>
+            <div id="exercise-progress-container">
+                <div class="empty-state">
+                    <div class="empty-state-icon">📊</div>
+                    <h3>Noch keine Daten</h3>
+                    <p>Führe Trainings durch, um deinen Fortschritt zu sehen</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="dashboard-actions">
+            <a href="personal-training.html" class="btn btn-primary">
+                <i class="fas fa-plus"></i>
+                Neuen Trainingsplan erstellen
+            </a>
+            <button class="btn btn-secondary" onclick="logWorkout()">
+                <i class="fas fa-check"></i>
+                Training abschließen
+            </button>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // AWS Config
+        window.AWS_CONFIG = {
+            userPoolId: 'eu-central-1_8gP4gLK9r',
+            clientId: '7kc5tt6a23fgh53d60vkefm812',
+            region: 'eu-central-1',
+            apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod',
+            dynamoDB: {
+                tableName: 'mawps-user-profiles',
+                region: 'eu-central-1'
+            }
+        };
+    </script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="js/aws-profile-api.js"></script>
+    <script src="js/real-user-auth-system.js"></script>
+    <script src="js/training-dashboard.js"></script>
+</body>
+</html>
+
