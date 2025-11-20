@@ -508,6 +508,47 @@ a:hover {
     min-width: 0;
 }
 
+.hero-about-visual {
+    align-items: center;
+    gap: var(--spacing-xl);
+}
+
+.hero-about-image {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 1.75rem;
+    padding: var(--spacing-md);
+    box-shadow: 0 30px 55px rgba(15, 23, 42, 0.25);
+    backdrop-filter: blur(12px);
+}
+
+.hero-about-image .profile-image {
+    width: 320px;
+    height: 320px;
+    border-radius: 1.5rem;
+    box-shadow: none;
+    border: none;
+    backdrop-filter: none;
+}
+
+.hero-about-stats {
+    width: 100%;
+    max-width: 520px;
+}
+
+.hero-about-stats .stat-card {
+    background: rgba(255, 255, 255, 0.95);
+    border: none;
+    box-shadow: 0 25px 50px rgba(15, 23, 42, 0.12);
+}
+
+.hero-about-stats .stat-number {
+    color: #4f46e5;
+}
+
+.hero-about-stats .stat-label {
+    color: #475569;
+}
+
 @keyframes heroVisualFade {
     0% { opacity: 0; transform: translateX(30px); }
     100% { opacity: 1; transform: translateX(0); }
@@ -1844,6 +1885,19 @@ a:hover {
     .hero-container {
         grid-template-columns: 1fr;
         text-align: center;
+    }
+    
+    .hero-about-image {
+        padding: var(--spacing-sm);
+    }
+    
+    .hero-about-image .profile-image {
+        width: 260px;
+        height: 260px;
+    }
+    
+    .hero-about-stats {
+        max-width: 100%;
     }
     
     .about-content {
