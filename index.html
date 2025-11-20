@@ -119,22 +119,26 @@
                     <a href="#contact" class="btn btn-outline" data-de="Kontakt aufnehmen" data-en="Get in Touch">Kontakt aufnehmen</a>
                 </div>
             </div>
-            <div class="hero-visual">
-                <div class="hero-image">
-                    <img src="manuel-weiss-portrait.jpg" alt="Manuel Weiss" class="profile-image" id="profile-photo" onerror="handleProfileImageError(this);">
+            <div class="hero-visual hero-about-visual">
+                <div class="about-image hero-about-image">
+                    <img src="manuel-weiss-portrait.jpg"
+                         alt="Manuel Weiss"
+                         class="profile-image dynamic-profile-image"
+                         id="profile-photo"
+                         onerror="handleProfileImageError(this);">
                 </div>
-                <div class="hero-stats">
-                    <div class="stat-item">
-                        <span class="stat-number" id="stat1-number">6+</span>
-                        <span class="stat-label" id="stat1-label">JAHRE IT PROJEKT ERFAHRUNG</span>
+                <div class="about-stats hero-about-stats">
+                    <div class="stat-card">
+                        <div class="stat-number" id="stat1-number">6+</div>
+                        <div class="stat-label" id="stat1-label">JAHRE IT PROJEKT ERFAHRUNG</div>
                     </div>
-                    <div class="stat-item">
-                        <span class="stat-number" id="stat2-number">60+</span>
-                        <span class="stat-label" id="stat2-label">ERFOLGREICH IMPLEMENTIERTE PROJEKTE</span>
+                    <div class="stat-card">
+                        <div class="stat-number" id="stat2-number">60+</div>
+                        <div class="stat-label" id="stat2-label">ERFOLGREICH IMPLEMENTIERTE PROJEKTE</div>
                     </div>
-                    <div class="stat-item">
-                        <span class="stat-number" id="stat3-number">100%</span>
-                        <span class="stat-label" id="stat3-label">LERNKURVENEFFEKT ;)</span>
+                    <div class="stat-card">
+                        <div class="stat-number" id="stat3-number">100%</div>
+                        <div class="stat-label" id="stat3-label">LERNKURVENEFFEKT ;)</div>
                     </div>
                 </div>
             </div>
@@ -371,7 +375,7 @@
                 </div>
                 <div class="about-visual">
                     <div class="about-image">
-                        <img src="manuel-weiss-portrait.jpg" alt="Manuel Weiss" class="profile-image">
+                        <img src="manuel-weiss-portrait.jpg" alt="Manuel Weiss" class="profile-image dynamic-profile-image" onerror="handleProfileImageError(this);">
                     </div>
                     <div class="about-stats">
                         <div class="stat-card">
@@ -819,20 +823,26 @@
         // Hero-Daten aus Admin-Panel laden und anwenden
         const DEFAULT_PROFILE_IMAGE_URL = 'manuel-weiss-portrait.jpg';
         let profileImageErrorRetries = 0;
+        window.latestAWSProfileImage = window.latestAWSProfileImage || null;
+        window.currentProfileImageSrc = window.currentProfileImageSrc || null;
 
         function setHeroProfileImage(src) {
             const targetSrc = src || DEFAULT_PROFILE_IMAGE_URL;
-            const profilePhoto = document.getElementById('profile-photo');
-            if (!profilePhoto) {
-                console.warn('⚠️ WEBSITE: profile-photo element not found');
+            const profileImages = document.querySelectorAll('.dynamic-profile-image');
+            if (!profileImages.length) {
+                console.warn('⚠️ WEBSITE: Keine dynamischen Profilbilder gefunden.');
                 return;
             }
-            if (profilePhoto.src !== targetSrc) {
-                profilePhoto.src = targetSrc;
-            }
-            profilePhoto.style.display = 'block';
-            profilePhoto.style.visibility = 'visible';
-            profilePhoto.style.opacity = '1';
+            
+            profileImages.forEach(img => {
+                if (img.dataset.loadedSrc !== targetSrc) {
+                    img.src = targetSrc;
+                    img.dataset.loadedSrc = targetSrc;
+                }
+                img.style.display = 'block';
+                img.style.visibility = 'visible';
+                img.style.opacity = '1';
+            });
             window.currentProfileImageSrc = targetSrc;
         }
 
@@ -1003,8 +1013,8 @@
                     });
                     
                     if (data.stat1Number && data.stat1Label) {
-                        const stat1Number = document.querySelector('.hero-stats .stat-item:nth-child(1) .stat-number');
-                        const stat1Label = document.querySelector('.hero-stats .stat-item:nth-child(1) .stat-label');
+                        const stat1Number = document.querySelector('.hero-about-stats .stat-card:nth-child(1) .stat-number');
+                        const stat1Label = document.querySelector('.hero-about-stats .stat-card:nth-child(1) .stat-label');
                         if (stat1Number) {
                             stat1Number.textContent = data.stat1Number;
                             console.log('✅ WEBSITE: Stat1 number updated to:', data.stat1Number);
@@ -1016,8 +1026,8 @@
                     }
                     
                     if (data.stat2Number && data.stat2Label) {
-                        const stat2Number = document.querySelector('.hero-stats .stat-item:nth-child(2) .stat-number');
-                        const stat2Label = document.querySelector('.hero-stats .stat-item:nth-child(2) .stat-label');
+                        const stat2Number = document.querySelector('.hero-about-stats .stat-card:nth-child(2) .stat-number');
+                        const stat2Label = document.querySelector('.hero-about-stats .stat-card:nth-child(2) .stat-label');
                         if (stat2Number) {
                             stat2Number.textContent = data.stat2Number;
                             console.log('✅ WEBSITE: Stat2 number updated to:', data.stat2Number);
@@ -1029,8 +1039,8 @@
                     }
                     
                     if (data.stat3Number && data.stat3Label) {
-                        const stat3Number = document.querySelector('.hero-stats .stat-item:nth-child(3) .stat-number');
-                        const stat3Label = document.querySelector('.hero-stats .stat-item:nth-child(3) .stat-label');
+                        const stat3Number = document.querySelector('.hero-about-stats .stat-card:nth-child(3) .stat-number');
+                        const stat3Label = document.querySelector('.hero-about-stats .stat-card:nth-child(3) .stat-label');
                         if (stat3Number) {
                             stat3Number.textContent = data.stat3Number;
                             console.log('✅ WEBSITE: Stat3 number updated to:', data.stat3Number);
@@ -1241,29 +1251,29 @@
                     
                     // Statistiken sofort aktualisieren
                     if (data.stat1Number) {
-                        const stat1Number = document.querySelector('.hero-stats .stat-item:nth-child(1) .stat-number');
+                        const stat1Number = document.querySelector('.hero-about-stats .stat-card:nth-child(1) .stat-number');
                         if (stat1Number) stat1Number.textContent = data.stat1Number;
                     }
                     if (data.stat1Label) {
-                        const stat1Label = document.querySelector('.hero-stats .stat-item:nth-child(1) .stat-label');
+                        const stat1Label = document.querySelector('.hero-about-stats .stat-card:nth-child(1) .stat-label');
                         if (stat1Label) stat1Label.textContent = data.stat1Label;
                     }
                     
                     if (data.stat2Number) {
-                        const stat2Number = document.querySelector('.hero-stats .stat-item:nth-child(2) .stat-number');
+                        const stat2Number = document.querySelector('.hero-about-stats .stat-card:nth-child(2) .stat-number');
                         if (stat2Number) stat2Number.textContent = data.stat2Number;
                     }
                     if (data.stat2Label) {
-                        const stat2Label = document.querySelector('.hero-stats .stat-item:nth-child(2) .stat-label');
+                        const stat2Label = document.querySelector('.hero-about-stats .stat-card:nth-child(2) .stat-label');
                         if (stat2Label) stat2Label.textContent = data.stat2Label;
                     }
                     
                     if (data.stat3Number) {
-                        const stat3Number = document.querySelector('.hero-stats .stat-item:nth-child(3) .stat-number');
+                        const stat3Number = document.querySelector('.hero-about-stats .stat-card:nth-child(3) .stat-number');
                         if (stat3Number) stat3Number.textContent = data.stat3Number;
                     }
                     if (data.stat3Label) {
-                        const stat3Label = document.querySelector('.hero-stats .stat-item:nth-child(3) .stat-label');
+                        const stat3Label = document.querySelector('.hero-about-stats .stat-card:nth-child(3) .stat-label');
                         if (stat3Label) stat3Label.textContent = data.stat3Label;
                     }
                 } catch (error) {
@@ -1278,12 +1288,12 @@
         
         // Funktion um Standard-Statistiken zu garantieren
         function ensureDefaultStatistics() {
-            const stat1Number = document.querySelector('.hero-stats .stat-item:nth-child(1) .stat-number');
-            const stat1Label = document.querySelector('.hero-stats .stat-item:nth-child(1) .stat-label');
-            const stat2Number = document.querySelector('.hero-stats .stat-item:nth-child(2) .stat-number');
-            const stat2Label = document.querySelector('.hero-stats .stat-item:nth-child(2) .stat-label');
-            const stat3Number = document.querySelector('.hero-stats .stat-item:nth-child(3) .stat-number');
-            const stat3Label = document.querySelector('.hero-stats .stat-item:nth-child(3) .stat-label');
+            const stat1Number = document.querySelector('.hero-about-stats .stat-card:nth-child(1) .stat-number');
+            const stat1Label = document.querySelector('.hero-about-stats .stat-card:nth-child(1) .stat-label');
+            const stat2Number = document.querySelector('.hero-about-stats .stat-card:nth-child(2) .stat-number');
+            const stat2Label = document.querySelector('.hero-about-stats .stat-card:nth-child(2) .stat-label');
+            const stat3Number = document.querySelector('.hero-about-stats .stat-card:nth-child(3) .stat-number');
+            const stat3Label = document.querySelector('.hero-about-stats .stat-card:nth-child(3) .stat-label');
             
             if (stat1Number && !stat1Number.textContent) stat1Number.textContent = '6+';
             if (stat1Label && !stat1Label.textContent) stat1Label.textContent = 'JAHRE IT PROJEKT ERFAHRUNG';
