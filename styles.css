@@ -225,13 +225,18 @@ a:hover {
 .nav-brand {
     display: flex;
     align-items: center;
-    gap: var(--spacing-sm);
+    gap: var(--spacing-md);
+    margin-right: var(--spacing-2xl);
+    flex-shrink: 0;
 }
 
 .nav-logo {
-    width: 40px;
-    height: 40px;
+    width: 48px;
+    height: 48px;
     border-radius: var(--radius-lg);
+    object-fit: cover;
+    object-position: center;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1);
 }
 
 .nav-profile-mini {
@@ -247,15 +252,48 @@ a:hover {
 }
 
 .nav-name {
-    font-size: var(--font-size-lg);
+    font-size: var(--font-size-xl);
     font-weight: 600;
     color: var(--gray-900);
+    letter-spacing: 0.01em;
 }
 
 .nav-menu {
     display: flex;
     align-items: center;
     gap: var(--spacing-2xl);
+    flex-wrap: wrap;
+}
+
+@media (max-width: 1024px) {
+    .nav-container {
+        flex-wrap: wrap;
+        row-gap: var(--spacing-md);
+    }
+
+    .nav-brand {
+        margin-right: 0;
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .nav-menu {
+        width: 100%;
+        justify-content: space-between;
+        gap: var(--spacing-lg);
+    }
+}
+
+@media (max-width: 640px) {
+    .nav-menu {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-sm);
+    }
+
+    .nav-brand {
+        justify-content: space-between;
+    }
 }
 
 .nav-link {
@@ -490,6 +528,9 @@ a:hover {
     object-position: center top !important;
     aspect-ratio: 1/1;
     max-width: 300px;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
     max-height: 300px;
     border: 2px solid rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(10px);
@@ -505,12 +546,12 @@ a:hover {
 
 .hero-stats {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: var(--spacing-md);
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
     width: 100%;
-    max-width: 600px;
+    max-width: 900px;
     min-width: 0;
-    padding: var(--spacing-md);
+    padding: 1.5rem;
     box-sizing: border-box;
     margin: var(--spacing-lg) auto 0;
     background: rgba(255, 255, 255, 0.05);
@@ -520,8 +561,8 @@ a:hover {
 
 .stat-item {
     text-align: center;
-    padding: var(--spacing-lg) var(--spacing-md);
-    min-width: 0;
+    padding: 1.5rem 1rem;
+    min-width: 200px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -531,7 +572,7 @@ a:hover {
     border-radius: var(--radius-lg);
     border: 1px solid rgba(255, 255, 255, 0.15);
     box-shadow: 0 10px 25px rgba(0,0,0,0.25);
-    min-height: 140px;
+    min-height: 160px;
 }
 
 .stat-item:not(:last-child)::after {
@@ -543,25 +584,26 @@ a:hover {
     font-size: calc(var(--font-size-3xl) * 0.9);
     font-weight: 700;
     color: white;
-    margin-bottom: var(--spacing-sm);
+    margin-bottom: 0.75rem;
     line-height: 1.1;
 }
 
 .stat-label {
-    font-size: var(--font-size-sm);
+    font-size: 0.95rem;
     color: rgba(255,255,255,0.95);
-    line-height: 1.5;
+    line-height: 1.6;
     font-weight: 500;
-    letter-spacing: 0.01em;
+    letter-spacing: 0.02em;
     margin: 0;
     word-wrap: break-word;
     word-break: normal;
     hyphens: auto;
-    padding: 0 var(--spacing-xs);
+    padding: 0 0.5rem;
     width: 100%;
     white-space: normal;
     overflow: visible;
     text-overflow: clip;
+    max-width: 100%;
 }
 
 /* Bessere Lesbarkeit: keine Silbentrennung im Hero-Subtext */
@@ -1855,20 +1897,34 @@ a:hover {
     }
     
     .hero-stats {
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        grid-template-columns: repeat(3, 1fr);
         max-width: 100%;
         margin: var(--spacing-lg) 0 0;
-        gap: var(--spacing-md);
+        gap: 1rem;
+        padding: 1rem;
     }
     
     .stat-item {
-        min-width: auto;
-        min-height: 130px;
-        padding: var(--spacing-md);
+        min-width: 180px;
+        min-height: 150px;
+        padding: 1.25rem 0.75rem;
     }
     
     .stat-label {
-        font-size: var(--font-size-sm);
+        font-size: 0.875rem;
+        line-height: 1.5;
+    }
+    
+    @media (max-width: 768px) {
+        .hero-stats {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+        
+        .stat-item {
+            min-width: 100%;
+            min-height: 120px;
+        }
     }
     
     .services-grid {
