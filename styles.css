@@ -581,6 +581,8 @@ a:hover {
     padding: var(--spacing-md);
     box-shadow: 0 30px 55px rgba(15, 23, 42, 0.25);
     backdrop-filter: blur(12px);
+    position: relative;
+    z-index: 1;
 }
 
 .hero-about-image .profile-image {
@@ -590,6 +592,11 @@ a:hover {
     box-shadow: none;
     border: none;
     backdrop-filter: none;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: relative;
+    z-index: 2;
 }
 
 .hero-about-stats {
@@ -598,12 +605,12 @@ a:hover {
 }
 
 .hero-about-stats .stat-card .stat-number {
-    color: var(--white) !important;
-    text-shadow: 0 5px 12px rgba(15, 23, 42, 0.25);
+    color: #667eea !important;
+    text-shadow: 0 5px 12px rgba(102, 126, 234, 0.3);
 }
 
 .hero-about-stats .stat-card .stat-label {
-    color: rgba(255, 255, 255, 0.95) !important;
+    color: #667eea !important;
     text-transform: uppercase;
     letter-spacing: 0.08em;
 }
@@ -1112,13 +1119,13 @@ a:hover {
 
 /* Services Section Text Colors */
 .services .section-title {
-    color: white;
+    color: var(--gray-900);
     position: relative;
     z-index: 1;
 }
 
 .services .section-subtitle {
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--gray-600);
     position: relative;
     z-index: 1;
 }
@@ -1126,12 +1133,12 @@ a:hover {
 /* Services Section */
 .services {
     padding: var(--spacing-3xl) 0;
-    background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 50%, #7c3aed 100%);
+    background: var(--white);
     position: relative;
     overflow: hidden;
 }
 
-/* Animierte Sterne für Services Section */
+/* Animierte Sterne für Services Section - nur auf dunklem Hintergrund */
 .services::after {
     content: '';
     position: absolute;
@@ -1139,8 +1146,8 @@ a:hover {
     left: 0;
     right: 0;
     bottom: 0;
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><defs><pattern id="stars" width="400" height="400" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1.5" fill="rgba(255,255,255,0.8)"/><circle cx="150" cy="80" r="1" fill="rgba(255,255,255,0.6)"/><circle cx="250" cy="120" r="2" fill="rgba(255,255,255,0.9)"/><circle cx="350" cy="60" r="1.2" fill="rgba(255,255,255,0.7)"/><circle cx="80" cy="180" r="0.8" fill="rgba(255,255,255,0.5)"/><circle cx="200" cy="200" r="1.8" fill="rgba(255,255,255,0.8)"/><circle cx="320" cy="180" r="1.1" fill="rgba(255,255,255,0.6)"/><circle cx="120" cy="280" r="1.3" fill="rgba(255,255,255,0.7)"/><circle cx="280" cy="320" r="0.9" fill="rgba(255,255,255,0.5)"/><circle cx="360" cy="280" r="1.6" fill="rgba(255,255,255,0.8)"/><circle cx="40" cy="320" r="1.4" fill="rgba(255,255,255,0.6)"/><circle cx="180" cy="360" r="0.7" fill="rgba(255,255,255,0.4)"/><circle cx="300" cy="40" r="1.7" fill="rgba(255,255,255,0.9)"/><circle cx="60" cy="140" r="1.2" fill="rgba(255,255,255,0.6)"/><circle cx="220" cy="140" r="0.6" fill="rgba(255,255,255,0.3)"/><circle cx="340" cy="220" r="1.5" fill="rgba(255,255,255,0.7)"/><circle cx="100" cy="240" r="1.1" fill="rgba(255,255,255,0.5)"/><circle cx="240" cy="260" r="0.8" fill="rgba(255,255,255,0.4)"/><circle cx="380" cy="140" r="1.3" fill="rgba(255,255,255,0.6)"/><circle cx="20" cy="200" r="1.9" fill="rgba(255,255,255,0.8)"/><circle cx="160" cy="40" r="1.4" fill="rgba(255,255,255,0.7)"/><circle cx="260" cy="80" r="0.5" fill="rgba(255,255,255,0.3)"/><circle cx="380" cy="360" r="1.8" fill="rgba(255,255,255,0.9)"/></pattern></defs><rect width="400" height="400" fill="url(%23stars)"/></svg>');
-    opacity: 0.6;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><defs><pattern id="stars" width="400" height="400" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1.5" fill="rgba(102,126,234,0.6)"/><circle cx="150" cy="80" r="1" fill="rgba(102,126,234,0.5)"/><circle cx="250" cy="120" r="2" fill="rgba(102,126,234,0.7)"/><circle cx="350" cy="60" r="1.2" fill="rgba(102,126,234,0.6)"/><circle cx="80" cy="180" r="0.8" fill="rgba(102,126,234,0.4)"/><circle cx="200" cy="200" r="1.8" fill="rgba(102,126,234,0.6)"/><circle cx="320" cy="180" r="1.1" fill="rgba(102,126,234,0.5)"/><circle cx="120" cy="280" r="1.3" fill="rgba(102,126,234,0.6)"/><circle cx="280" cy="320" r="0.9" fill="rgba(102,126,234,0.4)"/><circle cx="360" cy="280" r="1.6" fill="rgba(102,126,234,0.6)"/><circle cx="40" cy="320" r="1.4" fill="rgba(102,126,234,0.5)"/><circle cx="180" cy="360" r="0.7" fill="rgba(102,126,234,0.3)"/><circle cx="300" cy="40" r="1.7" fill="rgba(102,126,234,0.7)"/><circle cx="60" cy="140" r="1.2" fill="rgba(102,126,234,0.5)"/><circle cx="220" cy="140" r="0.6" fill="rgba(102,126,234,0.3)"/><circle cx="340" cy="220" r="1.5" fill="rgba(102,126,234,0.6)"/><circle cx="100" cy="240" r="1.1" fill="rgba(102,126,234,0.4)"/><circle cx="240" cy="260" r="0.8" fill="rgba(102,126,234,0.3)"/><circle cx="380" cy="140" r="1.3" fill="rgba(102,126,234,0.5)"/><circle cx="20" cy="200" r="1.9" fill="rgba(102,126,234,0.6)"/><circle cx="160" cy="40" r="1.4" fill="rgba(102,126,234,0.6)"/><circle cx="260" cy="80" r="0.5" fill="rgba(102,126,234,0.3)"/><circle cx="380" cy="360" r="1.8" fill="rgba(102,126,234,0.7)"/></pattern></defs><rect width="400" height="400" fill="url(%23stars)"/></svg>');
+    opacity: 0.4;
     animation: servicesStarsTwinkle 8s ease-in-out infinite, servicesStarsFloat 15s linear infinite;
     z-index: 0;
     pointer-events: none;
@@ -1149,19 +1156,19 @@ a:hover {
 /* Animationen für die Sterne in Services */
 @keyframes servicesStarsTwinkle {
     0%, 100% { 
-        opacity: 0.3; 
+        opacity: 0.2; 
         transform: scale(1);
     }
     25% { 
-        opacity: 0.8; 
+        opacity: 0.6; 
         transform: scale(1.1);
     }
     50% { 
-        opacity: 0.4; 
+        opacity: 0.3; 
         transform: scale(0.9);
     }
     75% { 
-        opacity: 0.9; 
+        opacity: 0.7; 
         transform: scale(1.05);
     }
 }
@@ -1196,10 +1203,10 @@ a:hover {
 .services-category-title {
     font-size: var(--font-size-2xl);
     font-weight: 700;
-    color: white;
+    color: var(--gray-900);
     margin-bottom: var(--spacing-xl);
     padding-bottom: var(--spacing-md);
-    border-bottom: 3px solid rgba(255, 255, 255, 0.3);
+    border-bottom: 3px solid var(--primary);
     display: flex;
     align-items: center;
     gap: var(--spacing-md);
@@ -1208,7 +1215,7 @@ a:hover {
 }
 
 .services-category-title i {
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--primary);
     font-size: 1.5rem;
 }
 
@@ -1314,7 +1321,7 @@ a:hover {
 .service-card h3 {
     font-size: var(--font-size-xl);
     margin-bottom: var(--spacing-md);
-    color: white;
+    color: var(--gray-800);
     font-weight: 700;
     transition: color 0.3s ease;
     position: relative;
@@ -1322,7 +1329,7 @@ a:hover {
 }
 
 .service-card p {
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--gray-600);
     margin-bottom: var(--spacing-lg);
     line-height: 1.6;
     transition: color 0.3s ease;
@@ -1345,7 +1352,7 @@ a:hover {
 
 /* Services Section Features */
 .services .service-features li {
-    color: rgba(255, 255, 255, 0.85);
+    color: var(--gray-700);
     position: relative;
     z-index: 1;
 }
