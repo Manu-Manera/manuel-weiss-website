@@ -34,6 +34,12 @@
     
     if (!res.ok) {
       const errorText = await res.text();
+        // Prüfe auf Quota-Fehler
+        if (errorText && (errorText.includes('quota') || errorText.includes('Quota') || errorText.includes('exceeded'))) {
+            const quotaError = `The quota has been exceeded. ${errorText}`;
+            console.error('❌ Quota Error:', quotaError);
+            throw new Error(quotaError);
+        }
         const errorMsg = `Upload-URL-Anfrage fehlgeschlagen (${res.status}): ${errorText || res.statusText}. ` +
           `Endpoint: ${endpoint}`;
         console.error('❌ Presign Error:', errorMsg);

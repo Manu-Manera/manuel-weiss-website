@@ -263,6 +263,11 @@ class HeroAboutSection {
                 
             } catch (e) {
                 console.warn('❌ S3 Upload fehlgeschlagen, verwende Base64 Fallback:', e.message);
+                // Spezielle Behandlung für Quota-Fehler
+                if (e.message && e.message.includes('quota')) {
+                    console.warn('⚠️ Quota-Limit erreicht. Verwende Base64-Fallback.');
+                    this.toast('AWS Quota-Limit erreicht. Bild wird lokal gespeichert.', 'warning');
+                }
             }
             
             // 2) Fallback Base64 (nur wenn S3 Upload fehlgeschlagen)
