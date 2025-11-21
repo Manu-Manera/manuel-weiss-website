@@ -403,12 +403,20 @@ class AWSProfileAPI {
     async loadWebsiteImages() {
         try {
             console.log('📥 Loading website images from AWS...');
+            console.log('🌐 Current domain:', window.location.hostname);
             
-            if (!window.AWS_CONFIG?.apiBaseUrl) {
+            // Fallback: Verwende AWS_APP_CONFIG.MEDIA_API_BASE falls AWS_CONFIG nicht verfügbar
+            const apiBaseUrl = window.AWS_CONFIG?.apiBaseUrl || 
+                              window.AWS_APP_CONFIG?.MEDIA_API_BASE || 
+                              'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod';
+            
+            if (!apiBaseUrl) {
                 throw new Error('AWS API not configured');
             }
             
-            const response = await fetch(`${window.AWS_CONFIG.apiBaseUrl}/website-images/owner`, {
+            console.log('🔗 Using API Base URL:', apiBaseUrl);
+            
+            const response = await fetch(`${apiBaseUrl}/website-images/owner`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
@@ -438,5 +446,16 @@ class AWSProfileAPI {
     }
 }
 
-// Create global instance
-window.awsProfileAPI = new AWSProfileAPI();
+// Create global instance - verzögert bis AWS_CONFIG verfügbar ist
+(function initAWSProfileAPI() {
+    function createInstance() {
+        if (window.AWS_CONFIG || window.AWS_APP_CONFIG) {
+            window.awsProfileAPI = new AWSProfileAPI();
+            console.log('✅ AWS Profile API initialized');
+        } else {
+            // Retry nach 100ms
+            setTimeout(createInstance, 100);
+        }
+    }
+    createInstance();
+})();

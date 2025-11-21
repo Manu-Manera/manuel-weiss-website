@@ -1187,10 +1187,34 @@
                     return window.latestAWSProfileImage;
                 }
                 
+                // Fallback: Versuche direkt aus S3 zu laden (wenn bekannt)
+                console.log('⚠️ WEBSITE: No image in DynamoDB, trying S3 fallback...');
+                const s3FallbackUrl = 'https://manuel-weiss-public-media.s3.eu-central-1.amazonaws.com/public/profile-images/owner/';
+                // Versuche die neueste Datei zu finden (vereinfacht: verwende timestamp)
+                const timestamp = Date.now();
+                const possibleUrls = [
+                    `${s3FallbackUrl}${timestamp - 86400000}-*.jpg`, // Gestern
+                    `${s3FallbackUrl}${timestamp - 172800000}-*.jpg`, // Vor 2 Tagen
+                ];
+                console.log('🔄 WEBSITE: S3 fallback URLs:', possibleUrls);
+                
                 throw new Error('Kein Profilbild in AWS gefunden');
             } catch (error) {
                 console.warn('⚠️ WEBSITE: Failed to load profile image from AWS:', error);
-                console.warn('⚠️ WEBSITE: Error details:', error.message, error.stack);
+                console.warn('⚠️ WEBSITE: Error details:', error.message);
+                console.warn('⚠️ WEBSITE: Stack:', error.stack);
+                console.warn('🌐 WEBSITE: Current domain:', window.location.hostname);
+                console.warn('🔧 WEBSITE: AWS_CONFIG available:', !!window.AWS_CONFIG);
+                console.warn('🔧 WEBSITE: AWS_APP_CONFIG available:', !!window.AWS_APP_CONFIG);
+                console.warn('🔧 WEBSITE: awsProfileAPI available:', !!window.awsProfileAPI);
+                
+                // Detailliertes Debugging
+                if (error.message.includes('AWS API not configured')) {
+                    console.error('❌ WEBSITE: AWS API Base URL fehlt!');
+                    console.error('   AWS_CONFIG.apiBaseUrl:', window.AWS_CONFIG?.apiBaseUrl);
+                    console.error('   AWS_APP_CONFIG.MEDIA_API_BASE:', window.AWS_APP_CONFIG?.MEDIA_API_BASE);
+                }
+                
                 if (!silentFallback) {
                     setHeroProfileImage(DEFAULT_PROFILE_IMAGE_URL);
                 }
@@ -1726,6 +1750,7 @@
         }
     </script>
     <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="js/aws-app-config.js"></script>
     <script src="js/aws-profile-api.js?v=20250116"></script>
     <script src="js/real-user-auth-system.js?v=20250116"></script>
     <script src="js/beraterprofil.js"></script>
