@@ -840,6 +840,32 @@
             window.currentProfileImageSrc = targetSrc;
         }
 
+        // WICHTIG: Profilbild IMMER zuerst aus AWS laden (domain-unabhängig)
+        async function loadProfileImageFirst() {
+            console.log('🔄 WEBSITE: Loading profile image from AWS (domain-independent)...');
+            try {
+                const awsImage = await loadProfileImageFromAWS(true);
+                if (awsImage) {
+                    console.log('✅ WEBSITE: Profile image loaded from AWS successfully');
+                    return awsImage;
+                }
+            } catch (error) {
+                console.warn('⚠️ WEBSITE: AWS load failed, will try localStorage fallback:', error);
+            }
+            
+            // Fallback: localStorage (domain-spezifisch, aber besser als nichts)
+            const localImage = localStorage.getItem('heroProfileImage') || 
+                              localStorage.getItem('adminProfileImage') || 
+                              localStorage.getItem('profileImage');
+            if (localImage && !localImage.includes('manuel-weiss-photo.svg') && !localImage.includes('manuel-weiss-portrait.jpg')) {
+                console.log('📦 WEBSITE: Using localStorage fallback image');
+                setHeroProfileImage(localImage);
+                return localImage;
+            }
+            
+            return null;
+        }
+
         async function loadHeroDataFromAdmin() {
             console.log('📋 WEBSITE: Loading hero data from admin panel...');
             
@@ -1128,27 +1154,43 @@
                 }
                 
                 console.log('☁️ WEBSITE: Loading profile image directly from AWS DynamoDB...');
+                console.log('🌐 WEBSITE: Current domain:', window.location.hostname);
+                
+                // Erhöhte Timeout für langsamere Verbindungen
                 const timeoutPromise = new Promise((_, reject) =>
-                    setTimeout(() => reject(new Error('Timeout')), 5000)
+                    setTimeout(() => reject(new Error('Timeout')), 10000)
                 );
+                
                 const awsImages = await Promise.race([
                     window.awsProfileAPI.loadWebsiteImages(),
                     timeoutPromise
                 ]).catch(err => {
                     console.warn('⚠️ AWS Bild-Laden timeout oder fehler:', err.message);
+                    // Detaillierte Fehlerbehandlung
+                    if (err.message.includes('CORS') || err.message.includes('cors')) {
+                        console.error('❌ CORS-Fehler: Domain möglicherweise nicht in AWS CORS-Liste');
+                    }
+                    if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError')) {
+                        console.error('❌ Netzwerkfehler: API nicht erreichbar');
+                    }
                     return null;
                 });
                 
                 if (awsImages && awsImages.profileImageDefault) {
                     window.latestAWSProfileImage = awsImages.profileImageDefault;
                     setHeroProfileImage(window.latestAWSProfileImage);
+                    // Auch in localStorage speichern für schnelleren Zugriff (aber AWS hat Priorität)
+                    localStorage.setItem('heroProfileImage', window.latestAWSProfileImage);
+                    localStorage.setItem('adminProfileImage', window.latestAWSProfileImage);
                     console.log('✅ WEBSITE: Profile image loaded from AWS DynamoDB and displayed');
+                    console.log('📸 WEBSITE: Image URL:', window.latestAWSProfileImage);
                     return window.latestAWSProfileImage;
                 }
                 
                 throw new Error('Kein Profilbild in AWS gefunden');
             } catch (error) {
                 console.warn('⚠️ WEBSITE: Failed to load profile image from AWS:', error);
+                console.warn('⚠️ WEBSITE: Error details:', error.message, error.stack);
                 if (!silentFallback) {
                     setHeroProfileImage(DEFAULT_PROFILE_IMAGE_URL);
                 }
@@ -1171,9 +1213,38 @@
             setHeroProfileImage(DEFAULT_PROFILE_IMAGE_URL);
         }
         
+        // WICHTIG: Profilbild IMMER zuerst aus AWS laden (domain-unabhängig)
+        async function loadProfileImageFirst() {
+            console.log('🔄 WEBSITE: Loading profile image from AWS (domain-independent)...');
+            console.log('🌐 WEBSITE: Current domain:', window.location.hostname);
+            try {
+                const awsImage = await loadProfileImageFromAWS(true);
+                if (awsImage) {
+                    console.log('✅ WEBSITE: Profile image loaded from AWS successfully');
+                    return awsImage;
+                }
+            } catch (error) {
+                console.warn('⚠️ WEBSITE: AWS load failed, will try localStorage fallback:', error);
+            }
+            
+            // Fallback: localStorage (domain-spezifisch, aber besser als nichts)
+            const localImage = localStorage.getItem('heroProfileImage') || 
+                              localStorage.getItem('adminProfileImage') || 
+                              localStorage.getItem('profileImage');
+            if (localImage && !localImage.includes('manuel-weiss-photo.svg') && !localImage.includes('manuel-weiss-portrait.jpg')) {
+                console.log('📦 WEBSITE: Using localStorage fallback image');
+                setHeroProfileImage(localImage);
+                return localImage;
+            }
+            
+            return null;
+        }
+
         // Beim Laden der Seite Hero-Daten laden
         document.addEventListener('DOMContentLoaded', async function() {
             console.log('🚀 WEBSITE: Page loaded, loading hero data...');
+            // WICHTIG: Profilbild ZUERST aus AWS laden (domain-unabhängig)
+            await loadProfileImageFirst();
             
             // Warte auf awsProfileAPI falls es noch nicht geladen ist
             let retries = 0;
@@ -1183,9 +1254,14 @@
             }
             
             // PRIORITÄT: Profilbild SOFORT aus AWS laden (vor allem anderen)
+            // WICHTIG: Dies funktioniert domain-unabhängig (mawps.netlify.app und manuel-weiss.ch)
+            console.log('🌐 WEBSITE: Loading profile image from AWS (works on all domains)...');
             const awsImage = await loadProfileImageFromAWS();
             if (!awsImage) {
+                console.warn('⚠️ WEBSITE: No AWS image found, using default');
                 setHeroProfileImage(DEFAULT_PROFILE_IMAGE_URL);
+            } else {
+                console.log('✅ WEBSITE: Profile image loaded successfully from AWS');
             }
             
             // Sofort Standard-Statistiken garantieren
