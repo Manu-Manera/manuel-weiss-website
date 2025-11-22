@@ -317,6 +317,7 @@ class AdminUserManagement {
                     </button>
                 </div>
             `;
+            }
         }
     }
     
