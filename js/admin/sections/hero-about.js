@@ -290,8 +290,34 @@ class HeroAboutSection {
      */
     async handleImageUpload(event) {
         const file = event.target.files[0];
-        if (!file) return;
-        if (!this.validateImageFile(file)) return;
+        if (!file) {
+            console.warn('⚠️ Keine Datei ausgewählt');
+            return;
+        }
+        
+        console.log('📁 File selected:', file.name, file.type, `${(file.size / 1024).toFixed(2)} KB`);
+        
+        if (!this.validateImageFile(file)) {
+            console.error('❌ Datei-Validierung fehlgeschlagen');
+            return;
+        }
+        
+        // SOFORT: Base64-Konvertierung für Vorschau (parallel zum Upload)
+        let base64Preview = null;
+        try {
+            console.log('🔄 Konvertiere Bild zu Base64 für Vorschau...');
+            base64Preview = await this.fileToBase64(file);
+            console.log('✅ Base64-Konvertierung erfolgreich, Länge:', base64Preview.length);
+            
+            // SOFORT Vorschau anzeigen
+            if (!this.els.currentProfileImage) {
+                this.els.currentProfileImage = document.getElementById('current-profile-image');
+            }
+            this.updateCurrentProfileImage(base64Preview);
+            console.log('✅ Vorschau-Bild angezeigt');
+        } catch (previewError) {
+            console.error('❌ Fehler bei Base64-Konvertierung:', previewError);
+        }
         
         try {
             this.toast('Profilbild wird hochgeladen...', 'info');
@@ -339,6 +365,7 @@ class HeroAboutSection {
                 
             } catch (e) {
                 console.warn('❌ S3 Upload fehlgeschlagen, verwende Base64 Fallback:', e.message);
+                console.warn('   Fehler-Details:', e);
                 // Spezielle Behandlung für Quota-Fehler
                 if (e.message && e.message.includes('quota')) {
                     console.warn('⚠️ Quota-Limit erreicht. Verwende Base64-Fallback.');
@@ -346,17 +373,19 @@ class HeroAboutSection {
                 }
             }
             
-            // 2) Fallback Base64 (nur wenn S3 Upload fehlgeschlagen)
-            let finalSrc = uploadedUrl;
+            // 2) Finale Quelle: S3 URL oder Base64
+            let finalSrc = uploadedUrl || base64Preview;
             if (!finalSrc) {
-                console.log('🔄 Konvertiere Bild zu Base64...');
+                console.log('🔄 Konvertiere Bild zu Base64 (Fallback)...');
                 finalSrc = await this.fileToBase64(file);
             }
             
             // 3) In localStorage speichern (als Cache)
+            console.log('💾 Speichere Bild in localStorage...');
             localStorage.setItem('adminProfileImage', finalSrc);
             localStorage.setItem('heroProfileImage', finalSrc);
             localStorage.setItem('profileImage', finalSrc);
+            console.log('✅ Bild in localStorage gespeichert');
             
             // heroData updaten
             let heroData = {};
@@ -396,8 +425,7 @@ class HeroAboutSection {
                 }
             }
             
-            // 5) Vorschau und Website aktualisieren
-            // Stelle sicher, dass Elemente gecacht sind
+            // 5) Vorschau und Website aktualisieren (falls noch nicht geschehen)
             if (!this.els.currentProfileImage) {
                 this.els.currentProfileImage = document.getElementById('current-profile-image');
             }
@@ -414,7 +442,23 @@ class HeroAboutSection {
             
         } catch (error) {
             console.error('❌ Profilbild-Upload Fehler:', error);
-            this.toast('Fehler beim Hochladen des Profilbilds: ' + error.message, 'error');
+            console.error('   Error stack:', error.stack);
+            
+            // Auch bei Fehler: Base64-Vorschau anzeigen falls verfügbar
+            if (base64Preview) {
+                console.log('🔄 Zeige Base64-Vorschau trotz Fehler...');
+                this.updateCurrentProfileImage(base64Preview);
+                localStorage.setItem('adminProfileImage', base64Preview);
+                localStorage.setItem('heroProfileImage', base64Preview);
+                this.toast('Bild lokal gespeichert (Upload fehlgeschlagen)', 'warning');
+            } else {
+                this.toast('Fehler beim Hochladen des Profilbilds: ' + error.message, 'error');
+            }
+        } finally {
+            // Input zurücksetzen, damit derselbe File wieder ausgewählt werden kann
+            if (this.els.imageUpload) {
+                this.els.imageUpload.value = '';
+            }
         }
     }
     
