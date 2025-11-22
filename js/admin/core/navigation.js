@@ -208,7 +208,7 @@ class AdminNavigation {
                 // Hero-About Section spezifische Initialisierung
                 if (sectionId === 'hero-about') {
                     if (window.HeroAboutSection) {
-                        console.log('Initializing HeroAboutSection');
+                        console.log('🚀 Initializing HeroAboutSection...');
                         // Re-initialisiere immer, falls nötig
                         if (!window.heroAboutSection) {
                             window.heroAboutSection = new window.HeroAboutSection();
@@ -216,9 +216,10 @@ class AdminNavigation {
                         // Prüfe ob init bereits aufgerufen wurde
                         if (window.heroAboutSection && typeof window.heroAboutSection.init === 'function') {
                             try {
+                                // init() wartet jetzt intern auf DOM-Elemente
                                 window.heroAboutSection.init();
                             } catch (err) {
-                                console.error('Error initializing HeroAboutSection:', err);
+                                console.error('❌ Error initializing HeroAboutSection:', err);
                             }
                         } else {
                             console.warn('⚠️ HeroAboutSection.init is not a function');
