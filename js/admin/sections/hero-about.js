@@ -397,6 +397,10 @@ class HeroAboutSection {
             }
             
             // 5) Vorschau und Website aktualisieren
+            // Stelle sicher, dass Elemente gecacht sind
+            if (!this.els.currentProfileImage) {
+                this.els.currentProfileImage = document.getElementById('current-profile-image');
+            }
             this.updateCurrentProfileImage(finalSrc);
             this.loadGallery();
             this.syncToWebsite();
@@ -519,8 +523,31 @@ class HeroAboutSection {
      * Aktuelles Profilbild aktualisieren
      */
     updateCurrentProfileImage(base64) {
+        // Stelle sicher, dass Element gecacht ist
+        if (!this.els.currentProfileImage) {
+            this.els.currentProfileImage = document.getElementById('current-profile-image');
+        }
+        
         if (this.els.currentProfileImage) {
+            console.log('🖼️ Updating profile image preview:', base64.substring(0, 50) + '...');
             this.els.currentProfileImage.src = base64;
+            this.els.currentProfileImage.style.display = 'block';
+            
+            // Aktualisiere auch den Namen falls vorhanden
+            const nameEl = document.getElementById('current-profile-name');
+            if (nameEl) {
+                nameEl.textContent = 'Profilbild hochgeladen';
+            }
+        } else {
+            console.error('❌ current-profile-image Element nicht gefunden!');
+            // Versuche direkt zu finden
+            const imgEl = document.getElementById('current-profile-image');
+            if (imgEl) {
+                console.log('✅ Element direkt gefunden, aktualisiere...');
+                imgEl.src = base64;
+                imgEl.style.display = 'block';
+                this.els.currentProfileImage = imgEl;
+            }
         }
     }
     
