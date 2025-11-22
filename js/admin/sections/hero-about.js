@@ -7,6 +7,8 @@ class HeroAboutSection {
     }
 
     init() {
+        console.log('🚀 HeroAbout.init() aufgerufen');
+        
         // Warte bis DOM bereit ist
         const tryInit = () => {
             // Prüfe ob alle kritischen Elemente vorhanden sind
@@ -14,7 +16,14 @@ class HeroAboutSection {
             const hasUploadBtn = document.getElementById('upload-image-btn');
             const hasImageUpload = document.getElementById('image-upload');
             
+            console.log('🔍 Prüfe DOM-Elemente:', {
+                hasForm: !!hasForm,
+                hasUploadBtn: !!hasUploadBtn,
+                hasImageUpload: !!hasImageUpload
+            });
+            
             if (hasForm && hasUploadBtn && hasImageUpload) {
+                console.log('✅ Alle Elemente gefunden, initialisiere...');
                 this.cacheEls();
                 this.loadFromStorage();
                 this.attachEvents();
@@ -27,8 +36,14 @@ class HeroAboutSection {
                     hasUploadBtn: !!hasUploadBtn,
                     hasImageUpload: !!hasImageUpload
                 });
-                // Retry nach 100ms
-                setTimeout(tryInit, 100);
+                // Retry nach 100ms (max 50 Versuche = 5 Sekunden)
+                const retries = (tryInit._retries || 0) + 1;
+                tryInit._retries = retries;
+                if (retries < 50) {
+                    setTimeout(tryInit, 100);
+                } else {
+                    console.error('❌ Timeout: DOM-Elemente nicht gefunden nach 5 Sekunden');
+                }
             }
         };
         
@@ -92,24 +107,52 @@ class HeroAboutSection {
             console.warn('⚠️ changeProfileBtn nicht gefunden');
         }
         
+        // Upload Button Event
         if (this.els.uploadImageBtn) {
-            this.els.uploadImageBtn.addEventListener('click', () => {
+            // Entferne alte Listener
+            const newBtn = this.els.uploadImageBtn.cloneNode(true);
+            this.els.uploadImageBtn.parentNode.replaceChild(newBtn, this.els.uploadImageBtn);
+            this.els.uploadImageBtn = newBtn;
+            
+            this.els.uploadImageBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
                 console.log('📤 Upload Image Button clicked');
                 if (this.els.imageUpload) {
                     this.els.imageUpload.click();
                 } else {
                     console.error('❌ imageUpload Element nicht gefunden!');
+                    // Versuche direkt zu finden
+                    this.els.imageUpload = document.getElementById('image-upload');
+                    if (this.els.imageUpload) {
+                        this.els.imageUpload.click();
+                    }
                 }
             });
+            console.log('✅ Upload Button Event-Listener angehängt');
         } else {
             console.warn('⚠️ uploadImageBtn nicht gefunden');
         }
         
+        // File Input Event
         if (this.els.imageUpload) {
+            // Entferne alte Listener
+            const newInput = this.els.imageUpload.cloneNode(true);
+            this.els.imageUpload.parentNode.replaceChild(newInput, this.els.imageUpload);
+            this.els.imageUpload = newInput;
+            
+            // Füge Event-Listener hinzu
             this.els.imageUpload.addEventListener('change', (e) => {
                 console.log('📁 File input changed, starting upload...');
+                console.log('   Files:', e.target.files);
+                console.log('   File count:', e.target.files.length);
+                if (e.target.files.length > 0) {
+                    console.log('   First file:', e.target.files[0].name, e.target.files[0].type, e.target.files[0].size);
+                }
                 this.handleImageUpload(e);
             });
+            
+            console.log('✅ File input Event-Listener angehängt');
         } else {
             console.error('❌ imageUpload Element nicht gefunden - Upload wird nicht funktionieren!');
         }
@@ -122,7 +165,7 @@ class HeroAboutSection {
         // Drag & Drop für Galerie
         this.setupDragAndDrop();
         
-        console.log('✅ HeroAbout: Event-Handler angehängt');
+            console.log('✅ HeroAbout: Event-Handler angehängt');
     }
 
     loadFromStorage() {
@@ -289,13 +332,21 @@ class HeroAboutSection {
      * Profilbild-Upload behandeln
      */
     async handleImageUpload(event) {
-        const file = event.target.files[0];
+        console.log('🚀 handleImageUpload aufgerufen!');
+        console.log('   Event:', event);
+        console.log('   Event target:', event.target);
+        console.log('   Files:', event.target?.files);
+        
+        const file = event?.target?.files?.[0];
         if (!file) {
-            console.warn('⚠️ Keine Datei ausgewählt');
+            console.error('❌ Keine Datei ausgewählt!');
+            console.error('   Event target:', event.target);
+            console.error('   Files length:', event.target?.files?.length);
+            this.toast('Keine Datei ausgewählt', 'error');
             return;
         }
         
-        console.log('📁 File selected:', file.name, file.type, `${(file.size / 1024).toFixed(2)} KB`);
+        console.log('✅ File selected:', file.name, file.type, `${(file.size / 1024).toFixed(2)} KB`);
         
         if (!this.validateImageFile(file)) {
             console.error('❌ Datei-Validierung fehlgeschlagen');
@@ -433,11 +484,18 @@ class HeroAboutSection {
             this.loadGallery();
             this.syncToWebsite();
             
-            const successMsg = uploadedUrl 
-                ? `✅ Profilbild auf AWS S3 & DynamoDB gespeichert` 
-                : `✅ Profilbild in localStorage gespeichert (S3 Upload fehlgeschlagen)`;
+            // Erfolgsmeldung mit Details
+            let successMsg = '';
+            if (uploadedUrl) {
+                successMsg = '✅ Profilbild erfolgreich auf AWS S3 & DynamoDB gespeichert!';
+                console.log('✅ Bild ist in AWS gespeichert und wird auf der Website angezeigt');
+            } else {
+                successMsg = '⚠️ Profilbild nur lokal gespeichert (AWS Upload fehlgeschlagen - Quota überschritten)';
+                console.warn('⚠️ Bild ist NUR in localStorage - wird NICHT auf der Website angezeigt!');
+                console.warn('⚠️ Bitte AWS Quota prüfen oder später erneut versuchen');
+            }
             
-            this.toast(successMsg, 'success');
+            this.toast(successMsg, uploadedUrl ? 'success' : 'warning');
             console.log('🎉 Profile image upload completed:', uploadMethod);
             
         } catch (error) {
