@@ -7,12 +7,33 @@ class HeroAboutSection {
     }
 
     init() {
-        this.cacheEls();
-        this.loadFromStorage();
-        this.attachEvents();
-        this.loadGallery();
-        this.loadCurrentProfileImage();
-        console.log('HeroAbout Section initialized');
+        // Warte bis DOM bereit ist
+        const tryInit = () => {
+            // Prüfe ob alle kritischen Elemente vorhanden sind
+            const hasForm = document.getElementById('heroName');
+            const hasUploadBtn = document.getElementById('upload-image-btn');
+            const hasImageUpload = document.getElementById('image-upload');
+            
+            if (hasForm && hasUploadBtn && hasImageUpload) {
+                this.cacheEls();
+                this.loadFromStorage();
+                this.attachEvents();
+                this.loadGallery();
+                this.loadCurrentProfileImage();
+                console.log('✅ HeroAbout Section initialized successfully');
+            } else {
+                console.log('⏳ HeroAbout: Warte auf DOM-Elemente...', {
+                    hasForm: !!hasForm,
+                    hasUploadBtn: !!hasUploadBtn,
+                    hasImageUpload: !!hasImageUpload
+                });
+                // Retry nach 100ms
+                setTimeout(tryInit, 100);
+            }
+        };
+        
+        // Starte Initialisierung
+        tryInit();
     }
 
     cacheEls() {
