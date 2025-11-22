@@ -240,15 +240,29 @@ class HeroAboutSection {
             let uploadMethod = 'Base64 (Fallback)';
             
             try {
+                // Prüfe ob awsMedia verfügbar ist
                 if (!window.awsMedia) {
-                    throw new Error('AWS Upload Module nicht geladen');
+                    console.error('❌ window.awsMedia nicht verfügbar');
+                    console.error('   Verfügbare window-Objekte:', Object.keys(window).filter(k => k.includes('aws')));
+                    throw new Error('AWS Upload Module nicht geladen. Bitte Seite neu laden.');
                 }
                 
-                if (!window.AWS_APP_CONFIG || !window.AWS_APP_CONFIG.MEDIA_API_BASE) {
-                    throw new Error('AWS API nicht konfiguriert');
+                // Prüfe ob AWS_APP_CONFIG verfügbar ist
+                if (!window.AWS_APP_CONFIG) {
+                    console.error('❌ window.AWS_APP_CONFIG nicht verfügbar');
+                    throw new Error('AWS API Konfiguration nicht geladen. Bitte Seite neu laden.');
+                }
+                
+                if (!window.AWS_APP_CONFIG.MEDIA_API_BASE) {
+                    console.error('❌ AWS_APP_CONFIG.MEDIA_API_BASE nicht gesetzt');
+                    console.error('   AWS_APP_CONFIG:', window.AWS_APP_CONFIG);
+                    throw new Error('AWS API Base URL nicht konfiguriert. Bitte js/aws-app-config.js prüfen.');
                 }
                 
                 console.log('✅ AWS Module verfügbar, starte S3 Upload...');
+                console.log('   API Base:', window.AWS_APP_CONFIG.MEDIA_API_BASE);
+                console.log('   File:', file.name, file.type, `${(file.size / 1024).toFixed(2)} KB`);
+                
                 const userId = 'owner';
                 const result = await window.awsMedia.uploadProfileImage(file, userId);
                 console.log('📦 S3 Upload Result:', result);
