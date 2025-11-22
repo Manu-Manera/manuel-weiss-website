@@ -43,6 +43,13 @@ class HeroAboutSection {
             refreshGalleryBtn: document.getElementById('refresh-gallery-btn'),
             clearGalleryBtn: document.getElementById('clear-gallery-btn')
         };
+        
+        // Debug: Prüfe ob kritische Elemente gefunden wurden
+        console.log('🔍 HeroAbout: Elemente gecacht:', {
+            uploadImageBtn: !!this.els.uploadImageBtn,
+            imageUpload: !!this.els.imageUpload,
+            changeProfileBtn: !!this.els.changeProfileBtn
+        });
     }
 
     attachEvents() {
@@ -51,9 +58,41 @@ class HeroAboutSection {
         this.els.resetBtn?.addEventListener('click', () => this.reset());
         
         // Profilbild-Events
-        this.els.changeProfileBtn?.addEventListener('click', () => this.els.imageUpload?.click());
-        this.els.uploadImageBtn?.addEventListener('click', () => this.els.imageUpload?.click());
-        this.els.imageUpload?.addEventListener('change', (e) => this.handleImageUpload(e));
+        if (this.els.changeProfileBtn) {
+            this.els.changeProfileBtn.addEventListener('click', () => {
+                console.log('🖼️ Change Profile Button clicked');
+                if (this.els.imageUpload) {
+                    this.els.imageUpload.click();
+                } else {
+                    console.error('❌ imageUpload Element nicht gefunden!');
+                }
+            });
+        } else {
+            console.warn('⚠️ changeProfileBtn nicht gefunden');
+        }
+        
+        if (this.els.uploadImageBtn) {
+            this.els.uploadImageBtn.addEventListener('click', () => {
+                console.log('📤 Upload Image Button clicked');
+                if (this.els.imageUpload) {
+                    this.els.imageUpload.click();
+                } else {
+                    console.error('❌ imageUpload Element nicht gefunden!');
+                }
+            });
+        } else {
+            console.warn('⚠️ uploadImageBtn nicht gefunden');
+        }
+        
+        if (this.els.imageUpload) {
+            this.els.imageUpload.addEventListener('change', (e) => {
+                console.log('📁 File input changed, starting upload...');
+                this.handleImageUpload(e);
+            });
+        } else {
+            console.error('❌ imageUpload Element nicht gefunden - Upload wird nicht funktionieren!');
+        }
+        
         this.els.selectGalleryImagesBtn?.addEventListener('click', () => this.els.galleryUploadInput?.click());
         this.els.galleryUploadInput?.addEventListener('change', (e) => this.handleGalleryUpload(e));
         this.els.refreshGalleryBtn?.addEventListener('click', () => this.loadGallery());
@@ -61,6 +100,8 @@ class HeroAboutSection {
         
         // Drag & Drop für Galerie
         this.setupDragAndDrop();
+        
+        console.log('✅ HeroAbout: Event-Handler angehängt');
     }
 
     loadFromStorage() {
@@ -599,14 +640,33 @@ window.HeroAboutSection = HeroAboutSection;
 // Auto-Bootstrapping: initialisiert, sobald das Section-Template im DOM ist
 (function bootstrapHeroAbout() {
     const tryInit = () => {
-        // nur initialisieren, wenn die Felder vorhanden sind
+        // Prüfe ob alle kritischen Elemente vorhanden sind
         const hasForm = document.getElementById('heroName');
-        if (hasForm) {
+        const hasUploadBtn = document.getElementById('upload-image-btn');
+        const hasImageUpload = document.getElementById('image-upload');
+        
+        if (hasForm && hasUploadBtn && hasImageUpload) {
             if (!window.heroAboutSection) {
+                console.log('🚀 HeroAbout: Initialisiere Section...');
                 window.heroAboutSection = new HeroAboutSection();
                 window.heroAboutSection.init();
+                console.log('✅ HeroAbout: Section initialisiert');
+            } else {
+                // Re-initialisiere Event-Handler falls nötig
+                console.log('🔄 HeroAbout: Section existiert bereits, prüfe Event-Handler...');
+                if (window.heroAboutSection.els && !window.heroAboutSection.els.uploadImageBtn) {
+                    console.log('🔄 HeroAbout: Re-initialisiere Elemente und Events...');
+                    window.heroAboutSection.cacheEls();
+                    window.heroAboutSection.attachEvents();
+                }
             }
             return; // fertig
+        } else {
+            console.log('⏳ HeroAbout: Warte auf Elemente...', {
+                hasForm: !!hasForm,
+                hasUploadBtn: !!hasUploadBtn,
+                hasImageUpload: !!hasImageUpload
+            });
         }
         setTimeout(tryInit, 200);
     };
@@ -616,6 +676,7 @@ window.HeroAboutSection = HeroAboutSection;
     window.addEventListener('hashchange', () => {
         // Nur für hero-about Route versuchen
         if (location.hash.replace('#', '') === 'hero-about') {
+            console.log('🔗 HeroAbout: Hash changed to hero-about, initialisiere...');
             setTimeout(tryInit, 100);
         }
     });
