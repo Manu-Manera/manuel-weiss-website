@@ -56,3 +56,4 @@ aws lambda get-function --function-name <function-name> --region eu-central-1
 
 
 
+
