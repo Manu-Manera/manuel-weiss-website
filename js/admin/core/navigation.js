@@ -136,9 +136,18 @@ class AdminNavigation {
                 }
             }
             
-            const route = this.routes.get(sectionId);
+            let route = this.routes.get(sectionId);
             if (!route) {
-                throw new Error(`Route not found for section: ${sectionId}`);
+                // Fallback: Versuche Standard-Route zu erstellen
+                console.warn(`⚠️ Route not found for ${sectionId}, trying fallback...`);
+                const fallbackRoute = {
+                    template: `admin/sections/${sectionId}.html`,
+                    script: `js/admin/sections/${sectionId}.js`
+                };
+                // Registriere die Route für zukünftige Verwendung
+                this.registerRoute(sectionId, fallbackRoute);
+                route = fallbackRoute;
+                console.log(`✅ Fallback route created for ${sectionId}:`, route);
             }
             
             console.log('Route found:', route);
@@ -198,13 +207,24 @@ class AdminNavigation {
             try {
                 // Hero-About Section spezifische Initialisierung
                 if (sectionId === 'hero-about') {
-                    if (window.HeroAboutSection && !window.heroAboutSection) {
+                    if (window.HeroAboutSection) {
                         console.log('Initializing HeroAboutSection');
-                        window.heroAboutSection = new window.HeroAboutSection();
-                        // Non-blocking
-                        window.heroAboutSection.init().catch(err => {
-                            console.error('Error initializing HeroAboutSection:', err);
-                        });
+                        // Re-initialisiere immer, falls nötig
+                        if (!window.heroAboutSection) {
+                            window.heroAboutSection = new window.HeroAboutSection();
+                        }
+                        // Prüfe ob init bereits aufgerufen wurde
+                        if (window.heroAboutSection && typeof window.heroAboutSection.init === 'function') {
+                            try {
+                                window.heroAboutSection.init();
+                            } catch (err) {
+                                console.error('Error initializing HeroAboutSection:', err);
+                            }
+                        } else {
+                            console.warn('⚠️ HeroAboutSection.init is not a function');
+                        }
+                    } else {
+                        console.warn('⚠️ window.HeroAboutSection not found');
                     }
                 }
                 
