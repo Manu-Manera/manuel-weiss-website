@@ -23,6 +23,28 @@
       body: JSON.stringify({ contentType: options.contentType, userId: options.userId }),
     });
     
+    // Handle 400 Bad Request (oft Quota-Fehler)
+    if (res.status === 400) {
+        const errorText = await res.text().catch(() => 'Unknown error');
+        console.error('❌ API Gateway 400 Error:', errorText);
+        
+        // Prüfe ob es ein Quota-Fehler ist
+        if (errorText.includes('quota') || errorText.includes('Quota') || errorText.includes('exceeded')) {
+            const quotaError = new Error('QuotaExceededError: The quota has been exceeded.');
+            quotaError.name = 'QuotaExceededError';
+            throw quotaError;
+        }
+        
+        throw new Error(`API Gateway Bad Request (400): ${errorText}`);
+    }
+    
+    // Handle 403 Forbidden (Berechtigungsfehler)
+    if (res.status === 403) {
+        const errorText = await res.text().catch(() => 'Forbidden');
+        console.error('❌ API Gateway 403 Forbidden:', errorText);
+        throw new Error(`API Gateway Forbidden (403): ${errorText}`);
+    }
+    
     // Handle 502 Bad Gateway and other server errors
     if (res.status === 502 || res.status === 503 || res.status === 504) {
         const errorMsg = `AWS API Gateway nicht verfügbar (${res.status}). ` +
@@ -69,8 +91,23 @@
       headers: { 'Content-Type': file.type, 'x-amz-acl': 'public-read' },
       body: file,
     });
-    if (!put.ok) throw new Error(`Upload failed: ${put.status}`);
-    return presign.publicUrl + `?v=${Date.now()}`;
+    if (!put.ok) {
+      const errorText = await put.text();
+      console.error('❌ S3 PUT failed:', put.status, errorText);
+      throw new Error(`Upload failed: ${put.status} - ${errorText}`);
+    }
+    
+    // WICHTIG: Entferne Query-Parameter von publicUrl (falls vorhanden) und füge Cache-Busting hinzu
+    let cleanUrl = presign.publicUrl;
+    if (cleanUrl.includes('?')) {
+      cleanUrl = cleanUrl.split('?')[0];
+    }
+    
+    // Stelle sicher, dass die URL korrekt ist (ohne doppelte Slashes)
+    cleanUrl = cleanUrl.replace(/([^:]\/)\/+/g, '$1');
+    
+    console.log('✅ S3 Upload erfolgreich, publicUrl:', cleanUrl);
+    return cleanUrl + `?v=${Date.now()}`;
   }
 
   async function uploadProfileImage(file, userId = 'anonymous') {

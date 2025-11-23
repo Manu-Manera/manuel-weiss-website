@@ -417,10 +417,29 @@ class HeroAboutSection {
             } catch (e) {
                 console.warn('❌ S3 Upload fehlgeschlagen, verwende Base64 Fallback:', e.message);
                 console.warn('   Fehler-Details:', e);
-                // Spezielle Behandlung für Quota-Fehler
-                if (e.message && e.message.includes('quota')) {
+                console.warn('   Error name:', e.name);
+                console.warn('   Error stack:', e.stack);
+                
+                // Spezielle Behandlung für Quota-Fehler (verschiedene Formate)
+                const isQuotaError = 
+                    e.name === 'QuotaExceededError' ||
+                    (e.message && (
+                        e.message.toLowerCase().includes('quota') ||
+                        e.message.toLowerCase().includes('exceeded') ||
+                        e.message.includes('QuotaExceededError')
+                    ));
+                
+                if (isQuotaError) {
                     console.warn('⚠️ Quota-Limit erreicht. Verwende Base64-Fallback.');
                     this.toast('AWS Quota-Limit erreicht. Bild wird lokal gespeichert.', 'warning');
+                } else if (e.message && (e.message.includes('403') || e.message.includes('Forbidden'))) {
+                    console.warn('⚠️ Berechtigungsfehler (403). Verwende Base64-Fallback.');
+                    this.toast('AWS Berechtigungsfehler. Bild wird lokal gespeichert.', 'warning');
+                } else if (e.message && e.message.includes('400')) {
+                    console.warn('⚠️ Bad Request (400). Möglicherweise Quota-Fehler. Verwende Base64-Fallback.');
+                    this.toast('AWS Upload fehlgeschlagen (400). Bild wird lokal gespeichert.', 'warning');
+                } else {
+                    this.toast('AWS Upload fehlgeschlagen. Bild wird lokal gespeichert.', 'warning');
                 }
             }
             
@@ -470,6 +489,7 @@ class HeroAboutSection {
             } else {
                 if (!uploadedUrl) {
                     console.warn('⚠️ Keine S3 URL verfügbar - DynamoDB Speicherung übersprungen');
+                    console.log('ℹ️ Bild wird als Base64 in localStorage gespeichert und im Admin-Panel angezeigt');
                 }
                 if (!window.awsProfileAPI) {
                     console.warn('⚠️ awsProfileAPI nicht verfügbar - DynamoDB Speicherung übersprungen');
@@ -480,7 +500,7 @@ class HeroAboutSection {
             if (!this.els.currentProfileImage) {
                 this.els.currentProfileImage = document.getElementById('current-profile-image');
             }
-            this.updateCurrentProfileImage(finalSrc);
+            this.updateCurrentProfileImage(finalSrc, file.name);
             this.loadGallery();
             this.syncToWebsite();
             
@@ -490,8 +510,11 @@ class HeroAboutSection {
                 successMsg = '✅ Profilbild erfolgreich auf AWS S3 & DynamoDB gespeichert!';
                 console.log('✅ Bild ist in AWS gespeichert und wird auf der Website angezeigt');
             } else {
-                successMsg = '⚠️ Profilbild nur lokal gespeichert (AWS Upload fehlgeschlagen - Quota überschritten)';
-                console.warn('⚠️ Bild ist NUR in localStorage - wird NICHT auf der Website angezeigt!');
+                successMsg = '⚠️ Profilbild lokal gespeichert (AWS Upload fehlgeschlagen - Quota/Fehler)';
+                console.warn('⚠️ Bild ist als Base64 in localStorage gespeichert');
+                console.warn('   → Wird im Admin-Panel angezeigt');
+                console.warn('   → Wird auf der Website angezeigt (wenn localStorage verfügbar)');
+                console.warn('   → Wird NICHT in AWS gespeichert (Quota/Fehler)');
                 console.warn('⚠️ Bitte AWS Quota prüfen oder später erneut versuchen');
             }
             
