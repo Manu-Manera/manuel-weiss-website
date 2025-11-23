@@ -64,7 +64,14 @@ exports.handler = async (event) => {
     }
     
     const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}${fileExt}`;
-    const key = `${prefix}${userId}/${fileType}/${fileName}`;
+    // WICHTIG: Für Profile-Bilder verwenden wir nur userId, nicht userId/fileType
+    // Das macht die URLs einfacher und kompatibler mit bestehenden Bildern
+    let key;
+    if (fileType === 'profile') {
+      key = `${prefix}${userId}/${fileName}`;
+    } else {
+      key = `${prefix}${userId}/${fileType}/${fileName}`;
+    }
 
     const expires = 60 * 2; // 2 minutes
 
@@ -78,7 +85,13 @@ exports.handler = async (event) => {
 
     const url = await s3.getSignedUrlPromise('putObject', params);
 
-    const publicUrl = `https://${bucket}.s3.${REGION}.amazonaws.com/${encodeURI(key)}`;
+    // WICHTIG: publicUrl muss genau dem Key entsprechen (ohne Query-Parameter)
+    // encodeURIComponent für jeden Teil des Pfads separat
+    const keyParts = key.split('/');
+    const encodedKey = keyParts.map(part => encodeURIComponent(part)).join('/');
+    const publicUrl = `https://${bucket}.s3.${REGION}.amazonaws.com/${encodedKey}`;
+
+    console.log('📤 Generated presigned URL:', { key, publicUrl, fileType, userId });
 
     return json(200, {
       url,

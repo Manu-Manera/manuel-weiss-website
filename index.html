@@ -1177,14 +1177,71 @@
                 });
                 
                 if (awsImages && awsImages.profileImageDefault) {
-                    window.latestAWSProfileImage = awsImages.profileImageDefault;
-                    setHeroProfileImage(window.latestAWSProfileImage);
-                    // Auch in localStorage speichern für schnelleren Zugriff (aber AWS hat Priorität)
-                    localStorage.setItem('heroProfileImage', window.latestAWSProfileImage);
-                    localStorage.setItem('adminProfileImage', window.latestAWSProfileImage);
-                    console.log('✅ WEBSITE: Profile image loaded from AWS DynamoDB and displayed');
-                    console.log('📸 WEBSITE: Image URL:', window.latestAWSProfileImage);
-                    return window.latestAWSProfileImage;
+                    const imageUrl = awsImages.profileImageDefault;
+                    
+                    // Prüfe ob die URL ungültig ist (test-new-image.jpg ist bekannt ungültig)
+                    if (imageUrl.includes('test-new-image.jpg')) {
+                        console.warn('⚠️ WEBSITE: Ungültige Test-URL erkannt, überspringe:', imageUrl);
+                        // Entferne ungültige URL aus localStorage
+                        localStorage.removeItem('heroProfileImage');
+                        localStorage.removeItem('adminProfileImage');
+                        throw new Error('Ungültige Test-URL erkannt');
+                    }
+                    
+                    window.latestAWSProfileImage = imageUrl;
+                    console.log('📸 WEBSITE: Image URL from DynamoDB:', imageUrl);
+                    
+                    // Teste ob das Bild geladen werden kann (nur einmal, nicht endlos)
+                    return new Promise((resolve, reject) => {
+                        const testImg = new Image();
+                        let resolved = false;
+                        
+                        testImg.onload = () => {
+                            if (resolved) return;
+                            resolved = true;
+                            console.log('✅ WEBSITE: Image URL ist erreichbar und gültig');
+                            setHeroProfileImage(imageUrl);
+                            // Nur gültige URLs in localStorage speichern
+                            localStorage.setItem('heroProfileImage', imageUrl);
+                            localStorage.setItem('adminProfileImage', imageUrl);
+                            resolve(imageUrl);
+                        };
+                        
+                        testImg.onerror = () => {
+                            if (resolved) return;
+                            resolved = true;
+                            console.error('❌ WEBSITE: Image URL ist NICHT erreichbar (403/404):', imageUrl);
+                            console.error('   Mögliche Ursachen:');
+                            console.error('   1. S3-Objekt existiert nicht');
+                            console.error('   2. S3-Objekt ist nicht öffentlich zugänglich');
+                            console.error('   3. S3-Bucket-Policy blockiert Zugriff');
+                            
+                            // Entferne ungültige URL aus localStorage
+                            localStorage.removeItem('heroProfileImage');
+                            localStorage.removeItem('adminProfileImage');
+                            
+                            // Versuche Base64-Fallback
+                            const fallback = localStorage.getItem('adminProfileImage');
+                            if (fallback && fallback.startsWith('data:')) {
+                                console.log('🔄 WEBSITE: Verwende Base64-Fallback aus localStorage');
+                                setHeroProfileImage(fallback);
+                                resolve(fallback);
+                            } else {
+                                reject(new Error('Image URL nicht erreichbar und kein Fallback verfügbar'));
+                            }
+                        };
+                        
+                        // Timeout nach 5 Sekunden
+                        setTimeout(() => {
+                            if (!resolved) {
+                                resolved = true;
+                                console.warn('⏱️ WEBSITE: Image load timeout');
+                                reject(new Error('Image load timeout'));
+                            }
+                        }, 5000);
+                        
+                        testImg.src = imageUrl;
+                    });
                 }
                 
                 // Fallback: Versuche direkt aus S3 zu laden (wenn bekannt)
