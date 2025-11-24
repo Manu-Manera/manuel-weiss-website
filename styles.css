@@ -160,6 +160,52 @@ body {
     background-color: var(--white);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    position: relative;
+    overflow-x: hidden;
+}
+
+body::before,
+body::after {
+    content: '';
+    position: fixed;
+    top: -10%;
+    left: 0;
+    width: 100%;
+    height: 130%;
+    pointer-events: none;
+    z-index: 50;
+    opacity: 0.25;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cg fill='none' stroke='rgba(255,255,255,0.8)' stroke-width='2'%3E%3Cpath d='M60 8 l0 20 M60 92 l0 20 M60 28 l15 15 M60 28 l-15 15 M60 92 l15 -15 M60 92 l-15 -15 M20 60 l20 0 M80 60 l20 0 M40 60 l10 10 M40 60 l10 -10 M80 60 l-10 10 M80 60 l-10 -10 M30 30 l12 12 M78 78 l12 12 M90 30 l-12 12 M30 90 l12 -12'/%3E%3Ccircle cx='20' cy='20' r='1.5' fill='rgba(255,255,255,0.7)'/%3E%3Ccircle cx='90' cy='50' r='1.2' fill='rgba(255,255,255,0.5)'/%3E%3Ccircle cx='30' cy='80' r='1' fill='rgba(255,255,255,0.6)'/%3E%3Ccircle cx='100' cy='90' r='1.4' fill='rgba(255,255,255,0.6)'/%3E%3C/g%3E%3C/svg%3E");
+    background-size: 300px 300px;
+    animation: gentleSnowFall 28s linear infinite;
+}
+
+body::after {
+    opacity: 0.15;
+    animation-duration: 38s;
+    animation-direction: reverse;
+    background-size: 220px 220px;
+    filter: blur(1px);
+}
+
+@keyframes gentleSnowFall {
+    0% {
+        transform: translate3d(0, -10%, 0);
+    }
+    100% {
+        transform: translate3d(-5%, 110%, 0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body::before,
+    body::after {
+        animation: none;
+    }
+    
+    .services::after {
+        animation: none;
+    }
 }
 
 /* Typography */
@@ -1149,56 +1195,34 @@ a:hover {
     color: white;
 }
 
-/* Animierte Sterne für Services Section */
+/* Winterlicher Schnee für Services Section */
 .services::after {
     content: '';
     position: absolute;
-    top: 0;
+    top: -10%;
     left: 0;
     right: 0;
-    bottom: 0;
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><defs><pattern id="stars" width="400" height="400" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1.5" fill="rgba(255,255,255,0.8)"/><circle cx="150" cy="80" r="1" fill="rgba(255,255,255,0.6)"/><circle cx="250" cy="120" r="2" fill="rgba(255,255,255,0.9)"/><circle cx="350" cy="60" r="1.2" fill="rgba(255,255,255,0.7)"/><circle cx="80" cy="180" r="0.8" fill="rgba(255,255,255,0.5)"/><circle cx="200" cy="200" r="1.8" fill="rgba(255,255,255,0.8)"/><circle cx="320" cy="180" r="1.1" fill="rgba(255,255,255,0.6)"/><circle cx="120" cy="280" r="1.3" fill="rgba(255,255,255,0.7)"/><circle cx="280" cy="320" r="0.9" fill="rgba(255,255,255,0.5)"/><circle cx="360" cy="280" r="1.6" fill="rgba(255,255,255,0.8)"/><circle cx="40" cy="320" r="1.4" fill="rgba(255,255,255,0.6)"/><circle cx="180" cy="360" r="0.7" fill="rgba(255,255,255,0.4)"/><circle cx="300" cy="40" r="1.7" fill="rgba(255,255,255,0.9)"/><circle cx="60" cy="140" r="1.2" fill="rgba(255,255,255,0.6)"/><circle cx="220" cy="140" r="0.6" fill="rgba(255,255,255,0.3)"/><circle cx="340" cy="220" r="1.5" fill="rgba(255,255,255,0.7)"/><circle cx="100" cy="240" r="1.1" fill="rgba(255,255,255,0.5)"/><circle cx="240" cy="260" r="0.8" fill="rgba(255,255,255,0.4)"/><circle cx="380" cy="140" r="1.3" fill="rgba(255,255,255,0.6)"/><circle cx="20" cy="200" r="1.9" fill="rgba(255,255,255,0.8)"/><circle cx="160" cy="40" r="1.4" fill="rgba(255,255,255,0.7)"/><circle cx="260" cy="80" r="0.5" fill="rgba(255,255,255,0.3)"/><circle cx="380" cy="360" r="1.8" fill="rgba(255,255,255,0.9)"/></pattern></defs><rect width="400" height="400" fill="url(%23stars)"/></svg>');
-    opacity: 0.6;
-    animation: servicesStarsTwinkle 8s ease-in-out infinite, servicesStarsFloat 15s linear infinite;
+    bottom: -10%;
+    background-image:
+        radial-gradient(rgba(255, 255, 255, 0.7) 1px, transparent 40%),
+        radial-gradient(rgba(255, 255, 255, 0.5) 1.5px, transparent 30%),
+        radial-gradient(rgba(255, 255, 255, 0.4) 2px, transparent 20%);
+    background-size: 200px 300px, 350px 450px, 500px 600px;
+    opacity: 0.45;
+    animation: servicesSnowFall 32s linear infinite;
     z-index: 0;
     pointer-events: none;
 }
 
-/* Animationen für die Sterne in Services */
-@keyframes servicesStarsTwinkle {
-    0%, 100% { 
-        opacity: 0.2; 
-        transform: scale(1);
+@keyframes servicesSnowFall {
+    0% {
+        transform: translate3d(0, -10%, 0);
     }
-    25% { 
-        opacity: 0.6; 
-        transform: scale(1.1);
+    50% {
+        transform: translate3d(-2%, 5%, 0);
     }
-    50% { 
-        opacity: 0.3; 
-        transform: scale(0.9);
-    }
-    75% { 
-        opacity: 0.7; 
-        transform: scale(1.05);
-    }
-}
-
-@keyframes servicesStarsFloat {
-    0% { 
-        transform: translateY(0px) translateX(0px);
-    }
-    25% { 
-        transform: translateY(-10px) translateX(5px);
-    }
-    50% { 
-        transform: translateY(-5px) translateX(-3px);
-    }
-    75% { 
-        transform: translateY(-15px) translateX(8px);
-    }
-    100% { 
-        transform: translateY(0px) translateX(0px);
+    100% {
+        transform: translate3d(2%, 15%, 0);
     }
 }
 
