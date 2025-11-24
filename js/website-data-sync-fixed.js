@@ -7,6 +7,8 @@ console.log('🚀 WEBSITE DATA SYNC - KORRIGIERTE VERSION GESTARTET');
 
 const ADMIN_DATA_KEY = 'adminProfileData';
 const PROFILE_IMAGE_KEY = 'adminProfileImage';
+const DEFAULT_PROFILE_IMAGE_FALLBACK = 'manuel-weiss-portrait.jpg';
+const BROKEN_PROFILE_URL_PATTERNS = ['test-new-image.jpg'];
 
 /**
  * Lädt Profilbild und Statistiken von LocalStorage und aktualisiert die Website
@@ -35,41 +37,112 @@ function loadWebsiteDataFromLocalStorage() {
  */
 function loadWebsiteProfileImage() {
     const storedImage = localStorage.getItem(PROFILE_IMAGE_KEY);
-    if (storedImage) {
-        console.log('🖼️ Profilbild gefunden, aktualisiere Website...');
-        
-        // Verschiedene Selektoren für Profilbild - WICHTIG: #profile-photo zuerst prüfen
-        const imageSelectors = [
-            '#profile-photo',
-            '#hero-profile-image',
-            '.hero-image',
-            '.profile-image',
-            '.main-image',
-            'img[alt*="Manuel"]',
-            'img[alt*="Profil"]',
-            '.hero img',
-            '.profile img'
-        ];
-        
-        imageSelectors.forEach(selector => {
-            const imageElement = document.querySelector(selector);
-            if (imageElement) {
-                imageElement.src = storedImage;
-                console.log(`✅ Profilbild aktualisiert: ${selector}`);
-            }
-        });
-        
-        // Zusätzlich: Alle Bilder mit bestimmten Attributen aktualisieren
-        const allImages = document.querySelectorAll('img');
-        allImages.forEach(img => {
-            if (img.alt && (img.alt.includes('Manuel') || img.alt.includes('Profil'))) {
-                img.src = storedImage;
-                console.log(`✅ Profilbild aktualisiert: ${img.alt}`);
-            }
-        });
-    } else {
+    
+    if (!storedImage) {
         console.log('ℹ️ Kein Profilbild in LocalStorage gefunden');
+        applyProfileImageToSelectors(DEFAULT_PROFILE_IMAGE_FALLBACK);
+        return;
     }
+    
+    // Bekannte, kaputte URLs sofort entfernen
+    if (BROKEN_PROFILE_URL_PATTERNS.some(pattern => storedImage.includes(pattern))) {
+        console.warn('⚠️ Ungültige oder blockierte Profilbild-URL erkannt:', storedImage);
+        localStorage.removeItem(PROFILE_IMAGE_KEY);
+        applyProfileImageToSelectors(DEFAULT_PROFILE_IMAGE_FALLBACK);
+        return;
+    }
+    
+    // Base64-Images sofort anwenden
+    if (storedImage.startsWith('data:')) {
+        console.log('🖼️ Base64-Profilbild gefunden, aktualisiere Website...');
+        applyProfileImageToSelectors(storedImage);
+        return;
+    }
+    
+    // Für HTTP/S-URLs sicherstellen, dass sie erreichbar sind
+    console.log('🔎 Prüfe Profilbild-URL:', storedImage);
+    verifyImageSource(storedImage)
+        .then(() => {
+            console.log('✅ Profilbild-URL ist erreichbar, aktualisiere Website...');
+            applyProfileImageToSelectors(storedImage);
+        })
+        .catch(error => {
+            console.error('❌ Profilbild-URL ist NICHT erreichbar:', error.message);
+            localStorage.removeItem(PROFILE_IMAGE_KEY);
+            applyProfileImageToSelectors(DEFAULT_PROFILE_IMAGE_FALLBACK);
+        });
+}
+
+/**
+ * Wendet das Profilbild auf alle relevanten Selektoren an
+ */
+function applyProfileImageToSelectors(src) {
+    const imageSelectors = [
+        '#profile-photo',
+        '#hero-profile-image',
+        '.hero-image',
+        '.profile-image',
+        '.main-image',
+        'img[alt*="Manuel"]',
+        'img[alt*="Profil"]',
+        '.hero img',
+        '.profile img'
+    ];
+    
+    imageSelectors.forEach(selector => {
+        const imageElement = document.querySelector(selector);
+        if (imageElement) {
+            imageElement.src = src;
+            console.log(`✅ Profilbild aktualisiert: ${selector}`);
+        }
+    });
+    
+    const allImages = document.querySelectorAll('img');
+    allImages.forEach(img => {
+        if (img.alt && (img.alt.includes('Manuel') || img.alt.includes('Profil'))) {
+            img.src = src;
+            console.log(`✅ Profilbild aktualisiert: ${img.alt}`);
+        }
+    });
+}
+
+/**
+ * Prüft, ob eine Bild-URL geladen werden kann
+ */
+function verifyImageSource(src) {
+    return new Promise((resolve, reject) => {
+        const testImg = new Image();
+        const cacheBustedSrc = src + (src.includes('?') ? '&' : '?') + 'cacheBust=' + Date.now();
+        let finished = false;
+        
+        const cleanup = () => {
+            finished = true;
+            testImg.onload = null;
+            testImg.onerror = null;
+        };
+        
+        const timeoutId = setTimeout(() => {
+            if (finished) return;
+            cleanup();
+            reject(new Error('Image load timeout'));
+        }, 5000);
+        
+        testImg.onload = () => {
+            if (finished) return;
+            clearTimeout(timeoutId);
+            cleanup();
+            resolve();
+        };
+        
+        testImg.onerror = () => {
+            if (finished) return;
+            clearTimeout(timeoutId);
+            cleanup();
+            reject(new Error('Image load error'));
+        };
+        
+        testImg.src = cacheBustedSrc;
+    });
 }
 
 /**
