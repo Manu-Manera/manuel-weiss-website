@@ -88,7 +88,7 @@
   async function uploadWithPresignedUrl(file, presign) {
     const put = await fetch(presign.url, {
       method: 'PUT',
-      headers: { 'Content-Type': file.type, 'x-amz-acl': 'public-read' },
+      headers: { 'Content-Type': file.type },
       body: file,
     });
     if (!put.ok) {

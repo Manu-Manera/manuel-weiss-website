@@ -4,6 +4,7 @@
 class HeroAboutSection {
     constructor() {
         this.storageKey = 'adminProfileData';
+        this.quotaWarningShown = false;
     }
 
     init() {
@@ -452,19 +453,8 @@ class HeroAboutSection {
             
             // 3) In localStorage speichern (als Cache)
             console.log('💾 Speichere Bild in localStorage...');
-            localStorage.setItem('adminProfileImage', finalSrc);
-            localStorage.setItem('heroProfileImage', finalSrc);
-            localStorage.setItem('profileImage', finalSrc);
+            this.saveProfileImageLocally(finalSrc);
             console.log('✅ Bild in localStorage gespeichert');
-            
-            // heroData updaten
-            let heroData = {};
-            try {
-                const stored = localStorage.getItem('heroData');
-                if (stored) heroData = JSON.parse(stored);
-            } catch {}
-            heroData.profileImage = finalSrc;
-            localStorage.setItem('heroData', JSON.stringify(heroData));
             
             // 4) WICHTIG: Wenn S3 Upload erfolgreich war, in DynamoDB speichern
             if (uploadedUrl && window.awsProfileAPI) {
@@ -529,8 +519,7 @@ class HeroAboutSection {
             if (base64Preview) {
                 console.log('🔄 Zeige Base64-Vorschau trotz Fehler...');
                 this.updateCurrentProfileImage(base64Preview);
-                localStorage.setItem('adminProfileImage', base64Preview);
-                localStorage.setItem('heroProfileImage', base64Preview);
+                this.saveProfileImageLocally(base64Preview);
                 this.toast('Bild lokal gespeichert (Upload fehlgeschlagen)', 'warning');
             } else {
                 this.toast('Fehler beim Hochladen des Profilbilds: ' + error.message, 'error');
@@ -728,24 +717,7 @@ class HeroAboutSection {
         if (image) {
             const base64 = image.data;
             
-            // In LocalStorage speichern - MEHRERE KEYS für Kompatibilität
-            localStorage.setItem('adminProfileImage', base64);
-            localStorage.setItem('heroProfileImage', base64);
-            localStorage.setItem('profileImage', base64);
-            
-            // Profilbild auch in heroData speichern
-            let heroData = {};
-            try {
-                const stored = localStorage.getItem('heroData');
-                if (stored) {
-                    heroData = JSON.parse(stored);
-                }
-            } catch (e) {
-                console.warn('heroData nicht gefunden oder ungültig');
-            }
-            
-            heroData.profileImage = base64;
-            localStorage.setItem('heroData', JSON.stringify(heroData));
+            this.saveProfileImageLocally(base64);
             
             this.updateCurrentProfileImage(base64);
             
@@ -789,6 +761,80 @@ class HeroAboutSection {
         if (storedImage && this.els.currentProfileImage) {
             this.els.currentProfileImage.src = storedImage;
         }
+    }
+
+    saveProfileImageLocally(imageSrc) {
+        if (!imageSrc) return;
+        
+        ['adminProfileImage', 'heroProfileImage', 'profileImage'].forEach((key) => {
+            this.safeSetLocalStorage(key, imageSrc);
+        });
+        
+        let heroData = {};
+        try {
+            const stored = localStorage.getItem('heroData');
+            if (stored) heroData = JSON.parse(stored) || {};
+        } catch (error) {
+            console.warn('⚠️ HeroAbout: heroData konnte nicht gelesen werden:', error.message);
+            heroData = {};
+        }
+        heroData.profileImage = imageSrc;
+        this.safeSetLocalStorage('heroData', JSON.stringify(heroData));
+    }
+    
+    safeSetLocalStorage(key, value) {
+        try {
+            localStorage.setItem(key, value);
+            return true;
+        } catch (error) {
+            if (this.isQuotaError(error)) {
+                console.warn(`⚠️ localStorage Quota erreicht beim Setzen von ${key}:`, error.message);
+                
+                if (!this.quotaWarningShown) {
+                    this.toast('Lokaler Speicher voll – entferne alte Bilder...', 'warning');
+                    this.quotaWarningShown = true;
+                }
+                
+                this.cleanupLocalImageStorage();
+                
+                try {
+                    localStorage.setItem(key, value);
+                    return true;
+                } catch (retryError) {
+                    console.error(`❌ localStorage erneut fehlgeschlagen für ${key}:`, retryError.message);
+                    this.toast('Lokaler Speicher ist voll – Bild nur temporär sichtbar.', 'error');
+                    return false;
+                }
+            }
+            
+            console.error(`❌ localStorage Fehler für ${key}:`, error);
+            return false;
+        }
+    }
+    
+    cleanupLocalImageStorage() {
+        const cleanupKeys = [
+            'adminProfileGallery',
+            'legacyProfileImages',
+            'heroProfileImageBackup',
+            'profileImageBackup'
+        ];
+        
+        cleanupKeys.forEach((key) => {
+            if (localStorage.getItem(key)) {
+                console.log(`🧹 Entferne lokalen Speicher-Eintrag: ${key}`);
+                localStorage.removeItem(key);
+            }
+        });
+    }
+    
+    isQuotaError(error) {
+        if (!error) return false;
+        return (
+            error.name === 'QuotaExceededError' ||
+            error.name === 'NS_ERROR_DOM_QUOTA_REACHED' ||
+            (error.message && error.message.toLowerCase().includes('quota'))
+        );
     }
 
     toast(msg, type = 'success') {

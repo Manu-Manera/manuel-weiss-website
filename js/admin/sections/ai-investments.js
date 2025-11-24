@@ -499,16 +499,16 @@ class AIInvestmentSection {
     /**
      * Metrics aktualisieren
      */
-    updateMetrics(metrics) {
+    updateMetrics(metrics = {}) {
         // Risk Metrics
-        document.getElementById('varValue').textContent = `${(metrics.var_95 * 100).toFixed(1)}%`;
-        document.getElementById('sharpeValue').textContent = metrics.sharpe_ratio.toFixed(2);
-        document.getElementById('drawdownValue').textContent = `${(metrics.max_drawdown * 100).toFixed(1)}%`;
+        this.setMetricValue('varValue', this.formatPercentage(metrics.var_95, 1));
+        this.setMetricValue('sharpeValue', this.formatNumber(metrics.sharpe_ratio, 2));
+        this.setMetricValue('drawdownValue', this.formatPercentage(metrics.max_drawdown, 1));
         
         // Learning Metrics
-        document.getElementById('hitRate7d').textContent = `${(metrics.hit_rate_7d * 100).toFixed(0)}%`;
-        document.getElementById('hitRate30d').textContent = `${(metrics.hit_rate_30d * 100).toFixed(0)}%`;
-        document.getElementById('reliability').textContent = `${(metrics.reliability * 100).toFixed(0)}%`;
+        this.setMetricValue('hitRate7d', this.formatPercentage(metrics.hit_rate_7d, 0));
+        this.setMetricValue('hitRate30d', this.formatPercentage(metrics.hit_rate_30d, 0));
+        this.setMetricValue('reliability', this.formatPercentage(metrics.reliability, 0));
     }
     
     /**
@@ -588,6 +588,25 @@ class AIInvestmentSection {
             'executed': 'Ausgeführt'
         };
         return statusTexts[status] || status;
+    }
+
+    setMetricValue(elementId, value) {
+        const el = document.getElementById(elementId);
+        if (!el) {
+            console.warn(`AI Investment: Element #${elementId} nicht gefunden – möglicherweise ist die Section nicht aktiv.`);
+            return;
+        }
+        el.textContent = value;
+    }
+    
+    formatPercentage(value, digits = 0) {
+        if (typeof value !== 'number' || Number.isNaN(value)) return '--';
+        return `${(value * 100).toFixed(digits)}%`;
+    }
+    
+    formatNumber(value, digits = 2) {
+        if (typeof value !== 'number' || Number.isNaN(value)) return '--';
+        return value.toFixed(digits);
     }
     
     formatTime(timestamp) {
