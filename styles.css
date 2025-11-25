@@ -156,8 +156,8 @@ body {
     font-family: var(--font-family);
     font-size: var(--font-size-base);
     line-height: 1.6;
-    color: var(--gray-800);
-    background-color: var(--white);
+    color: var(--gray-200);
+    background: radial-gradient(circle at 20% 20%, #0d1f45 0%, #08122a 50%, #030812 100%);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     position: relative;
@@ -168,32 +168,44 @@ body::before,
 body::after {
     content: '';
     position: fixed;
-    top: -10%;
+    top: -15%;
     left: 0;
-    width: 100%;
-    height: 130%;
+    width: 120%;
+    height: 140%;
     pointer-events: none;
     z-index: 50;
-    opacity: 0.25;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cg fill='none' stroke='rgba(255,255,255,0.8)' stroke-width='2'%3E%3Cpath d='M60 8 l0 20 M60 92 l0 20 M60 28 l15 15 M60 28 l-15 15 M60 92 l15 -15 M60 92 l-15 -15 M20 60 l20 0 M80 60 l20 0 M40 60 l10 10 M40 60 l10 -10 M80 60 l-10 10 M80 60 l-10 -10 M30 30 l12 12 M78 78 l12 12 M90 30 l-12 12 M30 90 l12 -12'/%3E%3Ccircle cx='20' cy='20' r='1.5' fill='rgba(255,255,255,0.7)'/%3E%3Ccircle cx='90' cy='50' r='1.2' fill='rgba(255,255,255,0.5)'/%3E%3Ccircle cx='30' cy='80' r='1' fill='rgba(255,255,255,0.6)'/%3E%3Ccircle cx='100' cy='90' r='1.4' fill='rgba(255,255,255,0.6)'/%3E%3C/g%3E%3C/svg%3E");
-    background-size: 300px 300px;
-    animation: gentleSnowFall 28s linear infinite;
+    opacity: 0.4;
+    background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cg fill='none' stroke='rgba(255,255,255,0.25)' stroke-width='1.5'%3E%3Cpath d='M80 10 l0 25 M80 125 l0 25 M80 35 l15 15 M80 35 l-15 15 M80 125 l15 -15 M80 125 l-15 -15 M20 80 l25 0 M115 80 l25 0 M45 80 l10 10 M45 80 l10 -10 M115 80 l-10 10 M115 80 l-10 -10 M35 35 l14 14 M111 111 l14 14 M125 35 l-14 14 M35 125 l14 -14'/%3E%3C/g%3E%3Ccircle cx='30' cy='30' r='2.2' fill='rgba(255,255,255,0.55)'/%3E%3Ccircle cx='120' cy='60' r='1.5' fill='rgba(255,255,255,0.35)'/%3E%3Ccircle cx='45' cy='120' r='1.2' fill='rgba(255,255,255,0.4)'/%3E%3Ccircle cx='135' cy='115' r='2' fill='rgba(255,255,255,0.45)'/%3E%3Ccircle cx='95' cy='25' r='1.3' fill='rgba(255,255,255,0.3)'/%3E%3C/svg%3E"),
+        radial-gradient(rgba(255,255,255,0.35) 1px, transparent 45%),
+        radial-gradient(rgba(255,255,255,0.2) 2px, transparent 40%);
+    background-size: 420px 420px, 380px 480px, 520px 620px;
+    animation: snowflakeDrift 32s linear infinite, snowflakeGlow 12s ease-in-out infinite;
 }
 
 body::after {
-    opacity: 0.15;
-    animation-duration: 38s;
-    animation-direction: reverse;
-    background-size: 220px 220px;
+    opacity: 0.25;
+    animation-duration: 44s, 18s;
+    animation-direction: reverse, alternate;
     filter: blur(1px);
+    background-size: 280px 320px, 260px 360px, 420px 520px;
 }
 
-@keyframes gentleSnowFall {
+@keyframes snowflakeDrift {
     0% {
         transform: translate3d(0, -10%, 0);
     }
     100% {
-        transform: translate3d(-5%, 110%, 0);
+        transform: translate3d(-8%, 110%, 0);
+    }
+}
+
+@keyframes snowflakeGlow {
+    0%, 100% {
+        opacity: 0.25;
+    }
+    50% {
+        opacity: 0.5;
     }
 }
 
@@ -1204,12 +1216,13 @@ a:hover {
     right: 0;
     bottom: -10%;
     background-image:
-        radial-gradient(rgba(255, 255, 255, 0.7) 1px, transparent 40%),
-        radial-gradient(rgba(255, 255, 255, 0.5) 1.5px, transparent 30%),
-        radial-gradient(rgba(255, 255, 255, 0.4) 2px, transparent 20%);
-    background-size: 200px 300px, 350px 450px, 500px 600px;
-    opacity: 0.45;
-    animation: servicesSnowFall 32s linear infinite;
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='320' viewBox='0 0 220 320'%3E%3Cg fill='none' stroke='rgba(255,255,255,0.45)' stroke-width='1.6'%3E%3Cpath d='M110 20 l0 30 M110 270 l0 30 M110 50 l18 18 M110 50 l-18 18 M110 270 l18 -18 M110 270 l-18 -18 M30 160 l30 0 M160 160 l30 0 M60 160 l12 12 M60 160 l12 -12 M160 160 l-12 12 M160 160 l-12 -12'/%3E%3C/g%3E%3Ccircle cx='40' cy='60' r='2.5' fill='rgba(255,255,255,0.55)'/%3E%3Ccircle cx='180' cy='110' r='1.6' fill='rgba(255,255,255,0.35)'/%3E%3Ccircle cx='70' cy='230' r='1.2' fill='rgba(255,255,255,0.4)'/%3E%3Ccircle cx='200' cy='250' r='2.1' fill='rgba(255,255,255,0.35)'/%3E%3Ccircle cx='120' cy='90' r='1.1' fill='rgba(255,255,255,0.3)'/%3E%3C/svg%3E"),
+        radial-gradient(rgba(255,255,255,0.55) 1px, transparent 45%),
+        radial-gradient(rgba(255,255,255,0.35) 1.6px, transparent 40%),
+        radial-gradient(rgba(255,255,255,0.2) 2.2px, transparent 30%);
+    background-size: 220px 320px, 260px 360px, 360px 420px, 520px 620px;
+    opacity: 0.55;
+    animation: servicesSnowFall 28s linear infinite, snowflakeGlow 10s ease-in-out infinite;
     z-index: 0;
     pointer-events: none;
 }

@@ -316,27 +316,27 @@
     --transition-base: 0.3s ease-in-out;
     --transition-slow: 0.5s ease-in-out;
     
-    /* Light mode variables */
-    --bg-primary: var(--white);
-    --bg-secondary: var(--gray-50);
-    --bg-tertiary: var(--gray-100);
-    --text-primary: var(--gray-900);
-    --text-secondary: var(--gray-600);
-    --text-muted: var(--gray-500);
-    --border-color: var(--gray-200);
-    --border-light: var(--gray-100);
+    /* Light mode variables (winter theme override) */
+    --bg-primary: #0a1635;
+    --bg-secondary: #050b1c;
+    --bg-tertiary: #0f2146;
+    --text-primary: #e8f1ff;
+    --text-secondary: #b3c6ff;
+    --text-muted: #8da2d9;
+    --border-color: rgba(255, 255, 255, 0.15);
+    --border-light: rgba(255, 255, 255, 0.08);
 }
 
 /* Dark mode */
 body.dark-mode {
-    --bg-primary: var(--gray-900);
-    --bg-secondary: var(--gray-800);
-    --bg-tertiary: var(--gray-700);
-    --text-primary: var(--gray-50);
-    --text-secondary: var(--gray-400);
-    --text-muted: var(--gray-500);
-    --border-color: var(--gray-700);
-    --border-light: var(--gray-600);
+    --bg-primary: #030816;
+    --bg-secondary: #01040b;
+    --bg-tertiary: #07132a;
+    --text-primary: #f4f7ff;
+    --text-secondary: #cfdcfe;
+    --text-muted: #9fb0d6;
+    --border-color: rgba(255, 255, 255, 0.2);
+    --border-light: rgba(255, 255, 255, 0.12);
 }
 
 /* Reset and Base Styles */
@@ -348,7 +348,7 @@ body.dark-mode {
 
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background-color: var(--bg-secondary);
+    background: radial-gradient(circle at 10% 20%, #0f1f47 0%, #050b18 50%, #02040b 100%);
     color: var(--text-primary);
     line-height: 1.6;
     transition: background-color var(--transition-base), color var(--transition-base);
@@ -360,23 +360,28 @@ body::before,
 body::after {
     content: '';
     position: fixed;
-    top: -10%;
+    top: -15%;
     left: 0;
-    width: 100%;
-    height: 130%;
+    width: 120%;
+    height: 140%;
     pointer-events: none;
     z-index: 5;
-    opacity: 0.2;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cg fill='none' stroke='rgba(255,255,255,0.7)' stroke-width='1.5'%3E%3Cpath d='M60 10 l0 18 M60 92 l0 18 M60 28 l12 12 M60 28 l-12 12 M60 92 l12 -12 M60 92 l-12 -12 M22 60 l18 0 M80 60 l18 0 M40 60 l8 8 M40 60 l8 -8 M80 60 l-8 8 M80 60 l-8 -8 M32 32 l10 10 M78 78 l10 10 M88 32 l-10 10 M32 88 l10 -10'/%3E%3Ccircle cx='25' cy='25' r='1.2' fill='rgba(255,255,255,0.6)'/%3E%3Ccircle cx='95' cy='55' r='1.1' fill='rgba(255,255,255,0.5)'/%3E%3Ccircle cx='35' cy='85' r='1' fill='rgba(255,255,255,0.5)'/%3E%3Ccircle cx='100' cy='95' r='1.3' fill='rgba(255,255,255,0.5)'/%3E%3C/g%3E%3C/svg%3E");
-    background-size: 260px 260px;
-    animation: adminSnowFall 30s linear infinite;
+    opacity: 0.35;
+    background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='260' viewBox='0 0 200 260'%3E%3Cg fill='none' stroke='rgba(255,255,255,0.35)' stroke-width='1.5'%3E%3Cpath d='M100 15 l0 30 M100 215 l0 30 M100 45 l18 18 M100 45 l-18 18 M100 215 l18 -18 M100 215 l-18 -18 M30 130 l30 0 M140 130 l30 0 M60 130 l12 12 M60 130 l12 -12 M140 130 l-12 12 M140 130 l-12 -12 M42 42 l14 14 M146 188 l14 14 M158 42 l-14 14 M42 188 l14 -14'/%3E%3C/g%3E%3Ccircle cx='45' cy='70' r='2.4' fill='rgba(255,255,255,0.55)'/%3E%3Ccircle cx='165' cy='105' r='1.6' fill='rgba(255,255,255,0.35)'/%3E%3Ccircle cx='70' cy='205' r='1.2' fill='rgba(255,255,255,0.4)'/%3E%3Ccircle cx='180' cy='195' r='2.2' fill='rgba(255,255,255,0.35)'/%3E%3Ccircle cx='110' cy='90' r='1.1' fill='rgba(255,255,255,0.3)'/%3E%3C/svg%3E"),
+        radial-gradient(rgba(255,255,255,0.45) 1px, transparent 50%),
+        radial-gradient(rgba(255,255,255,0.25) 1.8px, transparent 45%),
+        radial-gradient(rgba(255,255,255,0.15) 2.2px, transparent 35%);
+    background-size: 320px 420px, 280px 360px, 420px 520px, 540px 640px;
+    animation: adminSnowFall 30s linear infinite, adminSnowGlow 14s ease-in-out infinite;
 }
 
 body::after {
-    opacity: 0.12;
-    animation-duration: 40s;
-    animation-direction: reverse;
+    opacity: 0.2;
+    animation-duration: 42s, 18s;
+    animation-direction: reverse, alternate;
     filter: blur(1px);
+    background-size: 260px 360px, 240px 320px, 360px 460px, 520px 620px;
 }
 
 @keyframes adminSnowFall {
@@ -384,7 +389,16 @@ body::after {
         transform: translate3d(0, -10%, 0);
     }
     100% {
-        transform: translate3d(-4%, 110%, 0);
+        transform: translate3d(-6%, 110%, 0);
+    }
+}
+
+@keyframes adminSnowGlow {
+    0%, 100% {
+        opacity: 0.3;
+    }
+    50% {
+        opacity: 0.5;
     }
 }
 
@@ -461,7 +475,7 @@ body::after {
 /* Sidebar */
 .admin-sidebar {
     width: var(--sidebar-width);
-    background: var(--bg-primary);
+    background: linear-gradient(180deg, rgba(11,26,56,0.95) 0%, rgba(4,10,24,0.98) 60%, rgba(2,5,12,0.98) 100%);
     border-right: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
@@ -469,6 +483,7 @@ body::after {
     position: fixed;
     height: 100vh;
     z-index: 100;
+    box-shadow: 12px 0 30px rgba(5, 10, 20, 0.6);
 }
 
 .admin-sidebar.collapsed {
@@ -645,6 +660,10 @@ body::after {
     width: 100%;
     padding: var(--spacing-lg);
     box-sizing: border-box;
+    background: radial-gradient(circle at top, rgba(15,34,76,0.35), rgba(5,11,24,0.85));
+    border-radius: 24px 0 0 0;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(12px);
 }
 
 /* Responsive content handling */
@@ -668,7 +687,7 @@ body::after {
 /* Top Bar */
 .admin-topbar {
     height: var(--topbar-height);
-    background: var(--bg-primary);
+    background: linear-gradient(90deg, rgba(8,20,46,0.95) 0%, rgba(5,12,30,0.95) 100%);
     border-bottom: 1px solid var(--border-color);
     display: flex;
     align-items: center;
