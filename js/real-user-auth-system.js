@@ -854,37 +854,66 @@ class RealUserAuthSystem {
         try {
             console.log('🚀 Starting AWS Cognito registration...');
             
-            const userAttributes = [
-                {
-                    Name: 'email',
-                    Value: userData.email
-                },
-                {
-                    Name: 'given_name',
-                    Value: userData.firstName || ''
-                },
-                {
-                    Name: 'family_name',
-                    Value: userData.lastName || ''
+            const buildAttributes = (includeTitle = true) => {
+                const attrs = [
+                    { Name: 'email', Value: userData.email },
+                    { Name: 'given_name', Value: userData.firstName || '' },
+                    { Name: 'family_name', Value: userData.lastName || '' }
+                ];
+                
+                if (includeTitle && userData.title) {
+                    attrs.push({
+                        Name: 'custom:title',
+                        Value: userData.title
+                    });
                 }
-            ];
-            
-            // Add custom attribute for title if needed
-            if (userData.title) {
-                userAttributes.push({
-                    Name: 'custom:title',
-                    Value: userData.title
-                });
-            }
-            
-            const params = {
-                ClientId: this.clientId,
-                Username: userData.email,
-                Password: userData.password,
-                UserAttributes: userAttributes
+                
+                return attrs;
             };
             
-            const result = await this.cognitoIdentityServiceProvider.signUp(params).promise();
+            const attemptSignUp = async (includeTitle) => {
+                const params = {
+                    ClientId: this.clientId,
+                    Username: userData.email,
+                    Password: userData.password,
+                    UserAttributes: buildAttributes(includeTitle)
+                };
+                
+                return this.cognitoIdentityServiceProvider.signUp(params).promise();
+            };
+            
+            let result;
+            let triedWithoutTitle = false;
+            
+            try {
+                result = await attemptSignUp(true);
+            } catch (initialError) {
+                const isTitleAttributeError = 
+                    initialError.code === 'InvalidParameterException' &&
+                    userData.title &&
+                    (
+                        (initialError.message && initialError.message.toLowerCase().includes('custom:title')) ||
+                        (initialError.message && initialError.message.toLowerCase().includes('attributes')) ||
+                        initialError.message === '1 validation error detected: Value at \'userAttributes\' failed to satisfy constraint: Member must satisfy constraint: [Member must satisfy regular expression pattern: [\\p{L}\\p{M}\\p{S}\\p{N}\\p{P}\\p{Z}]+]'
+                    );
+                
+                if (isTitleAttributeError) {
+                    console.warn('⚠️ custom:title wird im User Pool nicht unterstützt. Starte erneuten Versuch ohne dieses Attribut.');
+                    triedWithoutTitle = true;
+                    try {
+                        result = await attemptSignUp(false);
+                    } catch (retryError) {
+                        console.error('❌ Registrierung ohne custom:title ebenfalls fehlgeschlagen:', retryError);
+                        throw retryError;
+                    }
+                } else {
+                    throw initialError;
+                }
+            }
+            
+            if (triedWithoutTitle) {
+                console.log('ℹ️ Registrierung ohne custom:title Attribut erfolgreich.');
+            }
             
             console.log('✅ Registration successful');
             console.log('📋 Registration result:', JSON.stringify(result, null, 2));
