@@ -348,7 +348,11 @@ body.dark-mode {
 
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: radial-gradient(circle at 10% 20%, #0f1f47 0%, #050b18 50%, #02040b 100%);
+    background:
+        radial-gradient(circle at 20% 15%, rgba(35, 64, 128, 0.6), transparent 45%),
+        radial-gradient(circle at 75% 10%, rgba(30, 54, 110, 0.5), transparent 40%),
+        radial-gradient(circle at 60% 80%, rgba(20, 36, 86, 0.45), transparent 50%),
+        linear-gradient(180deg, #020411 0%, #010208 100%);
     color: var(--text-primary);
     line-height: 1.6;
     transition: background-color var(--transition-base), color var(--transition-base);
@@ -360,46 +364,50 @@ body::before,
 body::after {
     content: '';
     position: fixed;
-    top: -15%;
+    top: 0;
     left: 0;
-    width: 120%;
-    height: 140%;
+    width: 100%;
+    height: 100%;
     pointer-events: none;
     z-index: 5;
-    opacity: 0.35;
+}
+
+body::before {
     background-image:
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='260' viewBox='0 0 200 260'%3E%3Cg fill='none' stroke='rgba(255,255,255,0.35)' stroke-width='1.5'%3E%3Cpath d='M100 15 l0 30 M100 215 l0 30 M100 45 l18 18 M100 45 l-18 18 M100 215 l18 -18 M100 215 l-18 -18 M30 130 l30 0 M140 130 l30 0 M60 130 l12 12 M60 130 l12 -12 M140 130 l-12 12 M140 130 l-12 -12 M42 42 l14 14 M146 188 l14 14 M158 42 l-14 14 M42 188 l14 -14'/%3E%3C/g%3E%3Ccircle cx='45' cy='70' r='2.4' fill='rgba(255,255,255,0.55)'/%3E%3Ccircle cx='165' cy='105' r='1.6' fill='rgba(255,255,255,0.35)'/%3E%3Ccircle cx='70' cy='205' r='1.2' fill='rgba(255,255,255,0.4)'/%3E%3Ccircle cx='180' cy='195' r='2.2' fill='rgba(255,255,255,0.35)'/%3E%3Ccircle cx='110' cy='90' r='1.1' fill='rgba(255,255,255,0.3)'/%3E%3C/svg%3E"),
-        radial-gradient(rgba(255,255,255,0.45) 1px, transparent 50%),
-        radial-gradient(rgba(255,255,255,0.25) 1.8px, transparent 45%),
-        radial-gradient(rgba(255,255,255,0.15) 2.2px, transparent 35%);
-    background-size: 320px 420px, 280px 360px, 420px 520px, 540px 640px;
-    animation: adminSnowFall 30s linear infinite, adminSnowGlow 14s ease-in-out infinite;
+        radial-gradient(circle at 18% 20%, rgba(255,255,255,0.55) 0%, transparent 55%),
+        radial-gradient(circle at 35% 12%, rgba(255,255,255,0.3) 0%, transparent 45%),
+        radial-gradient(circle at 70% 22%, rgba(255,255,255,0.4) 0%, transparent 50%),
+        radial-gradient(circle at 82% 40%, rgba(255,255,255,0.25) 0%, transparent 45%),
+        radial-gradient(circle at 28% 72%, rgba(255,255,255,0.3) 0%, transparent 45%),
+        radial-gradient(circle at 55% 78%, rgba(255,255,255,0.28) 0%, transparent 45%),
+        radial-gradient(circle at 88% 75%, rgba(255,255,255,0.2) 0%, transparent 45%);
+    opacity: 0.6;
+    animation: adminTwinkle 14s ease-in-out infinite alternate;
 }
 
 body::after {
-    opacity: 0.2;
-    animation-duration: 42s, 18s;
-    animation-direction: reverse, alternate;
-    filter: blur(1px);
-    background-size: 260px 360px, 240px 320px, 360px 460px, 520px 620px;
+    background-image:
+        radial-gradient(circle, rgba(255,255,255,0.25) 15%, transparent 60%),
+        radial-gradient(circle, rgba(255,255,255,0.15) 12%, transparent 65%),
+        radial-gradient(circle, rgba(255,255,255,0.12) 10%, transparent 70%);
+    background-repeat: no-repeat;
+    background-size: 200% 200%;
+    background-position: 0% 0%, 30% 25%, 60% 60%;
+    opacity: 0.35;
+    mix-blend-mode: screen;
+    animation: adminSkyFloat 32s linear infinite;
 }
 
-@keyframes adminSnowFall {
-    0% {
-        transform: translate3d(0, -10%, 0);
-    }
-    100% {
-        transform: translate3d(-6%, 110%, 0);
-    }
+@keyframes adminTwinkle {
+    0% { opacity: 0.35; transform: scale(1); }
+    50% { opacity: 0.65; transform: scale(1.02); }
+    100% { opacity: 0.45; transform: scale(0.98); }
 }
 
-@keyframes adminSnowGlow {
-    0%, 100% {
-        opacity: 0.3;
-    }
-    50% {
-        opacity: 0.5;
-    }
+@keyframes adminSkyFloat {
+    0% { transform: translate3d(0, 0, 0); }
+    50% { transform: translate3d(-2%, -3%, 0); }
+    100% { transform: translate3d(-4%, -6%, 0); }
 }
 
 @media (prefers-reduced-motion: reduce) {
