@@ -853,16 +853,18 @@ a:hover {
 
 /* Service Card Button Optimizations */
 .service-card .btn {
-    width: 100%;
+    /* Einheitliche, kompaktere Buttons in allen Service-Kacheln */
+    width: auto;
+    align-self: flex-start;
     justify-content: center;
     text-align: center;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    min-height: 48px;
+    min-height: 40px;
     font-size: var(--font-size-sm);
     font-weight: 600;
-    padding: var(--spacing-sm) var(--spacing-md);
+    padding: 0.55rem 1.6rem;
     border-radius: 8px;
     transition: all 0.3s ease;
     position: relative;
