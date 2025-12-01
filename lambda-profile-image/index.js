@@ -80,7 +80,16 @@ exports.handler = async (event) => {
       Key: key,
       Expires: expires,
       ContentType: contentType,
-      ACL: 'public-read',
+      // ACL NICHT mehr setzen:
+      // - Der Bucket ist höchstwahrscheinlich mit "ACLs disabled" konfiguriert.
+      // - Wenn hier eine ACL signiert wird, erwartet die Presigned URL,
+      //   dass der Client auch den passenden "x-amz-acl"-Header mitsendet.
+      // - In js/aws-media.js haben wir den Header bewusst entfernt,
+      //   um den Fehler "AccessControlListNotSupported" zu vermeiden.
+      // - Eine signierte ACL ohne entsprechenden Header im PUT führt zu
+      //   400/403-Fehlern ("SignatureDoesNotMatch") und der Upload bricht ab.
+      //
+      // Die öffentliche Lesbarkeit wird stattdessen über die Bucket-Policy geregelt.
     };
 
     const url = await s3.getSignedUrlPromise('putObject', params);
