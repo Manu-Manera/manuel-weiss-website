@@ -2645,3 +2645,10 @@ a:hover {
     color: rgba(255, 255, 255, 0.9);
     font-weight: 500;
 }
+
+.service-card.modern-highlight:hover .service-features li {
+    /* Beim Hover: weiß und leicht glühend */
+    color: #ffffff;
+    text-shadow: 0 0 12px rgba(255, 255, 255, 0.9),
+                 0 0 20px rgba(255, 255, 255, 0.7);
+}
