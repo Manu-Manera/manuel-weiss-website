@@ -1810,10 +1810,13 @@ a:hover {
 
 .about-stats {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    /* Wie weiter unten bei den Service-Kacheln:
+       flexible, automatisch umbrechende Spalten */
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
     gap: 1.5rem;
     width: 100%;
-    max-width: 600px;
+    max-width: 900px;
+    margin: 0 auto;
 }
 
 .stat-card {
