@@ -1334,12 +1334,20 @@ a:hover {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    color: var(--primary);
+    /* Standard-Zustand: Text in „Mehr erfahren“ auf lilafarbenem Umfeld klar weiß */
+    color: #ffffff;
     font-weight: 600;
     transition: all var(--transition-base);
 }
 
+/* Sicherstellen, dass auch Links/Spans im CTA weiß sind */
+.service-cta a,
+.service-cta span {
+    color: inherit;
+}
+
 .service-card:hover .service-cta {
+    /* Hover: Karte wird weiß, Text wird dunkellila für gute Lesbarkeit */
     color: var(--primary-dark);
     transform: translateX(4px);
 }
