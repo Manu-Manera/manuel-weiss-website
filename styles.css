@@ -859,8 +859,9 @@ a:hover {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    height: 48px; /* Feste Höhe statt min-height für einheitliche Button-Größe */
-    min-height: 48px;
+    height: 48px !important; /* Feste Höhe für alle Buttons */
+    min-height: 48px !important;
+    max-height: 48px !important; /* Verhindert, dass Buttons größer werden */
     font-size: var(--font-size-sm);
     font-weight: 600;
     padding: var(--spacing-sm) var(--spacing-md);
@@ -870,6 +871,7 @@ a:hover {
     z-index: 1;
     display: flex;
     align-items: center; /* Text vertikal zentrieren */
+    box-sizing: border-box; /* Padding und Border in der Höhe berücksichtigen */
 }
 
 .service-card .btn-primary {
@@ -1290,6 +1292,7 @@ a:hover {
     margin: 0 auto;
     position: relative;
     z-index: 1;
+    align-items: stretch; /* Alle Karten haben die gleiche Höhe */
 }
 
 .service-card {
@@ -1346,7 +1349,7 @@ a:hover {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    /* Standard-Zustand: Text in „Mehr erfahren“ auf lilafarbenem Umfeld klar weiß */
+    /* Standard-Zustand: Text in „Mehr erfahren" auf lilafarbenem Umfeld klar weiß */
     color: #ffffff;
     font-weight: 600;
     transition: all var(--transition-base);
@@ -1563,6 +1566,8 @@ a:hover {
 .service-card .btn {
     margin-top: auto;
     flex-shrink: 0;
+    height: 48px !important; /* Feste Höhe für alle Buttons, damit sie auf einer Linie sind */
+    min-height: 48px !important;
 }
 
 .service-features li::before {
@@ -2619,6 +2624,8 @@ a:hover {
     transition: all 0.3s ease;
     position: relative;
     z-index: 2;
+    height: 48px !important; /* Gleiche Höhe wie alle anderen Service-Buttons */
+    min-height: 48px !important;
 }
 
 .modern-btn:hover {
