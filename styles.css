@@ -859,6 +859,7 @@ a:hover {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    height: 48px; /* Feste Höhe statt min-height für einheitliche Button-Größe */
     min-height: 48px;
     font-size: var(--font-size-sm);
     font-weight: 600;
@@ -867,6 +868,8 @@ a:hover {
     transition: all 0.3s ease;
     position: relative;
     z-index: 1;
+    display: flex;
+    align-items: center; /* Text vertikal zentrieren */
 }
 
 .service-card .btn-primary {
