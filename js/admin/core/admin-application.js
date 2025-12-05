@@ -194,6 +194,7 @@ class AdminApplication {
         createIfAvailable('media', 'MediaSection');
         createIfAvailable('personalityMethods', 'PersonalityMethodsSection');
         createIfAvailable('ikigai', 'IkigaiSection');
+        createIfAvailable('rentals', 'RentalsSection');
         createIfAvailable('aiInvestment', 'AIInvestmentSection');
 
         console.log('Sections initialized (guarded)');
