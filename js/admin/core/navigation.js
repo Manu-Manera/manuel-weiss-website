@@ -262,6 +262,30 @@ class AdminNavigation {
                         }
                     }
                 }
+                
+                // Rentals Section spezifische Initialisierung
+                if (sectionId === 'rentals') {
+                    if (window.RentalsSection) {
+                        console.log('🏠 Initializing RentalsSection...');
+                        // Re-initialisiere immer, falls nötig
+                        if (!window.rentalsSection) {
+                            window.rentalsSection = new window.RentalsSection();
+                        }
+                        // Prüfe ob init bereits aufgerufen wurde
+                        if (window.rentalsSection && typeof window.rentalsSection.init === 'function') {
+                            try {
+                                // init() wartet jetzt intern auf DOM-Elemente
+                                window.rentalsSection.init();
+                            } catch (err) {
+                                console.error('❌ Error initializing RentalsSection:', err);
+                            }
+                        } else {
+                            console.warn('⚠️ RentalsSection.init is not a function');
+                        }
+                    } else {
+                        console.warn('⚠️ window.RentalsSection not found');
+                    }
+                }
             } catch (error) {
                 console.error(`Error in initializeSection for ${sectionId}:`, error);
             }
