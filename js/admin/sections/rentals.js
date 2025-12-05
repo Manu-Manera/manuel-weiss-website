@@ -340,39 +340,72 @@ class RentalsSection {
      * Hochgeladene Bilder speichern
      */
     saveUploadedImages(newImages) {
-        const storageKey = `rentalImages_${this.currentRentalType}`;
+        // WICHTIG: Speichere mit dem Key, den die Website erwartet
+        // Die Website erwartet: ${activityName}_images (z.B. wohnmobil_images)
+        const websiteStorageKey = `${this.currentRentalType}_images`;
+        
+        // Auch im alten Format speichern für Kompatibilität
+        const adminStorageKey = `rentalImages_${this.currentRentalType}`;
+        
         let existingImages = [];
         
         try {
-            const stored = localStorage.getItem(storageKey);
-            if (stored) {
-                existingImages = JSON.parse(stored);
+            // Lade aus dem Website-Format (hat Priorität)
+            const websiteStored = localStorage.getItem(websiteStorageKey);
+            if (websiteStored) {
+                existingImages = JSON.parse(websiteStored);
+            } else {
+                // Fallback: Lade aus Admin-Format
+                const adminStored = localStorage.getItem(adminStorageKey);
+                if (adminStored) {
+                    existingImages = JSON.parse(adminStored);
+                }
             }
         } catch (e) {
             console.warn('Fehler beim Laden gespeicherter Bilder:', e);
         }
 
-        // Neue Bilder hinzufügen
-        existingImages = [...existingImages, ...newImages];
+        // Neue Bilder hinzufügen (konvertiere Format für Website)
+        const formattedNewImages = newImages.map(img => ({
+            url: img.url,
+            imageData: img.url, // Website erwartet imageData
+            filename: img.filename || 'uploaded-image.jpg',
+            uploadedAt: img.uploadedAt || new Date().toISOString(),
+            isUploaded: true
+        }));
+
+        existingImages = [...existingImages, ...formattedNewImages];
         
         // Duplikate entfernen (basierend auf URL)
-        existingImages = existingImages.filter((img, index, self) => 
-            index === self.findIndex(i => i.url === img.url)
-        );
+        existingImages = existingImages.filter((img, index, self) => {
+            const imgUrl = img.url || img.imageData;
+            return index === self.findIndex(i => (i.url || i.imageData) === imgUrl);
+        });
 
-        localStorage.setItem(storageKey, JSON.stringify(existingImages));
+        // Speichere in beiden Formaten für Kompatibilität
+        localStorage.setItem(websiteStorageKey, JSON.stringify(existingImages));
+        localStorage.setItem(adminStorageKey, JSON.stringify(existingImages));
+        
+        // Trigger Custom Event für sofortige Aktualisierung auf der Website
+        window.dispatchEvent(new CustomEvent('rentalImagesUpdated', {
+            detail: { rentalType: this.currentRentalType }
+        }));
+        
         console.log('✅ Bilder gespeichert:', existingImages);
+        console.log(`✅ Gespeichert in: ${websiteStorageKey} und ${adminStorageKey}`);
     }
 
     /**
      * Bild entfernen
      */
     removeImage(imageUrl) {
-        const storageKey = `rentalImages_${this.currentRentalType}`;
+        const websiteStorageKey = `${this.currentRentalType}_images`;
+        const adminStorageKey = `rentalImages_${this.currentRentalType}`;
+        
         let images = [];
         
         try {
-            const stored = localStorage.getItem(storageKey);
+            const stored = localStorage.getItem(websiteStorageKey);
             if (stored) {
                 images = JSON.parse(stored);
             }
@@ -380,8 +413,14 @@ class RentalsSection {
             console.warn('Fehler beim Laden gespeicherter Bilder:', e);
         }
 
-        images = images.filter(img => img.url !== imageUrl);
-        localStorage.setItem(storageKey, JSON.stringify(images));
+        images = images.filter(img => {
+            const imgUrl = img.url || img.imageData;
+            return imgUrl !== imageUrl;
+        });
+        
+        // Speichere in beiden Formaten
+        localStorage.setItem(websiteStorageKey, JSON.stringify(images));
+        localStorage.setItem(adminStorageKey, JSON.stringify(images));
         
         this.toast('Bild entfernt', 'info');
     }
@@ -477,12 +516,20 @@ class RentalsSection {
      * Gespeicherte Bilder abrufen
      */
     getStoredImages() {
-        const storageKey = `rentalImages_${this.currentRentalType}`;
+        const websiteStorageKey = `${this.currentRentalType}_images`;
+        const adminStorageKey = `rentalImages_${this.currentRentalType}`;
         
         try {
-            const stored = localStorage.getItem(storageKey);
-            if (stored) {
-                return JSON.parse(stored);
+            // Versuche zuerst Website-Format
+            const websiteStored = localStorage.getItem(websiteStorageKey);
+            if (websiteStored) {
+                return JSON.parse(websiteStored);
+            }
+            
+            // Fallback: Admin-Format
+            const adminStored = localStorage.getItem(adminStorageKey);
+            if (adminStored) {
+                return JSON.parse(adminStored);
             }
         } catch (e) {
             console.warn('Fehler beim Laden gespeicherter Bilder:', e);
