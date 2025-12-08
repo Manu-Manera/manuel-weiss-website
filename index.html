@@ -1114,38 +1114,7 @@
             }
         }
         
-        // Sprachumschaltung Funktionalität
-        function initializeLanguageSwitch() {
-            const langSwitch = document.getElementById('langSwitch');
-            const currentLangSpan = document.getElementById('currentLang');
-            let currentLang = 'de';
-            
-            // Sprache wechseln
-            if (langSwitch) {
-                langSwitch.addEventListener('click', function() {
-                    currentLang = currentLang === 'de' ? 'en' : 'de';
-                    currentLangSpan.textContent = currentLang.toUpperCase();
-                    switchLanguage(currentLang);
-                });
-            }
-        }
-        
-        // Sprache umschalten
-        function switchLanguage(lang) {
-            const elements = document.querySelectorAll('[data-de][data-en]');
-            elements.forEach(element => {
-                const text = element.getAttribute(`data-${lang}`);
-                if (text) {
-                    element.textContent = text;
-                }
-            });
-            
-            // Spezielle Behandlung für Download-Button
-            const downloadText = document.querySelector('.download-text');
-            if (downloadText) {
-                downloadText.textContent = lang === 'de' ? 'Beraterprofil herunterladen' : 'Download Consultant Profile';
-            }
-        }
+        // Sprachumschaltung Funktionalität entfernt - nur Flaggen-Button in Navigation verwendet
         
         // Funktion um Profilbild direkt aus AWS DynamoDB zu laden (unabhängig von heroData)
         async function loadProfileImageFromAWS(silentFallback = false) {
@@ -1368,7 +1337,6 @@
                 // Bei Fehler trotzdem Standard-Werte garantieren
                 ensureDefaultStatistics();
             }
-            initializeLanguageSwitch();
         });
         
         // Auch bei Storage-Änderungen reagieren (für Live-Updates)
