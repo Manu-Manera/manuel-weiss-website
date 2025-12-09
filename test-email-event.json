@@ -1,0 +1,24 @@
+{
+  "Records": [
+    {
+      "eventSource": "aws:ses",
+      "eventVersion": "1.0",
+      "ses": {
+        "mail": {
+          "messageId": "ihm35j051oqeel3va3ubbnsd638ndutd3dif5j01",
+          "source": "manuelvonweiss@gmail.com",
+          "destination": ["mail@manuel-weiss.ch"],
+          "timestamp": "2025-12-09T10:17:24.794Z"
+        },
+        "receipt": {
+          "recipients": ["mail@manuel-weiss.ch"],
+          "action": {
+            "type": "Lambda",
+            "functionArn": "arn:aws:lambda:eu-central-1:038333965110:function:ManuelWeissEmailSetup-EmailProcessor218EC076-i0Dq2uhJRLy9"
+          }
+        }
+      }
+    }
+  ]
+}
+
