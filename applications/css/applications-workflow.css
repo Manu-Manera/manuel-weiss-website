@@ -1685,3 +1685,248 @@
     }
 }
 
+
+/* ============================================
+   📱 MOBILE OPTIMIERUNG - APPLICATIONS
+   ============================================ */
+
+/* Mobile Layout für Applications Pages */
+@media (max-width: 768px) {
+    /* Form Sections */
+    .form-section {
+        padding: 1.5rem 1rem;
+        margin: 1rem 0;
+    }
+    
+    .section-header {
+        margin-bottom: 1.5rem;
+    }
+    
+    .section-title {
+        font-size: 1.5rem;
+    }
+    
+    .section-description {
+        font-size: 0.9rem;
+    }
+    
+    /* Form Groups */
+    .form-group {
+        margin-bottom: 1rem;
+    }
+    
+    .form-group label {
+        font-size: 0.875rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-input,
+    .form-textarea,
+    .form-select {
+        font-size: 1rem;
+        padding: 0.75rem;
+        min-height: 44px; /* Touch-friendly */
+    }
+    
+    .form-textarea {
+        min-height: 120px;
+    }
+    
+    /* Buttons */
+    .btn {
+        width: 100%;
+        min-height: 48px;
+        font-size: 1rem;
+        padding: 0.75rem 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .btn-group {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    /* Content Actions */
+    .content-actions {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .content-actions .btn {
+        width: 100%;
+    }
+    
+    /* Generated Text */
+    .generated-text {
+        margin: 1.5rem 0;
+    }
+    
+    .form-textarea {
+        font-size: 0.9rem;
+        line-height: 1.6;
+    }
+    
+    /* Generation Stats */
+    .generation-stats {
+        flex-direction: column;
+        gap: 0.5rem;
+        padding: 1rem;
+    }
+    
+    .stat-item {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    /* Form Actions */
+    .form-actions {
+        flex-direction: column;
+        gap: 0.5rem;
+        padding: 1.5rem 1rem;
+    }
+    
+    .form-actions .btn {
+        width: 100%;
+    }
+    
+    /* Loading Animation Mobile */
+    .modern-loading-animation {
+        min-height: 300px;
+        padding: 2rem 1rem;
+    }
+    
+    .magic-container {
+        max-width: 100%;
+    }
+    
+    .magic-center {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .magic-icon {
+        font-size: 36px;
+    }
+    
+    .magic-title {
+        font-size: 1.5rem;
+    }
+    
+    .magic-subtitle {
+        font-size: 0.9rem;
+    }
+    
+    /* Upload Summary Mobile */
+    .upload-summary {
+        padding: 1rem;
+        margin: 1rem 0;
+    }
+    
+    .upload-summary-grid {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+    
+    /* Document Upload Cards */
+    .upload-card {
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .upload-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .upload-card-title {
+        font-size: 1rem;
+    }
+    
+    /* File Preview */
+    .file-preview {
+        padding: 0.75rem;
+        margin-top: 0.75rem;
+    }
+    
+    .file-preview-info {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    /* Progress Bar Mobile */
+    .progress-bar {
+        padding: 0 1rem;
+    }
+    
+    .progress-text {
+        padding: 0 1rem;
+        font-size: 0.8rem;
+    }
+    
+    /* Workflow Header Mobile */
+    .workflow-header {
+        padding-top: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .workflow-title {
+        font-size: 1.75rem;
+    }
+    
+    .workflow-subtitle {
+        font-size: 1rem;
+    }
+}
+
+/* Extra Small Devices */
+@media (max-width: 480px) {
+    .form-section {
+        padding: 1rem;
+    }
+    
+    .section-title {
+        font-size: 1.25rem;
+    }
+    
+    .form-input,
+    .form-textarea,
+    .form-select {
+        font-size: 0.9rem;
+    }
+    
+    .btn {
+        font-size: 0.9rem;
+        padding: 0.625rem 1rem;
+    }
+    
+    .magic-center {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .magic-icon {
+        font-size: 28px;
+    }
+    
+    .magic-title {
+        font-size: 1.25rem;
+    }
+    
+    .workflow-title {
+        font-size: 1.5rem;
+    }
+}
+
+/* Touch Device Optimierungen */
+@media (hover: none) and (pointer: coarse) {
+    .btn,
+    .form-input,
+    .form-select {
+        min-height: 48px;
+    }
+    
+    .btn:active {
+        transform: scale(0.98);
+    }
+}
