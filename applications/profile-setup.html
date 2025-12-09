@@ -36,19 +36,22 @@
                     <i class="fas fa-user"></i>
                     Anmelden
                 </button>
-                <div id="realUserMenu" class="user-menu" style="display: none;">
-                    <div class="user-info">
+                <div id="realUserButton" class="user-button" style="display: none;">
+                    <div class="user-info" id="userInfoClickable">
                         <img id="userAvatarImg" src="../images/manuel-weiss-portrait.jpg" alt="User Avatar" class="user-avatar-img">
                         <span id="userName">Benutzer</span>
+                        <i class="fas fa-chevron-down" style="margin-left: 8px; font-size: 0.8em;"></i>
                     </div>
-                    <a href="../user-profile-dashboard.html" class="user-menu-link">
-                        <i class="fas fa-chart-line"></i>
-                        Dashboard
-                    </a>
-                    <a href="#" class="user-menu-link" onclick="window.realUserAuth.logout()">
-                        <i class="fas fa-sign-out-alt"></i>
-                        Abmelden
-                    </a>
+                    <div id="realUserMenu" class="user-menu" style="display: none;">
+                        <a href="../user-profile-dashboard.html" class="user-menu-link">
+                            <i class="fas fa-chart-line"></i>
+                            Dashboard
+                        </a>
+                        <a href="#" class="user-menu-link" onclick="window.realUserAuth.logout(); return false;">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Abmelden
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>

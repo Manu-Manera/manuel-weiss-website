@@ -133,18 +133,53 @@ class BewerbungsprofilManager {
 
     updateAuthUI() {
         const authButton = document.getElementById('realAuthButton');
+        const userButton = document.getElementById('realUserButton');
         const userMenu = document.getElementById('realUserMenu');
         const userName = document.getElementById('userName');
         const userAvatarImg = document.getElementById('userAvatarImg');
+        const userInfoClickable = document.getElementById('userInfoClickable');
 
         if (this.isAuthenticated && this.currentUser) {
+            // Auth-Button verstecken, User-Button zeigen
             if (authButton) authButton.style.display = 'none';
-            if (userMenu) userMenu.style.display = 'block';
+            if (userButton) userButton.style.display = 'block';
+            
+            // User-Menü sollte standardmäßig ausgeblendet sein (nur beim Klick sichtbar)
+            if (userMenu) {
+                userMenu.style.display = 'none';
+            }
+            
+            // Click-Handler für Toggle (falls noch nicht vorhanden)
+            if (userInfoClickable && !userInfoClickable.dataset.listenerAdded) {
+                userInfoClickable.style.cursor = 'pointer';
+                userInfoClickable.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const isVisible = userMenu.style.display === 'block';
+                    userMenu.style.display = isVisible ? 'none' : 'block';
+                });
+                
+                // Schließe Menü beim Klick außerhalb
+                const closeMenuHandler = (e) => {
+                    if (!userMenu.contains(e.target) && !userInfoClickable.contains(e.target)) {
+                        userMenu.style.display = 'none';
+                    }
+                };
+                document.addEventListener('click', closeMenuHandler);
+                userInfoClickable.dataset.listenerAdded = 'true';
+                userInfoClickable.dataset.closeHandler = 'true';
+            }
+            
+            // User-Info aktualisieren
             if (userName) userName.textContent = this.currentUser.name || this.currentUser.email;
             if (userAvatarImg) {
                 userAvatarImg.src = this.currentUser.avatar || '../images/manuel-weiss-portrait.jpg';
                 userAvatarImg.alt = this.currentUser.name || 'User Avatar';
             }
+        } else {
+            // Nicht authentifiziert: Auth-Button zeigen, User-Button verstecken
+            if (authButton) authButton.style.display = 'block';
+            if (userButton) userButton.style.display = 'none';
+            if (userMenu) userMenu.style.display = 'none';
         }
     }
 
@@ -494,35 +529,106 @@ class BewerbungsprofilManager {
 
     async saveProfile(profileData) {
         try {
-            const response = await fetch('/api/applications/profile', {
+            console.log('💾 Speichere Bewerbungsprofil:', profileData);
+            
+            // Versuche zuerst awsProfileAPI (falls verfügbar)
+            if (window.awsProfileAPI && window.awsProfileAPI.isInitialized) {
+                try {
+                    console.log('📤 Verwende awsProfileAPI...');
+                    const profileToSave = {
+                        type: 'application-profile',
+                        ...profileData,
+                        userId: this.currentUser?.id || this.currentUser?.userId,
+                        email: this.currentUser?.email
+                    };
+                    
+                    await window.awsProfileAPI.saveProfile(profileToSave);
+                    console.log('✅ Profil erfolgreich über awsProfileAPI gespeichert');
+                    
+                    return {
+                        success: true,
+                        profile: profileToSave,
+                        message: 'Profil erfolgreich gespeichert'
+                    };
+                } catch (apiError) {
+                    console.warn('⚠️ awsProfileAPI Fehler, versuche API-Endpoint:', apiError);
+                }
+            }
+            
+            // Fallback: API-Endpoint
+            const apiBaseUrl = window.AWS_CONFIG?.apiBaseUrl || '';
+            const apiUrl = apiBaseUrl ? `${apiBaseUrl}/profile` : '/api/applications/profile';
+            
+            console.log('📤 Verwende API-Endpoint:', apiUrl);
+            
+            const authToken = await this.getAuthToken();
+            if (!authToken) {
+                throw new Error('Kein Auth-Token verfügbar');
+            }
+            
+            const response = await fetch(apiUrl, {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${await this.getAuthToken()}`,
+                    'Authorization': `Bearer ${authToken}`,
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(profileData)
+                body: JSON.stringify({
+                    ...profileData,
+                    userId: this.currentUser?.id || this.currentUser?.userId,
+                    email: this.currentUser?.email,
+                    type: 'application-profile'
+                })
             });
 
             if (response.ok) {
                 const result = await response.json();
+                console.log('✅ Profil erfolgreich über API gespeichert:', result);
                 return {
                     success: true,
                     profile: result,
                     message: 'Profil erfolgreich gespeichert'
                 };
             } else {
-                const error = await response.json();
+                const errorText = await response.text();
+                let errorData;
+                try {
+                    errorData = JSON.parse(errorText);
+                } catch (e) {
+                    errorData = { message: errorText || `HTTP ${response.status}` };
+                }
+                
+                console.error('❌ API-Fehler:', response.status, errorData);
                 return {
                     success: false,
-                    error: error.message || 'Profil konnte nicht gespeichert werden'
+                    error: errorData.message || `Profil konnte nicht gespeichert werden (${response.status})`
                 };
             }
         } catch (error) {
             console.error('❌ Profil-Speicher-Fehler:', error);
-            return {
-                success: false,
-                error: 'Netzwerkfehler beim Speichern des Profils'
-            };
+            
+            // Fallback: Lokale Speicherung
+            try {
+                const localKey = `application_profile_${this.currentUser?.id || 'temp'}`;
+                localStorage.setItem(localKey, JSON.stringify({
+                    ...profileData,
+                    savedAt: new Date().toISOString(),
+                    savedOffline: true
+                }));
+                console.log('💾 Profil lokal gespeichert als Fallback');
+                
+                return {
+                    success: true,
+                    profile: profileData,
+                    message: 'Profil lokal gespeichert (wird später synchronisiert)',
+                    offline: true
+                };
+            } catch (localError) {
+                console.error('❌ Auch lokale Speicherung fehlgeschlagen:', localError);
+                return {
+                    success: false,
+                    error: error.message || 'Netzwerkfehler beim Speichern des Profils'
+                };
+            }
         }
     }
 
