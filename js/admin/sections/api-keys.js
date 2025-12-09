@@ -276,7 +276,7 @@ class ApiKeysSection {
     }
     
     /**
-     * Direkter DynamoDB-Zugriff (Fallback, wenn API fehlschlägt)
+     * Direkter DynamoDB-Zugriff zum Speichern (Fallback)
      */
     async saveToDynamoDBDirect(profileData) {
         try {
@@ -288,7 +288,7 @@ class ApiKeysSection {
                 region: window.AWS_CONFIG?.region || 'eu-central-1'
             });
             
-            const tableName = window.AWS_CONFIG?.tableName || 'mawps-user-profiles';
+            const tableName = window.AWS_CONFIG?.dynamoDB?.tableName || 'mawps-user-profiles';
             
             await dynamoDB.put({
                 TableName: tableName,
@@ -299,6 +299,40 @@ class ApiKeysSection {
         } catch (error) {
             console.error('❌ Direkter DynamoDB-Zugriff fehlgeschlagen:', error);
             throw error;
+        }
+    }
+    
+    /**
+     * Direkter DynamoDB-Zugriff zum Laden (Fallback)
+     */
+    async loadFromDynamoDBDirect(userId) {
+        try {
+            if (!window.AWS || !window.AWS.DynamoDB) {
+                throw new Error('AWS SDK nicht verfügbar');
+            }
+            
+            const dynamoDB = new window.AWS.DynamoDB.DocumentClient({
+                region: window.AWS_CONFIG?.region || 'eu-central-1'
+            });
+            
+            const tableName = window.AWS_CONFIG?.dynamoDB?.tableName || 'mawps-user-profiles';
+            
+            const result = await dynamoDB.get({
+                TableName: tableName,
+                Key: {
+                    userId: userId
+                }
+            }).promise();
+            
+            if (result.Item) {
+                console.log('✅ Direkt aus DynamoDB geladen');
+                return result.Item;
+            }
+            
+            return null;
+        } catch (error) {
+            console.error('❌ Direkter DynamoDB-Zugriff fehlgeschlagen:', error);
+            return null;
         }
     }
     
