@@ -217,38 +217,104 @@ class TranslationManager {
     
     applyLanguage() {
         console.log('🔄 Applying language:', this.currentLanguage);
-        console.log('📚 Available translations:', Object.keys(this.translations));
         
-        // Wait a bit for DOM to be fully ready
-        setTimeout(() => {
-            // Update all elements with data-translate attribute
-            const elements = document.querySelectorAll('[data-translate]');
-            console.log(`🔍 Found ${elements.length} elements to translate`);
-            
-            elements.forEach(element => {
-                const key = element.getAttribute('data-translate');
-                const translation = this.translate(key);
-                
-                console.log(`🔤 Translating ${key}: ${translation}`);
-                
-                if (element.tagName === 'INPUT' && element.type === 'placeholder') {
-                    element.placeholder = translation;
-                } else if (element.tagName === 'INPUT' && element.type === 'value') {
-                    element.value = translation;
+        // Update HTML lang attribute
+        document.documentElement.lang = this.currentLanguage;
+        
+        // Update all elements with data-de and data-en attributes
+        document.querySelectorAll('[data-de][data-en]').forEach(element => {
+            const text = element.getAttribute(`data-${this.currentLanguage}`);
+            if (text) {
+                if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                    element.value = text;
+                } else if (element.hasAttribute('placeholder')) {
+                    element.setAttribute('placeholder', text);
                 } else {
-                    element.textContent = translation;
+                    // Behalte HTML-Struktur bei (z.B. <span> mit Klassen)
+                    if (element.children.length > 0) {
+                        // Wenn Element Kinder hat, nur Text-Knoten aktualisieren
+                        Array.from(element.childNodes).forEach(node => {
+                            if (node.nodeType === Node.TEXT_NODE) {
+                                node.textContent = text;
+                            }
+                        });
+                    } else {
+                        element.textContent = text;
+                    }
                 }
-            });
-            
-            // Update title and meta description
-            document.title = this.translate('page.title');
-            const metaDescription = document.querySelector('meta[name="description"]');
-            if (metaDescription) {
-                metaDescription.content = this.translate('page.description');
             }
+        });
+        
+        // Update elements with only data-de or data-en (single language)
+        document.querySelectorAll('[data-de]:not([data-en])').forEach(element => {
+            if (this.currentLanguage === 'de') {
+                const text = element.getAttribute('data-de');
+                if (text) {
+                    if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                        element.value = text;
+                    } else if (element.hasAttribute('placeholder')) {
+                        element.setAttribute('placeholder', text);
+                    } else {
+                        element.textContent = text;
+                    }
+                }
+            }
+        });
+        
+        document.querySelectorAll('[data-en]:not([data-de])').forEach(element => {
+            if (this.currentLanguage === 'en') {
+                const text = element.getAttribute('data-en');
+                if (text) {
+                    if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                        element.value = text;
+                    } else if (element.hasAttribute('placeholder')) {
+                        element.setAttribute('placeholder', text);
+                    } else {
+                        element.textContent = text;
+                    }
+                }
+            }
+        });
+        
+        // Update all elements with data-translate attribute (fallback)
+        document.querySelectorAll('[data-translate]').forEach(element => {
+            const key = element.getAttribute('data-translate');
+            const translation = this.translate(key);
             
-            console.log('✅ Language applied successfully');
-        }, 100);
+            if (element.tagName === 'INPUT' && element.type === 'placeholder') {
+                element.placeholder = translation;
+            } else if (element.tagName === 'INPUT' && element.type === 'value') {
+                element.value = translation;
+            } else {
+                element.textContent = translation;
+            }
+        });
+        
+        // Update page title
+        const titleElement = document.querySelector('title');
+        if (titleElement) {
+            const titleDe = titleElement.getAttribute('data-de') || titleElement.textContent;
+            const titleEn = titleElement.getAttribute('data-en');
+            if (this.currentLanguage === 'en' && titleEn) {
+                titleElement.textContent = titleEn;
+            } else {
+                titleElement.textContent = titleDe;
+            }
+        }
+        
+        // Update meta description
+        const metaDescription = document.querySelector('meta[name="description"]');
+        if (metaDescription) {
+            const descDe = metaDescription.getAttribute('data-de') || metaDescription.getAttribute('content');
+            const descEn = metaDescription.getAttribute('data-en');
+            if (this.currentLanguage === 'en' && descEn) {
+                metaDescription.setAttribute('content', descEn);
+            } else {
+                metaDescription.setAttribute('content', descDe);
+            }
+        }
+        
+        this.updateLanguageSwitcher();
     }
     
     createLanguageSwitcher() {
