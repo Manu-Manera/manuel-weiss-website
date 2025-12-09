@@ -219,7 +219,11 @@ class AICoverLetterGenerator {
         // PRIORITÄT 1: AWS DynamoDB (Admin-Konfiguration)
         try {
             if (window.awsProfileAPI && window.awsProfileAPI.isInitialized) {
-                const adminProfile = await window.awsProfileAPI.loadProfile().catch(() => null);
+                // Versuche Admin-Konfiguration zu laden (userId: 'admin' oder 'owner')
+                const adminProfile = await window.awsProfileAPI.loadProfile('admin').catch(() => {
+                    // Fallback: Versuche mit 'owner'
+                    return window.awsProfileAPI.loadProfile('owner').catch(() => null);
+                });
                 
                 if (adminProfile && adminProfile.apiKeys) {
                     const apiKeys = adminProfile.apiKeys;
