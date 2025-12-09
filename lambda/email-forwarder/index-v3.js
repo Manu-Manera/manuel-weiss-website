@@ -30,10 +30,14 @@ exports.handler = async (event) => {
         const { messageId, source, destination, timestamp } = mail;
         const { action, recipients } = receipt;
         
+        // Normalisiere source und destination (können Arrays sein)
+        const sourceEmail = Array.isArray(source) ? source[0] : source;
+        const destinationEmail = Array.isArray(destination) ? destination[0] : destination;
+        
         console.log('📬 E-Mail empfangen:', {
             messageId,
-            from: source,
-            to: destination,
+            from: sourceEmail,
+            to: destinationEmail,
             timestamp,
             action: action.type,
             s3Action: action.s3Action
@@ -98,16 +102,16 @@ exports.handler = async (event) => {
                 },
                 Body: {
                     Html: {
-                        Data: buildForwardedEmailHtml(emailParts, rawEmail, source, destination),
+                        Data: buildForwardedEmailHtml(emailParts, rawEmail, sourceEmail, destinationEmail),
                         Charset: 'UTF-8'
                     },
                     Text: {
-                        Data: buildForwardedEmailText(emailParts, rawEmail, source, destination),
+                        Data: buildForwardedEmailText(emailParts, rawEmail, sourceEmail, destinationEmail),
                         Charset: 'UTF-8'
                     }
                 }
             },
-            ReplyToAddresses: [emailParts.from || source]
+            ReplyToAddresses: [emailParts.from || sourceEmail]
         });
         
         const result = await sesClient.send(sendEmailCommand);
@@ -285,7 +289,14 @@ ${rawEmail}
  * HTML-Escape
  */
 function escapeHtml(text) {
+    // Handle null, undefined, arrays, and other non-string types
     if (!text) return '';
+    if (Array.isArray(text)) {
+        text = text.join(', ');
+    }
+    if (typeof text !== 'string') {
+        text = String(text);
+    }
     const map = {
         '&': '&amp;',
         '<': '&lt;',
