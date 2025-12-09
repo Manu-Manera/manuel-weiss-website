@@ -605,30 +605,10 @@ class BewerbungsprofilManager {
             }
         } catch (error) {
             console.error('❌ Profil-Speicher-Fehler:', error);
-            
-            // Fallback: Lokale Speicherung
-            try {
-                const localKey = `application_profile_${this.currentUser?.id || 'temp'}`;
-                localStorage.setItem(localKey, JSON.stringify({
-                    ...profileData,
-                    savedAt: new Date().toISOString(),
-                    savedOffline: true
-                }));
-                console.log('💾 Profil lokal gespeichert als Fallback');
-                
-                return {
-                    success: true,
-                    profile: profileData,
-                    message: 'Profil lokal gespeichert (wird später synchronisiert)',
-                    offline: true
-                };
-            } catch (localError) {
-                console.error('❌ Auch lokale Speicherung fehlgeschlagen:', localError);
-                return {
-                    success: false,
-                    error: error.message || 'Netzwerkfehler beim Speichern des Profils'
-                };
-            }
+            return {
+                success: false,
+                error: error.message || 'Fehler beim Speichern des Profils in AWS. Bitte versuchen Sie es erneut.'
+            };
         }
     }
 

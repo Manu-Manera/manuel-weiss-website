@@ -524,10 +524,7 @@ class UserProfile {
 
         this.profileData = { ...this.profileData, ...formData };
         
-        // Save to localStorage as backup
-        localStorage.setItem('userProfile', JSON.stringify(this.profileData));
-        
-        // Save to AWS if authenticated
+        // Save to AWS (PRIMARY STORAGE - keine lokale Speicherung)
         if (window.realUserAuth?.isLoggedIn() && this.awsProfileAPI) {
             try {
                 console.log('💾 Saving profile to AWS...');
@@ -537,6 +534,8 @@ class UserProfile {
                 console.error('❌ Failed to save profile to AWS:', error);
                 throw error; // Re-throw to show error notification
             }
+        } else {
+            throw new Error('Benutzer nicht angemeldet oder AWS API nicht verfügbar');
         }
     }
 

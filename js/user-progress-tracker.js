@@ -72,9 +72,9 @@ class UserProgressTracker {
                 this.progressData = this.getDefaultProgressData();
             }
         } catch (error) {
-            console.error('Error loading progress:', error);
-            // Load from local storage as fallback
-            this.loadFromLocalStorage();
+            console.error('Error loading progress from AWS:', error);
+            // Kein Fallback - starte mit leeren Daten
+            this.progressData = this.getDefaultProgressData();
         }
     }
 
@@ -85,9 +85,7 @@ class UserProgressTracker {
         // WICHTIG: Prüfe ob User angemeldet ist
         if (!window.realUserAuth || !window.realUserAuth.isLoggedIn || !window.realUserAuth.isLoggedIn()) {
             console.warn('Cannot save progress: User not authenticated');
-            // Speichere trotzdem lokal als Fallback
-            this.saveToLocalStorage();
-            return;
+            throw new Error('Benutzer nicht angemeldet. Bitte melden Sie sich an, um Fortschritt zu speichern.');
         }
 
         // Stelle sicher, dass userId gesetzt ist
@@ -108,8 +106,7 @@ class UserProgressTracker {
         try {
             if (!window.awsProfileAPI) {
                 console.error('AWS Profile API not available');
-                this.saveToLocalStorage();
-                return;
+                throw new Error('AWS Profile API nicht verfügbar. Bitte Seite neu laden.');
             }
 
             // Stelle sicher, dass progressData userId enthält
@@ -126,18 +123,16 @@ class UserProgressTracker {
                 lastProgressUpdate: new Date().toISOString()
             };
             
-            // Save to AWS
+            // Save to AWS (PRIMARY STORAGE)
             await window.awsProfileAPI.saveProfile(updatedProfile);
             
             this.pendingChanges = false;
             console.log('✅ Progress saved to AWS for user:', this.userId);
             
-            // Also save to local storage as backup
-            this.saveToLocalStorage();
+            // Lokale Speicherung entfernt - alles wird in AWS gespeichert
         } catch (error) {
-            console.error('Error saving progress:', error);
-            // Fallback to local storage
-            this.saveToLocalStorage();
+            console.error('❌ Error saving progress to AWS:', error);
+            throw error; // Fehler weiterwerfen, damit UI darauf reagieren kann
         }
     }
 
@@ -391,36 +386,22 @@ class UserProgressTracker {
     }
 
     /**
-     * Save to local storage (fallback)
+     * DEPRECATED: Save to local storage (nicht mehr verwendet - alles wird in AWS gespeichert)
+     * Diese Methode wird nicht mehr aufgerufen, da alle Daten in AWS gespeichert werden.
      */
     saveToLocalStorage() {
-        if (!this.userId) return;
-        
-        const key = `userProgress_${this.userId}`;
-        localStorage.setItem(key, JSON.stringify(this.progressData));
-        console.log('Progress saved to local storage');
+        // DEPRECATED: Lokale Speicherung deaktiviert - alles wird in AWS gespeichert
+        console.warn('⚠️ saveToLocalStorage() ist deprecated - Daten werden nur in AWS gespeichert');
     }
 
     /**
-     * Load from local storage (fallback)
+     * DEPRECATED: Load from local storage (nicht mehr verwendet - alles wird von AWS geladen)
+     * Diese Methode wird nicht mehr aufgerufen, da alle Daten von AWS geladen werden.
      */
     loadFromLocalStorage() {
-        if (!this.userId) return;
-        
-        const key = `userProgress_${this.userId}`;
-        const stored = localStorage.getItem(key);
-        
-        if (stored) {
-            try {
-                this.progressData = JSON.parse(stored);
-                console.log('Progress loaded from local storage');
-            } catch (error) {
-                console.error('Error parsing local storage progress:', error);
-                this.progressData = this.getDefaultProgressData();
-            }
-        } else {
-            this.progressData = this.getDefaultProgressData();
-        }
+        // DEPRECATED: Lokale Speicherung deaktiviert - alles wird von AWS geladen
+        console.warn('⚠️ loadFromLocalStorage() ist deprecated - Daten werden nur von AWS geladen');
+        this.progressData = this.getDefaultProgressData();
     }
 
     /**
