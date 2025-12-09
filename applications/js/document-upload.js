@@ -490,9 +490,19 @@ class DocumentUpload {
         let total = 0;
         Object.values(this.uploadedFiles).forEach(files => {
             if (Array.isArray(files)) {
-                files.forEach(file => total += file.size);
+                files.forEach(item => {
+                    // Unterstütze sowohl file.size als auch item.file?.size
+                    const size = item?.file?.size || item?.size || 0;
+                    if (typeof size === 'number' && !isNaN(size)) {
+                        total += size;
+                    }
+                });
             } else if (files) {
-                total += files.size;
+                // Unterstütze sowohl files.file?.size als auch files.size
+                const size = files?.file?.size || files?.size || 0;
+                if (typeof size === 'number' && !isNaN(size)) {
+                    total += size;
+                }
             }
         });
         return total;

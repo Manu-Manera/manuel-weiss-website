@@ -660,9 +660,20 @@
 
 .upload-summary {
     background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
-    color: white;
+    color: white !important;
     padding: 2rem;
     margin-top: 2rem;
+}
+
+.upload-summary * {
+    color: white !important;
+}
+
+.upload-summary .summary-title,
+.upload-summary .summary-description,
+.upload-summary .stat-number,
+.upload-summary .stat-label {
+    color: white !important;
 }
 
 .summary-header {
