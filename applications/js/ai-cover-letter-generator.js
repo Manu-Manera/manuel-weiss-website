@@ -144,7 +144,7 @@ class AICoverLetterGenerator {
             const options = this.collectOptions();
             
             // Wähle verfügbaren KI-Provider (OpenAI > Google > Template)
-            const provider = this.getActiveAIProvider();
+            const provider = await this.getActiveAIProvider();
             let coverLetter;
             
             if (provider) {
@@ -215,8 +215,63 @@ class AICoverLetterGenerator {
         };
     }
 
-    getActiveAIProvider() {
-        // PRIORITÄT 1: Admin-Panel API Keys (State Manager)
+    async getActiveAIProvider() {
+        // PRIORITÄT 1: AWS DynamoDB (Admin-Konfiguration)
+        try {
+            if (window.awsProfileAPI && window.awsProfileAPI.isInitialized) {
+                const adminProfile = await window.awsProfileAPI.loadProfile().catch(() => null);
+                
+                if (adminProfile && adminProfile.apiKeys) {
+                    const apiKeys = adminProfile.apiKeys;
+                    
+                    // Prüfe OpenAI
+                    if (apiKeys.openai?.apiKey && this.isValidAPIKey(apiKeys.openai.apiKey)) {
+                        console.log('✅ Nutze OpenAI API Key aus AWS DynamoDB');
+                        return {
+                            type: 'openai',
+                            key: apiKeys.openai.apiKey,
+                            config: {
+                                model: apiKeys.openai.model || 'gpt-4o-mini',
+                                maxTokens: apiKeys.openai.maxTokens || 1000,
+                                temperature: apiKeys.openai.temperature || 0.3
+                            }
+                        };
+                    }
+                    
+                    // Prüfe Anthropic Claude
+                    if (apiKeys.anthropic?.apiKey && this.isValidAnthropicKey(apiKeys.anthropic.apiKey)) {
+                        console.log('✅ Nutze Anthropic Claude API Key aus AWS DynamoDB');
+                        return {
+                            type: 'anthropic',
+                            key: apiKeys.anthropic.apiKey,
+                            config: {
+                                model: apiKeys.anthropic.model || 'claude-3-sonnet-20240229',
+                                maxTokens: apiKeys.anthropic.maxTokens || 1000,
+                                temperature: apiKeys.anthropic.temperature || 0.3
+                            }
+                        };
+                    }
+                    
+                    // Prüfe Google AI
+                    if (apiKeys.google?.apiKey && this.isValidGoogleKey(apiKeys.google.apiKey)) {
+                        console.log('✅ Nutze Google AI API Key aus AWS DynamoDB');
+                        return {
+                            type: 'google',
+                            key: apiKeys.google.apiKey,
+                            config: {
+                                model: apiKeys.google.model || 'gemini-pro',
+                                maxTokens: apiKeys.google.maxTokens || 1000,
+                                temperature: apiKeys.google.temperature || 0.3
+                            }
+                        };
+                    }
+                }
+            }
+        } catch (error) {
+            console.warn('⚠️ Fehler beim Lesen aus AWS DynamoDB:', error);
+        }
+        
+        // PRIORITÄT 2: Admin-Panel API Keys (State Manager / localStorage)
         try {
             const adminState = localStorage.getItem('admin_state');
             if (adminState) {
@@ -225,7 +280,7 @@ class AICoverLetterGenerator {
                 
                 // Prüfe OpenAI
                 if (apiKeys.openai?.apiKey && this.isValidAPIKey(apiKeys.openai.apiKey)) {
-                    console.log('✅ Nutze OpenAI API Key aus Admin-Panel');
+                    console.log('✅ Nutze OpenAI API Key aus Admin-Panel localStorage');
                     return {
                         type: 'openai',
                         key: apiKeys.openai.apiKey,
@@ -239,7 +294,7 @@ class AICoverLetterGenerator {
                 
                 // Prüfe Anthropic Claude
                 if (apiKeys.anthropic?.apiKey && this.isValidAnthropicKey(apiKeys.anthropic.apiKey)) {
-                    console.log('✅ Nutze Anthropic Claude API Key aus Admin-Panel');
+                    console.log('✅ Nutze Anthropic Claude API Key aus Admin-Panel localStorage');
                     return {
                         type: 'anthropic',
                         key: apiKeys.anthropic.apiKey,
@@ -253,7 +308,7 @@ class AICoverLetterGenerator {
                 
                 // Prüfe Google AI
                 if (apiKeys.google?.apiKey && this.isValidGoogleKey(apiKeys.google.apiKey)) {
-                    console.log('✅ Nutze Google AI API Key aus Admin-Panel');
+                    console.log('✅ Nutze Google AI API Key aus Admin-Panel localStorage');
                     return {
                         type: 'google',
                         key: apiKeys.google.apiKey,
@@ -533,6 +588,12 @@ Erstelle nur das Anschreiben ohne zusätzliche Erklärungen.
     displayGeneratedContent(content) {
         const generatedSection = document.getElementById('generatedContent');
         const generatedText = document.getElementById('generatedText');
+        const loadingAnimation = document.getElementById('loadingAnimation');
+        
+        // Verstecke Loading-Animation
+        if (loadingAnimation) {
+            loadingAnimation.style.display = 'none';
+        }
         
         generatedText.value = content;
         generatedSection.style.display = 'block';

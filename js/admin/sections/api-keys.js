@@ -170,7 +170,7 @@ class ApiKeysSection {
     /**
      * Service speichern
      */
-    saveService(service) {
+    async saveService(service) {
         const serviceData = {
             apiKey: document.getElementById(`${service}-key`).value,
             model: document.getElementById(`${service}-model`).value,
@@ -178,11 +178,74 @@ class ApiKeysSection {
             temperature: parseFloat(document.getElementById(`${service}-temperature`).value)
         };
         
-        // State Manager aktualisieren
+        // State Manager aktualisieren (localStorage)
         if (this.stateManager) {
             const currentSettings = this.stateManager.getState('apiKeys') || {};
             currentSettings[service] = serviceData;
             this.stateManager.setState('apiKeys', currentSettings);
+        }
+        
+        // ZUSÄTZLICH: In AWS DynamoDB speichern (für alle User verfügbar)
+        try {
+            // Warte auf awsProfileAPI Initialisierung
+            if (window.awsProfileAPI && !window.awsProfileAPI.isInitialized) {
+                await new Promise(resolve => {
+                    const checkInit = setInterval(() => {
+                        if (window.awsProfileAPI && window.awsProfileAPI.isInitialized) {
+                            clearInterval(checkInit);
+                            resolve();
+                        }
+                    }, 100);
+                    setTimeout(() => {
+                        clearInterval(checkInit);
+                        resolve();
+                    }, 5000);
+                });
+            }
+            
+            if (window.awsProfileAPI && window.awsProfileAPI.isInitialized) {
+                // Lade aktuelle Admin-Konfiguration (userId: 'admin' oder 'owner')
+                let adminProfile = {};
+                try {
+                    // Versuche zuerst mit 'admin' userId
+                    const adminProfileAdmin = await window.awsProfileAPI.loadProfile().catch(() => null);
+                    if (adminProfileAdmin && adminProfileAdmin.userId === 'admin') {
+                        adminProfile = adminProfileAdmin;
+                    } else {
+                        // Fallback: Versuche mit 'owner' userId
+                        const adminProfileOwner = await window.awsProfileAPI.loadProfile().catch(() => null);
+                        if (adminProfileOwner && adminProfileOwner.userId === 'owner') {
+                            adminProfile = adminProfileOwner;
+                        }
+                    }
+                } catch (error) {
+                    console.warn('⚠️ Fehler beim Laden des Admin-Profils:', error);
+                }
+                
+                // Aktualisiere API Keys in Admin-Profil
+                const updatedProfile = {
+                    ...adminProfile,
+                    userId: 'admin', // Admin-Konfiguration (konsistent)
+                    type: 'admin-config',
+                    apiKeys: {
+                        ...(adminProfile?.apiKeys || {}),
+                        [service]: {
+                            ...serviceData, // Enthält den vollständigen API Key
+                            updatedAt: new Date().toISOString()
+                        }
+                    },
+                    updatedAt: new Date().toISOString()
+                };
+                
+                // Speichere in AWS
+                await window.awsProfileAPI.saveProfile(updatedProfile);
+                console.log('✅ API Key in AWS gespeichert für Service:', service);
+            } else {
+                console.warn('⚠️ awsProfileAPI nicht verfügbar, speichere nur lokal');
+            }
+        } catch (error) {
+            console.error('❌ Fehler beim Speichern in AWS:', error);
+            // Weiterhin lokal speichern, auch wenn AWS fehlschlägt
         }
         
         // Status aktualisieren
