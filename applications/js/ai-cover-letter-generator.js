@@ -1310,11 +1310,21 @@ Herzliche Grüße
     }
 
     showLoading() {
-        document.getElementById('loadingOverlay').style.display = 'flex';
+        const loadingEl = document.getElementById('loadingAnimation');
+        const generatedSection = document.getElementById('generatedContent');
+        if (loadingEl) {
+            loadingEl.style.display = 'flex';
+        }
+        if (generatedSection) {
+            generatedSection.style.display = 'none';
+        }
     }
 
     hideLoading() {
-        document.getElementById('loadingOverlay').style.display = 'none';
+        const loadingEl = document.getElementById('loadingAnimation');
+        if (loadingEl) {
+            loadingEl.style.display = 'none';
+        }
     }
 
     showNotification(message, type = 'info') {
