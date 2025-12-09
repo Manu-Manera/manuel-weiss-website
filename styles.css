@@ -1389,7 +1389,7 @@ a:hover {
 
 /* Persönlichkeitsentwicklung Kachel: Beschreibung in weiss */
 .service-card.modern-highlight p {
-    color: #ffffff !important;
+    color: rgba(255, 255, 255, 0.95) !important;
 }
 
 /* AI-Digitalisierung - Workflow CTA Text in weiß für bessere Lesbarkeit auf Gradient */
@@ -2560,10 +2560,13 @@ a:hover {
 /* 🚀 Modern Application Management Service Card Enhancements */
 .service-card.modern-highlight {
     position: relative;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     color: white;
     transform: scale(1.02);
-    box-shadow: 0 20px 40px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 20px 40px rgba(102, 126, 234, 0.2);
     overflow: hidden;
 }
 
