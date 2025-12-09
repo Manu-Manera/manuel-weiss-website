@@ -438,6 +438,45 @@ class AICoverLetterGenerator {
         }
         return text;
     }
+    
+    async callAnthropic(jobData, profileData, options, provider) {
+        const config = provider?.config || {};
+        const prompt = this.constructPrompt(jobData, profileData, options);
+        const systemPrompt = 'Du bist ein professioneller Bewerbungsberater aus dem DACH-Raum. Erstelle hochwertige Bewerbungsanschreiben auf Deutsch.';
+        
+        const response = await fetch('https://api.anthropic.com/v1/messages', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': provider.key,
+                'anthropic-version': '2023-06-01'
+            },
+            body: JSON.stringify({
+                model: config.model || 'claude-3-sonnet-20240229',
+                max_tokens: config.maxTokens || 800,
+                temperature: config.temperature ?? 0.7,
+                system: systemPrompt,
+                messages: [
+                    {
+                        role: 'user',
+                        content: prompt
+                    }
+                ]
+            })
+        });
+        
+        if (!response.ok) {
+            const error = await response.json().catch(() => ({}));
+            throw new Error(`Anthropic Claude Fehler: ${error.error?.message || response.statusText}`);
+        }
+        
+        const data = await response.json();
+        const text = data.content?.[0]?.text;
+        if (!text) {
+            throw new Error('Anthropic Claude lieferte keinen Text zurück');
+        }
+        return text;
+    }
 
     constructPrompt(jobData, profileData, options) {
         const lengthMap = {
