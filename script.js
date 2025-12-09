@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // Initialize all website functions
 function initializeWebsite() {
     hideLoadingScreen();
+    initMobileMenu();
     initNavigation();
     initAnimations();
     initContactForm();
@@ -18,6 +19,69 @@ function initializeWebsite() {
     loadHeroContentFromStorage();
     setupProfileImageListener();
     initNutritionPlanner();
+}
+
+// Mobile Menu Toggle
+function initMobileMenu() {
+    const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+    const mobileAuthSection = document.getElementById('mobileAuthSection');
+    const authSection = document.querySelector('.auth-section');
+    
+    if (!mobileMenuToggle || !mobileMenu) return;
+    
+    // Toggle Menu
+    mobileMenuToggle.addEventListener('click', function(e) {
+        e.stopPropagation();
+        mobileMenuToggle.classList.toggle('active');
+        mobileMenu.classList.toggle('active');
+        mobileMenuOverlay.classList.toggle('active');
+        document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
+    });
+    
+    // Close Menu on Overlay Click
+    if (mobileMenuOverlay) {
+        mobileMenuOverlay.addEventListener('click', function() {
+            mobileMenuToggle.classList.remove('active');
+            mobileMenu.classList.remove('active');
+            mobileMenuOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        });
+    }
+    
+    // Close Menu on Link Click
+    const mobileLinks = mobileMenu.querySelectorAll('.nav-link');
+    mobileLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            mobileMenuToggle.classList.remove('active');
+            mobileMenu.classList.remove('active');
+            if (mobileMenuOverlay) mobileMenuOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        });
+    });
+    
+    // Copy Auth Section to Mobile Menu
+    if (authSection && mobileAuthSection) {
+        const updateMobileAuth = () => {
+            const authClone = authSection.cloneNode(true);
+            mobileAuthSection.innerHTML = '';
+            mobileAuthSection.appendChild(authClone);
+        };
+        updateMobileAuth();
+        // Update when auth state changes
+        setInterval(updateMobileAuth, 1000);
+    }
+    
+    // Close Menu on Escape Key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && mobileMenu.classList.contains('active')) {
+            mobileMenuToggle.classList.remove('active');
+            mobileMenu.classList.remove('active');
+            if (mobileMenuOverlay) mobileMenuOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    });
 }
 
 // Hide loading screen
