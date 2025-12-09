@@ -114,6 +114,9 @@
 html {
     scroll-behavior: smooth;
     font-size: 16px;
+    height: 100%;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
 }
 
 body {
@@ -123,6 +126,11 @@ body {
     background-color: var(--white);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+    overflow-x: hidden;
+    position: relative;
+    width: 100%;
 }
 
 /* Focus Management */
@@ -3089,6 +3097,35 @@ a:hover {
     .service-card:active {
         transform: scale(0.98);
     }
+    
+    /* Touch Scroll Optimierung */
+    html,
+    body {
+        -webkit-overflow-scrolling: touch;
+        touch-action: pan-y;
+        overscroll-behavior-y: contain;
+    }
+    
+    /* Verhindere Pull-to-Refresh auf iOS */
+    body {
+        overscroll-behavior-y: none;
+    }
+    
+    /* Fix für iOS Safari Bounce */
+    @supports (-webkit-touch-callout: none) {
+        body {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        body.scrollable {
+            position: relative;
+            height: auto;
+            overflow: visible;
+        }
+    }
 }
 
 /* High DPI Displays */
@@ -3109,5 +3146,401 @@ a:hover {
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
+    }
+}
+
+/* ============================================
+   🌐 CROSS-BROWSER KOMPATIBILITÄT
+   ============================================ */
+
+/* Firefox-spezifische Fixes */
+@-moz-document url-prefix() {
+    /* Firefox: backdrop-filter Fallback */
+    .admin-content,
+    .service-card.modern-highlight,
+    .stat-card,
+    .magic-container {
+        background: rgba(255, 255, 255, 0.95) !important;
+    }
+    
+    /* Firefox: Smooth Scrolling */
+    html {
+        scroll-behavior: smooth;
+    }
+    
+    /* Firefox: Flexbox Gap Fallback */
+    .services-grid,
+    .highlights-grid,
+    .activities-grid {
+        gap: 1.5rem;
+        margin: -0.75rem;
+    }
+    
+    .services-grid > *,
+    .highlights-grid > *,
+    .activities-grid > * {
+        margin: 0.75rem;
+    }
+    
+    /* Firefox: Grid Auto-fit Fix */
+    .services-grid {
+        display: -moz-grid;
+        -moz-grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+}
+
+/* Chrome/Edge-spezifische Optimierungen */
+@supports (-webkit-appearance: none) {
+    /* Webkit: backdrop-filter Support */
+    .admin-content,
+    .service-card.modern-highlight,
+    .stat-card {
+        -webkit-backdrop-filter: blur(12px);
+        backdrop-filter: blur(12px);
+    }
+    
+    /* Webkit: Smooth Scrolling */
+    html {
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Webkit: Text Rendering */
+    body {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+}
+
+/* Safari-spezifische Fixes */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+    /* Safari: backdrop-filter */
+    .admin-content,
+    .service-card.modern-highlight,
+    .stat-card {
+        -webkit-backdrop-filter: blur(12px);
+        backdrop-filter: blur(12px);
+    }
+    
+    /* Safari: Flexbox Gap Fallback */
+    .hero-actions {
+        display: -webkit-flex;
+        -webkit-flex-wrap: wrap;
+    }
+    
+    /* Safari: Grid Support */
+    .services-grid {
+        display: -webkit-grid;
+        -webkit-grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+}
+
+/* Allgemeine Cross-Browser Fixes */
+* {
+    /* Box-sizing für alle Browser */
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+/* Flexbox Fallbacks */
+.flex,
+.d-flex,
+.hero-actions,
+.nav-container,
+.content-actions {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+}
+
+/* Grid Fallbacks */
+.grid,
+.services-grid,
+.highlights-grid,
+.activities-grid,
+.about-stats {
+    display: -webkit-grid;
+    display: -moz-grid;
+    display: -ms-grid;
+    display: grid;
+}
+
+/* Transform mit Vendor-Prefixes */
+.transform,
+.service-card:hover,
+.btn:hover {
+    -webkit-transform: translateY(-2px);
+    -moz-transform: translateY(-2px);
+    -ms-transform: translateY(-2px);
+    -o-transform: translateY(-2px);
+    transform: translateY(-2px);
+}
+
+/* Transition mit Vendor-Prefixes */
+.transition,
+.btn,
+.service-card,
+.nav-link {
+    -webkit-transition: all 0.3s ease;
+    -moz-transition: all 0.3s ease;
+    -ms-transition: all 0.3s ease;
+    -o-transition: all 0.3s ease;
+    transition: all 0.3s ease;
+}
+
+/* Border-radius mit Vendor-Prefixes */
+.rounded,
+.btn,
+.service-card,
+.stat-card {
+    -webkit-border-radius: var(--radius-lg);
+    -moz-border-radius: var(--radius-lg);
+    border-radius: var(--radius-lg);
+}
+
+/* Box-shadow mit Vendor-Prefixes */
+.shadow,
+.service-card,
+.stat-card,
+.btn {
+    -webkit-box-shadow: var(--shadow-md);
+    -moz-box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow-md);
+}
+
+/* Backdrop-filter mit Fallbacks */
+.backdrop-blur,
+.admin-content,
+.service-card.modern-highlight,
+.stat-card {
+    background: rgba(255, 255, 255, 0.95);
+    -webkit-backdrop-filter: blur(12px);
+    -moz-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+}
+
+/* Firefox: backdrop-filter Fallback */
+@supports not (backdrop-filter: blur(12px)) {
+    .admin-content,
+    .service-card.modern-highlight,
+    .stat-card,
+    .magic-container {
+        background: rgba(255, 255, 255, 0.98) !important;
+    }
+}
+
+/* CSS-Variablen Fallback für ältere Browser */
+@supports not (--css: variables) {
+    :root {
+        --primary: #6366f1;
+        --primary-dark: #4f46e5;
+        --white: #ffffff;
+        --gray-800: #1e293b;
+        --spacing-md: 1rem;
+        --spacing-lg: 1.5rem;
+        --text-base: 1rem;
+        --text-lg: 1.125rem;
+        --radius-lg: 0.75rem;
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+}
+
+/* Firefox: Gradient Text Fallback */
+.gradient-text {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: var(--primary); /* Fallback für Firefox */
+}
+
+/* Firefox: -webkit-text-fill-color Fallback */
+@-moz-document url-prefix() {
+    .gradient-text {
+        color: var(--primary);
+        background: none;
+        -webkit-text-fill-color: unset;
+    }
+}
+
+/* Firefox: Grid Auto-fit Alternative */
+@supports not (grid-template-columns: repeat(auto-fit, minmax(280px, 1fr))) {
+    .services-grid {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    
+    .service-card {
+        flex: 1 1 280px;
+        min-width: 280px;
+        max-width: 100%;
+    }
+}
+
+/* Firefox: Flexbox Gap Fallback */
+@supports not (gap: 1.5rem) {
+    .services-grid,
+    .highlights-grid,
+    .activities-grid {
+        margin: -0.75rem;
+    }
+    
+    .services-grid > *,
+    .highlights-grid > *,
+    .activities-grid > * {
+        margin: 0.75rem;
+    }
+}
+
+/* Firefox: aspect-ratio Fallback */
+@supports not (aspect-ratio: 16/9) {
+    .hero-image,
+    .activity-image img {
+        height: auto;
+        padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+    }
+}
+
+/* Firefox: :has() Selector Fallback */
+@supports not selector(:has(*)) {
+    .service-card:has(.service-features) {
+        padding-bottom: 2rem;
+    }
+}
+
+/* Firefox: Container Queries Fallback */
+@supports not (container-type: inline-size) {
+    .service-card {
+        width: 100%;
+        max-width: 400px;
+    }
+}
+
+/* Firefox: Scrollbar Styling */
+@-moz-document url-prefix() {
+    * {
+        scrollbar-width: thin;
+        scrollbar-color: var(--gray-400) var(--gray-100);
+    }
+}
+
+/* Webkit: Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--gray-100);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--gray-400);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--gray-500);
+}
+
+/* Firefox: Input Styling */
+@-moz-document url-prefix() {
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    textarea,
+    select {
+        -moz-appearance: none;
+        appearance: none;
+    }
+    
+    input[type="number"] {
+        -moz-appearance: textfield;
+    }
+    
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+}
+
+/* Firefox: Button Focus Styling */
+@-moz-document url-prefix() {
+    .btn:focus,
+    .nav-link:focus {
+        outline: 2px solid var(--primary);
+        outline-offset: 2px;
+    }
+}
+
+/* Firefox: Animation Performance */
+@-moz-document url-prefix() {
+    .service-card,
+    .stat-card,
+    .btn {
+        will-change: transform;
+    }
+}
+
+/* Firefox: Text Selection */
+@-moz-document url-prefix() {
+    ::selection {
+        background: var(--primary);
+        color: var(--white);
+    }
+    
+    ::-moz-selection {
+        background: var(--primary);
+        color: var(--white);
+    }
+}
+
+/* Webkit: Text Selection */
+::-webkit-selection {
+    background: var(--primary);
+    color: var(--white);
+}
+
+/* Firefox: Placeholder Styling */
+@-moz-document url-prefix() {
+    input::placeholder,
+    textarea::placeholder {
+        opacity: 0.6;
+    }
+}
+
+/* Webkit: Placeholder Styling */
+::-webkit-input-placeholder {
+    opacity: 0.6;
+}
+
+/* Firefox: Image Rendering */
+@-moz-document url-prefix() {
+    img {
+        image-rendering: -moz-crisp-edges;
+        image-rendering: crisp-edges;
+    }
+}
+
+/* Webkit: Image Rendering */
+img {
+    -webkit-image-rendering: -webkit-optimize-contrast;
+    image-rendering: -webkit-optimize-contrast;
+}
+
+/* Firefox: Filter Fallback */
+@supports not (filter: blur(10px)) {
+    .sparkle {
+        opacity: 0.8;
+    }
+}
+
+/* Firefox: Clip-path Fallback */
+@supports not (clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%)) {
+    .service-card.modern-highlight::before {
+        display: none;
     }
 }

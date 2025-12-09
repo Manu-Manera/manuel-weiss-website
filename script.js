@@ -3,7 +3,70 @@
 // DOM Content Loaded
 document.addEventListener('DOMContentLoaded', () => {
     initializeWebsite();
+    fixMobileScroll();
 });
+
+// Mobile Scroll Fixes
+function fixMobileScroll() {
+    // Fix für iOS Safari Viewport
+    if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
+        // Setze Viewport Height korrekt
+        const setViewportHeight = () => {
+            const vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+        };
+        
+        setViewportHeight();
+        window.addEventListener('resize', setViewportHeight);
+        window.addEventListener('orientationchange', setViewportHeight);
+        
+        // Entferne fixed positioning nach Load
+        setTimeout(() => {
+            document.body.classList.add('scrollable');
+        }, 100);
+    }
+    
+    // Verhindere Scroll-Locking beim Mobile Menu
+    const mobileMenu = document.getElementById('mobileMenu');
+    const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+    
+    if (mobileMenu && mobileMenuOverlay) {
+        const observer = new MutationObserver(() => {
+            if (mobileMenu.classList.contains('active')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
+        });
+        
+        observer.observe(mobileMenu, {
+            attributes: true,
+            attributeFilter: ['class']
+        });
+    }
+    
+    // Smooth Scroll für alle Browser
+    if ('scrollBehavior' in document.documentElement.style) {
+        // Native smooth scroll unterstützt
+    } else {
+        // Polyfill für ältere Browser
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+                if (href !== '#' && href.startsWith('#')) {
+                    e.preventDefault();
+                    const target = document.querySelector(href);
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                }
+            });
+        });
+    }
+}
 
 // Initialize all website functions
 function initializeWebsite() {
