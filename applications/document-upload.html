@@ -327,17 +327,8 @@
     <!-- Auth & Core -->
     
     
-    <!-- AWS Config MUSS ZUERST kommen -->
+    <!-- AWS_CONFIG für andere APIs -->
     <script>
-        // AWS_APP_CONFIG für aws-media.js (Dokument-Upload)
-        window.AWS_APP_CONFIG = {
-            MEDIA_API_BASE: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod',
-            REGION: 'eu-central-1',
-            S3_PROFILE_BUCKET_NAME: 'manuel-weiss-public-media',
-            S3_PROFILE_PREFIX: 'public/profile-images/'
-        };
-        
-        // AWS_CONFIG für andere APIs
         window.AWS_CONFIG = {
             userPoolId: 'eu-central-1_8gP4gLK9r',
             clientId: '7kc5tt6a23fgh53d60vkefm812',
