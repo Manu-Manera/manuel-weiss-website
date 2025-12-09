@@ -1034,6 +1034,15 @@
     align-items: center;
     justify-content: center;
     z-index: 1000;
+    /* WICHTIG: Verhindert Rotation der gesamten Seite */
+    transform: none !important;
+    animation: none !important;
+}
+
+.loading-overlay * {
+    /* Verhindert Rotation aller Kindelemente */
+    transform: none !important;
+    animation: none !important;
 }
 
 .loading-spinner {
@@ -1044,6 +1053,9 @@
     text-align: center;
     max-width: 400px;
     width: 90%;
+    /* WICHTIG: Verhindert Rotation des Containers */
+    transform: none !important;
+    animation: none !important;
 }
 
 .loading-spinner .spinner {
@@ -1054,6 +1066,9 @@
     border-radius: 50%;
     animation: spin 1s linear infinite;
     margin: 0 auto 1.5rem;
+    /* WICHTIG: Nur der Spinner selbst rotiert, nicht der Container */
+    display: inline-block;
+    transform-origin: center;
 }
 
 .loading-spinner h3 {

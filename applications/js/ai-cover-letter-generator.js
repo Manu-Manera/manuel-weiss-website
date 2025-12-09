@@ -152,6 +152,8 @@ class AICoverLetterGenerator {
                     coverLetter = await this.callOpenAI(jobData, profileData, options, provider);
                 } else if (provider.type === 'google') {
                     coverLetter = await this.callGoogleAI(jobData, profileData, options, provider);
+                } else if (provider.type === 'anthropic') {
+                    coverLetter = await this.callAnthropic(jobData, profileData, options, provider);
                 } else {
                     throw new Error(`Unbekannter Provider: ${provider.type}`);
                 }
@@ -214,53 +216,148 @@ class AICoverLetterGenerator {
     }
 
     getActiveAIProvider() {
-        const openAIKey = this.getAPIKey();
-        if (this.isValidAPIKey(openAIKey)) {
-            const openAIConfig = window.GlobalAPIManager?.getServiceConfig?.('openai');
-            console.log('✅ Nutze OpenAI API Key aus', openAIConfig ? 'GlobalAPIManager' : 'localStorage');
-            return {
-                type: 'openai',
-                key: openAIKey,
-                config: openAIConfig
-            };
-        }
-        
-        const manager = window.GlobalAPIManager;
-        if (manager?.isServiceEnabled?.('google')) {
-            const googleConfig = manager.getServiceConfig('google');
-            if (googleConfig?.key) {
-                console.log('✅ Google AI aktiviert via GlobalAPIManager');
-                return {
-                    type: 'google',
-                    key: googleConfig.key,
-                    config: googleConfig
-                };
-            }
-        }
-        
-        // Fallback: direkt aus localStorage.global_api_keys lesen (falls Manager nicht verfügbar oder deaktiviert)
+        // PRIORITÄT 1: Admin-Panel API Keys (State Manager)
         try {
-            const raw = localStorage.getItem('global_api_keys');
-            if (raw) {
-                const parsed = JSON.parse(raw);
-                const googleConfig = parsed?.google;
-                if (googleConfig?.key) {
-                    console.log('✅ Google AI via localStorage Fallback aktiviert');
+            const adminState = localStorage.getItem('admin_state');
+            if (adminState) {
+                const state = JSON.parse(adminState);
+                const apiKeys = state?.apiKeys || {};
+                
+                // Prüfe OpenAI
+                if (apiKeys.openai?.apiKey && this.isValidAPIKey(apiKeys.openai.apiKey)) {
+                    console.log('✅ Nutze OpenAI API Key aus Admin-Panel');
+                    return {
+                        type: 'openai',
+                        key: apiKeys.openai.apiKey,
+                        config: {
+                            model: apiKeys.openai.model || 'gpt-4o-mini',
+                            maxTokens: apiKeys.openai.maxTokens || 1000,
+                            temperature: apiKeys.openai.temperature || 0.3
+                        }
+                    };
+                }
+                
+                // Prüfe Anthropic Claude
+                if (apiKeys.anthropic?.apiKey && this.isValidAnthropicKey(apiKeys.anthropic.apiKey)) {
+                    console.log('✅ Nutze Anthropic Claude API Key aus Admin-Panel');
+                    return {
+                        type: 'anthropic',
+                        key: apiKeys.anthropic.apiKey,
+                        config: {
+                            model: apiKeys.anthropic.model || 'claude-3-sonnet-20240229',
+                            maxTokens: apiKeys.anthropic.maxTokens || 1000,
+                            temperature: apiKeys.anthropic.temperature || 0.3
+                        }
+                    };
+                }
+                
+                // Prüfe Google AI
+                if (apiKeys.google?.apiKey && this.isValidGoogleKey(apiKeys.google.apiKey)) {
+                    console.log('✅ Nutze Google AI API Key aus Admin-Panel');
+                    return {
+                        type: 'google',
+                        key: apiKeys.google.apiKey,
+                        config: {
+                            model: apiKeys.google.model || 'gemini-pro',
+                            maxTokens: apiKeys.google.maxTokens || 1000,
+                            temperature: apiKeys.google.temperature || 0.3
+                        }
+                    };
+                }
+            }
+        } catch (error) {
+            console.warn('⚠️ Fehler beim Lesen des Admin-Panel States:', error);
+        }
+        
+        // PRIORITÄT 2: GlobalAPIManager (falls verfügbar)
+        const manager = window.GlobalAPIManager;
+        if (manager) {
+            // OpenAI
+            if (manager.isServiceEnabled?.('openai')) {
+                const openAIConfig = manager.getServiceConfig('openai');
+                if (openAIConfig?.key && this.isValidAPIKey(openAIConfig.key)) {
+                    console.log('✅ Nutze OpenAI API Key aus GlobalAPIManager');
+                    return {
+                        type: 'openai',
+                        key: openAIConfig.key,
+                        config: openAIConfig
+                    };
+                }
+            }
+            
+            // Google AI
+            if (manager.isServiceEnabled?.('google')) {
+                const googleConfig = manager.getServiceConfig('google');
+                if (googleConfig?.key && this.isValidGoogleKey(googleConfig.key)) {
+                    console.log('✅ Nutze Google AI API Key aus GlobalAPIManager');
                     return {
                         type: 'google',
                         key: googleConfig.key,
                         config: googleConfig
                     };
                 }
-                console.warn('ℹ️ global_api_keys gefunden, aber ohne Google-Key oder disabled:', parsed);
-            } else {
-                console.warn('ℹ️ Kein global_api_keys Eintrag im localStorage gefunden');
+            }
+        }
+        
+        // PRIORITÄT 3: Direkt aus localStorage.global_api_keys
+        try {
+            const raw = localStorage.getItem('global_api_keys');
+            if (raw) {
+                const parsed = JSON.parse(raw);
+                
+                // OpenAI
+                if (parsed.openai?.key && this.isValidAPIKey(parsed.openai.key)) {
+                    console.log('✅ Nutze OpenAI API Key aus global_api_keys');
+                    return {
+                        type: 'openai',
+                        key: parsed.openai.key,
+                        config: parsed.openai
+                    };
+                }
+                
+                // Google AI
+                if (parsed.google?.key && this.isValidGoogleKey(parsed.google.key)) {
+                    console.log('✅ Nutze Google AI API Key aus global_api_keys');
+                    return {
+                        type: 'google',
+                        key: parsed.google.key,
+                        config: parsed.google
+                    };
+                }
             }
         } catch (error) {
             console.warn('⚠️ Konnte global_api_keys nicht lesen:', error);
         }
         
+        // PRIORITÄT 4: Fallback zu getAPIKey() (alte Methode)
+        const openAIKey = this.getAPIKey();
+        if (this.isValidAPIKey(openAIKey)) {
+            console.log('✅ Nutze OpenAI API Key aus getAPIKey() Fallback');
+            return {
+                type: 'openai',
+                key: openAIKey,
+                config: {
+                    model: 'gpt-4o-mini',
+                    maxTokens: 1000,
+                    temperature: 0.3
+                }
+            };
+        }
+        
+        console.warn('❌ Kein gültiger API Key gefunden');
         return null;
+    }
+    
+    isValidAnthropicKey(key) {
+        if (!key || typeof key !== 'string') return false;
+        const trimmed = key.trim();
+        return trimmed.length > 20 && trimmed.startsWith('sk-ant-');
+    }
+    
+    isValidGoogleKey(key) {
+        if (!key || typeof key !== 'string') return false;
+        const trimmed = key.trim();
+        return trimmed.length > 20 && trimmed.startsWith('AIza');
     }
     
     async callOpenAI(jobData, profileData, options, provider) {
