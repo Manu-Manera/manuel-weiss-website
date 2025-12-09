@@ -416,6 +416,16 @@ class WebsiteUsersManagement {
                 <td>${created}</td>
                 <td>
                     <div class="action-buttons">
+                        ${user.UserStatus === 'UNCONFIRMED' ? `
+                        <button 
+                            class="btn-icon" 
+                            data-action="confirm-user"
+                            title="E-Mail bestätigen"
+                            style="color: #10b981;"
+                        >
+                            <i class="fas fa-check-circle"></i>
+                        </button>
+                        ` : ''}
                         <button 
                             class="btn-icon" 
                             data-action="edit-user"
@@ -694,6 +704,30 @@ class WebsiteUsersManagement {
         
         // Setup close handlers
         this.setupModalCloseHandlers(modal);
+    }
+    
+    async handleConfirmUser(email, username) {
+        if (!confirm(`Möchten Sie den Benutzer ${email} manuell bestätigen?\n\nDies umgeht die E-Mail-Bestätigung und aktiviert das Konto sofort.`)) {
+            return;
+        }
+        
+        try {
+            console.log('✅ Bestätige Benutzer:', email);
+            
+            await this.cognitoIdentityServiceProvider.adminConfirmSignUp({
+                UserPoolId: this.userPoolId,
+                Username: username || email
+            }).promise();
+            
+            this.showSuccess(`Benutzer ${email} wurde erfolgreich bestätigt!`);
+            
+            // Reload users list
+            await this.loadWebsiteUsers();
+            
+        } catch (error) {
+            console.error('❌ Fehler beim Bestätigen des Benutzers:', error);
+            this.showError(`Fehler beim Bestätigen: ${error.message || error.code || 'Unbekannter Fehler'}`);
+        }
     }
     
     showDeleteConfirmModal(email) {
