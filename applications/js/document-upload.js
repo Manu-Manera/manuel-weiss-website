@@ -212,8 +212,10 @@ class DocumentUpload {
         // Update summary
         this.updateSummary();
         
-        // Save to storage
-        this.saveDocuments();
+        // Save to AWS (async, keine Blockierung)
+        this.saveDocuments().catch(error => {
+            console.error('Fehler beim Speichern der Dokumente:', error);
+        });
     }
     
     async uploadFileToS3(file, type) {
@@ -503,9 +505,7 @@ class DocumentUpload {
         return Math.round((completed / total) * 100);
     }
 
-    saveDocuments() {
-        if (!this.applicationsCore) return;
-        
+    async saveDocuments() {
         // Extract file info and upload results
         const documentData = {
             files: {},
@@ -521,10 +521,12 @@ class DocumentUpload {
                 name: this.uploadedFiles.cv.file?.name || this.uploadedFiles.cv.name,
                 size: this.uploadedFiles.cv.file?.size || this.uploadedFiles.cv.size
             };
-            if (this.uploadedFiles.cv.uploadResult) {
+            if (this.uploadedFiles.cv.uploadResult && this.uploadedFiles.cv.uploadResult.publicUrl) {
                 documentData.uploadResults.cv = {
                     url: this.uploadedFiles.cv.uploadResult.publicUrl,
-                    key: this.uploadedFiles.cv.uploadResult.key
+                    key: this.uploadedFiles.cv.uploadResult.key,
+                    s3Key: this.uploadedFiles.cv.uploadResult.key,
+                    bucket: this.uploadedFiles.cv.uploadResult.bucket
                 };
             }
         }
@@ -536,10 +538,12 @@ class DocumentUpload {
                 size: item.file?.size || item.size
             }));
             documentData.uploadResults.certificates = this.uploadedFiles.certificates
-                .filter(item => item.uploadResult)
+                .filter(item => item.uploadResult && item.uploadResult.publicUrl)
                 .map(item => ({
                     url: item.uploadResult.publicUrl,
-                    key: item.uploadResult.key
+                    key: item.uploadResult.key,
+                    s3Key: item.uploadResult.key,
+                    bucket: item.uploadResult.bucket
                 }));
         }
         
@@ -550,10 +554,12 @@ class DocumentUpload {
                 size: item.file?.size || item.size
             }));
             documentData.uploadResults.portfolio = this.uploadedFiles.portfolio
-                .filter(item => item.uploadResult)
+                .filter(item => item.uploadResult && item.uploadResult.publicUrl)
                 .map(item => ({
                     url: item.uploadResult.publicUrl,
-                    key: item.uploadResult.key
+                    key: item.uploadResult.key,
+                    s3Key: item.uploadResult.key,
+                    bucket: item.uploadResult.bucket
                 }));
         }
         
@@ -563,40 +569,148 @@ class DocumentUpload {
                 name: this.uploadedFiles.photo.file?.name || this.uploadedFiles.photo.name,
                 size: this.uploadedFiles.photo.file?.size || this.uploadedFiles.photo.size
             };
-            if (this.uploadedFiles.photo.uploadResult) {
+            if (this.uploadedFiles.photo.uploadResult && this.uploadedFiles.photo.uploadResult.publicUrl) {
                 documentData.uploadResults.photo = {
                     url: this.uploadedFiles.photo.uploadResult.publicUrl,
-                    key: this.uploadedFiles.photo.uploadResult.key
+                    key: this.uploadedFiles.photo.uploadResult.key,
+                    s3Key: this.uploadedFiles.photo.uploadResult.key,
+                    bucket: this.uploadedFiles.photo.uploadResult.bucket
                 };
             }
         }
         
-        this.applicationsCore.saveDocumentData(documentData);
-        this.applicationsCore.trackProgress('document-upload', documentData);
-        
-        // Also save to localStorage for profile
-        const userId = this.getUserId();
-        const profileKey = `profile_${userId}`;
-        const profileData = JSON.parse(localStorage.getItem(profileKey) || '{}');
-        if (!profileData.documents) profileData.documents = {};
-        profileData.documents = { ...profileData.documents, ...documentData.uploadResults };
-        localStorage.setItem(profileKey, JSON.stringify(profileData));
-        
-        console.log('💾 Documents saved:', documentData);
+        // Save to AWS (PRIMARY STORAGE - keine lokale Speicherung)
+        try {
+            const userId = this.getUserId();
+            
+            if (!window.awsProfileAPI || !window.awsProfileAPI.isInitialized) {
+                console.warn('⚠️ awsProfileAPI nicht verfügbar, warte auf Initialisierung...');
+                await new Promise(resolve => {
+                    const checkInit = setInterval(() => {
+                        if (window.awsProfileAPI && window.awsProfileAPI.isInitialized) {
+                            clearInterval(checkInit);
+                            resolve();
+                        }
+                    }, 100);
+                    setTimeout(() => {
+                        clearInterval(checkInit);
+                        resolve();
+                    }, 5000);
+                });
+            }
+            
+            if (window.awsProfileAPI && window.awsProfileAPI.isInitialized) {
+                // Lade aktuelles Profil von AWS
+                const profile = await window.awsProfileAPI.loadProfile();
+                
+                // Füge Dokumente zum Profil hinzu
+                const updatedProfile = {
+                    ...profile,
+                    userId: userId,
+                    documents: {
+                        ...(profile?.documents || {}),
+                        ...documentData.uploadResults
+                    },
+                    documentMetadata: {
+                        ...(profile?.documentMetadata || {}),
+                        files: documentData.files,
+                        uploadedAt: documentData.uploadedAt,
+                        totalFiles: documentData.totalFiles,
+                        totalSize: documentData.totalSize
+                    },
+                    updatedAt: new Date().toISOString()
+                };
+                
+                // Speichere in AWS
+                await window.awsProfileAPI.saveProfile(updatedProfile);
+                console.log('✅ Dokumente erfolgreich in AWS gespeichert:', documentData);
+                
+                // Track progress
+                if (this.applicationsCore) {
+                    this.applicationsCore.trackProgress('document-upload', documentData);
+                }
+            } else {
+                throw new Error('AWS Profile API nicht verfügbar');
+            }
+        } catch (error) {
+            console.error('❌ Fehler beim Speichern der Dokumente in AWS:', error);
+            this.showNotification('Fehler beim Speichern der Dokumente. Bitte versuchen Sie es erneut.', 'error');
+            throw error;
+        }
     }
 
-    loadExistingDocuments() {
-        if (!this.applicationsCore) return;
-        
-        const existingDocuments = this.applicationsCore.getDocumentData();
-        if (!existingDocuments || !existingDocuments.length) return;
-        
-        // Get the most recent document data
-        const latestDocument = existingDocuments[existingDocuments.length - 1];
-        if (latestDocument && latestDocument.files) {
-            this.uploadedFiles = latestDocument.files;
-            this.renderExistingFiles();
-            this.updateSummary();
+    async loadExistingDocuments() {
+        try {
+            // Lade Dokumente von AWS (PRIMARY STORAGE)
+            if (window.awsProfileAPI && window.awsProfileAPI.isInitialized) {
+                const profile = await window.awsProfileAPI.loadProfile();
+                
+                if (profile && profile.documents) {
+                    console.log('📋 Lade Dokumente von AWS:', profile.documents);
+                    
+                    // Konvertiere AWS-Dokumente zurück zu uploadedFiles Format
+                    if (profile.documents.cv) {
+                        this.uploadedFiles.cv = {
+                            uploadResult: {
+                                publicUrl: profile.documents.cv.url,
+                                key: profile.documents.cv.key || profile.documents.cv.s3Key,
+                                bucket: profile.documents.cv.bucket
+                            }
+                        };
+                    }
+                    
+                    if (profile.documents.certificates && Array.isArray(profile.documents.certificates)) {
+                        this.uploadedFiles.certificates = profile.documents.certificates.map(cert => ({
+                            uploadResult: {
+                                publicUrl: cert.url,
+                                key: cert.key || cert.s3Key,
+                                bucket: cert.bucket
+                            }
+                        }));
+                    }
+                    
+                    if (profile.documents.portfolio && Array.isArray(profile.documents.portfolio)) {
+                        this.uploadedFiles.portfolio = profile.documents.portfolio.map(port => ({
+                            uploadResult: {
+                                publicUrl: port.url,
+                                key: port.key || port.s3Key,
+                                bucket: port.bucket
+                            }
+                        }));
+                    }
+                    
+                    if (profile.documents.photo) {
+                        this.uploadedFiles.photo = {
+                            uploadResult: {
+                                publicUrl: profile.documents.photo.url,
+                                key: profile.documents.photo.key || profile.documents.photo.s3Key,
+                                bucket: profile.documents.photo.bucket
+                            }
+                        };
+                    }
+                    
+                    this.renderExistingFiles();
+                    this.updateSummary();
+                    console.log('✅ Dokumente von AWS geladen');
+                    return;
+                }
+            }
+            
+            // Fallback: Versuche von applicationsCore zu laden (falls vorhanden)
+            if (this.applicationsCore) {
+                const existingDocuments = this.applicationsCore.getDocumentData();
+                if (existingDocuments && existingDocuments.length > 0) {
+                    const latestDocument = existingDocuments[existingDocuments.length - 1];
+                    if (latestDocument && latestDocument.files) {
+                        this.uploadedFiles = latestDocument.files;
+                        this.renderExistingFiles();
+                        this.updateSummary();
+                        console.log('✅ Dokumente von applicationsCore geladen (Fallback)');
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('❌ Fehler beim Laden der Dokumente:', error);
         }
     }
 
