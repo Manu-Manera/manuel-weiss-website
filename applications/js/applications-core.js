@@ -150,12 +150,7 @@ class ApplicationsCore {
             await this.userProgressTracker.updateProgress('bewerbungsmanager', step, progressData);
         }
         
-        // Also save to localStorage as fallback
-        const key = `bewerbung_progress_${this.currentUser.id}`;
-        const allProgress = JSON.parse(localStorage.getItem(key) || '{}');
-        allProgress[step] = progressData;
-        localStorage.setItem(key, JSON.stringify(allProgress));
-        
+        // Lokale Speicherung entfernt - alles wird über UserProgressTracker in AWS gespeichert
         console.log(`📊 Progress tracked: Step ${step}`, progressData);
     }
 
