@@ -113,7 +113,7 @@ class SimpleTranslation {
     }
     
     updateLanguageSwitcher() {
-        // Update language switcher UI
+        // Update language switcher UI (Desktop und Mobile)
         document.querySelectorAll('.lang-link[data-lang], .lang-link-compact[data-lang]').forEach(link => {
             if (link.getAttribute('data-lang') === this.currentLanguage) {
                 link.classList.add('active');

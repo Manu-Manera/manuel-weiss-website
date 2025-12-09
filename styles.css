@@ -2598,11 +2598,13 @@ a:hover {
     gap: 0.5rem;
     justify-content: center;
     flex-wrap: wrap;
+    width: 100%;
 }
 
-.mobile-language-switcher .lang-link {
-    flex: 1;
-    min-width: 80px;
+.mobile-language-switcher .lang-link-compact {
+    flex: 0 0 auto;
+    min-width: 44px; /* Touch-friendly */
+    min-height: 44px;
     justify-content: center;
 }
 
