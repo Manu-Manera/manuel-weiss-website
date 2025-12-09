@@ -14,7 +14,14 @@ Thank you for your response. I'm happy to provide detailed information about our
 
 ## Use Case Overview
 
-We operate a professional services website (https://manuel-weiss.ch) that provides HR consulting and digitalization services. We need Amazon SES to send **transactional emails only** for our user authentication and account management system.
+We operate a professional services website (https://manuel-weiss.ch) that provides HR consulting and digitalization services. We have **already implemented a fully functional production system** on AWS, including:
+
+- ✅ AWS Cognito User Pool (eu-central-1_8gP4gLK9r) - configured and operational
+- ✅ Domain verification (manuel-weiss.ch) - verified with SPF, DKIM, DMARC records
+- ✅ Email forwarding system - Lambda function processing incoming emails
+- ✅ Verified email identities - domain and email addresses verified
+
+We need Amazon SES Production Access to send **transactional emails** to **new users who register on our website**. Currently, we are in Sandbox mode, which limits us to sending only to pre-verified email addresses. This prevents new user registrations from receiving verification emails, as their email addresses are not pre-verified.
 
 ## Email Sending Details
 
