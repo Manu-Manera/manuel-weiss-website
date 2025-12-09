@@ -559,8 +559,9 @@ a:hover {
 }
 
 .gradient-text {
-    color: white;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    /* Gradient wird später definiert - hier nur Basis-Styles */
+    display: inline-block;
+    font-weight: inherit;
 }
 
 /* Herz-Animation */
@@ -3432,21 +3433,35 @@ a:hover {
     }
 }
 
-/* Firefox: Gradient Text Fallback */
-.gradient-text {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+/* Gradient Text - Hauptdefinition */
+.hero .gradient-text {
+    background: linear-gradient(135deg, #ffffff 0%, #e0e7ff 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    color: var(--primary); /* Fallback für Firefox */
+    color: #ffffff; /* Fallback für Browser ohne background-clip Support */
+    text-shadow: none; /* Kein Text-Shadow bei Gradient */
+    display: inline-block;
+    font-weight: 700;
+}
+
+/* Fallback für Browser ohne background-clip Support */
+@supports not (-webkit-background-clip: text) {
+    .hero .gradient-text {
+        color: #ffffff;
+        background: none;
+        -webkit-text-fill-color: unset;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
 }
 
 /* Firefox: -webkit-text-fill-color Fallback */
 @-moz-document url-prefix() {
-    .gradient-text {
-        color: var(--primary);
+    .hero .gradient-text {
+        color: #ffffff;
         background: none;
         -webkit-text-fill-color: unset;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     }
 }
 
