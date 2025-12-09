@@ -503,7 +503,31 @@
     
     <!-- Scripts -->
     <script src="js/universal-navigation.js"></script>
+    <!-- Translation Manager -->
+    <script src="js/translation-manager.js"></script>
+    
     <script src="script.js"></script>
+    
+    <!-- Initialize Translation Manager -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.TranslationManager) {
+                window.translationManager = new TranslationManager();
+                window.translationManager.init();
+                
+                // Language Switcher Event Listeners
+                document.querySelectorAll('.lang-link[data-lang]').forEach(link => {
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const lang = this.getAttribute('data-lang');
+                        if (window.translationManager) {
+                            window.translationManager.setLanguage(lang);
+                        }
+                    });
+                });
+            }
+        });
+    </script>
     
     <!-- Smart API für AWS-Integration -->
     <script>
