@@ -909,6 +909,30 @@ class WebsiteUsersManagement {
         }
     }
     
+    async handleConfirmUser(email, username) {
+        if (!confirm(`Möchten Sie den Benutzer ${email} manuell bestätigen?\n\nDies umgeht die E-Mail-Bestätigung und aktiviert das Konto sofort.`)) {
+            return;
+        }
+        
+        try {
+            console.log('✅ Bestätige Benutzer:', email);
+            
+            await this.cognitoIdentityServiceProvider.adminConfirmSignUp({
+                UserPoolId: this.userPoolId,
+                Username: username || email
+            }).promise();
+            
+            this.showSuccess(`Benutzer ${email} wurde erfolgreich bestätigt!`);
+            
+            // Reload users list
+            await this.loadWebsiteUsers();
+            
+        } catch (error) {
+            console.error('❌ Fehler beim Bestätigen des Benutzers:', error);
+            this.showError(`Fehler beim Bestätigen: ${error.message || error.code || 'Unbekannter Fehler'}`);
+        }
+    }
+    
     async handleDeleteUser() {
         if (!this.userToDelete) return;
         
