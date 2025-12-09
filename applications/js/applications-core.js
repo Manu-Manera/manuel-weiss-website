@@ -171,13 +171,8 @@ class ApplicationsCore {
             await this.userProgressTracker.updateProgress('bewerbungsmanager', 'application-data', applicationData);
         }
 
-        // Also save to localStorage as fallback
-        const key = `applications_${this.currentUser.id}`;
-        const applications = JSON.parse(localStorage.getItem(key) || '[]');
-        applications.push(applicationData);
-        localStorage.setItem(key, JSON.stringify(applications));
-
-        console.log('💾 Application data saved:', applicationData);
+        // Lokale Speicherung entfernt - alles wird über UserProgressTracker in AWS gespeichert
+        console.log('✅ Application data saved to AWS:', applicationData);
         return applicationData;
     }
 
@@ -192,11 +187,16 @@ class ApplicationsCore {
         }
     }
 
-    getApplicationData() {
-        if (!this.currentUser) return [];
+    async getApplicationData() {
+        if (!this.currentUser || !this.awsProfileAPI) return [];
 
-        const key = `applications_${this.currentUser.id}`;
-        return JSON.parse(localStorage.getItem(key) || '[]');
+        try {
+            const profile = await this.awsProfileAPI.loadProfile();
+            return profile?.applications || [];
+        } catch (error) {
+            console.error('❌ Error loading application data from AWS:', error);
+            return [];
+        }
     }
 
     // Profile data management - NUR AWS SPEICHERUNG
