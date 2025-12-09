@@ -197,7 +197,26 @@ class BewerbungsprofilManager {
 
             console.log('📋 Lade existierendes Profil für:', this.currentUser.email);
             
-            // API-Call um existierendes Profil zu laden
+            // Versuche zuerst awsProfileAPI (einheitliche Datenquelle)
+            if (window.awsProfileAPI && window.awsProfileAPI.isInitialized) {
+                try {
+                    const profile = await window.awsProfileAPI.loadProfile();
+                    if (profile) {
+                        console.log('✅ Profil von AWS geladen:', profile);
+                        
+                        // Konvertiere AWS-Profil-Format zu profile-setup Format
+                        const profileData = this.convertAWSProfileToSetupFormat(profile);
+                        this.profileData = profileData;
+                        this.populateForm(profileData);
+                        console.log('✅ Profil erfolgreich geladen und Formular ausgefüllt');
+                        return;
+                    }
+                } catch (apiError) {
+                    console.warn('⚠️ Fehler beim Laden von awsProfileAPI, versuche API-Endpoint:', apiError);
+                }
+            }
+            
+            // Fallback: API-Call um existierendes Profil zu laden
             const response = await fetch(`/api/applications/profile/${this.currentUser.id}`, {
                 method: 'GET',
                 headers: {
@@ -217,6 +236,63 @@ class BewerbungsprofilManager {
         } catch (error) {
             console.error('❌ Fehler beim Laden des Profils:', error);
         }
+    }
+    
+    convertAWSProfileToSetupFormat(awsProfile) {
+        // Konvertiere AWS-Profil-Format zu profile-setup Format
+        // AWS-Profil kann verschiedene Formate haben:
+        // 1. Direkt: { firstName, lastName, email, ... }
+        // 2. In personal: { personal: { firstName, lastName, ... } }
+        // 3. In application-profile: { 'application-profile': { personal: { ... } } }
+        
+        const profileData = {};
+        
+        // Persönliche Daten
+        if (awsProfile.personal) {
+            profileData.personal = awsProfile.personal;
+        } else if (awsProfile['application-profile']?.personal) {
+            profileData.personal = awsProfile['application-profile'].personal;
+        } else {
+            // Direkt aus AWS-Profil
+            profileData.personal = {
+                firstName: awsProfile.firstName || '',
+                lastName: awsProfile.lastName || '',
+                email: awsProfile.email || this.currentUser?.email || '',
+                phone: awsProfile.phone || '',
+                location: awsProfile.location || '',
+                birthDate: awsProfile.birthDate || ''
+            };
+        }
+        
+        // Berufserfahrung
+        if (awsProfile.experience) {
+            profileData.experience = awsProfile.experience;
+        } else if (awsProfile['application-profile']?.experience) {
+            profileData.experience = awsProfile['application-profile'].experience;
+        }
+        
+        // Ausbildung
+        if (awsProfile.education) {
+            profileData.education = awsProfile.education;
+        } else if (awsProfile['application-profile']?.education) {
+            profileData.education = awsProfile['application-profile'].education;
+        }
+        
+        // Fähigkeiten
+        if (awsProfile.skills) {
+            profileData.skills = awsProfile.skills;
+        } else if (awsProfile['application-profile']?.skills) {
+            profileData.skills = awsProfile['application-profile'].skills;
+        }
+        
+        // Karriereziele
+        if (awsProfile.careerGoals) {
+            profileData.careerGoals = awsProfile.careerGoals;
+        } else if (awsProfile['application-profile']?.careerGoals) {
+            profileData.careerGoals = awsProfile['application-profile'].careerGoals;
+        }
+        
+        return profileData;
     }
 
     populateForm(profileData) {
@@ -535,11 +611,27 @@ class BewerbungsprofilManager {
             if (window.awsProfileAPI && window.awsProfileAPI.isInitialized) {
                 try {
                     console.log('📤 Verwende awsProfileAPI...');
+                    // Harmonisiertes Format: Speichere sowohl als application-profile als auch direkt
                     const profileToSave = {
-                        type: 'application-profile',
-                        ...profileData,
+                        // Direkte Felder (für user-profile.html Kompatibilität)
+                        firstName: profileData.personal?.firstName || '',
+                        lastName: profileData.personal?.lastName || '',
+                        email: profileData.personal?.email || this.currentUser?.email || '',
+                        phone: profileData.personal?.phone || '',
+                        location: profileData.personal?.location || '',
+                        birthDate: profileData.personal?.birthDate || '',
+                        
+                        // Strukturierte Daten (für profile-setup.html Kompatibilität)
+                        personal: profileData.personal || {},
+                        experience: profileData.experience || [],
+                        education: profileData.education || [],
+                        skills: profileData.skills || {},
+                        careerGoals: profileData.careerGoals || {},
+                        
+                        // Metadaten
+                        type: 'user-profile', // Einheitlicher Typ
                         userId: this.currentUser?.id || this.currentUser?.userId,
-                        email: this.currentUser?.email
+                        updatedAt: new Date().toISOString()
                     };
                     
                     await window.awsProfileAPI.saveProfile(profileToSave);
