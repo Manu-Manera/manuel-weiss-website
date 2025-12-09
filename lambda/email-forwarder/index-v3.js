@@ -226,19 +226,26 @@ function decodeHeader(header) {
  * HTML-Version der weitergeleiteten E-Mail erstellen
  */
 function buildForwardedEmailHtml(emailParts, rawEmail, originalFrom, originalTo) {
+    // Bereinige den Body - entferne leere Zeilen am Anfang/Ende
+    const cleanBody = emailParts.body.trim();
+    
     return `
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
     <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-        .forwarded-header { background: #f0f0f0; padding: 15px; border-left: 4px solid #007bff; margin-bottom: 20px; }
-        .forwarded-header h3 { margin: 0 0 10px 0; color: #007bff; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .forwarded-header { background: #f0f7ff; padding: 15px; border-left: 4px solid #007bff; margin-bottom: 20px; border-radius: 4px; }
+        .forwarded-header h3 { margin: 0 0 10px 0; color: #007bff; font-size: 16px; }
         .forwarded-info { font-size: 0.9em; color: #666; }
         .forwarded-info strong { color: #333; }
-        .original-email { background: #f9f9f9; padding: 15px; border: 1px solid #ddd; margin-top: 20px; }
-        .original-email pre { white-space: pre-wrap; word-wrap: break-word; }
+        .email-body { background: #ffffff; padding: 20px; border: 1px solid #e0e0e0; border-radius: 4px; margin-top: 20px; white-space: pre-wrap; word-wrap: break-word; font-family: inherit; }
+        .email-body:empty::before { content: "(Keine Nachricht)"; color: #999; font-style: italic; }
+        .technical-details { margin-top: 20px; padding-top: 15px; border-top: 1px solid #e0e0e0; }
+        .technical-details summary { cursor: pointer; color: #666; font-size: 0.85em; user-select: none; }
+        .technical-details summary:hover { color: #333; }
+        .technical-details pre { background: #f9f9f9; padding: 10px; border-radius: 4px; font-size: 0.75em; overflow-x: auto; max-height: 300px; overflow-y: auto; }
     </style>
 </head>
 <body>
@@ -252,10 +259,12 @@ function buildForwardedEmailHtml(emailParts, rawEmail, originalFrom, originalTo)
         </div>
     </div>
     
-    <div class="original-email">
-        <h4>Original-E-Mail:</h4>
+    <div class="email-body">${escapeHtml(cleanBody)}</div>
+    
+    <details class="technical-details">
+        <summary>Technische Details anzeigen</summary>
         <pre>${escapeHtml(rawEmail)}</pre>
-    </div>
+    </details>
 </body>
 </html>
     `.trim();
@@ -265,6 +274,9 @@ function buildForwardedEmailHtml(emailParts, rawEmail, originalFrom, originalTo)
  * Text-Version der weitergeleiteten E-Mail erstellen
  */
 function buildForwardedEmailText(emailParts, rawEmail, originalFrom, originalTo) {
+    // Bereinige den Body - entferne leere Zeilen am Anfang/Ende
+    const cleanBody = emailParts.body.trim();
+    
     return `
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📧 WEITERGELEITETE E-MAIL
@@ -276,10 +288,10 @@ Datum: ${emailParts.date}
 Betreff: ${emailParts.subject || '(Kein Betreff)'}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-ORIGINAL-E-MAIL:
+NACHRICHT:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-${rawEmail}
+${cleanBody || '(Keine Nachricht)'}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     `.trim();
