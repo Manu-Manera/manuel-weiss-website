@@ -52,12 +52,6 @@
                 <a href="#about" class="nav-link">Über mich</a>
                 <a href="#contact" class="nav-link">Kontakt</a>
                 
-                <!-- Language Switcher Mobile -->
-                <div class="language-switcher mobile-language-switcher" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #e5e7eb;">
-                    <button class="lang-link" data-lang="de" title="Deutsch">🇩🇪 DE</button>
-                    <button class="lang-link" data-lang="en" title="English">🇬🇧 EN</button>
-                </div>
-                
                 <!-- Auth Section Mobile -->
                 <div class="auth-section" id="mobileAuthSection"></div>
             </div>
@@ -130,8 +124,10 @@
         <div class="hero-container">
             <div class="hero-content">
                 <h1 class="hero-title" id="hero-title">
-                    <span class="gradient-text" data-de="Manuel Weiss - Professional Services" data-en="Manuel Weiss - Professional Services">
-                        Manuel Weiss - Professional Services
+                    <span class="gradient-text">
+                        <span class="hero-title-line-1" data-de="Manuel Weiss" data-en="Manuel Weiss">Manuel Weiss</span>
+                        <br>
+                        <span class="hero-title-line-2" data-de="Professional Services" data-en="Professional Services">Professional Services</span>
                     </span>
                 </h1>
                 <p class="hero-subtitle" id="hero-subtitle" data-de="Digitale Transformation voranzutreiben mit dem Wunsch im Herzen anderen die Arbeit zu erleichtern und echten, qualitativ hochwertigen Mehrwert für den Arbeitsalltag zu stiften. Mit Köpfchen, Herzblut und höchster Motivation." data-en="Driving digital transformation with the desire at heart to make work easier for others and to create real, high-quality added value for everyday work. With brains, heart, and highest motivation.">
@@ -515,8 +511,8 @@
                 window.translationManager = new TranslationManager();
                 window.translationManager.init();
                 
-                // Language Switcher Event Listeners
-                document.querySelectorAll('.lang-link[data-lang]').forEach(link => {
+                // Language Switcher Event Listeners (für alle Varianten)
+                document.querySelectorAll('.lang-link[data-lang], .lang-link-compact[data-lang]').forEach(link => {
                     link.addEventListener('click', function(e) {
                         e.preventDefault();
                         const lang = this.getAttribute('data-lang');
