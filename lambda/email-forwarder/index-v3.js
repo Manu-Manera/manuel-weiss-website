@@ -39,14 +39,22 @@ exports.handler = async (event) => {
             s3Action: action.s3Action
         });
         
-        // Prüfe ob E-Mail in S3 gespeichert wurde
-        if (action.type !== 'S3' || !action.s3Action) {
-            console.log('⚠️ Keine S3 Action gefunden');
-            return { statusCode: 200, body: 'No S3 action' };
-        }
+        // Bestimme S3 Bucket und Key
+        let s3Bucket, s3Key;
         
-        const s3Bucket = action.s3Action.bucketName;
-        const s3Key = action.s3Action.objectKey;
+        if (action.type === 'S3' && action.s3Action) {
+            // E-Mail wurde über S3 Action gespeichert
+            s3Bucket = action.s3Action.bucketName;
+            s3Key = action.s3Action.objectKey;
+            console.log('📦 S3 Action gefunden:', { bucket: s3Bucket, key: s3Key });
+        } else {
+            // Lambda wurde direkt aufgerufen, E-Mail sollte in S3 sein
+            // Verwende den Standard-Bucket und konstruiere den Key aus messageId
+            s3Bucket = process.env.EMAIL_BUCKET || 'manu-email-storage-038333965110';
+            // Der Key ist normalerweise: emails/{messageId}
+            s3Key = `emails/${messageId}`;
+            console.log('📦 Keine S3 Action, versuche E-Mail aus S3 zu laden:', { bucket: s3Bucket, key: s3Key });
+        }
         
         console.log('📦 Lade E-Mail aus S3:', { bucket: s3Bucket, key: s3Key });
         
@@ -287,4 +295,5 @@ function escapeHtml(text) {
     };
     return text.replace(/[&<>"']/g, m => map[m]);
 }
+
 
