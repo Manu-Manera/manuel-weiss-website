@@ -1930,3 +1930,255 @@
         transform: scale(0.98);
     }
 }
+
+/* ============================================
+   🌐 CROSS-BROWSER KOMPATIBILITÄT - APPLICATIONS
+   ============================================ */
+
+/* Firefox-spezifische Fixes */
+@-moz-document url-prefix() {
+    /* Firefox: backdrop-filter Fallback */
+    .modern-loading-animation,
+    .magic-container {
+        background: rgba(255, 255, 255, 0.95) !important;
+    }
+    
+    /* Firefox: Smooth Scrolling */
+    html {
+        scroll-behavior: smooth;
+    }
+    
+    /* Firefox: Flexbox Gap Fallback */
+    .content-actions,
+    .form-actions,
+    .btn-group {
+        gap: 1rem;
+        margin: -0.5rem;
+    }
+    
+    .content-actions > *,
+    .form-actions > *,
+    .btn-group > * {
+        margin: 0.5rem;
+    }
+}
+
+/* Chrome/Edge-spezifische Optimierungen */
+@supports (-webkit-appearance: none) {
+    /* Webkit: backdrop-filter Support */
+    .modern-loading-animation,
+    .magic-container {
+        -webkit-backdrop-filter: blur(20px);
+        backdrop-filter: blur(20px);
+    }
+    
+    /* Webkit: Smooth Scrolling */
+    html {
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Webkit: Text Rendering */
+    body {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+}
+
+/* Safari-spezifische Fixes */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+    /* Safari: backdrop-filter */
+    .modern-loading-animation,
+    .magic-container {
+        -webkit-backdrop-filter: blur(20px);
+        backdrop-filter: blur(20px);
+    }
+}
+
+/* Allgemeine Cross-Browser Fixes */
+.form-input,
+.form-textarea,
+.form-select,
+.btn {
+    /* Box-sizing für alle Browser */
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    
+    /* Appearance Reset */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+/* Flexbox Fallbacks */
+.flex,
+.d-flex,
+.content-actions,
+.form-actions,
+.btn-group {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+}
+
+/* Grid Fallbacks */
+.grid,
+.templates-grid,
+.upload-summary-grid {
+    display: -webkit-grid;
+    display: -moz-grid;
+    display: -ms-grid;
+    display: grid;
+}
+
+/* Transform mit Vendor-Prefixes */
+.btn:active,
+.upload-card:active {
+    -webkit-transform: scale(0.98);
+    -moz-transform: scale(0.98);
+    -ms-transform: scale(0.98);
+    -o-transform: scale(0.98);
+    transform: scale(0.98);
+}
+
+/* Transition mit Vendor-Prefixes */
+.btn,
+.form-input,
+.form-textarea,
+.form-select {
+    -webkit-transition: all 0.3s ease;
+    -moz-transition: all 0.3s ease;
+    -ms-transition: all 0.3s ease;
+    -o-transition: all 0.3s ease;
+    transition: all 0.3s ease;
+}
+
+/* Border-radius mit Vendor-Prefixes */
+.rounded,
+.btn,
+.form-input,
+.form-textarea,
+.upload-card {
+    -webkit-border-radius: var(--radius-lg);
+    -moz-border-radius: var(--radius-lg);
+    border-radius: var(--radius-lg);
+}
+
+/* Box-shadow mit Vendor-Prefixes */
+.shadow,
+.upload-card,
+.form-section {
+    -webkit-box-shadow: var(--shadow-md);
+    -moz-box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow-md);
+}
+
+/* Backdrop-filter mit Fallbacks */
+.backdrop-blur,
+.modern-loading-animation,
+.magic-container {
+    background: rgba(255, 255, 255, 0.95);
+    -webkit-backdrop-filter: blur(20px);
+    -moz-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+}
+
+/* Firefox: backdrop-filter Fallback */
+@supports not (backdrop-filter: blur(20px)) {
+    .modern-loading-animation,
+    .magic-container {
+        background: rgba(255, 255, 255, 0.98) !important;
+    }
+}
+
+/* Firefox: Input Number Styling */
+@-moz-document url-prefix() {
+    input[type="number"] {
+        -moz-appearance: textfield;
+    }
+    
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+}
+
+/* Firefox: Button Focus Styling */
+@-moz-document url-prefix() {
+    .btn:focus,
+    .form-input:focus,
+    .form-textarea:focus {
+        outline: 2px solid var(--primary-color);
+        outline-offset: 2px;
+    }
+}
+
+/* Firefox: Scrollbar Styling */
+@-moz-document url-prefix() {
+    * {
+        scrollbar-width: thin;
+        scrollbar-color: var(--gray-400) var(--gray-100);
+    }
+}
+
+/* Webkit: Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--gray-100);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--gray-400);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--gray-500);
+}
+
+/* Firefox: Text Selection */
+@-moz-document url-prefix() {
+    ::selection {
+        background: var(--primary-color);
+        color: var(--white);
+    }
+    
+    ::-moz-selection {
+        background: var(--primary-color);
+        color: var(--white);
+    }
+}
+
+/* Webkit: Text Selection */
+::-webkit-selection {
+    background: var(--primary-color);
+    color: var(--white);
+}
+
+/* Firefox: Placeholder Styling */
+@-moz-document url-prefix() {
+    input::placeholder,
+    textarea::placeholder {
+        opacity: 0.6;
+    }
+}
+
+/* Webkit: Placeholder Styling */
+::-webkit-input-placeholder {
+    opacity: 0.6;
+}
+
+/* Firefox: Animation Performance */
+@-moz-document url-prefix() {
+    .btn,
+    .upload-card {
+        will-change: transform;
+    }
+}
