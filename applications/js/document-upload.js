@@ -363,7 +363,7 @@ class DocumentUpload {
         return validFiles;
     }
 
-    showFilePreview(file, type) {
+    showFilePreview(file, type, uploadResult = null) {
         const preview = document.getElementById(`${type}Preview`);
         if (!preview) return;
         
@@ -371,10 +371,15 @@ class DocumentUpload {
         const fileSize = document.querySelector(`#${type}Preview .file-size`);
         const fileIcon = document.querySelector(`#${type}Preview .file-icon`);
         
-        if (fileName) fileName.textContent = file.name;
-        if (fileSize) fileSize.textContent = this.formatFileSize(file.size);
+        // Wenn file ein Objekt mit uploadResult ist, extrahiere die Datei-Info
+        const actualFile = file?.file || file;
+        const fileNameToShow = actualFile?.name || (uploadResult?.publicUrl ? 'Hochgeladen' : 'Unbekannt');
+        const fileSizeToShow = actualFile?.size || 0;
+        
+        if (fileName) fileName.textContent = fileNameToShow;
+        if (fileSize) fileSize.textContent = fileSizeToShow > 0 ? this.formatFileSize(fileSizeToShow) : '';
         if (fileIcon) {
-            fileIcon.className = this.getFileIcon(file.name);
+            fileIcon.className = this.getFileIcon(fileNameToShow);
         }
         
         preview.style.display = 'block';
