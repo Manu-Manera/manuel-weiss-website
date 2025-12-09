@@ -12,30 +12,119 @@ class BewerbungsprofilManager {
     async init() {
         console.log('🚀 Bewerbungsprofil Manager wird initialisiert...');
         
-        // Auth-Status prüfen
-        await this.checkAuthStatus();
+        // Warte auf realUserAuth falls nötig
+        if (!window.realUserAuth) {
+            console.log('⏳ Warte auf realUserAuth...');
+            let attempts = 0;
+            while (!window.realUserAuth && attempts < 100) {
+                await new Promise(resolve => setTimeout(resolve, 100));
+                attempts++;
+            }
+        }
         
         // Event Listeners setup
         this.setupEventListeners();
+        
+        // Auth-Status prüfen
+        await this.checkAuthStatus();
         
         // Formular vorausfüllen falls User eingeloggt
         if (this.isAuthenticated) {
             await this.loadExistingProfile();
         }
+        
+        // Event-Listener für Auth-State-Änderungen
+        document.addEventListener('userLogin', (e) => {
+            console.log('🔔 User Login Event empfangen:', e.detail);
+            this.currentUser = e.detail;
+            this.isAuthenticated = true;
+            this.updateAuthUI();
+        });
+        
+        document.addEventListener('userLogout', () => {
+            console.log('🔔 User Logout Event empfangen');
+            this.currentUser = null;
+            this.isAuthenticated = false;
+            this.updateAuthUI();
+        });
+        
+        // Prüfe Auth-Status regelmäßig (falls Session wiederhergestellt wird)
+        setInterval(() => {
+            if (!this.isAuthenticated && window.realUserAuth) {
+                this.checkAuthStatus();
+            }
+        }, 5000);
     }
 
     async checkAuthStatus() {
         try {
-            // Prüfe ob real-user-auth-system verfügbar ist
-            if (window.realUserAuth && window.realUserAuth.isLoggedIn && window.realUserAuth.isLoggedIn()) {
-                this.currentUser = window.realUserAuth.getCurrentUser();
-                this.isAuthenticated = true;
-                console.log('✅ User ist authentifiziert:', this.currentUser);
-                this.updateAuthUI();
-            } else {
-                console.log('⚠️ User nicht authentifiziert');
-                this.showAuthPrompt();
+            console.log('🔍 Prüfe Auth-Status...');
+            console.log('  - realUserAuth verfügbar:', !!window.realUserAuth);
+            
+            // Warte auf Initialisierung falls nötig
+            if (window.realUserAuth && !window.realUserAuth.isInitialized) {
+                console.log('⏳ Warte auf Auth-System-Initialisierung...');
+                let attempts = 0;
+                while (!window.realUserAuth.isInitialized && attempts < 50) {
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                    attempts++;
+                }
             }
+            
+            // Prüfe ob real-user-auth-system verfügbar ist
+            if (window.realUserAuth) {
+                console.log('  - isInitialized:', window.realUserAuth.isInitialized);
+                console.log('  - isAuthenticated:', window.realUserAuth.isAuthenticated);
+                console.log('  - isLoggedIn():', window.realUserAuth.isLoggedIn ? window.realUserAuth.isLoggedIn() : 'N/A');
+                
+                // Prüfe auf verschiedene Arten
+                const isLoggedIn = window.realUserAuth.isLoggedIn && window.realUserAuth.isLoggedIn();
+                const isAuthenticated = window.realUserAuth.isAuthenticated === true;
+                const hasCurrentUser = window.realUserAuth.getCurrentUser && window.realUserAuth.getCurrentUser();
+                
+                console.log('  - isLoggedIn:', isLoggedIn);
+                console.log('  - isAuthenticated:', isAuthenticated);
+                console.log('  - hasCurrentUser:', !!hasCurrentUser);
+                
+                if (isLoggedIn || isAuthenticated || hasCurrentUser) {
+                    this.currentUser = window.realUserAuth.getCurrentUser();
+                    this.isAuthenticated = true;
+                    console.log('✅ User ist authentifiziert:', this.currentUser);
+                    this.updateAuthUI();
+                    return;
+                }
+            }
+            
+            // Fallback: Prüfe Session direkt
+            const session = localStorage.getItem('aws_auth_session');
+            if (session) {
+                try {
+                    const sessionData = JSON.parse(session);
+                    if (sessionData.accessToken) {
+                        console.log('✅ Session gefunden in localStorage');
+                        // Versuche User-Info aus Token zu extrahieren
+                        if (sessionData.idToken) {
+                            // Token ist vorhanden, Benutzer sollte angemeldet sein
+                            // Versuche realUserAuth zu initialisieren
+                            if (window.realUserAuth && window.realUserAuth.init) {
+                                await window.realUserAuth.init();
+                                if (window.realUserAuth.isLoggedIn && window.realUserAuth.isLoggedIn()) {
+                                    this.currentUser = window.realUserAuth.getCurrentUser();
+                                    this.isAuthenticated = true;
+                                    console.log('✅ User aus Session wiederhergestellt:', this.currentUser);
+                                    this.updateAuthUI();
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                } catch (e) {
+                    console.error('Fehler beim Parsen der Session:', e);
+                }
+            }
+            
+            console.log('⚠️ User nicht authentifiziert');
+            this.showAuthPrompt();
         } catch (error) {
             console.error('❌ Auth-Status-Check fehlgeschlagen:', error);
             this.showAuthPrompt();
@@ -233,8 +322,16 @@ class BewerbungsprofilManager {
     async handleFormSubmit(e) {
         e.preventDefault();
         
+        // Prüfe Auth-Status erneut vor dem Speichern
+        await this.checkAuthStatus();
+        
         if (!this.isAuthenticated) {
-            alert('❌ Bitte melden Sie sich zuerst an, um Ihr Profil zu speichern.');
+            // Zeige Auth-Modal statt Alert
+            if (window.realUserAuth && window.realUserAuth.showAuthModal) {
+                window.realUserAuth.showAuthModal();
+            } else {
+                alert('❌ Bitte melden Sie sich zuerst an, um Ihr Profil zu speichern.');
+            }
             return;
         }
 
