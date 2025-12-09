@@ -420,10 +420,25 @@
 
     <!-- Loading Overlay -->
     <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+        <div class="loading-background">
+            <div class="gradient-orb orb-1"></div>
+            <div class="gradient-orb orb-2"></div>
+            <div class="gradient-orb orb-3"></div>
+        </div>
         <div class="loading-spinner">
-            <div class="spinner"></div>
-            <h3>Anschreiben wird generiert...</h3>
-            <p>Bitte warten Sie, während die KI Ihr personalisiertes Anschreiben erstellt.</p>
+            <div class="spinner-container">
+                <div class="spinner-ring ring-1"></div>
+                <div class="spinner-ring ring-2"></div>
+                <div class="spinner-ring ring-3"></div>
+                <div class="spinner-center">
+                    <i class="fas fa-magic"></i>
+                </div>
+            </div>
+            <h3 class="loading-title">Anschreiben wird generiert...</h3>
+            <p class="loading-description">Bitte warten Sie, während die KI Ihr personalisiertes Anschreiben erstellt.</p>
+            <div class="loading-progress">
+                <div class="progress-bar-animated"></div>
+            </div>
         </div>
     </div>
 
