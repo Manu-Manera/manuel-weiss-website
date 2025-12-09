@@ -522,7 +522,27 @@ class UserProfile {
             formData.profileImageUrl = this.profileData.profileImageUrl;
         }
 
-        this.profileData = { ...this.profileData, ...formData };
+        // Harmonisiertes Format: Speichere sowohl direkt als auch strukturiert
+        const profileToSave = {
+            // Direkte Felder (für Kompatibilität)
+            ...formData,
+            
+            // Strukturierte Daten (für profile-setup.html Kompatibilität)
+            personal: {
+                firstName: formData.firstName,
+                lastName: formData.lastName,
+                email: formData.email,
+                phone: formData.phone,
+                location: formData.location,
+                birthDate: formData.birthDate
+            },
+            
+            // Metadaten
+            type: 'user-profile', // Einheitlicher Typ
+            updatedAt: new Date().toISOString()
+        };
+
+        this.profileData = { ...this.profileData, ...profileToSave };
         
         // Save to AWS (PRIMARY STORAGE - keine lokale Speicherung)
         if (window.realUserAuth?.isLoggedIn() && this.awsProfileAPI) {
