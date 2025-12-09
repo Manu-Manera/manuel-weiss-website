@@ -157,7 +157,9 @@ function parseEmail(rawEmail) {
     let body = '';
     let inHeaders = true;
     let headerEnd = false;
+    let bodyStartIndex = -1;
     
+    // Finde das Ende der Header (erste leere Zeile)
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
         
@@ -166,6 +168,7 @@ function parseEmail(rawEmail) {
             if (line.trim() === '') {
                 headerEnd = true;
                 inHeaders = false;
+                bodyStartIndex = i + 1;
                 continue;
             }
             
@@ -186,18 +189,69 @@ function parseEmail(rawEmail) {
             } else if (lowerLine.startsWith('date:')) {
                 date = line.substring(5).trim();
             }
-        } else {
-            // Body-Bereich
-            body += line + '\n';
         }
     }
+    
+    // Extrahiere Body ab der ersten Zeile nach den Headern
+    if (bodyStartIndex >= 0) {
+        const bodyLines = [];
+        let inBody = true;
+        
+        for (let i = bodyStartIndex; i < lines.length; i++) {
+            const line = lines[i];
+            
+            // Stoppe bei MIME-Boundaries oder wenn wir auf weitere Header stoßen
+            if (line.startsWith('--') && line.includes('boundary')) {
+                continue; // Skip boundary lines
+            }
+            
+            // Wenn wir auf Content-Type oder andere Header-ähnliche Zeilen stoßen, 
+            // die nicht zum Body gehören, stoppen wir
+            if (inBody && line.match(/^[A-Z][a-zA-Z-]+:/) && 
+                !line.toLowerCase().startsWith('content-transfer-encoding:') &&
+                !line.toLowerCase().startsWith('content-type:')) {
+                // Möglicherweise ein weiterer Header-Block, aber wir nehmen den ersten Body
+                break;
+            }
+            
+            // Sammle Body-Zeilen
+            if (inBody) {
+                // Überspringe leere Zeilen am Anfang des Bodies
+                if (bodyLines.length === 0 && line.trim() === '') {
+                    continue;
+                }
+                bodyLines.push(line);
+            }
+        }
+        
+        body = bodyLines.join('\n');
+    }
+    
+    // Bereinige Body: Entferne MIME-Header, Base64-Encodings, etc.
+    body = body
+        .replace(/^Content-Type:.*$/gmi, '')
+        .replace(/^Content-Transfer-Encoding:.*$/gmi, '')
+        .replace(/^Mime-Version:.*$/gmi, '')
+        .replace(/^--[a-zA-Z0-9]+$/gm, '') // MIME boundaries
+        .replace(/^--$/gm, '') // MIME boundary end
+        .replace(/^[A-Z][a-zA-Z-]+:.*$/gm, '') // Weitere Header-ähnliche Zeilen
+        .split('\n')
+        .filter(line => {
+            // Entferne Zeilen, die wie Base64 aussehen (lange Zeilen ohne Leerzeichen)
+            if (line.length > 76 && !line.includes(' ') && /^[A-Za-z0-9+/=]+$/.test(line)) {
+                return false;
+            }
+            return true;
+        })
+        .join('\n')
+        .trim();
     
     return {
         subject: decodeHeader(subject),
         from: from || 'unknown',
         to: to || 'unknown',
         date: date || new Date().toISOString(),
-        body: body.trim()
+        body: body
     };
 }
 
