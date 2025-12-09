@@ -1,0 +1,16 @@
+{
+  "name": "email-forwarder",
+  "version": "1.0.0",
+  "description": "AWS SES Email Forwarder Lambda Function",
+  "main": "index-v3.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.490.0",
+    "@aws-sdk/client-ses": "^3.490.0"
+  },
+  "author": "",
+  "license": "ISC"
+}
+
