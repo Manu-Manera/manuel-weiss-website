@@ -204,9 +204,15 @@ class ApplicationsCore {
         return JSON.parse(localStorage.getItem(key) || '[]');
     }
 
-    // Profile data management
-    saveProfileData(data) {
-        if (!this.currentUser) return;
+    // Profile data management - NUR AWS SPEICHERUNG
+    async saveProfileData(data) {
+        if (!this.currentUser) {
+            throw new Error('Benutzer nicht angemeldet');
+        }
+
+        if (!this.awsProfileAPI) {
+            throw new Error('AWS Profile API nicht verfügbar');
+        }
 
         const profileData = {
             ...data,
@@ -214,12 +220,15 @@ class ApplicationsCore {
             updatedAt: new Date().toISOString()
         };
 
-        // Save to localStorage
-        const key = `profile_${this.currentUser.id}`;
-        localStorage.setItem(key, JSON.stringify(profileData));
-
-        console.log('👤 Profile data saved:', profileData);
-        return profileData;
+        // Save to AWS (PRIMARY STORAGE - keine lokale Speicherung)
+        try {
+            await this.awsProfileAPI.saveProfile(profileData);
+            console.log('✅ Profile data saved to AWS:', profileData);
+            return profileData;
+        } catch (error) {
+            console.error('❌ Error saving profile to AWS:', error);
+            throw error;
+        }
     }
 
     async loadProfileDataFromAWS() {
@@ -228,24 +237,20 @@ class ApplicationsCore {
         try {
             const awsProfile = await this.awsProfileAPI.loadProfile();
             if (awsProfile) {
-                // Update local storage with AWS data
-                const key = `profile_${this.currentUser.id}`;
-                localStorage.setItem(key, JSON.stringify(awsProfile));
+                console.log('✅ Profile loaded from AWS');
                 return awsProfile;
             }
         } catch (error) {
-            console.error('Error loading profile from AWS:', error);
+            console.error('❌ Error loading profile from AWS:', error);
+            throw error;
         }
 
-        // Fallback to localStorage
-        return this.getProfileData();
+        return null;
     }
 
-    getProfileData() {
-        if (!this.currentUser) return null;
-
-        const key = `profile_${this.currentUser.id}`;
-        return JSON.parse(localStorage.getItem(key) || 'null');
+    async getProfileData() {
+        // Lade immer von AWS
+        return await this.loadProfileDataFromAWS();
     }
 
     // Document management
