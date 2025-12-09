@@ -385,6 +385,16 @@ class WebsiteUsersManagement {
             });
         });
         
+        listEl.querySelectorAll('[data-action="confirm-user"]').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                const row = e.target.closest('tr');
+                const email = row.dataset.email;
+                const username = row.dataset.username;
+                await this.handleConfirmUser(email, username);
+            });
+        });
+        
         listEl.querySelectorAll('[data-action="reset-password"]').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const row = e.target.closest('tr');
