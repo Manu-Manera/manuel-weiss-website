@@ -1500,6 +1500,202 @@ class RealUserAuthSystem {
         }
     }
 
+    /**
+     * Zeige 2FA-Challenge-Modal
+     */
+    showMFAChallenge(session, challengeName) {
+        // Erstelle 2FA-Modal falls nicht vorhanden
+        if (!document.getElementById('mfaChallengeModal')) {
+            this.createMFAChallengeModal();
+        }
+
+        // Speichere Session für 2FA-Verifizierung
+        this.pendingMFASession = session;
+        this.pendingMFAChallengeName = challengeName;
+
+        // Zeige Modal
+        const modal = document.getElementById('mfaChallengeModal');
+        modal.style.display = 'flex';
+        
+        // Focus auf Code-Eingabe
+        const mfaCodeInput = document.getElementById('mfaCodeInput');
+        if (mfaCodeInput) {
+            setTimeout(() => {
+                mfaCodeInput.focus();
+                mfaCodeInput.select();
+            }, 100);
+        }
+    }
+
+    /**
+     * Erstelle 2FA-Challenge-Modal
+     */
+    createMFAChallengeModal() {
+        const modalHTML = `
+            <div id="mfaChallengeModal" class="auth-modal" style="display: none;">
+                <div class="auth-modal-content">
+                    <div class="auth-modal-header">
+                        <h2><i class="fas fa-shield-alt"></i> 2FA-Bestätigung</h2>
+                        <button class="auth-close" onclick="realUserAuth.closeMFAChallenge()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="auth-modal-body">
+                        <p style="margin-bottom: 1.5rem;">
+                            Bitte geben Sie den 6-stelligen Code aus Ihrer Authenticator-App ein:
+                        </p>
+                        <form id="mfaChallengeForm" class="auth-form">
+                            <div class="form-group">
+                                <label for="mfaCodeInput">2FA-Code</label>
+                                <input 
+                                    type="text" 
+                                    id="mfaCodeInput" 
+                                    required 
+                                    placeholder="000000" 
+                                    maxlength="6"
+                                    pattern="[0-9]{6}"
+                                    inputmode="numeric"
+                                    autocomplete="one-time-code"
+                                    style="text-align: center; font-size: 1.5rem; letter-spacing: 0.5rem; font-weight: 600; font-family: 'Courier New', monospace;"
+                                >
+                            </div>
+                            <button type="submit" class="btn btn-primary auth-btn">
+                                <i class="fas fa-check"></i> Bestätigen
+                            </button>
+                            <div class="auth-links">
+                                <a href="#" onclick="realUserAuth.closeMFAChallenge(); realUserAuth.showLoginForm(); return false;">
+                                    <i class="fas fa-arrow-left"></i> Zurück zur Anmeldung
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+        // Setup form handler
+        document.getElementById('mfaChallengeForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await this.handleMFAChallenge();
+        });
+
+        // Auto-submit when 6 digits entered
+        const mfaCodeInput = document.getElementById('mfaCodeInput');
+        if (mfaCodeInput) {
+            mfaCodeInput.addEventListener('input', (e) => {
+                e.target.value = e.target.value.replace(/[^0-9]/g, '');
+                if (e.target.value.length === 6) {
+                    setTimeout(() => {
+                        document.getElementById('mfaChallengeForm').dispatchEvent(new Event('submit'));
+                    }, 300);
+                }
+            });
+        }
+    }
+
+    /**
+     * Behandle 2FA-Challenge
+     */
+    async handleMFAChallenge() {
+        const code = document.getElementById('mfaCodeInput').value;
+        
+        if (!code || code.length !== 6) {
+            this.showNotification('Bitte geben Sie einen 6-stelligen Code ein.', 'error');
+            return;
+        }
+
+        if (!this.pendingMFASession) {
+            this.showNotification('Fehler: Keine gültige Session gefunden.', 'error');
+            return;
+        }
+
+        const email = document.getElementById('loginEmail').value.trim();
+
+        try {
+            this.showLoading('2FA-Code wird verifiziert...');
+
+            const params = {
+                Session: this.pendingMFASession,
+                ClientId: this.clientId,
+                ChallengeName: this.pendingMFAChallengeName,
+                ChallengeResponses: {
+                    SOFTWARE_TOKEN_MFA_CODE: code.trim(),
+                    USERNAME: email
+                }
+            };
+
+            const result = await this.cognitoIdentityServiceProvider
+                .respondToAuthChallenge(params)
+                .promise();
+
+            if (result.AuthenticationResult) {
+                // 2FA erfolgreich verifiziert
+                const session = {
+                    idToken: result.AuthenticationResult.IdToken,
+                    accessToken: result.AuthenticationResult.AccessToken,
+                    refreshToken: result.AuthenticationResult.RefreshToken,
+                    expiresAt: new Date(Date.now() + result.AuthenticationResult.ExpiresIn * 1000).toISOString()
+                };
+
+                const rememberMe = document.getElementById('rememberMe')?.checked || false;
+                this.saveSession(session, rememberMe);
+
+                const userInfo = await this.getUserInfo(session.idToken);
+                this.currentUser = userInfo;
+                this.isAuthenticated = true;
+                this.userData = userInfo;
+
+                // Load user data
+                await this.loadUserData();
+
+                // Update UI
+                this.updateAuthUI();
+                this.closeMFAChallenge();
+                this.closeAuthModal();
+
+                this.showNotification('✅ Erfolgreich angemeldet!', 'success');
+
+                // Dispatch login event
+                document.dispatchEvent(new CustomEvent('userLogin', { detail: userInfo }));
+            } else {
+                throw new Error('Ungültige Antwort von Cognito');
+            }
+        } catch (error) {
+            console.error('2FA verification error:', error);
+            
+            let errorMessage = 'Ungültiger 2FA-Code. ';
+            if (error.code === 'CodeMismatchException') {
+                errorMessage += 'Bitte prüfen Sie die Zeit in Ihrer Authenticator-App.';
+            } else {
+                errorMessage += error.message || 'Unbekannter Fehler.';
+            }
+            
+            this.showNotification(errorMessage, 'error');
+            
+            // Clear code input
+            const mfaCodeInput = document.getElementById('mfaCodeInput');
+            if (mfaCodeInput) {
+                mfaCodeInput.value = '';
+                mfaCodeInput.focus();
+            }
+        } finally {
+            this.hideLoading();
+        }
+    }
+
+    /**
+     * Schließe 2FA-Challenge-Modal
+     */
+    closeMFAChallenge() {
+        const modal = document.getElementById('mfaChallengeModal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+        this.pendingMFASession = null;
+        this.pendingMFAChallengeName = null;
+    }
+
     updateAuthUI() {
         const authButton = document.getElementById('realAuthButton');
         const userDropdown = this.getUserDropdownElement();
