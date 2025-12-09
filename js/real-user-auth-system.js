@@ -524,7 +524,17 @@ class RealUserAuthSystem {
                         <form id="verifyEmailForm" class="auth-form" style="display: none;">
                             <div class="form-group">
                                 <label for="verifyCode">Bestätigungscode</label>
-                                <input type="text" id="verifyCode" required placeholder="Code aus E-Mail" maxlength="6">
+                                <input 
+                                    type="text" 
+                                    id="verifyCode" 
+                                    required 
+                                    placeholder="000000" 
+                                    maxlength="6"
+                                    pattern="[0-9]{6}"
+                                    inputmode="numeric"
+                                    autocomplete="one-time-code"
+                                    style="text-align: center; font-size: 1.5rem; letter-spacing: 0.5rem; font-weight: 600; font-family: 'Courier New', monospace;"
+                                >
                                 <small class="form-hint" style="color: #64748b; margin-top: 0.5rem; display: block;">
                                     <i class="fas fa-info-circle"></i> 
                                     Bitte geben Sie den 6-stelligen Code ein, den Sie per E-Mail erhalten haben.
@@ -534,9 +544,12 @@ class RealUserAuthSystem {
                                 <i class="fas fa-check"></i> E-Mail bestätigen
                             </button>
                             <div class="auth-links">
-                                <a href="#" onclick="realUserAuth.resendVerificationCode(); return false;">
+                                <a href="#" onclick="realUserAuth.resendVerificationCode(); return false;" id="resendCodeLink">
                                     <i class="fas fa-redo"></i> Code erneut senden
                                 </a>
+                                <small id="resendCooldown" style="display: none; color: #ef4444; margin-top: 0.5rem;">
+                                    Bitte warten Sie <span id="cooldownSeconds">60</span> Sekunden
+                                </small>
                             </div>
                         </form>
                     </div>
@@ -570,10 +583,34 @@ class RealUserAuthSystem {
         });
 
         // Email verification form
-        document.getElementById('verifyEmailForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            await this.handleEmailVerification();
-        });
+        const verifyForm = document.getElementById('verifyEmailForm');
+        if (verifyForm) {
+            verifyForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await this.handleEmailVerification();
+            });
+            
+            // Auto-submit when 6 digits entered
+            const verifyCodeInput = document.getElementById('verifyCode');
+            if (verifyCodeInput) {
+                verifyCodeInput.addEventListener('input', (e) => {
+                    // Only allow numbers
+                    e.target.value = e.target.value.replace(/[^0-9]/g, '');
+                    
+                    // Auto-submit when 6 digits entered
+                    if (e.target.value.length === 6) {
+                        setTimeout(() => {
+                            verifyForm.dispatchEvent(new Event('submit'));
+                        }, 300);
+                    }
+                });
+                
+                // Focus on input when form is shown
+                verifyCodeInput.addEventListener('focus', () => {
+                    verifyCodeInput.select();
+                });
+            }
+        }
     }
 
     async handleLogin() {
@@ -619,6 +656,9 @@ class RealUserAuthSystem {
 
                 // Dispatch login event
                 document.dispatchEvent(new CustomEvent('userLogin', { detail: result.user }));
+            } else if (result.requiresMFA) {
+                // 2FA erforderlich - zeige 2FA-Modal
+                this.showMFAChallenge(result.session, result.challengeName);
             } else {
                 this.showNotification(result.error, 'error');
             }
@@ -681,6 +721,18 @@ class RealUserAuthSystem {
             console.log('📧 E-Mail war:', trimmedEmail);
             
             const result = await this.cognitoIdentityServiceProvider.initiateAuth(params).promise();
+            
+            // Prüfe ob 2FA erforderlich ist
+            if (result.ChallengeName === 'SOFTWARE_TOKEN_MFA') {
+                console.log('🔐 2FA erforderlich');
+                return {
+                    success: false,
+                    requiresMFA: true,
+                    challengeName: result.ChallengeName,
+                    session: result.Session,
+                    error: 'Bitte geben Sie den 2FA-Code aus Ihrer Authenticator-App ein.'
+                };
+            }
             
             console.log('✅ Login successful');
             
@@ -1072,11 +1124,25 @@ class RealUserAuthSystem {
 
                 // Clear pending verification
                 localStorage.removeItem('pendingVerification');
+                localStorage.removeItem('lastResendVerificationCode');
                 
-                // Show login form
-                this.showLoginForm();
+                // Close modal and show login form after short delay
+                setTimeout(() => {
+                    this.closeAuthModal();
+                    setTimeout(() => {
+                        this.showAuthModal();
+                        this.showLoginForm();
+                    }, 300);
+                }, 1500);
             } else {
                 this.showNotification(result.error, 'error');
+                
+                // Clear code input on error
+                const verifyCodeInput = document.getElementById('verifyCode');
+                if (verifyCodeInput) {
+                    verifyCodeInput.value = '';
+                    verifyCodeInput.focus();
+                }
             }
         } catch (error) {
             console.error('Email verification error:', error);
@@ -1136,6 +1202,23 @@ class RealUserAuthSystem {
             return;
         }
 
+        // Rate limiting: Prüfe ob zu schnell erneut gesendet wurde
+        const lastResendKey = 'lastResendVerificationCode';
+        const lastResend = localStorage.getItem(lastResendKey);
+        const cooldownSeconds = 60; // 60 Sekunden Cooldown
+        
+        if (lastResend) {
+            const timeSinceLastResend = (Date.now() - parseInt(lastResend)) / 1000;
+            if (timeSinceLastResend < cooldownSeconds) {
+                const remaining = Math.ceil(cooldownSeconds - timeSinceLastResend);
+                this.showNotification(`Bitte warten Sie noch ${remaining} Sekunden, bevor Sie den Code erneut anfordern.`, 'error');
+                
+                // Zeige Cooldown-Timer
+                this.startResendCooldown(remaining);
+                return;
+            }
+        }
+
         try {
             this.showLoading('Code wird erneut gesendet...');
             
@@ -1148,6 +1231,12 @@ class RealUserAuthSystem {
             const result = await this.cognitoIdentityServiceProvider.resendConfirmationCode(params).promise();
             
             console.log('✅ Confirmation code resent successfully');
+            
+            // Speichere Zeitpunkt des erneuten Sendens
+            localStorage.setItem(lastResendKey, Date.now().toString());
+            
+            // Starte Cooldown-Timer
+            this.startResendCooldown(cooldownSeconds);
             
             this.showNotification(
                 '✅ Neue Bestätigungs-E-Mail wurde gesendet! Bitte prüfen Sie Ihr E-Mail-Postfach.',
@@ -1163,6 +1252,9 @@ class RealUserAuthSystem {
                 errorMessage += 'Benutzer nicht gefunden.';
             } else if (error.code === 'LimitExceededException') {
                 errorMessage += 'Zu viele Anfragen. Bitte warten Sie einen Moment.';
+                // Setze Cooldown auch bei LimitExceeded
+                localStorage.setItem(lastResendKey, Date.now().toString());
+                this.startResendCooldown(cooldownSeconds);
             } else {
                 errorMessage += error.message || 'Unbekannter Fehler.';
             }
@@ -1171,6 +1263,31 @@ class RealUserAuthSystem {
         } finally {
             this.hideLoading();
         }
+    }
+    
+    startResendCooldown(seconds) {
+        const resendLink = document.getElementById('resendCodeLink');
+        const cooldownElement = document.getElementById('resendCooldown');
+        const cooldownSeconds = document.getElementById('cooldownSeconds');
+        
+        if (!resendLink || !cooldownElement || !cooldownSeconds) return;
+        
+        let remaining = seconds;
+        resendLink.style.pointerEvents = 'none';
+        resendLink.style.opacity = '0.5';
+        cooldownElement.style.display = 'block';
+        
+        const interval = setInterval(() => {
+            remaining--;
+            cooldownSeconds.textContent = remaining;
+            
+            if (remaining <= 0) {
+                clearInterval(interval);
+                resendLink.style.pointerEvents = 'auto';
+                resendLink.style.opacity = '1';
+                cooldownElement.style.display = 'none';
+            }
+        }, 1000);
     }
 
     async loadUserData() {
@@ -1349,13 +1466,37 @@ class RealUserAuthSystem {
         document.getElementById('authModalTitle').textContent = 'E-Mail bestätigen';
         
         // Store email for verification
-        const email = document.getElementById('registerEmail').value;
-        localStorage.setItem('pendingVerification', email);
+        const email = document.getElementById('registerEmail')?.value || localStorage.getItem('pendingVerification');
+        if (email) {
+            localStorage.setItem('pendingVerification', email);
+        }
         
-        // Hide code display hint (not needed for real AWS Cognito)
-        const hint = document.getElementById('verificationHint');
-        if (hint) {
-            hint.style.display = 'none';
+        // Focus on code input and clear it
+        const verifyCodeInput = document.getElementById('verifyCode');
+        if (verifyCodeInput) {
+            verifyCodeInput.value = '';
+            setTimeout(() => {
+                verifyCodeInput.focus();
+                verifyCodeInput.select();
+            }, 100);
+        }
+        
+        // Reset cooldown display
+        const cooldownElement = document.getElementById('resendCooldown');
+        if (cooldownElement) {
+            cooldownElement.style.display = 'none';
+        }
+        
+        // Prüfe ob Cooldown aktiv ist
+        const lastResendKey = 'lastResendVerificationCode';
+        const lastResend = localStorage.getItem(lastResendKey);
+        if (lastResend) {
+            const timeSinceLastResend = (Date.now() - parseInt(lastResend)) / 1000;
+            const cooldownSeconds = 60;
+            if (timeSinceLastResend < cooldownSeconds) {
+                const remaining = Math.ceil(cooldownSeconds - timeSinceLastResend);
+                this.startResendCooldown(remaining);
+            }
         }
     }
 
