@@ -537,20 +537,36 @@ a:hover {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: var(--spacing-3xl);
-    align-items: center;
+    align-items: start; /* Start statt center, damit alles sichtbar ist */
     overflow: visible;
     box-sizing: border-box;
     width: 100%;
+    min-height: 100vh; /* Mindesthöhe für vollständige Sichtbarkeit */
 }
 
 .hero-title {
     font-size: var(--font-size-6xl);
     font-weight: 700;
-    line-height: 1.1;
+    line-height: 1.2;
     margin-bottom: var(--spacing-lg);
     color: white;
     text-shadow: 0 4px 20px rgba(0,0,0,0.3);
     animation: heroTitleFade 1s ease-out;
+}
+
+.hero-title-line-1,
+.hero-title-line-2 {
+    display: block;
+}
+
+.hero-title-line-1 {
+    margin-bottom: 0.2em;
+}
+
+.hero-title-line-2 {
+    font-size: 0.75em; /* Etwas kleiner für die zweite Zeile */
+    font-weight: 600;
+    opacity: 0.95;
 }
 
 @keyframes heroTitleFade {
@@ -652,8 +668,11 @@ a:hover {
 }
 
 .hero-about-visual {
-    align-items: center;
+    align-items: flex-start; /* Start statt center für bessere Sichtbarkeit */
     gap: var(--spacing-xl);
+    width: 100%;
+    max-width: 100%;
+    overflow: visible;
 }
 
 .hero-about-image {
@@ -685,6 +704,8 @@ a:hover {
 .hero-about-stats {
     width: 100%;
     max-width: 520px;
+    margin-top: var(--spacing-lg); /* Abstand zum Profilbild */
+    overflow: visible;
 }
 
 .hero-about-stats .stat-card {
@@ -2499,6 +2520,46 @@ a:hover {
     margin-left: 1rem;
     padding-left: 1rem;
     border-left: 1px solid #e5e7eb;
+}
+
+/* Kompakter Language Switcher - nur Flaggen */
+.language-switcher-compact {
+    display: flex;
+    gap: 0.25rem;
+    margin-left: 0.75rem;
+    padding-left: 0.75rem;
+    border-left: 1px solid #e5e7eb;
+    align-items: center;
+}
+
+.lang-link-compact {
+    padding: 0.35rem 0.5rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--gray-600);
+    transition: all 0.2s;
+    border: 1px solid transparent;
+    background: transparent;
+    cursor: pointer;
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 32px;
+    min-width: 32px;
+}
+
+.lang-link-compact:hover {
+    color: #6366f1;
+    background: #f3f4f6;
+}
+
+.lang-link-compact.active {
+    color: #6366f1;
+    background: #eef2ff;
+    border-color: #6366f1;
 }
 
 .lang-link {
