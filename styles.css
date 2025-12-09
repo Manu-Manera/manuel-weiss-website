@@ -2799,6 +2799,66 @@ a:hover {
         --text-5xl: 2.2rem;
     }
     
+    /* Mobile Scroll Fixes - KRITISCH */
+    html {
+        height: auto !important;
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    body {
+        height: auto !important;
+        min-height: 100vh;
+        min-height: -webkit-fill-available;
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
+        position: relative !important;
+        -webkit-overflow-scrolling: touch;
+        touch-action: pan-y;
+        overscroll-behavior-y: contain;
+    }
+    
+    /* Fix für iOS Safari Viewport */
+    @supports (-webkit-touch-callout: none) {
+        body {
+            min-height: -webkit-fill-available;
+            position: relative !important;
+            height: auto !important;
+        }
+    }
+    
+    /* body::before und body::after dürfen Scroll NICHT blockieren */
+    body::before,
+    body::after {
+        position: absolute !important; /* Statt fixed auf Mobile */
+        height: auto !important;
+        min-height: 100vh;
+        pointer-events: none !important;
+        touch-action: none !important;
+        will-change: transform;
+    }
+    
+    /* Alle Sections müssen scrollbar sein */
+    section {
+        position: relative;
+        overflow: visible;
+        min-height: auto;
+    }
+    
+    /* Hero Section Scroll Fix */
+    .hero {
+        min-height: auto;
+        padding: var(--spacing-xl) 0;
+        position: relative;
+        overflow: visible;
+    }
+    
+    .hero-container {
+        min-height: auto;
+        position: relative;
+    }
+    
     /* Navigation Mobile */
     .mobile-menu-toggle {
         display: flex;
