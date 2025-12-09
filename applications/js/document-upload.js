@@ -717,22 +717,31 @@ class DocumentUpload {
     renderExistingFiles() {
         // Render CV
         if (this.uploadedFiles.cv) {
-            this.showFilePreview(this.uploadedFiles.cv, 'cv');
+            // CV kann entweder direkt ein File-Objekt sein oder ein Objekt mit uploadResult
+            const cvFile = this.uploadedFiles.cv.file || this.uploadedFiles.cv;
+            const cvResult = this.uploadedFiles.cv.uploadResult || null;
+            this.showFilePreview(cvFile, 'cv', cvResult);
         }
         
         // Render certificates
-        if (this.uploadedFiles.certificates.length > 0) {
-            this.showFilesList(this.uploadedFiles.certificates, 'certificates');
+        if (this.uploadedFiles.certificates && this.uploadedFiles.certificates.length > 0) {
+            const certFiles = this.uploadedFiles.certificates.map(item => item.file || item);
+            const certResults = this.uploadedFiles.certificates.map(item => item.uploadResult || null);
+            this.showFilesList(certFiles, 'certificates', certResults);
         }
         
         // Render portfolio
-        if (this.uploadedFiles.portfolio.length > 0) {
-            this.showFilesList(this.uploadedFiles.portfolio, 'portfolio');
+        if (this.uploadedFiles.portfolio && this.uploadedFiles.portfolio.length > 0) {
+            const portFiles = this.uploadedFiles.portfolio.map(item => item.file || item);
+            const portResults = this.uploadedFiles.portfolio.map(item => item.uploadResult || null);
+            this.showFilesList(portFiles, 'portfolio', portResults);
         }
         
         // Render photo
         if (this.uploadedFiles.photo) {
-            this.showFilePreview(this.uploadedFiles.photo, 'photo');
+            const photoFile = this.uploadedFiles.photo.file || this.uploadedFiles.photo;
+            const photoResult = this.uploadedFiles.photo.uploadResult || null;
+            this.showFilePreview(photoFile, 'photo', photoResult);
         }
     }
 
