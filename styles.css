@@ -2509,6 +2509,14 @@ a:hover {
     color: #6b7280;
     transition: all 0.2s;
     border: 1px solid transparent;
+    background: transparent;
+    cursor: pointer;
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 44px; /* Touch-friendly */
+    min-width: 44px;
 }
 
 .lang-link:hover {
@@ -2520,6 +2528,20 @@ a:hover {
     color: #6366f1;
     background: #eef2ff;
     border-color: #6366f1;
+}
+
+/* Mobile Language Switcher */
+.mobile-language-switcher {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.mobile-language-switcher .lang-link {
+    flex: 1;
+    min-width: 80px;
+    justify-content: center;
 }
 
 @media (max-width: 768px) {
