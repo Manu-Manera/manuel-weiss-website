@@ -106,7 +106,7 @@
                     </div>
                 </div>
                 <div class="hero-actions">
-                    <a href="profile-setup.html" class="btn btn-primary btn-large">
+                    <a href="#" id="jetztStartenButton" class="btn btn-primary btn-large" onclick="handleJetztStarten(); return false;">
                         <i class="fas fa-rocket"></i>
                         Jetzt starten
                     </a>
@@ -517,8 +517,59 @@
                 window.realUserAuth.showNotification('Profil wird geöffnet...', 'info');
             }
             setTimeout(() => {
+                // Einheitliche Profil-Seite - lädt automatisch bestehende Daten
                 window.location.href = '../user-profile.html#personal';
             }, 500);
+        }
+        
+        // "Jetzt starten" Button-Handler - prüft ob Profildaten existieren
+        async function handleJetztStarten() {
+            // Prüfe ob Benutzer angemeldet ist
+            if (!window.realUserAuth || !window.realUserAuth.isLoggedIn || !window.realUserAuth.isLoggedIn()) {
+                // Nicht angemeldet - zeige Auth-Modal
+                if (window.realUserAuth && window.realUserAuth.showAuthModal) {
+                    window.realUserAuth.showAuthModal();
+                } else {
+                    window.location.href = 'profile-setup.html';
+                }
+                return;
+            }
+            
+            const user = window.realUserAuth.getCurrentUser();
+            if (!user) {
+                window.location.href = 'profile-setup.html';
+                return;
+            }
+            
+            // Prüfe ob Profildaten existieren
+            try {
+                if (window.awsProfileAPI && window.awsProfileAPI.isInitialized) {
+                    const profile = await window.awsProfileAPI.loadProfile();
+                    
+                    // Prüfe ob Profildaten vorhanden sind
+                    const hasProfileData = profile && (
+                        profile.firstName || 
+                        profile.lastName || 
+                        profile.personal?.firstName ||
+                        profile['application-profile']?.personal?.firstName
+                    );
+                    
+                    if (hasProfileData) {
+                        // Profildaten existieren - weiterleiten zur Profil-Seite (kann bearbeitet werden)
+                        window.location.href = '../user-profile.html#personal';
+                    } else {
+                        // Keine Profildaten - weiterleiten zur Setup-Seite
+                        window.location.href = 'profile-setup.html';
+                    }
+                } else {
+                    // AWS API nicht verfügbar - weiterleiten zur Setup-Seite
+                    window.location.href = 'profile-setup.html';
+                }
+            } catch (error) {
+                console.error('Fehler beim Prüfen der Profildaten:', error);
+                // Bei Fehler - weiterleiten zur Setup-Seite
+                window.location.href = 'profile-setup.html';
+            }
         }
         
         function openSettings() {
