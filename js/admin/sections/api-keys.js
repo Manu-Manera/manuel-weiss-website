@@ -12,7 +12,7 @@ class ApiKeysSection {
     /**
      * Section initialisieren
      */
-    init() {
+    async init() {
         if (this.initialized) return;
         
         // Dependencies prüfen
@@ -24,10 +24,29 @@ class ApiKeysSection {
             this.globalApiManager = window.globalAPIManager;
         }
         
+        // Warte auf awsProfileAPI Initialisierung
+        if (window.awsProfileAPI && !window.awsProfileAPI.isInitialized) {
+            await new Promise(resolve => {
+                const checkInit = setInterval(() => {
+                    if (window.awsProfileAPI && window.awsProfileAPI.isInitialized) {
+                        clearInterval(checkInit);
+                        resolve();
+                    }
+                }, 100);
+                setTimeout(() => {
+                    clearInterval(checkInit);
+                    resolve();
+                }, 5000);
+            });
+        }
+        
+        // Lade API Keys aus AWS (falls vorhanden)
+        await this.loadApiKeysFromAWS();
+        
         // Event Listeners hinzufügen
         this.attachEventListeners();
         
-        // Settings laden
+        // Settings laden (aus localStorage + AWS)
         this.loadApiSettings();
         
         // Temperature Sliders einrichten
@@ -89,9 +108,10 @@ class ApiKeysSection {
     }
     
     /**
-     * API Settings laden
+     * API Settings laden (aus localStorage + AWS)
      */
     loadApiSettings() {
+        // Lade aus State Manager (localStorage)
         const settings = this.stateManager?.getState('apiKeys') || {};
         
         const services = ['openai', 'anthropic', 'google'];
@@ -100,8 +120,8 @@ class ApiKeysSection {
             if (serviceSettings) {
                 // API Key
                 const keyInput = document.getElementById(`${service}-key`);
-                if (keyInput) {
-                    keyInput.value = serviceSettings.apiKey || '';
+                if (keyInput && serviceSettings.apiKey) {
+                    keyInput.value = serviceSettings.apiKey;
                 }
                 
                 // Model
@@ -253,6 +273,33 @@ class ApiKeysSection {
         
         // Success Message
         this.showMessage(service, 'Einstellungen gespeichert!', 'success');
+    }
+    
+    /**
+     * Direkter DynamoDB-Zugriff (Fallback, wenn API fehlschlägt)
+     */
+    async saveToDynamoDBDirect(profileData) {
+        try {
+            if (!window.AWS || !window.AWS.DynamoDB) {
+                throw new Error('AWS SDK nicht verfügbar');
+            }
+            
+            const dynamoDB = new window.AWS.DynamoDB.DocumentClient({
+                region: window.AWS_CONFIG?.region || 'eu-central-1'
+            });
+            
+            const tableName = window.AWS_CONFIG?.tableName || 'mawps-user-profiles';
+            
+            await dynamoDB.put({
+                TableName: tableName,
+                Item: profileData
+            }).promise();
+            
+            console.log('✅ Direkt in DynamoDB gespeichert');
+        } catch (error) {
+            console.error('❌ Direkter DynamoDB-Zugriff fehlgeschlagen:', error);
+            throw error;
+        }
     }
     
     /**
