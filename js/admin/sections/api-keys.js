@@ -204,16 +204,16 @@ class ApiKeysSection {
             }
             
             if (window.awsProfileAPI && window.awsProfileAPI.isInitialized) {
-                // Lade aktuelle Admin-Konfiguration (userId: 'admin' oder 'owner')
+                // Lade aktuelle Admin-Konfiguration (userId: 'admin')
                 let adminProfile = {};
                 try {
                     // Versuche zuerst mit 'admin' userId
-                    const adminProfileAdmin = await window.awsProfileAPI.loadProfile().catch(() => null);
+                    const adminProfileAdmin = await window.awsProfileAPI.loadProfile('admin').catch(() => null);
                     if (adminProfileAdmin && adminProfileAdmin.userId === 'admin') {
                         adminProfile = adminProfileAdmin;
                     } else {
                         // Fallback: Versuche mit 'owner' userId
-                        const adminProfileOwner = await window.awsProfileAPI.loadProfile().catch(() => null);
+                        const adminProfileOwner = await window.awsProfileAPI.loadProfile('owner').catch(() => null);
                         if (adminProfileOwner && adminProfileOwner.userId === 'owner') {
                             adminProfile = adminProfileOwner;
                         }

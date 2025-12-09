@@ -77,7 +77,20 @@ class AWSProfileAPI {
         try {
             console.log('💾 Saving profile to AWS DynamoDB...');
             
-            const { userId, idToken } = await this.getAuthCredentials();
+            // Wenn userId explizit in profileData angegeben ist (z.B. 'admin'), verwende diesen
+            // Ansonsten hole userId aus Auth-Credentials
+            let userId, idToken;
+            if (profileData.userId && (profileData.userId === 'admin' || profileData.userId === 'owner')) {
+                // Admin-Konfiguration - verwende explizite userId
+                userId = profileData.userId;
+                // Für Admin-Konfigurationen brauchen wir möglicherweise keinen Token
+                idToken = null;
+            } else {
+                // Normale User-Profile - hole aus Auth
+                const credentials = await this.getAuthCredentials();
+                userId = credentials.userId;
+                idToken = credentials.idToken;
+            }
             
             // Prepare item for DynamoDB
             const item = {
@@ -96,12 +109,18 @@ class AWSProfileAPI {
             // Use API Gateway endpoint if available
             if (window.AWS_CONFIG?.apiBaseUrl) {
                 try {
+                    const headers = {
+                        'Content-Type': 'application/json'
+                    };
+                    
+                    // Nur Authorization Header hinzufügen, wenn idToken vorhanden ist
+                    if (idToken) {
+                        headers['Authorization'] = `Bearer ${idToken}`;
+                    }
+                    
                     const response = await fetch(`${window.AWS_CONFIG.apiBaseUrl}/profile`, {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${idToken}`
-                        },
+                        headers: headers,
                         body: JSON.stringify(item)
                     });
 
@@ -147,7 +166,7 @@ class AWSProfileAPI {
     /**
      * Load user profile data from DynamoDB
      */
-    async loadProfile() {
+    async loadProfile(userIdOverride = null) {
         if (!this.isInitialized) {
             await this.waitForInit();
         }
@@ -155,16 +174,36 @@ class AWSProfileAPI {
         try {
             console.log('📥 Loading profile from AWS DynamoDB...');
             
-            const { userId, idToken } = await this.getAuthCredentials();
+            // Wenn userIdOverride angegeben ist (z.B. 'admin'), verwende diesen
+            // Ansonsten hole userId aus Auth-Credentials
+            let userId, idToken;
+            if (userIdOverride && (userIdOverride === 'admin' || userIdOverride === 'owner')) {
+                userId = userIdOverride;
+                idToken = null; // Für Admin-Konfigurationen brauchen wir möglicherweise keinen Token
+            } else {
+                const credentials = await this.getAuthCredentials();
+                userId = credentials.userId;
+                idToken = credentials.idToken;
+            }
 
             // Use API Gateway endpoint if available
             if (window.AWS_CONFIG?.apiBaseUrl) {
                 try {
-                    const response = await fetch(`${window.AWS_CONFIG.apiBaseUrl}/profile`, {
+                    const headers = {};
+                    
+                    // Nur Authorization Header hinzufügen, wenn idToken vorhanden ist
+                    if (idToken) {
+                        headers['Authorization'] = `Bearer ${idToken}`;
+                    }
+                    
+                    // Wenn userIdOverride angegeben ist, als Query-Parameter hinzufügen
+                    const url = userIdOverride 
+                        ? `${window.AWS_CONFIG.apiBaseUrl}/profile?userId=${userIdOverride}`
+                        : `${window.AWS_CONFIG.apiBaseUrl}/profile`;
+                    
+                    const response = await fetch(url, {
                         method: 'GET',
-                        headers: {
-                            'Authorization': `Bearer ${idToken}`
-                        }
+                        headers: headers
                     });
 
                     if (!response.ok) {
