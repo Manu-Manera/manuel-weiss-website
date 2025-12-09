@@ -463,9 +463,9 @@ class BewerbungsprofilManager {
             
             if (result.success) {
                 this.showSuccessMessage();
-                // Weiterleitung zum nächsten Schritt
+                // Weiterleitung zum nächsten Schritt im Workflow: Dokumente hochladen
                 setTimeout(() => {
-                    window.location.href = 'job-analysis.html';
+                    window.location.href = 'document-upload.html';
                 }, 2000);
                 } else {
                 this.showErrorMessage(result.error);
