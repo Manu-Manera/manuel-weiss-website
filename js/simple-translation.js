@@ -8,6 +8,9 @@ class SimpleTranslation {
     }
     
     init() {
+        // Prüfe URL-Pfad für Sprache
+        this.detectLanguageFromURL();
+        
         // Warte auf DOM
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', () => this.applyLanguage());
@@ -17,6 +20,62 @@ class SimpleTranslation {
         
         // Update Language Switcher
         this.updateLanguageSwitcher();
+    }
+    
+    detectLanguageFromURL() {
+        // Prüfe ob URL mit /en/ beginnt
+        const path = window.location.pathname;
+        if (path.startsWith('/en/') || path.includes('/en/')) {
+            this.currentLanguage = 'en';
+            localStorage.setItem('selectedLanguage', 'en');
+            document.documentElement.lang = 'en';
+        } else {
+            // Standard: Deutsch, außer explizit auf Englisch
+            const storedLang = localStorage.getItem('selectedLanguage');
+            if (storedLang === 'en' && !path.startsWith('/en/')) {
+                // Wenn gespeichert ist EN, aber URL ist nicht /en/, dann zu /en/ weiterleiten
+                const newPath = '/en' + path;
+                if (newPath !== path) {
+                    window.location.href = newPath;
+                    return;
+                }
+            }
+            this.currentLanguage = storedLang || 'de';
+            document.documentElement.lang = this.currentLanguage;
+        }
+    }
+    
+    switchLanguage(lang) {
+        if (lang === 'de' || lang === 'en') {
+            const currentPath = window.location.pathname;
+            let newPath;
+            
+            if (lang === 'en') {
+                // Wechsel zu Englisch: Füge /en/ hinzu
+                if (currentPath.startsWith('/en/')) {
+                    newPath = currentPath; // Bereits auf /en/
+                } else if (currentPath === '/' || currentPath === '/index.html') {
+                    newPath = '/en/index.html';
+                } else {
+                    newPath = '/en' + currentPath.replace(/^\/en/, '');
+                }
+            } else {
+                // Wechsel zu Deutsch: Entferne /en/
+                if (currentPath.startsWith('/en/')) {
+                    newPath = currentPath.replace('/en/', '/');
+                } else {
+                    newPath = currentPath;
+                }
+            }
+            
+            // Navigiere zur neuen URL
+            if (newPath !== currentPath) {
+                window.location.href = newPath;
+            } else {
+                // Gleiche URL, nur Sprache ändern
+                this.setLanguage(lang);
+            }
+        }
     }
     
     setLanguage(lang) {
