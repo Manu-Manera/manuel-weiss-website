@@ -75,8 +75,37 @@ function loadWebsiteProfileImage() {
 
 /**
  * Wendet das Profilbild auf alle relevanten Selektoren an
+ * SCHUTZ: Überschreibt nicht, wenn bereits ein AWS-Profilbild gesetzt wurde
  */
 function applyProfileImageToSelectors(src) {
+    // SCHUTZ: Wenn bereits ein AWS-Profilbild gesetzt wurde, nicht überschreiben
+    if (window.profileImageSetByAWS && window.currentProfileImageSrc) {
+        const isAWSImage = window.currentProfileImageSrc.startsWith('http') || 
+                          window.currentProfileImageSrc.includes('amazonaws') || 
+                          window.currentProfileImageSrc.includes('s3') ||
+                          window.currentProfileImageSrc.startsWith('data:');
+        
+        // Wenn das aktuelle Bild von AWS kommt und das neue Bild nicht, dann nicht überschreiben
+        if (isAWSImage && !src.startsWith('http') && !src.includes('amazonaws') && !src.includes('s3') && !src.startsWith('data:')) {
+            console.log('🛡️ WEBSITE DATA SYNC: AWS-Profilbild bereits gesetzt - überschreibe nicht mit localStorage-Bild');
+            return;
+        }
+    }
+    
+    // SCHUTZ: Wenn bereits ein Profilbild gesetzt wurde (nicht Standard), prüfen ob überschreiben erlaubt
+    const DEFAULT_IMAGES = ['manuel-weiss-portrait.jpg', 'manuel-weiss-photo.svg'];
+    const isDefaultImage = DEFAULT_IMAGES.some(defaultImg => src.includes(defaultImg));
+    const currentSrc = window.currentProfileImageSrc;
+    
+    if (currentSrc && !isDefaultImage) {
+        const currentIsDefault = DEFAULT_IMAGES.some(defaultImg => currentSrc.includes(defaultImg));
+        // Wenn aktuelles Bild nicht Standard ist und neues Bild auch nicht Standard, dann nicht überschreiben
+        if (!currentIsDefault && !isDefaultImage && !src.startsWith('data:')) {
+            console.log('🛡️ WEBSITE DATA SYNC: Profilbild bereits gesetzt - überschreibe nicht');
+            return;
+        }
+    }
+    
     const imageSelectors = [
         '#profile-photo',
         '#hero-profile-image',
@@ -92,18 +121,28 @@ function applyProfileImageToSelectors(src) {
     imageSelectors.forEach(selector => {
         const imageElement = document.querySelector(selector);
         if (imageElement) {
-            imageElement.src = src;
-            console.log(`✅ Profilbild aktualisiert: ${selector}`);
+            // Nur setzen wenn es sich wirklich ändert
+            if (imageElement.src !== src && imageElement.dataset.loadedSrc !== src) {
+                imageElement.src = src;
+                imageElement.dataset.loadedSrc = src;
+                console.log(`✅ Profilbild aktualisiert: ${selector}`);
+            }
         }
     });
     
     const allImages = document.querySelectorAll('img');
     allImages.forEach(img => {
         if (img.alt && (img.alt.includes('Manuel') || img.alt.includes('Profil'))) {
-            img.src = src;
-            console.log(`✅ Profilbild aktualisiert: ${img.alt}`);
+            if (img.src !== src && img.dataset.loadedSrc !== src) {
+                img.src = src;
+                img.dataset.loadedSrc = src;
+                console.log(`✅ Profilbild aktualisiert: ${img.alt}`);
+            }
         }
     });
+    
+    // Aktualisiere window.currentProfileImageSrc
+    window.currentProfileImageSrc = src;
 }
 
 /**
@@ -435,11 +474,16 @@ window.addEventListener('storage', (event) => {
  */
 document.addEventListener('DOMContentLoaded', () => {
     console.log('🌐 DOM geladen, starte Website Data Sync...');
-    loadWebsiteDataFromLocalStorage();
     
-    // Re-apply kurz nach nachgeladenen Skripten
-    setTimeout(loadWebsiteDataFromLocalStorage, 300);
-    setTimeout(loadWebsiteDataFromLocalStorage, 1000);
+    // Warte kurz, damit AWS-Profilbild zuerst geladen werden kann
+    setTimeout(() => {
+        // Nur laden wenn noch kein Profilbild gesetzt wurde
+        if (!window.currentProfileImageSrc || window.currentProfileImageSrc.includes('manuel-weiss-portrait.jpg') || window.currentProfileImageSrc.includes('manuel-weiss-photo.svg')) {
+            loadWebsiteDataFromLocalStorage();
+        } else {
+            console.log('🛡️ WEBSITE DATA SYNC: Profilbild bereits gesetzt, überspringe localStorage-Laden');
+        }
+    }, 1500); // Warte länger, damit AWS-Profilbild zuerst geladen wird
     
     console.log('✅ Website Data Sync initialisiert');
 });

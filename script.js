@@ -660,12 +660,30 @@ preloadImages();
 
 // Load profile image from localStorage
 function loadProfileImageFromStorage() {
+    // SCHUTZ: Nur laden wenn noch kein Profilbild gesetzt wurde oder wenn es das Standard-Bild ist
+    const currentSrc = window.currentProfileImageSrc;
+    const DEFAULT_IMAGES = ['manuel-weiss-portrait.jpg', 'manuel-weiss-photo.svg'];
+    const isCurrentDefault = currentSrc && DEFAULT_IMAGES.some(defaultImg => currentSrc.includes(defaultImg));
+    
+    // Wenn bereits ein AWS-Profilbild gesetzt wurde, nicht überschreiben
+    if (window.profileImageSetByAWS && currentSrc) {
+        console.log('🛡️ SCRIPT.JS: AWS-Profilbild bereits gesetzt - überschreibe nicht');
+        return;
+    }
+    
     const savedImage = localStorage.getItem('profileImage');
     if (savedImage && savedImage.startsWith('data:image/')) {
-        const profileImageElement = document.getElementById('profile-photo');
-        if (profileImageElement) {
-            profileImageElement.src = savedImage;
-            console.log('✅ Profilbild aus localStorage geladen (script.js)');
+        // Nur setzen wenn noch kein Profilbild gesetzt oder wenn es das Standard-Bild ist
+        if (!currentSrc || isCurrentDefault) {
+            const profileImageElement = document.getElementById('profile-photo');
+            if (profileImageElement) {
+                profileImageElement.src = savedImage;
+                profileImageElement.dataset.loadedSrc = savedImage;
+                window.currentProfileImageSrc = savedImage;
+                console.log('✅ Profilbild aus localStorage geladen (script.js)');
+            }
+        } else {
+            console.log('🛡️ SCRIPT.JS: Profilbild bereits gesetzt - überschreibe nicht mit localStorage');
         }
     }
 }
@@ -743,9 +761,17 @@ function applyTextEffect(effect) {
 function setupProfileImageListener() {
     window.addEventListener('storage', function(e) {
         if (e.key === 'profileImage' && e.newValue && e.newValue.startsWith('data:image/')) {
+            // SCHUTZ: Nur aktualisieren wenn noch kein AWS-Profilbild gesetzt wurde
+            if (window.profileImageSetByAWS && window.currentProfileImageSrc) {
+                console.log('🛡️ SCRIPT.JS: AWS-Profilbild bereits gesetzt - überschreibe nicht mit storage event');
+                return;
+            }
+            
             const profileImageElement = document.getElementById('profile-photo');
             if (profileImageElement) {
                 profileImageElement.src = e.newValue;
+                profileImageElement.dataset.loadedSrc = e.newValue;
+                window.currentProfileImageSrc = e.newValue;
                 console.log('✅ Profilbild in Echtzeit aktualisiert (storage event)');
             }
         }
@@ -756,9 +782,17 @@ function setupProfileImageListener() {
     localStorage.setItem = function(key, value) {
         originalSetItem.apply(this, arguments);
         if (key === 'profileImage' && value && value.startsWith('data:image/')) {
+            // SCHUTZ: Nur aktualisieren wenn noch kein AWS-Profilbild gesetzt wurde
+            if (window.profileImageSetByAWS && window.currentProfileImageSrc) {
+                console.log('🛡️ SCRIPT.JS: AWS-Profilbild bereits gesetzt - überschreibe nicht mit setItem');
+                return;
+            }
+            
             const profileImageElement = document.getElementById('profile-photo');
             if (profileImageElement) {
                 profileImageElement.src = value;
+                profileImageElement.dataset.loadedSrc = value;
+                window.currentProfileImageSrc = value;
                 console.log('✅ Profilbild in Echtzeit aktualisiert (setItem override)');
             }
         }
