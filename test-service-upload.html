@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service-Bild-Upload Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 2rem;
+            margin: 1rem 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .test-image {
+            max-width: 300px;
+            max-height: 200px;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border: 2px solid #ddd;
+        }
+        .btn {
+            padding: 0.75rem 1.5rem;
+            background: #6366f1;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 0.5rem;
+        }
+        .btn:hover {
+            background: #4f46e5;
+        }
+        .success { color: #10b981; }
+        .error { color: #ef4444; }
+        .warning { color: #f59e0b; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Service-Bild-Upload Test</h1>
+    
+    <div class="test-section">
+        <h2>Test 1: Beispielbild erstellen</h2>
+        <p>Erstelle ein Test-Bild (SVG) und lade es hoch:</p>
+        <button class="btn" onclick="createTestImage()">📸 Test-Bild erstellen</button>
+        <div id="test-image-display"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 2: Service mit Bild erstellen</h2>
+        <p>Erstelle einen Test-Service mit hochgeladenem Bild:</p>
+        <button class="btn" onclick="createTestService()">🚀 Test-Service erstellen</button>
+        <div id="test-service-display"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 3: Services aus localStorage anzeigen</h2>
+        <button class="btn" onclick="displayServices()">📋 Services anzeigen</button>
+        <div id="services-display"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 4: Service-Bilder auf Website testen</h2>
+        <p>Öffne die Startseite und prüfe ob Service-Bilder angezeigt werden:</p>
+        <a href="index.html" class="btn" target="_blank">🌐 Startseite öffnen</a>
+    </div>
+
+    <script>
+        // Lade awsMedia falls verfügbar
+        if (typeof window.awsMedia === 'undefined') {
+            console.warn('⚠️ awsMedia nicht verfügbar - Base64 Fallback wird verwendet');
+        }
+
+        /**
+         * Erstelle ein Test-Bild (SVG als Base64)
+         */
+        function createTestImage() {
+            const svg = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="400" height="300">
+                    <defs>
+                        <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <rect width="400" height="300" fill="url(#grad)"/>
+                    <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" 
+                          fill="white" font-size="32" font-weight="bold" font-family="Arial">
+                        Service Test Image
+                    </text>
+                    <text x="50%" y="60%" text-anchor="middle" dominant-baseline="middle" 
+                          fill="rgba(255,255,255,0.8)" font-size="18" font-family="Arial">
+                        ${new Date().toLocaleString()}
+                    </text>
+                </svg>
+            `;
+            
+            const base64 = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)));
+            
+            const display = document.getElementById('test-image-display');
+            display.innerHTML = `
+                <p class="success">✅ Test-Bild erstellt!</p>
+                <img src="${base64}" alt="Test" class="test-image">
+                <p><strong>Base64 Länge:</strong> ${base64.length} Zeichen</p>
+                <button class="btn" onclick="uploadTestImage('${base64}')">📤 Bild hochladen</button>
+            `;
+            
+            window.testImageBase64 = base64;
+        }
+
+        /**
+         * Lade Test-Bild hoch (simuliert Upload)
+         */
+        async function uploadTestImage(base64Image) {
+            const display = document.getElementById('test-image-display');
+            display.innerHTML += '<p>📤 Upload wird simuliert...</p>';
+            
+            // Simuliere Upload (in echt würde hier awsMedia.uploadProfileImage() aufgerufen)
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            display.innerHTML += '<p class="success">✅ Bild hochgeladen (simuliert)</p>';
+            display.innerHTML += '<p>💾 Bild wird in localStorage gespeichert...</p>';
+            
+            // Speichere in localStorage
+            const imageKey = `test_service_image_${Date.now()}`;
+            localStorage.setItem(imageKey, base64Image);
+            
+            // Speichere auch in Service-Images-Array
+            let serviceImages = JSON.parse(localStorage.getItem('website_service_images') || '[]');
+            serviceImages.push({
+                id: Date.now(),
+                url: base64Image,
+                imageData: base64Image,
+                filename: 'test-service-image.svg',
+                uploadedAt: new Date().toISOString(),
+                isUploaded: false
+            });
+            localStorage.setItem('website_service_images', JSON.stringify(serviceImages));
+            
+            display.innerHTML += `<p class="success">✅ Bild in localStorage gespeichert (Key: ${imageKey})</p>`;
+        }
+
+        /**
+         * Erstelle einen Test-Service mit Bild
+         */
+        async function createTestService() {
+            if (!window.testImageBase64) {
+                alert('Bitte erstellen Sie zuerst ein Test-Bild!');
+                return;
+            }
+
+            const display = document.getElementById('test-service-display');
+            display.innerHTML = '<p>🚀 Erstelle Test-Service...</p>';
+
+            // Lade bestehende Services
+            let services = JSON.parse(localStorage.getItem('website_services') || '[]');
+            
+            // Erstelle neuen Test-Service
+            const testService = {
+                id: Date.now(),
+                name: 'Test Service ' + new Date().toLocaleTimeString(),
+                category: 'beratung',
+                description: 'Dies ist ein Test-Service mit hochgeladenem Bild. Das Bild sollte auf der Website angezeigt werden.',
+                icon: 'fas fa-flask',
+                color: '#6366f1',
+                image: window.testImageBase64,
+                active: true,
+                createdAt: new Date().toISOString()
+            };
+
+            services.push(testService);
+            localStorage.setItem('website_services', JSON.stringify(services));
+
+            display.innerHTML = `
+                <p class="success">✅ Test-Service erstellt!</p>
+                <div style="background: #f5f5f5; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                    <h3>${testService.name}</h3>
+                    <p>${testService.description}</p>
+                    <img src="${testService.image}" alt="${testService.name}" class="test-image">
+                </div>
+                <p><strong>Service ID:</strong> ${testService.id}</p>
+                <p><strong>Bild vorhanden:</strong> ${testService.image ? '✅ Ja' : '❌ Nein'}</p>
+            `;
+        }
+
+        /**
+         * Zeige alle Services aus localStorage
+         */
+        function displayServices() {
+            const services = JSON.parse(localStorage.getItem('website_services') || '[]');
+            const display = document.getElementById('services-display');
+            
+            if (services.length === 0) {
+                display.innerHTML = '<p class="warning">⚠️ Keine Services gefunden</p>';
+                return;
+            }
+
+            display.innerHTML = `
+                <p class="success">✅ ${services.length} Service(s) gefunden:</p>
+                ${services.map(s => `
+                    <div style="background: #f5f5f5; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                        <h3>${s.name}</h3>
+                        <p><strong>Kategorie:</strong> ${s.category}</p>
+                        <p><strong>Beschreibung:</strong> ${s.description}</p>
+                        <p><strong>Bild vorhanden:</strong> ${s.image ? '✅ Ja' : '❌ Nein'}</p>
+                        ${s.image ? `<img src="${s.image}" alt="${s.name}" class="test-image" onerror="this.nextSibling.style.display='block';"><p style="display:none; color:red;">❌ Bild konnte nicht geladen werden</p>` : ''}
+                    </div>
+                `).join('')}
+            `;
+        }
+
+        // Initialisierung
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🧪 Service-Bild-Upload Test geladen');
+            displayServices();
+        });
+    </script>
+</body>
+</html>
+
