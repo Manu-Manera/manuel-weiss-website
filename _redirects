@@ -14,6 +14,13 @@
 /personality        /persoenlichkeitsentwicklung-uebersicht.html 200
 /methods            /persoenlichkeitsentwicklung-uebersicht.html 200
 
+# English Language Routes (/en/)
+/en/persoenlichkeitsentwicklung-uebersicht.html    /en/persoenlichkeitsentwicklung-uebersicht.html  200
+/en/persoenlichkeitsentwicklung.html               /en/persoenlichkeitsentwicklung.html            200
+/en/ikigai.html                                    /en/ikigai.html                                200
+/en/methods/*                                      /en/methods/:splat                             200
+/en/*                                              /en/:splat                                    200
+
 # Application Automation Routes
 /applications       /applications/index.html      200
 /bewerbung          /applications/index.html      200

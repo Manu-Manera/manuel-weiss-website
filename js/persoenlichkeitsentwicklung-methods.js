@@ -1,8 +1,13 @@
 // Persönlichkeitsentwicklung Methods - JavaScript Module
 
-// Method Navigation Functions - Enhanced with error handling
+// Method Navigation Functions - Enhanced with error handling and language support
 function startMethod(methodId) {
     console.log('startMethod called with:', methodId);
+    
+    // Prüfe aktuelle Sprache aus URL
+    const isEnglish = window.location.pathname.startsWith('/en/') || 
+                      (window.simpleTranslation && window.simpleTranslation.getCurrentLanguage() === 'en');
+    const langPrefix = isEnglish ? '/en/' : '/';
     
     // Direct navigation to specific workflow pages
     const methodUrls = {
@@ -37,26 +42,33 @@ function startMethod(methodId) {
         'systemic-coaching': 'methods/systemic-coaching/systemic-coaching.html',
         'target-coaching': 'methods/target-coaching/target-coaching.html',
         'therapy-form-finder': 'methods/therapy-form-finder.html',
-        'therapy-form-finder-test': 'methods/therapy-form-finder.html'  // Fallback für Tests
+        'therapy-form-finder-test': 'methods/therapy-form-finder.html',  // Fallback für Tests
+        'raisec': 'raisec-persoenlichkeitsentwicklung.html'
     };
     
     // Debug: Log all available methods
     console.log('Available methods:', Object.keys(methodUrls));
     console.log('Looking for method:', methodId);
+    console.log('Current language:', isEnglish ? 'en' : 'de');
     
     // Try direct match first, then normalized
     const normalizedId = methodId.trim();
     const url = methodUrls[methodId] || methodUrls[normalizedId];
     
     if (url) {
-        console.log('✓ Method found:', methodId, '-> Navigating to:', url);
-        window.location.href = url;
+        // Füge Sprach-Präfix hinzu wenn nötig
+        const fullUrl = isEnglish ? `/en/${url}` : `/${url}`;
+        console.log('✓ Method found:', methodId, '-> Navigating to:', fullUrl);
+        window.location.href = fullUrl;
     } else {
         console.error('✗ Method NOT found:', methodId);
         console.error('Available methods:', Object.keys(methodUrls));
         console.error('Method ID received:', JSON.stringify(methodId));
         console.error('Method ID type:', typeof methodId);
-        alert(`Diese Methode ist noch nicht verfügbar.\n\nMethod ID: "${methodId}"\n\nBitte öffne die Browser-Konsole (F12) für weitere Details.`);
+        const errorMsg = isEnglish 
+            ? `This method is not yet available.\n\nMethod ID: "${methodId}"\n\nPlease open the browser console (F12) for more details.`
+            : `Diese Methode ist noch nicht verfügbar.\n\nMethod ID: "${methodId}"\n\nBitte öffne die Browser-Konsole (F12) für weitere Details.`;
+        alert(errorMsg);
     }
 }
 
