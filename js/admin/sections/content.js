@@ -51,6 +51,14 @@ class ContentSection {
                 this.renderServices();
             });
         }
+
+        // Service-Bild-Upload Event-Listener
+        const serviceImageInput = document.getElementById('newServiceImage');
+        if (serviceImageInput) {
+            serviceImageInput.addEventListener('change', (e) => {
+                this.handleServiceImageUpload(e);
+            });
+        }
     }
 
     async loadServices() {
@@ -105,10 +113,22 @@ class ContentSection {
             return matchesSearch && matchesFilter;
         });
 
-        servicesList.innerHTML = filteredServices.map(service => `
+        servicesList.innerHTML = filteredServices.map(service => {
+            const imagePreview = service.image ? `
+                <div style="margin-top: 1rem;">
+                    <img src="${service.image}" alt="${service.name}" style="max-width: 100%; max-height: 200px; border-radius: 8px; object-fit: cover; border: 2px solid #ddd;">
+                </div>
+            ` : `
+                <div style="margin-top: 1rem; padding: 2rem; background: #f5f5f5; border-radius: 8px; text-align: center; color: #999;">
+                    <i class="fas fa-image" style="font-size: 2rem; margin-bottom: 0.5rem;"></i>
+                    <p style="margin: 0; font-size: 0.875rem;">Kein Bild</p>
+                </div>
+            `;
+
+            return `
             <div class="service-card" style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-left: 4px solid ${service.color};">
                 <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
-                    <div>
+                    <div style="flex: 1;">
                         <h4 style="color: ${service.color}; margin: 0 0 0.5rem 0;">
                             <i class="${service.icon}"></i> ${service.name}
                         </h4>
@@ -123,7 +143,8 @@ class ContentSection {
                         </button>
                     </div>
                 </div>
-                <div style="display: flex; justify-content: space-between; align-items: center;">
+                ${imagePreview}
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem;">
                     <span class="badge" style="background: ${service.color}; color: white; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.8rem;">
                         ${service.category}
                     </span>
@@ -132,7 +153,8 @@ class ContentSection {
                     </span>
                 </div>
             </div>
-        `).join('');
+        `;
+        }).join('');
     }
 
     async createService() {
@@ -141,11 +163,24 @@ class ContentSection {
         const description = document.getElementById('newServiceDescription').value;
         const icon = document.getElementById('newServiceIcon').value;
         const color = document.getElementById('newServiceColor').value;
-        const image = document.getElementById('newServiceImage').files[0];
+        const imageFile = document.getElementById('newServiceImage').files[0];
 
         if (!name || !description) {
             this.showMessage('Bitte füllen Sie alle Pflichtfelder aus', 'error');
             return;
+        }
+
+        // Bild hochladen (falls vorhanden)
+        let imageUrl = null;
+        if (imageFile) {
+            this.showMessage('Bild wird hochgeladen...', 'info');
+            imageUrl = await this.uploadImage(imageFile);
+            if (!imageUrl) {
+                this.showMessage('Warnung: Bild-Upload fehlgeschlagen, Service wird ohne Bild erstellt', 'warning');
+            }
+        } else if (this.currentServiceImage) {
+            // Verwende bereits hochgeladenes Bild
+            imageUrl = this.currentServiceImage;
         }
 
         const newService = {
@@ -155,7 +190,7 @@ class ContentSection {
             description,
             icon: icon || 'fas fa-cog',
             color,
-            image: image ? await this.uploadImage(image) : null,
+            image: imageUrl,
             active: true,
             createdAt: new Date().toISOString()
         };
@@ -164,20 +199,194 @@ class ContentSection {
         await this.saveServices();
         this.renderServices();
         this.clearForm();
-        this.showMessage('Service erfolgreich erstellt!', 'success');
+        
+        const successMsg = imageUrl 
+            ? 'Service erfolgreich erstellt! Bild wurde hochgeladen und wird auf der Website angezeigt.'
+            : 'Service erfolgreich erstellt!';
+        this.showMessage(successMsg, 'success');
     }
 
+    /**
+     * Service-Bild-Upload behandeln (wie Profilbild)
+     */
+    async handleServiceImageUpload(event) {
+        const file = event?.target?.files?.[0];
+        if (!file) {
+            console.log('ℹ️ Keine Datei ausgewählt');
+            return;
+        }
+
+        console.log('📸 Service-Bild-Upload gestartet:', file.name, file.type, `${(file.size / 1024).toFixed(2)} KB`);
+
+        // Validierung
+        if (!this.validateImageFile(file)) {
+            return;
+        }
+
+        // Base64 für Vorschau
+        let base64Preview = null;
+        try {
+            base64Preview = await this.fileToBase64(file);
+            this.showServiceImagePreview(base64Preview);
+        } catch (error) {
+            console.error('❌ Fehler bei Base64-Konvertierung:', error);
+        }
+
+        // Upload zu AWS S3 (wie Profilbild)
+        let uploadedUrl = null;
+        try {
+            if (window.awsMedia && window.AWS_APP_CONFIG?.MEDIA_API_BASE) {
+                console.log('📤 Upload zu AWS S3...');
+                const userId = 'owner';
+                const result = await window.awsMedia.uploadProfileImage(file, userId);
+                
+                if (result && result.publicUrl) {
+                    uploadedUrl = result.publicUrl;
+                    console.log('✅ S3 Upload erfolgreich:', uploadedUrl);
+                    this.showMessage('Bild erfolgreich auf AWS S3 hochgeladen!', 'success');
+                }
+            }
+        } catch (error) {
+            console.warn('⚠️ AWS Upload fehlgeschlagen, verwende Base64 Fallback:', error);
+            this.showMessage('AWS Upload fehlgeschlagen. Bild wird lokal gespeichert.', 'warning');
+        }
+
+        // Finale Quelle: S3 URL oder Base64
+        const finalSrc = uploadedUrl || base64Preview;
+        if (finalSrc) {
+            // Speichere in localStorage für Vorschau
+            this.currentServiceImage = finalSrc;
+            console.log('💾 Service-Bild gespeichert (Vorschau)');
+        }
+    }
+
+    /**
+     * Service-Bild-Vorschau anzeigen
+     */
+    showServiceImagePreview(imageSrc) {
+        // Erstelle oder aktualisiere Vorschau-Container
+        let previewContainer = document.getElementById('service-image-preview');
+        if (!previewContainer) {
+            const imageInput = document.getElementById('newServiceImage');
+            if (imageInput && imageInput.parentElement) {
+                previewContainer = document.createElement('div');
+                previewContainer.id = 'service-image-preview';
+                previewContainer.style.cssText = 'margin-top: 1rem; padding: 1rem; background: #f5f5f5; border-radius: 8px;';
+                imageInput.parentElement.appendChild(previewContainer);
+            }
+        }
+
+        if (previewContainer) {
+            previewContainer.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <img src="${imageSrc}" alt="Vorschau" style="max-width: 150px; max-height: 150px; border-radius: 8px; object-fit: cover; border: 2px solid #ddd;">
+                    <div>
+                        <p style="margin: 0; font-weight: 500; color: #333;">✅ Bild ausgewählt</p>
+                        <p style="margin: 0.25rem 0 0 0; font-size: 0.875rem; color: #666;">Bild wird beim Erstellen des Services gespeichert</p>
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    /**
+     * Bild-Datei validieren
+     */
+    validateImageFile(file) {
+        const maxSize = 5 * 1024 * 1024; // 5MB
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/svg+xml'];
+        
+        if (file.size > maxSize) {
+            this.showMessage('Datei ist zu groß (max. 5MB)', 'error');
+            return false;
+        }
+        
+        if (!allowedTypes.includes(file.type)) {
+            this.showMessage('Nicht unterstütztes Dateiformat. Bitte verwenden Sie JPG, PNG, WebP oder SVG.', 'error');
+            return false;
+        }
+        
+        return true;
+    }
+
+    /**
+     * Datei zu Base64 konvertieren
+     */
+    fileToBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    }
+
+    /**
+     * Service-Bild hochladen (wird von createService aufgerufen)
+     */
     async uploadImage(file) {
         try {
-            // Hier würde der Upload-Logic implementiert werden
-            // Für jetzt simulieren wir einen Upload
-            return new Promise((resolve) => {
-                setTimeout(() => {
-                    resolve(`/uploads/services/${file.name}`);
-                }, 1000);
+            console.log('📸 Service-Bild-Upload:', file.name, file.type, `${(file.size / 1024).toFixed(2)} KB`);
+
+            // Validierung
+            if (!this.validateImageFile(file)) {
+                return null;
+            }
+
+            // 1) Base64 für sofortige Vorschau
+            let base64Preview = null;
+            try {
+                base64Preview = await this.fileToBase64(file);
+            } catch (error) {
+                console.error('❌ Fehler bei Base64-Konvertierung:', error);
+            }
+
+            // 2) Upload zu AWS S3 (wie Profilbild)
+            let uploadedUrl = null;
+            try {
+                if (window.awsMedia && window.AWS_APP_CONFIG?.MEDIA_API_BASE) {
+                    console.log('📤 Upload zu AWS S3...');
+                    const userId = 'owner';
+                    const result = await window.awsMedia.uploadProfileImage(file, userId);
+                    
+                    if (result && result.publicUrl) {
+                        uploadedUrl = result.publicUrl;
+                        console.log('✅ S3 Upload erfolgreich:', uploadedUrl);
+                    }
+                }
+            } catch (error) {
+                console.warn('⚠️ AWS Upload fehlgeschlagen, verwende Base64 Fallback:', error);
+            }
+
+            // 3) Finale Quelle: S3 URL oder Base64
+            const finalSrc = uploadedUrl || base64Preview;
+            if (!finalSrc) {
+                console.error('❌ Keine Bildquelle verfügbar');
+                return null;
+            }
+
+            // 4) Speichere in localStorage für Website-Anzeige
+            const serviceImageKey = `service_image_${Date.now()}`;
+            localStorage.setItem(serviceImageKey, finalSrc);
+            console.log('💾 Service-Bild in localStorage gespeichert:', serviceImageKey);
+
+            // 5) Speichere auch in globalem Service-Images-Array
+            let serviceImages = JSON.parse(localStorage.getItem('website_service_images') || '[]');
+            serviceImages.push({
+                id: Date.now(),
+                url: finalSrc,
+                imageData: finalSrc,
+                filename: file.name,
+                uploadedAt: new Date().toISOString(),
+                isUploaded: !!uploadedUrl
             });
+            localStorage.setItem('website_service_images', JSON.stringify(serviceImages));
+            console.log('💾 Service-Bild zu globalem Array hinzugefügt');
+
+            return finalSrc;
         } catch (error) {
             console.error('❌ Content: Error uploading image:', error);
+            this.showMessage('Fehler beim Hochladen des Bildes: ' + error.message, 'error');
             return null;
         }
     }
@@ -196,6 +405,15 @@ class ContentSection {
         document.getElementById('newServiceIcon').value = '';
         document.getElementById('newServiceColor').value = '#6366f1';
         document.getElementById('newServiceImage').value = '';
+        
+        // Vorschau entfernen
+        const previewContainer = document.getElementById('service-image-preview');
+        if (previewContainer) {
+            previewContainer.innerHTML = '';
+        }
+        
+        // Aktuelles Bild zurücksetzen
+        this.currentServiceImage = null;
     }
 
     editService(serviceId) {
