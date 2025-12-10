@@ -68,3 +68,4 @@ window.simpleTranslation.setLanguage('en'); // oder 'de'
 2. Alte `translation-manager.js` Datei löschen (optional)
 3. Weitere Seiten auf SimpleTranslation umstellen
 
+
