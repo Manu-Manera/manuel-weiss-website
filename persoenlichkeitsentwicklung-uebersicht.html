@@ -3120,6 +3120,24 @@
     <script src="js/aws-profile-api.js"></script>
     <script src="js/user-progress-tracker.js"></script>
     <script src="js/personality-auth-integration.js"></script>
+    <!-- Simple Translation -->
+    <script src="js/simple-translation.js"></script>
+    
+    <!-- Initialize Language Switcher -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Language Switcher Event Listeners
+            document.querySelectorAll('.lang-link-compact[data-lang]').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const lang = this.getAttribute('data-lang');
+                    if (window.simpleTranslation) {
+                        window.simpleTranslation.setLanguage(lang);
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>
 
