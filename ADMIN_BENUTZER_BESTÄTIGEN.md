@@ -107,3 +107,4 @@ aws cognito-idp admin-confirm-sign-up \
 **Lösung:** Admin-Panel → Website Users → "✓"-Button klicken
 **Ergebnis:** Benutzer ist sofort bestätigt und kann sich anmelden!
 
+

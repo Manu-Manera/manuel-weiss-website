@@ -176,3 +176,4 @@ Falls es Probleme gibt, klicken Sie auf **"Erweiterte IMAP-Einstellungen"**:
 - **GMX Hilfe:** https://hilfe.gmx.net
 - **Mail.app Hilfe:** https://support.apple.com/de-de/guide/mail/
 
+
