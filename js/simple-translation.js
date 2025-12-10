@@ -41,16 +41,29 @@ class SimpleTranslation {
                 } else if (element.hasAttribute('placeholder')) {
                     element.setAttribute('placeholder', text);
                 } else {
-                    // Behalte HTML-Struktur bei (z.B. <span> mit Klassen)
-                    if (element.children.length > 0) {
-                        // Wenn Element Kinder hat, nur Text-Knoten aktualisieren
-                        Array.from(element.childNodes).forEach(node => {
-                            if (node.nodeType === Node.TEXT_NODE) {
-                                node.textContent = text;
-                            }
+                    // Für Elemente mit Kindern (z.B. Buttons mit Icons): Nur den Text-Content aktualisieren
+                    const textNodes = Array.from(element.childNodes).filter(node => node.nodeType === Node.TEXT_NODE);
+                    const hasOnlyText = element.children.length === 0 || (element.children.length === 1 && element.querySelector('i, svg, img'));
+                    
+                    if (hasOnlyText && textNodes.length > 0) {
+                        // Ersetze nur Text-Knoten, behalte Icons/HTML bei
+                        textNodes.forEach(node => {
+                            node.textContent = text;
                         });
-                    } else {
+                    } else if (element.children.length === 0) {
+                        // Keine Kinder: Text direkt setzen
                         element.textContent = text;
+                    } else {
+                        // Elemente mit Kindern: Suche nach <span> oder direktem Text
+                        const span = element.querySelector('span:not([data-de]):not([data-en])');
+                        if (span) {
+                            span.textContent = text;
+                        } else {
+                            // Fallback: Ersetze Text-Knoten
+                            textNodes.forEach(node => {
+                                node.textContent = text;
+                            });
+                        }
                     }
                 }
             }
