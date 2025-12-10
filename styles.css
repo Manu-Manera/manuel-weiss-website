@@ -2635,9 +2635,9 @@ a:hover {
 /* 🚀 Modern Application Management Service Card Enhancements */
 .service-card.modern-highlight {
     position: relative;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    background: rgba(255, 255, 255, 0.1) !important; /* Durchsichtig wie andere Kacheln */
+    backdrop-filter: blur(10px); /* Gleicher Blur wie andere Kacheln */
+    -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.2);
     color: white;
     transform: scale(1.02);
@@ -3367,7 +3367,10 @@ a:hover {
 @-moz-document url-prefix() {
     /* Firefox: backdrop-filter Fallback */
     .admin-content,
-    .service-card.modern-highlight,
+    .service-card.modern-highlight {
+        background: rgba(255, 255, 255, 0.1) !important; /* Durchsichtig wie andere Kacheln */
+    }
+    
     .stat-card,
     .magic-container {
         background: rgba(255, 255, 255, 0.95) !important;
@@ -3523,7 +3526,13 @@ a:hover {
 /* Backdrop-filter mit Fallbacks */
 .backdrop-blur,
 .admin-content,
-.service-card.modern-highlight,
+.service-card.modern-highlight {
+    background: rgba(255, 255, 255, 0.1) !important; /* Durchsichtig wie andere Kacheln */
+    -webkit-backdrop-filter: blur(10px);
+    -moz-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+}
+
 .stat-card {
     background: rgba(255, 255, 255, 0.95);
     -webkit-backdrop-filter: blur(12px);
@@ -3534,10 +3543,13 @@ a:hover {
 /* Firefox: backdrop-filter Fallback */
 @supports not (backdrop-filter: blur(12px)) {
     .admin-content,
-    .service-card.modern-highlight,
     .stat-card,
     .magic-container {
         background: rgba(255, 255, 255, 0.98) !important;
+    }
+    
+    .service-card.modern-highlight {
+        background: rgba(255, 255, 255, 0.15) !important; /* Etwas mehr Deckkraft als Fallback, aber immer noch durchsichtig */
     }
 }
 
