@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-de="RAISEC-Theorie - Wissenschaftlicher Hintergrund | Manuel Weiss" data-en="RAISEC Theory - Scientific Background | Manuel Weiss">RAISEC Theory - Scientific Background | Manuel Weiss</title>
+    <meta name="description" data-de="Vertiefen Sie Ihr Verständnis des RAISEC-Modells nach Holland. Wissenschaftlicher Hintergrund, Forschungsergebnisse und moderne Anwendungen." data-en="Deepen your understanding of the RAISEC model by Holland. Scientific background, research findings, and modern applications." content="Deepen your understanding of the RAISEC model by Holland. Scientific background, research findings, and modern applications.">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../css/raisec-method.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/unified-auth-system.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="../index.html" class="nav-brand-link">
+                    <img src="../manuel-weiss-photo.svg" alt="Manuel Weiss" class="nav-logo">
+                    <span class="nav-name">Manuel Weiss</span>
+                </a>
+            </div>
+            <div class="nav-menu" id="navMenu">
+                <a href="../index.html" class="nav-link" data-de="Start" data-en="Home">Home</a>
+                <a href="persoenlichkeitsentwicklung-uebersicht.html" class="nav-link" data-de="Persönlichkeitsentwicklung" data-en="Personality Development">Personality Development</a>
+                <a href="../index.html#contact" class="nav-link" data-de="Kontakt" data-en="Contact">Contact</a>
+            
+                <!-- Language Switcher -->
+                <div class="language-switcher-compact">
+                    <button class="lang-link-compact" data-lang="de" title="Deutsch">🇩🇪</button>
+                    <button class="lang-link-compact active" data-lang="en" title="English">🇬🇧</button>
+                </div>
+                
+                <!-- AWS User System -->
+                <div class="user-system" id="userSystem">
+                    <div class="user-info" id="userInfo" style="display: none;">
+                        <div class="user-avatar">
+                            <img id="userAvatar" src="../manuel-weiss-photo.svg" alt="User Avatar" class="user-avatar-img">
+                        </div>
+                        <div class="user-details">
+                            <span class="user-name" id="userName" data-de="Benutzer" data-en="User">User</span>
+                            <span class="user-email" id="userEmail">user@example.com</span>
+                        </div>
+                        <button class="user-logout" id="userLogout" onclick="logoutUser()">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="user-login" id="userLogin">
+                        <button class="btn-login" onclick="loginUser()">
+                            <i class="fas fa-sign-in-alt"></i>
+                            <span data-de="Anmelden" data-en="Sign In">Sign In</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title" data-de="RAISEC-Theorie" data-en="RAISEC Theory">RAISEC Theory</h1>
+                <p class="hero-subtitle" data-de="Wissenschaftlicher Hintergrund und moderne Anwendungen des Holland-Codes" data-en="Scientific background and modern applications of the Holland Codes">
+                    Scientific background and modern applications of the Holland Codes
+                </p>
+                <div class="hero-actions">
+                    <a href="raisec-persoenlichkeitsentwicklung.html" class="btn btn-primary">
+                        <i class="fas fa-play"></i> <span data-de="Jetzt starten" data-en="Start Now">Start Now</span>
+                    </a>
+                    <a href="raisec-anwendung.html" class="btn btn-outline">
+                        <i class="fas fa-lightbulb"></i> <span data-de="Praktische Anwendung" data-en="Practical Application">Practical Application</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Scientific Background -->
+    <section class="scientific-background-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 data-de="Wissenschaftlicher Hintergrund" data-en="Scientific Background">Scientific Background</h2>
+                <p data-de="Das RAISEC-Modell basiert auf über 50 Jahren Forschung und Millionen von Teilnehmern" data-en="The RAISEC model is based on over 50 years of research and millions of participants">
+                    The RAISEC model is based on over 50 years of research and millions of participants
+                </p>
+            </div>
+            <div class="research-timeline">
+                <div class="timeline-item">
+                    <div class="timeline-year">1959</div>
+                    <div class="timeline-content">
+                        <h3 data-de="Grundlagenforschung" data-en="Foundational Research">Foundational Research</h3>
+                        <p data-de="John L. Holland beginnt seine Forschung zur Berufswahl und Persönlichkeitstypen an der Johns Hopkins University." data-en="John L. Holland begins his research on career choice and personality types at Johns Hopkins University.">
+                            John L. Holland begins his research on career choice and personality types at Johns Hopkins University.
+                        </p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-year">1973</div>
+                    <div class="timeline-content">
+                        <h3 data-de="Erste Veröffentlichung" data-en="First Publication">First Publication</h3>
+                        <p data-de="Veröffentlichung des \"Self-Directed Search\" (SDS) - dem ersten standardisierten Test zur Berufsorientierung." data-en="Publication of the \"Self-Directed Search\" (SDS) - the first standardized test for career orientation.">
+                            Publication of the "Self-Directed Search" (SDS) - the first standardized test for career orientation.
+                        </p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-year">1985</div>
+                    <div class="timeline-content">
+                        <h3 data-de="Internationale Anerkennung" data-en="International Recognition">International Recognition</h3>
+                        <p data-de="Das Modell wird in über 30 Ländern validiert und übersetzt. Über 1 Million Menschen haben den Test absolviert." data-en="The model is validated and translated in over 30 countries. Over 1 million people have taken the test.">
+                            The model is validated and translated in over 30 countries. Over 1 million people have taken the test.
+                        </p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-year">2000</div>
+                    <div class="timeline-content">
+                        <h3 data-de="Digitale Revolution" data-en="Digital Revolution">Digital Revolution</h3>
+                        <p data-de="Online-Versionen und digitale Assessments werden entwickelt. Integration in moderne HR-Systeme." data-en="Online versions and digital assessments are developed. Integration into modern HR systems.">
+                            Online versions and digital assessments are developed. Integration into modern HR systems.
+                        </p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-year">2024</div>
+                    <div class="timeline-content">
+                        <h3 data-de="Moderne Anwendung" data-en="Modern Application">Modern Application</h3>
+                        <p data-de="KI-gestützte Analysen und Integration in moderne Talent-Management-Systeme. Über 10 Millionen Teilnehmer weltweit." data-en="AI-powered analyses and integration into modern talent management systems. Over 10 million participants worldwide.">
+                            AI-powered analyses and integration into modern talent management systems. Over 10 million participants worldwide.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Research Statistics -->
+    <section class="research-stats-section">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-microscope"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>50+ <span data-de="Jahre" data-en="Years">Years</span></h3>
+                        <p data-de="Kontinuierliche Forschung" data-en="Continuous Research">Continuous Research</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>10M+</h3>
+                        <p data-de="Teilnehmer weltweit" data-en="Participants Worldwide">Participants Worldwide</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>95%</h3>
+                        <p data-de="Validierungsrate" data-en="Validation Rate">Validation Rate</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>30+</h3>
+                        <p data-de="Länder & Sprachen" data-en="Countries & Languages">Countries & Languages</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Theory Deep Dive -->
+    <section class="theory-deep-dive">
+        <div class="container">
+            <div class="section-header">
+                <h2 data-de="Die sechs Persönlichkeitstypen im Detail" data-en="The Six Personality Types in Detail">The Six Personality Types in Detail</h2>
+                <p data-de="Eine detaillierte Analyse der RAISEC-Dimensionen" data-en="A detailed analysis of the RAISEC dimensions">
+                    A detailed analysis of the RAISEC dimensions
+                </p>
+            </div>
+            <div class="theory-grid">
+                <!-- Realistic Type -->
+                <div class="theory-card realistic">
+                    <div class="theory-header">
+                        <div class="theory-icon">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                        <h3>R - Realistic</h3>
+                        <p class="theory-subtitle" data-de="Praktisch, handwerklich, technisch" data-en="Practical, hands-on, technical">Practical, hands-on, technical</p>
+                    </div>
+                    <div class="theory-content">
+                        <div class="theory-section">
+                            <h4 data-de="Kernpersönlichkeit" data-en="Core Personality">Core Personality</h4>
+                            <p data-de="Realistische Menschen sind praktisch veranlagt, arbeiten gerne mit ihren Händen und bevorzugen konkrete, messbare Ergebnisse. Sie schätzen Ehrlichkeit, Direktheit und praktische Problemlösungen." data-en="Realistic people are practical, enjoy working with their hands, and prefer concrete, measurable results. They value honesty, directness, and practical problem-solving.">
+                                Realistic people are practical, enjoy working with their hands, and prefer concrete, measurable results. 
+                                They value honesty, directness, and practical problem-solving.
+                            </p>
+                        </div>
+                        <div class="theory-section">
+                            <h4 data-de="Stärken" data-en="Strengths">Strengths</h4>
+                            <ul>
+                                <li data-de="Handwerkliche Fähigkeiten" data-en="Manual skills">Manual skills</li>
+                                <li data-de="Technisches Verständnis" data-en="Technical understanding">Technical understanding</li>
+                                <li data-de="Problemlösungskompetenz" data-en="Problem-solving competence">Problem-solving competence</li>
+                                <li data-de="Praktische Umsetzung" data-en="Practical implementation">Practical implementation</li>
+                            </ul>
+                        </div>
+                        <div class="theory-section">
+                            <h4 data-de="Moderne Anwendungen" data-en="Modern Applications">Modern Applications</h4>
+                            <p data-de="In der digitalen Transformation sind realistische Typen besonders gefragt für die Implementierung von Technologien, IoT-Entwicklung und praktische KI-Anwendungen." data-en="In digital transformation, realistic types are particularly in demand for technology implementation, IoT development, and practical AI applications.">
+                                In digital transformation, realistic types are particularly in demand for technology implementation, 
+                                IoT development, and practical AI applications.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Investigative Type -->
+                <div class="theory-card investigative">
+                    <div class="theory-header">
+                        <div class="theory-icon">
+                            <i class="fas fa-flask"></i>
+                        </div>
+                        <h3>A - Investigative</h3>
+                        <p class="theory-subtitle" data-de="Forschend, wissenschaftlich, intellektuell" data-en="Research-oriented, scientific, intellectual">Research-oriented, scientific, intellectual</p>
+                    </div>
+                    <div class="theory-content">
+                        <div class="theory-section">
+                            <h4 data-de="Kernpersönlichkeit" data-en="Core Personality">Core Personality</h4>
+                            <p data-de="Analytische Menschen sind neugierig, logisch und wissenschaftlich orientiert. Sie lieben es, komplexe Probleme zu lösen und neue Erkenntnisse zu gewinnen." data-en="Investigative people are curious, logical, and scientifically oriented. They love solving complex problems and gaining new insights.">
+                                Investigative people are curious, logical, and scientifically oriented. 
+                                They love solving complex problems and gaining new insights.
+                            </p>
+                        </div>
+                        <div class="theory-section">
+                            <h4 data-de="Stärken" data-en="Strengths">Strengths</h4>
+                            <ul>
+                                <li data-de="Analytisches Denken" data-en="Analytical thinking">Analytical thinking</li>
+                                <li data-de="Forschungsfähigkeiten" data-en="Research skills">Research skills</li>
+                                <li data-de="Kritisches Denken" data-en="Critical thinking">Critical thinking</li>
+                                <li data-de="Wissenschaftliche Methodik" data-en="Scientific methodology">Scientific methodology</li>
+                            </ul>
+                        </div>
+                        <div class="theory-section">
+                            <h4 data-de="Moderne Anwendungen" data-en="Modern Applications">Modern Applications</h4>
+                            <p data-de="Perfekt für Data Science, KI-Forschung, Quantencomputing und wissenschaftliche Innovationen in der modernen Arbeitswelt." data-en="Perfect for data science, AI research, quantum computing, and scientific innovations in the modern workplace.">
+                                Perfect for data science, AI research, quantum computing, and scientific innovations in the modern workplace.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Artistic Type -->
+                <div class="theory-card artistic">
+                    <div class="theory-header">
+                        <div class="theory-icon">
+                            <i class="fas fa-palette"></i>
+                        </div>
+                        <h3>I - Artistic</h3>
+                        <p class="theory-subtitle" data-de="Kreativ, expressiv, unkonventionell" data-en="Creative, expressive, unconventional">Creative, expressive, unconventional</p>
+                    </div>
+                    <div class="theory-content">
+                        <div class="theory-section">
+                            <h4 data-de="Kernpersönlichkeit" data-en="Core Personality">Core Personality</h4>
+                            <p data-de="Künstlerische Menschen sind kreativ, expressiv und schätzen Individualität. Sie bevorzugen unkonventionelle Lösungen und künstlerische Ausdrucksformen." data-en="Artistic people are creative, expressive, and value individuality. They prefer unconventional solutions and artistic forms of expression.">
+                                Artistic people are creative, expressive, and value individuality. 
+                                They prefer unconventional solutions and artistic forms of expression.
+                            </p>
+                        </div>
+                        <div class="theory-section">
+                            <h4 data-de="Stärken" data-en="Strengths">Strengths</h4>
+                            <ul>
+                                <li data-de="Kreativität" data-en="Creativity">Creativity</li>
+                                <li data-de="Innovation" data-en="Innovation">Innovation</li>
+                                <li data-de="Design-Thinking" data-en="Design thinking">Design thinking</li>
+                                <li data-de="Ästhetisches Empfinden" data-en="Aesthetic sense">Aesthetic sense</li>
+                            </ul>
+                        </div>
+                        <div class="theory-section">
+                            <h4 data-de="Moderne Anwendungen" data-en="Modern Applications">Modern Applications</h4>
+                            <p data-de="Essentiell für UX/UI-Design, Content-Erstellung, digitale Kunst und kreative Technologien in der modernen Wirtschaft." data-en="Essential for UX/UI design, content creation, digital art, and creative technologies in the modern economy.">
+                                Essential for UX/UI design, content creation, digital art, and creative technologies in the modern economy.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Social Type -->
+                <div class="theory-card social">
+                    <div class="theory-header">
+                        <div class="theory-icon">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <h3>S - Social</h3>
+                        <p class="theory-subtitle" data-de="Hilfsbereit, kommunikativ, kooperativ" data-en="Helpful, communicative, cooperative">Helpful, communicative, cooperative</p>
+                    </div>
+                    <div class="theory-content">
+                        <div class="theory-section">
+                            <h4 data-de="Kernpersönlichkeit" data-en="Core Personality">Core Personality</h4>
+                            <p data-de="Soziale Menschen sind hilfsbereit, empathisch und arbeiten gerne mit anderen. Sie schätzen zwischenmenschliche Beziehungen und gemeinsame Ziele." data-en="Social people are helpful, empathetic, and enjoy working with others. They value interpersonal relationships and shared goals.">
+                                Social people are helpful, empathetic, and enjoy working with others. 
+                                They value interpersonal relationships and shared goals.
+                            </p>
+                        </div>
+                        <div class="theory-section">
+                            <h4 data-de="Stärken" data-en="Strengths">Strengths</h4>
+                            <ul>
+                                <li data-de="Empathie" data-en="Empathy">Empathy</li>
+                                <li data-de="Kommunikationsfähigkeit" data-en="Communication skills">Communication skills</li>
+                                <li data-de="Teamarbeit" data-en="Teamwork">Teamwork</li>
+                                <li data-de="Emotionale Intelligenz" data-en="Emotional intelligence">Emotional intelligence</li>
+                            </ul>
+                        </div>
+                        <div class="theory-section">
+                            <h4 data-de="Moderne Anwendungen" data-en="Modern Applications">Modern Applications</h4>
+                            <p data-de="Kritisch für Remote-Teamführung, digitale Zusammenarbeit, virtuelle Beratung und moderne HR-Praktiken." data-en="Critical for remote team leadership, digital collaboration, virtual counseling, and modern HR practices.">
+                                Critical for remote team leadership, digital collaboration, virtual counseling, and modern HR practices.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Enterprising Type -->
+                <div class="theory-card enterprising">
+                    <div class="theory-header">
+                        <div class="theory-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h3>E - Enterprising</h3>
+                        <p class="theory-subtitle" data-de="Führungsstark, verkaufsorientiert, ehrgeizig" data-en="Leadership-oriented, sales-focused, ambitious">Leadership-oriented, sales-focused, ambitious</p>
+                    </div>
+                    <div class="theory-content">
+                        <div class="theory-section">
+                            <h4 data-de="Kernpersönlichkeit" data-en="Core Personality">Core Personality</h4>
+                            <p data-de="Unternehmerische Menschen sind ehrgeizig, führungsstark und verkaufsorientiert. Sie übernehmen gerne Verantwortung und treiben Innovationen voran." data-en="Enterprising people are ambitious, leadership-oriented, and sales-focused. They enjoy taking responsibility and driving innovation.">
+                                Enterprising people are ambitious, leadership-oriented, and sales-focused. 
+                                They enjoy taking responsibility and driving innovation.
+                            </p>
+                        </div>
+                        <div class="theory-section">
+                            <h4 data-de="Stärken" data-en="Strengths">Strengths</h4>
+                            <ul>
+                                <li data-de="Führungsqualitäten" data-en="Leadership qualities">Leadership qualities</li>
+                                <li data-de="Verkaufsfähigkeiten" data-en="Sales skills">Sales skills</li>
+                                <li data-de="Strategisches Denken" data-en="Strategic thinking">Strategic thinking</li>
+                            </ul>
+                        </div>
+                        <div class="theory-section">
+                            <h4 data-de="Moderne Anwendungen" data-en="Modern Applications">Modern Applications</h4>
+                            <p data-de="Unverzichtbar für Start-up-Gründungen, digitale Transformation, E-Commerce und moderne Geschäftsmodelle." data-en="Indispensable for startup founding, digital transformation, e-commerce, and modern business models.">
+                                Indispensable for startup founding, digital transformation, e-commerce, and modern business models.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Conventional Type -->
+                <div class="theory-card conventional">
+                    <div class="theory-header">
+                        <div class="theory-icon">
+                            <i class="fas fa-calculator"></i>
+                        </div>
+                        <h3>C - Conventional</h3>
+                        <p class="theory-subtitle" data-de="Strukturiert, organisiert, detailorientiert" data-en="Structured, organized, detail-oriented">Structured, organized, detail-oriented</p>
+                    </div>
+                    <div class="theory-content">
+                        <div class="theory-section">
+                            <h4 data-de="Kernpersönlichkeit" data-en="Core Personality">Core Personality</h4>
+                            <p data-de="Konventionelle Menschen sind strukturiert, organisiert und arbeiten gerne nach festen Regeln. Sie schätzen Ordnung, Präzision und systematische Arbeitsweisen." data-en="Conventional people are structured, organized, and enjoy working according to fixed rules. They value order, precision, and systematic work methods.">
+                                Conventional people are structured, organized, and enjoy working according to fixed rules. 
+                                They value order, precision, and systematic work methods.
+                            </p>
+                        </div>
+                        <div class="theory-section">
+                            <h4 data-de="Stärken" data-en="Strengths">Strengths</h4>
+                            <ul>
+                                <li data-de="Organisationstalent" data-en="Organizational talent">Organizational talent</li>
+                                <li data-de="Präzision" data-en="Precision">Precision</li>
+                                <li data-de="Systematisches Arbeiten" data-en="Systematic work">Systematic work</li>
+                                <li data-de="Detailorientierung" data-en="Attention to detail">Attention to detail</li>
+                            </ul>
+                        </div>
+                        <div class="theory-section">
+                            <h4 data-de="Moderne Anwendungen" data-en="Modern Applications">Modern Applications</h4>
+                            <p data-de="Essentiell für Prozessoptimierung, Compliance, Datenmanagement und die Strukturierung digitaler Arbeitsabläufe." data-en="Essential for process optimization, compliance, data management, and structuring digital workflows.">
+                                Essential for process optimization, compliance, data management, and structuring digital workflows.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modern Applications -->
+    <section class="modern-applications">
+        <div class="container">
+            <div class="section-header">
+                <h2 data-de="Moderne Anwendungen des RAISEC-Modells" data-en="Modern Applications of the RAISEC Model">Modern Applications of the RAISEC Model</h2>
+                <p data-de="Wie das Modell in der heutigen Arbeitswelt eingesetzt wird" data-en="How the model is used in today's workplace">
+                    How the model is used in today's workplace
+                </p>
+            </div>
+            <div class="applications-grid">
+                <div class="application-card">
+                    <div class="app-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3 data-de="KI & Digitalisierung" data-en="AI & Digitalization">AI & Digitalization</h3>
+                    <p data-de="Das RAISEC-Modell wird in KI-Systemen zur automatischen Berufsberatung und Talent-Matching eingesetzt." data-en="The RAISEC model is used in AI systems for automated career counseling and talent matching.">
+                        The RAISEC model is used in AI systems for automated career counseling and talent matching.
+                    </p>
+                    <ul>
+                        <li data-de="KI-gestützte Karriereberatung" data-en="AI-powered career counseling">AI-powered career counseling</li>
+                        <li data-de="Automatisches Job-Matching" data-en="Automatic job matching">Automatic job matching</li>
+                        <li data-de="Predictive Analytics für Talent-Management" data-en="Predictive analytics for talent management">Predictive analytics for talent management</li>
+                        <li data-de="Personalisierte Lernempfehlungen" data-en="Personalized learning recommendations">Personalized learning recommendations</li>
+                    </ul>
+                </div>
+                
+                <div class="application-card">
+                    <div class="app-icon">
+                        <i class="fas fa-users-cog"></i>
+                    </div>
+                    <h3 data-de="Team-Diversität" data-en="Team Diversity">Team Diversity</h3>
+                    <p data-de="Unternehmen nutzen RAISEC-Profile, um diverse und ausgewogene Teams zu bilden." data-en="Companies use RAISEC profiles to form diverse and balanced teams.">
+                        Companies use RAISEC profiles to form diverse and balanced teams.
+                    </p>
+                    <ul>
+                        <li data-de="Diverse Team-Zusammenstellung" data-en="Diverse team composition">Diverse team composition</li>
+                        <li data-de="Komplementäre Persönlichkeitsprofile" data-en="Complementary personality profiles">Complementary personality profiles</li>
+                        <li data-de="Verbesserte Team-Performance" data-en="Improved team performance">Improved team performance</li>
+                        <li data-de="Reduzierte Konflikte" data-en="Reduced conflicts">Reduced conflicts</li>
+                    </ul>
+                </div>
+                
+                <div class="application-card">
+                    <div class="app-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <h3 data-de="Lebenslanges Lernen" data-en="Lifelong Learning">Lifelong Learning</h3>
+                    <p data-de="RAISEC-Profile helfen bei der Identifikation von Weiterbildungsbedarfen und Lernpfaden." data-en="RAISEC profiles help identify training needs and learning paths.">
+                        RAISEC profiles help identify training needs and learning paths.
+                    </p>
+                    <ul>
+                        <li data-de="Personalisierte Lernpfade" data-en="Personalized learning paths">Personalized learning paths</li>
+                        <li data-de="Skill-Gap-Analysen" data-en="Skills gap analyses">Skills gap analyses</li>
+                        <li data-de="Karriereentwicklungspläne" data-en="Career development plans">Career development plans</li>
+                        <li data-de="Umschulungsempfehlungen" data-en="Retraining recommendations">Retraining recommendations</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-content">
+                <h2 data-de="Bereit für Ihr RAISEC-Assessment?" data-en="Ready for Your RAISEC Assessment?">Ready for Your RAISEC Assessment?</h2>
+                <p data-de="Entdecken Sie Ihre beruflichen Interessen und finden Sie passende Karrierewege" data-en="Discover your career interests and find suitable career paths">
+                    Discover your career interests and find suitable career paths
+                </p>
+                <div class="cta-actions">
+                    <a href="raisec-persoenlichkeitsentwicklung.html" class="btn btn-primary">
+                        <i class="fas fa-play"></i> <span data-de="Jetzt starten" data-en="Start Now">Start Now</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>Manuel Weiss</h3>
+                    <p data-de="HR-Beratung für die digitale Transformation" data-en="HR Consulting for Digital Transformation">HR Consulting for Digital Transformation</p>
+                </div>
+                <div class="footer-links">
+                    <a href="../index.html" data-de="Start" data-en="Home">Home</a>
+                    <a href="persoenlichkeitsentwicklung-uebersicht.html" data-de="Persönlichkeitsentwicklung" data-en="Personality Development">Personality Development</a>
+                    <a href="raisec-theorie.html" data-de="RAISEC-Theorie" data-en="RAISEC Theory">RAISEC Theory</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p data-de="© 2024 Manuel Weiss. Alle Rechte vorbehalten." data-en="© 2024 Manuel Weiss. All rights reserved.">© 2024 Manuel Weiss. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Auth Modals -->
+    <div id="authModalsContainer"></div>
+    <script src="../js/simple-translation.js"></script>
+    <script>
+        // Mobile navigation toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const navToggle = document.getElementById('navToggle');
+            const navMenu = document.getElementById('navMenu');
+            if (navToggle && navMenu) {
+                navToggle.addEventListener('click', function() {
+                    navMenu.classList.toggle('active');
+                    navToggle.classList.toggle('active');
+                });
+                
+                // Close menu when clicking on a link
+                const navLinks = document.querySelectorAll('.nav-link');
+                navLinks.forEach(link => {
+                    link.addEventListener('click', function() {
+                        navMenu.classList.remove('active');
+                        navToggle.classList.remove('active');
+                    });
+                });
+            }
+            
+            // Language Switcher
+            document.querySelectorAll('.lang-link-compact[data-lang]').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const lang = this.getAttribute('data-lang');
+                    if (window.simpleTranslation) {
+                        if (typeof window.simpleTranslation.switchLanguage === 'function') {
+                            window.simpleTranslation.switchLanguage(lang);
+                        } else {
+                            window.simpleTranslation.setLanguage(lang);
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+    <script src="../js/global-auth-system.js"></script>
+</body>
+</html>
+

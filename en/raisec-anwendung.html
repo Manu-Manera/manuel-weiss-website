@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-de="RAISEC-Anwendung - Praktische Umsetzung | Manuel Weiss" data-en="RAISEC Application - Practical Implementation | Manuel Weiss">RAISEC Application - Practical Implementation | Manuel Weiss</title>
+    <meta name="description" data-de="Lernen Sie, wie Sie Ihre RAISEC-Ergebnisse praktisch anwenden können. Karriereplanung, Team-Building und persönliche Entwicklung." data-en="Learn how to practically apply your RAISEC results. Career planning, team building, and personal development." content="Learn how to practically apply your RAISEC results. Career planning, team building, and personal development.">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../css/raisec-method.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/unified-auth-system.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="../index.html" class="nav-brand-link">
+                    <img src="../manuel-weiss-photo.svg" alt="Manuel Weiss" class="nav-logo">
+                    <span class="nav-name">Manuel Weiss</span>
+                </a>
+            </div>
+            <div class="nav-menu" id="navMenu">
+                <a href="../index.html" class="nav-link" data-de="Start" data-en="Home">Home</a>
+                <a href="persoenlichkeitsentwicklung-uebersicht.html" class="nav-link" data-de="Persönlichkeitsentwicklung" data-en="Personality Development">Personality Development</a>
+                <a href="../index.html#contact" class="nav-link" data-de="Kontakt" data-en="Contact">Contact</a>
+            
+                <!-- Language Switcher -->
+                <div class="language-switcher-compact">
+                    <button class="lang-link-compact" data-lang="de" title="Deutsch">🇩🇪</button>
+                    <button class="lang-link-compact active" data-lang="en" title="English">🇬🇧</button>
+                </div>
+                
+                <!-- AWS User System -->
+                <div class="user-system" id="userSystem">
+                    <div class="user-info" id="userInfo" style="display: none;">
+                        <div class="user-avatar">
+                            <img id="userAvatar" src="../manuel-weiss-photo.svg" alt="User Avatar" class="user-avatar-img">
+                        </div>
+                        <div class="user-details">
+                            <span class="user-name" id="userName" data-de="Benutzer" data-en="User">User</span>
+                            <span class="user-email" id="userEmail">user@example.com</span>
+                        </div>
+                        <button class="user-logout" id="userLogout" onclick="logoutUser()">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="user-login" id="userLogin">
+                        <button class="btn-login" onclick="loginUser()">
+                            <i class="fas fa-sign-in-alt"></i>
+                            <span data-de="Anmelden" data-en="Sign In">Sign In</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title" data-de="RAISEC-Anwendung" data-en="RAISEC Application">RAISEC Application</h1>
+                <p class="hero-subtitle" data-de="Praktische Umsetzung Ihrer Ergebnisse für Karriere und persönliche Entwicklung" data-en="Practical implementation of your results for career and personal development">
+                    Practical implementation of your results for career and personal development
+                </p>
+                <div class="hero-actions">
+                    <a href="raisec-persoenlichkeitsentwicklung.html" class="btn btn-primary">
+                        <i class="fas fa-play"></i> <span data-de="Jetzt starten" data-en="Start Now">Start Now</span>
+                    </a>
+                    <a href="raisec-theorie.html" class="btn btn-outline">
+                        <i class="fas fa-book"></i> <span data-de="Theorie verstehen" data-en="Understand Theory">Understand Theory</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Application Steps -->
+    <section class="application-steps-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 data-de="Ihre RAISEC-Ergebnisse optimal nutzen" data-en="Optimally Use Your RAISEC Results">Optimally Use Your RAISEC Results</h2>
+                <p data-de="Ein 5-Schritte-Plan für die praktische Anwendung" data-en="A 5-step plan for practical application">
+                    A 5-step plan for practical application
+                </p>
+            </div>
+            <div class="steps-container">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3 data-de="Selbstreflexion" data-en="Self-Reflection">Self-Reflection</h3>
+                        <p data-de="Analysieren Sie Ihre RAISEC-Ergebnisse und überlegen Sie, welche Aspekte Sie überraschen oder bestätigen." data-en="Analyze your RAISEC results and consider which aspects surprise or confirm your expectations.">
+                            Analyze your RAISEC results and consider which aspects surprise or confirm your expectations.
+                        </p>
+                        <div class="step-actions">
+                            <div class="reflection-questions">
+                                <h4 data-de="Reflexionsfragen:" data-en="Reflection Questions:">Reflection Questions:</h4>
+                                <ul>
+                                    <li data-de="Welche Ergebnisse überraschen Sie?" data-en="Which results surprise you?">Which results surprise you?</li>
+                                    <li data-de="Welche passen zu Ihrer Selbsteinschätzung?" data-en="Which match your self-assessment?">Which match your self-assessment?</li>
+                                    <li data-de="Wo sehen Sie Entwicklungspotential?" data-en="Where do you see development potential?">Where do you see development potential?</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3 data-de="Karriere-Mapping" data-en="Career Mapping">Career Mapping</h3>
+                        <p data-de="Identifizieren Sie Berufsfelder und Positionen, die zu Ihrem RAISEC-Profil passen." data-en="Identify career fields and positions that match your RAISEC profile.">
+                            Identify career fields and positions that match your RAISEC profile.
+                        </p>
+                        <div class="step-actions">
+                            <div class="career-mapping">
+                                <h4 data-de="Karriere-Planung:" data-en="Career Planning:">Career Planning:</h4>
+                                <ul>
+                                    <li data-de="Passende Berufsfelder recherchieren" data-en="Research suitable career fields">Research suitable career fields</li>
+                                    <li data-de="Skill-Gaps identifizieren" data-en="Identify skill gaps">Identify skill gaps</li>
+                                    <li data-de="Karriereziele definieren" data-en="Define career goals">Define career goals</li>
+                                    <li data-de="Entwicklungsplan erstellen" data-en="Create development plan">Create development plan</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3 data-de="Skill-Entwicklung" data-en="Skill Development">Skill Development</h3>
+                        <p data-de="Entwickeln Sie gezielt die Fähigkeiten, die zu Ihrem RAISEC-Profil passen." data-en="Systematically develop the skills that match your RAISEC profile.">
+                            Systematically develop the skills that match your RAISEC profile.
+                        </p>
+                        <div class="step-actions">
+                            <div class="skill-development">
+                                <h4 data-de="Entwicklungsbereiche:" data-en="Development Areas:">Development Areas:</h4>
+                                <ul>
+                                    <li data-de="Hard Skills für Ihr Profil" data-en="Hard skills for your profile">Hard skills for your profile</li>
+                                    <li data-de="Soft Skills stärken" data-en="Strengthen soft skills">Strengthen soft skills</li>
+                                    <li data-de="Zertifikate und Weiterbildungen" data-en="Certificates and training">Certificates and training</li>
+                                    <li data-de="Praktische Erfahrungen sammeln" data-en="Gain practical experience">Gain practical experience</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3 data-de="Networking & Mentoring" data-en="Networking & Mentoring">Networking & Mentoring</h3>
+                        <p data-de="Bauen Sie ein Netzwerk mit Menschen auf, die ähnliche RAISEC-Profile haben." data-en="Build a network with people who have similar RAISEC profiles.">
+                            Build a network with people who have similar RAISEC profiles.
+                        </p>
+                        <div class="step-actions">
+                            <div class="networking-tips">
+                                <h4 data-de="Networking-Strategien:" data-en="Networking Strategies:">Networking Strategies:</h4>
+                                <ul>
+                                    <li data-de="Branchenevents besuchen" data-en="Attend industry events">Attend industry events</li>
+                                    <li data-de="Online-Communities beitreten" data-en="Join online communities">Join online communities</li>
+                                    <li data-de="Mentoren finden" data-en="Find mentors">Find mentors</li>
+                                    <li data-de="Peer-Gruppen bilden" data-en="Form peer groups">Form peer groups</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h3 data-de="Kontinuierliche Anpassung" data-en="Continuous Adaptation">Continuous Adaptation</h3>
+                        <p data-de="Überprüfen Sie regelmäßig Ihr RAISEC-Profil und passen Sie Ihre Strategie an." data-en="Regularly review your RAISEC profile and adjust your strategy.">
+                            Regularly review your RAISEC profile and adjust your strategy.
+                        </p>
+                        <div class="step-actions">
+                            <div class="adaptation-strategy">
+                                <h4 data-de="Anpassungsstrategien:" data-en="Adaptation Strategies:">Adaptation Strategies:</h4>
+                                <ul>
+                                    <li data-de="Jährliche RAISEC-Wiederholung" data-en="Annual RAISEC retake">Annual RAISEC retake</li>
+                                    <li data-de="Karriereziele überprüfen" data-en="Review career goals">Review career goals</li>
+                                    <li data-de="Neue Trends berücksichtigen" data-en="Consider new trends">Consider new trends</li>
+                                    <li data-de="Flexibilität entwickeln" data-en="Develop flexibility">Develop flexibility</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Career Paths -->
+    <section class="career-paths-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 data-de="Karrierewege nach RAISEC-Profilen" data-en="Career Paths by RAISEC Profiles">Career Paths by RAISEC Profiles</h2>
+                <p data-de="Detaillierte Berufsempfehlungen für jeden Typ" data-en="Detailed career recommendations for each type">
+                    Detailed career recommendations for each type
+                </p>
+            </div>
+            <div class="career-paths-grid">
+                <!-- Realistic Careers -->
+                <div class="career-path-card realistic">
+                    <div class="career-header">
+                        <div class="career-icon">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                        <h3 data-de="Realistische Karrierewege" data-en="Realistic Career Paths">Realistic Career Paths</h3>
+                        <p data-de="Praktische und technische Berufsfelder" data-en="Practical and technical career fields">Practical and technical career fields</p>
+                    </div>
+                    <div class="career-content">
+                        <div class="career-categories">
+                            <div class="category">
+                                <h4 data-de="Ingenieurswesen" data-en="Engineering">Engineering</h4>
+                                <ul>
+                                    <li data-de="Maschinenbauingenieur" data-en="Mechanical Engineer">Mechanical Engineer</li>
+                                    <li data-de="Elektroingenieur" data-en="Electrical Engineer">Electrical Engineer</li>
+                                    <li data-de="Bauingenieur" data-en="Civil Engineer">Civil Engineer</li>
+                                    <li data-de="Produktionsingenieur" data-en="Production Engineer">Production Engineer</li>
+                                </ul>
+                            </div>
+                            <div class="category">
+                                <h4 data-de="Technik & Handwerk" data-en="Technology & Crafts">Technology & Crafts</h4>
+                                <ul>
+                                    <li data-de="Techniker" data-en="Technician">Technician</li>
+                                    <li data-de="Mechaniker" data-en="Mechanic">Mechanic</li>
+                                    <li data-de="Elektriker" data-en="Electrician">Electrician</li>
+                                    <li data-de="Zimmerer" data-en="Carpenter">Carpenter</li>
+                                </ul>
+                            </div>
+                            <div class="category">
+                                <h4 data-de="Landwirtschaft & Natur" data-en="Agriculture & Nature">Agriculture & Nature</h4>
+                                <ul>
+                                    <li data-de="Landwirt" data-en="Farmer">Farmer</li>
+                                    <li data-de="Forstwirt" data-en="Forester">Forester</li>
+                                    <li data-de="Gärtner" data-en="Gardener">Gardener</li>
+                                    <li data-de="Umwelttechniker" data-en="Environmental Technician">Environmental Technician</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Investigative Careers -->
+                <div class="career-path-card investigative">
+                    <div class="career-header">
+                        <div class="career-icon">
+                            <i class="fas fa-flask"></i>
+                        </div>
+                        <h3 data-de="Analytische Karrierewege" data-en="Investigative Career Paths">Investigative Career Paths</h3>
+                        <p data-de="Forschung und wissenschaftliche Berufe" data-en="Research and scientific careers">Research and scientific careers</p>
+                    </div>
+                    <div class="career-content">
+                        <div class="career-categories">
+                            <div class="category">
+                                <h4 data-de="Wissenschaft & Forschung" data-en="Science & Research">Science & Research</h4>
+                                <ul>
+                                    <li data-de="Wissenschaftler" data-en="Scientist">Scientist</li>
+                                    <li data-de="Forscher" data-en="Researcher">Researcher</li>
+                                    <li data-de="Laborant" data-en="Lab Technician">Lab Technician</li>
+                                    <li data-de="Datenanalyst" data-en="Data Analyst">Data Analyst</li>
+                                </ul>
+                            </div>
+                            <div class="category">
+                                <h4 data-de="Medizin & Gesundheit" data-en="Medicine & Health">Medicine & Health</h4>
+                                <ul>
+                                    <li data-de="Arzt" data-en="Doctor">Doctor</li>
+                                    <li data-de="Apotheker" data-en="Pharmacist">Pharmacist</li>
+                                    <li data-de="Psychologe" data-en="Psychologist">Psychologist</li>
+                                    <li data-de="Therapeut" data-en="Therapist">Therapist</li>
+                                </ul>
+                            </div>
+                            <div class="category">
+                                <h4 data-de="IT & Technologie" data-en="IT & Technology">IT & Technology</h4>
+                                <ul>
+                                    <li data-de="Software-Entwickler" data-en="Software Developer">Software Developer</li>
+                                    <li data-de="Data Scientist" data-en="Data Scientist">Data Scientist</li>
+                                    <li data-de="Systemanalyst" data-en="Systems Analyst">Systems Analyst</li>
+                                    <li data-de="IT-Berater" data-en="IT Consultant">IT Consultant</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Artistic Careers -->
+                <div class="career-path-card artistic">
+                    <div class="career-header">
+                        <div class="career-icon">
+                            <i class="fas fa-palette"></i>
+                        </div>
+                        <h3 data-de="Künstlerische Karrierewege" data-en="Artistic Career Paths">Artistic Career Paths</h3>
+                        <p data-de="Kreative und expressive Berufsfelder" data-en="Creative and expressive career fields">Creative and expressive career fields</p>
+                    </div>
+                    <div class="career-content">
+                        <div class="career-categories">
+                            <div class="category">
+                                <h4 data-de="Design & Kunst" data-en="Design & Art">Design & Art</h4>
+                                <ul>
+                                    <li data-de="Grafikdesigner" data-en="Graphic Designer">Graphic Designer</li>
+                                    <li data-de="Webdesigner" data-en="Web Designer">Web Designer</li>
+                                    <li data-de="Künstler" data-en="Artist">Artist</li>
+                                    <li data-de="Fotograf" data-en="Photographer">Photographer</li>
+                                </ul>
+                            </div>
+                            <div class="category">
+                                <h4 data-de="Medien & Kommunikation" data-en="Media & Communication">Media & Communication</h4>
+                                <ul>
+                                    <li data-de="Journalist" data-en="Journalist">Journalist</li>
+                                    <li data-de="Schriftsteller" data-en="Writer">Writer</li>
+                                    <li data-de="Videograf" data-en="Videographer">Videographer</li>
+                                    <li data-de="Content-Creator" data-en="Content Creator">Content Creator</li>
+                                </ul>
+                            </div>
+                            <div class="category">
+                                <h4 data-de="Unterhaltung & Kultur" data-en="Entertainment & Culture">Entertainment & Culture</h4>
+                                <ul>
+                                    <li data-de="Musiker" data-en="Musician">Musician</li>
+                                    <li data-de="Schauspieler" data-en="Actor">Actor</li>
+                                    <li data-de="Regisseur" data-en="Director">Director</li>
+                                    <li data-de="Eventmanager" data-en="Event Manager">Event Manager</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Social Careers -->
+                <div class="career-path-card social">
+                    <div class="career-header">
+                        <div class="career-icon">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <h3 data-de="Soziale Karrierewege" data-en="Social Career Paths">Social Career Paths</h3>
+                        <p data-de="Hilfsbereite und kommunikative Berufe" data-en="Helpful and communicative careers">Helpful and communicative careers</p>
+                    </div>
+                    <div class="career-content">
+                        <div class="career-categories">
+                            <div class="category">
+                                <h4 data-de="Bildung & Erziehung" data-en="Education">Education</h4>
+                                <ul>
+                                    <li data-de="Lehrer" data-en="Teacher">Teacher</li>
+                                    <li data-de="Dozent" data-en="Lecturer">Lecturer</li>
+                                    <li data-de="Erzieher" data-en="Educator">Educator</li>
+                                    <li data-de="Trainer" data-en="Trainer">Trainer</li>
+                                </ul>
+                            </div>
+                            <div class="category">
+                                <h4 data-de="Sozialarbeit & Beratung" data-en="Social Work & Counseling">Social Work & Counseling</h4>
+                                <ul>
+                                    <li data-de="Sozialarbeiter" data-en="Social Worker">Social Worker</li>
+                                    <li data-de="Berater" data-en="Counselor">Counselor</li>
+                                    <li data-de="Coach" data-en="Coach">Coach</li>
+                                </ul>
+                            </div>
+                            <div class="category">
+                                <h4 data-de="Gesundheit & Pflege" data-en="Health & Care">Health & Care</h4>
+                                <ul>
+                                    <li data-de="Krankenpfleger" data-en="Nurse">Nurse</li>
+                                    <li data-de="Altenpfleger" data-en="Elderly Care Worker">Elderly Care Worker</li>
+                                    <li data-de="Physiotherapeut" data-en="Physiotherapist">Physiotherapist</li>
+                                    <li data-de="Hebamme" data-en="Midwife">Midwife</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Enterprising Careers -->
+                <div class="career-path-card enterprising">
+                    <div class="career-header">
+                        <div class="career-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h3 data-de="Unternehmerische Karrierewege" data-en="Enterprising Career Paths">Enterprising Career Paths</h3>
+                        <p data-de="Führungs- und verkaufsorientierte Berufe" data-en="Leadership and sales-oriented careers">Leadership and sales-oriented careers</p>
+                    </div>
+                    <div class="career-content">
+                        <div class="career-categories">
+                            <div class="category">
+                                <h4 data-de="Management & Führung" data-en="Management & Leadership">Management & Leadership</h4>
+                                <ul>
+                                    <li data-de="Manager" data-en="Manager">Manager</li>
+                                    <li data-de="Geschäftsführer" data-en="CEO">CEO</li>
+                                    <li data-de="Projektleiter" data-en="Project Manager">Project Manager</li>
+                                    <li data-de="Teamleiter" data-en="Team Leader">Team Leader</li>
+                                </ul>
+                            </div>
+                            <div class="category">
+                                <h4 data-de="Verkauf & Marketing" data-en="Sales & Marketing">Sales & Marketing</h4>
+                                <ul>
+                                    <li data-de="Verkäufer" data-en="Salesperson">Salesperson</li>
+                                    <li data-de="Account Manager" data-en="Account Manager">Account Manager</li>
+                                    <li data-de="Marketing-Manager" data-en="Marketing Manager">Marketing Manager</li>
+                                    <li data-de="Vertriebsleiter" data-en="Sales Director">Sales Director</li>
+                                </ul>
+                            </div>
+                            <div class="category">
+                                <h4 data-de="Unternehmertum" data-en="Entrepreneurship">Entrepreneurship</h4>
+                                <ul>
+                                    <li data-de="Unternehmer" data-en="Entrepreneur">Entrepreneur</li>
+                                    <li data-de="Start-up-Gründer" data-en="Startup Founder">Startup Founder</li>
+                                    <li data-de="Investor" data-en="Investor">Investor</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Conventional Careers -->
+                <div class="career-path-card conventional">
+                    <div class="career-header">
+                        <div class="career-icon">
+                            <i class="fas fa-calculator"></i>
+                        </div>
+                        <h3 data-de="Konventionelle Karrierewege" data-en="Conventional Career Paths">Conventional Career Paths</h3>
+                        <p data-de="Strukturierte und organisatorische Berufe" data-en="Structured and organizational careers">Structured and organizational careers</p>
+                    </div>
+                    <div class="career-content">
+                        <div class="career-categories">
+                            <div class="category">
+                                <h4 data-de="Buchhaltung & Finanzen" data-en="Accounting & Finance">Accounting & Finance</h4>
+                                <ul>
+                                    <li data-de="Buchhalter" data-en="Accountant">Accountant</li>
+                                    <li data-de="Controller" data-en="Controller">Controller</li>
+                                    <li data-de="Steuerberater" data-en="Tax Advisor">Tax Advisor</li>
+                                    <li data-de="Banker" data-en="Banker">Banker</li>
+                                </ul>
+                            </div>
+                            <div class="category">
+                                <h4 data-de="Verwaltung & Organisation" data-en="Administration & Organization">Administration & Organization</h4>
+                                <ul>
+                                    <li data-de="Sekretär" data-en="Secretary">Secretary</li>
+                                    <li data-de="Assistent" data-en="Assistant">Assistant</li>
+                                    <li data-de="Verwaltungsangestellter" data-en="Administrative Employee">Administrative Employee</li>
+                                    <li data-de="Projektkoordinator" data-en="Project Coordinator">Project Coordinator</li>
+                                </ul>
+                            </div>
+                            <div class="category">
+                                <h4 data-de="IT & Datenmanagement" data-en="IT & Data Management">IT & Data Management</h4>
+                                <ul>
+                                    <li data-de="Datenbankadministrator" data-en="Database Administrator">Database Administrator</li>
+                                    <li data-de="Systemadministrator" data-en="Systems Administrator">Systems Administrator</li>
+                                    <li data-de="Qualitätsmanager" data-en="Quality Manager">Quality Manager</li>
+                                    <li data-de="Compliance-Manager" data-en="Compliance Manager">Compliance Manager</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Success Stories -->
+    <section class="success-stories-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 data-de="Erfolgsgeschichten" data-en="Success Stories">Success Stories</h2>
+                <p data-de="Wie andere ihre RAISEC-Ergebnisse erfolgreich umgesetzt haben" data-en="How others have successfully implemented their RAISEC results">
+                    How others have successfully implemented their RAISEC results
+                </p>
+            </div>
+            <div class="stories-grid">
+                <div class="story-card">
+                    <div class="story-header">
+                        <div class="story-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="story-info">
+                            <h4>Sarah M.</h4>
+                            <p>RAISEC: I-A-S</p>
+                        </div>
+                    </div>
+                    <div class="story-content">
+                        <h3 data-de="Von der Buchhaltung zur UX-Designerin" data-en="From Accounting to UX Designer">From Accounting to UX Designer</h3>
+                        <p data-de="\"Mein RAISEC-Profil zeigte starke künstlerische und analytische Tendenzen. Ich habe daraufhin eine UX-Design-Ausbildung begonnen und bin jetzt als Senior UX-Designerin tätig.\"" data-en="\"My RAISEC profile showed strong artistic and analytical tendencies. I then started a UX design training and am now working as a Senior UX Designer.\"">
+                            "My RAISEC profile showed strong artistic and analytical tendencies. I then started a UX design training and am now working as a Senior UX Designer."
+                        </p>
+                        <div class="story-outcome">
+                            <span class="outcome-tag" data-de="Karrierewechsel" data-en="Career Change">Career Change</span>
+                            <span class="outcome-tag" data-de="Erfolgreich" data-en="Successful">Successful</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="story-card">
+                    <div class="story-header">
+                        <div class="story-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="story-info">
+                            <h4>Michael K.</h4>
+                            <p>RAISEC: E-S-A</p>
+                        </div>
+                    </div>
+                    <div class="story-content">
+                        <h3 data-de="Vom Verkäufer zum Teamleiter" data-en="From Salesperson to Team Leader">From Salesperson to Team Leader</h3>
+                        <p data-de="\"Mein unternehmerisches und soziales Profil hat mir geholfen, mich für Führungspositionen zu qualifizieren. Heute leite ich ein 15-köpfiges Vertriebsteam.\"" data-en="\"My enterprising and social profile helped me qualify for leadership positions. Today I lead a 15-person sales team.\"">
+                            "My enterprising and social profile helped me qualify for leadership positions. Today I lead a 15-person sales team."
+                        </p>
+                        <div class="story-outcome">
+                            <span class="outcome-tag" data-de="Beförderung" data-en="Promotion">Promotion</span>
+                            <span class="outcome-tag" data-de="Führung" data-en="Leadership">Leadership</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="story-card">
+                    <div class="story-header">
+                        <div class="story-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="story-info">
+                            <h4>Anna L.</h4>
+                            <p>RAISEC: A-I-S</p>
+                        </div>
+                    </div>
+                    <div class="story-content">
+                        <h3 data-de="Von der Verwaltung zur Data Scientist" data-en="From Administration to Data Scientist">From Administration to Data Scientist</h3>
+                        <p data-de="\"Mein analytisches Profil hat mich dazu motiviert, Data Science zu studieren. Jetzt arbeite ich als Data Scientist in einem Tech-Unternehmen.\"" data-en="\"My investigative profile motivated me to study data science. Now I work as a Data Scientist in a tech company.\"">
+                            "My investigative profile motivated me to study data science. Now I work as a Data Scientist in a tech company."
+                        </p>
+                        <div class="story-outcome">
+                            <span class="outcome-tag" data-de="Weiterbildung" data-en="Further Education">Further Education</span>
+                            <span class="outcome-tag" data-de="Tech-Karriere" data-en="Tech Career">Tech Career</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-content">
+                <h2 data-de="Starten Sie Ihr RAISEC-Assessment" data-en="Start Your RAISEC Assessment">Start Your RAISEC Assessment</h2>
+                <p data-de="Entdecken Sie Ihre beruflichen Interessen und finden Sie Ihren optimalen Karriereweg" data-en="Discover your career interests and find your optimal career path">
+                    Discover your career interests and find your optimal career path
+                </p>
+                <div class="cta-actions">
+                    <a href="raisec-persoenlichkeitsentwicklung.html" class="btn btn-primary">
+                        <i class="fas fa-play"></i> <span data-de="Jetzt starten" data-en="Start Now">Start Now</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>Manuel Weiss</h3>
+                    <p data-de="HR-Beratung für die digitale Transformation" data-en="HR Consulting for Digital Transformation">HR Consulting for Digital Transformation</p>
+                </div>
+                <div class="footer-links">
+                    <a href="../index.html" data-de="Start" data-en="Home">Home</a>
+                    <a href="persoenlichkeitsentwicklung-uebersicht.html" data-de="Persönlichkeitsentwicklung" data-en="Personality Development">Personality Development</a>
+                    <a href="raisec-theorie.html" data-de="RAISEC-Theorie" data-en="RAISEC Theory">RAISEC Theory</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p data-de="© 2024 Manuel Weiss. Alle Rechte vorbehalten." data-en="© 2024 Manuel Weiss. All rights reserved.">© 2024 Manuel Weiss. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Auth Modals -->
+    <div id="authModalsContainer"></div>
+    <script src="../js/simple-translation.js"></script>
+    <script>
+        // Mobile navigation toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const navToggle = document.getElementById('navToggle');
+            const navMenu = document.getElementById('navMenu');
+            if (navToggle && navMenu) {
+                navToggle.addEventListener('click', function() {
+                    navMenu.classList.toggle('active');
+                    navToggle.classList.toggle('active');
+                });
+                
+                // Close menu when clicking on a link
+                const navLinks = document.querySelectorAll('.nav-link');
+                navLinks.forEach(link => {
+                    link.addEventListener('click', function() {
+                        navMenu.classList.remove('active');
+                        navToggle.classList.remove('active');
+                    });
+                });
+            }
+            
+            // Language Switcher
+            document.querySelectorAll('.lang-link-compact[data-lang]').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const lang = this.getAttribute('data-lang');
+                    if (window.simpleTranslation) {
+                        if (typeof window.simpleTranslation.switchLanguage === 'function') {
+                            window.simpleTranslation.switchLanguage(lang);
+                        } else {
+                            window.simpleTranslation.setLanguage(lang);
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+    <script src="../js/global-auth-system.js"></script>
+</body>
+</html>
+
