@@ -43,14 +43,15 @@
             </div>
             
             <div class="nav-menu">
-                <a href="index.html" class="nav-link">Start</a>
-                <a href="persoenlichkeitsentwicklung-uebersicht.html" class="nav-link active">Persönlichkeitsentwicklung</a>
-                <a href="applications/index.html" class="nav-link">Bewerbungsmanager</a>
-                <a href="website-services.html" class="nav-link">Services</a>
+                <a href="index.html" class="nav-link" data-de="Start" data-en="Home">Start</a>
+                <a href="persoenlichkeitsentwicklung-uebersicht.html" class="nav-link active" data-de="Persönlichkeitsentwicklung" data-en="Personality Development">Persönlichkeitsentwicklung</a>
+                <a href="applications/index.html" class="nav-link" data-de="Bewerbungsmanager" data-en="Application Manager">Bewerbungsmanager</a>
+                <a href="website-services.html" class="nav-link" data-de="Services" data-en="Services">Services</a>
                 
-                <!-- Language Switcher - nur eine Auswahl -->
-                <div class="language-switcher">
-                    <a href="en/persoenlichkeitsentwicklung-uebersicht.html" class="lang-link" title="Switch to English">🇬🇧 EN</a>
+                <!-- Language Switcher - Kompakt -->
+                <div class="language-switcher-compact">
+                    <button class="lang-link-compact" data-lang="de" title="Deutsch">🇩🇪</button>
+                    <button class="lang-link-compact" data-lang="en" title="English">🇬🇧</button>
                 </div>
             </div>
             
@@ -58,7 +59,7 @@
                 <div class="nav-user" id="navUser">
                     <button id="realAuthButton" class="nav-login-btn">
                         <i class="fas fa-user"></i>
-                        <span>Anmelden</span>
+                        <span data-de="Anmelden" data-en="Login">Anmelden</span>
                     </button>
                     
                     <!-- User Dropdown Menu -->
