@@ -300,7 +300,7 @@
 /* Hero Section - Ultra Modern Redesign like Ikigai */
 .personality-hero {
     background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 50%, #7c3aed 100%);
-    padding: 8rem 0 4rem;
+    padding: 5rem 0 3rem; /* Reduziert von 8rem 0 4rem */
     position: relative;
     overflow: hidden;
     color: white !important;
@@ -1270,10 +1270,10 @@
     font-size: 1.5rem;
     font-weight: 800;
     color: #1e293b;
-    margin: 0 0 1rem 0;
+    margin: 0 0 0.75rem 0; /* Reduziert von 1rem */
     line-height: 1.2;
     letter-spacing: -0.02em;
-    min-height: 2.4rem;
+    min-height: auto; /* Entfernt: 2.4rem */
     display: flex;
     align-items: center;
 }
@@ -1484,6 +1484,21 @@
 }
 
 @media (max-width: 768px) {
+    .personality-methods-overview .section-header {
+        margin-bottom: 1.5rem;
+        margin-top: 1rem;
+        padding: 0 0.5rem;
+    }
+    
+    .personality-methods-overview .section-title {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .personality-methods-overview .section-subtitle {
+        font-size: 1rem;
+    }
+    
     .methods-grid {
         grid-template-columns: 1fr;
         gap: 1.5rem; /* Reduziert von 2.5rem */
