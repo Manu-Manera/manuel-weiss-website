@@ -871,7 +871,7 @@
         window.latestAWSProfileImage = window.latestAWSProfileImage || null;
         window.currentProfileImageSrc = window.currentProfileImageSrc || null;
 
-        function setHeroProfileImage(src) {
+        function setHeroProfileImage(src, force = false) {
             const targetSrc = src || DEFAULT_PROFILE_IMAGE_URL;
             const profileImages = document.querySelectorAll('.dynamic-profile-image');
             if (!profileImages.length) {
@@ -879,16 +879,41 @@
                 return;
             }
             
+            // SCHUTZ: Wenn bereits ein Profilbild gesetzt wurde und es nicht das Standard-Bild ist,
+            // und force=false, dann nicht überschreiben (außer es ist ein AWS-Bild)
+            const isDefaultImage = targetSrc === DEFAULT_PROFILE_IMAGE_URL || 
+                                   targetSrc.includes('manuel-weiss-portrait.jpg') ||
+                                   targetSrc.includes('manuel-weiss-photo.svg');
+            const isAWSImage = targetSrc && (targetSrc.startsWith('http') || targetSrc.includes('amazonaws') || targetSrc.includes('s3'));
+            const currentSrc = window.currentProfileImageSrc;
+            
+            // Wenn bereits ein Profilbild gesetzt ist und es nicht das Standard-Bild ist,
+            // und das neue Bild auch nicht von AWS kommt, dann nicht überschreiben
+            if (!force && currentSrc && !isDefaultImage && !isAWSImage && !targetSrc.startsWith('data:')) {
+                console.log('🛡️ WEBSITE: Profilbild-Schutz aktiv - überschreibe nicht mit:', targetSrc);
+                return;
+            }
+            
+            // Wenn bereits ein AWS-Bild gesetzt ist, nur durch ein anderes AWS-Bild überschreiben
+            if (!force && currentSrc && (currentSrc.startsWith('http') || currentSrc.includes('amazonaws') || currentSrc.includes('s3'))) {
+                if (!isAWSImage && !targetSrc.startsWith('data:')) {
+                    console.log('🛡️ WEBSITE: AWS-Profilbild bereits gesetzt - überschreibe nicht mit localStorage-Bild');
+                    return;
+                }
+            }
+            
             profileImages.forEach(img => {
                 if (img.dataset.loadedSrc !== targetSrc) {
                     img.src = targetSrc;
                     img.dataset.loadedSrc = targetSrc;
+                    console.log('✅ WEBSITE: Profilbild gesetzt:', targetSrc);
                 }
                 img.style.display = 'block';
                 img.style.visibility = 'visible';
                 img.style.opacity = '1';
             });
             window.currentProfileImageSrc = targetSrc;
+            window.profileImageSetByAWS = isAWSImage || targetSrc.startsWith('data:');
         }
 
         // WICHTIG: Profilbild IMMER zuerst aus AWS laden (domain-unabhängig)
