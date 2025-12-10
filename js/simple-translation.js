@@ -41,28 +41,30 @@ class SimpleTranslation {
                 } else if (element.hasAttribute('placeholder')) {
                     element.setAttribute('placeholder', text);
                 } else {
-                    // Für Elemente mit Kindern (z.B. Buttons mit Icons): Nur den Text-Content aktualisieren
-                    const textNodes = Array.from(element.childNodes).filter(node => node.nodeType === Node.TEXT_NODE);
-                    const hasOnlyText = element.children.length === 0 || (element.children.length === 1 && element.querySelector('i, svg, img'));
-                    
-                    if (hasOnlyText && textNodes.length > 0) {
-                        // Ersetze nur Text-Knoten, behalte Icons/HTML bei
-                        textNodes.forEach(node => {
-                            node.textContent = text;
-                        });
-                    } else if (element.children.length === 0) {
-                        // Keine Kinder: Text direkt setzen
-                        element.textContent = text;
+                    // Für Elemente mit Kindern (z.B. Buttons mit Icons): Suche nach <span> mit data-de/data-en
+                    const childSpan = element.querySelector('span[data-de][data-en]');
+                    if (childSpan) {
+                        // Wenn ein <span> mit Übersetzungsattributen gefunden wird, aktualisiere diesen
+                        const childText = childSpan.getAttribute(`data-${this.currentLanguage}`);
+                        if (childText) {
+                            childSpan.textContent = childText;
+                        }
                     } else {
-                        // Elemente mit Kindern: Suche nach <span> oder direktem Text
+                        // Kein <span> mit Übersetzungen: Suche nach erstem <span> ohne Übersetzungen
                         const span = element.querySelector('span:not([data-de]):not([data-en])');
                         if (span) {
                             span.textContent = text;
                         } else {
-                            // Fallback: Ersetze Text-Knoten
-                            textNodes.forEach(node => {
-                                node.textContent = text;
-                            });
+                            // Kein <span> gefunden: Ersetze nur Text-Knoten, behalte Icons/HTML bei
+                            const textNodes = Array.from(element.childNodes).filter(node => node.nodeType === Node.TEXT_NODE);
+                            if (textNodes.length > 0) {
+                                textNodes.forEach(node => {
+                                    node.textContent = text;
+                                });
+                            } else if (element.children.length === 0) {
+                                // Keine Kinder: Text direkt setzen
+                                element.textContent = text;
+                            }
                         }
                     }
                 }
