@@ -3132,7 +3132,11 @@
                     e.preventDefault();
                     const lang = this.getAttribute('data-lang');
                     if (window.simpleTranslation) {
-                        window.simpleTranslation.setLanguage(lang);
+                        if (typeof window.simpleTranslation.switchLanguage === 'function') {
+                            window.simpleTranslation.switchLanguage(lang);
+                        } else {
+                            window.simpleTranslation.setLanguage(lang);
+                        }
                     }
                 });
             });
