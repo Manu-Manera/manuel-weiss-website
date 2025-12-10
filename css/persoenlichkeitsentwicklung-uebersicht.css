@@ -1,8 +1,30 @@
 /* Persönlichkeitsentwicklung Übersicht - Modern Clean Design */
+/* Optimiert für 2024 Best Practices - Kompaktes Layout, Mobile-First, Cross-Browser */
 
 /* CSS Variables */
 :root {
     --header-height: 80px;
+    --card-padding: 2rem;
+    --card-gap: 2rem;
+    --section-spacing: 2.5rem;
+}
+
+/* Cross-Browser Support */
+@supports not (backdrop-filter: blur(10px)) {
+    .method-card {
+        background: #ffffff;
+    }
+}
+
+/* Firefox Support */
+@-moz-document url-prefix() {
+    .method-card {
+        background: #ffffff;
+    }
+    
+    .method-card::before {
+        display: none; /* Firefox backdrop-filter Fallback */
+    }
 }
 
 /* Modern Login Button & Dropdown Styles */
