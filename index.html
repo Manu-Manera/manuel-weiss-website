@@ -1397,15 +1397,25 @@
                 await loadHeroDataFromAdmin();
                 
                 // Zusätzlich: Auch aus website-data-sync-fixed.js laden
+                // ABER: Nur wenn noch kein Profilbild gesetzt wurde
                 if (window.loadWebsiteDataFromLocalStorage) {
                     setTimeout(() => {
-                        window.loadWebsiteDataFromLocalStorage();
+                        // Nur laden wenn noch kein Profilbild oder wenn es das Standard-Bild ist
+                        const currentSrc = window.currentProfileImageSrc;
+                        const isDefault = !currentSrc || 
+                                        currentSrc.includes('manuel-weiss-portrait.jpg') || 
+                                        currentSrc.includes('manuel-weiss-photo.svg');
+                        if (isDefault || !window.profileImageSetByAWS) {
+                            window.loadWebsiteDataFromLocalStorage();
+                        } else {
+                            console.log('🛡️ WEBSITE: Profilbild bereits von AWS gesetzt - überspringe website-data-sync');
+                        }
                     }, 500);
                 }
 
-                // Profilbild ggf. erneut anwenden
-                if (window.latestAWSProfileImage) {
-                    setHeroProfileImage(window.latestAWSProfileImage);
+                // Profilbild ggf. erneut anwenden (nur wenn noch nicht gesetzt)
+                if (window.latestAWSProfileImage && (!window.currentProfileImageSrc || window.currentProfileImageSrc.includes('manuel-weiss-portrait.jpg'))) {
+                    setHeroProfileImage(window.latestAWSProfileImage, true);
                 }
             } catch (error) {
                 console.error('❌ WEBSITE: Failed to load hero data:', error);
