@@ -246,6 +246,26 @@ class AdminNavigation {
                     }
                 }
                 
+                // Content Section spezifische Initialisierung
+                if (sectionId === 'content') {
+                    if (window.ContentSection) {
+                        console.log('🚀 Initializing ContentSection...');
+                        const contentSection = window.AdminApp?.sections?.content || new window.ContentSection();
+                        if (!contentSection.isInitialized) {
+                            contentSection.init().catch(err => {
+                                console.error('Error initializing ContentSection:', err);
+                            });
+                        }
+                        if (window.AdminApp && !window.AdminApp.sections.content) {
+                            window.AdminApp.sections.content = contentSection;
+                        }
+                        // Globale Variable für einfachen Zugriff
+                        window.contentSection = contentSection;
+                    } else {
+                        console.warn('⚠️ window.ContentSection not found');
+                    }
+                }
+                
                 // User Management Section spezifische Initialisierung
                 if (sectionId === 'user-management') {
                     if (window.AdminUserManagement) {
