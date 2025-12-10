@@ -52,13 +52,12 @@ class ContentSection {
             });
         }
 
-        // Service-Bild-Upload Event-Listener
-        const serviceImageInput = document.getElementById('newServiceImage');
-        if (serviceImageInput) {
-            serviceImageInput.addEventListener('change', (e) => {
+        // Service-Bild-Upload Event-Listener (mit Delegation für dynamisch geladene Elemente)
+        document.addEventListener('change', (e) => {
+            if (e.target && e.target.id === 'newServiceImage') {
                 this.handleServiceImageUpload(e);
-            });
-        }
+            }
+        });
     }
 
     async loadServices() {
@@ -494,3 +493,25 @@ class ContentSection {
 
 // Export für AdminApplication
 window.ContentSection = ContentSection;
+
+// Globale Instanz für direkten Zugriff
+let contentSectionInstance = null;
+
+// Initialisierung wenn DOM bereit ist
+document.addEventListener('DOMContentLoaded', function() {
+    // Warte kurz, damit AdminApplication initialisiert werden kann
+    setTimeout(() => {
+        if (window.AdminApp && window.AdminApp.sections && window.AdminApp.sections.content) {
+            contentSectionInstance = window.AdminApp.sections.content;
+            console.log('✅ ContentSection aus AdminApp geladen');
+        } else if (window.ContentSection) {
+            // Fallback: Erstelle eigene Instanz
+            contentSectionInstance = new ContentSection();
+            contentSectionInstance.init();
+            console.log('✅ ContentSection als Fallback initialisiert');
+        }
+        
+        // Globale Variable für einfachen Zugriff
+        window.contentSection = contentSectionInstance;
+    }, 500);
+});
