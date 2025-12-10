@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-de="Persönlichkeitsentwicklung & Ikigai - Manuel Weiss" data-en="Personality Development & Ikigai - Manuel Weiss">Personality Development & Ikigai - Manuel Weiss</title>
+    
+    <!-- Meta Tags -->
+    <meta name="description" data-de="Entdecke deinen Ikigai - deinen Grund zu leben. Ausführlicher Workflow zur Selbstfindung, Lebensziel-Entwicklung und Persönlichkeitsentwicklung." data-en="Discover your Ikigai - your reason for being. Comprehensive workflow for self-discovery, life goal development, and personality development." content="Discover your Ikigai - your reason for being. Comprehensive workflow for self-discovery, life goal development, and personality development.">
+    <meta name="keywords" content="Ikigai, Personality Development, Self-discovery, Life Goals, Motivation, Purpose of Life">
+    <meta name="author" content="Manuel Weiss">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="Personality Development & Ikigai - Manuel Weiss">
+    <meta property="og:description" content="Discover your Ikigai - your reason for being">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://manuel-weiss.ch/en/persoenlichkeitsentwicklung.html">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../css/user-auth.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="../favicon.ico">
+    
+    <!-- Additional Styles -->
+    <style>
+        .navbar .auth-section .btn-auth {
+            background: linear-gradient(135deg, #10b981, #059669) !important;
+            color: white !important;
+            padding: 0.5rem 1rem !important;
+            border-radius: 8px !important;
+            font-weight: 600 !important;
+            font-size: 0.875rem !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 0.5rem !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3) !important;
+            border: none !important;
+            cursor: pointer !important;
+        }
+        
+        .navbar .auth-section .btn-auth:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4) !important;
+            background: linear-gradient(135deg, #059669, #047857) !important;
+        }
+        
+        .navbar .auth-section .btn-auth i {
+            font-size: 0.875rem !important;
+        }
+        
+        .navbar .auth-section {
+            display: flex !important;
+            align-items: center !important;
+            margin-left: 1rem !important;
+            padding-left: 1rem !important;
+            border-left: 1px solid #e5e7eb !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="../manuel-weiss-photo.svg" alt="MW" class="nav-logo">
+                <span class="nav-name">Manuel Weiss</span>
+            </div>
+            
+            <div class="nav-menu" id="navMenu">
+                <a href="../index.html?from_service=true" class="nav-link" data-de="Home" data-en="Home">Home</a>
+                <a href="../index.html?from_service=true#services" class="nav-link" data-de="Services" data-en="Services">Services</a>
+                <a href="../index.html?from_service=true#about" class="nav-link" data-de="About" data-en="About">About</a>
+                <a href="../index.html?from_service=true#contact" class="nav-link" data-de="Contact" data-en="Contact">Contact</a>
+                
+                <!-- Language Switcher -->
+                <div class="language-switcher-compact">
+                    <button class="lang-link-compact" data-lang="de" title="Deutsch">🇩🇪</button>
+                    <button class="lang-link-compact active" data-lang="en" title="English">🇬🇧</button>
+                </div>
+            </div>
+            
+            <!-- AWS User System -->
+            <div class="auth-section">
+                <button id="realAuthButton" class="btn-auth">
+                    <i class="fas fa-user"></i>
+                    <span data-de="Anmelden" data-en="Sign In">Sign In</span>
+                </button>
+                <div id="realUserMenu" class="user-menu" style="display: none;">
+                    <div class="user-info">
+                        <img id="userAvatarImg" src="../manuel-weiss-photo.svg" alt="User Avatar" class="user-avatar-img">
+                        <span id="userName">User</span>
+                    </div>
+                    <a href="../user-profile-dashboard.html" class="user-menu-link">
+                        <i class="fas fa-chart-line"></i>
+                        <span data-de="Dashboard" data-en="Dashboard">Dashboard</span>
+                    </a>
+                    <a href="#" class="user-menu-link" onclick="window.realUserAuth.logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span data-de="Abmelden" data-en="Sign Out">Sign Out</span>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero ikigai-hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1 class="hero-title" data-de="Entdecke deinen Ikigai" data-en="Discover Your Ikigai">
+                    Discover Your <span class="gradient-text">Ikigai</span>
+                </h1>
+                <p class="hero-subtitle" data-de="Dein Grund zu leben. Ein ausführlicher Workflow zur Selbstfindung, Lebensziel-Entwicklung und Persönlichkeitsentwicklung." data-en="Your reason for being. A comprehensive workflow for self-discovery, life goal development, and personality development.">
+                    Your reason for being. A comprehensive workflow for self-discovery, 
+                    life goal development, and personality development.
+                </p>
+                <div class="hero-actions">
+                    <a href="../methods/ikigai/index-ikigai.html" class="btn btn-primary" data-de="Ikigai-Workflow starten" data-en="Start Ikigai Workflow" target="_blank">Start Ikigai Workflow</a>
+                    <button onclick="window.open('../methods/ikigai/index-ikigai.html', '_blank')" class="btn btn-secondary" style="margin-left: 10px;" data-de="Alternative: Ikigai öffnen" data-en="Alternative: Open Ikigai">Alternative: Open Ikigai</button>
+                    <a href="#what-is-ikigai" class="btn btn-outline" data-de="Was ist Ikigai?" data-en="What is Ikigai?">What is Ikigai?</a>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="ikigai-visual">
+                    <div class="ikigai-circle">
+                        <div class="ikigai-center">
+                            <span class="ikigai-text">IKIGAI</span>
+                        </div>
+                        <div class="ikigai-quadrant" data-quadrant="passion">
+                            <i class="fas fa-heart"></i>
+                            <span data-de="Was du liebst" data-en="What You Love">What You Love</span>
+                        </div>
+                        <div class="ikigai-quadrant" data-quadrant="mission">
+                            <i class="fas fa-bullseye"></i>
+                            <span data-de="Was die Welt braucht" data-en="What the World Needs">What the World Needs</span>
+                        </div>
+                        <div class="ikigai-quadrant" data-quadrant="profession">
+                            <i class="fas fa-briefcase"></i>
+                            <span data-de="Wofür du bezahlt wirst" data-en="What You Can Be Paid For">What You Can Be Paid For</span>
+                        </div>
+                        <div class="ikigai-quadrant" data-quadrant="vocation">
+                            <i class="fas fa-star"></i>
+                            <span data-de="Worin du gut bist" data-en="What You're Good At">What You're Good At</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- What is Ikigai Section -->
+    <section id="what-is-ikigai" class="what-is-ikigai">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title" data-de="Was ist Ikigai?" data-en="What is Ikigai?">What is Ikigai?</h2>
+                <p class="section-subtitle" data-de="Die japanische Philosophie für ein erfülltes und sinnvolles Leben" data-en="The Japanese philosophy for a fulfilled and meaningful life">
+                    The Japanese philosophy for a fulfilled and meaningful life
+                </p>
+            </div>
+            
+            <div class="ikigai-explanation">
+                <div class="explanation-content">
+                    <div class="explanation-text">
+                        <h3 data-de="Der Begriff Ikigai" data-en="The Concept of Ikigai">The Concept of Ikigai</h3>
+                        <p>
+                            <strong>Ikigai</strong> (生き甲斐) is a Japanese concept that can be translated as "reason for being" or "purpose in life". 
+                            It is the intersection of four important life areas:
+                        </p>
+                        
+                        <div class="ikigai-elements">
+                            <div class="element">
+                                <div class="element-icon">💖</div>
+                                <h4 data-de="Was du liebst" data-en="What You Love">What You Love</h4>
+                                <p data-de="Deine Leidenschaften und Interessen, die dir Freude bereiten" data-en="Your passions and interests that bring you joy">Your passions and interests that bring you joy</p>
+                            </div>
+                            <div class="element">
+                                <div class="element-icon">🎯</div>
+                                <h4 data-de="Was die Welt braucht" data-en="What the World Needs">What the World Needs</h4>
+                                <p data-de="Bereiche, in denen du einen positiven Beitrag leisten kannst" data-en="Areas where you can make a positive contribution">Areas where you can make a positive contribution</p>
+                            </div>
+                            <div class="element">
+                                <div class="element-icon">💼</div>
+                                <h4 data-de="Wofür du bezahlt wirst" data-en="What You Can Be Paid For">What You Can Be Paid For</h4>
+                                <p data-de="Deine beruflichen Fähigkeiten und Talente" data-en="Your professional skills and talents">Your professional skills and talents</p>
+                            </div>
+                            <div class="element">
+                                <div class="element-icon">⭐</div>
+                                <h4 data-de="Worin du gut bist" data-en="What You're Good At">What You're Good At</h4>
+                                <p data-de="Deine natürlichen Stärken und Kompetenzen" data-en="Your natural strengths and competencies">Your natural strengths and competencies</p>
+                            </div>
+                        </div>
+                        
+                        <div class="benefits">
+                            <h3 data-de="Warum Ikigai wichtig ist" data-en="Why Ikigai Matters">Why Ikigai Matters</h3>
+                            <ul>
+                                <li><strong data-de="Lebenszufriedenheit:" data-en="Life Satisfaction:">Life Satisfaction:</strong> <span data-de="Menschen mit einem klaren Ikigai sind zufriedener und glücklicher" data-en="People with a clear Ikigai are more satisfied and happier">People with a clear Ikigai are more satisfied and happier</span></li>
+                                <li><strong data-de="Langlebigkeit:" data-en="Longevity:">Longevity:</strong> <span data-de="In Okinawa, wo Ikigai seinen Ursprung hat, leben Menschen besonders lange" data-en="In Okinawa, where Ikigai originated, people live particularly long lives">In Okinawa, where Ikigai originated, people live particularly long lives</span></li>
+                                <li><strong data-de="Motivation:" data-en="Motivation:">Motivation:</strong> <span data-de="Ein klares Ikigai gibt dir täglich einen Grund aufzustehen" data-en="A clear Ikigai gives you a reason to get up every day">A clear Ikigai gives you a reason to get up every day</span></li>
+                                <li><strong data-de="Entscheidungsfindung:" data-en="Decision Making:">Decision Making:</strong> <span data-de="Hilft bei wichtigen Lebensentscheidungen" data-en="Helps with important life decisions">Helps with important life decisions</span></li>
+                                <li><strong data-de="Stressreduktion:" data-en="Stress Reduction:">Stress Reduction:</strong> <span data-de="Reduziert Stress durch klare Lebensziele" data-en="Reduces stress through clear life goals">Reduces stress through clear life goals</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="video-resources">
+                        <h3 data-de="Video-Tutorials & Tipps" data-en="Video Tutorials & Tips">Video Tutorials & Tips</h3>
+                        <div class="video-grid">
+                            <div class="video-card">
+                                <div class="video-thumbnail">
+                                    <i class="fab fa-youtube"></i>
+                                </div>
+                                <h4 data-de="Ikigai erklärt" data-en="Ikigai Explained">Ikigai Explained</h4>
+                                <p data-de="Grundlagen und Philosophie des Ikigai-Konzepts" data-en="Basics and philosophy of the Ikigai concept">Basics and philosophy of the Ikigai concept</p>
+                                <a href="#" class="video-link" data-video="ikigai-basics" data-de="Video ansehen" data-en="Watch Video">Watch Video</a>
+                            </div>
+                            <div class="video-card">
+                                <div class="video-thumbnail">
+                                    <i class="fab fa-youtube"></i>
+                                </div>
+                                <h4 data-de="Selbstreflexion" data-en="Self-Reflection">Self-Reflection</h4>
+                                <p data-de="Techniken zur tiefen Selbstanalyse" data-en="Techniques for deep self-analysis">Techniques for deep self-analysis</p>
+                                <a href="#" class="video-link" data-video="self-reflection" data-de="Video ansehen" data-en="Watch Video">Watch Video</a>
+                            </div>
+                            <div class="video-card">
+                                <div class="video-thumbnail">
+                                    <i class="fab fa-youtube"></i>
+                                </div>
+                                <h4 data-de="Lebensziele setzen" data-en="Setting Life Goals">Setting Life Goals</h4>
+                                <p data-de="Wie du deine Ziele strukturiert angehst" data-en="How to approach your goals systematically">How to approach your goals systematically</p>
+                                <a href="#" class="video-link" data-video="goal-setting" data-de="Video ansehen" data-en="Watch Video">Watch Video</a>
+                            </div>
+                            <div class="video-card">
+                                <div class="video-thumbnail">
+                                    <i class="fab fa-youtube"></i>
+                                </div>
+                                <h4 data-de="Ikigai im Alltag" data-en="Ikigai in Daily Life">Ikigai in Daily Life</h4>
+                                <p data-de="Praktische Umsetzung im täglichen Leben" data-en="Practical implementation in daily life">Practical implementation in daily life</p>
+                                <a href="#" class="video-link" data-video="daily-ikigai" data-de="Video ansehen" data-en="Watch Video">Watch Video</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Ikigai Workflow Section - Note: This is a simplified version. The full workflow would need extensive translation -->
+    <section id="ikigai-workflow" class="ikigai-workflow">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title" data-de="Dein Ikigai-Workflow" data-en="Your Ikigai Workflow">Your Ikigai Workflow</h2>
+                <p class="section-subtitle" data-de="Ein strukturierter Prozess zur Entdeckung deines persönlichen Ikigai" data-en="A structured process to discover your personal Ikigai">
+                    A structured process to discover your personal Ikigai
+                </p>
+            </div>
+            
+            <div class="workflow-container">
+                <!-- Progress Bar -->
+                <div class="workflow-progress">
+                    <div class="progress-step active" data-step="1">
+                        <div class="step-number">1</div>
+                        <div class="step-title" data-de="Selbstreflexion" data-en="Self-Reflection">Self-Reflection</div>
+                    </div>
+                    <div class="progress-step" data-step="2">
+                        <div class="step-number">2</div>
+                        <div class="step-title" data-de="Passion" data-en="Passion">Passion</div>
+                    </div>
+                    <div class="progress-step" data-step="3">
+                        <div class="step-number">3</div>
+                        <div class="step-title" data-de="Mission" data-en="Mission">Mission</div>
+                    </div>
+                    <div class="progress-step" data-step="4">
+                        <div class="step-number">4</div>
+                        <div class="step-title" data-de="Profession" data-en="Profession">Profession</div>
+                    </div>
+                    <div class="progress-step" data-step="5">
+                        <div class="step-number">5</div>
+                        <div class="step-title" data-de="Vocation" data-en="Vocation">Vocation</div>
+                    </div>
+                    <div class="progress-step" data-step="6">
+                        <div class="step-number">6</div>
+                        <div class="step-title" data-de="Synthese" data-en="Synthesis">Synthesis</div>
+                    </div>
+                    <div class="progress-step" data-step="7">
+                        <div class="step-number">7</div>
+                        <div class="step-title" data-de="Aktionsplan" data-en="Action Plan">Action Plan</div>
+                    </div>
+                </div>
+                
+                <!-- Workflow Content - Simplified for now, full translation would require extensive work -->
+                <div class="workflow-content">
+                    <div class="workflow-step active" data-step="1">
+                        <div class="step-header">
+                            <h3 data-de="Schritt 1: Selbstreflexion & Vorbereitung" data-en="Step 1: Self-Reflection & Preparation">Step 1: Self-Reflection & Preparation</h3>
+                            <p data-de="Bevor wir deinen Ikigai entdecken, lass uns eine tiefe Selbstreflexion durchführen." data-en="Before we discover your Ikigai, let's do a deep self-reflection.">
+                                Before we discover your Ikigai, let's do a deep self-reflection.
+                            </p>
+                        </div>
+                        
+                        <div class="workflow-note">
+                            <p data-de="Hinweis: Der vollständige Workflow ist in der interaktiven Ikigai-Anwendung verfügbar. Klicke auf 'Start Ikigai Workflow' oben, um den vollständigen Prozess zu beginnen." data-en="Note: The complete workflow is available in the interactive Ikigai application. Click 'Start Ikigai Workflow' above to begin the full process.">
+                                <strong>Note:</strong> The complete workflow is available in the interactive Ikigai application. 
+                                Click "Start Ikigai Workflow" above to begin the full process.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Navigation Buttons -->
+                <div class="workflow-navigation">
+                    <div class="nav-buttons">
+                        <a href="../methods/ikigai/index-ikigai.html" class="btn btn-primary" target="_blank" data-de="Vollständigen Workflow starten" data-en="Start Full Workflow">Start Full Workflow</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact">
+        <div class="container">
+            <div class="contact-content">
+                <div class="contact-info">
+                    <h2 class="section-title" data-de="Persönliche Begleitung" data-en="Personal Support">Personal Support</h2>
+                    <p class="contact-description" data-de="Möchtest du Unterstützung bei deiner Ikigai-Reise? Ich begleite dich gerne auf dem Weg zu deinem persönlichen Sinn des Lebens." data-en="Would you like support on your Ikigai journey? I'm happy to guide you on your path to your personal purpose in life.">
+                        Would you like support on your Ikigai journey? I'm happy to guide you 
+                        on your path to your personal purpose in life.
+                    </p>
+                    
+                    <div class="contact-details">
+                        <div class="contact-item">
+                            <i class="fas fa-envelope"></i>
+                            <div>
+                                <h4 data-de="E-Mail" data-en="Email">Email</h4>
+                                <a href="mailto:info@manuel-weiss.ch">info@manuel-weiss.ch</a>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <div>
+                                <h4 data-de="Standort" data-en="Location">Location</h4>
+                                <p>Switzerland</p>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-item">
+                            <i class="fas fa-clock"></i>
+                            <div>
+                                <h4 data-de="Verfügbarkeit" data-en="Availability">Availability</h4>
+                                <p data-de="Mo-Fr: 9:00 - 18:00" data-en="Mon-Fri: 9:00 - 18:00">Mon-Fri: 9:00 - 18:00</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="contact-form">
+                    <form id="contactForm">
+                        <div class="form-group">
+                            <label for="name" data-de="Name" data-en="Name">Name</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email" data-de="E-Mail" data-en="Email">Email</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="subject" data-de="Betreff" data-en="Subject">Subject</label>
+                            <input type="text" id="subject" name="subject" value="Personality Development & Ikigai" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="message" data-de="Nachricht" data-en="Message">Message</label>
+                            <textarea id="message" name="message" rows="5" placeholder="Tell me about your Ikigai journey..." required></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i>
+                            <span data-de="Nachricht senden" data-en="Send Message">Send Message</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <img src="../manuel-weiss-photo.svg" alt="MW" class="footer-logo">
+                    <div>
+                        <h3>Manuel Weiss</h3>
+                        <p data-de="HR Berater für AI & Transformation" data-en="HR Consultant for AI & Transformation">HR Consultant for AI & Transformation</p>
+                    </div>
+                </div>
+                
+                <div class="footer-links">
+                    <div class="footer-section">
+                        <h4 data-de="Services" data-en="Services">Services</h4>
+                        <ul>
+                            <li><a href="../index.html#services" data-de="AI & Digitalisierung" data-en="AI & Digitalization">AI & Digitalization</a></li>
+                            <li><a href="../index.html#services" data-de="HR Transformation" data-en="HR Transformation">HR Transformation</a></li>
+                            <li><a href="../index.html#services" data-de="Geschäftsprozesse" data-en="Business Processes">Business Processes</a></li>
+                            <li><a href="../ernaehrungsberatung.html" data-de="Ernährungsberatung" data-en="Nutrition Consulting">Nutrition Consulting</a></li>
+                            <li><a href="persoenlichkeitsentwicklung.html" data-de="Persönlichkeitsentwicklung" data-en="Personality Development">Personality Development</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-section">
+                        <h4 data-de="Aktivitäten" data-en="Activities">Activities</h4>
+                        <ul>
+                            <li><a href="../wohnmobil.html" data-de="Wohnmobil" data-en="Camper">Camper</a></li>
+                            <li><a href="../fotobox.html" data-de="Fotobox" data-en="Photo Booth">Photo Booth</a></li>
+                            <li><a href="../ebike.html" data-de="E-Bikes" data-en="E-Bikes">E-Bikes</a></li>
+                            <li><a href="../sup.html" data-de="SUP" data-en="SUP">SUP</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-section">
+                        <h4 data-de="Kontakt" data-en="Contact">Contact</h4>
+                        <ul>
+                            <li><a href="mailto:info@manuel-weiss.ch" data-de="E-Mail" data-en="Email">Email</a></li>
+                            <li><a href="#contact" data-de="Kontaktformular" data-en="Contact Form">Contact Form</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p data-de="© 2024 Manuel Weiss. Alle Rechte vorbehalten." data-en="© 2024 Manuel Weiss. All rights reserved.">© 2024 Manuel Weiss. All rights reserved.</p>
+                <div class="footer-social">
+                    <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="../script.js"></script>
+    <script src="../js/method-loader.js"></script>
+    <script src="../js/persoenlichkeitsentwicklung-methods.js"></script>
+    <script src="../js/personality-methods-multilingual.js"></script>
+    <script src="../js/simple-translation.js"></script>
+    
+    <!-- Initialize Language Switcher -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.lang-link-compact[data-lang]').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const lang = this.getAttribute('data-lang');
+                    if (window.simpleTranslation) {
+                        if (typeof window.simpleTranslation.switchLanguage === 'function') {
+                            window.simpleTranslation.switchLanguage(lang);
+                        } else {
+                            window.simpleTranslation.setLanguage(lang);
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+    
+    <!-- AWS Auth System -->
+    <script>
+        window.AWS_CONFIG = {
+            userPoolId: 'eu-central-1_8gP4gLK9r',
+            clientId: '7kc5tt6a23fgh53d60vkefm812',
+            region: 'eu-central-1',
+            apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod',
+            dynamoDB: {
+                tableName: 'mawps-user-profiles',
+                region: 'eu-central-1'
+            },
+            s3: {
+                bucket: 'mawps-user-files-1760106396',
+                region: 'eu-central-1'
+            }
+        };
+        
+        if (typeof AWS !== 'undefined') {
+            AWS.config.update({
+                region: window.AWS_CONFIG.region
+            });
+            
+            window.AWS_COGNITO_CONFIG = {
+                UserPoolId: window.AWS_CONFIG.userPoolId,
+                ClientId: window.AWS_CONFIG.clientId
+            };
+            
+            console.log('AWS Configuration loaded');
+        }
+    </script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js" 
+            onerror="console.error('Error loading AWS SDK');"></script>
+    <script src="../js/real-user-auth-system.js?v=20250116" 
+            onerror="console.error('Error loading real-user-auth-system.js');"></script>
+</body>
+</html>
+
