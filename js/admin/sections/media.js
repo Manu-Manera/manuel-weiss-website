@@ -129,8 +129,54 @@ class MediaSection {
      */
     async loadMediaItems() {
         try {
-            // Mock data - in real implementation, load from API
-            this.mediaItems = [
+            this.mediaItems = [];
+            
+            // Service-Bilder aus localStorage laden
+            const serviceImages = JSON.parse(localStorage.getItem('website_service_images') || '[]');
+            serviceImages.forEach((img, index) => {
+                this.mediaItems.push({
+                    id: `service-${img.id || index}`,
+                    name: img.filename || 'service-image.jpg',
+                    type: 'image',
+                    category: 'services',
+                    size: img.size ? this.formatFileSize(img.size) : 'N/A',
+                    date: img.uploadedAt ? new Date(img.uploadedAt).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+                    url: img.url || img.imageData,
+                    thumbnail: img.url || img.imageData,
+                    isUploaded: img.isUploaded || false,
+                    originalData: img
+                });
+            });
+            
+            // Services aus localStorage laden (für Service-Bilder)
+            const services = JSON.parse(localStorage.getItem('website_services') || '[]');
+            services.forEach((service, index) => {
+                if (service.image) {
+                    // Prüfe ob bereits in serviceImages vorhanden
+                    const exists = this.mediaItems.some(item => 
+                        item.url === service.image || item.thumbnail === service.image
+                    );
+                    
+                    if (!exists) {
+                        this.mediaItems.push({
+                            id: `service-from-service-${service.id || index}`,
+                            name: `${service.name} - Bild`,
+                            type: 'image',
+                            category: 'services',
+                            size: 'N/A',
+                            date: service.createdAt ? new Date(service.createdAt).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+                            url: service.image,
+                            thumbnail: service.image,
+                            isUploaded: service.image.startsWith('http'),
+                            serviceName: service.name,
+                            originalData: service
+                        });
+                    }
+                }
+            });
+            
+            // Mock data für andere Kategorien (kann später durch echte Daten ersetzt werden)
+            this.mediaItems.push(
                 {
                     id: 1,
                     name: 'profilbild.jpg',
@@ -161,7 +207,7 @@ class MediaSection {
                     url: '/images/portfolio-projekt1.jpg',
                     thumbnail: '/images/thumbnails/portfolio-projekt1.jpg'
                 }
-            ];
+            );
             
             // Category Counts aktualisieren
             this.updateCategoryCounts();
@@ -178,7 +224,7 @@ class MediaSection {
      * Category Counts aktualisieren
      */
     updateCategoryCounts() {
-        const categories = ['profile', 'application', 'portfolio', 'documents', 'gallery', 'videos'];
+        const categories = ['profile', 'application', 'portfolio', 'documents', 'gallery', 'services', 'videos'];
         
         categories.forEach(category => {
             const count = this.mediaItems.filter(item => item.category === category).length;
@@ -244,6 +290,8 @@ class MediaSection {
                         <div class="media-info" style="padding: 0.75rem;">
                             <h4 style="margin: 0 0 0.25rem 0; font-size: 0.9rem; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${item.name}</h4>
                             <p style="margin: 0; font-size: 0.8rem; color: #64748b;">${item.size} • ${this.formatDate(item.date)}</p>
+                            ${item.isUploaded ? '<span style="font-size: 0.7rem; color: #10b981; margin-top: 0.25rem; display: block;">☁️ AWS S3</span>' : ''}
+                            ${item.serviceName ? `<p style="margin: 0.25rem 0 0 0; font-size: 0.75rem; color: #6366f1;">Service: ${item.serviceName}</p>` : ''}
                         </div>
                     </div>
                 `).join('')}
@@ -402,7 +450,14 @@ class MediaSection {
      * Einzelne Datei hochladen
      */
     async uploadFile(file, current, total) {
-        // Mock upload - in real implementation, upload to server
+        console.log(`📤 Uploading file ${current}/${total}: ${file.name} to category: ${this.currentCategory}`);
+        
+        // Spezielle Behandlung für Service-Bilder (wie Profilbild)
+        if (this.currentCategory === 'services' && file.type.startsWith('image/')) {
+            return await this.uploadServiceImage(file, current, total);
+        }
+        
+        // Standard-Upload für andere Kategorien
         return new Promise((resolve) => {
             setTimeout(() => {
                 const newItem = {
@@ -419,6 +474,107 @@ class MediaSection {
                 this.mediaItems.push(newItem);
                 resolve();
             }, 1000);
+        });
+    }
+    
+    /**
+     * Service-Bild hochladen (wie Profilbild)
+     */
+    async uploadServiceImage(file, current, total) {
+        try {
+            console.log('📸 Service-Bild-Upload gestartet:', file.name, file.type, `${(file.size / 1024).toFixed(2)} KB`);
+            
+            // Validierung
+            const maxSize = 5 * 1024 * 1024; // 5MB
+            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/svg+xml'];
+            
+            if (file.size > maxSize) {
+                throw new Error('Datei ist zu groß (max. 5MB)');
+            }
+            
+            if (!allowedTypes.includes(file.type)) {
+                throw new Error('Nicht unterstütztes Dateiformat. Bitte verwenden Sie JPG, PNG, WebP oder SVG.');
+            }
+            
+            // Base64 für sofortige Vorschau
+            let base64Preview = null;
+            try {
+                base64Preview = await this.fileToBase64(file);
+            } catch (error) {
+                console.error('❌ Fehler bei Base64-Konvertierung:', error);
+            }
+            
+            // Upload zu AWS S3 (wie Profilbild)
+            let uploadedUrl = null;
+            try {
+                if (window.awsMedia && window.AWS_APP_CONFIG?.MEDIA_API_BASE) {
+                    console.log('📤 Upload zu AWS S3...');
+                    const userId = 'owner';
+                    const result = await window.awsMedia.uploadProfileImage(file, userId);
+                    
+                    if (result && result.publicUrl) {
+                        uploadedUrl = result.publicUrl;
+                        console.log('✅ S3 Upload erfolgreich:', uploadedUrl);
+                    }
+                }
+            } catch (error) {
+                console.warn('⚠️ AWS Upload fehlgeschlagen, verwende Base64 Fallback:', error);
+            }
+            
+            // Finale Quelle: S3 URL oder Base64
+            const finalSrc = uploadedUrl || base64Preview;
+            if (!finalSrc) {
+                throw new Error('Keine Bildquelle verfügbar');
+            }
+            
+            // Speichere in localStorage
+            const serviceImageKey = `service_image_${Date.now()}`;
+            localStorage.setItem(serviceImageKey, finalSrc);
+            
+            // Speichere auch in globalem Service-Images-Array
+            let serviceImages = JSON.parse(localStorage.getItem('website_service_images') || '[]');
+            serviceImages.push({
+                id: Date.now(),
+                url: finalSrc,
+                imageData: finalSrc,
+                filename: file.name,
+                uploadedAt: new Date().toISOString(),
+                isUploaded: !!uploadedUrl
+            });
+            localStorage.setItem('website_service_images', JSON.stringify(serviceImages));
+            
+            // Media Item hinzufügen
+            const newItem = {
+                id: `service-${Date.now()}`,
+                name: file.name,
+                type: 'image',
+                category: 'services',
+                size: this.formatFileSize(file.size),
+                date: new Date().toISOString().split('T')[0],
+                url: finalSrc,
+                thumbnail: finalSrc,
+                isUploaded: !!uploadedUrl
+            };
+            
+            this.mediaItems.push(newItem);
+            console.log('✅ Service-Bild erfolgreich hochgeladen und gespeichert');
+            
+            return newItem;
+        } catch (error) {
+            console.error('❌ Service-Bild-Upload Fehler:', error);
+            throw error;
+        }
+    }
+    
+    /**
+     * Datei zu Base64 konvertieren
+     */
+    fileToBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
         });
     }
     
