@@ -1435,14 +1435,13 @@
     display: flex;
     gap: 1rem;
     align-items: center;
-    margin-top: auto; /* Drückt Buttons immer nach unten */
+    margin-top: auto; /* Drückt Buttons immer nach unten - WICHTIG für gleiche Höhe */
     padding-top: 1.5rem;
     border-top: 1px solid rgba(99, 102, 241, 0.1);
     justify-content: center;
     flex-wrap: wrap;
-    /* Feste Höhe für Buttons-Bereich - WICHTIG für gleiche Höhe */
-    min-height: 70px;
-    max-height: 70px;
+    /* Feste Höhe für Buttons-Bereich - WICHTIG für gleiche Höhe über alle Karten */
+    height: 70px; /* Feste Höhe statt min/max */
     flex-shrink: 0;
     overflow: hidden; /* Verhindert Überlauf */
     width: 100%; /* Verhindert Überlauf */
