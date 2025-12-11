@@ -1181,12 +1181,12 @@
     position: relative;
     overflow: hidden;
     height: 100%;
-    min-height: auto; /* Entfernt: 650px war zu groß */
-    max-height: none;
     display: flex;
     flex-direction: column;
     cursor: pointer;
     backdrop-filter: blur(10px);
+    /* Gleiche Höhe für alle Karten */
+    min-height: 520px;
 }
 
 .method-card::before {
@@ -1220,9 +1220,10 @@
     display: flex;
     align-items: flex-start;
     gap: 1.5rem;
-    margin-bottom: 1.25rem; /* Reduziert von 2rem */
-    flex-grow: 0; /* Geändert von 1 */
-    min-height: auto; /* Entfernt: 120px */
+    margin-bottom: 1rem;
+    flex-shrink: 0;
+    /* Feste Höhe für Header-Bereich */
+    min-height: 100px;
 }
 
 .method-title {
@@ -1241,50 +1242,51 @@
 }
 
 .method-icon {
-    width: 80px;
-    height: 80px;
-    border-radius: 20px;
+    width: 70px;
+    height: 70px;
+    border-radius: 18px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2rem;
+    font-size: 1.8rem;
     color: white;
     flex-shrink: 0;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
     transition: all 0.3s ease;
 }
 
+/* Method Icons - Optimierte Farben und passende Icons */
 .method-icon.ikigai { background: linear-gradient(135deg, #ff6b6b, #ee5a24); }
-.method-icon.values { background: linear-gradient(135deg, #a8e6cf, #7fcdcd); }
-.method-icon.strengths { background: linear-gradient(135deg, #ffd93d, #ff6b6b); }
-.method-icon.goals { background: linear-gradient(135deg, #74b9ff, #0984e3); }
+.method-icon.values-clarification { background: linear-gradient(135deg, #f093fb, #f5576c); }
+.method-icon.strengths-finder { background: linear-gradient(135deg, #ffd93d, #ff6b6b); }
+.method-icon.goal-setting { background: linear-gradient(135deg, #74b9ff, #0984e3); }
 .method-icon.mindfulness { background: linear-gradient(135deg, #a29bfe, #6c5ce7); }
-.method-icon.eq { background: linear-gradient(135deg, #fd79a8, #e84393); }
-.method-icon.habits { background: linear-gradient(135deg, #fdcb6e, #e17055); }
+.method-icon.emotional-intelligence { background: linear-gradient(135deg, #fd79a8, #e84393); }
+.method-icon.habit-building { background: linear-gradient(135deg, #fdcb6e, #e17055); }
 .method-icon.communication { background: linear-gradient(135deg, #81ecec, #00b894); }
-.method-icon.time { background: linear-gradient(135deg, #ffeaa7, #fdcb6e); }
-.method-icon.gallup { background: linear-gradient(135deg, #74b9ff, #0984e3); }
-.method-icon.via { background: linear-gradient(135deg, #a29bfe, #6c5ce7); }
-.method-icon.self { background: linear-gradient(135deg, #fd79a8, #e84393); }
-.method-icon.nlp { background: linear-gradient(135deg, #81ecec, #00b894); }
-.method-icon.johari { background: linear-gradient(135deg, #ffeaa7, #fdcb6e); }
-.method-icon.walt { background: linear-gradient(135deg, #ff7675, #d63031); }
-.method-icon.nonviolent { background: linear-gradient(135deg, #a8e6cf, #00b894); }
-.method-icon.pillars { background: linear-gradient(135deg, #74b9ff, #0984e3); }
-.method-icon.meta { background: linear-gradient(135deg, #a29bfe, #6c5ce7); }
-.method-icon.aek { background: linear-gradient(135deg, #fd79a8, #e84393); }
-.method-icon.rubikon { background: linear-gradient(135deg, #81ecec, #00b894); }
-.method-icon.systemic { background: linear-gradient(135deg, #ffeaa7, #fdcb6e); }
-.method-icon.rafael { background: linear-gradient(135deg, #ff7675, #d63031); }
-.method-icon.conflict { background: linear-gradient(135deg, #a8e6cf, #00b894); }
-.method-icon.harvard { background: linear-gradient(135deg, #74b9ff, #0984e3); }
-.method-icon.circular { background: linear-gradient(135deg, #a29bfe, #6c5ce7); }
-.method-icon.target { background: linear-gradient(135deg, #fd79a8, #e84393); }
-.method-icon.solution { background: linear-gradient(135deg, #81ecec, #00b894); }
-.method-icon.change { background: linear-gradient(135deg, #ffeaa7, #fdcb6e); }
-.method-icon.competence { background: linear-gradient(135deg, #ff7675, #d63031); }
-.method-icon.moment { background: linear-gradient(135deg, #a8e6cf, #00b894); }
-.method-icon.resource { background: linear-gradient(135deg, #74b9ff, #0984e3); }
+.method-icon.time-management { background: linear-gradient(135deg, #ffeaa7, #fdcb6e); }
+.method-icon.gallup-strengths { background: linear-gradient(135deg, #74b9ff, #0984e3); }
+.method-icon.via-strengths { background: linear-gradient(135deg, #a29bfe, #6c5ce7); }
+.method-icon.self-assessment { background: linear-gradient(135deg, #fd79a8, #e84393); }
+.method-icon.nlp-dilts { background: linear-gradient(135deg, #81ecec, #00b894); }
+.method-icon.johari-window { background: linear-gradient(135deg, #ffeaa7, #fdcb6e); }
+.method-icon.walt-disney { background: linear-gradient(135deg, #ff7675, #d63031); }
+.method-icon.nonviolent-communication { background: linear-gradient(135deg, #a8e6cf, #00b894); }
+.method-icon.five-pillars { background: linear-gradient(135deg, #74b9ff, #0984e3); }
+.method-icon.nlp-meta-goal { background: linear-gradient(135deg, #a29bfe, #6c5ce7); }
+.method-icon.aek-communication { background: linear-gradient(135deg, #fd79a8, #e84393); }
+.method-icon.rubikon-model { background: linear-gradient(135deg, #81ecec, #00b894); }
+.method-icon.systemic-coaching { background: linear-gradient(135deg, #ffeaa7, #fdcb6e); }
+.method-icon.rafael-method { background: linear-gradient(135deg, #ff7675, #d63031); }
+.method-icon.conflict-escalation { background: linear-gradient(135deg, #a8e6cf, #00b894); }
+.method-icon.harvard-method { background: linear-gradient(135deg, #74b9ff, #0984e3); }
+.method-icon.circular-interview { background: linear-gradient(135deg, #a29bfe, #6c5ce7); }
+.method-icon.target-coaching { background: linear-gradient(135deg, #fd79a8, #e84393); }
+.method-icon.solution-focused { background: linear-gradient(135deg, #81ecec, #00b894); }
+.method-icon.change-stages { background: linear-gradient(135deg, #ffeaa7, #fdcb6e); }
+.method-icon.competence-map { background: linear-gradient(135deg, #ff7675, #d63031); }
+.method-icon.moment-excellence { background: linear-gradient(135deg, #a8e6cf, #00b894); }
+.method-icon.resource-analysis { background: linear-gradient(135deg, #74b9ff, #0984e3); }
 .method-icon.raisec { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
 .method-icon.therapy-form-finder { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
 
@@ -1302,25 +1304,32 @@
 
 .method-info p {
     color: #64748b;
-    font-size: 1rem;
-    line-height: 1.7;
-    margin: 0 0 1rem 0; /* Reduziert von 1.5rem */
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin: 0 0 1rem 0;
     font-weight: 400;
-    min-height: auto;
-    display: block;
-    overflow: visible;
+    /* Text-Overflow: Maximal 4 Zeilen */
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-height: 6.4rem; /* 4 Zeilen * 1.6 line-height * 1rem font-size */
+    max-height: 6.4rem;
 }
 
 .method-tags {
     display: flex;
     flex-wrap: wrap;
     gap: 0.8rem;
-    margin: 1.25rem 0; /* Reduziert von 2rem 0 2.5rem 0 */
-    padding: 1rem 0; /* Reduziert von 1.5rem 0 */
+    margin: 1rem 0;
+    padding: 1rem 0;
     border-top: 1px solid #f1f5f9;
-    min-height: auto; /* Entfernt: 100px */
     align-items: flex-start;
     justify-content: flex-start;
+    /* Feste Höhe für Tags-Bereich */
+    min-height: 60px;
+    flex-shrink: 0;
 }
 
 .method-tag {
@@ -1344,17 +1353,19 @@
 
 .method-stats {
     display: flex;
-    gap: 1rem; /* Reduziert von 1.5rem */
-    margin: 1.25rem 0; /* Reduziert von 2rem 0 2.5rem 0 */
-    padding: 1.25rem; /* Reduziert von 1.5rem */
+    gap: 1rem;
+    margin: 1rem 0;
+    padding: 1.25rem;
     background: linear-gradient(135deg, #f8fafc, #e2e8f0);
     border-radius: 16px;
     border: 1px solid rgba(99, 102, 241, 0.1);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    min-height: auto; /* Entfernt: 140px */
     align-items: center;
     flex-wrap: wrap;
     justify-content: space-around;
+    /* Feste Höhe für Stats-Bereich */
+    min-height: 100px;
+    flex-shrink: 0;
 }
 
 .stat-item {
@@ -1399,12 +1410,14 @@
     display: flex;
     gap: 1rem;
     align-items: center;
-    margin-top: auto;
-    padding-top: 1.5rem; /* Reduziert von 2rem */
+    margin-top: auto; /* Drückt Buttons immer nach unten */
+    padding-top: 1.5rem;
     border-top: 1px solid rgba(99, 102, 241, 0.1);
-    min-height: auto; /* Entfernt: 90px */
     justify-content: center;
     flex-wrap: wrap;
+    /* Feste Höhe für Buttons-Bereich */
+    min-height: 70px;
+    flex-shrink: 0;
 }
 
 .btn {
@@ -1523,14 +1536,37 @@
     
     .methods-grid {
         grid-template-columns: 1fr;
-        gap: 1.5rem; /* Reduziert von 2.5rem */
+        gap: 1.5rem;
         padding: 0 1rem;
-        margin: 2rem 0; /* Reduziert von 3rem 0 */
+        margin: 2rem 0;
     }
     
     .method-card {
-        margin-bottom: 1rem; /* Reduziert von 1.5rem */
-        padding: 1.5rem; /* Reduziert von 2rem */
+        margin-bottom: 1rem;
+        padding: 1.5rem;
+        min-height: auto; /* Auf Mobile keine feste Höhe */
+    }
+    
+    .method-info p {
+        -webkit-line-clamp: 3; /* Auf Mobile nur 3 Zeilen */
+        min-height: 4.8rem;
+        max-height: 4.8rem;
+    }
+    
+    .method-header {
+        min-height: auto;
+    }
+    
+    .method-tags {
+        min-height: auto;
+    }
+    
+    .method-stats {
+        min-height: auto;
+    }
+    
+    .method-action {
+        min-height: auto;
     }
     
     .method-title {
