@@ -219,26 +219,43 @@ class DocumentUpload {
     }
     
     async uploadFileToS3(file, type) {
-        // Use unified upload system if available
-        if (window.unifiedFileUpload && window.unifiedFileUpload.upload) {
+        // Verwende Smart Media Upload (Priorität)
+        if (window.smartMediaUpload) {
             try {
-            return await window.unifiedFileUpload.upload(file, {
-                type: type,
-                onProgress: (percent, fileName) => {
-                    console.log(`Upload Progress: ${percent}% - ${fileName}`);
-                },
-                onError: (error, file) => {
-                    console.error(`Upload Error für ${file?.name}:`, error);
-                }
-            });
+                const categoryMap = {
+                    'cv': 'cv',
+                    'certificates': 'certificate',
+                    'portfolio': 'document',
+                    'photo': 'profile'
+                };
+                
+                const category = categoryMap[type] || 'document';
+                const result = await window.smartMediaUpload.upload(file, {
+                    category: category,
+                    userId: this.getUserId(),
+                    onProgress: (progress) => {
+                        console.log(`Upload Progress: ${progress}% - ${file.name}`);
+                    }
+                });
+                
+                // Konvertiere zu erwartetem Format
+                return {
+                    publicUrl: result.url,
+                    key: result.id || Date.now().toString(),
+                    bucket: result.s3Url ? 's3' : 'local-storage',
+                    region: result.s3Url ? 'eu-central-1' : 'local',
+                    fileType: type,
+                    fileName: file.name,
+                    size: file.size,
+                    storage: result.uploadMethod === 'AWS S3' ? 's3' : 'local'
+                };
             } catch (error) {
-                // If unified upload fails, try fallback
-                console.warn('Unified upload failed, trying fallback:', error);
+                console.warn('Smart Media Upload fehlgeschlagen, verwende Fallback:', error);
                 return await this.uploadFileToS3Fallback(file, type, error);
             }
         }
         
-        // Fallback to direct AWS Media upload
+        // Fallback: Alte Methode
         return await this.uploadFileToS3Fallback(file, type);
     }
     
@@ -715,13 +732,13 @@ class DocumentUpload {
             
             // Fallback: Versuche von applicationsCore zu laden (falls vorhanden)
             if (this.applicationsCore) {
-                const existingDocuments = this.applicationsCore.getDocumentData();
+        const existingDocuments = this.applicationsCore.getDocumentData();
                 if (existingDocuments && existingDocuments.length > 0) {
-                    const latestDocument = existingDocuments[existingDocuments.length - 1];
-                    if (latestDocument && latestDocument.files) {
-                        this.uploadedFiles = latestDocument.files;
-                        this.renderExistingFiles();
-                        this.updateSummary();
+        const latestDocument = existingDocuments[existingDocuments.length - 1];
+        if (latestDocument && latestDocument.files) {
+            this.uploadedFiles = latestDocument.files;
+            this.renderExistingFiles();
+            this.updateSummary();
                         console.log('✅ Dokumente von applicationsCore geladen (Fallback)');
                     }
                 }
