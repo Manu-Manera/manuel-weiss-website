@@ -206,7 +206,7 @@ class ContentSection {
     }
 
     /**
-     * Service-Bild-Upload behandeln (wie Profilbild)
+     * Service-Bild-Upload behandeln - verwendet Smart Media Upload
      */
     async handleServiceImageUpload(event) {
         const file = event?.target?.files?.[0];
@@ -217,6 +217,46 @@ class ContentSection {
 
         console.log('📸 Service-Bild-Upload gestartet:', file.name, file.type, `${(file.size / 1024).toFixed(2)} KB`);
 
+        try {
+            // Verwende Smart Media Upload
+            if (window.smartMediaUpload) {
+                const result = await window.smartMediaUpload.upload(file, {
+                    category: 'service',
+                    userId: 'owner',
+                    onProgress: (progress) => {
+                        console.log(`📤 Upload Progress: ${progress}%`);
+                    },
+                    onSuccess: (data) => {
+                        this.currentServiceImage = data.url;
+                        this.showServiceImagePreview(data.url);
+                        if (data.uploadMethod === 'AWS S3') {
+                            this.showMessage('Bild erfolgreich auf AWS S3 hochgeladen!', 'success');
+                        } else {
+                            this.showMessage('Bild lokal gespeichert (AWS Upload fehlgeschlagen)', 'warning');
+                        }
+                    },
+                    onError: (error) => {
+                        console.error('❌ Upload Fehler:', error);
+                        this.showMessage('Fehler beim Hochladen: ' + error.message, 'error');
+                    }
+                });
+            } else {
+                // Fallback: Alte Methode
+                console.warn('⚠️ Smart Media Upload nicht verfügbar, verwende Fallback');
+                await this.handleServiceImageUploadFallback(event);
+            }
+        } catch (error) {
+            console.error('❌ Service-Bild-Upload Fehler:', error);
+            this.showMessage('Fehler beim Hochladen: ' + error.message, 'error');
+        }
+    }
+    
+    /**
+     * Fallback-Upload-Methode
+     */
+    async handleServiceImageUploadFallback(event) {
+        const file = event?.target?.files?.[0];
+        
         // Validierung
         if (!this.validateImageFile(file)) {
             return;
@@ -231,17 +271,15 @@ class ContentSection {
             console.error('❌ Fehler bei Base64-Konvertierung:', error);
         }
 
-        // Upload zu AWS S3 (wie Profilbild)
+        // Upload zu AWS S3
         let uploadedUrl = null;
         try {
             if (window.awsMedia && window.AWS_APP_CONFIG?.MEDIA_API_BASE) {
-                console.log('📤 Upload zu AWS S3...');
                 const userId = 'owner';
                 const result = await window.awsMedia.uploadProfileImage(file, userId);
                 
                 if (result && result.publicUrl) {
                     uploadedUrl = result.publicUrl;
-                    console.log('✅ S3 Upload erfolgreich:', uploadedUrl);
                     this.showMessage('Bild erfolgreich auf AWS S3 hochgeladen!', 'success');
                 }
             }
@@ -253,9 +291,7 @@ class ContentSection {
         // Finale Quelle: S3 URL oder Base64
         const finalSrc = uploadedUrl || base64Preview;
         if (finalSrc) {
-            // Speichere in localStorage für Vorschau
             this.currentServiceImage = finalSrc;
-            console.log('💾 Service-Bild gespeichert (Vorschau)');
         }
     }
 
@@ -321,73 +357,87 @@ class ContentSection {
     }
 
     /**
-     * Service-Bild hochladen (wird von createService aufgerufen)
+     * Service-Bild hochladen - verwendet Smart Media Upload
      */
     async uploadImage(file) {
         try {
             console.log('📸 Service-Bild-Upload:', file.name, file.type, `${(file.size / 1024).toFixed(2)} KB`);
 
-            // Validierung
-            if (!this.validateImageFile(file)) {
-                return null;
+            // Verwende Smart Media Upload
+            if (window.smartMediaUpload) {
+                const result = await window.smartMediaUpload.upload(file, {
+                    category: 'service',
+                    userId: 'owner'
+                });
+                
+                console.log('✅ Service-Bild erfolgreich hochgeladen:', result);
+                return result.url;
+            } else {
+                // Fallback: Alte Methode
+                console.warn('⚠️ Smart Media Upload nicht verfügbar, verwende Fallback');
+                return await this.uploadImageFallback(file);
             }
-
-            // 1) Base64 für sofortige Vorschau
-            let base64Preview = null;
-            try {
-                base64Preview = await this.fileToBase64(file);
-            } catch (error) {
-                console.error('❌ Fehler bei Base64-Konvertierung:', error);
-            }
-
-            // 2) Upload zu AWS S3 (wie Profilbild)
-            let uploadedUrl = null;
-            try {
-                if (window.awsMedia && window.AWS_APP_CONFIG?.MEDIA_API_BASE) {
-                    console.log('📤 Upload zu AWS S3...');
-                    const userId = 'owner';
-                    const result = await window.awsMedia.uploadProfileImage(file, userId);
-                    
-                    if (result && result.publicUrl) {
-                        uploadedUrl = result.publicUrl;
-                        console.log('✅ S3 Upload erfolgreich:', uploadedUrl);
-                    }
-                }
-            } catch (error) {
-                console.warn('⚠️ AWS Upload fehlgeschlagen, verwende Base64 Fallback:', error);
-            }
-
-            // 3) Finale Quelle: S3 URL oder Base64
-            const finalSrc = uploadedUrl || base64Preview;
-            if (!finalSrc) {
-                console.error('❌ Keine Bildquelle verfügbar');
-                return null;
-            }
-
-            // 4) Speichere in localStorage für Website-Anzeige
-            const serviceImageKey = `service_image_${Date.now()}`;
-            localStorage.setItem(serviceImageKey, finalSrc);
-            console.log('💾 Service-Bild in localStorage gespeichert:', serviceImageKey);
-
-            // 5) Speichere auch in globalem Service-Images-Array
-            let serviceImages = JSON.parse(localStorage.getItem('website_service_images') || '[]');
-            serviceImages.push({
-                id: Date.now(),
-                url: finalSrc,
-                imageData: finalSrc,
-                filename: file.name,
-                uploadedAt: new Date().toISOString(),
-                isUploaded: !!uploadedUrl
-            });
-            localStorage.setItem('website_service_images', JSON.stringify(serviceImages));
-            console.log('💾 Service-Bild zu globalem Array hinzugefügt');
-
-            return finalSrc;
         } catch (error) {
             console.error('❌ Content: Error uploading image:', error);
             this.showMessage('Fehler beim Hochladen des Bildes: ' + error.message, 'error');
             return null;
         }
+    }
+    
+    /**
+     * Fallback-Upload-Methode (alte Implementierung)
+     */
+    async uploadImageFallback(file) {
+        // Validierung
+        if (!this.validateImageFile(file)) {
+            return null;
+        }
+
+        // Base64 für sofortige Vorschau
+        let base64Preview = null;
+        try {
+            base64Preview = await this.fileToBase64(file);
+        } catch (error) {
+            console.error('❌ Fehler bei Base64-Konvertierung:', error);
+        }
+
+        // Upload zu AWS S3
+        let uploadedUrl = null;
+        try {
+            if (window.awsMedia && window.AWS_APP_CONFIG?.MEDIA_API_BASE) {
+                console.log('📤 Upload zu AWS S3...');
+                const userId = 'owner';
+                const result = await window.awsMedia.uploadProfileImage(file, userId);
+                
+                if (result && result.publicUrl) {
+                    uploadedUrl = result.publicUrl;
+                    console.log('✅ S3 Upload erfolgreich:', uploadedUrl);
+                }
+            }
+        } catch (error) {
+            console.warn('⚠️ AWS Upload fehlgeschlagen, verwende Base64 Fallback:', error);
+        }
+
+        // Finale Quelle: S3 URL oder Base64
+        const finalSrc = uploadedUrl || base64Preview;
+        if (!finalSrc) {
+            console.error('❌ Keine Bildquelle verfügbar');
+            return null;
+        }
+
+        // Speichere in localStorage
+        let serviceImages = JSON.parse(localStorage.getItem('website_service_images') || '[]');
+        serviceImages.push({
+            id: Date.now(),
+            url: finalSrc,
+            imageData: finalSrc,
+            filename: file.name,
+            uploadedAt: new Date().toISOString(),
+            isUploaded: !!uploadedUrl
+        });
+        localStorage.setItem('website_service_images', JSON.stringify(serviceImages));
+
+        return finalSrc;
     }
 
     async saveServices() {
