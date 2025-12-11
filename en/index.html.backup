@@ -1,0 +1,1926 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Manuel Weiss - HR Berater für AI & Transformation</title>
+    
+    <!-- Meta Tags -->
+    <meta name="description" content="Manuel Weiss - HR Berater für AI, Transformation und Geschäftsprozesse. Professionelle Dienstleistungen und innovative Lösungen.">
+    <meta name="keywords" content="HR Berater, AI, Transformation, Geschäftsprozesse, Digitalisierung, Personalwesen">
+    <meta name="author" content="Manuel Weiss">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="Manuel Weiss - Professional Services">
+    <meta property="og:description" content="HR Berater für AI, Transformation und Geschäftsprozesse">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://mawps.netlify.app">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/persoenlichkeitsentwicklung-uebersicht.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="manuel-weiss-portrait.jpg" alt="MW" class="nav-logo">
+                <span class="nav-name">Manuel Weiss</span>
+            </div>
+            
+            <!-- Mobile Menu Toggle -->
+            <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Menü öffnen" data-de="Menü öffnen" data-en="Open Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            
+            <!-- Mobile Menu Overlay -->
+            <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
+            
+            <!-- Mobile Menu -->
+            <div class="mobile-menu" id="mobileMenu">
+                <a href="#home" class="nav-link active" data-de="Start" data-en="Home">Start</a>
+                <a href="#services" class="nav-link" data-de="Services" data-en="Services">Services</a>
+                <a href="#about" class="nav-link" data-de="Über mich" data-en="About">Über mich</a>
+                <a href="#contact" class="nav-link" data-de="Kontakt" data-en="Contact">Kontakt</a>
+                
+                <!-- Language Switcher Mobile - Kompakt -->
+                <div class="language-switcher-compact mobile-language-switcher" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255, 255, 255, 0.2);">
+                    <button class="lang-link-compact" data-lang="de" title="Deutsch">🇩🇪</button>
+                    <button class="lang-link-compact" data-lang="en" title="English">🇬🇧</button>
+                </div>
+                
+                <!-- Auth Section Mobile -->
+                <div class="auth-section" id="mobileAuthSection"></div>
+            </div>
+            
+            <div class="nav-menu" id="navMenu">
+                <a href="#home" class="nav-link active" data-de="Start" data-en="Home">Start</a>
+                <a href="#services" class="nav-link" data-de="Services" data-en="Services">Services</a>
+                <a href="#about" class="nav-link" data-de="Über mich" data-en="About">Über mich</a>
+                <a href="#contact" class="nav-link" data-de="Kontakt" data-en="Contact">Kontakt</a>
+                
+                <!-- Language Switcher - Kompakt -->
+                <div class="language-switcher-compact">
+                    <button class="lang-link-compact" data-lang="de" title="Deutsch">🇩🇪</button>
+                    <button class="lang-link-compact" data-lang="en" title="English">🇬🇧</button>
+                </div>
+                
+                <!-- Auth Buttons -->
+                <div class="auth-section">
+                    <div class="nav-user" id="navUser">
+                        <button id="realAuthButton" class="nav-login-btn">
+                            <i class="fas fa-user"></i>
+                            <span data-de="Anmelden" data-en="Login">Anmelden</span>
+                        </button>
+                        
+                        <!-- User Dropdown Menu -->
+                        <div class="user-dropdown" id="userDropdown" style="display: none;">
+                            <div class="user-dropdown-header">
+                                <div class="user-avatar-small">
+                                    <img id="userAvatarImg" src="manuel-weiss-portrait.jpg" alt="User" class="user-avatar-img">
+                                </div>
+                                <div class="user-info-small">
+                                    <div class="user-name-small" id="userName">Benutzer</div>
+                                    <div class="user-email-small" id="userEmail"></div>
+                                </div>
+                            </div>
+                            <div class="user-dropdown-content">
+                                <a href="#" class="user-dropdown-item" onclick="openProfile(); return false;">
+                                    <i class="fas fa-user-circle"></i>
+                                    <span>Profil</span>
+                                </a>
+                                <a href="#" class="user-dropdown-item" onclick="openSettings(); return false;">
+                                    <i class="fas fa-cog"></i>
+                                    <span>Einstellungen</span>
+                                </a>
+                                <a href="#" class="user-dropdown-item" onclick="openProgress(); return false;">
+                                    <i class="fas fa-chart-line"></i>
+                                    <span>Fortschritt</span>
+                                </a>
+                                <div class="user-dropdown-divider"></div>
+                                <a href="#" class="user-dropdown-item logout" onclick="window.realUserAuth?.logout(); return false;">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    <span>Abmelden</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1 class="hero-title" id="hero-title">
+                    <span class="gradient-text">
+                        <span class="hero-title-line-1" data-de="Manuel Weiss" data-en="Manuel Weiss">Manuel Weiss</span>
+                        <br>
+                        <span class="hero-title-line-2" data-de="Professional Services" data-en="Professional Services">Professional Services</span>
+                    </span>
+                </h1>
+                <p class="hero-subtitle" id="hero-subtitle" data-de="Digitale Transformation voranzutreiben mit dem Wunsch im Herzen anderen die Arbeit zu erleichtern und echten, qualitativ hochwertigen Mehrwert für den Arbeitsalltag zu stiften. Mit Köpfchen, Herzblut und höchster Motivation." data-en="Driving digital transformation with the desire at heart to make work easier for others and to create real, high-quality added value for everyday work. With brains, heart, and highest motivation.">
+                    Digitale Transformation voranzutreiben mit dem Wunsch im Herzen anderen die Arbeit zu erleichtern und echten, qualitativ hochwertigen Mehrwert für den Arbeitsalltag zu stiften. Mit Köpfchen, Herzblut und höchster Motivation.
+                </p>
+                <div class="hero-actions">
+                    <a href="#services" class="btn btn-primary"><span data-de="Services entdecken" data-en="Discover Services">Services entdecken</span></a>
+                    <a href="#contact" class="btn btn-outline"><span data-de="Kontakt aufnehmen" data-en="Get in Touch">Kontakt aufnehmen</span></a>
+                </div>
+            </div>
+            <div class="hero-visual hero-about-visual">
+                <div class="about-image hero-about-image">
+                    <img src="manuel-weiss-portrait.jpg"
+                         alt="Manuel Weiss"
+                         class="profile-image dynamic-profile-image"
+                         id="profile-photo"
+                         onerror="handleProfileImageError(this);">
+                </div>
+                <div class="about-stats hero-about-stats">
+                    <div class="stat-card">
+                        <div class="stat-number" id="stat1-number">6+</div>
+                        <div class="stat-label" id="stat1-label" data-de="JAHRE IT PROJEKT ERFAHRUNG" data-en="YEARS IT PROJECT EXPERIENCE">JAHRE IT PROJEKT ERFAHRUNG</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="stat2-number">60+</div>
+                        <div class="stat-label" id="stat2-label" data-de="ERFOLGREICH IMPLEMENTIERTE PROJEKTE" data-en="SUCCESSFULLY IMPLEMENTED PROJECTS">ERFOLGREICH IMPLEMENTIERTE PROJEKTE</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="stat3-number">100%</div>
+                        <div class="stat-label" id="stat3-label" data-de="LERNKURVENEFFEKT ;)" data-en="LEARNING CURVE EFFECT ;)">LERNKURVENEFFEKT ;)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="services">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title" data-de="Meine Services" data-en="My Services">Meine Services</h2>
+                <p class="section-subtitle" data-de="Professionelle Beratung in den Bereichen HR, AI und Geschäftsprozesse" data-en="Professional consulting in the areas of HR, AI and business processes">
+                    Professionelle Beratung in den Bereichen HR, AI und Geschäftsprozesse
+                </p>
+            </div>
+            
+            <!-- Business Kontext -->
+            <div class="services-category">
+                <h3 class="services-category-title">
+                    <i class="fas fa-briefcase"></i>
+                    <span data-de="Business Kontext" data-en="Business Context">Business Kontext</span>
+                </h3>
+            <div class="services-grid">
+                <div class="service-card" onclick="window.location.href='ai-digitalisierung.html'">
+                    <div class="service-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3 data-de="AI & Digitalisierung" data-en="AI & Digitalization">AI & Digitalisierung</h3>
+                    <p data-de="Strategische Beratung für die Integration von KI in HR-Prozesse und Unternehmensabläufe." data-en="Strategic consulting for the integration of AI into HR processes and business workflows.">Strategische Beratung für die Integration von KI in HR-Prozesse und Unternehmensabläufe.</p>
+                    <ul class="service-features">
+                        <li data-de="KI-Strategieentwicklung" data-en="AI Strategy Development">KI-Strategieentwicklung</li>
+                        <li data-de="Prozessautomatisierung" data-en="Process Automation">Prozessautomatisierung</li>
+                        <li data-de="Digital Workplace" data-en="Digital Workplace">Digital Workplace</li>
+                    </ul>
+                    <div class="service-cta">
+                        <span class="cta-text" data-de="Mehr erfahren" data-en="Learn more">Mehr erfahren</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </div>
+                
+                <div class="service-card" onclick="window.location.href='hr-transformation.html'">
+                    <div class="service-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3 data-de="HR Transformation" data-en="HR Transformation">HR Transformation</h3>
+                    <p data-de="Moderne HR-Strukturen und -Prozesse für zukunftsfähige Unternehmen." data-en="Modern HR structures and processes for future-proof companies.">Moderne HR-Strukturen und -Prozesse für zukunftsfähige Unternehmen.</p>
+                    <ul class="service-features">
+                        <li data-de="HR-Strategie" data-en="HR Strategy">HR-Strategie</li>
+                        <li data-de="Organisationsentwicklung" data-en="Organizational Development">Organisationsentwicklung</li>
+                        <li data-de="Change Management" data-en="Change Management">Change Management</li>
+                    </ul>
+                    <div class="service-cta">
+                        <span class="cta-text" data-de="Mehr erfahren" data-en="Learn more">Mehr erfahren</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </div>
+                
+                <div class="service-card" onclick="window.location.href='hr-prozessautomatisierung.html'">
+                    <div class="service-icon">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <h3 data-de="HR-Prozessautomatisierung" data-en="HR Process Automation">HR-Prozessautomatisierung</h3>
+                    <p data-de="KI-gestützte Automatisierung von HR-Prozessen für maximale Effizienz und Employee Experience." data-en="AI-supported automation of HR processes for maximum efficiency and employee experience.">KI-gestützte Automatisierung von HR-Prozessen für maximale Effizienz und Employee Experience.</p>
+                    <ul class="service-features">
+                        <li data-de="RPA & KI-Integration" data-en="RPA & AI Integration">RPA & KI-Integration</li>
+                        <li data-de="HR-Self-Service" data-en="HR Self-Service">HR-Self-Service</li>
+                        <li data-de="Prozessoptimierung" data-en="Process Optimization">Prozessoptimierung</li>
+                    </ul>
+                    <div class="service-cta">
+                        <span class="cta-text" data-de="Mehr erfahren" data-en="Learn more">Mehr erfahren</span>
+                        <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                
+            <!-- Privater Kontext -->
+            <div class="services-category">
+                <h3 class="services-category-title">
+                    <i class="fas fa-user"></i>
+                    <span data-de="Privater Kontext" data-en="Private Context">Privater Kontext</span>
+                </h3>
+                <div class="services-grid">
+                <div class="service-card modern-highlight" onclick="window.location.href='persoenlichkeitsentwicklung-uebersicht.html'">
+                    <div class="service-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <div class="service-badge" data-de="🚀 NEU" data-en="🚀 NEW">🚀 NEU</div>
+                    <h3 data-de="Persönlichkeitsentwicklung" data-en="Personality Development">Persönlichkeitsentwicklung</h3>
+                    <p data-de="Umfassende Persönlichkeitsentwicklung mit 33+ wissenschaftlich fundierten Methoden und modernem Dashboard." data-en="Comprehensive personality development with 33+ scientifically founded methods and a modern dashboard.">Umfassende Persönlichkeitsentwicklung mit 33+ wissenschaftlich fundierten Methoden und modernem Dashboard.</p>
+                    <ul class="service-features">
+                        <li data-de="🧠 33+ Persönlichkeitsmethoden" data-en="🧠 33+ Personality Methods">🧠 33+ Persönlichkeitsmethoden</li>
+                        <li data-de="📊 Fortschritts-Tracking" data-en="📊 Progress Tracking">📊 Fortschritts-Tracking</li>
+                        <li data-de="🎯 Ziel-Management" data-en="🎯 Goal Management">🎯 Ziel-Management</li>
+                        <li data-de="📈 Achievement-System" data-en="📈 Achievement System">📈 Achievement-System</li>
+                    </ul>
+                    <a href="persoenlichkeitsentwicklung-uebersicht.html" class="btn btn-primary modern-btn">
+                        <i class="fas fa-rocket"></i>
+                        <span data-de="Tools Entdecken" data-en="Discover Tools">Tools Entdecken</span>
+                    </a>
+                </div>
+                
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3 data-de="Bewerbungsmanager" data-en="Application Manager">Bewerbungsmanager</h3>
+                    <p data-de="Automatisieren Sie Ihre Bewerbungen mit KI-Power. 90% Zeitersparnis durch intelligente Anschreiben-Generierung, Lebenslauf-Optimierung und Bewerbungs-Tracking." data-en="Automate your applications with AI power. 90% time savings through intelligent cover letter generation, resume optimization, and application tracking.">Automatisieren Sie Ihre Bewerbungen mit KI-Power. 90% Zeitersparnis durch intelligente Anschreiben-Generierung, Lebenslauf-Optimierung und Bewerbungs-Tracking.</p>
+                    <ul class="service-features">
+                        <li data-de="KI-Anschreiben-Generator" data-en="AI Cover Letter Generator">KI-Anschreiben-Generator</li>
+                        <li data-de="Lebenslauf-Optimierung" data-en="Resume Optimization">Lebenslauf-Optimierung</li>
+                        <li data-de="Bewerbungs-Tracking" data-en="Application Tracking">Bewerbungs-Tracking</li>
+                        <li data-de="Interview-Vorbereitung" data-en="Interview Preparation">Interview-Vorbereitung</li>
+                    </ul>
+                    <a href="applications/index.html" class="btn btn-primary"><span data-de="Jetzt starten" data-en="Start Now">Jetzt starten</span></a>
+                </div>
+                
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-dumbbell"></i>
+                    </div>
+                    <h3 data-de="Personal Training" data-en="Personal Training">Personal Training</h3>
+                    <p data-de="KI-gestützte Trainingspläne für Gym oder Home-Workout. Personalisierte Pläne mit Kalender-Integration und Fortschritts-Tracking." data-en="AI-supported training plans for gym or home workout. Personalized plans with calendar integration and progress tracking.">KI-gestützte Trainingspläne für Gym oder Home-Workout. Personalisierte Pläne mit Kalender-Integration und Fortschritts-Tracking.</p>
+                    <ul class="service-features">
+                        <li data-de="AI-Trainingsplan-Generator" data-en="AI Training Plan Generator">AI-Trainingsplan-Generator</li>
+                        <li data-de="Gym & Bodyweight-Optionen" data-en="Gym & Bodyweight Options">Gym & Bodyweight-Optionen</li>
+                        <li data-de="Kalender-Export (Google/Apple)" data-en="Calendar Export (Google/Apple)">Kalender-Export (Google/Apple)</li>
+                        <li data-de="Fortschritts-Tracking" data-en="Progress Tracking">Fortschritts-Tracking</li>
+                    </ul>
+                    <a href="personal-training.html" class="btn btn-primary"><span data-de="Trainingsplan erstellen" data-en="Create Training Plan">Trainingsplan erstellen</span></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Activities Section -->
+    <section class="activities">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title" data-de="Aktivitäten & Vermietungen" data-en="Activities & Rentals">Aktivitäten & Vermietungen</h2>
+                <p class="section-subtitle" data-de="Entdecke meine verschiedenen Angebote und Aktivitäten" data-en="Discover my various offers and activities">
+                    Entdecke meine verschiedenen Angebote und Aktivitäten
+                </p>
+            </div>
+            
+            <div class="activities-grid">
+                <a href="wohnmobil.html" class="activity-card">
+                    <div class="activity-image">
+                        <img src="images/wohnmobil/wohnmobil-exterior.jpg" alt="Wohnmobil">
+                    </div>
+                    <div class="activity-content">
+                        <h3 data-de="Wohnmobil" data-en="Motorhome">Wohnmobil</h3>
+                        <p data-de="Komfortable Reisen mit unserem modernen Wohnmobil" data-en="Comfortable travel with our modern motorhome">Komfortable Reisen mit unserem modernen Wohnmobil</p>
+                        <span class="activity-link" data-de="Mehr erfahren" data-en="Learn more">Mehr erfahren <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </a>
+                
+                <a href="fotobox.html" class="activity-card">
+                    <div class="activity-image">
+                        <img src="images/fotobox/fotobox-1.jpg" alt="Fotobox">
+                    </div>
+                    <div class="activity-content">
+                        <h3 data-de="Fotobox" data-en="Photo Booth">Fotobox</h3>
+                        <p data-de="Professionelle Fotobox für Events und Feiern" data-en="Professional photo booth for events and celebrations">Professionelle Fotobox für Events und Feiern</p>
+                        <span class="activity-link" data-de="Mehr erfahren" data-en="Learn more">Mehr erfahren <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </a>
+                
+                <a href="ebike.html" class="activity-card">
+                    <div class="activity-image">
+                        <img src="images/ebike/ebike-1.jpg" alt="E-Bikes" onerror="this.style.display='none'">
+                    </div>
+                    <div class="activity-content">
+                        <h3 data-de="E-Bikes" data-en="E-Bikes">E-Bikes</h3>
+                        <p data-de="Elektrofahrräder für umweltfreundliche Mobilität" data-en="Electric bicycles for eco-friendly mobility">Elektrofahrräder für umweltfreundliche Mobilität</p>
+                        <span class="activity-link" data-de="Mehr erfahren" data-en="Learn more">Mehr erfahren <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </a>
+                
+                <a href="sup.html" class="activity-card">
+                    <div class="activity-image">
+                        <img src="images/sup/sup-1.jpg" alt="SUP" onerror="this.style.display='none'">
+                    </div>
+                    <div class="activity-content">
+                        <h3 data-de="SUP" data-en="SUP">SUP</h3>
+                        <p data-de="Stand-Up Paddling für Wassersport-Enthusiasten" data-en="Stand-Up Paddling for water sports enthusiasts">Stand-Up Paddling für Wassersport-Enthusiasten</p>
+                        <span class="activity-link" data-de="Mehr erfahren" data-en="Learn more">Mehr erfahren <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <div class="about-content">
+                <div class="about-text">
+                    <h2 class="section-title" data-de="Über mich" data-en="About Me">Über mich</h2>
+                    <p class="about-description" data-de="Als HR-Berater mit Fokus auf AI und Transformation bringe ich über 6 Jahre IT Projekt Erfahrung in der Digitalisierung von HR-Prozessen mit. Mein Ziel ist es, Unternehmen dabei zu unterstützen, ihre HR-Abteilungen zukunftsfähig zu gestalten." data-en="As an HR consultant with a focus on AI and transformation, I bring over 6 years of IT project experience in the digitalization of HR processes. My goal is to support companies in making their HR departments future-proof.">
+                        Als HR-Berater mit Fokus auf AI und Transformation bringe ich über 6 Jahre IT Projekt Erfahrung in der Digitalisierung von HR-Prozessen mit. 
+                        Mein Ziel ist es, Unternehmen dabei zu unterstützen, ihre HR-Abteilungen zukunftsfähig zu gestalten.
+                    </p>
+                    <div class="about-highlights">
+                        <div class="highlight-item">
+                            <div class="highlight-icon">
+                                <i class="fas fa-graduation-cap"></i>
+                            </div>
+                            <div class="highlight-content">
+                                <h3 data-de="Bildung & Expertise" data-en="Education & Expertise">Bildung & Expertise</h3>
+                                <p data-de="Studium der Wirtschaftswissenschaften mit Schwerpunkt Personalwesen und Digitalisierung" data-en="Studies in economics with a focus on human resources and digitalization">Studium der Wirtschaftswissenschaften mit Schwerpunkt Personalwesen und Digitalisierung</p>
+                            </div>
+                        </div>
+                        <div class="highlight-item">
+                            <div class="highlight-icon">
+                                <i class="fas fa-briefcase"></i>
+                            </div>
+                            <div class="highlight-content">
+                                <h3 data-de="Berufserfahrung" data-en="Professional Experience">Berufserfahrung</h3>
+                                <p data-de="6+ Jahre IT Projekt Erfahrung in HR-Beratung, AI-Integration und Geschäftsprozessoptimierung" data-en="6+ years of IT project experience in HR consulting, AI integration and business process optimization">6+ Jahre IT Projekt Erfahrung in HR-Beratung, AI-Integration und Geschäftsprozessoptimierung</p>
+                            </div>
+                        </div>
+                        <div class="highlight-item">
+                            <div class="highlight-icon">
+                                <i class="fas fa-lightbulb"></i>
+                            </div>
+                            <div class="highlight-content">
+                                <h3 data-de="Innovation" data-en="Innovation">Innovation</h3>
+                                <p data-de="Spezialisiert auf moderne HR-Technologien und KI-gestützte Lösungen" data-en="Specialized in modern HR technologies and AI-supported solutions">Spezialisiert auf moderne HR-Technologien und KI-gestützte Lösungen</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-visual">
+                    <div class="about-image">
+                        <img src="manuel-weiss-portrait.jpg" alt="Manuel Weiss" class="profile-image dynamic-profile-image" onerror="handleProfileImageError(this);">
+                    </div>
+                    <div class="about-stats">
+                        <div class="stat-card">
+                            <div class="stat-number">6+</div>
+                            <div class="stat-label">JAHRE IT PROJEKT ERFAHRUNG</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">60+</div>
+                            <div class="stat-label">ERFOLGREICH IMPLEMENTIERTE PROJEKTE</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">100%</div>
+                            <div class="stat-label">LERNKURVENEFFEKT ;)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <div class="contact-content">
+                <div class="contact-info">
+                    <h2 class="section-title" data-de="Kontakt" data-en="Contact">Kontakt</h2>
+                    <p class="contact-description" data-de="Bereit für die nächste Herausforderung? Lassen Sie uns gemeinsam Ihre HR-Prozesse modernisieren und die Zukunft gestalten." data-en="Ready for the next challenge? Let's work together to modernize your HR processes and shape the future.">
+                        Bereit für die nächste Herausforderung? Lassen Sie uns gemeinsam 
+                        Ihre HR-Prozesse modernisieren und die Zukunft gestalten.
+                    </p>
+                    
+                    <div class="contact-details">
+                        <div class="contact-item">
+                            <i class="fas fa-envelope"></i>
+                            <div>
+                                <h4 data-de="E-Mail" data-en="Email">E-Mail</h4>
+                                <a href="mailto:info@manuel-weiss.ch">info@manuel-weiss.ch</a>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-item">
+                            <i class="fas fa-phone"></i>
+                            <div>
+                                <h4 data-de="Telefon" data-en="Phone">Telefon</h4>
+                                <a href="tel:+41798385590">+41 79 838 55 90</a>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <div>
+                                <h4 data-de="Adresse" data-en="Address">Adresse</h4>
+                                <p>Pilatusstrasse 40<br>8330 Pfäffikon ZH</p>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-item">
+                            <i class="fas fa-clock"></i>
+                            <div>
+                                <h4 data-de="Verfügbarkeit" data-en="Availability">Verfügbarkeit</h4>
+                                <p data-de="Mo-Fr: 9:00 - 18:00" data-en="Mon-Fri: 9:00 - 18:00">Mo-Fr: 9:00 - 18:00</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="contact-form">
+                    <form id="contactForm">
+                        <div class="form-group">
+                            <label for="name" data-de="Name" data-en="Name">Name</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email" data-de="E-Mail" data-en="Email">E-Mail</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="subject" data-de="Betreff" data-en="Subject">Betreff</label>
+                            <input type="text" id="subject" name="subject" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="message" data-de="Nachricht" data-en="Message">Nachricht</label>
+                            <textarea id="message" name="message" rows="5" required></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i>
+                            <span data-de="Nachricht senden" data-en="Send Message">Nachricht senden</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Translation Manager -->
+    
+    
+    <!-- Scripts -->
+    <script src="js/universal-navigation.js"></script>
+    <!-- Simple Translation Manager -->
+    <script src="js/simple-translation.js"></script>
+    
+    <script src="script.js"></script>
+    
+    <!-- Initialize Language Switcher -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Language Switcher Event Listeners
+            document.querySelectorAll('.lang-link-compact[data-lang]').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const lang = this.getAttribute('data-lang');
+                    if (window.simpleTranslation) {
+                        if (typeof window.simpleTranslation.switchLanguage === 'function') {
+                            window.simpleTranslation.switchLanguage(lang);
+                        } else {
+                            window.simpleTranslation.setLanguage(lang);
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+    
+    <!-- Smart API für AWS-Integration -->
+    <script>
+        // Smart API laden für AWS-Integration
+        const smartApiScript = document.createElement('script');
+        smartApiScript.src = 'js/smart-api.js?v=1.0';
+        smartApiScript.onload = function() {
+            console.log('✅ WEBSITE: Smart API loaded for AWS integration');
+        };
+        document.head.appendChild(smartApiScript);
+    </script>
+    
+    <!-- Website Data Sync - KORRIGIERTE VERSION: zuletzt laden, damit es alles überschreibt -->
+    <script src="js/website-data-sync-fixed.js"></script>
+    <script src="js/rental-images-loader.js"></script>
+
+    <!-- Login Visibility Control -->
+    <script>
+        // Prüfe ob Benutzer von Service-Unterseite kommt
+        function checkServiceReferrer() {
+            const referrer = document.referrer;
+            const currentUrl = window.location.href;
+            
+            // Service-Unterseiten die Login-Button aktivieren
+            const servicePages = [
+                'persoenlichkeitsentwicklung.html',
+                'persoenlichkeitsentwicklung-uebersicht.html',
+                'personal-training.html',
+                'ernaehrungsberatung.html',
+                'beraterprofil.html',
+                'applications-modern.html',
+                'lebenslauf.html',
+                'lebenslauf-admin.html',
+                'hr-designer.html',
+                'ikigai.html',
+                'enterprise-portal.html',
+                'cloud-services.html',
+                'services-overview.html',
+                'website-services.html',
+                'multi-user-dashboard.html'
+            ];
+            
+            // Prüfe ob Referrer eine Service-Unterseite ist
+            const isFromServicePage = servicePages.some(page => 
+                referrer.includes(page) || currentUrl.includes(page)
+            );
+            
+            // Prüfe URL-Parameter für Service-Referrer
+            const urlParams = new URLSearchParams(window.location.search);
+            const serviceReferrer = urlParams.get('from_service');
+            
+        }
+        
+        // Initial check when page loads
+        document.addEventListener('DOMContentLoaded', checkServiceReferrer);
+        
+        // Check on page show (for back/forward navigation)
+        window.addEventListener('pageshow', checkServiceReferrer);
+        
+        // Beraterprofil herunterladen Funktionalität
+        document.addEventListener('DOMContentLoaded', function() {
+            const profileDownloadBtn = document.getElementById('profileDownloadBtn');
+            if (profileDownloadBtn) {
+                profileDownloadBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    downloadBeraterprofil();
+                });
+            }
+        });
+        
+        function downloadBeraterprofil() {
+            console.log('📄 Beraterprofil wird heruntergeladen...');
+            
+            // Erstelle ein visuell ansprechendes Beraterprofil mit KORREKTEN Lebenslauf-Daten
+            const profileData = {
+                name: 'Manuel Alexander Weiss',
+                title: 'HR Consultant',
+                email: 'info@manuel-weiss.ch',
+                phone: '+41 79 838 55 90',
+                location: 'Pilatusstrasse 40, 8330 Pfäffikon ZH',
+                website: 'https://manuel-weiss.ch',
+                linkedin: 'https://linkedin.com/in/manuel-weiss',
+                experience: [
+                    {
+                        position: 'HR Consultant',
+                        company: 'HR Campus AG, Zürich',
+                        period: '12.2021 - 06.2025',
+                        description: 'End-to-end UKG HRSD Implementierungen für SME und Enterprise Kunden. Design, Automatisierung und Integration von HR-Prozessen über SAP SuccessFactors/HCM, DocuSign. ADONIS BPMN 2.0 Modellierung und HR Health Checks.'
+                    },
+                    {
+                        position: 'Process Consultant',
+                        company: 'BOC Information Technologies Consulting GmbH, Berlin',
+                        period: '12.2019 - 12.2021',
+                        description: 'Business Process Management (BPM) Praxis für Kundenorganisationen. Prozess-Discovery Sessions, Workflow-Dokumentation, Gap-Analyse, SIPOC und Root-Cause-Analyse. ADONIS Prozess-Management Suite Deployment.'
+                    },
+                    {
+                        position: 'IT Project Manager, Sales & Contract Management',
+                        company: 'eeMobility (Startup), München',
+                        period: '03.2019 - 09.2019',
+                        description: 'End-to-end Vertragsmanagement Lifecycle, Digitalisierungsprojekte für optimierte Workflows. Trade-Fair Koordination und 6-monatiges Sales Training mit externem Coach.'
+                    },
+                    {
+                        position: 'Production Technician',
+                        company: 'Work and travel Australia',
+                        period: '09.2017 - 02.2019',
+                        description: 'Assemblierung von Stahl- und Faser-Seilen nach technischen Toleranzen. Lean-Management (5S) Implementation zur Verbesserung der Shop-Floor Organisation.'
+                    }
+                ],
+                projects: [
+                    {
+                        name: 'UKG HRSD Implementierungen',
+                        type: 'KSA, Binelli, Sonnhalde Gempen, PDGR, Pestalozzi, Spital Muri, Schindler',
+                        period: '2021 - 2025',
+                        description: 'End-to-end UKG HRSD Implementierungen mit Wissensdatenbank, Prozessoptimierung und digitalem Personaldossier für verschiedene Branchen. Kunden: KSA, Binelli, Sonnhalde Gempen, PDGR, Pestalozzi, Spital Muri, Schindler.',
+                        skills: ['UKG HRSD', 'Wissensdatenbank', 'Digitales Personaldossier', 'Prozessoptimierung']
+                    },
+                    {
+                        name: 'ADONIS BPMN 2.0 Einführung',
+                        type: 'Müller Milch, KFW',
+                        period: '2019 - 2021',
+                        description: 'Einführung von ADONIS und fachliches Business Process Management (BPM) bei Müller Milch. GRC-Implementierung bei KFW für optimierte Governance-Prozesse.',
+                        skills: ['ADONIS', 'BPMN 2.0', 'GRC', 'Governance']
+                    },
+                    {
+                        name: 'Prozessschulungen & Workshops',
+                        type: 'Landeshauptstadt München, Dywidag, Fiege Logistik, VKB, GEMA, Universität der Bundeswehr',
+                        period: '2019 - 2021',
+                        description: 'Durchführung von Prozessschulungen und Workshops für verschiedene Organisationen. Training in BPM-Methoden und Prozessoptimierung bei Landeshauptstadt München, Dywidag, Fiege Logistik, VKB, GEMA, Universität der Bundeswehr.',
+                        skills: ['Prozessschulungen', 'Workshops', 'BPM-Training', 'Change Management']
+                    },
+                    {
+                        name: 'Business Process Management (BPM)',
+                        type: 'BOC Information Technologies',
+                        period: '2019 - 2021',
+                        description: 'Strukturierte BPM-Praxis für Kundenorganisationen. Prozess-Discovery Sessions, Workflow-Dokumentation und Gap-Analyse mit SIPOC und Root-Cause-Analyse Techniken.',
+                        skills: ['BPM', 'Prozess-Discovery', 'Gap-Analyse', 'SIPOC', 'Root-Cause-Analyse']
+                    }
+                ],
+                skills: {
+                    'HR-Tech & Process Expertise (9/10)': [
+                        'UKG HRSD', 'SAP SuccessFactors/HCM', 'ADONIS BPMN 2.0', 'HR Data Migration', 'Interface Design', 'HR Health Checks'
+                    ],
+                    'Project Governance & Delivery (9/10)': [
+                        'PRINCE2 Practitioner', 'Scrum Master', 'Agile/Waterfall', 'Hybrid Approaches', 'Project Tailoring'
+                    ],
+                    'Language Proficiency (8/10)': [
+                        'Deutsch (Muttersprache)', 'Englisch C1 (18 Monate Australien)', 'Spanisch A2'
+                    ],
+                    'Collaboration & Productivity (9/10)': [
+                        'Microsoft 365 Power-User', 'Teams', 'SharePoint', 'Power Automate', 'Co-Authoring'
+                    ]
+                },
+                education: [
+                    {
+                        degree: 'Bachelor in Wirtschaftswissenschaften',
+                        institution: 'Munich University of Applied Sciences',
+                        period: '04.2012 - 06.2017',
+                        description: 'Spezialisierungen: Human Resource Management, Supply Chain Management und Service Management.',
+                        skills: ['Wirtschaftswissenschaften', 'HR Management', 'Supply Chain Management', 'Service Management']
+                    },
+                    {
+                        degree: 'Master Professional in Business Administration (Skilled Crafts)',
+                        institution: 'Handwerkskammer für Schwaben',
+                        period: '04.2009 - 04.2010',
+                        description: 'Weiterbildung während der Abendschule.',
+                        skills: ['Business Administration', 'Skilled Crafts', 'Abendschule']
+                    }
+                ]
+            };
+            
+            // Erstelle HTML für das Beraterprofil
+            const profileHTML = createBeraterprofilHTML(profileData);
+            
+            // Erstelle und lade PDF herunter
+            createAndDownloadPDF(profileHTML, 'Manuel_Weiss_Beraterprofil.pdf');
+        }
+        
+        function createBeraterprofilHTML(data) {
+            return `
+                <!DOCTYPE html>
+                <html lang="de">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Beraterprofil - ${data.name}</title>
+                    <style>
+                        body {
+                            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                            line-height: 1.6;
+                            color: #333;
+                            max-width: 800px;
+                            margin: 0 auto;
+                            padding: 2rem;
+                            background: #fff;
+                        }
+                        .header {
+                            text-align: center;
+                            margin-bottom: 3rem;
+                            padding: 2rem;
+                            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                            color: white;
+                            border-radius: 12px;
+                        }
+                        .header h1 {
+                            font-size: 2.5rem;
+                            margin-bottom: 0.5rem;
+                        }
+                        .header h2 {
+                            font-size: 1.5rem;
+                            opacity: 0.9;
+                            margin-bottom: 1rem;
+                        }
+                        .contact-info {
+                            display: flex;
+                            justify-content: center;
+                            gap: 2rem;
+                            flex-wrap: wrap;
+                        }
+                        .section {
+                            margin-bottom: 2.5rem;
+                        }
+                        .section h3 {
+                            color: #667eea;
+                            border-bottom: 2px solid #667eea;
+                            padding-bottom: 0.5rem;
+                            margin-bottom: 1.5rem;
+                        }
+                        .experience-item, .project-item {
+                            margin-bottom: 1.5rem;
+                            padding: 1rem;
+                            background: #f8f9fa;
+                            border-radius: 8px;
+                            border-left: 4px solid #667eea;
+                        }
+                        .experience-item h4, .project-item h4 {
+                            color: #1f2937;
+                            margin-bottom: 0.5rem;
+                        }
+                        .skills-grid {
+                            display: flex;
+                            flex-wrap: wrap;
+                            gap: 0.5rem;
+                        }
+                        .skill-tag {
+                            background: #667eea;
+                            color: white;
+                            padding: 0.25rem 0.75rem;
+                            border-radius: 12px;
+                            font-size: 0.875rem;
+                        }
+                        .footer {
+                            text-align: center;
+                            margin-top: 3rem;
+                            padding-top: 2rem;
+                            border-top: 1px solid #e5e7eb;
+                            color: #6b7280;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>${data.name}</h1>
+                        <h2>${data.title}</h2>
+                        <div class="contact-info">
+                            <span>📧 ${data.email}</span>
+                            <span>📞 ${data.phone}</span>
+                            <span>📍 ${data.location}</span>
+                            <span>🌐 ${data.website}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <h3>Berufserfahrung</h3>
+                        ${data.experience.map(exp => `
+                            <div class="experience-item">
+                                <h4>${exp.position}</h4>
+                                <p><strong>${exp.company}</strong> | ${exp.period}</p>
+                                <p>${exp.description}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <div class="section">
+                        <h3>Projekte</h3>
+                        ${data.projects.map(project => `
+                            <div class="project-item">
+                                <h4>${project.name} - ${project.type}</h4>
+                                ${project.period ? `<p><strong>Zeitraum:</strong> ${project.period}</p>` : ''}
+                                <p>${project.description}</p>
+                                <div class="skills-grid">
+                                    ${project.skills.map(skill => `<span class="skill-tag">${skill}</span>`).join('')}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <div class="section">
+                        <h3>Fähigkeiten</h3>
+                        ${Object.entries(data.skills).map(([category, skills]) => `
+                            <div style="margin-bottom: 1.5rem;">
+                                <h4 style="color: #667eea; margin-bottom: 0.5rem;">${category}</h4>
+                                <div class="skills-grid">
+                                    ${skills.map(skill => `<span class="skill-tag">${skill}</span>`).join('')}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <div class="section">
+                        <h3>Ausbildung</h3>
+                        ${data.education.map(edu => `
+                            <div class="experience-item">
+                                <h4>${edu.degree}</h4>
+                                <p><strong>${edu.institution}</strong> | ${edu.period}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                </body>
+                </html>
+            `;
+        }
+        
+        function createAndDownloadPDF(htmlContent, filename) {
+            // Erstelle ein neues Fenster mit dem HTML-Inhalt
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(htmlContent);
+            printWindow.document.close();
+            
+            // Warte kurz und drucke als PDF
+            setTimeout(() => {
+                printWindow.print();
+            }, 500);
+        }
+    </script>
+    
+    <!-- Hero-Daten Integration aus Admin-Panel -->
+    <script>
+        console.log('🚀 WEBSITE: Loading hero data integration...');
+        
+        // Hero-Daten aus Admin-Panel laden und anwenden
+        const DEFAULT_PROFILE_IMAGE_URL = 'manuel-weiss-portrait.jpg';
+        let profileImageErrorRetries = 0;
+        window.latestAWSProfileImage = window.latestAWSProfileImage || null;
+        window.currentProfileImageSrc = window.currentProfileImageSrc || null;
+
+        function setHeroProfileImage(src, force = false) {
+            const targetSrc = src || DEFAULT_PROFILE_IMAGE_URL;
+            const profileImages = document.querySelectorAll('.dynamic-profile-image');
+            if (!profileImages.length) {
+                console.warn('⚠️ WEBSITE: Keine dynamischen Profilbilder gefunden.');
+                return;
+            }
+            
+            // SCHUTZ: Wenn bereits ein Profilbild gesetzt wurde und es nicht das Standard-Bild ist,
+            // und force=false, dann nicht überschreiben (außer es ist ein AWS-Bild)
+            const isDefaultImage = targetSrc === DEFAULT_PROFILE_IMAGE_URL || 
+                                   targetSrc.includes('manuel-weiss-portrait.jpg') ||
+                                   targetSrc.includes('manuel-weiss-photo.svg');
+            const isAWSImage = targetSrc && (targetSrc.startsWith('http') || targetSrc.includes('amazonaws') || targetSrc.includes('s3'));
+            const currentSrc = window.currentProfileImageSrc;
+            
+            // Wenn bereits ein Profilbild gesetzt ist und es nicht das Standard-Bild ist,
+            // und das neue Bild auch nicht von AWS kommt, dann nicht überschreiben
+            if (!force && currentSrc && !isDefaultImage && !isAWSImage && !targetSrc.startsWith('data:')) {
+                console.log('🛡️ WEBSITE: Profilbild-Schutz aktiv - überschreibe nicht mit:', targetSrc);
+                return;
+            }
+            
+            // Wenn bereits ein AWS-Bild gesetzt ist, nur durch ein anderes AWS-Bild überschreiben
+            if (!force && currentSrc && (currentSrc.startsWith('http') || currentSrc.includes('amazonaws') || currentSrc.includes('s3'))) {
+                if (!isAWSImage && !targetSrc.startsWith('data:')) {
+                    console.log('🛡️ WEBSITE: AWS-Profilbild bereits gesetzt - überschreibe nicht mit localStorage-Bild');
+                    return;
+                }
+            }
+            
+            profileImages.forEach(img => {
+                if (img.dataset.loadedSrc !== targetSrc) {
+                    img.src = targetSrc;
+                    img.dataset.loadedSrc = targetSrc;
+                    console.log('✅ WEBSITE: Profilbild gesetzt:', targetSrc);
+                }
+                img.style.display = 'block';
+                img.style.visibility = 'visible';
+                img.style.opacity = '1';
+            });
+            window.currentProfileImageSrc = targetSrc;
+            window.profileImageSetByAWS = isAWSImage || targetSrc.startsWith('data:');
+        }
+
+        // WICHTIG: Profilbild IMMER zuerst aus AWS laden (domain-unabhängig)
+        async function loadProfileImageFirst() {
+            console.log('🔄 WEBSITE: Loading profile image from AWS (domain-independent)...');
+            try {
+                const awsImage = await loadProfileImageFromAWS(true);
+                if (awsImage) {
+                    console.log('✅ WEBSITE: Profile image loaded from AWS successfully');
+                    return awsImage;
+                }
+            } catch (error) {
+                console.warn('⚠️ WEBSITE: AWS load failed, will try localStorage fallback:', error);
+            }
+            
+            // Fallback: localStorage (domain-spezifisch, aber besser als nichts)
+            const localImage = localStorage.getItem('heroProfileImage') || 
+                              localStorage.getItem('adminProfileImage') || 
+                              localStorage.getItem('profileImage');
+            if (localImage && !localImage.includes('manuel-weiss-photo.svg') && !localImage.includes('manuel-weiss-portrait.jpg')) {
+                console.log('📦 WEBSITE: Using localStorage fallback image');
+                setHeroProfileImage(localImage);
+                return localImage;
+            }
+            
+            return null;
+        }
+
+        async function loadHeroDataFromAdmin() {
+            console.log('📋 WEBSITE: Loading hero data from admin panel...');
+            
+            // Erst versuchen von AWS zu laden
+            let heroData = null;
+            try {
+                if (window.smartAPI) {
+                    console.log('☁️ WEBSITE: Trying to load hero data from AWS...');
+                    const awsData = await window.smartAPI.getDocument('hero-data', 'default-user');
+                    if (awsData && awsData.data) {
+                        heroData = JSON.stringify(awsData.data);
+                        console.log('✅ WEBSITE: Hero data loaded from AWS');
+                    }
+                }
+            } catch (error) {
+                console.log('⚠️ WEBSITE: AWS not available, using localStorage');
+            }
+            
+            // Falls AWS nicht verfügbar, localStorage verwenden
+            if (!heroData) {
+                heroData = localStorage.getItem('heroData');
+            }
+            
+            // Auch aus adminProfileData laden (für Kompatibilität)
+            let adminProfileData = null;
+            if (!heroData) {
+                adminProfileData = localStorage.getItem('adminProfileData');
+                if (adminProfileData) {
+                    try {
+                        const adminData = JSON.parse(adminProfileData);
+                        // adminProfileData zu heroData-Format konvertieren
+                        heroData = JSON.stringify({
+                            title: adminData.title || '',
+                            subtitle: adminData.subtitle || '',
+                            profileImage: localStorage.getItem('adminProfileImage') || localStorage.getItem('heroProfileImage')
+                        });
+                        console.log('✅ WEBSITE: Loaded from adminProfileData');
+                    } catch (e) {
+                        console.error('❌ WEBSITE: Error parsing adminProfileData:', e);
+                    }
+                }
+            }
+            
+            if (heroData) {
+                try {
+                    let data = JSON.parse(heroData);
+                    // Admin-Panel-Daten bevorzugen (Titel/Untertitel aus adminProfileData überschreiben)
+                    try {
+                        const adminProfileData = localStorage.getItem('adminProfileData');
+                        if (adminProfileData) {
+                            const apd = JSON.parse(adminProfileData);
+                            data.title = apd.title || data.title;
+                            data.subtitle = apd.subtitle || data.subtitle;
+                        }
+                    } catch {}
+                    console.log('✅ WEBSITE: Hero data found:', data);
+                    
+                    // Hero-Text aus heroData laden und anzeigen
+                    if (data.title) {
+                        const heroTitle = document.querySelector('.hero-title .gradient-text');
+                        if (heroTitle) {
+                            // Prüfen ob Herz-Animation vorhanden ist
+                            const heartSpan = heroTitle.querySelector('.heart-animation');
+                            // Text aktualisieren, aber Herz-Animation beibehalten
+                            if (data.title.includes('❤️') || data.title.includes('<span')) {
+                                heroTitle.innerHTML = data.title;
+                            } else if (data.title.includes('Leidenschaft')) {
+                                // Automatisch Herz-Animation hinzufügen bei "Leidenschaft"
+                                heroTitle.innerHTML = data.title + ' <span class="heart-animation">❤️</span>';
+                            } else {
+                                heroTitle.innerHTML = data.title;
+                            }
+                            console.log('✅ WEBSITE: Hero title updated:', data.title);
+                        }
+                    }
+                    
+                    if (data.subtitle) {
+                        const heroSubtitle = document.getElementById('hero-subtitle');
+                        if (heroSubtitle) {
+                            heroSubtitle.textContent = data.subtitle;
+                            console.log('✅ WEBSITE: Hero subtitle updated:', data.subtitle);
+                        }
+                    }
+                    
+                    // PROFILBILD: immer aus AWS (mit Fallback)
+                    console.log('📸 WEBSITE: Applying profile image...');
+                    let profileImage = window.latestAWSProfileImage || null;
+
+                    // Falls AWS noch nicht geladen wurde, einmal versuchen
+                    if (!profileImage) {
+                        profileImage = await loadProfileImageFromAWS(true);
+                    }
+
+                    // Letzte Option: heroData liefert evtl. direkte URL
+                    if (!profileImage && data.profileImage && data.profileImage.startsWith('http')) {
+                        profileImage = data.profileImage;
+                        console.log('✅ WEBSITE: Profile image from heroData');
+                    }
+
+                    if (!profileImage) {
+                        profileImage = DEFAULT_PROFILE_IMAGE_URL;
+                        console.log('ℹ️ WEBSITE: Using default profile image');
+                    }
+
+                    setHeroProfileImage(profileImage);
+                    
+                    // Button-Text aktualisieren
+                    if (data.buttonText) {
+                        const contactButton = document.querySelector('.hero-actions .btn-outline');
+                        if (contactButton) {
+                            contactButton.textContent = data.buttonText;
+                        }
+                    }
+                    
+                    // Button-Link aktualisieren
+                    if (data.buttonLink) {
+                        const contactButton = document.querySelector('.hero-actions .btn-outline');
+                        if (contactButton) {
+                            contactButton.href = data.buttonLink;
+                        }
+                    }
+                    
+                    // Kontaktdaten aktualisieren
+                    if (data.email) {
+                        const emailLinks = document.querySelectorAll('a[href^="mailto:"]');
+                        emailLinks.forEach(link => {
+                            link.href = `mailto:${data.email}`;
+                            link.textContent = data.email;
+                        });
+                    }
+                    
+                    if (data.phone) {
+                        // Telefonnummer in Kontakt-Sektion hinzufügen/aktualisieren
+                        updateContactPhone(data.phone);
+                    }
+                    
+                    if (data.location) {
+                        const locationElement = document.querySelector('.contact-item .fas.fa-map-marker-alt').parentElement.querySelector('p');
+                        if (locationElement) {
+                            locationElement.textContent = data.location;
+                        }
+                    }
+                    
+                    // Hintergrund-Farben aktualisieren
+                    if (data.bgColor1 && data.bgColor2) {
+                        const heroSection = document.querySelector('.hero');
+                        if (heroSection) {
+                            heroSection.style.background = `linear-gradient(135deg, ${data.bgColor1} 0%, ${data.bgColor2} 100%)`;
+                        }
+                    }
+                    
+                    // Text-Farbe aktualisieren
+                    if (data.textColor) {
+                        const heroContent = document.querySelector('.hero-content');
+                        if (heroContent) {
+                            heroContent.style.color = data.textColor;
+                        }
+                    }
+                    
+                    // Hero-Statistiken aktualisieren
+                    console.log('📊 WEBSITE: Updating hero statistics...', {
+                        stat1: { number: data.stat1Number, label: data.stat1Label },
+                        stat2: { number: data.stat2Number, label: data.stat2Label },
+                        stat3: { number: data.stat3Number, label: data.stat3Label }
+                    });
+                    
+                    if (data.stat1Number && data.stat1Label) {
+                        const stat1Number = document.querySelector('.hero-about-stats .stat-card:nth-child(1) .stat-number');
+                        const stat1Label = document.querySelector('.hero-about-stats .stat-card:nth-child(1) .stat-label');
+                        if (stat1Number) {
+                            stat1Number.textContent = data.stat1Number;
+                            console.log('✅ WEBSITE: Stat1 number updated to:', data.stat1Number);
+                        }
+                        if (stat1Label) {
+                            stat1Label.textContent = data.stat1Label;
+                            console.log('✅ WEBSITE: Stat1 label updated to:', data.stat1Label);
+                        }
+                    }
+                    
+                    if (data.stat2Number && data.stat2Label) {
+                        const stat2Number = document.querySelector('.hero-about-stats .stat-card:nth-child(2) .stat-number');
+                        const stat2Label = document.querySelector('.hero-about-stats .stat-card:nth-child(2) .stat-label');
+                        if (stat2Number) {
+                            stat2Number.textContent = data.stat2Number;
+                            console.log('✅ WEBSITE: Stat2 number updated to:', data.stat2Number);
+                        }
+                        if (stat2Label) {
+                            stat2Label.textContent = data.stat2Label;
+                            console.log('✅ WEBSITE: Stat2 label updated to:', data.stat2Label);
+                        }
+                    }
+                    
+                    if (data.stat3Number && data.stat3Label) {
+                        const stat3Number = document.querySelector('.hero-about-stats .stat-card:nth-child(3) .stat-number');
+                        const stat3Label = document.querySelector('.hero-about-stats .stat-card:nth-child(3) .stat-label');
+                        if (stat3Number) {
+                            stat3Number.textContent = data.stat3Number;
+                            console.log('✅ WEBSITE: Stat3 number updated to:', data.stat3Number);
+                        }
+                        if (stat3Label) {
+                            stat3Label.textContent = data.stat3Label;
+                            console.log('✅ WEBSITE: Stat3 label updated to:', data.stat3Label);
+                        }
+                    }
+                    
+                    console.log('✅ WEBSITE: Hero data applied successfully');
+                    
+                } catch (error) {
+                    console.error('❌ WEBSITE: Error loading hero data:', error);
+                }
+            } else {
+                console.log('ℹ️ WEBSITE: No hero data found, using defaults');
+            }
+        }
+        
+        // Telefonnummer in Kontakt-Sektion hinzufügen/aktualisieren
+        function updateContactPhone(phoneNumber) {
+            const contactDetails = document.querySelector('.contact-details');
+            if (contactDetails) {
+                // Prüfen ob Telefon bereits existiert
+                let phoneElement = contactDetails.querySelector('.contact-item .fas.fa-phone');
+                if (phoneElement) {
+                    // Existierende Telefonnummer aktualisieren
+                    const phoneLink = phoneElement.parentElement.querySelector('a');
+                    if (phoneLink) {
+                        phoneLink.href = `tel:${phoneNumber}`;
+                        phoneLink.textContent = phoneNumber;
+                    }
+                } else {
+                    // Neue Telefonnummer hinzufügen
+                    const phoneItem = document.createElement('div');
+                    phoneItem.className = 'contact-item';
+                    phoneItem.innerHTML = `
+                        <i class="fas fa-phone"></i>
+                        <div>
+                            <h4>Telefon</h4>
+                            <a href="tel:${phoneNumber}">${phoneNumber}</a>
+                        </div>
+                    `;
+                    
+                    // Nach dem E-Mail Element einfügen
+                    const emailItem = contactDetails.querySelector('.contact-item .fas.fa-envelope').parentElement;
+                    emailItem.parentNode.insertBefore(phoneItem, emailItem.nextSibling);
+                }
+            }
+        }
+        
+        // Sprachumschaltung Funktionalität entfernt - nur Flaggen-Button in Navigation verwendet
+        
+        // Funktion um Profilbild direkt aus AWS DynamoDB zu laden (unabhängig von heroData)
+        async function loadProfileImageFromAWS(silentFallback = false) {
+            try {
+                if (!window.awsProfileAPI || !window.awsProfileAPI.loadWebsiteImages) {
+                    throw new Error('awsProfileAPI nicht verfügbar für Profilbild-Laden');
+                }
+                
+                console.log('☁️ WEBSITE: Loading profile image directly from AWS DynamoDB...');
+                console.log('🌐 WEBSITE: Current domain:', window.location.hostname);
+                
+                // Erhöhte Timeout für langsamere Verbindungen
+                const timeoutPromise = new Promise((_, reject) =>
+                    setTimeout(() => reject(new Error('Timeout')), 10000)
+                );
+                
+                const awsImages = await Promise.race([
+                    window.awsProfileAPI.loadWebsiteImages(),
+                    timeoutPromise
+                ]).catch(err => {
+                    console.warn('⚠️ AWS Bild-Laden timeout oder fehler:', err.message);
+                    // Detaillierte Fehlerbehandlung
+                    if (err.message.includes('CORS') || err.message.includes('cors')) {
+                        console.error('❌ CORS-Fehler: Domain möglicherweise nicht in AWS CORS-Liste');
+                    }
+                    if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError')) {
+                        console.error('❌ Netzwerkfehler: API nicht erreichbar');
+                    }
+                    return null;
+                });
+                
+                if (awsImages && awsImages.profileImageDefault) {
+                    const imageUrl = awsImages.profileImageDefault;
+                    
+                    // Prüfe ob die URL ungültig ist (test-new-image.jpg ist bekannt ungültig)
+                    if (imageUrl.includes('test-new-image.jpg')) {
+                        console.warn('⚠️ WEBSITE: Ungültige Test-URL erkannt, überspringe:', imageUrl);
+                        // Entferne ungültige URL aus localStorage
+                        localStorage.removeItem('heroProfileImage');
+                        localStorage.removeItem('adminProfileImage');
+                        throw new Error('Ungültige Test-URL erkannt');
+                    }
+                    
+                    window.latestAWSProfileImage = imageUrl;
+                    console.log('📸 WEBSITE: Image URL from DynamoDB:', imageUrl);
+                    
+                    // Teste ob das Bild geladen werden kann (nur einmal, nicht endlos)
+                    return new Promise((resolve, reject) => {
+                        const testImg = new Image();
+                        let resolved = false;
+                        
+                        testImg.onload = () => {
+                            if (resolved) return;
+                            resolved = true;
+                            console.log('✅ WEBSITE: Image URL ist erreichbar und gültig');
+                            setHeroProfileImage(imageUrl);
+                            // Nur gültige URLs in localStorage speichern
+                            localStorage.setItem('heroProfileImage', imageUrl);
+                            localStorage.setItem('adminProfileImage', imageUrl);
+                            resolve(imageUrl);
+                        };
+                        
+                        testImg.onerror = () => {
+                            if (resolved) return;
+                            resolved = true;
+                            console.error('❌ WEBSITE: Image URL ist NICHT erreichbar (403/404):', imageUrl);
+                            console.error('   Mögliche Ursachen:');
+                            console.error('   1. S3-Objekt existiert nicht');
+                            console.error('   2. S3-Objekt ist nicht öffentlich zugänglich');
+                            console.error('   3. S3-Bucket-Policy blockiert Zugriff');
+                            
+                            // Entferne ungültige URL aus localStorage
+                            localStorage.removeItem('heroProfileImage');
+                            localStorage.removeItem('adminProfileImage');
+                            
+                            // Versuche Base64-Fallback
+                            const fallback = localStorage.getItem('adminProfileImage');
+                            if (fallback && fallback.startsWith('data:')) {
+                                console.log('🔄 WEBSITE: Verwende Base64-Fallback aus localStorage');
+                                setHeroProfileImage(fallback);
+                                resolve(fallback);
+                            } else {
+                                reject(new Error('Image URL nicht erreichbar und kein Fallback verfügbar'));
+                            }
+                        };
+                        
+                        // Timeout nach 5 Sekunden
+                        setTimeout(() => {
+                            if (!resolved) {
+                                resolved = true;
+                                console.warn('⏱️ WEBSITE: Image load timeout');
+                                reject(new Error('Image load timeout'));
+                            }
+                        }, 5000);
+                        
+                        testImg.src = imageUrl;
+                    });
+                }
+                
+                // Fallback: Versuche direkt aus S3 zu laden (wenn bekannt)
+                console.log('⚠️ WEBSITE: No image in DynamoDB, trying S3 fallback...');
+                const s3FallbackUrl = 'https://manuel-weiss-public-media.s3.eu-central-1.amazonaws.com/public/profile-images/owner/';
+                // Versuche die neueste Datei zu finden (vereinfacht: verwende timestamp)
+                const timestamp = Date.now();
+                const possibleUrls = [
+                    `${s3FallbackUrl}${timestamp - 86400000}-*.jpg`, // Gestern
+                    `${s3FallbackUrl}${timestamp - 172800000}-*.jpg`, // Vor 2 Tagen
+                ];
+                console.log('🔄 WEBSITE: S3 fallback URLs:', possibleUrls);
+                
+                throw new Error('Kein Profilbild in AWS gefunden');
+            } catch (error) {
+                console.warn('⚠️ WEBSITE: Failed to load profile image from AWS:', error);
+                console.warn('⚠️ WEBSITE: Error details:', error.message);
+                console.warn('⚠️ WEBSITE: Stack:', error.stack);
+                console.warn('🌐 WEBSITE: Current domain:', window.location.hostname);
+                console.warn('🔧 WEBSITE: AWS_CONFIG available:', !!window.AWS_CONFIG);
+                console.warn('🔧 WEBSITE: AWS_APP_CONFIG available:', !!window.AWS_APP_CONFIG);
+                console.warn('🔧 WEBSITE: awsProfileAPI available:', !!window.awsProfileAPI);
+                
+                // Detailliertes Debugging
+                if (error.message.includes('AWS API not configured')) {
+                    console.error('❌ WEBSITE: AWS API Base URL fehlt!');
+                    console.error('   AWS_CONFIG.apiBaseUrl:', window.AWS_CONFIG?.apiBaseUrl);
+                    console.error('   AWS_APP_CONFIG.MEDIA_API_BASE:', window.AWS_APP_CONFIG?.MEDIA_API_BASE);
+                }
+                
+                if (!silentFallback) {
+                    setHeroProfileImage(DEFAULT_PROFILE_IMAGE_URL);
+                }
+                return null;
+            }
+        }
+        
+        // Error-Handler für Profilbild
+        async function handleProfileImageError(img) {
+            console.warn('⚠️ WEBSITE: Profile image failed to load, retrying via AWS...');
+            img.onerror = null;
+            if (profileImageErrorRetries < 1) {
+                profileImageErrorRetries++;
+                const awsImage = await loadProfileImageFromAWS(true);
+                if (awsImage) {
+                    img.src = awsImage;
+                    return;
+                }
+            }
+            setHeroProfileImage(DEFAULT_PROFILE_IMAGE_URL);
+        }
+        
+        // WICHTIG: Profilbild IMMER zuerst aus AWS laden (domain-unabhängig)
+        async function loadProfileImageFirst() {
+            console.log('🔄 WEBSITE: Loading profile image from AWS (domain-independent)...');
+            console.log('🌐 WEBSITE: Current domain:', window.location.hostname);
+            try {
+                const awsImage = await loadProfileImageFromAWS(true);
+                if (awsImage) {
+                    console.log('✅ WEBSITE: Profile image loaded from AWS successfully');
+                    return awsImage;
+                }
+            } catch (error) {
+                console.warn('⚠️ WEBSITE: AWS load failed, will try localStorage fallback:', error);
+            }
+            
+            // Fallback: localStorage (domain-spezifisch, aber besser als nichts)
+            const localImage = localStorage.getItem('heroProfileImage') || 
+                              localStorage.getItem('adminProfileImage') || 
+                              localStorage.getItem('profileImage');
+            if (localImage && !localImage.includes('manuel-weiss-photo.svg') && !localImage.includes('manuel-weiss-portrait.jpg')) {
+                console.log('📦 WEBSITE: Using localStorage fallback image');
+                setHeroProfileImage(localImage);
+                return localImage;
+            }
+            
+            return null;
+        }
+
+        // Beim Laden der Seite Hero-Daten laden
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🚀 WEBSITE: Page loaded, loading hero data...');
+            // WICHTIG: Profilbild ZUERST aus AWS laden (domain-unabhängig)
+            await loadProfileImageFirst();
+            
+            // Warte auf awsProfileAPI falls es noch nicht geladen ist
+            let retries = 0;
+            while (!window.awsProfileAPI && retries < 10) {
+                await new Promise(resolve => setTimeout(resolve, 100));
+                retries++;
+            }
+            
+            // PRIORITÄT: Profilbild SOFORT aus AWS laden (vor allem anderen)
+            // WICHTIG: Dies funktioniert domain-unabhängig (mawps.netlify.app und manuel-weiss.ch)
+            console.log('🌐 WEBSITE: Loading profile image from AWS (works on all domains)...');
+            const awsImage = await loadProfileImageFromAWS();
+            if (!awsImage) {
+                console.warn('⚠️ WEBSITE: No AWS image found, using default');
+                setHeroProfileImage(DEFAULT_PROFILE_IMAGE_URL);
+            } else {
+                console.log('✅ WEBSITE: Profile image loaded successfully from AWS');
+            }
+            
+            // Sofort Standard-Statistiken garantieren
+            ensureDefaultStatistics();
+            
+            try {
+                await loadHeroDataFromAdmin();
+                
+                // Zusätzlich: Auch aus website-data-sync-fixed.js laden
+                // ABER: Nur wenn noch kein Profilbild gesetzt wurde
+                if (window.loadWebsiteDataFromLocalStorage) {
+                    setTimeout(() => {
+                        // Nur laden wenn noch kein Profilbild oder wenn es das Standard-Bild ist
+                        const currentSrc = window.currentProfileImageSrc;
+                        const isDefault = !currentSrc || 
+                                        currentSrc.includes('manuel-weiss-portrait.jpg') || 
+                                        currentSrc.includes('manuel-weiss-photo.svg');
+                        if (isDefault || !window.profileImageSetByAWS) {
+                            window.loadWebsiteDataFromLocalStorage();
+                        } else {
+                            console.log('🛡️ WEBSITE: Profilbild bereits von AWS gesetzt - überspringe website-data-sync');
+                        }
+                    }, 500);
+                }
+
+                // Profilbild ggf. erneut anwenden (nur wenn noch nicht gesetzt)
+                if (window.latestAWSProfileImage && (!window.currentProfileImageSrc || window.currentProfileImageSrc.includes('manuel-weiss-portrait.jpg'))) {
+                    setHeroProfileImage(window.latestAWSProfileImage, true);
+                }
+            } catch (error) {
+                console.error('❌ WEBSITE: Failed to load hero data:', error);
+                // Bei Fehler trotzdem Standard-Werte garantieren
+                ensureDefaultStatistics();
+            }
+        });
+        
+        // Auch bei Storage-Änderungen reagieren (für Live-Updates)
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'heroData' || e.key === 'adminProfileData' || e.key === 'adminProfileImage') {
+                console.log('🔄 WEBSITE: Hero data updated, reloading...', e.key);
+                loadHeroDataFromAdmin();
+                loadProfileImageFromAWS(true);
+            }
+        });
+        
+        // Auch Storage-Events im gleichen Tab abfangen (für Live-Updates ohne Tab-Wechsel)
+        const originalSetItem = Storage.prototype.setItem;
+        Storage.prototype.setItem = function(key, value) {
+            originalSetItem.apply(this, [key, value]);
+            if (key === 'heroData' || key === 'adminProfileData' || key === 'adminProfileImage') {
+                window.dispatchEvent(new StorageEvent('storage', {
+                    key: key,
+                    newValue: value,
+                    oldValue: this.getItem(key)
+                }));
+            }
+        };
+        
+        // Zusätzliche Funktion für sofortige Statistiken-Updates
+        function updateHeroStatistics() {
+            const heroData = localStorage.getItem('heroData');
+            if (heroData) {
+                try {
+                    const data = JSON.parse(heroData);
+                    console.log('📊 WEBSITE: Updating statistics immediately...', data);
+                    
+                    // Statistiken sofort aktualisieren
+                    if (data.stat1Number) {
+                        const stat1Number = document.querySelector('.hero-about-stats .stat-card:nth-child(1) .stat-number');
+                        if (stat1Number) stat1Number.textContent = data.stat1Number;
+                    }
+                    if (data.stat1Label) {
+                        const stat1Label = document.querySelector('.hero-about-stats .stat-card:nth-child(1) .stat-label');
+                        if (stat1Label) stat1Label.textContent = data.stat1Label;
+                    }
+                    
+                    if (data.stat2Number) {
+                        const stat2Number = document.querySelector('.hero-about-stats .stat-card:nth-child(2) .stat-number');
+                        if (stat2Number) stat2Number.textContent = data.stat2Number;
+                    }
+                    if (data.stat2Label) {
+                        const stat2Label = document.querySelector('.hero-about-stats .stat-card:nth-child(2) .stat-label');
+                        if (stat2Label) stat2Label.textContent = data.stat2Label;
+                    }
+                    
+                    if (data.stat3Number) {
+                        const stat3Number = document.querySelector('.hero-about-stats .stat-card:nth-child(3) .stat-number');
+                        if (stat3Number) stat3Number.textContent = data.stat3Number;
+                    }
+                    if (data.stat3Label) {
+                        const stat3Label = document.querySelector('.hero-about-stats .stat-card:nth-child(3) .stat-label');
+                        if (stat3Label) stat3Label.textContent = data.stat3Label;
+                    }
+                } catch (error) {
+                    console.error('❌ WEBSITE: Error updating statistics:', error);
+                }
+            } else {
+                // Standard-Werte garantieren, falls keine Admin-Daten vorhanden
+                console.log('📊 WEBSITE: Using default statistics...');
+                ensureDefaultStatistics();
+            }
+        }
+        
+        // Funktion um Standard-Statistiken zu garantieren
+        function ensureDefaultStatistics() {
+            const stat1Number = document.querySelector('.hero-about-stats .stat-card:nth-child(1) .stat-number');
+            const stat1Label = document.querySelector('.hero-about-stats .stat-card:nth-child(1) .stat-label');
+            const stat2Number = document.querySelector('.hero-about-stats .stat-card:nth-child(2) .stat-number');
+            const stat2Label = document.querySelector('.hero-about-stats .stat-card:nth-child(2) .stat-label');
+            const stat3Number = document.querySelector('.hero-about-stats .stat-card:nth-child(3) .stat-number');
+            const stat3Label = document.querySelector('.hero-about-stats .stat-card:nth-child(3) .stat-label');
+            
+            if (stat1Number && !stat1Number.textContent) stat1Number.textContent = '6+';
+            if (stat1Label && !stat1Label.textContent) stat1Label.textContent = 'JAHRE IT PROJEKT ERFAHRUNG';
+            if (stat2Number && !stat2Number.textContent) stat2Number.textContent = '60+';
+            if (stat2Label && !stat2Label.textContent) stat2Label.textContent = 'ERFOLGREICH IMPLEMENTIERTE PROJEKTE';
+            if (stat3Number && !stat3Number.textContent) stat3Number.textContent = '100%';
+            if (stat3Label && !stat3Label.textContent) stat3Label.textContent = 'LERNKURVENEFFEKT ;)';
+        }
+        
+        // Polling für Live-Updates (falls Storage-Events nicht funktionieren)
+        setInterval(updateHeroStatistics, 2000);
+        
+        // Sofortige Website-Aktualisierung bei Profilbild-Änderungen
+        function updateWebsiteProfileImage() {
+            if (window.latestAWSProfileImage) {
+                setHeroProfileImage(window.latestAWSProfileImage);
+            }
+        }
+        
+        function updateProfileImageLive() {
+            if (window.latestAWSProfileImage) {
+                if (window.currentProfileImageSrc !== window.latestAWSProfileImage) {
+                    setHeroProfileImage(window.latestAWSProfileImage);
+                }
+            } else {
+                loadProfileImageFromAWS(true);
+            }
+        }
+        
+        // Polling für Live-Updates
+        setInterval(updateProfileImageLive, 5000);
+        
+        // Globale Funktionen exportieren für Admin-Panel Zugriff
+        window.updateProfileImageLive = updateProfileImageLive;
+        window.updateWebsiteProfileImage = updateWebsiteProfileImage;
+        
+        console.log('✅ WEBSITE: Hero data integration ready');
+    </script>
+
+    <!-- Footer mit allen Bereichen -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <!-- Linke Spalte: Persönliche Informationen -->
+                <div class="footer-section footer-brand">
+                    <div class="brand-info">
+                        <div class="brand-icon">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <div class="brand-text">
+                            <h3>Manuel Weiss</h3>
+                            <p data-de="HR-Berater für AI & Transformation" data-en="HR Consultant for AI & Transformation">HR-Berater für AI & Transformation</p>
+                        </div>
+                    </div>
+                    <div class="contact-info">
+                        <p><i class="fas fa-envelope"></i> <a href="mailto:info@manuel-weiss.ch">info@manuel-weiss.ch</a></p>
+                        <p><i class="fas fa-phone"></i> <a href="tel:+41798385590">+41 79 838 55 90</a></p>
+                        <p><i class="fas fa-map-marker-alt"></i> Pilatusstrasse 40, 8330 Pfäffikon ZH</p>
+                    </div>
+                </div>
+                
+                <!-- Services Spalte -->
+                <div class="footer-section">
+                    <h3 data-de="Services" data-en="Services">Services</h3>
+                    <ul>
+                        <li><a href="ai-digitalisierung.html" data-de="AI & Digitalisierung" data-en="AI & Digitalization">AI & Digitalisierung</a></li>
+                        <li><a href="hr-transformation.html" data-de="HR Transformation" data-en="HR Transformation">HR Transformation</a></li>
+                        <li><a href="hr-prozessautomatisierung.html" data-de="Geschäftsprozesse" data-en="Business Processes">Geschäftsprozesse</a></li>
+                        <li><a href="persoenlichkeitsentwicklung-uebersicht.html" data-de="Persönlichkeitsentwicklung" data-en="Personality Development">Persönlichkeitsentwicklung</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Aktivitäten Spalte -->
+                <div class="footer-section">
+                    <h3 data-de="Aktivitäten" data-en="Activities">Aktivitäten</h3>
+                    <ul>
+                        <li><a href="wohnmobil.html" data-de="Wohnmobil" data-en="Motorhome">Wohnmobil</a></li>
+                        <li><a href="fotobox.html" data-de="Fotobox" data-en="Photo Booth">Fotobox</a></li>
+                        <li><a href="ebike.html" data-de="E-Bikes" data-en="E-Bikes">E-Bikes</a></li>
+                        <li><a href="sup.html" data-de="SUP" data-en="SUP">SUP</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Kontakt & Rechtliches Spalte -->
+                <div class="footer-section">
+                    <h3 data-de="Kontakt & Rechtliches" data-en="Contact & Legal">Kontakt & Rechtliches</h3>
+                    <ul>
+                        <li><a href="mailto:info@manuel-weiss.ch" data-de="E-Mail" data-en="Email">E-Mail</a></li>
+                        <li><a href="#contact" data-de="Kontaktformular" data-en="Contact Form">Kontaktformular</a></li>
+                        <li><a href="https://my.visualcv.com/manuel-weiss/" target="_blank" rel="noopener" data-de="Lebenslauf" data-en="Resume">Lebenslauf</a></li>
+                        <li><a href="impressum.html" data-de="Impressum" data-en="Imprint">Impressum</a></li>
+                        <li><a href="datenschutz.html" data-de="Datenschutz" data-en="Privacy Policy">Datenschutz</a></li>
+                        <li><a href="nutzungsbedingungen.html" data-de="Nutzungsbedingungen" data-en="Terms of Use">Nutzungsbedingungen</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Footer Bottom mit Copyright und Social Media -->
+            <div class="footer-bottom">
+                <div class="footer-bottom-content">
+                    <div class="copyright">
+                        <p data-de="© 2024 Manuel Weiss. Alle Rechte vorbehalten." data-en="© 2024 Manuel Weiss. All rights reserved.">&copy; 2024 Manuel Weiss. Alle Rechte vorbehalten.</p>
+                    </div>
+                    <div class="social-media">
+                        <a href="https://linkedin.com/in/manuel-weiss" target="_blank" rel="noopener">
+                            <i class="fab fa-linkedin"></i>
+                        </a>
+                        <a href="https://twitter.com/manuelweiss" target="_blank" rel="noopener">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="https://github.com/Manu-Manera" target="_blank" rel="noopener">
+                            <i class="fab fa-github"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <style>
+        .footer {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            color: white;
+            padding: 3rem 0 1rem;
+            margin-top: 4rem;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 3rem;
+            margin-bottom: 2rem;
+        }
+        
+        /* Brand Section (erste Spalte) */
+        .footer-brand {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .brand-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .brand-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+        
+        .brand-text h3 {
+            color: white;
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .brand-text p {
+            color: #94a3b8;
+            margin: 0.25rem 0 0 0;
+            font-size: 0.9rem;
+        }
+        
+        /* Standard Footer Sections */
+        .footer-section h3 {
+            color: #60a5fa;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .footer-section ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .footer-section ul li {
+            margin-bottom: 0.75rem;
+        }
+        
+        .footer-section a {
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-block;
+            font-size: 0.9rem;
+        }
+        
+        .footer-section a:hover {
+            color: #60a5fa;
+            transform: translateX(4px);
+        }
+        
+        /* Contact Info */
+        .contact-info p {
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.9rem;
+        }
+        
+        .contact-info i {
+            color: #60a5fa;
+            width: 16px;
+            text-align: center;
+        }
+        
+        .contact-info a {
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .contact-info a:hover {
+            color: #60a5fa;
+        }
+        
+        /* Footer Bottom */
+        .footer-bottom {
+            border-top: 1px solid #475569;
+            padding-top: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .footer-bottom-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .copyright p {
+            color: #94a3b8;
+            margin: 0;
+            font-size: 0.9rem;
+        }
+        
+        .social-media {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .social-media a {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+        }
+        
+        .social-media a:hover {
+            background: #60a5fa;
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .footer-content {
+                grid-template-columns: 1fr 1fr;
+                gap: 2rem;
+            }
+            
+            .footer-brand {
+                grid-column: 1 / -1;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+                text-align: center;
+            }
+            
+            .brand-info {
+                justify-content: center;
+            }
+            
+            .footer-bottom-content {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .footer {
+                padding: 2rem 0 1rem;
+            }
+            
+            .footer-content {
+                gap: 1.5rem;
+            }
+            
+            .brand-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+            }
+            
+            .brand-text h3 {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+
+    <!-- Enhanced Website Data Sync -->
+    <script src="js/website-sync-enhanced.js?v=20250120"></script>
+    
+    <!-- AWS Auth System -->
+    <script>
+        // AWS Config INLINE (um Cache-Probleme zu vermeiden)
+        window.AWS_CONFIG = {
+            userPoolId: 'eu-central-1_8gP4gLK9r',
+            clientId: '7kc5tt6a23fgh53d60vkefm812',
+            region: 'eu-central-1',
+            apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod',
+            dynamoDB: {
+                tableName: 'mawps-user-profiles',
+                region: 'eu-central-1'
+            },
+            domain: {
+                name: 'manuel-weiss.ch',
+                email: 'mail@manuel-weiss.ch',
+                region: 'eu-central-1'
+            },
+            s3: {
+                bucket: 'mawps-user-files-1760106396',
+                region: 'eu-central-1'
+            }
+        };
+        
+        // Initialize AWS with configuration
+        if (typeof AWS !== 'undefined') {
+            AWS.config.update({
+                region: window.AWS_CONFIG.region
+            });
+            window.AWS_COGNITO_CONFIG = {
+                UserPoolId: window.AWS_CONFIG.userPoolId,
+                ClientId: window.AWS_CONFIG.clientId
+            };
+        }
+    </script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="js/aws-app-config.js"></script>
+    <script src="js/aws-profile-api.js?v=20250116"></script>
+    <script src="js/real-user-auth-system.js?v=20250116"></script>
+    <script src="js/beraterprofil.js"></script>
+    
+    <!-- Menü-Funktionen -->
+    <script>
+        function openProfile() {
+            if (window.realUserAuth && window.realUserAuth.showNotification) {
+                window.realUserAuth.showNotification('Profil wird geöffnet...', 'info');
+            }
+            setTimeout(() => {
+                window.location.href = 'user-profile.html#personal';
+            }, 500);
+        }
+        
+        function openSettings() {
+            if (window.realUserAuth && window.realUserAuth.showNotification) {
+                window.realUserAuth.showNotification('Einstellungen werden geöffnet...', 'info');
+            }
+            setTimeout(() => {
+                window.location.href = 'user-profile.html#settings';
+            }, 500);
+        }
+        
+        function openProgress() {
+            if (window.realUserAuth && window.realUserAuth.showNotification) {
+                window.realUserAuth.showNotification('Fortschritt wird angezeigt...', 'info');
+            }
+            setTimeout(() => {
+                window.location.href = 'user-profile.html#progress';
+            }, 500);
+        }
+        
+        // Close dropdown when clicking outside (mit Verzögerung für Button-Click)
+        document.addEventListener('click', function(event) {
+            const navUser = document.getElementById('navUser');
+            const userDropdown = document.getElementById('userDropdown');
+            const authButton = document.getElementById('realAuthButton');
+            
+            // Prüfe ob der Klick auf den Auth-Button war
+            if (authButton && authButton.contains(event.target)) {
+                return;
+            }
+            
+            // Prüfe ob der Klick außerhalb des User-Systems war
+            if (navUser && userDropdown && !navUser.contains(event.target)) {
+                setTimeout(() => {
+                    if (userDropdown) {
+                        userDropdown.style.display = 'none';
+                    }
+                }, 10);
+            }
+        });
+    </script>
+
+</body>
+</html>
+</html>
