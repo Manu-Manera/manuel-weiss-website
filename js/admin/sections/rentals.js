@@ -227,7 +227,7 @@ class RentalsSection {
     }
 
     /**
-     * Bilder hochladen (ähnlich wie Profilbild)
+     * Bilder hochladen - verwendet Smart Media Upload
      */
     async handleImageUpload(files) {
         if (!files || files.length === 0) return;
@@ -243,18 +243,90 @@ class RentalsSection {
             const file = files[i];
             
             try {
-                // Prüfe ob awsMedia verfügbar ist
-                if (!window.awsMedia || !window.awsMedia.uploadProfileImage) {
-                    console.error('❌ awsMedia nicht verfügbar');
-                    this.toast('Upload-System nicht verfügbar', 'error');
+                // Verwende Smart Media Upload
+                if (window.smartMediaUpload) {
+                    const result = await window.smartMediaUpload.upload(file, {
+                        category: 'rental',
+                        userId: 'owner',
+                        metadata: {
+                            rentalType: this.currentRentalType
+                        },
+                        onProgress: (progress) => {
+                            console.log(`📤 Upload Progress: ${progress}%`);
+                        },
+                        onSuccess: (data) => {
+                            uploadedImages.push({
+                                url: data.url,
+                                filename: file.name,
+                                uploadedAt: new Date().toISOString(),
+                                isUploaded: !!data.s3Url
+                            });
+
+                            // Vorschau hinzufügen
+                            const preview = document.createElement('div');
+                            preview.style.position = 'relative';
+                            preview.innerHTML = `
+                                <img src="${data.url}" alt="${file.name}" 
+                                     style="width: 100%; height: 150px; object-fit: cover; border-radius: 6px; border: 2px solid #ddd;">
+                                <button type="button" class="remove-image-btn" data-url="${data.url}"
+                                        style="position: absolute; top: 5px; right: 5px; background: rgba(239, 68, 68, 0.9); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                                    <i class="fas fa-times" style="font-size: 0.75rem;"></i>
+                                </button>
+                            `;
+                            
+                            previewContainer.appendChild(preview);
+
+                            // Remove-Button Event Listener
+                            const removeBtn = preview.querySelector('.remove-image-btn');
+                            if (removeBtn) {
+                                removeBtn.addEventListener('click', () => {
+                                    this.removeImage(data.url);
+                                    preview.remove();
+                                });
+                            }
+
+                            this.toast(`Bild ${i + 1} erfolgreich hochgeladen`, 'success');
+                        },
+                        onError: (error) => {
+                            console.error('❌ Upload-Fehler:', error);
+                            this.toast(`Fehler beim Upload von ${file.name}`, 'error');
+                        }
+                    });
+                } else {
+                    // Fallback: Alte Methode
+                    console.warn('⚠️ Smart Media Upload nicht verfügbar, verwende Fallback');
+                    await this.handleImageUploadFallback(files);
                     return;
                 }
+            } catch (error) {
+                console.error('❌ Upload-Fehler:', error);
+                this.toast(`Fehler beim Upload von ${file.name}`, 'error');
+            }
+        }
 
-                // Lade Bild zu AWS S3 hoch
-                const userId = 'rentals'; // Oder eine spezifische User-ID
+        // Bilder in LocalStorage speichern
+        this.saveUploadedImages(uploadedImages);
+    }
+    
+    /**
+     * Fallback-Upload-Methode (alte Implementierung)
+     */
+    async handleImageUploadFallback(files) {
+        const previewContainer = document.getElementById('rentalImagePreview');
+        if (!previewContainer) return;
+
+        const uploadedImages = [];
+
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            
+            try {
+                if (!window.awsMedia || !window.awsMedia.uploadProfileImage) {
+                    throw new Error('Upload-System nicht verfügbar');
+                }
+
+                const userId = 'rentals';
                 const result = await window.awsMedia.uploadProfileImage(file, userId);
-                
-                console.log('📦 S3 Upload Result:', result);
                 
                 if (result && result.publicUrl) {
                     uploadedImages.push({
@@ -277,7 +349,6 @@ class RentalsSection {
                     
                     previewContainer.appendChild(preview);
 
-                    // Remove-Button Event Listener
                     const removeBtn = preview.querySelector('.remove-image-btn');
                     if (removeBtn) {
                         removeBtn.addEventListener('click', () => {
@@ -287,14 +358,11 @@ class RentalsSection {
                     }
 
                     this.toast(`Bild ${i + 1} erfolgreich hochgeladen`, 'success');
-                } else {
-                    console.error('❌ Keine publicUrl im Upload-Result');
-                    this.toast(`Fehler beim Upload von ${file.name}`, 'error');
                 }
             } catch (error) {
                 console.error('❌ Upload-Fehler:', error);
                 
-                // Fallback: Base64-Vorschau (lokal speichern)
+                // Fallback: Base64
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     const base64Url = e.target.result;
@@ -332,7 +400,6 @@ class RentalsSection {
             }
         }
 
-        // Bilder in LocalStorage speichern
         this.saveUploadedImages(uploadedImages);
     }
 

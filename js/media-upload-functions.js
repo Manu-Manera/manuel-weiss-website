@@ -58,7 +58,7 @@ function handleFileUpload(files) {
     });
 }
 
-// Upload single file
+// Upload single file - verwendet Smart Media Upload
 async function uploadSingleFile(file, index, total) {
     console.log(`📤 Uploading file ${index + 1}/${total}:`, file.name);
     
@@ -68,13 +68,34 @@ async function uploadSingleFile(file, index, total) {
         
         // Determine category based on file type
         const category = getFileCategory(file);
-        const subcategory = getFileSubcategory(file);
         
-        // Upload using unified system
-        if (window.unifiedAWS && typeof window.unifiedAWS.uploadMedia === 'function') {
+        // Verwende Smart Media Upload (Priorität)
+        if (window.smartMediaUpload) {
+            const result = await window.smartMediaUpload.upload(file, {
+                category: category,
+                userId: 'owner',
+                onProgress: (progress) => {
+                    const totalProgress = ((index + progress / 100) / total) * 100;
+                    updateUploadProgress(totalProgress);
+                },
+                onSuccess: (data) => {
+                    console.log('✅ Upload successful:', data);
+                    showNotification(`${file.name} erfolgreich hochgeladen`, 'success');
+                },
+                onError: (error) => {
+                    console.error('❌ Upload failed:', error);
+                    showNotification(`Upload von ${file.name} fehlgeschlagen: ${error.message}`, 'error');
+                }
+            });
+            
+            // Update progress
+            const progress = ((index + 1) / total) * 100;
+            updateUploadProgress(progress);
+            
+        } else if (window.unifiedAWS && typeof window.unifiedAWS.uploadMedia === 'function') {
+            // Fallback: unifiedAWS
             const result = await window.unifiedAWS.uploadMedia([file], {
                 category: category,
-                subcategory: subcategory,
                 onProgress: (progress) => {
                     updateUploadProgress(progress);
                 }
@@ -83,15 +104,19 @@ async function uploadSingleFile(file, index, total) {
             console.log('✅ Upload successful:', result);
             showNotification(`${file.name} erfolgreich hochgeladen`, 'success');
             
+            // Update progress
+            const progress = ((index + 1) / total) * 100;
+            updateUploadProgress(progress);
+            
         } else {
             // Fallback to localStorage
-            await uploadToLocalStorage(file, category, subcategory);
+            await uploadToLocalStorage(file, category, 'files');
             showNotification(`${file.name} in LocalStorage gespeichert`, 'info');
+            
+            // Update progress
+            const progress = ((index + 1) / total) * 100;
+            updateUploadProgress(progress);
         }
-        
-        // Update progress
-        const progress = ((index + 1) / total) * 100;
-        updateUploadProgress(progress);
         
     } catch (error) {
         console.error('❌ Upload failed:', error);
