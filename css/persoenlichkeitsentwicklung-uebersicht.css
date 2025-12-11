@@ -1174,19 +1174,22 @@
 .method-card {
     background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
     border-radius: 24px;
-    padding: 2rem; /* Reduziert von 2.5rem */
+    padding: 2rem;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     border: 1px solid rgba(99, 102, 241, 0.1);
     position: relative;
-    overflow: hidden;
+    overflow: hidden; /* Verhindert Überlauf */
     height: 100%;
     display: flex;
     flex-direction: column;
     cursor: pointer;
     backdrop-filter: blur(10px);
-    /* Gleiche Höhe für alle Karten */
+    /* Gleiche Höhe für alle Karten - WICHTIG für Buttons auf gleicher Höhe */
     min-height: 520px;
+    max-height: 520px; /* Feste Höhe für alle Karten */
+    box-sizing: border-box;
+    width: 100%; /* Verhindert Überlauf */
 }
 
 .method-card::before {
@@ -1290,16 +1293,24 @@
 .method-icon.raisec { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
 .method-icon.therapy-form-finder { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
 
+/* .method-info h3 wurde nach oben verschoben */
+
+.method-info {
+    flex: 1;
+    min-width: 0; /* WICHTIG: Ermöglicht Text-Overflow */
+    overflow: hidden; /* Verhindert Überlauf */
+}
+
 .method-info h3 {
     font-size: 1.5rem;
     font-weight: 800;
     color: #1e293b;
-    margin: 0 0 0.75rem 0; /* Reduziert von 1rem */
+    margin: 0 0 0.75rem 0;
     line-height: 1.2;
     letter-spacing: -0.02em;
-    min-height: auto; /* Entfernt: 2.4rem */
-    display: flex;
-    align-items: center;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
 }
 
 .method-info p {
@@ -1316,6 +1327,9 @@
     text-overflow: ellipsis;
     min-height: 6.4rem; /* 4 Zeilen * 1.6 line-height * 1rem font-size */
     max-height: 6.4rem;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
 }
 
 .method-tags {
@@ -1330,6 +1344,9 @@
     /* Feste Höhe für Tags-Bereich */
     min-height: 60px;
     flex-shrink: 0;
+    overflow: hidden; /* Verhindert Überlauf */
+    width: 100%; /* Verhindert Überlauf */
+    box-sizing: border-box;
 }
 
 .method-tag {
@@ -1343,7 +1360,10 @@
     transition: all 0.2s ease;
     border: none;
     white-space: nowrap;
-    overflow: visible;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%; /* Verhindert Überlauf */
+    box-sizing: border-box;
 }
 
 .method-tag:hover {
@@ -1366,6 +1386,9 @@
     /* Feste Höhe für Stats-Bereich */
     min-height: 100px;
     flex-shrink: 0;
+    overflow: hidden; /* Verhindert Überlauf */
+    width: 100%; /* Verhindert Überlauf */
+    box-sizing: border-box;
 }
 
 .stat-item {
@@ -1402,8 +1425,10 @@
     text-transform: uppercase;
     letter-spacing: 0.5px;
     white-space: nowrap;
-    overflow: visible;
-    text-overflow: unset;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .method-action {
@@ -1415,9 +1440,13 @@
     border-top: 1px solid rgba(99, 102, 241, 0.1);
     justify-content: center;
     flex-wrap: wrap;
-    /* Feste Höhe für Buttons-Bereich */
+    /* Feste Höhe für Buttons-Bereich - WICHTIG für gleiche Höhe */
     min-height: 70px;
+    max-height: 70px;
     flex-shrink: 0;
+    overflow: hidden; /* Verhindert Überlauf */
+    width: 100%; /* Verhindert Überlauf */
+    box-sizing: border-box;
 }
 
 .btn {
