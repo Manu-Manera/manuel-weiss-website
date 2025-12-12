@@ -3077,11 +3077,16 @@ a:hover {
     
     /* Navigation Mobile */
     .mobile-menu-toggle {
-        display: flex;
+        display: flex !important;
+        position: absolute;
+        right: var(--spacing-xl);
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 1001;
     }
     
     .nav-menu {
-        display: none;
+        display: none !important;
     }
     
     .nav-menu.mobile-active {
