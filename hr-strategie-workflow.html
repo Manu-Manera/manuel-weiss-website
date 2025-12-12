@@ -120,12 +120,23 @@
         
         .assessment-category.clickable-category {
             cursor: pointer;
+            position: relative;
         }
         
         .assessment-category.clickable-category:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
             border-color: #3b82f6;
+        }
+        
+        .assessment-category.clickable-category * {
+            pointer-events: none;
+        }
+        
+        .assessment-category.clickable-category input[type="range"],
+        .assessment-category.clickable-category .slider-container,
+        .assessment-category.clickable-category .slider-container * {
+            pointer-events: auto;
         }
         
         .category-header {
@@ -1174,21 +1185,31 @@ Entwickelt mit Harvard & MIT Methodologie`;
         let currentStep = 0;
         const totalSteps = 8; // 0 = Assessment, 1-7 = Workflow steps
         
-        // Sidebar functionality
-        function toggleSidebar() {
+        // Sidebar functionality - Make globally available
+        window.toggleSidebar = function() {
             const sidebar = document.getElementById('workflowSidebar');
             const icon = document.getElementById('sidebarToggleIcon');
             const content = document.getElementById('sidebarContent');
             
+            if (!sidebar) {
+                console.error('Sidebar not found');
+                return;
+            }
+            
             if (sidebar.classList.contains('collapsed')) {
                 sidebar.classList.remove('collapsed');
-                icon.className = 'fas fa-chevron-left';
-                content.style.display = 'block';
+                if (icon) icon.className = 'fas fa-chevron-left';
+                if (content) content.style.display = 'block';
             } else {
                 sidebar.classList.add('collapsed');
-                icon.className = 'fas fa-chevron-right';
-                content.style.display = 'none';
+                if (icon) icon.className = 'fas fa-chevron-right';
+                if (content) content.style.display = 'none';
             }
+        };
+        
+        // Also keep local function for backwards compatibility
+        function toggleSidebar() {
+            window.toggleSidebar();
         }
         
         // Assessment functions
@@ -1253,11 +1274,23 @@ Entwickelt mit Harvard & MIT Methodologie`;
             if (sidebarLevel) sidebarLevel.textContent = level;
         }
         
-        function openDetailAssessment(dimension) {
-            // Save current progress
-            saveProgress();
-            // Navigate to detail page (to be created)
+        // Make openDetailAssessment globally available
+        window.openDetailAssessment = function(dimension) {
+            // Save current progress if function exists
+            if (typeof saveProgress === 'function') {
+                try {
+                    saveProgress();
+                } catch (e) {
+                    console.warn('Could not save progress:', e);
+                }
+            }
+            // Navigate to detail page
             window.location.href = `hr-strategie-assessment-detail-${dimension}.html`;
+        };
+        
+        // Also keep local function for backwards compatibility
+        function openDetailAssessment(dimension) {
+            window.openDetailAssessment(dimension);
         }
         
         // Navigation functions
@@ -1399,6 +1432,37 @@ Entwickelt mit Harvard & MIT Methodologie`;
             updateMaturityDisplay();
             updateProgress();
             workflowExporter = new AssessmentExporter();
+            
+            // Setup click handlers for assessment categories as fallback
+            document.querySelectorAll('.clickable-category').forEach(category => {
+                category.addEventListener('click', function(e) {
+                    // Don't trigger if clicking on slider or its container
+                    if (e.target.tagName === 'INPUT' || e.target.closest('.slider-container') || e.target.closest('input[type="range"]')) {
+                        return;
+                    }
+                    const onclick = this.getAttribute('onclick');
+                    if (onclick) {
+                        const match = onclick.match(/openDetailAssessment\('([^']+)'\)/);
+                        if (match) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            window.openDetailAssessment(match[1]);
+                        }
+                    }
+                });
+            });
+            
+            // Ensure sidebar toggle button works
+            const sidebarToggle = document.querySelector('.sidebar-toggle');
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    window.toggleSidebar();
+                });
+            }
+            
+            console.log('✅ HR-Strategy Workflow initialized successfully');
         });
     </script>
     
