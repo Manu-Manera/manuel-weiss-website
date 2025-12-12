@@ -115,10 +115,30 @@
                 description: 'Wie modern ist Ihre Cloud-Infrastruktur? Nutzen Sie Cloud-Services für Skalierbarkeit und Flexibilität?',
                 icon: 'fa-cloud',
                 subCriteria: [
-                    { id: 'cloudHrSystems', title: 'Cloud-basierte HR-Systeme im Einsatz' },
-                    { id: 'scalableCloud', title: 'Skalierbare Cloud-Infrastruktur verfügbar' },
-                    { id: 'multiCloudStrategy', title: 'Multi-Cloud oder Hybrid-Cloud Strategie' },
-                    { id: 'cloudGovernance', title: 'Cloud-Governance und Best Practices etabliert' }
+                    { 
+                        id: 'cloudHrSystems', 
+                        title: 'Cloud-basierte HR-Systeme im Einsatz',
+                        description: 'Nutzen Sie moderne Cloud-basierte HR-Systeme?',
+                        examples: ['Workday, SAP SuccessFactors, BambooHR im Einsatz', 'SaaS-basierte HR-Lösungen', 'Keine On-Premise Legacy-Systeme']
+                    },
+                    { 
+                        id: 'scalableCloud', 
+                        title: 'Skalierbare Cloud-Infrastruktur verfügbar',
+                        description: 'Kann Ihre Infrastruktur automatisch mit der Last skalieren?',
+                        examples: ['Auto-Scaling konfiguriert', 'Elastische Ressourcenallokation', 'Cloud-native Architektur']
+                    },
+                    { 
+                        id: 'multiCloudStrategy', 
+                        title: 'Multi-Cloud oder Hybrid-Cloud Strategie',
+                        description: 'Nutzen Sie mehrere Cloud-Anbieter oder eine Hybrid-Strategie?',
+                        examples: ['AWS, Azure, GCP kombiniert', 'Hybrid-Cloud Setup', 'Vendor-Lock-in vermieden']
+                    },
+                    { 
+                        id: 'cloudGovernance', 
+                        title: 'Cloud-Governance und Best Practices etabliert',
+                        description: 'Gibt es klare Richtlinien und Prozesse für Cloud-Nutzung?',
+                        examples: ['Cloud-Governance-Framework', 'Cost-Management-Tools', 'Security-Best-Practices']
+                    }
                 ]
             },
             {
@@ -127,10 +147,30 @@
                 description: 'Wie gut sind Ihre Systeme über APIs verbunden? Gibt es moderne REST/GraphQL APIs?',
                 icon: 'fa-plug',
                 subCriteria: [
-                    { id: 'modernApis', title: 'Moderne REST oder GraphQL APIs verfügbar' },
-                    { id: 'documentedApis', title: 'Dokumentierte API-Schnittstellen' },
-                    { id: 'easyIntegration', title: 'Einfache Integration neuer Systeme möglich' },
-                    { id: 'apiSecurity', title: 'API-Sicherheit und Authentifizierung implementiert' }
+                    { 
+                        id: 'modernApis', 
+                        title: 'Moderne REST oder GraphQL APIs verfügbar',
+                        description: 'Welche API-Standards nutzen Sie?',
+                        examples: ['REST API v2/v3', 'GraphQL Endpoints', 'OpenAPI/Swagger Spezifikationen']
+                    },
+                    { 
+                        id: 'documentedApis', 
+                        title: 'Dokumentierte API-Schnittstellen',
+                        description: 'Ist Ihre API-Dokumentation aktuell und vollständig?',
+                        examples: ['Vollständige API-Dokumentation', 'Interaktive API-Explorer', 'Code-Beispiele verfügbar']
+                    },
+                    { 
+                        id: 'easyIntegration', 
+                        title: 'Einfache Integration neuer Systeme möglich',
+                        description: 'Wie einfach ist die Integration neuer Systeme?',
+                        examples: ['Standardisierte Integration Patterns', 'SDKs für gängige Sprachen', 'Schnelle Onboarding-Zeit']
+                    },
+                    { 
+                        id: 'apiSecurity', 
+                        title: 'API-Sicherheit und Authentifizierung implementiert',
+                        description: 'Wie sicher sind Ihre APIs?',
+                        examples: ['OAuth 2.0 / JWT', 'Rate Limiting', 'API-Gateway mit Security']
+                    }
                 ]
             },
             {
@@ -139,10 +179,30 @@
                 description: 'Wie gut sind Ihre HR-Systeme untereinander integriert? Gibt es nahtlosen Datenfluss?',
                 icon: 'fa-network-wired',
                 subCriteria: [
-                    { id: 'seamlessIntegration', title: 'Nahtlose Integration zwischen HR-Systemen' },
-                    { id: 'automatedDataflow', title: 'Automatisierter Datenfluss zwischen Systemen' },
-                    { id: 'noManualTransfer', title: 'Keine manuellen Datenübertragungen nötig' },
-                    { id: 'realTimeSync', title: 'Echtzeit-Synchronisation zwischen Systemen' }
+                    { 
+                        id: 'seamlessIntegration', 
+                        title: 'Nahtlose Integration zwischen HR-Systemen',
+                        description: 'Wie nahtlos ist die Integration zwischen Ihren HR-Systemen?',
+                        examples: ['Single Sign-On (SSO)', 'Unified Data Model', 'Konsistente Benutzeroberflächen']
+                    },
+                    { 
+                        id: 'automatedDataflow', 
+                        title: 'Automatisierter Datenfluss zwischen Systemen',
+                        description: 'Wie automatisiert ist der Datenfluss?',
+                        examples: ['Event-driven Architecture', 'Real-time Data Pipelines', 'Keine manuellen Schritte']
+                    },
+                    { 
+                        id: 'noManualTransfer', 
+                        title: 'Keine manuellen Datenübertragungen nötig',
+                        description: 'Gibt es noch manuelle Datenübertragungen?',
+                        examples: ['Vollständig automatisierte Prozesse', 'Keine Excel-Importe nötig', 'API-basierte Synchronisation']
+                    },
+                    { 
+                        id: 'realTimeSync', 
+                        title: 'Echtzeit-Synchronisation zwischen Systemen',
+                        description: 'Wie aktuell sind die Daten zwischen Systemen?',
+                        examples: ['Event-basierte Updates', 'Sub-Sekunden Latenz', 'Bidirektionale Synchronisation']
+                    }
                 ]
             },
             {
@@ -151,10 +211,30 @@
                 description: 'Kann Ihre Infrastruktur mit wachsenden Datenmengen und Nutzern mithalten?',
                 icon: 'fa-chart-line',
                 subCriteria: [
-                    { id: 'autoScaling', title: 'Automatische Skalierung bei Lastspitzen' },
-                    { id: 'highPerformance', title: 'Hohe Performance auch bei großen Datenmengen' },
-                    { id: 'elasticResources', title: 'Elastische Ressourcenallokation' },
-                    { id: 'loadBalancing', title: 'Load Balancing und Performance-Optimierung' }
+                    { 
+                        id: 'autoScaling', 
+                        title: 'Automatische Skalierung bei Lastspitzen',
+                        description: 'Skaliert Ihre Infrastruktur automatisch?',
+                        examples: ['Horizontal Scaling', 'Container-basierte Architektur', 'Serverless Functions']
+                    },
+                    { 
+                        id: 'highPerformance', 
+                        title: 'Hohe Performance auch bei großen Datenmengen',
+                        description: 'Wie performant ist das System?',
+                        examples: ['Sub-Sekunden Antwortzeiten', 'Optimierte Datenbankabfragen', 'Caching-Strategien']
+                    },
+                    { 
+                        id: 'elasticResources', 
+                        title: 'Elastische Ressourcenallokation',
+                        description: 'Wie elastisch sind die Ressourcen?',
+                        examples: ['On-demand Ressourcen', 'Cost-optimierte Skalierung', 'Ressourcen-Pooling']
+                    },
+                    { 
+                        id: 'loadBalancing', 
+                        title: 'Load Balancing und Performance-Optimierung',
+                        description: 'Gibt es Load Balancing?',
+                        examples: ['Multi-Region Deployment', 'Traffic Distribution', 'Health Checks']
+                    }
                 ]
             },
             {
@@ -163,10 +243,30 @@
                 description: 'Wie sicher ist Ihre technische Infrastruktur? Gibt es moderne Sicherheitsmaßnahmen?',
                 icon: 'fa-shield-alt',
                 subCriteria: [
-                    { id: 'modernEncryption', title: 'Moderne Verschlüsselungstechnologien' },
-                    { id: 'iam', title: 'Identity & Access Management (IAM)' },
-                    { id: 'securityAudits', title: 'Regelmäßige Sicherheitsaudits' },
-                    { id: 'threatDetection', title: 'Threat Detection und Incident Response' }
+                    { 
+                        id: 'modernEncryption', 
+                        title: 'Moderne Verschlüsselungstechnologien',
+                        description: 'Welche Verschlüsselung nutzen Sie?',
+                        examples: ['TLS 1.3', 'End-to-End Verschlüsselung', 'Encryption at Rest']
+                    },
+                    { 
+                        id: 'iam', 
+                        title: 'Identity & Access Management (IAM)',
+                        description: 'Wie ist das Identity Management?',
+                        examples: ['Multi-Factor Authentication', 'Role-Based Access Control', 'Single Sign-On']
+                    },
+                    { 
+                        id: 'securityAudits', 
+                        title: 'Regelmäßige Sicherheitsaudits',
+                        description: 'Wie regelmäßig sind Security Audits?',
+                        examples: ['Quartalsweise Audits', 'Penetration Testing', 'Compliance-Zertifizierungen']
+                    },
+                    { 
+                        id: 'threatDetection', 
+                        title: 'Threat Detection und Incident Response',
+                        description: 'Gibt es Threat Detection?',
+                        examples: ['SIEM-Systeme', 'Anomaly Detection', 'Incident Response Plan']
+                    }
                 ]
             },
             {
@@ -175,10 +275,30 @@
                 description: 'Wie ist Ihre Datenarchitektur aufgebaut? Gibt es moderne Datenbanken und Storage-Lösungen?',
                 icon: 'fa-database',
                 subCriteria: [
-                    { id: 'modernDatabases', title: 'Moderne Datenbanktechnologien (SQL/NoSQL)' },
-                    { id: 'dataWarehouse', title: 'Data Warehouse oder Data Lake vorhanden' },
-                    { id: 'efficientQueries', title: 'Effiziente Datenabfragen möglich' },
-                    { id: 'dataBackup', title: 'Backup- und Disaster-Recovery-Strategien' }
+                    { 
+                        id: 'modernDatabases', 
+                        title: 'Moderne Datenbanktechnologien (SQL/NoSQL)',
+                        description: 'Welche Datenbanken nutzen Sie?',
+                        examples: ['PostgreSQL, MongoDB', 'Time-Series DBs', 'In-Memory Databases']
+                    },
+                    { 
+                        id: 'dataWarehouse', 
+                        title: 'Data Warehouse oder Data Lake vorhanden',
+                        description: 'Gibt es Data Warehouse/Lake?',
+                        examples: ['Snowflake, BigQuery', 'Data Lake Architecture', 'ETL/ELT Pipelines']
+                    },
+                    { 
+                        id: 'efficientQueries', 
+                        title: 'Effiziente Datenabfragen möglich',
+                        description: 'Wie effizient sind Abfragen?',
+                        examples: ['Optimierte Indizes', 'Query Performance Monitoring', 'Materialized Views']
+                    },
+                    { 
+                        id: 'dataBackup', 
+                        title: 'Backup- und Disaster-Recovery-Strategien',
+                        description: 'Wie ist das Backup?',
+                        examples: ['Automated Backups', 'Point-in-Time Recovery', 'Disaster Recovery Plan']
+                    }
                 ]
             },
             {
@@ -187,10 +307,30 @@
                 description: 'Wie gut können Sie Ihre Systeme überwachen? Gibt es moderne Monitoring-Tools?',
                 icon: 'fa-chart-area',
                 subCriteria: [
-                    { id: 'realtimeMonitoring', title: 'Echtzeit-Monitoring der Systeme' },
-                    { id: 'loggingTracing', title: 'Logging und Tracing verfügbar' },
-                    { id: 'proactiveDetection', title: 'Proaktive Fehlererkennung' },
-                    { id: 'performanceMetrics', title: 'Umfassende Performance-Metriken' }
+                    { 
+                        id: 'realtimeMonitoring', 
+                        title: 'Echtzeit-Monitoring der Systeme',
+                        description: 'Wie wird überwacht?',
+                        examples: ['Real-time Dashboards', 'Alerting Systeme', 'Performance Tracking']
+                    },
+                    { 
+                        id: 'loggingTracing', 
+                        title: 'Logging und Tracing verfügbar',
+                        description: 'Gibt es Logging/Tracing?',
+                        examples: ['Centralized Logging', 'Distributed Tracing', 'Log Aggregation']
+                    },
+                    { 
+                        id: 'proactiveDetection', 
+                        title: 'Proaktive Fehlererkennung',
+                        description: 'Wie proaktiv ist die Fehlererkennung?',
+                        examples: ['Predictive Analytics', 'Automated Alerts', 'Self-Healing Systems']
+                    },
+                    { 
+                        id: 'performanceMetrics', 
+                        title: 'Umfassende Performance-Metriken',
+                        description: 'Welche Metriken werden erfasst?',
+                        examples: ['APM Tools', 'Business Metrics', 'User Experience Metrics']
+                    }
                 ]
             },
             {
@@ -199,10 +339,30 @@
                 description: 'Wie aktuell sind Ihre Technologien? Werden veraltete Systeme kontinuierlich modernisiert?',
                 icon: 'fa-sync-alt',
                 subCriteria: [
-                    { id: 'regularUpdates', title: 'Regelmäßige Technologie-Updates' },
-                    { id: 'legacyMigration', title: 'Migration weg von Legacy-Systemen' },
-                    { id: 'modernAdoption', title: 'Adoption moderner Technologien' },
-                    { id: 'techRoadmap', title: 'Klare Technologie-Roadmap vorhanden' }
+                    { 
+                        id: 'regularUpdates', 
+                        title: 'Regelmäßige Technologie-Updates',
+                        description: 'Wie regelmäßig werden Updates gemacht?',
+                        examples: ['Agile Release Cycles', 'Continuous Deployment', 'Feature Flags']
+                    },
+                    { 
+                        id: 'legacyMigration', 
+                        title: 'Migration weg von Legacy-Systemen',
+                        description: 'Gibt es Legacy-Migration?',
+                        examples: ['Modernization Roadmap', 'Incremental Migration', 'Legacy System Retirement']
+                    },
+                    { 
+                        id: 'modernAdoption', 
+                        title: 'Adoption moderner Technologien',
+                        description: 'Wie modern sind die Technologien?',
+                        examples: ['Cloud-Native Stack', 'Microservices', 'Container Orchestration']
+                    },
+                    { 
+                        id: 'techRoadmap', 
+                        title: 'Klare Technologie-Roadmap vorhanden',
+                        description: 'Gibt es eine Tech-Roadmap?',
+                        examples: ['3-Jahres-Plan', 'Technology Radar', 'Innovation Budget']
+                    }
                 ]
             }
         ];
@@ -257,6 +417,15 @@
                             return `
                             <div class="sub-criterion-item" style="border-left-color: #f5576c;">
                                 <div class="sub-criterion-label">${subCriterion.title}</div>
+                                ${subCriterion.description ? `<div class="sub-criterion-description" style="color: #6b7280; font-size: 0.875rem; margin-bottom: 0.5rem;">${subCriterion.description}</div>` : ''}
+                                ${subCriterion.examples && subCriterion.examples.length > 0 ? `
+                                <div class="sub-criterion-examples" style="background: #f8fafc; padding: 0.75rem; border-radius: 6px; margin-bottom: 0.75rem; font-size: 0.8rem; color: #6b7280;">
+                                    <strong style="color: #374151; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">Beispiele:</strong>
+                                    <ul style="margin: 0.5rem 0 0 1.25rem; padding: 0;">
+                                        ${subCriterion.examples.map(ex => `<li style="margin-bottom: 0.25rem;">${ex}</li>`).join('')}
+                                    </ul>
+                                </div>
+                                ` : ''}
                                 <div class="sub-criterion-slider-wrapper">
                                     <input 
                                         type="range" 

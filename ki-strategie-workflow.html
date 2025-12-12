@@ -1072,6 +1072,7 @@
                             </div>
                             <div class="slider-container">
                                 <input type="range" min="1" max="5" value="1" class="slider" id="dataQualitySlider" oninput="updateAssessment('dataQuality', this.value)" onclick="event.stopPropagation();">
+                                <div class="slider-value-display" id="dataQualityValue" style="text-align: center; font-size: 1.25rem; font-weight: 700; color: #764ba2; margin: 0.5rem 0;">1</div>
                                 <div class="slider-labels">
                                     <span>Mangelhaft</span>
                                     <span>Exzellent</span>
@@ -1094,6 +1095,7 @@
                             </div>
                             <div class="slider-container">
                                 <input type="range" min="1" max="5" value="1" class="slider" id="techInfraSlider" oninput="updateAssessment('techInfra', this.value)" onclick="event.stopPropagation();">
+                                <div class="slider-value-display" id="techInfraValue" style="text-align: center; font-size: 1.25rem; font-weight: 700; color: #f5576c; margin: 0.5rem 0;">1</div>
                                 <div class="slider-labels">
                                     <span>Veraltet</span>
                                     <span>State-of-the-Art</span>
@@ -1116,6 +1118,7 @@
                             </div>
                             <div class="slider-container">
                                 <input type="range" min="1" max="5" value="1" class="slider" id="orgReadinessSlider" oninput="updateAssessment('orgReadiness', this.value)" onclick="event.stopPropagation();">
+                                <div class="slider-value-display" id="orgReadinessValue" style="text-align: center; font-size: 1.25rem; font-weight: 700; color: #00f2fe; margin: 0.5rem 0;">1</div>
                                 <div class="slider-labels">
                                     <span>Widerstand</span>
                                     <span>Sehr bereit</span>
@@ -1138,6 +1141,7 @@
                             </div>
                             <div class="slider-container">
                                 <input type="range" min="1" max="5" value="1" class="slider" id="skillsSlider" oninput="updateAssessment('skills', this.value)" onclick="event.stopPropagation();">
+                                <div class="slider-value-display" id="skillsValue" style="text-align: center; font-size: 1.25rem; font-weight: 700; color: #38f9d7; margin: 0.5rem 0;">1</div>
                                 <div class="slider-labels">
                                     <span>Grundlagen</span>
                                     <span>Expertenwissen</span>
@@ -1160,6 +1164,7 @@
                             </div>
                             <div class="slider-container">
                                 <input type="range" min="1" max="5" value="1" class="slider" id="governanceSlider" oninput="updateAssessment('governance', this.value)" onclick="event.stopPropagation();">
+                                <div class="slider-value-display" id="governanceValue" style="text-align: center; font-size: 1.25rem; font-weight: 700; color: #fee140; margin: 0.5rem 0;">1</div>
                                 <div class="slider-labels">
                                     <span>Unvollständig</span>
                                     <span>Vollständig</span>
@@ -1182,6 +1187,7 @@
                             </div>
                             <div class="slider-container">
                                 <input type="range" min="1" max="5" value="1" class="slider" id="innovationSlider" oninput="updateAssessment('innovation', this.value)" onclick="event.stopPropagation();">
+                                <div class="slider-value-display" id="innovationValue" style="text-align: center; font-size: 1.25rem; font-weight: 700; color: #fed6e3; margin: 0.5rem 0;">1</div>
                                 <div class="slider-labels">
                                     <span>Konservativ</span>
                                     <span>Innovativ</span>
@@ -2027,6 +2033,11 @@
         // Maturity assessment functions
         function updateAssessment(dimension, value) {
             maturityData[dimension] = parseInt(value);
+            // Update value display
+            const valueDisplay = document.getElementById(`${dimension}Value`);
+            if (valueDisplay) {
+                valueDisplay.textContent = value;
+            }
             calculateOverallMaturity();
             updateMaturityDisplay();
             generatePersonalizedInsights();
@@ -2068,6 +2079,11 @@
                     const slider = document.getElementById(`${dimension}Slider`);
                     if (slider) {
                         slider.value = Math.round(aggregatedValue);
+                    }
+                    // Update value display
+                    const valueDisplay = document.getElementById(`${dimension}Value`);
+                    if (valueDisplay) {
+                        valueDisplay.textContent = aggregatedValue.toFixed(1);
                     }
                 }
             });
