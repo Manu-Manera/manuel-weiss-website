@@ -506,14 +506,34 @@
         
         window.openDetailAssessment = function(dimension) {
             console.log('openDetailAssessment called with dimension:', dimension);
-            // Save current progress if function exists
-            if (typeof saveProgress === 'function') {
-                try {
-                    saveProgress();
-                } catch (e) {
-                    console.warn('Could not save progress:', e);
+            
+            // Try to save progress - function might not be available yet
+            try {
+                // Check if saveProgress exists in current scope or window
+                const saveFn = typeof saveProgress !== 'undefined' ? saveProgress : 
+                              (typeof window.saveProgress !== 'undefined' ? window.saveProgress : null);
+                if (saveFn && typeof saveFn === 'function') {
+                    saveFn();
+                    console.log('Progress saved');
+                } else {
+                    // Try to get from localStorage and save manually
+                    try {
+                        const progressData = {
+                            hrMaturityData: window.hrMaturityData || {},
+                            currentStep: window.currentStep || 0,
+                            overallMaturity: window.overallHrMaturity || 1.0,
+                            timestamp: new Date().toISOString()
+                        };
+                        localStorage.setItem('hrStrategieWorkflow', JSON.stringify(progressData));
+                        console.log('Progress saved manually');
+                    } catch (e) {
+                        console.warn('Could not save progress:', e);
+                    }
                 }
+            } catch (e) {
+                console.warn('Error saving progress:', e);
             }
+            
             // Navigate to detail page
             const url = `hr-strategie-assessment-detail-${dimension}.html`;
             console.log('Navigating to:', url);
