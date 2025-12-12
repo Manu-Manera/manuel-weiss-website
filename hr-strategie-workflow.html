@@ -1238,7 +1238,8 @@ Entwickelt mit Harvard & MIT Methodologie`;
                     star.classList.add('active');
                     star.classList.remove('active');
         // HR-Readiness Assessment System
-        let hrMaturityData = {
+        // Make variables globally available for saveProgress
+        window.hrMaturityData = {
             strategicAnchoring: 1,
             valueCreation: 1,
             dataInfrastructure: 1,
@@ -1247,9 +1248,14 @@ Entwickelt mit Harvard & MIT Methodologie`;
             scalingEcosystem: 1,
             learningAdaptation: 1
         };
-        let overallHrMaturity = 1.0;
-        let currentStep = 0;
+        window.overallHrMaturity = 1.0;
+        window.currentStep = 0;
         const totalSteps = 8; // 0 = Assessment, 1-7 = Workflow steps
+        
+        // Keep local references for backwards compatibility
+        let hrMaturityData = window.hrMaturityData;
+        let overallHrMaturity = window.overallHrMaturity;
+        let currentStep = window.currentStep;
         
         // Sidebar functionality - Functions already defined in head, just keep local reference
         function toggleSidebar() {
@@ -1274,6 +1280,7 @@ Entwickelt mit Harvard & MIT Methodologie`;
         function calculateOverallMaturity() {
             const sum = Object.values(hrMaturityData).reduce((acc, val) => acc + val, 0);
             overallHrMaturity = (sum / Object.keys(hrMaturityData).length).toFixed(1);
+            window.overallHrMaturity = overallHrMaturity;
         }
         
         function updateMaturityDisplay() {
@@ -1394,14 +1401,18 @@ Entwickelt mit Harvard & MIT Methodologie`;
         }
         
         function saveProgress() {
+            // Use window variables if available, fallback to local
             const progressData = {
-                currentStep: currentStep,
-                hrMaturityData: hrMaturityData,
-                overallMaturity: overallHrMaturity,
+                currentStep: window.currentStep !== undefined ? window.currentStep : currentStep,
+                hrMaturityData: window.hrMaturityData || hrMaturityData,
+                overallMaturity: window.overallHrMaturity !== undefined ? window.overallHrMaturity : overallHrMaturity,
                 timestamp: new Date().toISOString()
             };
             localStorage.setItem('hrStrategieWorkflow', JSON.stringify(progressData));
         }
+        
+        // Make saveProgress globally available
+        window.saveProgress = saveProgress;
         
         function loadProgress() {
             const saved = localStorage.getItem('hrStrategieWorkflow');
