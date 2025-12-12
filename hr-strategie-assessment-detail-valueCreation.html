@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wertschöpfung & Schlüsselfelder - HR-Readiness Assessment - Manuel Weiss</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/ki-assessment-detail.css">
+    <style>
+        .detail-header { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+        .criterion-icon { background: linear-gradient(135deg, #10b981, #059669); }
+        .detail-slider::-webkit-slider-thumb, .detail-slider::-moz-range-thumb,
+        .sub-criterion-slider::-webkit-slider-thumb, .sub-criterion-slider::-moz-range-thumb { background: linear-gradient(135deg, #10b981, #059669); }
+        .slider-value-display, .sub-criterion-value, .criterion-average-value { color: #059669; }
+        .aggregated-score { background: linear-gradient(135deg, #10b981, #059669); }
+        .save-button { color: #059669; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="manuel-weiss-photo.svg" alt="Manuel Weiss" class="nav-logo">
+                <span class="nav-name">Manuel Weiss</span>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="hr-transformation.html">HR-Transformation</a>
+                <a href="index.html#about">Über mich</a>
+                <a href="index.html#contact">Kontakt</a>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="detail-assessment-container">
+        <div class="detail-header">
+            <a href="hr-strategie-workflow.html" class="back-button"><i class="fas fa-arrow-left"></i> Zurück zur Übersicht</a>
+            <h1><i class="fas fa-chart-line"></i> Wertschöpfung & Schlüsselfelder</h1>
+            <p>Definieren Sie die strategischen Handlungsfelder, die messbar zum Unternehmenserfolg beitragen. Harvard: Fokus auf den "Return on People".</p>
+        </div>
+        
+        <div id="criteriaContainer"></div>
+        
+        <div class="aggregated-score">
+            <h3>Gesamtbewertung</h3>
+            <div class="score-display">
+                <div class="score-circle-large" id="aggregatedScore">1.0</div>
+                <div class="score-description" id="scoreDescription">Bewerten Sie die Kriterien, um Ihre Gesamtbewertung zu sehen</div>
+            </div>
+            <div style="display: flex; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap;">
+                <button class="save-button" onclick="saveAndReturn()" style="flex: 1; min-width: 200px;"><i class="fas fa-save"></i> Bewertung speichern und zurück</button>
+                <button onclick="exportToExcel()" style="background: #217346; color: white; border: none; padding: 1rem 2rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; flex: 1; min-width: 150px;"><i class="fas fa-file-excel"></i> Excel Export</button>
+                <button onclick="exportToPDF()" style="background: #dc3545; color: white; border: none; padding: 1rem 2rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; flex: 1; min-width: 150px;"><i class="fas fa-file-pdf"></i> PDF Export</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const valueCreationCriteria = [
+            {
+                id: 'talentAcquisition',
+                title: 'Talent Acquisition & Employer Branding',
+                description: 'Wie effektiv ist Ihre Talent-Akquise?',
+                icon: 'fa-user-plus',
+                subCriteria: [
+                    { id: 'effectiveRecruiting', title: 'Effektive Recruiting-Prozesse', description: 'Wie effektiv ist das Recruiting?', examples: ['Schnelle Time-to-Fill', 'Hohe Quality-of-Hire', 'Effiziente Prozesse'] },
+                    { id: 'employerBrand', title: 'Starke Employer Brand', description: 'Gibt es eine starke Employer Brand?', examples: ['Attraktive Marke', 'Positive Reputation', 'Starker Auftritt'] },
+                    { id: 'diverseTalent', title: 'Vielfältiges Talent-Pool', description: 'Wie vielfältig ist das Talent-Pool?', examples: ['Diversity-Fokus', 'Inklusive Recruiting', 'Breites Netzwerk'] },
+                    { id: 'talentPipeline', title: 'Aktive Talent-Pipeline', description: 'Gibt es eine Talent-Pipeline?', examples: ['Kontinuierliche Sourcing', 'Talent-Relationship', 'Proaktive Akquise'] }
+                ]
+            },
+            {
+                id: 'learningDevelopment',
+                title: 'Learning & Development',
+                description: 'Wie gut ist die Kompetenzentwicklung?',
+                icon: 'fa-graduation-cap',
+                subCriteria: [
+                    { id: 'structuredLd', title: 'Strukturierte L&D-Programme', description: 'Gibt es strukturierte Programme?', examples: ['Entwicklungspläne', 'Kurrikulum', 'Zertifizierungen'] },
+                    { id: 'personalizedLearning', title: 'Personalisierte Lernpfade', description: 'Gibt es personalisierte Pfade?', examples: ['Individuelle Pläne', 'Adaptive Learning', 'Bedürfnisorientiert'] },
+                    { id: 'measurableImpact', title: 'Messbarer L&D-Impact', description: 'Wird der Impact gemessen?', examples: ['ROI-Messung', 'Kompetenz-Assessments', 'Performance-Verbesserung'] },
+                    { id: 'continuousLearning', title: 'Kultur des kontinuierlichen Lernens', description: 'Gibt es eine Lernkultur?', examples: ['Lernfreundliche Umgebung', 'Zeit für Lernen', 'Lern-Communities'] }
+                ]
+            },
+            {
+                id: 'employeeExperience',
+                title: 'Employee Experience & Engagement',
+                description: 'Wie gut ist die Employee Experience?',
+                icon: 'fa-heart',
+                subCriteria: [
+                    { id: 'positiveExperience', title: 'Positive Employee Experience', description: 'Wie positiv ist die Experience?', examples: ['Hohe Zufriedenheit', 'Positive Feedback', 'Engagement'] },
+                    { id: 'engagementPrograms', title: 'Engagement-Programme', description: 'Gibt es Engagement-Programme?', examples: ['Recognition-Programs', 'Wellness-Initiativen', 'Team-Events'] },
+                    { id: 'feedbackCulture', title: 'Feedback-Kultur', description: 'Gibt es eine Feedback-Kultur?', examples: ['Regelmäßiges Feedback', '360° Feedback', 'Offene Kommunikation'] },
+                    { id: 'workLifeBalance', title: 'Work-Life-Balance', description: 'Wie gut ist die Balance?', examples: ['Flexible Arbeitszeiten', 'Remote-Optionen', 'Wellness-Programme'] }
+                ]
+            },
+            {
+                id: 'workforcePlanning',
+                title: 'Workforce Planning',
+                description: 'Wie gut ist die Workforce-Planung?',
+                icon: 'fa-users-cog',
+                subCriteria: [
+                    { id: 'strategicPlanning', title: 'Strategische Workforce-Planung', description: 'Gibt es strategische Planung?', examples: ['Langfristige Planung', 'Szenario-Analyse', 'Kapazitätsplanung'] },
+                    { id: 'skillGapAnalysis', title: 'Skill-Gap-Analyse', description: 'Werden Skill-Gaps analysiert?', examples: ['Regelmäßige Analysen', 'Gap-Identifikation', 'Schließungsstrategien'] },
+                    { id: 'successionPlanning', title: 'Succession Planning', description: 'Gibt es Succession Planning?', examples: ['Nachfolge-Planung', 'Talent-Pipeline', 'Entwicklungspläne'] },
+                    { id: 'workforceAnalytics', title: 'Workforce Analytics', description: 'Gibt es Workforce Analytics?', examples: ['Datenbasierte Planung', 'Predictive Analytics', 'Trend-Analyse'] }
+                ]
+            },
+            {
+                id: 'diversityInclusion',
+                title: 'Diversity, Equity & Inclusion',
+                description: 'Wie gut ist DE&I implementiert?',
+                icon: 'fa-globe',
+                subCriteria: [
+                    { id: 'diversityPrograms', title: 'Diversity-Programme', description: 'Gibt es Diversity-Programme?', examples: ['DE&I-Initiativen', 'Diversity-Recruiting', 'Inklusive Kultur'] },
+                    { id: 'equityMeasures', title: 'Equity-Maßnahmen', description: 'Gibt es Equity-Maßnahmen?', examples: ['Fair Pay', 'Gleiche Chancen', 'Bias-Reduktion'] },
+                    { id: 'inclusiveCulture', title: 'Inklusive Kultur', description: 'Wie inklusiv ist die Kultur?', examples: ['Wertschätzung', 'Offenheit', 'Respekt'] },
+                    { id: 'diversityMetrics', title: 'Diversity-Metriken', description: 'Werden Metriken erfasst?', examples: ['Diversity-Dashboard', 'Regelmäßige Messung', 'Zielsetzungen'] }
+                ]
+            },
+            {
+                id: 'performanceManagement',
+                title: 'Performance Management',
+                description: 'Wie gut ist das Performance Management?',
+                icon: 'fa-trophy',
+                subCriteria: [
+                    { id: 'clearGoals', title: 'Klare Ziele und Erwartungen', description: 'Gibt es klare Ziele?', examples: ['SMART Goals', 'Klare Erwartungen', 'Regelmäßige Reviews'] },
+                    { id: 'continuousFeedback', title: 'Kontinuierliches Feedback', description: 'Gibt es kontinuierliches Feedback?', examples: ['Regelmäßige Check-ins', 'Real-time Feedback', 'Coaching'] },
+                    { id: 'performanceDevelopment', title: 'Performance & Development', description: 'Wird Performance entwickelt?', examples: ['Entwicklungspläne', 'Coaching', 'Förderung'] },
+                    { id: 'recognitionRewards', title: 'Recognition & Rewards', description: 'Gibt es Recognition?', examples: ['Anerkennungsprogramme', 'Performance-Boni', 'Karriere-Entwicklung'] }
+                ]
+            },
+            {
+                id: 'hrAnalytics',
+                title: 'HR Analytics & Metriken',
+                description: 'Wie gut ist HR Analytics?',
+                icon: 'fa-chart-bar',
+                subCriteria: [
+                    { id: 'dataDriven', title: 'Datenbasierte HR-Entscheidungen', description: 'Werden Entscheidungen datenbasiert getroffen?', examples: ['People Analytics', 'Data-Driven HR', 'Evidence-Based'] },
+                    { id: 'hrMetrics', title: 'HR-Metriken und KPIs', description: 'Gibt es HR-Metriken?', examples: ['HR-Dashboard', 'KPI-Tracking', 'Regelmäßige Reports'] },
+                    { id: 'predictiveAnalytics', title: 'Predictive Analytics', description: 'Gibt es Predictive Analytics?', examples: ['Vorhersagemodelle', 'Trend-Analyse', 'Risiko-Identifikation'] },
+                    { id: 'businessImpact', title: 'Business Impact Messung', description: 'Wird der Business Impact gemessen?', examples: ['ROI-Messung', 'Impact-Analyse', 'Value Creation'] }
+                ]
+            },
+            {
+                id: 'hrInnovation',
+                title: 'HR-Innovation',
+                description: 'Wie innovativ ist HR?',
+                icon: 'fa-lightbulb',
+                subCriteria: [
+                    { id: 'innovativeSolutions', title: 'Innovative HR-Lösungen', description: 'Gibt es innovative Lösungen?', examples: ['Neue Technologien', 'Innovative Prozesse', 'Kreative Ansätze'] },
+                    { id: 'experimentation', title: 'Experimentierfreude', description: 'Gibt es Experimentierfreude?', examples: ['Pilot-Projekte', 'Test & Learn', 'Innovation Labs'] },
+                    { id: 'techAdoption', title: 'Technologie-Adoption', description: 'Wie gut ist die Tech-Adoption?', examples: ['Moderne Tools', 'AI/ML Integration', 'Digitalisierung'] },
+                    { id: 'futureReadiness', title: 'Zukunftsfähigkeit', description: 'Wie zukunftsfähig ist HR?', examples: ['Trend-Monitoring', 'Zukunfts-Strategien', 'Agile Anpassung'] }
+                ]
+            }
+        ];
+        
+        let assessmentValues = {};
+        
+        function initializeAssessment() {
+            const saved = JSON.parse(localStorage.getItem('hrStrategieAssessments') || '{}');
+            if (saved.valueCreation && saved.valueCreation.details) {
+                assessmentValues = saved.valueCreation.details;
+            }
+            valueCreationCriteria.forEach(criterion => {
+                criterion.subCriteria.forEach(subCriterion => {
+                    const key = `${criterion.id}_${subCriterion.id}`;
+                    if (!assessmentValues[key]) assessmentValues[key] = 1;
+                });
+            });
+            renderCriteria();
+            updateAggregatedScore();
+        }
+        
+        function renderCriteria() {
+            const container = document.getElementById('criteriaContainer');
+            container.innerHTML = valueCreationCriteria.map(criterion => {
+                const subValues = criterion.subCriteria.map(sub => {
+                    const key = `${criterion.id}_${sub.id}`;
+                    return assessmentValues[key] || 1;
+                });
+                const criterionAverage = (subValues.reduce((sum, val) => sum + val, 0) / subValues.length).toFixed(1);
+                return `
+                <div class="criterion-card">
+                    <div class="criterion-header">
+                        <div class="criterion-icon"><i class="fas ${criterion.icon}"></i></div>
+                        <div class="criterion-title-section">
+                            <h3 class="criterion-title">${criterion.title}</h3>
+                            <p class="criterion-description">${criterion.description}</p>
+                        </div>
+                    </div>
+                    <div class="sub-criteria-container">
+                        ${criterion.subCriteria.map(subCriterion => {
+                            const key = `${criterion.id}_${subCriterion.id}`;
+                            const value = assessmentValues[key] || 1;
+                            return `
+                            <div class="sub-criterion-item" style="border-left-color: #059669;">
+                                <div class="sub-criterion-label">${subCriterion.title}</div>
+                                ${subCriterion.description ? `<div class="sub-criterion-description" style="color: #6b7280; font-size: 0.875rem; margin-bottom: 0.5rem;">${subCriterion.description}</div>` : ''}
+                                ${subCriterion.examples && subCriterion.examples.length > 0 ? `
+                                <div class="sub-criterion-examples" style="background: #f8fafc; padding: 0.75rem; border-radius: 6px; margin-bottom: 0.75rem; font-size: 0.8rem; color: #6b7280;">
+                                    <strong style="color: #374151; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">Beispiele:</strong>
+                                    <ul style="margin: 0.5rem 0 0 1.25rem; padding: 0;">
+                                        ${subCriterion.examples.map(ex => `<li style="margin-bottom: 0.25rem;">${ex}</li>`).join('')}
+                                    </ul>
+                                </div>
+                                ` : ''}
+                                <div class="sub-criterion-slider-wrapper">
+                                    <input type="range" min="1" max="5" step="1" value="${value}" class="sub-criterion-slider" id="slider-${key}" style="accent-color: #059669;" oninput="updateSubCriterionValue('${criterion.id}', '${subCriterion.id}', this.value)">
+                                    <div class="sub-criterion-value" id="value-${key}">${value}</div>
+                                    <div class="sub-criterion-scale"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
+                                </div>
+                            </div>
+                            `;
+                        }).join('')}
+                        <div class="criterion-average">
+                            <span class="criterion-average-label">Durchschnitt für "${criterion.title}":</span>
+                            <span class="criterion-average-value" id="avg-${criterion.id}">${criterionAverage}</span>
+                        </div>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+        
+        function updateSubCriterionValue(criterionId, subCriterionId, value) {
+            const key = `${criterionId}_${subCriterionId}`;
+            assessmentValues[key] = parseInt(value);
+            document.getElementById(`value-${key}`).textContent = value;
+            const criterion = valueCreationCriteria.find(c => c.id === criterionId);
+            const subValues = criterion.subCriteria.map(sub => {
+                const subKey = `${criterionId}_${sub.id}`;
+                return assessmentValues[subKey] || 1;
+            });
+            const criterionAverage = (subValues.reduce((sum, val) => sum + val, 0) / subValues.length).toFixed(1);
+            document.getElementById(`avg-${criterionId}`).textContent = criterionAverage;
+            updateAggregatedScore();
+        }
+        
+        function updateAggregatedScore() {
+            const criterionAverages = valueCreationCriteria.map(criterion => {
+                const subValues = criterion.subCriteria.map(sub => {
+                    const key = `${criterion.id}_${sub.id}`;
+                    return assessmentValues[key] || 1;
+                });
+                return subValues.reduce((sum, val) => sum + val, 0) / subValues.length;
+            });
+            const overallAverage = (criterionAverages.reduce((sum, val) => sum + val, 0) / criterionAverages.length).toFixed(1);
+            document.getElementById('aggregatedScore').textContent = overallAverage;
+            let description = '';
+            if (overallAverage <= 1.5) description = 'Schwach - Erhebliche Verbesserung der Wertschöpfung erforderlich';
+            else if (overallAverage <= 2.5) description = 'Verbesserungswürdig - Grundlagen vorhanden, Wertschöpfung entwickeln';
+            else if (overallAverage <= 3.5) description = 'Gut - Solide Wertschöpfung, weitere Optimierung möglich';
+            else if (overallAverage <= 4.5) description = 'Sehr gut - Hohe Wertschöpfung, kleine Verbesserungen möglich';
+            else description = 'Exzellent - Hervorragende Wertschöpfung';
+            document.getElementById('scoreDescription').textContent = description;
+        }
+        
+        function saveAndReturn() {
+            const criterionAverages = valueCreationCriteria.map(criterion => {
+                const subValues = criterion.subCriteria.map(sub => {
+                    const key = `${criterion.id}_${sub.id}`;
+                    return assessmentValues[key] || 1;
+                });
+                return subValues.reduce((sum, val) => sum + val, 0) / subValues.length;
+            });
+            const aggregated = (criterionAverages.reduce((sum, val) => sum + val, 0) / criterionAverages.length).toFixed(1);
+            let saved = JSON.parse(localStorage.getItem('hrStrategieAssessments') || '{}');
+            saved.valueCreation = { 
+                aggregated: parseFloat(aggregated), 
+                details: assessmentValues,
+                criterionAverages: valueCreationCriteria.map(criterion => {
+                    const subValues = criterion.subCriteria.map(sub => {
+                        const key = `${criterion.id}_${sub.id}`;
+                        return assessmentValues[key] || 1;
+                    });
+                    return {
+                        criterionId: criterion.id,
+                        average: subValues.reduce((sum, val) => sum + val, 0) / subValues.length
+                    };
+                }),
+                timestamp: new Date().toISOString() 
+            };
+            localStorage.setItem('hrStrategieAssessments', JSON.stringify(saved));
+            let workflowData = JSON.parse(localStorage.getItem('hrStrategieWorkflow') || '{}');
+            if (!workflowData.hrMaturityData) workflowData.hrMaturityData = {};
+            workflowData.hrMaturityData.valueCreation = parseFloat(aggregated);
+            localStorage.setItem('hrStrategieWorkflow', JSON.stringify(workflowData));
+            window.location.href = 'hr-strategie-workflow.html';
+        }
+        
+        let exporter = null;
+        async function exportToExcel() {
+            if (!exporter) { exporter = new AssessmentExporter(); await new Promise(r => setTimeout(r, 1000)); }
+            const data = prepareExportData();
+            await exporter.exportToExcel(data, `HR-Strategie-Wertschöpfung-${new Date().toISOString().split('T')[0]}`);
+        }
+        async function exportToPDF() {
+            if (!exporter) { exporter = new AssessmentExporter(); await new Promise(r => setTimeout(r, 1000)); }
+            const data = prepareExportData();
+            await exporter.exportToPDF(data, `HR-Strategie-Wertschöpfung-${new Date().toISOString().split('T')[0]}`);
+        }
+        function prepareExportData() {
+            const criterionAverages = valueCreationCriteria.map(c => {
+                const subValues = c.subCriteria.map(sub => assessmentValues[`${c.id}_${sub.id}`] || 1);
+                return { criterionId: c.id, criterionTitle: c.title, average: subValues.reduce((s, v) => s + v, 0) / subValues.length };
+            });
+            const overall = criterionAverages.reduce((s, c) => s + c.average, 0) / criterionAverages.length;
+            return {
+                dimension: 'valueCreation', dimensionName: 'Wertschöpfung & Schlüsselfelder', overall, aggregated: overall,
+                dimensions: { valueCreation: { aggregated: overall, criteria: valueCreationCriteria.map(c => ({
+                    id: c.id, title: c.title, description: c.description, subCriteria: c.subCriteria.map(sub => ({
+                        id: sub.id, title: sub.title, value: assessmentValues[`${c.id}_${sub.id}`] || 1
+                    }))
+                })), criterionAverages }}, details: assessmentValues, timestamp: new Date().toISOString()
+            };
+        }
+        document.addEventListener('DOMContentLoaded', function() { initializeAssessment(); exporter = new AssessmentExporter(); });
+    </script>
+    <script src="js/assessment-export.js"></script>
+</body>
+</html>
+
