@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skalierung & HR-Ökosystem - HR-Readiness Assessment - Manuel Weiss</title>
+    <meta name="description" content="Detaillierte Bewertung von Skalierung & HR-Ökosystem für HR-Readiness. Skalierbare HR-Lösungen und Ökosystem-Integration.">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/ki-assessment-detail.css">
+    <style>
+        .detail-header { background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); }
+        .criterion-icon { background: linear-gradient(135deg, #06b6d4, #0891b2); }
+        .detail-slider::-webkit-slider-thumb, .detail-slider::-moz-range-thumb,
+        .sub-criterion-slider::-webkit-slider-thumb, .sub-criterion-slider::-moz-range-thumb { background: linear-gradient(135deg, #06b6d4, #0891b2); }
+        .slider-value-display, .sub-criterion-value, .criterion-average-value { color: #0891b2; }
+        .aggregated-score { background: linear-gradient(135deg, #06b6d4, #0891b2); }
+        .save-button { color: #0891b2; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="manuel-weiss-photo.svg" alt="Manuel Weiss" class="nav-logo">
+                <span class="nav-name">Manuel Weiss</span>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="hr-transformation.html">HR-Transformation</a>
+                <a href="index.html#about">Über mich</a>
+                <a href="index.html#contact">Kontakt</a>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="detail-assessment-container">
+        <div class="detail-header">
+            <a href="hr-strategie-workflow.html" class="back-button"><i class="fas fa-arrow-left"></i> Zurück zur Übersicht</a>
+            <h1><i class="fas fa-expand-arrows-alt"></i> Skalierung & HR-Ökosystem</h1>
+            <p>Nutzen Sie skalierbare HR-Lösungen und das HR-Ökosystem. Harvard: Skalierbare HR-Prozesse für Wachstum. MIT: Ökosystem-Integration und Partnerschaften.</p>
+        </div>
+        
+        <div id="criteriaContainer"></div>
+        
+        <div class="aggregated-score">
+            <h3>Gesamtbewertung</h3>
+            <div class="score-display">
+                <div class="score-circle-large" id="aggregatedScore">1.0</div>
+                <div class="score-description" id="scoreDescription">Bewerten Sie die Kriterien, um Ihre Gesamtbewertung zu sehen</div>
+            </div>
+            <div style="display: flex; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap;">
+                <button class="save-button" onclick="saveAndReturn()" style="flex: 1; min-width: 200px;"><i class="fas fa-save"></i> Bewertung speichern und zurück</button>
+                <button onclick="exportToExcel()" style="background: #217346; color: white; border: none; padding: 1rem 2rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; flex: 1; min-width: 150px;"><i class="fas fa-file-excel"></i> Excel Export</button>
+                <button onclick="exportToPDF()" style="background: #dc3545; color: white; border: none; padding: 1rem 2rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; flex: 1; min-width: 150px;"><i class="fas fa-file-pdf"></i> PDF Export</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const scalingEcosystemCriteria = [
+            {
+                id: 'scalableProcesses',
+                title: 'Skalierbare HR-Prozesse',
+                description: 'Wie skalierbar sind Ihre HR-Prozesse? Können sie mit dem Wachstum mithalten?',
+                icon: 'fa-expand-arrows-alt',
+                subCriteria: [
+                    { id: 'scalableDesign', title: 'Skalierbare Prozess-Designs', description: 'Sind die Prozesse skalierbar?', examples: ['Automatisierte Prozesse', 'Cloud-basiert', 'Elastische Skalierung'] },
+                    { id: 'growthReady', title: 'Wachstumsbereit', description: 'Ist HR wachstumsbereit?', examples: ['Skalierbare Infrastruktur', 'Flexible Struktur', 'Wachstumsfähig'] },
+                    { id: 'processEfficiency', title: 'Effiziente Prozesse bei Skalierung', description: 'Bleiben Prozesse effizient?', examples: ['Kontinuierliche Effizienz', 'Optimierte Workflows', 'Performance bei Wachstum'] },
+                    { id: 'costScaling', title: 'Kosteneffiziente Skalierung', description: 'Ist Skalierung kosteneffizient?', examples: ['Optimierte Kosten', 'Economies of Scale', 'Kosten-Kontrolle'] },
+                    { id: 'scalingStrategy', title: 'Klare Skalierungsstrategie', description: 'Gibt es eine Skalierungsstrategie?', examples: ['Skalierungsplan', 'Roadmap', 'Wachstumsstrategie'] }
+                ]
+            },
+            {
+                id: 'technologyScalability',
+                title: 'Technologie-Skalierbarkeit',
+                description: 'Wie skalierbar ist Ihre HR-Technologie? Kann sie mit wachsenden Anforderungen mithalten?',
+                icon: 'fa-server',
+                subCriteria: [
+                    { id: 'cloudInfrastructure', title: 'Cloud-basierte skalierbare Infrastruktur', description: 'Nutzen Sie Cloud-Infrastruktur?', examples: ['Cloud-native', 'Auto-Scaling', 'Elastische Ressourcen'] },
+                    { id: 'scalablePlatforms', title: 'Skalierbare HR-Plattformen', description: 'Gibt es skalierbare Plattformen?', examples: ['SaaS-Lösungen', 'Multi-Tenant', 'Skalierbare Architektur'] },
+                    { id: 'performanceScalability', title: 'Performance bei Skalierung', description: 'Bleibt Performance erhalten?', examples: ['Hohe Performance', 'Optimierte Systeme', 'Performance-Monitoring'] },
+                    { id: 'integrationScalability', title: 'Skalierbare System-Integration', description: 'Ist Integration skalierbar?', examples: ['Microservices', 'API-basiert', 'Modulare Architektur'] },
+                    { id: 'techRoadmap', title: 'Technologie-Roadmap für Skalierung', description: 'Gibt es eine Tech-Roadmap?', examples: ['Skalierungsplan', 'Technologie-Strategie', 'Zukunftsfähigkeit'] }
+                ]
+            },
+            {
+                id: 'ecosystemPartnerships',
+                title: 'HR-Ökosystem & Partnerschaften',
+                description: 'Wie gut ist HR in das Ökosystem integriert? Gibt es strategische Partnerschaften?',
+                icon: 'fa-network-wired',
+                subCriteria: [
+                    { id: 'strategicPartners', title: 'Strategische HR-Partnerschaften', description: 'Gibt es strategische Partner?', examples: ['HR-Tech-Partner', 'Beratungspartner', 'Service-Partner'] },
+                    { id: 'ecosystemIntegration', title: 'Ökosystem-Integration', description: 'Gibt es Ökosystem-Integration?', examples: ['Vendor-Integration', 'Partner-Netzwerk', 'Ökosystem-Plattformen'] },
+                    { id: 'partnershipValue', title: 'Wertschöpfung durch Partnerschaften', description: 'Schaffen Partnerschaften Wert?', examples: ['Gemeinsame Innovation', 'Wertschöpfung', 'Win-Win-Situationen'] },
+                    { id: 'partnerManagement', title: 'Partnerschafts-Management', description: 'Gibt es Partner-Management?', examples: ['Partner-Strategie', 'Vendor-Management', 'Performance-Tracking'] },
+                    { id: 'ecosystemInnovation', title: 'Innovation durch Ökosystem', description: 'Gibt es Ökosystem-Innovation?', examples: ['Gemeinsame Innovation', 'Co-Innovation', 'Innovations-Partnerschaften'] }
+                ]
+            },
+            {
+                id: 'vendorManagement',
+                title: 'Vendor-Management & Outsourcing',
+                description: 'Wie gut ist Ihr Vendor-Management? Gibt es strategisches Outsourcing?',
+                icon: 'fa-handshake',
+                subCriteria: [
+                    { id: 'vendorStrategy', title: 'Strategisches Vendor-Management', description: 'Gibt es Vendor-Strategie?', examples: ['Vendor-Strategie', 'Partner-Auswahl', 'Vendor-Performance'] },
+                    { id: 'outsourcing', title: 'Strategisches Outsourcing', description: 'Gibt es strategisches Outsourcing?', examples: ['Outsourcing-Strategie', 'Sourcing-Entscheidungen', 'Cost-Benefit'] },
+                    { id: 'vendorPerformance', title: 'Vendor-Performance-Management', description: 'Gibt es Vendor-Performance-Management?', examples: ['SLA-Management', 'Performance-Tracking', 'Vendor-Reviews'] },
+                    { id: 'vendorRelationships', title: 'Starke Vendor-Beziehungen', description: 'Gibt es starke Beziehungen?', examples: ['Partnerschaftliche Beziehungen', 'Langfristige Partnerschaften', 'Vertrauen'] },
+                    { id: 'vendorInnovation', title: 'Innovation durch Vendor', description: 'Gibt es Vendor-Innovation?', examples: ['Gemeinsame Innovation', 'Vendor-Input', 'Innovations-Partnerschaften'] }
+                ]
+            },
+            {
+                id: 'marketIntelligence',
+                title: 'Markt-Intelligence & Benchmarking',
+                description: 'Wie gut kennen Sie den HR-Markt? Gibt es Benchmarking und Markt-Intelligence?',
+                icon: 'fa-chart-line',
+                subCriteria: [
+                    { id: 'marketAwareness', title: 'Markt-Bewusstsein', description: 'Gibt es Markt-Bewusstsein?', examples: ['Markt-Monitoring', 'Trend-Tracking', 'Markt-Intelligence'] },
+                    { id: 'benchmarking', title: 'Regelmäßiges Benchmarking', description: 'Gibt es Benchmarking?', examples: ['Peer-Benchmarking', 'Best Practices', 'Vergleichsstudien'] },
+                    { id: 'competitiveIntelligence', title: 'Competitive Intelligence', description: 'Gibt es Competitive Intelligence?', examples: ['Wettbewerbs-Analyse', 'Markt-Positionierung', 'Competitive Monitoring'] },
+                    { id: 'marketTrends', title: 'Trend-Monitoring', description: 'Gibt es Trend-Monitoring?', examples: ['HR-Trends', 'Technologie-Trends', 'Zukunfts-Trends'] },
+                    { id: 'marketStrategy', title: 'Markt-basierte Strategie', description: 'Gibt es markt-basierte Strategie?', examples: ['Markt-Orientierung', 'Strategische Positionierung', 'Markt-Strategie'] }
+                ]
+            },
+            {
+                id: 'globalReach',
+                title: 'Global Reach & Multi-Country',
+                description: 'Wie gut ist HR für globale Expansion aufgestellt? Gibt es Multi-Country-Fähigkeiten?',
+                icon: 'fa-globe',
+                subCriteria: [
+                    { id: 'globalCapabilities', title: 'Globale HR-Fähigkeiten', description: 'Gibt es globale Fähigkeiten?', examples: ['Multi-Country-Support', 'Globale Prozesse', 'Internationale Expertise'] },
+                    { id: 'localAdaptation', title: 'Lokale Anpassungsfähigkeit', description: 'Gibt es lokale Anpassung?', examples: ['Lokale Anpassung', 'Kulturelle Sensibilität', 'Lokale Compliance'] },
+                    { id: 'globalSystems', title: 'Globale HR-Systeme', description: 'Gibt es globale Systeme?', examples: ['Multi-Country-Systeme', 'Globale Plattformen', 'Internationale Integration'] },
+                    { id: 'globalTeam', title: 'Globale HR-Teams', description: 'Gibt es globale Teams?', examples: ['Internationale Teams', 'Global Collaboration', 'Multi-Country-Teams'] },
+                    { id: 'globalStrategy', title: 'Globale HR-Strategie', description: 'Gibt es globale Strategie?', examples: ['Internationale Strategie', 'Global Alignment', 'Multi-Country-Planung'] }
+                ]
+            },
+            {
+                id: 'innovationEcosystem',
+                title: 'Innovations-Ökosystem',
+                description: 'Gibt es ein Innovations-Ökosystem? Wie wird Innovation gefördert?',
+                icon: 'fa-lightbulb',
+                subCriteria: [
+                    { id: 'innovationPartners', title: 'Innovations-Partnerschaften', description: 'Gibt es Innovations-Partner?', examples: ['Startup-Partnerschaften', 'Innovations-Labs', 'Co-Innovation'] },
+                    { id: 'innovationPrograms', title: 'Innovations-Programme', description: 'Gibt es Innovations-Programme?', examples: ['Innovation Labs', 'Pilot-Projekte', 'Innovations-Förderung'] },
+                    { id: 'startupEngagement', title: 'Startup-Engagement', description: 'Gibt es Startup-Engagement?', examples: ['Startup-Partnerschaften', 'Innovations-Wettbewerbe', 'Startup-Integration'] },
+                    { id: 'innovationCulture', title: 'Innovations-Kultur', description: 'Gibt es Innovations-Kultur?', examples: ['Innovation-Freundlichkeit', 'Experimentierfreude', 'Innovations-Mindset'] },
+                    { id: 'innovationMetrics', title: 'Innovations-Metriken', description: 'Gibt es Innovations-Metriken?', examples: ['Innovation-Tracking', 'ROI-Messung', 'Innovations-Scorecard'] }
+                ]
+            },
+            {
+                id: 'platformEcosystem',
+                title: 'Plattform-Ökosystem',
+                description: 'Gibt es ein Plattform-Ökosystem? Wie integriert sind HR-Plattformen?',
+                icon: 'fa-layer-group',
+                subCriteria: [
+                    { id: 'platformIntegration', title: 'Plattform-Integration', description: 'Gibt es Plattform-Integration?', examples: ['Integrierte Plattformen', 'API-Integration', 'Ecosystem-Platforms'] },
+                    { id: 'platformStrategy', title: 'Plattform-Strategie', description: 'Gibt es Plattform-Strategie?', examples: ['Plattform-Architektur', 'Platform-Strategy', 'Ecosystem-Design'] },
+                    { id: 'platformPartners', title: 'Plattform-Partner', description: 'Gibt es Plattform-Partner?', examples: ['Partner-Integration', 'Platform-Ecosystem', 'Vendor-Integration'] },
+                    { id: 'platformInnovation', title: 'Plattform-Innovation', description: 'Gibt es Plattform-Innovation?', examples: ['Platform-Enhancements', 'Neue Features', 'Innovation auf Plattform'] },
+                    { id: 'platformValue', title: 'Wertschöpfung durch Plattform', description: 'Schafft Plattform Wert?', examples: ['Platform-Value', 'Ökosystem-Wert', 'Network-Effects'] }
+                ]
+            },
+            {
+                id: 'scalableGrowth',
+                title: 'Skalierbares Wachstum',
+                description: 'Wie gut ist HR für Wachstum vorbereitet? Gibt es skalierbare Wachstumsstrategien?',
+                icon: 'fa-chart-line',
+                subCriteria: [
+                    { id: 'growthStrategy', title: 'Wachstumsstrategie für HR', description: 'Gibt es Wachstumsstrategie?', examples: ['Growth-Plan', 'Skalierungs-Strategie', 'Wachstums-Roadmap'] },
+                    { id: 'scalableResources', title: 'Skalierbare Ressourcen', description: 'Gibt es skalierbare Ressourcen?', examples: ['Elastische Ressourcen', 'Cloud-basiert', 'Flexible Capacity'] },
+                    { id: 'growthMetrics', title: 'Wachstums-Metriken', description: 'Gibt es Wachstums-Metriken?', examples: ['Growth-Tracking', 'Skalierungs-Metriken', 'Performance bei Wachstum'] },
+                    { id: 'growthReadiness', title: 'Wachstumsbereitschaft', description: 'Ist HR wachstumsbereit?', examples: ['Growth-Ready', 'Skalierbare Struktur', 'Wachstumsfähig'] },
+                    { id: 'sustainableGrowth', title: 'Nachhaltiges Wachstum', description: 'Gibt es nachhaltiges Wachstum?', examples: ['Sustainable Scaling', 'Langfristiges Wachstum', 'Wachstums-Nachhaltigkeit'] }
+                ]
+            },
+            {
+                id: 'ecosystemValue',
+                title: 'Ökosystem-Wertschöpfung',
+                description: 'Wie viel Wert schafft das HR-Ökosystem? Gibt es messbare Wertschöpfung?',
+                icon: 'fa-star',
+                subCriteria: [
+                    { id: 'ecosystemValue', title: 'Messbare Ökosystem-Wertschöpfung', description: 'Gibt es messbare Wertschöpfung?', examples: ['ROI-Messung', 'Value-Tracking', 'Ökosystem-ROI'] },
+                    { id: 'partnerValue', title: 'Wertschöpfung durch Partner', description: 'Schaffen Partner Wert?', examples: ['Partner-ROI', 'Gemeinsame Wertschöpfung', 'Win-Win'] },
+                    { id: 'innovationValue', title: 'Innovations-Wertschöpfung', description: 'Schafft Innovation Wert?', examples: ['Innovation-ROI', 'Wertschöpfung durch Innovation', 'Innovations-Impact'] },
+                    { id: 'ecosystemMetrics', title: 'Ökosystem-Metriken', description: 'Gibt es Ökosystem-Metriken?', examples: ['Ecosystem-KPIs', 'Partner-Performance', 'Ökosystem-Scorecard'] },
+                    { id: 'valueOptimization', title: 'Wertschöpfungs-Optimierung', description: 'Wird Wertschöpfung optimiert?', examples: ['Value-Optimization', 'ROI-Maximierung', 'Kontinuierliche Verbesserung'] }
+                ]
+            }
+        ];
+        
+        let assessmentValues = {};
+        
+        function initializeAssessment() {
+            const saved = JSON.parse(localStorage.getItem('hrStrategieAssessments') || '{}');
+            if (saved.scalingEcosystem && saved.scalingEcosystem.details) {
+                assessmentValues = saved.scalingEcosystem.details;
+            }
+            scalingEcosystemCriteria.forEach(criterion => {
+                criterion.subCriteria.forEach(subCriterion => {
+                    const key = `${criterion.id}_${subCriterion.id}`;
+                    if (!assessmentValues[key]) assessmentValues[key] = 1;
+                });
+            });
+            renderCriteria();
+            updateAggregatedScore();
+        }
+        
+        function renderCriteria() {
+            const container = document.getElementById('criteriaContainer');
+            container.innerHTML = scalingEcosystemCriteria.map(criterion => {
+                const subValues = criterion.subCriteria.map(sub => {
+                    const key = `${criterion.id}_${sub.id}`;
+                    return assessmentValues[key] || 1;
+                });
+                const criterionAverage = (subValues.reduce((sum, val) => sum + val, 0) / subValues.length).toFixed(1);
+                return `
+                <div class="criterion-card">
+                    <div class="criterion-header">
+                        <div class="criterion-icon"><i class="fas ${criterion.icon}"></i></div>
+                        <div class="criterion-title-section">
+                            <h3 class="criterion-title">${criterion.title}</h3>
+                            <p class="criterion-description">${criterion.description}</p>
+                        </div>
+                    </div>
+                    <div class="sub-criteria-container">
+                        ${criterion.subCriteria.map(subCriterion => {
+                            const key = `${criterion.id}_${subCriterion.id}`;
+                            const value = assessmentValues[key] || 1;
+                            return `
+                            <div class="sub-criterion-item" style="border-left-color: #0891b2;">
+                                <div class="sub-criterion-label">${subCriterion.title}</div>
+                                ${subCriterion.description ? `<div class="sub-criterion-description" style="color: #6b7280; font-size: 0.875rem; margin-bottom: 0.5rem;">${subCriterion.description}</div>` : ''}
+                                ${subCriterion.examples && subCriterion.examples.length > 0 ? `
+                                <div class="sub-criterion-examples" style="background: #f8fafc; padding: 0.75rem; border-radius: 6px; margin-bottom: 0.75rem; font-size: 0.8rem; color: #6b7280;">
+                                    <strong style="color: #374151; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">Beispiele:</strong>
+                                    <ul style="margin: 0.5rem 0 0 1.25rem; padding: 0;">
+                                        ${subCriterion.examples.map(ex => `<li style="margin-bottom: 0.25rem;">${ex}</li>`).join('')}
+                                    </ul>
+                                </div>
+                                ` : ''}
+                                <div class="sub-criterion-slider-wrapper">
+                                    <input type="range" min="1" max="5" step="1" value="${value}" class="sub-criterion-slider" id="slider-${key}" style="accent-color: #0891b2;" oninput="updateSubCriterionValue('${criterion.id}', '${subCriterion.id}', this.value)">
+                                    <div class="sub-criterion-value" id="value-${key}">${value}</div>
+                                    <div class="sub-criterion-scale"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
+                                </div>
+                            </div>
+                            `;
+                        }).join('')}
+                        <div class="criterion-average">
+                            <span class="criterion-average-label">Durchschnitt für "${criterion.title}":</span>
+                            <span class="criterion-average-value" id="avg-${criterion.id}">${criterionAverage}</span>
+                        </div>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+        
+        function updateSubCriterionValue(criterionId, subCriterionId, value) {
+            const key = `${criterionId}_${subCriterionId}`;
+            assessmentValues[key] = parseInt(value);
+            document.getElementById(`value-${key}`).textContent = value;
+            const criterion = scalingEcosystemCriteria.find(c => c.id === criterionId);
+            const subValues = criterion.subCriteria.map(sub => {
+                const subKey = `${criterionId}_${sub.id}`;
+                return assessmentValues[subKey] || 1;
+            });
+            const criterionAverage = (subValues.reduce((sum, val) => sum + val, 0) / subValues.length).toFixed(1);
+            document.getElementById(`avg-${criterionId}`).textContent = criterionAverage;
+            updateAggregatedScore();
+        }
+        
+        function updateAggregatedScore() {
+            const criterionAverages = scalingEcosystemCriteria.map(criterion => {
+                const subValues = criterion.subCriteria.map(sub => {
+                    const key = `${criterion.id}_${sub.id}`;
+                    return assessmentValues[key] || 1;
+                });
+                return subValues.reduce((sum, val) => sum + val, 0) / subValues.length;
+            });
+            const overallAverage = (criterionAverages.reduce((sum, val) => sum + val, 0) / criterionAverages.length).toFixed(1);
+            document.getElementById('aggregatedScore').textContent = overallAverage;
+            let description = '';
+            if (overallAverage <= 1.5) description = 'Schwach - Erhebliche Verbesserung der Skalierung & Ökosystem erforderlich';
+            else if (overallAverage <= 2.5) description = 'Verbesserungswürdig - Grundlagen vorhanden, Skalierung & Ökosystem entwickeln';
+            else if (overallAverage <= 3.5) description = 'Gut - Solide Skalierung & Ökosystem, weitere Optimierung möglich';
+            else if (overallAverage <= 4.5) description = 'Sehr gut - Hohe Skalierungsfähigkeit & Ökosystem, kleine Verbesserungen möglich';
+            else description = 'Exzellent - Hervorragende Skalierung & Ökosystem';
+            document.getElementById('scoreDescription').textContent = description;
+        }
+        
+        function saveAndReturn() {
+            const criterionAverages = scalingEcosystemCriteria.map(criterion => {
+                const subValues = criterion.subCriteria.map(sub => {
+                    const key = `${criterion.id}_${sub.id}`;
+                    return assessmentValues[key] || 1;
+                });
+                return subValues.reduce((sum, val) => sum + val, 0) / subValues.length;
+            });
+            const aggregated = (criterionAverages.reduce((sum, val) => sum + val, 0) / criterionAverages.length).toFixed(1);
+            let saved = JSON.parse(localStorage.getItem('hrStrategieAssessments') || '{}');
+            saved.scalingEcosystem = { 
+                aggregated: parseFloat(aggregated), 
+                details: assessmentValues,
+                criterionAverages: scalingEcosystemCriteria.map(criterion => {
+                    const subValues = criterion.subCriteria.map(sub => {
+                        const key = `${criterion.id}_${sub.id}`;
+                        return assessmentValues[key] || 1;
+                    });
+                    return {
+                        criterionId: criterion.id,
+                        average: subValues.reduce((sum, val) => sum + val, 0) / subValues.length
+                    };
+                }),
+                timestamp: new Date().toISOString() 
+            };
+            localStorage.setItem('hrStrategieAssessments', JSON.stringify(saved));
+            let workflowData = JSON.parse(localStorage.getItem('hrStrategieWorkflow') || '{}');
+            if (!workflowData.hrMaturityData) workflowData.hrMaturityData = {};
+            workflowData.hrMaturityData.scalingEcosystem = parseFloat(aggregated);
+            localStorage.setItem('hrStrategieWorkflow', JSON.stringify(workflowData));
+            window.location.href = 'hr-strategie-workflow.html';
+        }
+        
+        let exporter = null;
+        async function exportToExcel() {
+            if (!exporter) { exporter = new AssessmentExporter(); await new Promise(r => setTimeout(r, 1000)); }
+            const data = prepareExportData();
+            await exporter.exportToExcel(data, `HR-Strategie-Skalierung-Ökosystem-${new Date().toISOString().split('T')[0]}`);
+        }
+        async function exportToPDF() {
+            if (!exporter) { exporter = new AssessmentExporter(); await new Promise(r => setTimeout(r, 1000)); }
+            const data = prepareExportData();
+            await exporter.exportToPDF(data, `HR-Strategie-Skalierung-Ökosystem-${new Date().toISOString().split('T')[0]}`);
+        }
+        function prepareExportData() {
+            const criterionAverages = scalingEcosystemCriteria.map(c => {
+                const subValues = c.subCriteria.map(sub => assessmentValues[`${c.id}_${sub.id}`] || 1);
+                return { criterionId: c.id, criterionTitle: c.title, average: subValues.reduce((s, v) => s + v, 0) / subValues.length };
+            });
+            const overall = criterionAverages.reduce((s, c) => s + c.average, 0) / criterionAverages.length;
+            return {
+                dimension: 'scalingEcosystem', dimensionName: 'Skalierung & HR-Ökosystem', overall, aggregated: overall,
+                dimensions: { scalingEcosystem: { aggregated: overall, criteria: scalingEcosystemCriteria.map(c => ({
+                    id: c.id, title: c.title, description: c.description, subCriteria: c.subCriteria.map(sub => ({
+                        id: sub.id, title: sub.title, value: assessmentValues[`${c.id}_${sub.id}`] || 1
+                    }))
+                })), criterionAverages }}, details: assessmentValues, timestamp: new Date().toISOString()
+            };
+        }
+        document.addEventListener('DOMContentLoaded', function() { initializeAssessment(); exporter = new AssessmentExporter(); });
+    </script>
+    <script src="js/assessment-export.js"></script>
+</body>
+</html>
+

@@ -11,9 +11,216 @@
     <!-- Custom Styles for Organizational Development Workflow -->
     <style>
         .org-dev-container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 2rem;
+            position: relative;
+        }
+        
+        /* Workflow Sidebar */
+        .workflow-sidebar {
+            position: fixed;
+            right: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 280px;
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+        
+        .workflow-sidebar.collapsed {
+            width: 60px;
+            padding: 1rem;
+        }
+        
+        .sidebar-toggle {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: #10b981;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .progress-summary {
+            margin-bottom: 1rem;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #059669);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        .current-state-indicator {
+            background: #f0fdf4;
+            border: 2px solid #10b981;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .maturity-score {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+        }
+        
+        .score-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: white;
+            background: #10b981;
+        }
+        
+        .score-circle.score-beginner {
+            background: #ef4444;
+        }
+        
+        .score-circle.score-intermediate {
+            background: #f59e0b;
+        }
+        
+        .score-circle.score-advanced {
+            background: #3b82f6;
+        }
+        
+        .score-circle.score-expert {
+            background: #10b981;
+        }
+        
+        /* Assessment System Styles */
+        .assessment-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .assessment-category {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+        
+        .assessment-category.clickable-category {
+            cursor: pointer;
+        }
+        
+        .assessment-category.clickable-category:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border-color: #10b981;
+        }
+        
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        
+        .category-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+        }
+        
+        .slider-container {
+            margin-top: 1rem;
+        }
+        
+        .slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: #e5e7eb;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #10b981;
+            cursor: pointer;
+        }
+        
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-top: 0.5rem;
+        }
+        
+        .slider-value-display {
+            text-align: center;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin: 0.5rem 0;
+        }
+        
+        .smart-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .ai-icon {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
         }
         
         .workflow-header {
@@ -278,30 +485,278 @@
         </div>
     </div>
     <div class="org-dev-container">
+        <!-- Smart Workflow Sidebar -->
+        <div class="workflow-sidebar" id="workflowSidebar">
+            <button class="sidebar-toggle" onclick="toggleSidebar()">
+                <i class="fas fa-chevron-left" id="sidebarToggleIcon"></i>
+            </button>
+            
+            <div class="sidebar-content" id="sidebarContent">
+                <div class="progress-summary">
+                    <h4 style="margin: 0 0 1rem; font-size: 1rem;">Fortschritt</h4>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="overallProgress" style="width: 0%;"></div>
+                    </div>
+                    <span class="progress-text" id="progressText">0% abgeschlossen</span>
+                </div>
+                
+                <div class="current-state-indicator">
+                    <div class="maturity-score">
+                        <div class="score-circle" id="maturityCircle">1</div>
+                        <div>
+                            <div style="font-size: 0.875rem; color: #6b7280;">Organisations-Reifegrad</div>
+                            <div id="maturityLevel">Anfänger</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 0.75rem; margin-top: 1rem; flex-wrap: wrap;">
+                    <button onclick="exportAllToExcel()" style="background: #217346; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; flex: 1; min-width: 120px;">
+                        <i class="fas fa-file-excel"></i> Excel
+                    </button>
+                    <button onclick="exportAllToPDF()" style="background: #dc3545; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; flex: 1; min-width: 120px;">
+                        <i class="fas fa-file-pdf"></i> PDF
+                    </button>
+                </div>
+            </div>
+        </div>
+        
         <!-- Header -->
         <div class="workflow-header">
+            <div class="smart-badge">
+                <i class="fas fa-graduation-cap ai-icon"></i>
+                Wissenschaftlich fundierte Methodologie
+            </div>
             <h1><i class="fas fa-users"></i> Organisationsentwicklung</h1>
-            <p>Gestalten Sie Ihre Organisation für die Zukunft mit agilen Strukturen und kollaborativen Kulturen</p>
+            <p>Gestalten Sie Ihre Organisation für die Zukunft mit agilen Strukturen und kollaborativen Kulturen. Systematische Bewertung und Entwicklung Ihrer Organisation.</p>
         </div>
+        
         <!-- Progress Indicator -->
         <div class="workflow-progress">
-            <div class="progress-step active" id="step1-progress">
-                <i class="fas fa-search"></i> Diagnose
+            <div class="progress-step active" data-step="0">
+                <i class="fas fa-search"></i>
+                <span>Ist-Analyse</span>
             </div>
-            <div class="progress-step" id="step2-progress">
-                <i class="fas fa-eye"></i> Vision
-            <div class="progress-step" id="step3-progress">
-                <i class="fas fa-sitemap"></i> Struktur
-            <div class="progress-step" id="step4-progress">
-                <i class="fas fa-heart"></i> Kultur
-            <div class="progress-step" id="step5-progress">
-                <i class="fas fa-crown"></i> Leadership
-            <div class="progress-step" id="step6-progress">
-                <i class="fas fa-handshake"></i> Teams
-            <div class="progress-step" id="step7-progress">
-                <i class="fas fa-sync-alt"></i> Nachhaltigkeit
+            <div class="progress-step" data-step="1">
+                <i class="fas fa-eye"></i>
+                <span>Vision</span>
+            </div>
+            <div class="progress-step" data-step="2">
+                <i class="fas fa-sitemap"></i>
+                <span>Struktur</span>
+            </div>
+            <div class="progress-step" data-step="3">
+                <i class="fas fa-heart"></i>
+                <span>Kultur</span>
+            </div>
+            <div class="progress-step" data-step="4">
+                <i class="fas fa-crown"></i>
+                <span>Leadership</span>
+            </div>
+            <div class="progress-step" data-step="5">
+                <i class="fas fa-handshake"></i>
+                <span>Teams</span>
+            </div>
+            <div class="progress-step" data-step="6">
+                <i class="fas fa-sync-alt"></i>
+                <span>Nachhaltigkeit</span>
+            </div>
+        </div>
+        
+        <!-- Step 0: Organisations-Reifegrad Analyse -->
+        <div class="workflow-step active" data-step="0">
+            <div class="step-header">
+                <div class="step-number">🔍</div>
+                <div class="step-title">
+                    <h2>Organisations-Reifegrad Analyse</h2>
+                    <p>Systematische Bewertung der aktuellen Organisationsentwicklung in 7 Dimensionen</p>
+                </div>
+            </div>
+            
+            <div class="step-content">
+                <div class="maturity-assessment-card" style="background: #f8fafc; border-radius: 16px; padding: 2rem; margin-bottom: 2rem; border: 2px solid #10b981;">
+                    <h3 style="color: #1f2937; margin-bottom: 1rem;">🎯 Intelligente Ist-Zustand-Bewertung</h3>
+                    <p style="color: #6b7280; margin-bottom: 1.5rem;">Bewerten Sie Ihre Organisation in den kritischen Dimensionen. Diese Analyse bildet die Grundlage für Ihre maßgeschneiderte Organisationsentwicklung.</p>
+                    
+                    <div class="assessment-grid">
+                        <div class="assessment-category clickable-category" onclick="openDetailAssessment('structure')" style="cursor: pointer;">
+                            <div class="category-header">
+                                <div class="category-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
+                                    <i class="fas fa-sitemap"></i>
+                                </div>
+                                <div>
+                                    <h4>Organisationsstruktur & Design</h4>
+                                    <p style="font-size: 0.875rem; color: #6b7280; margin: 0;">Flexible und anpassungsfähige Strukturen</p>
+                                </div>
+                                <div style="margin-left: auto; color: #10b981;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </div>
+                            </div>
+                            <div class="slider-container">
+                                <input type="range" min="1" max="5" value="1" class="slider" id="structureSlider" oninput="updateAssessment('structure', this.value)" onclick="event.stopPropagation();">
+                                <div class="slider-value-display" id="structureValue" style="color: #059669;">1</div>
+                                <div class="slider-labels">
+                                    <span>Starr</span>
+                                    <span>Agil</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="assessment-category clickable-category" onclick="openDetailAssessment('culture')" style="cursor: pointer;">
+                            <div class="category-header">
+                                <div class="category-icon" style="background: linear-gradient(135deg, #ec4899, #be185d);">
+                                    <i class="fas fa-heart"></i>
+                                </div>
+                                <div>
+                                    <h4>Kultur & Werte</h4>
+                                    <p style="font-size: 0.875rem; color: #6b7280; margin: 0;">Wertebasierte Unternehmenskultur</p>
+                                </div>
+                                <div style="margin-left: auto; color: #ec4899;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </div>
+                            </div>
+                            <div class="slider-container">
+                                <input type="range" min="1" max="5" value="1" class="slider" id="cultureSlider" oninput="updateAssessment('culture', this.value)" onclick="event.stopPropagation();">
+                                <div class="slider-value-display" id="cultureValue" style="color: #be185d;">1</div>
+                                <div class="slider-labels">
+                                    <span>Schwach</span>
+                                    <span>Stark</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="assessment-category clickable-category" onclick="openDetailAssessment('leadership')" style="cursor: pointer;">
+                            <div class="category-header">
+                                <div class="category-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                                    <i class="fas fa-crown"></i>
+                                </div>
+                                <div>
+                                    <h4>Leadership & Führung</h4>
+                                    <p style="font-size: 0.875rem; color: #6b7280; margin: 0;">Transformative Führungskräfte</p>
+                                </div>
+                                <div style="margin-left: auto; color: #f59e0b;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </div>
+                            </div>
+                            <div class="slider-container">
+                                <input type="range" min="1" max="5" value="1" class="slider" id="leadershipSlider" oninput="updateAssessment('leadership', this.value)" onclick="event.stopPropagation();">
+                                <div class="slider-value-display" id="leadershipValue" style="color: #d97706;">1</div>
+                                <div class="slider-labels">
+                                    <span>Traditionell</span>
+                                    <span>Modern</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="assessment-category clickable-category" onclick="openDetailAssessment('teams')" style="cursor: pointer;">
+                            <div class="category-header">
+                                <div class="category-icon" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);">
+                                    <i class="fas fa-handshake"></i>
+                                </div>
+                                <div>
+                                    <h4>Team-Entwicklung & Collaboration</h4>
+                                    <p style="font-size: 0.875rem; color: #6b7280; margin: 0;">Hochperformante Teams</p>
+                                </div>
+                                <div style="margin-left: auto; color: #3b82f6;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </div>
+                            </div>
+                            <div class="slider-container">
+                                <input type="range" min="1" max="5" value="1" class="slider" id="teamsSlider" oninput="updateAssessment('teams', this.value)" onclick="event.stopPropagation();">
+                                <div class="slider-value-display" id="teamsValue" style="color: #1d4ed8;">1</div>
+                                <div class="slider-labels">
+                                    <span>Niedrig</span>
+                                    <span>Hoch</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="assessment-category clickable-category" onclick="openDetailAssessment('communication')" style="cursor: pointer;">
+                            <div class="category-header">
+                                <div class="category-icon" style="background: linear-gradient(135deg, #06b6d4, #0891b2);">
+                                    <i class="fas fa-comments"></i>
+                                </div>
+                                <div>
+                                    <h4>Kommunikation & Transparenz</h4>
+                                    <p style="font-size: 0.875rem; color: #6b7280; margin: 0;">Offene und transparente Kommunikation</p>
+                                </div>
+                                <div style="margin-left: auto; color: #06b6d4;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </div>
+                            </div>
+                            <div class="slider-container">
+                                <input type="range" min="1" max="5" value="1" class="slider" id="communicationSlider" oninput="updateAssessment('communication', this.value)" onclick="event.stopPropagation();">
+                                <div class="slider-value-display" id="communicationValue" style="color: #0891b2;">1</div>
+                                <div class="slider-labels">
+                                    <span>Geschlossen</span>
+                                    <span>Offen</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="assessment-category clickable-category" onclick="openDetailAssessment('innovation')" style="cursor: pointer;">
+                            <div class="category-header">
+                                <div class="category-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
+                                    <i class="fas fa-lightbulb"></i>
+                                </div>
+                                <div>
+                                    <h4>Innovation & Lernen</h4>
+                                    <p style="font-size: 0.875rem; color: #6b7280; margin: 0;">Lernende Organisation</p>
+                                </div>
+                                <div style="margin-left: auto; color: #8b5cf6;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </div>
+                            </div>
+                            <div class="slider-container">
+                                <input type="range" min="1" max="5" value="1" class="slider" id="innovationSlider" oninput="updateAssessment('innovation', this.value)" onclick="event.stopPropagation();">
+                                <div class="slider-value-display" id="innovationValue" style="color: #7c3aed;">1</div>
+                                <div class="slider-labels">
+                                    <span>Statisch</span>
+                                    <span>Dynamisch</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="assessment-category clickable-category" onclick="openDetailAssessment('changeAgility')" style="cursor: pointer;">
+                            <div class="category-header">
+                                <div class="category-icon" style="background: linear-gradient(135deg, #14b8a6, #0d9488);">
+                                    <i class="fas fa-sync-alt"></i>
+                                </div>
+                                <div>
+                                    <h4>Change Fähigkeit & Agilität</h4>
+                                    <p style="font-size: 0.875rem; color: #6b7280; margin: 0;">Anpassungsfähigkeit und Agilität</p>
+                                </div>
+                                <div style="margin-left: auto; color: #14b8a6;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </div>
+                            </div>
+                            <div class="slider-container">
+                                <input type="range" min="1" max="5" value="1" class="slider" id="changeAgilitySlider" oninput="updateAssessment('changeAgility', this.value)" onclick="event.stopPropagation();">
+                                <div class="slider-value-display" id="changeAgilityValue" style="color: #0d9488;">1</div>
+                                <div class="slider-labels">
+                                    <span>Starr</span>
+                                    <span>Agil</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="background: white; border-radius: 12px; padding: 1.5rem; margin-top: 2rem; text-align: center;">
+                        <h4 style="color: #1f2937; margin-bottom: 1rem;">📊 Ihre Organisations-Reifegrad Bewertung</h4>
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 1rem;">
+                            <div class="score-circle" id="overallMaturityScore" style="width: 60px; height: 60px; font-size: 1.5rem;">1.0</div>
+                            <div>
+                                <div style="font-size: 1.25rem; font-weight: 700; color: #1f2937;" id="maturityDescription">Organisations-Einsteiger</div>
+                                <div style="font-size: 0.875rem; color: #6b7280;" id="maturityRecommendation">Fokus auf Grundlagen und Strukturentwicklung</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <!-- Step 1: Organisationsdiagnose & Assessment -->
-        <div class="workflow-step" id="step1">
+        <div class="workflow-step" id="step1" data-step="1" style="display: none;">
             <div class="step-header">
                 <div class="step-number">1</div>
                 <div class="step-title">Organisationsdiagnose & Assessment</div>
@@ -339,7 +794,7 @@
                 <label for="challenges">Identifizierte Herausforderungen</label>
                 <textarea id="challenges" rows="3" placeholder="Welche Herausforderungen haben Sie identifiziert?"></textarea>
         <!-- Step 2: Zukunftsbild entwickeln -->
-        <div class="workflow-step" id="step2" style="display: none;">
+        <div class="workflow-step" id="step2" data-step="2" style="display: none;">
                 <div class="step-number">2</div>
                 <div class="step-title">Zukunftsbild entwickeln</div>
                 <p>Entwickeln Sie eine klare Vision für die gewünschte Organisationsform der Zukunft.</p>
@@ -364,7 +819,7 @@
                         <input type="checkbox" id="innovativeOrg" value="innovative-org">
                         <label for="innovativeOrg">Innovative Organisation</label>
         <!-- Step 3: Agile Organisation -->
-        <div class="workflow-step" id="step3" style="display: none;">
+        <div class="workflow-step" id="step3" data-step="3" style="display: none;">
                 <div class="step-number">3</div>
                 <div class="step-title">Agile Organisation</div>
                 <p>Gestalten Sie flexible und anpassungsfähige Organisationsstrukturen für maximale Agilität.</p>
@@ -389,7 +844,7 @@
                 <label for="agilePractices">Agile Praktiken</label>
                 <textarea id="agilePractices" rows="3" placeholder="Welche agilen Praktiken möchten Sie implementieren?"></textarea>
         <!-- Step 4: Kultur & Werte -->
-        <div class="workflow-step" id="step4" style="display: none;">
+        <div class="workflow-step" id="step4" data-step="4" style="display: none;">
                 <div class="step-number">4</div>
                 <div class="step-title">Kultur & Werte</div>
                 <p>Entwickeln Sie eine starke Unternehmenskultur, die Innovation und Zusammenarbeit fördert.</p>
@@ -412,7 +867,7 @@
                         <input type="checkbox" id="sustainability" value="sustainability">
                         <label for="sustainability">Nachhaltigkeit</label>
         <!-- Step 5: Leadership Development -->
-        <div class="workflow-step" id="step5" style="display: none;">
+        <div class="workflow-step" id="step5" data-step="5" style="display: none;">
                 <div class="step-number">5</div>
                 <div class="step-title">Leadership Development</div>
                 <p>Entwickeln Sie Führungskräfte für die neue Organisationsform.</p>
@@ -434,7 +889,7 @@
                         <input type="checkbox" id="digital" value="digital">
                         <label for="digital">Digitale Führung</label>
         <!-- Step 6: Team-Entwicklung -->
-        <div class="workflow-step" id="step6" style="display: none;">
+        <div class="workflow-step" id="step6" data-step="6" style="display: none;">
                 <div class="step-number">6</div>
                 <div class="step-title">Team-Entwicklung</div>
                 <p>Stärken Sie die Zusammenarbeit und Effektivität Ihrer Teams.</p>
@@ -453,7 +908,7 @@
                         <input type="checkbox" id="feedback" value="feedback">
                         <label for="feedback">Feedback-Kultur</label>
         <!-- Step 7: Nachhaltige Implementierung -->
-        <div class="workflow-step" id="step7" style="display: none;">
+        <div class="workflow-step" id="step7" data-step="7" style="display: none;">
                 <div class="step-number">7</div>
                 <div class="step-title">Nachhaltige Implementierung</div>
                 <p>Sichern Sie den langfristigen Erfolg der Organisationsentwicklung.</p>
@@ -496,8 +951,261 @@
 <!-- Auth Modals -->
 <div id="authModalsContainer"></div>
 <script>
-        let currentStep = 1;
-        const totalSteps = 7;
+        // Organisationsentwicklung Assessment System
+        let orgDevMaturityData = {
+            structure: 1,
+            culture: 1,
+            leadership: 1,
+            teams: 1,
+            communication: 1,
+            innovation: 1,
+            changeAgility: 1
+        };
+        let overallOrgDevMaturity = 1.0;
+        let currentStep = 0;
+        const totalSteps = 7; // 0 = Assessment, 1-6 = Workflow steps
+        
+        // Sidebar functionality
+        function toggleSidebar() {
+            const sidebar = document.getElementById('workflowSidebar');
+            const icon = document.getElementById('sidebarToggleIcon');
+            const content = document.getElementById('sidebarContent');
+            
+            if (sidebar.classList.contains('collapsed')) {
+                sidebar.classList.remove('collapsed');
+                icon.className = 'fas fa-chevron-left';
+                content.style.display = 'block';
+            } else {
+                sidebar.classList.add('collapsed');
+                icon.className = 'fas fa-chevron-right';
+                content.style.display = 'none';
+            }
+        }
+        
+        // Assessment functions
+        function updateAssessment(dimension, value) {
+            orgDevMaturityData[dimension] = parseInt(value);
+            const valueDisplay = document.getElementById(`${dimension}Value`);
+            if (valueDisplay) {
+                valueDisplay.textContent = value;
+            }
+            calculateOverallMaturity();
+            updateMaturityDisplay();
+            saveProgress();
+        }
+        
+        function calculateOverallMaturity() {
+            // Load detail assessments if available
+            const detailAssessments = JSON.parse(localStorage.getItem('orgDevDetailAssessments') || '{}');
+            let total = 0;
+            let count = 0;
+            
+            Object.keys(orgDevMaturityData).forEach(dimension => {
+                if (detailAssessments[dimension] && detailAssessments[dimension].aggregated) {
+                    total += detailAssessments[dimension].aggregated;
+                } else {
+                    total += orgDevMaturityData[dimension];
+                }
+                count++;
+            });
+            
+            overallOrgDevMaturity = parseFloat((total / count).toFixed(1));
+        }
+        
+        function updateMaturityDisplay() {
+            const circle = document.getElementById('overallMaturityScore');
+            const description = document.getElementById('maturityDescription');
+            const recommendation = document.getElementById('maturityRecommendation');
+            const sidebarCircle = document.getElementById('maturityCircle');
+            const sidebarLevel = document.getElementById('maturityLevel');
+            
+            if (circle) circle.textContent = overallOrgDevMaturity;
+            
+            let level, desc, rec, colorClass;
+            if (overallOrgDevMaturity <= 1.5) {
+                level = 'Anfänger';
+                desc = 'Organisations-Einsteiger';
+                rec = 'Fokus auf Grundlagen und Strukturentwicklung';
+                colorClass = 'score-beginner';
+            } else if (overallOrgDevMaturity <= 2.5) {
+                level = 'Aufsteiger';
+                desc = 'Organisations-Aufsteiger';
+                rec = 'Grundlagen vorhanden, weitere Entwicklung nötig';
+                colorClass = 'score-intermediate';
+            } else if (overallOrgDevMaturity <= 3.5) {
+                level = 'Fortgeschritten';
+                desc = 'Organisations-Fortgeschritten';
+                rec = 'Solide Basis, Optimierung möglich';
+                colorClass = 'score-advanced';
+            } else if (overallOrgDevMaturity <= 4.5) {
+                level = 'Experte';
+                desc = 'Organisations-Experte';
+                rec = 'Hohe Reife, kleine Verbesserungen möglich';
+                colorClass = 'score-expert';
+            } else {
+                level = 'Exzellent';
+                desc = 'Organisations-Exzellenz';
+                rec = 'Hervorragende Organisationsentwicklung';
+                colorClass = 'score-expert';
+            }
+            
+            if (description) description.textContent = desc;
+            if (recommendation) recommendation.textContent = rec;
+            if (sidebarCircle) {
+                sidebarCircle.textContent = Math.round(overallOrgDevMaturity);
+                sidebarCircle.className = `score-circle ${colorClass}`;
+            }
+            if (sidebarLevel) sidebarLevel.textContent = level;
+        }
+        
+        function openDetailAssessment(dimension) {
+            // Save current progress
+            saveProgress();
+            // Navigate to detail page
+            window.location.href = `org-dev-assessment-detail-${dimension}.html`;
+        }
+        
+        function loadDetailAssessments() {
+            const detailAssessments = JSON.parse(localStorage.getItem('orgDevDetailAssessments') || '{}');
+            Object.keys(detailAssessments).forEach(dimension => {
+                if (detailAssessments[dimension].aggregated) {
+                    orgDevMaturityData[dimension] = detailAssessments[dimension].aggregated;
+                    const slider = document.getElementById(`${dimension}Slider`);
+                    const valueDisplay = document.getElementById(`${dimension}Value`);
+                    if (slider) slider.value = detailAssessments[dimension].aggregated;
+                    if (valueDisplay) valueDisplay.textContent = detailAssessments[dimension].aggregated;
+                }
+            });
+            calculateOverallMaturity();
+            updateMaturityDisplay();
+        }
+        
+        // Navigation functions
+        function changeStep(direction) {
+            const prevStep = currentStep;
+            currentStep += direction;
+            if (currentStep < 0) currentStep = 0;
+            if (currentStep >= totalSteps) currentStep = totalSteps - 1;
+            if (currentStep !== prevStep) {
+                updateStepDisplay();
+                updateProgress();
+                updateNavigation();
+                saveProgress();
+            }
+        }
+        
+        function updateStepDisplay() {
+            document.querySelectorAll('.workflow-step').forEach((step, index) => {
+                step.classList.remove('active');
+                step.style.display = 'none';
+                if (index === currentStep) {
+                    step.classList.add('active');
+                    step.style.display = 'block';
+                }
+            });
+        }
+        
+        function updateProgress() {
+            document.querySelectorAll('.progress-step').forEach((step, index) => {
+                step.classList.remove('active', 'completed');
+                if (index < currentStep) {
+                    step.classList.add('completed');
+                } else if (index === currentStep) {
+                    step.classList.add('active');
+                }
+            });
+            
+            updateOverallProgress();
+        }
+        
+        function updateOverallProgress() {
+            const progress = ((currentStep + 1) / totalSteps) * 100;
+            const progressFill = document.getElementById('overallProgress');
+            const progressText = document.getElementById('progressText');
+            if (progressFill) progressFill.style.width = `${progress}%`;
+            if (progressText) progressText.textContent = `${Math.round(progress)}% abgeschlossen`;
+        }
+        
+        function updateNavigation() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            if (prevBtn) prevBtn.style.display = currentStep > 0 ? 'inline-block' : 'none';
+            if (nextBtn) {
+                nextBtn.textContent = currentStep === totalSteps - 1 ? 'Strategie generieren' : 'Weiter';
+                nextBtn.onclick = currentStep === totalSteps - 1 ? generateOrgDevStrategy : () => changeStep(1);
+            }
+        }
+        
+        function saveProgress() {
+            const progressData = {
+                currentStep: currentStep,
+                orgDevMaturityData: orgDevMaturityData,
+                overallMaturity: overallOrgDevMaturity,
+                timestamp: new Date().toISOString()
+            };
+            localStorage.setItem('orgDevWorkflow', JSON.stringify(progressData));
+        }
+        
+        function loadProgress() {
+            const saved = localStorage.getItem('orgDevWorkflow');
+            if (saved) {
+                const data = JSON.parse(saved);
+                currentStep = data.currentStep || 0;
+                if (data.orgDevMaturityData) {
+                    orgDevMaturityData = data.orgDevMaturityData;
+                    Object.keys(orgDevMaturityData).forEach(dimension => {
+                        const slider = document.getElementById(`${dimension}Slider`);
+                        const valueDisplay = document.getElementById(`${dimension}Value`);
+                        if (slider) slider.value = orgDevMaturityData[dimension];
+                        if (valueDisplay) valueDisplay.textContent = orgDevMaturityData[dimension];
+                    });
+                }
+                calculateOverallMaturity();
+                updateMaturityDisplay();
+                updateStepDisplay();
+                updateProgress();
+                updateNavigation();
+            }
+        }
+        
+        // Export functions
+        let workflowExporter = null;
+        
+        async function exportAllToExcel() {
+            if (!workflowExporter) {
+                workflowExporter = new AssessmentExporter();
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+            const data = prepareCompleteExportData();
+            await workflowExporter.exportToExcel(data, `Organisationsentwicklung-Gesamt-Assessment-${new Date().toISOString().split('T')[0]}`);
+        }
+        
+        async function exportAllToPDF() {
+            if (!workflowExporter) {
+                workflowExporter = new AssessmentExporter();
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+            const data = prepareCompleteExportData();
+            await workflowExporter.exportToPDF(data, `Organisationsentwicklung-Gesamt-Assessment-${new Date().toISOString().split('T')[0]}`);
+        }
+        
+        function prepareCompleteExportData() {
+            const detailAssessments = JSON.parse(localStorage.getItem('orgDevDetailAssessments') || '{}');
+            return {
+                overall: overallOrgDevMaturity,
+                dimensions: {
+                    structure: { aggregated: detailAssessments.structure?.aggregated || orgDevMaturityData.structure },
+                    culture: { aggregated: detailAssessments.culture?.aggregated || orgDevMaturityData.culture },
+                    leadership: { aggregated: detailAssessments.leadership?.aggregated || orgDevMaturityData.leadership },
+                    teams: { aggregated: detailAssessments.teams?.aggregated || orgDevMaturityData.teams },
+                    communication: { aggregated: detailAssessments.communication?.aggregated || orgDevMaturityData.communication },
+                    innovation: { aggregated: detailAssessments.innovation?.aggregated || orgDevMaturityData.innovation },
+                    changeAgility: { aggregated: detailAssessments.changeAgility?.aggregated || orgDevMaturityData.changeAgility }
+                },
+                maturityData: orgDevMaturityData,
+                timestamp: new Date().toISOString()
+            };
+        }
     // Load auth modals
     async function loadAuthModals() {
         try {
@@ -525,42 +1233,6 @@
         // Check user status
             window.awsAuth.checkUserStatus();
     });
-    function changeStep(direction) {
-            const prevStep = currentStep;
-            currentStep += direction;
-            if (currentStep < 1) currentStep = 1;
-            if (currentStep > totalSteps) currentStep = totalSteps;
-            if (currentStep !== prevStep) {
-                updateStepDisplay();
-                updateProgress();
-                updateNavigation();
-        function updateStepDisplay() {
-            // Hide all steps
-            for (let i = 1; i <= totalSteps; i++) {
-                document.getElementById(`step${i}`).style.display = 'none';
-            // Show current step
-            document.getElementById(`step${currentStep}`).style.display = 'block';
-        function updateProgress() {
-                const progressStep = document.getElementById(`step${i}-progress`);
-                if (i < currentStep) {
-                    progressStep.classList.remove('active');
-                    progressStep.classList.add('completed');
-                } else if (i === currentStep) {
-                    progressStep.classList.remove('completed');
-                    progressStep.classList.add('active');
-                } else {
-                    progressStep.classList.remove('active', 'completed');
-                }
-        function updateNavigation() {
-            const prevBtn = document.getElementById('prevBtn');
-            const nextBtn = document.getElementById('nextBtn');
-            prevBtn.style.display = currentStep > 1 ? 'inline-block' : 'none';
-            if (currentStep === totalSteps) {
-                nextBtn.innerHTML = '<i class="fas fa-download"></i> Strategie generieren';
-                nextBtn.onclick = generateOrgDevStrategy;
-            } else {
-                nextBtn.innerHTML = 'Weiter <i class="fas fa-arrow-right"></i>';
-                nextBtn.onclick = () => changeStep(1);
         function generateOrgDevStrategy() {
             // Collect all form data
             const strategyData = {
@@ -614,10 +1286,20 @@ Entwickelt mit wissenschaftlichen Methoden`;
             URL.revokeObjectURL(url);
             alert(`✅ ${filename} erfolgreich heruntergeladen!`);
         // Initialize
-        updateStepDisplay();
-        updateProgress();
-        updateNavigation();
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProgress();
+            loadDetailAssessments();
+            calculateOverallMaturity();
+            updateMaturityDisplay();
+            updateStepDisplay();
+            updateProgress();
+            updateNavigation();
+            workflowExporter = new AssessmentExporter();
+        });
     </script>
+    
+    <!-- Assessment Export Script -->
+    <script src="js/assessment-export.js"></script>
 
     <!-- AWS Configuration -->
     <script>

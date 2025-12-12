@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kontinuierliches Lernen & Anpassung - HR-Readiness Assessment - Manuel Weiss</title>
+    <meta name="description" content="Detaillierte Bewertung von Kontinuierlichem Lernen & Anpassung für HR-Readiness. Lernende Organisation und kontinuierliche Verbesserung.">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/ki-assessment-detail.css">
+    <style>
+        .detail-header { background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%); }
+        .criterion-icon { background: linear-gradient(135deg, #14b8a6, #0d9488); }
+        .detail-slider::-webkit-slider-thumb, .detail-slider::-moz-range-thumb,
+        .sub-criterion-slider::-webkit-slider-thumb, .sub-criterion-slider::-moz-range-thumb { background: linear-gradient(135deg, #14b8a6, #0d9488); }
+        .slider-value-display, .sub-criterion-value, .criterion-average-value { color: #0d9488; }
+        .aggregated-score { background: linear-gradient(135deg, #14b8a6, #0d9488); }
+        .save-button { color: #0d9488; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="manuel-weiss-photo.svg" alt="Manuel Weiss" class="nav-logo">
+                <span class="nav-name">Manuel Weiss</span>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="hr-transformation.html">HR-Transformation</a>
+                <a href="index.html#about">Über mich</a>
+                <a href="index.html#contact">Kontakt</a>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="detail-assessment-container">
+        <div class="detail-header">
+            <a href="hr-strategie-workflow.html" class="back-button"><i class="fas fa-arrow-left"></i> Zurück zur Übersicht</a>
+            <h1><i class="fas fa-sync-alt"></i> Kontinuierliches Lernen & Anpassung</h1>
+            <p>Fördern Sie eine lernende Organisation und kontinuierliche Verbesserung. Harvard: Organisational Learning. MIT: Agile Anpassung und Experimentierfreude.</p>
+        </div>
+        
+        <div id="criteriaContainer"></div>
+        
+        <div class="aggregated-score">
+            <h3>Gesamtbewertung</h3>
+            <div class="score-display">
+                <div class="score-circle-large" id="aggregatedScore">1.0</div>
+                <div class="score-description" id="scoreDescription">Bewerten Sie die Kriterien, um Ihre Gesamtbewertung zu sehen</div>
+            </div>
+            <div style="display: flex; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap;">
+                <button class="save-button" onclick="saveAndReturn()" style="flex: 1; min-width: 200px;"><i class="fas fa-save"></i> Bewertung speichern und zurück</button>
+                <button onclick="exportToExcel()" style="background: #217346; color: white; border: none; padding: 1rem 2rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; flex: 1; min-width: 150px;"><i class="fas fa-file-excel"></i> Excel Export</button>
+                <button onclick="exportToPDF()" style="background: #dc3545; color: white; border: none; padding: 1rem 2rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; flex: 1; min-width: 150px;"><i class="fas fa-file-pdf"></i> PDF Export</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const learningAdaptationCriteria = [
+            {
+                id: 'learningCulture',
+                title: 'Lernkultur & -umgebung',
+                description: 'Gibt es eine starke Lernkultur in HR? Wird kontinuierliches Lernen gefördert?',
+                icon: 'fa-graduation-cap',
+                subCriteria: [
+                    { id: 'learningCulture', title: 'Starke Lernkultur', description: 'Gibt es eine Lernkultur?', examples: ['Lernfreundliche Umgebung', 'Zeit für Lernen', 'Lern-Communities'] },
+                    { id: 'learningTime', title: 'Zeit für Lernen und Entwicklung', description: 'Gibt es Zeit für Lernen?', examples: ['Dedizierte Lernzeit', 'Lern-Budgets', 'Entwicklungszeit'] },
+                    { id: 'learningSupport', title: 'Unterstützung für Lernen', description: 'Gibt es Lern-Unterstützung?', examples: ['Lern-Ressourcen', 'Lern-Budgets', 'Mentoring'] },
+                    { id: 'learningRecognition', title: 'Anerkennung für Lernen', description: 'Gibt es Anerkennung?', examples: ['Lern-Awards', 'Zertifizierungen', 'Anerkennung'] },
+                    { id: 'learningMindset', title: 'Lern-Mindset', description: 'Gibt es Lern-Mindset?', examples: ['Growth Mindset', 'Lernbereitschaft', 'Kuriosität'] }
+                ]
+            },
+            {
+                id: 'learningPrograms',
+                title: 'Lernprogramme & Entwicklung',
+                description: 'Welche Lernprogramme gibt es? Wie strukturiert ist die Kompetenzentwicklung?',
+                icon: 'fa-book',
+                subCriteria: [
+                    { id: 'structuredPrograms', title: 'Strukturierte Lernprogramme', description: 'Gibt es strukturierte Programme?', examples: ['Entwicklungspläne', 'Kurrikulum', 'Zertifizierungen'] },
+                    { id: 'personalizedLearning', title: 'Personalisierte Lernpfade', description: 'Gibt es personalisierte Pfade?', examples: ['Individuelle Pläne', 'Adaptive Learning', 'Bedürfnisorientiert'] },
+                    { id: 'diverseLearning', title: 'Vielfältige Lernformate', description: 'Gibt es vielfältige Formate?', examples: ['Online-Lernen', 'Workshops', 'Coaching', 'Mentoring'] },
+                    { id: 'continuousLearning', title: 'Kontinuierliche Lernangebote', description: 'Gibt es kontinuierliche Angebote?', examples: ['Regelmäßige Trainings', 'Lern-Communities', 'Kontinuierliche Entwicklung'] },
+                    { id: 'learningImpact', title: 'Messbarer L&D-Impact', description: 'Wird der Impact gemessen?', examples: ['ROI-Messung', 'Kompetenz-Assessments', 'Performance-Verbesserung'] }
+                ]
+            },
+            {
+                id: 'knowledgeManagement',
+                title: 'Wissensmanagement & Sharing',
+                description: 'Wie gut ist das Wissensmanagement? Gibt es effektives Knowledge Sharing?',
+                icon: 'fa-brain',
+                subCriteria: [
+                    { id: 'knowledgeBase', title: 'Wissensbasis & Dokumentation', description: 'Gibt es eine Wissensbasis?', examples: ['Knowledge Base', 'Dokumentation', 'Best Practices Library'] },
+                    { id: 'knowledgeSharing', title: 'Wissensaustausch & Sharing', description: 'Gibt es Wissensaustausch?', examples: ['Knowledge Sharing', 'Communities of Practice', 'Peer Learning'] },
+                    { id: 'lessonsLearned', title: 'Lessons Learned Prozesse', description: 'Gibt es Lessons Learned?', examples: ['Retrospectives', 'Lessons Learned', 'Best Practices'] },
+                    { id: 'expertiseSharing', title: 'Expertise-Sharing', description: 'Gibt es Expertise-Sharing?', examples: ['Expert-Netzwerke', 'Mentoring', 'Coaching'] },
+                    { id: 'knowledgeCulture', title: 'Wissens-Kultur', description: 'Gibt es Wissens-Kultur?', examples: ['Sharing-Kultur', 'Open Knowledge', 'Collaborative Learning'] }
+                ]
+            },
+            {
+                id: 'adaptability',
+                title: 'Anpassungsfähigkeit & Flexibilität',
+                description: 'Wie anpassungsfähig ist HR? Kann es schnell auf Veränderungen reagieren?',
+                icon: 'fa-adjust',
+                subCriteria: [
+                    { id: 'changeReadiness', title: 'Change Readiness', description: 'Ist HR change-ready?', examples: ['Change-Kompetenz', 'Flexibilität', 'Anpassungsfähigkeit'] },
+                    { id: 'quickAdaptation', title: 'Schnelle Anpassung', description: 'Kann HR schnell anpassen?', examples: ['Schnelle Reaktion', 'Agile Anpassung', 'Flexible Prozesse'] },
+                    { id: 'flexibleStructure', title: 'Flexible Organisationsstruktur', description: 'Ist die Struktur flexibel?', examples: ['Anpassungsfähig', 'Agile Struktur', 'Flexible Rollen'] },
+                    { id: 'adaptiveProcesses', title: 'Anpassungsfähige Prozesse', description: 'Sind Prozesse anpassungsfähig?', examples: ['Flexible Prozesse', 'Agile Methoden', 'Anpassungsfähigkeit'] },
+                    { id: 'adaptiveCulture', title: 'Anpassungsfähige Kultur', description: 'Gibt es adaptive Kultur?', examples: ['Lernende Organisation', 'Kontinuierliche Anpassung', 'Agile Werte'] }
+                ]
+            },
+            {
+                id: 'experimentation',
+                title: 'Experimentierfreude & Innovation',
+                description: 'Wie experimentierfreudig ist HR? Gibt es Raum für Innovation und Experimente?',
+                icon: 'fa-flask',
+                subCriteria: [
+                    { id: 'experimentation', title: 'Experimentierfreude', description: 'Gibt es Experimentierfreude?', examples: ['Pilot-Projekte', 'Test & Learn', 'Innovation Labs'] },
+                    { id: 'safeExperiments', title: 'Sicherer Raum für Experimente', description: 'Gibt es sichere Räume?', examples: ['Fail-Safe Environment', 'Experimentier-Kultur', 'Lernen aus Fehlern'] },
+                    { id: 'innovationPrograms', title: 'Innovations-Programme', description: 'Gibt es Innovations-Programme?', examples: ['Innovation Labs', 'Hackathons', 'Innovations-Wettbewerbe'] },
+                    { id: 'rapidPrototyping', title: 'Rapid Prototyping & Testing', description: 'Gibt es Rapid Prototyping?', examples: ['Schnelle Tests', 'Prototyping', 'Iterative Entwicklung'] },
+                    { id: 'innovationCulture', title: 'Innovations-Kultur', description: 'Gibt es Innovations-Kultur?', examples: ['Innovation-Freundlichkeit', 'Experimentierfreude', 'Innovations-Mindset'] }
+                ]
+            },
+            {
+                id: 'feedbackLoops',
+                title: 'Feedback-Loops & Continuous Improvement',
+                description: 'Gibt es effektive Feedback-Loops? Wird kontinuierlich verbessert?',
+                icon: 'fa-sync',
+                subCriteria: [
+                    { id: 'feedbackSystems', title: 'Etablierte Feedback-Systeme', description: 'Gibt es Feedback-Systeme?', examples: ['360° Feedback', 'Regelmäßiges Feedback', 'Feedback-Kultur'] },
+                    { id: 'continuousImprovement', title: 'Kontinuierliche Verbesserung', description: 'Gibt es kontinuierliche Verbesserung?', examples: ['Process Reviews', 'Optimierungsinitiativen', 'Kaizen'] },
+                    { id: 'rapidIteration', title: 'Rapid Iteration & Learning', description: 'Gibt es Rapid Iteration?', examples: ['Schnelle Iterationen', 'Agile Methoden', 'Kontinuierliches Lernen'] },
+                    { id: 'feedbackCulture', title: 'Feedback-Kultur', description: 'Gibt es Feedback-Kultur?', examples: ['Offenes Feedback', 'Kontinuierliches Feedback', 'Feedback-Willigkeit'] },
+                    { id: 'improvementMetrics', title: 'Verbesserungs-Metriken', description: 'Gibt es Verbesserungs-Metriken?', examples: ['Improvement-Tracking', 'ROI-Messung', 'Performance-Metriken'] }
+                ]
+            },
+            {
+                id: 'agileMethods',
+                title: 'Agile Methoden & Praktiken',
+                description: 'Werden agile Methoden in HR angewendet? Gibt es agile Praktiken?',
+                icon: 'fa-project-diagram',
+                subCriteria: [
+                    { id: 'agileAdoption', title: 'Agile Methoden-Adoption', description: 'Gibt es agile Adoption?', examples: ['Scrum', 'Kanban', 'Agile Frameworks'] },
+                    { id: 'agileTeams', title: 'Agile HR-Teams', description: 'Gibt es agile Teams?', examples: ['Cross-Functional Teams', 'Selbstorganisierte Teams', 'Agile Struktur'] },
+                    { id: 'sprintPlanning', title: 'Sprint-Planning & Iterationen', description: 'Gibt es Sprint-Planning?', examples: ['Sprints', 'Iterative Entwicklung', 'Agile Planning'] },
+                    { id: 'agileCulture', title: 'Agile Kultur & Werte', description: 'Gibt es agile Kultur?', examples: ['Agile Werte', 'Agile Mindset', 'Agile Prinzipien'] },
+                    { id: 'agileMetrics', title: 'Agile Metriken & Tracking', description: 'Gibt es agile Metriken?', examples: ['Velocity', 'Sprint-Metriken', 'Agile KPIs'] }
+                ]
+            },
+            {
+                id: 'futureReadiness',
+                title: 'Zukunftsfähigkeit & Trend-Monitoring',
+                description: 'Wie zukunftsfähig ist HR? Gibt es Trend-Monitoring und Zukunfts-Strategien?',
+                icon: 'fa-crystal-ball',
+                subCriteria: [
+                    { id: 'trendMonitoring', title: 'Trend-Monitoring & Intelligence', description: 'Gibt es Trend-Monitoring?', examples: ['HR-Trends', 'Technologie-Trends', 'Zukunfts-Trends'] },
+                    { id: 'futurePlanning', title: 'Zukunfts-Planung & Strategie', description: 'Gibt es Zukunfts-Planung?', examples: ['Zukunfts-Strategien', 'Szenario-Planning', 'Zukunfts-Vorbereitung'] },
+                    { id: 'futureSkills', title: 'Zukunfts-Kompetenzen entwickeln', description: 'Werden Zukunfts-Kompetenzen entwickelt?', examples: ['Future Skills', 'Kompetenz-Entwicklung', 'Zukunfts-Fähigkeiten'] },
+                    { id: 'futureReadiness', title: 'Zukunftsfähigkeit', description: 'Wie zukunftsfähig ist HR?', examples: ['Trend-Monitoring', 'Zukunfts-Strategien', 'Agile Anpassung'] },
+                    { id: 'innovationReadiness', title: 'Innovations-Bereitschaft', description: 'Ist HR innovationsbereit?', examples: ['Innovation-Freundlichkeit', 'Tech-Adoption', 'Zukunfts-Innovation'] }
+                ]
+            },
+            {
+                id: 'organizationalLearning',
+                title: 'Organisational Learning',
+                description: 'Gibt es Organizational Learning? Wird auf organisationaler Ebene gelernt?',
+                icon: 'fa-university',
+                subCriteria: [
+                    { id: 'orgLearning', title: 'Organisationales Lernen', description: 'Gibt es organisationales Lernen?', examples: ['Organizational Learning', 'System-Level Learning', 'Kollektives Lernen'] },
+                    { id: 'learningOrganization', title: 'Lernende Organisation', description: 'Ist HR eine lernende Organisation?', examples: ['Learning Organization', 'Kontinuierliches Lernen', 'Lernende Kultur'] },
+                    { id: 'systemLearning', title: 'System-Level Learning', description: 'Gibt es System-Level Learning?', examples: ['System-Weites Lernen', 'Organisationales Lernen', 'Kollektive Intelligenz'] },
+                    { id: 'learningMetrics', title: 'Learning-Metriken', description: 'Gibt es Learning-Metriken?', examples: ['Learning-KPIs', 'Lern-Impact', 'Organizational Learning Metrics'] },
+                    { id: 'learningCulture', title: 'Lernende Kultur', description: 'Gibt es lernende Kultur?', examples: ['Lern-Kultur', 'Kontinuierliches Lernen', 'Lernende Organisation'] }
+                ]
+            },
+            {
+                id: 'resilience',
+                title: 'Resilienz & Krisenfähigkeit',
+                description: 'Wie resilient ist HR? Kann es Krisen und Herausforderungen bewältigen?',
+                icon: 'fa-shield-alt',
+                subCriteria: [
+                    { id: 'resilience', title: 'Organisationale Resilienz', description: 'Gibt es Resilienz?', examples: ['Krisenfähigkeit', 'Widerstandsfähigkeit', 'Resilienz'] },
+                    { id: 'crisisManagement', title: 'Krisen-Management-Fähigkeiten', description: 'Gibt es Krisen-Management?', examples: ['Crisis Response', 'Krisen-Pläne', 'Krisen-Fähigkeiten'] },
+                    { id: 'adaptability', title: 'Anpassungsfähigkeit bei Herausforderungen', description: 'Gibt es Anpassungsfähigkeit?', examples: ['Flexibilität', 'Anpassungsfähigkeit', 'Resilienz'] },
+                    { id: 'recovery', title: 'Schnelle Recovery-Fähigkeiten', description: 'Gibt es Recovery-Fähigkeiten?', examples: ['Schnelle Erholung', 'Resilienz', 'Krisen-Erholung'] },
+                    { id: 'resilienceMetrics', title: 'Resilienz-Metriken', description: 'Gibt es Resilienz-Metriken?', examples: ['Resilienz-KPIs', 'Krisen-Performance', 'Resilienz-Tracking'] }
+                ]
+            }
+        ];
+        
+        let assessmentValues = {};
+        
+        function initializeAssessment() {
+            const saved = JSON.parse(localStorage.getItem('hrStrategieAssessments') || '{}');
+            if (saved.learningAdaptation && saved.learningAdaptation.details) {
+                assessmentValues = saved.learningAdaptation.details;
+            }
+            learningAdaptationCriteria.forEach(criterion => {
+                criterion.subCriteria.forEach(subCriterion => {
+                    const key = `${criterion.id}_${subCriterion.id}`;
+                    if (!assessmentValues[key]) assessmentValues[key] = 1;
+                });
+            });
+            renderCriteria();
+            updateAggregatedScore();
+        }
+        
+        function renderCriteria() {
+            const container = document.getElementById('criteriaContainer');
+            container.innerHTML = learningAdaptationCriteria.map(criterion => {
+                const subValues = criterion.subCriteria.map(sub => {
+                    const key = `${criterion.id}_${sub.id}`;
+                    return assessmentValues[key] || 1;
+                });
+                const criterionAverage = (subValues.reduce((sum, val) => sum + val, 0) / subValues.length).toFixed(1);
+                return `
+                <div class="criterion-card">
+                    <div class="criterion-header">
+                        <div class="criterion-icon"><i class="fas ${criterion.icon}"></i></div>
+                        <div class="criterion-title-section">
+                            <h3 class="criterion-title">${criterion.title}</h3>
+                            <p class="criterion-description">${criterion.description}</p>
+                        </div>
+                    </div>
+                    <div class="sub-criteria-container">
+                        ${criterion.subCriteria.map(subCriterion => {
+                            const key = `${criterion.id}_${subCriterion.id}`;
+                            const value = assessmentValues[key] || 1;
+                            return `
+                            <div class="sub-criterion-item" style="border-left-color: #0d9488;">
+                                <div class="sub-criterion-label">${subCriterion.title}</div>
+                                ${subCriterion.description ? `<div class="sub-criterion-description" style="color: #6b7280; font-size: 0.875rem; margin-bottom: 0.5rem;">${subCriterion.description}</div>` : ''}
+                                ${subCriterion.examples && subCriterion.examples.length > 0 ? `
+                                <div class="sub-criterion-examples" style="background: #f8fafc; padding: 0.75rem; border-radius: 6px; margin-bottom: 0.75rem; font-size: 0.8rem; color: #6b7280;">
+                                    <strong style="color: #374151; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">Beispiele:</strong>
+                                    <ul style="margin: 0.5rem 0 0 1.25rem; padding: 0;">
+                                        ${subCriterion.examples.map(ex => `<li style="margin-bottom: 0.25rem;">${ex}</li>`).join('')}
+                                    </ul>
+                                </div>
+                                ` : ''}
+                                <div class="sub-criterion-slider-wrapper">
+                                    <input type="range" min="1" max="5" step="1" value="${value}" class="sub-criterion-slider" id="slider-${key}" style="accent-color: #0d9488;" oninput="updateSubCriterionValue('${criterion.id}', '${subCriterion.id}', this.value)">
+                                    <div class="sub-criterion-value" id="value-${key}">${value}</div>
+                                    <div class="sub-criterion-scale"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
+                                </div>
+                            </div>
+                            `;
+                        }).join('')}
+                        <div class="criterion-average">
+                            <span class="criterion-average-label">Durchschnitt für "${criterion.title}":</span>
+                            <span class="criterion-average-value" id="avg-${criterion.id}">${criterionAverage}</span>
+                        </div>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+        
+        function updateSubCriterionValue(criterionId, subCriterionId, value) {
+            const key = `${criterionId}_${subCriterionId}`;
+            assessmentValues[key] = parseInt(value);
+            document.getElementById(`value-${key}`).textContent = value;
+            const criterion = learningAdaptationCriteria.find(c => c.id === criterionId);
+            const subValues = criterion.subCriteria.map(sub => {
+                const subKey = `${criterionId}_${sub.id}`;
+                return assessmentValues[subKey] || 1;
+            });
+            const criterionAverage = (subValues.reduce((sum, val) => sum + val, 0) / subValues.length).toFixed(1);
+            document.getElementById(`avg-${criterionId}`).textContent = criterionAverage;
+            updateAggregatedScore();
+        }
+        
+        function updateAggregatedScore() {
+            const criterionAverages = learningAdaptationCriteria.map(criterion => {
+                const subValues = criterion.subCriteria.map(sub => {
+                    const key = `${criterion.id}_${sub.id}`;
+                    return assessmentValues[key] || 1;
+                });
+                return subValues.reduce((sum, val) => sum + val, 0) / subValues.length;
+            });
+            const overallAverage = (criterionAverages.reduce((sum, val) => sum + val, 0) / criterionAverages.length).toFixed(1);
+            document.getElementById('aggregatedScore').textContent = overallAverage;
+            let description = '';
+            if (overallAverage <= 1.5) description = 'Schwach - Erhebliche Verbesserung von Lernen & Anpassung erforderlich';
+            else if (overallAverage <= 2.5) description = 'Verbesserungswürdig - Grundlagen vorhanden, Lernen & Anpassung entwickeln';
+            else if (overallAverage <= 3.5) description = 'Gut - Solide Lern- & Anpassungsfähigkeit, weitere Optimierung möglich';
+            else if (overallAverage <= 4.5) description = 'Sehr gut - Hohe Lern- & Anpassungsfähigkeit, kleine Verbesserungen möglich';
+            else description = 'Exzellent - Hervorragende Lern- & Anpassungsfähigkeit';
+            document.getElementById('scoreDescription').textContent = description;
+        }
+        
+        function saveAndReturn() {
+            const criterionAverages = learningAdaptationCriteria.map(criterion => {
+                const subValues = criterion.subCriteria.map(sub => {
+                    const key = `${criterion.id}_${sub.id}`;
+                    return assessmentValues[key] || 1;
+                });
+                return subValues.reduce((sum, val) => sum + val, 0) / subValues.length;
+            });
+            const aggregated = (criterionAverages.reduce((sum, val) => sum + val, 0) / criterionAverages.length).toFixed(1);
+            let saved = JSON.parse(localStorage.getItem('hrStrategieAssessments') || '{}');
+            saved.learningAdaptation = { 
+                aggregated: parseFloat(aggregated), 
+                details: assessmentValues,
+                criterionAverages: learningAdaptationCriteria.map(criterion => {
+                    const subValues = criterion.subCriteria.map(sub => {
+                        const key = `${criterion.id}_${sub.id}`;
+                        return assessmentValues[key] || 1;
+                    });
+                    return {
+                        criterionId: criterion.id,
+                        average: subValues.reduce((sum, val) => sum + val, 0) / subValues.length
+                    };
+                }),
+                timestamp: new Date().toISOString() 
+            };
+            localStorage.setItem('hrStrategieAssessments', JSON.stringify(saved));
+            let workflowData = JSON.parse(localStorage.getItem('hrStrategieWorkflow') || '{}');
+            if (!workflowData.hrMaturityData) workflowData.hrMaturityData = {};
+            workflowData.hrMaturityData.learningAdaptation = parseFloat(aggregated);
+            localStorage.setItem('hrStrategieWorkflow', JSON.stringify(workflowData));
+            window.location.href = 'hr-strategie-workflow.html';
+        }
+        
+        let exporter = null;
+        async function exportToExcel() {
+            if (!exporter) { exporter = new AssessmentExporter(); await new Promise(r => setTimeout(r, 1000)); }
+            const data = prepareExportData();
+            await exporter.exportToExcel(data, `HR-Strategie-Lernen-Anpassung-${new Date().toISOString().split('T')[0]}`);
+        }
+        async function exportToPDF() {
+            if (!exporter) { exporter = new AssessmentExporter(); await new Promise(r => setTimeout(r, 1000)); }
+            const data = prepareExportData();
+            await exporter.exportToPDF(data, `HR-Strategie-Lernen-Anpassung-${new Date().toISOString().split('T')[0]}`);
+        }
+        function prepareExportData() {
+            const criterionAverages = learningAdaptationCriteria.map(c => {
+                const subValues = c.subCriteria.map(sub => assessmentValues[`${c.id}_${sub.id}`] || 1);
+                return { criterionId: c.id, criterionTitle: c.title, average: subValues.reduce((s, v) => s + v, 0) / subValues.length };
+            });
+            const overall = criterionAverages.reduce((s, c) => s + c.average, 0) / criterionAverages.length;
+            return {
+                dimension: 'learningAdaptation', dimensionName: 'Kontinuierliches Lernen & Anpassung', overall, aggregated: overall,
+                dimensions: { learningAdaptation: { aggregated: overall, criteria: learningAdaptationCriteria.map(c => ({
+                    id: c.id, title: c.title, description: c.description, subCriteria: c.subCriteria.map(sub => ({
+                        id: sub.id, title: sub.title, value: assessmentValues[`${c.id}_${sub.id}`] || 1
+                    }))
+                })), criterionAverages }}, details: assessmentValues, timestamp: new Date().toISOString()
+            };
+        }
+        document.addEventListener('DOMContentLoaded', function() { initializeAssessment(); exporter = new AssessmentExporter(); });
+    </script>
+    <script src="js/assessment-export.js"></script>
+</body>
+</html>
+
