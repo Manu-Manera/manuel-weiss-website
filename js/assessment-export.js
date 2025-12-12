@@ -11,19 +11,27 @@ class AssessmentExporter {
     async loadLibraries() {
         // Load SheetJS for Excel export
         if (!window.XLSX) {
-            const script = document.createElement('script');
-            script.src = 'https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js';
-            document.head.appendChild(script);
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = 'https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js';
+                script.onload = () => resolve();
+                script.onerror = () => reject(new Error('XLSX library failed to load'));
+                document.head.appendChild(script);
+            });
         }
 
         // Load jsPDF for PDF export
         if (!window.jspdf) {
-            const script = document.createElement('script');
-            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
-            document.head.appendChild(script);
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+                script.onload = () => resolve();
+                script.onerror = () => reject(new Error('jsPDF library failed to load'));
+                document.head.appendChild(script);
+            });
         }
 
-        // Load Chart.js for diagrams
+        // Load Chart.js for diagrams (optional, not blocking)
         if (!window.Chart) {
             const script = document.createElement('script');
             script.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js';
@@ -35,8 +43,15 @@ class AssessmentExporter {
      * Export assessment data to Excel
      */
     async exportToExcel(data, filename = 'KI-Readiness-Assessment') {
-        if (!window.XLSX) {
-            await this.waitForLibrary('XLSX', 5000);
+        try {
+            if (!window.XLSX) {
+                await this.loadLibraries();
+                await this.waitForLibrary('XLSX', 5000);
+            }
+        } catch (error) {
+            console.error('Error loading libraries:', error);
+            alert('Fehler beim Laden der Export-Bibliotheken. Bitte Seite neu laden.');
+            return;
         }
 
         const workbook = window.XLSX.utils.book_new();
@@ -72,8 +87,15 @@ class AssessmentExporter {
      * Export assessment data to PDF with diagrams
      */
     async exportToPDF(data, filename = 'KI-Readiness-Assessment') {
-        if (!window.jspdf) {
-            await this.waitForLibrary('jspdf', 5000);
+        try {
+            if (!window.jspdf) {
+                await this.loadLibraries();
+                await this.waitForLibrary('jspdf', 5000);
+            }
+        } catch (error) {
+            console.error('Error loading libraries:', error);
+            alert('Fehler beim Laden der Export-Bibliotheken. Bitte Seite neu laden.');
+            return;
         }
 
         const { jsPDF } = window.jspdf;
