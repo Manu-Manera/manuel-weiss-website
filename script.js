@@ -243,12 +243,18 @@ function initMobileMenu() {
                             }
                         }
                         // Schließe Mobile Menu nach Klick
+                        const scrollY = document.body.style.top;
                         mobileMenuToggle.classList.remove('active');
                         mobileMenu.classList.remove('active');
                         if (mobileMenuOverlay) mobileMenuOverlay.classList.remove('active');
                         document.body.style.overflow = '';
                         document.body.style.position = '';
+                        document.body.style.top = '';
                         document.body.style.width = '';
+                        // Stelle Scroll-Position wieder her
+                        if (scrollY) {
+                            window.scrollTo(0, parseInt(scrollY || '0') * -1);
+                        }
                     });
                 }
             } else {
