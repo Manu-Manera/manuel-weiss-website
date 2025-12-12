@@ -1189,6 +1189,7 @@ Entwickelt mit Harvard & MIT Methodologie`;
         let currentStep = 0;
         const totalSteps = 8; // 0 = Assessment, 1-7 = Workflow steps
         
+        // Make functions globally available IMMEDIATELY (before DOMContentLoaded)
         // Sidebar functionality - Make globally available
         window.toggleSidebar = function() {
             const sidebar = document.getElementById('workflowSidebar');
@@ -1278,8 +1279,9 @@ Entwickelt mit Harvard & MIT Methodologie`;
             if (sidebarLevel) sidebarLevel.textContent = level;
         }
         
-        // Make openDetailAssessment globally available
+        // Make openDetailAssessment globally available IMMEDIATELY
         window.openDetailAssessment = function(dimension) {
+            console.log('openDetailAssessment called with dimension:', dimension);
             // Save current progress if function exists
             if (typeof saveProgress === 'function') {
                 try {
@@ -1289,13 +1291,18 @@ Entwickelt mit Harvard & MIT Methodologie`;
                 }
             }
             // Navigate to detail page
-            window.location.href = `hr-strategie-assessment-detail-${dimension}.html`;
+            const url = `hr-strategie-assessment-detail-${dimension}.html`;
+            console.log('Navigating to:', url);
+            window.location.href = url;
         };
         
         // Also keep local function for backwards compatibility
         function openDetailAssessment(dimension) {
             window.openDetailAssessment(dimension);
         }
+        
+        // Verify functions are available
+        console.log('Functions defined - toggleSidebar:', typeof window.toggleSidebar, 'openDetailAssessment:', typeof window.openDetailAssessment);
         
         // Navigation functions
         function nextStep() {
