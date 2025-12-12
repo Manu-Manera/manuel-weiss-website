@@ -1436,20 +1436,39 @@ Entwickelt mit Harvard & MIT Methodologie`;
             // Setup click handlers for assessment categories as fallback
             document.querySelectorAll('.clickable-category').forEach(category => {
                 category.addEventListener('click', function(e) {
-                    // Don't trigger if clicking on slider or its container
-                    if (e.target.tagName === 'INPUT' || e.target.closest('.slider-container') || e.target.closest('input[type="range"]')) {
+                    // Don't trigger if clicking on slider, slider container, or slider labels
+                    const clickedElement = e.target;
+                    if (clickedElement.tagName === 'INPUT' || 
+                        clickedElement.type === 'range' ||
+                        clickedElement.closest('.slider-container') || 
+                        clickedElement.closest('input[type="range"]') ||
+                        clickedElement.closest('.slider-labels') ||
+                        clickedElement.closest('.slider-value-display')) {
                         return;
                     }
+                    
+                    // Get dimension from onclick attribute or data attribute
+                    let dimension = null;
                     const onclick = this.getAttribute('onclick');
                     if (onclick) {
                         const match = onclick.match(/openDetailAssessment\('([^']+)'\)/);
                         if (match) {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            window.openDetailAssessment(match[1]);
+                            dimension = match[1];
                         }
                     }
-                });
+                    
+                    // Fallback: try to get from data attribute
+                    if (!dimension) {
+                        dimension = this.getAttribute('data-dimension');
+                    }
+                    
+                    if (dimension) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('Opening detail assessment for:', dimension);
+                        window.openDetailAssessment(dimension);
+                    }
+                }, true); // Use capture phase to ensure it fires
             });
             
             // Ensure sidebar toggle button works
