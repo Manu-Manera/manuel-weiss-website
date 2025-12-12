@@ -119,384 +119,383 @@
     </div>
     
     <script>
-        const teamsCriteria = [
-            {
-                id: 'organizationalFlexibility',
-                title: 'Organisatorische Flexibilität',
-                description: 'Wie flexibel ist Ihre Organisationsstruktur?',
-                icon: 'fa-random',
-                subCriteria: [
-                    { 
-                        id: 'flatHierarchy', 
-                        title: 'Flache Hierarchien',
-                        description: 'Gibt es flache Hierarchien, die schnelle Entscheidungen ermöglichen?',
-                        examples: ['Maximal 3-4 Hierarchieebenen', 'Kurze Entscheidungswege', 'Delegation von Verantwortung']
-                    },
-                    { 
-                        id: 'crossFunctionalTeams', 
-                        title: 'Cross-funktionale Teams',
-                        description: 'Arbeiten Teams cross-funktional zusammen?',
-                        examples: ['Interdisziplinäre Teams', 'Regelmäßiger Austausch', 'Gemeinsame Ziele']
-                    },
-                    { 
-                        id: 'dynamicStructure', 
-                        title: 'Dynamische Strukturanpassung',
-                        description: 'Kann die Struktur schnell angepasst werden?',
-                        examples: ['Flexible Team-Formation', 'Schnelle Reorganisation', 'Anpassungsfähigkeit']
-                    },
-                    { 
-                        id: 'matrixOrganization', 
-                        title: 'Matrix-Organisationsstruktur',
-                        description: 'Gibt es eine Matrix-Struktur für bessere Zusammenarbeit?',
-                        examples: ['Duale Berichtslinien', 'Projekt-Matrix', 'Funktions-Matrix']
-                    },
-                    { 
-                        id: 'networkStructure', 
-                        title: 'Netzwerk-Organisationsstruktur',
-                        description: 'Nutzt die Organisation Netzwerkstrukturen?',
-                        examples: ['Interne Netzwerke', 'Externe Partnerschaften', 'Kollaborative Strukturen']
-                    }
-                ]
-            },
-            {
-                id: 'agileDesign',
-                title: 'Agiles Organisationsdesign',
-                description: 'Wie agil ist das Organisationsdesign?',
-                icon: 'fa-bolt',
-                subCriteria: [
-                    { 
-                        id: 'selfOrganizingTeams', 
-                        title: 'Selbstorganisierte Teams',
-                        description: 'Haben Teams Autonomie und Selbstorganisation?',
-                        examples: ['Eigene Entscheidungsbefugnis', 'Selbstverwaltung', 'Eigene Ressourcenverwaltung']
-                    },
-                    { 
-                        id: 'scrumFramework', 
-                        title: 'Scrum/Agile Frameworks',
-                        description: 'Werden agile Frameworks verwendet?',
-                        examples: ['Scrum Teams', 'Sprints', 'Retrospektiven']
-                    },
-                    { 
-                        id: 'iterativeApproach', 
-                        title: 'Iterative Arbeitsweise',
-                        description: 'Wird iterativ gearbeitet?',
-                        examples: ['Kurze Zyklen', 'Schnelle Feedback-Loops', 'Kontinuierliche Verbesserung']
-                    },
-                    { 
-                        id: 'customerCentricity', 
-                        title: 'Kundenorientierte Strukturen',
-                        description: 'Ist die Struktur kundenorientiert?',
-                        examples: ['Kundennähe', 'Customer Journey Fokus', 'Kundenfeedback integriert']
-                    },
-                    { 
-                        id: 'rapidResponse', 
-                        title: 'Schnelle Reaktionsfähigkeit',
-                        description: 'Kann die Organisation schnell reagieren?',
-                        examples: ['Kurze Entscheidungszeiten', 'Schnelle Umsetzung', 'Anpassungsfähigkeit']
-                    }
-                ]
-            },
-            {
-                id: 'organizationalClarity',
-                title: 'Organisatorische Klarheit',
-                description: 'Wie klar sind Rollen, Verantwortlichkeiten und Prozesse?',
-                icon: 'fa-eye',
-                subCriteria: [
-                    { 
-                        id: 'clearRoles', 
-                        title: 'Klare Rollen und Verantwortlichkeiten',
-                        description: 'Sind Rollen und Verantwortlichkeiten klar definiert?',
-                        examples: ['Rollenbeschreibungen', 'Verantwortlichkeitsmatrix', 'Klare Zuständigkeiten']
-                    },
-                    { 
-                        id: 'processDocumentation', 
-                        title: 'Dokumentierte Prozesse',
-                        description: 'Sind Prozesse dokumentiert?',
-                        examples: ['Prozessdokumentation', 'Standard Operating Procedures', 'Guidelines']
-                    },
-                    { 
-                        id: 'decisionMaking', 
-                        title: 'Klare Entscheidungsfindung',
-                        description: 'Gibt es klare Entscheidungsprozesse?',
-                        examples: ['Entscheidungsmatrizen', 'Approval-Prozesse', 'Klare Autoritäten']
-                    },
-                    { 
-                        id: 'communicationChannels', 
-                        title: 'Definierte Kommunikationskanäle',
-                        description: 'Gibt es definierte Kommunikationswege?',
-                        examples: ['Kommunikationsmatrix', 'Regelmäßige Meetings', 'Informationsfluss']
-                    },
-                    { 
-                        id: 'governanceStructure', 
-                        title: 'Governance-Struktur',
-                        description: 'Gibt es eine klare Governance-Struktur?',
-                        examples: ['Steuerungskreise', 'Governance Boards', 'Klare Regeln']
-                    }
-                ]
-            },
-            {
-                id: 'scalability',
-                title: 'Skalierbarkeit',
-                description: 'Wie gut skaliert die Organisationsstruktur?',
-                icon: 'fa-expand-arrows-alt',
-                subCriteria: [
-                    { 
-                        id: 'growthReadiness', 
-                        title: 'Wachstumsbereitschaft',
-                        description: 'Ist die Struktur wachstumsbereit?',
-                        examples: ['Skalierbare Teams', 'Erweiterbare Strukturen', 'Wachstumsplanung']
-                    },
-                    { 
-                        id: 'modularDesign', 
-                        title: 'Modulares Design',
-                        description: 'Ist die Struktur modular aufgebaut?',
-                        examples: ['Wiederverwendbare Module', 'Plug-and-Play Teams', 'Modulare Einheiten']
-                    },
-                    { 
-                        id: 'resourceFlexibility', 
-                        title: 'Ressourcenflexibilität',
-                        description: 'Können Ressourcen flexibel zugewiesen werden?',
-                        examples: ['Flexible Ressourcenzuweisung', 'Shared Resources', 'Dynamische Allokation']
-                    },
-                    { 
-                        id: 'internationalScalability', 
-                        title: 'Internationale Skalierbarkeit',
-                        description: 'Skaliert die Struktur international?',
-                        examples: ['Globales Modell', 'Regionale Anpassungen', 'Kulturelle Flexibilität']
-                    },
-                    { 
-                        id: 'technologyScalability', 
-                        title: 'Technologie-Skalierbarkeit',
-                        description: 'Unterstützt Technologie die Skalierung?',
-                        examples: ['Skalierbare IT-Systeme', 'Cloud-Infrastruktur', 'Automatisierung']
-                    }
-                ]
-            },
-            {
-                id: 'collaborationStructures',
-                title: 'Kollaborationsstrukturen',
-                description: 'Wie gut sind Kollaborationsstrukturen etabliert?',
+        const teamsCriteria = [            {
+                id: 'teamFormation',
+                title: 'Team-Formation und -Zusammensetzung',
+                description: 'Wie gut sind Teams zusammengesetzt?',
                 icon: 'fa-users',
                 subCriteria: [
                     { 
-                        id: 'crossFunctionalCollaboration', 
-                        title: 'Cross-funktionale Zusammenarbeit',
-                        description: 'Gibt es Strukturen für cross-funktionale Zusammenarbeit?',
-                        examples: ['Gemeinsame Projekte', 'Cross-Functional Teams', 'Interdisziplinäre Zusammenarbeit']
+                        id: 'diverseTeams', 
+                        title: 'Vielfältige Team-Zusammensetzung',
+                        description: 'Sind Teams vielfältig zusammengesetzt?',
+                        examples: ['Diversität', 'Verschiedene Perspektiven', 'Multidisziplinär', 'Inklusiv']
                     },
                     { 
-                        id: 'knowledgeSharing', 
-                        title: 'Wissensaustausch-Strukturen',
-                        description: 'Gibt es Strukturen für Wissensaustausch?',
-                        examples: ['Communities of Practice', 'Wissensplattformen', 'Regelmäßiger Austausch']
+                        id: 'skillAlignment', 
+                        title: 'Skills-Alignment und Kompetenzen',
+                        description: 'Sind die Skills passend?',
+                        examples: ['Kompetenzen', 'Fähigkeiten', 'Expertise', 'Qualifikationen']
+                    },
+                    { 
+                        id: 'teamSize', 
+                        title: 'Optimale Team-Größe',
+                        description: 'Ist die Team-Größe optimal?',
+                        examples: ['Größe', 'Effizienz', 'Kommunikation', 'Zusammenarbeit']
+                    },
+                    { 
+                        id: 'roleClarity', 
+                        title: 'Klare Rollen im Team',
+                        description: 'Sind die Rollen klar?',
+                        examples: ['Rollen', 'Verantwortlichkeiten', 'Zuständigkeiten', 'Klarheit']
+                    },
+                    { 
+                        id: 'teamStability', 
+                        title: 'Team-Stabilität',
+                        description: 'Sind Teams stabil?',
+                        examples: ['Stabilität', 'Kontinuität', 'Zusammenhalt', 'Langlebigkeit']
+                    }
+                ]
+            },
+            {
+                id: 'teamCollaboration',
+                title: 'Team-Kollaboration',
+                description: 'Wie gut ist die Team-Kollaboration?',
+                icon: 'fa-handshake',
+                subCriteria: [
+                    { 
+                        id: 'effectiveCommunication', 
+                        title: 'Effektive Team-Kommunikation',
+                        description: 'Wie gut ist die Team-Kommunikation?',
+                        examples: ['Kommunikation', 'Austausch', 'Dialog', 'Information']
+                    },
+                    { 
+                        id: 'sharedGoals', 
+                        title: 'Gemeinsame Ziele und Vision',
+                        description: 'Gibt es gemeinsame Ziele?',
+                        examples: ['Ziele', 'Vision', 'Alignment', 'Ausrichtung']
                     },
                     { 
                         id: 'collaborativeTools', 
                         title: 'Kollaborative Tools und Plattformen',
                         description: 'Werden kollaborative Tools genutzt?',
-                        examples: ['Collaboration Software', 'Projektmanagement-Tools', 'Virtuelle Zusammenarbeit']
+                        examples: ['Tools', 'Plattformen', 'Software', 'Technologie']
                     },
                     { 
-                        id: 'informalNetworks', 
-                        title: 'Informelle Netzwerke',
-                        description: 'Gibt es informelle Netzwerke?',
-                        examples: ['Mentoring-Programme', 'Peer Networks', 'Informelle Communities']
+                        id: 'knowledgeSharing', 
+                        title: 'Wissensaustausch im Team',
+                        description: 'Wie gut ist der Wissensaustausch?',
+                        examples: ['Sharing', 'Austausch', 'Lernen', 'Wissen']
                     },
                     { 
-                        id: 'teamCohesion', 
-                        title: 'Team-Kohäsion',
-                        description: 'Wie stark ist die Team-Kohäsion?',
-                        examples: ['Team-Building', 'Gemeinsame Ziele', 'Starke Beziehungen']
+                        id: 'mutualSupport', 
+                        title: 'Gegenseitige Unterstützung',
+                        description: 'Gibt es gegenseitige Unterstützung?',
+                        examples: ['Support', 'Hilfe', 'Zusammenarbeit', 'Teamgeist']
                     }
                 ]
             },
             {
-                id: 'innovationStructures',
-                title: 'Innovationsstrukturen',
-                description: 'Wie gut sind Strukturen für Innovation etabliert?',
+                id: 'teamPerformance',
+                title: 'Team-Performance',
+                description: 'Wie gut ist die Team-Performance?',
+                icon: 'fa-trophy',
+                subCriteria: [
+                    { 
+                        id: 'highPerformance', 
+                        title: 'High Performance Teams',
+                        description: 'Gibt es High-Performance-Teams?',
+                        examples: ['Performance', 'Exzellenz', 'Ergebnisse', 'Effektivität']
+                    },
+                    { 
+                        id: 'performanceMetrics', 
+                        title: 'Team-Performance-Metriken',
+                        description: 'Gibt es Performance-Metriken?',
+                        examples: ['Metriken', 'KPIs', 'Messung', 'Tracking']
+                    },
+                    { 
+                        id: 'goalAchievement', 
+                        title: 'Zielerreichung',
+                        description: 'Werden Ziele erreicht?',
+                        examples: ['Ziele', 'Erfolg', 'Ergebnisse', 'Achievement']
+                    },
+                    { 
+                        id: 'continuousImprovement', 
+                        title: 'Kontinuierliche Verbesserung',
+                        description: 'Gibt es kontinuierliche Verbesserung?',
+                        examples: ['Verbesserung', 'Optimierung', 'Lernen', 'Evolution']
+                    },
+                    { 
+                        id: 'accountability', 
+                        title: 'Verantwortlichkeit im Team',
+                        description: 'Gibt es Verantwortlichkeit?',
+                        examples: ['Accountability', 'Verantwortung', 'Ownership', 'Commitment']
+                    }
+                ]
+            },
+            {
+                id: 'teamDevelopment',
+                title: 'Team-Entwicklung',
+                description: 'Wie gut ist die Team-Entwicklung?',
+                icon: 'fa-chart-line',
+                subCriteria: [
+                    { 
+                        id: 'developmentPrograms', 
+                        title: 'Team-Entwicklungsprogramme',
+                        description: 'Gibt es Entwicklungsprogramme?',
+                        examples: ['Programme', 'Training', 'Workshops', 'Bildung']
+                    },
+                    { 
+                        id: 'teamBuilding', 
+                        title: 'Team-Building Aktivitäten',
+                        description: 'Gibt es Team-Building?',
+                        examples: ['Aktivitäten', 'Events', 'Workshops', 'Zusammenhalt']
+                    },
+                    { 
+                        id: 'skillDevelopment', 
+                        title: 'Skills-Entwicklung im Team',
+                        description: 'Gibt es Skills-Entwicklung?',
+                        examples: ['Entwicklung', 'Training', 'Lernen', 'Kompetenzen']
+                    },
+                    { 
+                        id: 'careerDevelopment', 
+                        title: 'Karriereentwicklung im Team',
+                        description: 'Gibt es Karriereentwicklung?',
+                        examples: ['Karriere', 'Entwicklung', 'Wachstum', 'Möglichkeiten']
+                    },
+                    { 
+                        id: 'learningCulture', 
+                        title: 'Lernkultur im Team',
+                        description: 'Gibt es eine Lernkultur?',
+                        examples: ['Lernkultur', 'Lernen', 'Entwicklung', 'Wachstum']
+                    }
+                ]
+            },
+            {
+                id: 'conflictManagement',
+                title: 'Konfliktmanagement',
+                description: 'Wie gut ist das Konfliktmanagement?',
+                icon: 'fa-exclamation-triangle',
+                subCriteria: [
+                    { 
+                        id: 'conflictResolution', 
+                        title: 'Konfliktlösung',
+                        description: 'Wie gut ist die Konfliktlösung?',
+                        examples: ['Lösung', 'Mediation', 'Kompromisse', 'Konsens']
+                    },
+                    { 
+                        id: 'conflictPrevention', 
+                        title: 'Konfliktprävention',
+                        description: 'Gibt es Konfliktprävention?',
+                        examples: ['Prävention', 'Vorbeugung', 'Proaktiv', 'Früherkennung']
+                    },
+                    { 
+                        id: 'openDialogue', 
+                        title: 'Offener Dialog',
+                        description: 'Gibt es offenen Dialog?',
+                        examples: ['Dialog', 'Kommunikation', 'Offenheit', 'Transparenz']
+                    },
+                    { 
+                        id: 'mediation', 
+                        title: 'Mediation und Unterstützung',
+                        description: 'Gibt es Mediation?',
+                        examples: ['Mediation', 'Unterstützung', 'Hilfe', 'Beratung']
+                    },
+                    { 
+                        id: 'constructiveConflict', 
+                        title: 'Konstruktive Konflikte',
+                        description: 'Werden Konflikte konstruktiv genutzt?',
+                        examples: ['Konstruktiv', 'Lernen', 'Verbesserung', 'Innovation']
+                    }
+                ]
+            },
+            {
+                id: 'teamCohesion',
+                title: 'Team-Kohäsion',
+                description: 'Wie stark ist die Team-Kohäsion?',
+                icon: 'fa-link',
+                subCriteria: [
+                    { 
+                        id: 'teamBonding', 
+                        title: 'Team-Bonding und Zusammenhalt',
+                        description: 'Wie stark ist der Zusammenhalt?',
+                        examples: ['Zusammenhalt', 'Bonding', 'Gemeinschaft', 'Einheit']
+                    },
+                    { 
+                        id: 'trust', 
+                        title: 'Vertrauen im Team',
+                        description: 'Wie hoch ist das Vertrauen?',
+                        examples: ['Vertrauen', 'Sicherheit', 'Offenheit', 'Respekt']
+                    },
+                    { 
+                        id: 'psychologicalSafety', 
+                        title: 'Psychologische Sicherheit',
+                        description: 'Gibt es psychologische Sicherheit?',
+                        examples: ['Sicherheit', 'Offenheit', 'Vertrauen', 'Respekt']
+                    },
+                    { 
+                        id: 'teamIdentity', 
+                        title: 'Team-Identität',
+                        description: 'Gibt es eine Team-Identität?',
+                        examples: ['Identität', 'Zugehörigkeit', 'Gemeinschaft', 'Kultur']
+                    },
+                    { 
+                        id: 'sharedValues', 
+                        title: 'Gemeinsame Werte',
+                        description: 'Gibt es gemeinsame Werte?',
+                        examples: ['Werte', 'Prinzipien', 'Gemeinsamkeiten', 'Alignment']
+                    }
+                ]
+            },
+            {
+                id: 'crossFunctionalTeams',
+                title: 'Cross-funktionale Teams',
+                description: 'Wie gut sind cross-funktionale Teams?',
+                icon: 'fa-project-diagram',
+                subCriteria: [
+                    { 
+                        id: 'crossFunctionalStructure', 
+                        title: 'Cross-funktionale Struktur',
+                        description: 'Gibt es cross-funktionale Strukturen?',
+                        examples: ['Struktur', 'Organisation', 'Zusammenarbeit', 'Integration']
+                    },
+                    { 
+                        id: 'interdisciplinary', 
+                        title: 'Interdisziplinäre Zusammenarbeit',
+                        description: 'Gibt es interdisziplinäre Zusammenarbeit?',
+                        examples: ['Interdisziplinär', 'Verschiedene Bereiche', 'Integration', 'Zusammenarbeit']
+                    },
+                    { 
+                        id: 'sharedProjects', 
+                        title: 'Gemeinsame Projekte',
+                        description: 'Gibt es gemeinsame Projekte?',
+                        examples: ['Projekte', 'Zusammenarbeit', 'Gemeinsame Ziele', 'Integration']
+                    },
+                    { 
+                        id: 'knowledgeExchange', 
+                        title: 'Wissensaustausch zwischen Bereichen',
+                        description: 'Gibt es Wissensaustausch?',
+                        examples: ['Austausch', 'Sharing', 'Lernen', 'Wissen']
+                    },
+                    { 
+                        id: 'breakdownSilos', 
+                        title: 'Abbau von Silos',
+                        description: 'Werden Silos abgebaut?',
+                        examples: ['Silos', 'Integration', 'Zusammenarbeit', 'Offenheit']
+                    }
+                ]
+            },
+            {
+                id: 'remoteTeams',
+                title: 'Remote & Virtuelle Teams',
+                description: 'Wie gut funktionieren Remote-Teams?',
+                icon: 'fa-laptop',
+                subCriteria: [
+                    { 
+                        id: 'remoteInfrastructure', 
+                        title: 'Remote-Infrastruktur',
+                        description: 'Gibt es eine gute Remote-Infrastruktur?',
+                        examples: ['Infrastruktur', 'Tools', 'Technologie', 'Plattformen']
+                    },
+                    { 
+                        id: 'virtualCollaboration', 
+                        title: 'Virtuelle Kollaboration',
+                        description: 'Wie gut ist die virtuelle Kollaboration?',
+                        examples: ['Kollaboration', 'Tools', 'Kommunikation', 'Zusammenarbeit']
+                    },
+                    { 
+                        id: 'remoteCulture', 
+                        title: 'Remote-Kultur',
+                        description: 'Gibt es eine Remote-Kultur?',
+                        examples: ['Kultur', 'Werte', 'Praktiken', 'Normen']
+                    },
+                    { 
+                        id: 'workLifeBalance', 
+                        title: 'Work-Life-Balance',
+                        description: 'Gibt es Work-Life-Balance?',
+                        examples: ['Balance', 'Grenzen', 'Flexibilität', 'Wohlbefinden']
+                    },
+                    { 
+                        id: 'inclusion', 
+                        title: 'Inklusion von Remote-Mitarbeitern',
+                        description: 'Werden Remote-Mitarbeiter eingebunden?',
+                        examples: ['Inklusion', 'Einbindung', 'Gleichberechtigung', 'Zugehörigkeit']
+                    }
+                ]
+            },
+            {
+                id: 'teamInnovation',
+                title: 'Team-Innovation',
+                description: 'Wie innovativ sind Teams?',
                 icon: 'fa-lightbulb',
                 subCriteria: [
                     { 
-                        id: 'innovationTeams', 
-                        title: 'Dedizierte Innovations-Teams',
-                        description: 'Gibt es Teams für Innovation?',
-                        examples: ['Innovation Labs', 'R&D Teams', 'Innovation Hubs']
+                        id: 'innovationMindset', 
+                        title: 'Innovations-Mindset',
+                        description: 'Gibt es ein Innovations-Mindset?',
+                        examples: ['Mindset', 'Kreativität', 'Innovation', 'Experimentierfreude']
+                    },
+                    { 
+                        id: 'ideaGeneration', 
+                        title: 'Ideen-Generierung',
+                        description: 'Wie gut ist die Ideen-Generierung?',
+                        examples: ['Ideen', 'Kreativität', 'Brainstorming', 'Innovation']
                     },
                     { 
                         id: 'experimentation', 
-                        title: 'Experimentier-Strukturen',
-                        description: 'Gibt es Strukturen für Experimente?',
-                        examples: ['Pilot-Projekte', 'Prototyping', 'Test-Environments']
+                        title: 'Experimentierfreude',
+                        description: 'Gibt es Experimentierfreude?',
+                        examples: ['Experimente', 'Pilot-Projekte', 'Test & Learn', 'Innovation']
                     },
                     { 
-                        id: 'ideaManagement', 
-                        title: 'Ideenmanagement-System',
-                        description: 'Gibt es ein Ideenmanagement?',
-                        examples: ['Ideenplattformen', 'Innovation Contests', 'Ideen-Pipeline']
+                        id: 'innovationRewards', 
+                        title: 'Innovations-Belohnungen',
+                        description: 'Gibt es Innovations-Belohnungen?',
+                        examples: ['Belohnungen', 'Anerkennung', 'Incentives', 'Recognition']
                     },
                     { 
-                        id: 'startupCulture', 
-                        title: 'Startup-Kultur-Elemente',
-                        description: 'Gibt es Startup-Kultur-Elemente?',
-                        examples: ['Fail-Fast Kultur', 'Rapid Prototyping', 'Entrepreneurship']
-                    },
-                    { 
-                        id: 'externalInnovation', 
-                        title: 'Externe Innovationspartnerschaften',
-                        description: 'Gibt es externe Innovationspartnerschaften?',
-                        examples: ['Startup-Partnerschaften', 'Universitätskooperationen', 'Innovation Networks']
+                        id: 'learningFromFailure', 
+                        title: 'Lernen aus Fehlern',
+                        description: 'Wird aus Fehlern gelernt?',
+                        examples: ['Lernen', 'Fehleranalyse', 'Verbesserung', 'Lessons Learned']
                     }
                 ]
             },
             {
-                id: 'digitalTransformation',
-                title: 'Digitale Transformation',
-                description: 'Wie gut ist die Organisation für digitale Transformation aufgestellt?',
-                icon: 'fa-digital-tacho',
+                id: 'teamRecognition',
+                title: 'Team-Anerkennung & Wertschätzung',
+                description: 'Wie gut ist Team-Anerkennung?',
+                icon: 'fa-star',
                 subCriteria: [
                     { 
-                        id: 'digitalStrategy', 
-                        title: 'Digitale Strategie',
-                        description: 'Gibt es eine digitale Strategie?',
-                        examples: ['Digital Roadmap', 'Digitale Vision', 'Digital Transformation Plan']
+                        id: 'recognitionPrograms', 
+                        title: 'Anerkennungsprogramme',
+                        description: 'Gibt es Anerkennungsprogramme?',
+                        examples: ['Programme', 'Awards', 'Recognition', 'Wertschätzung']
                     },
                     { 
-                        id: 'digitalCapabilities', 
-                        title: 'Digitale Fähigkeiten',
-                        description: 'Hat die Organisation digitale Fähigkeiten?',
-                        examples: ['Digitale Skills', 'Digital Literacy', 'Technologie-Kompetenz']
-                    },
-                    { 
-                        id: 'dataDriven', 
-                        title: 'Datengetriebene Organisation',
-                        description: 'Ist die Organisation datengetrieben?',
-                        examples: ['Data Analytics', 'Business Intelligence', 'Datenbasierte Entscheidungen']
-                    },
-                    { 
-                        id: 'automation', 
-                        title: 'Automatisierungsgrad',
-                        description: 'Wie automatisiert ist die Organisation?',
-                        examples: ['Prozessautomatisierung', 'RPA', 'KI-gestützte Prozesse']
-                    },
-                    { 
-                        id: 'digitalCulture', 
-                        title: 'Digitale Kultur',
-                        description: 'Gibt es eine digitale Kultur?',
-                        examples: ['Digital Mindset', 'Agile Digitale Praktiken', 'Innovation Culture']
-                    }
-                ]
-            },
-            {
-                id: 'sustainabilityStructure',
-                title: 'Nachhaltigkeitsstruktur',
-                description: 'Wie gut ist Nachhaltigkeit in der Struktur verankert?',
-                icon: 'fa-leaf',
-                subCriteria: [
-                    { 
-                        id: 'sustainabilityIntegration', 
-                        title: 'Nachhaltigkeit in Struktur integriert',
-                        description: 'Ist Nachhaltigkeit strukturell verankert?',
-                        examples: ['Sustainability Teams', 'Nachhaltigkeitsziele', 'ESG-Integration']
-                    },
-                    { 
-                        id: 'resourceEfficiency', 
-                        title: 'Ressourceneffizienz',
-                        description: 'Wie effizient werden Ressourcen genutzt?',
-                        examples: ['Ressourcenoptimierung', 'Nachhaltige Prozesse', 'Effizienz-Metriken']
-                    },
-                    { 
-                        id: 'circularEconomy', 
-                        title: 'Kreislaufwirtschaft-Elemente',
-                        description: 'Gibt es Kreislaufwirtschaft-Elemente?',
-                        examples: ['Wiederverwendung', 'Recycling', 'Circular Design']
-                    },
-                    { 
-                        id: 'sustainabilityReporting', 
-                        title: 'Nachhaltigkeits-Reporting',
-                        description: 'Gibt es Nachhaltigkeits-Reporting?',
-                        examples: ['Sustainability Reports', 'ESG-Metriken', 'Transparenz']
-                    },
-                    { 
-                        id: 'longTermThinking', 
-                        title: 'Langfristiges Denken',
-                        description: 'Wird langfristig gedacht?',
-                        examples: ['Langfristige Strategie', 'Nachhaltige Investitionen', 'Zukunftsfähigkeit']
-                    }
-                ]
-            },
-            {
-                id: 'changeReadiness',
-                title: 'Change-Readiness',
-                description: 'Wie ready ist die Organisation für Veränderungen?',
-                icon: 'fa-sync-alt',
-                subCriteria: [
-                    { 
-                        id: 'changeManagement', 
-                        title: 'Change Management Strukturen',
-                        description: 'Gibt es Change Management Strukturen?',
-                        examples: ['Change Teams', 'Change Prozesse', 'Change Methodologie']
-                    },
-                    { 
-                        id: 'adaptability', 
-                        title: 'Anpassungsfähigkeit',
-                        description: 'Wie anpassungsfähig ist die Organisation?',
-                        examples: ['Schnelle Anpassung', 'Flexibilität', 'Resilienz']
-                    },
-                    { 
-                        id: 'learningOrganization', 
-                        title: 'Lernende Organisation',
-                        description: 'Ist die Organisation lernend?',
-                        examples: ['Lernkultur', 'Kontinuierliche Verbesserung', 'Reflexionsprozesse']
-                    },
-                    { 
-                        id: 'experimentationCulture', 
-                        title: 'Experimentier-Kultur',
-                        description: 'Gibt es eine Experimentier-Kultur?',
-                        examples: ['Test & Learn', 'Pilot-Projekte', 'Fail-Fast Mentalität']
-                    },
-                    { 
-                        id: 'futureOrientation', 
-                        title: 'Zukunftsorientierung',
-                        description: 'Ist die Organisation zukunftsorientiert?',
-                        examples: ['Trend-Monitoring', 'Zukunftsszenarien', 'Strategische Vorausschau']
-                    }
-                ]
-            },
-            {
-                id: 'performanceManagement',
-                title: 'Performance Management Strukturen',
-                description: 'Wie gut sind Performance Management Strukturen?',
-                icon: 'fa-chart-bar',
-                subCriteria: [
-                    { 
-                        id: 'performanceMetrics', 
-                        title: 'Performance-Metriken',
-                        description: 'Gibt es klare Performance-Metriken?',
-                        examples: ['KPIs definiert', 'Performance Dashboards', 'Regelmäßige Messung']
+                        id: 'teamCelebration', 
+                        title: 'Team-Feiern und Erfolge',
+                        description: 'Werden Erfolge gefeiert?',
+                        examples: ['Feiern', 'Erfolge', 'Celebration', 'Wertschätzung']
                     },
                     { 
                         id: 'feedbackCulture', 
                         title: 'Feedback-Kultur',
                         description: 'Gibt es eine Feedback-Kultur?',
-                        examples: ['Regelmäßiges Feedback', '360-Grad-Feedback', 'Konstruktive Kritik']
+                        examples: ['Feedback', 'Rückmeldung', 'Kommunikation', 'Wertschätzung']
                     },
                     { 
-                        id: 'performanceDevelopment', 
-                        title: 'Performance-Entwicklung',
-                        description: 'Gibt es Performance-Entwicklung?',
-                        examples: ['Performance Reviews', 'Entwicklungspläne', 'Coaching']
+                        id: 'appreciation', 
+                        title: 'Wertschätzung und Dankbarkeit',
+                        description: 'Gibt es Wertschätzung?',
+                        examples: ['Wertschätzung', 'Dankbarkeit', 'Anerkennung', 'Respekt']
                     },
                     { 
-                        id: 'goalAlignment', 
-                        title: 'Zielausrichtung',
-                        description: 'Sind Ziele ausgerichtet?',
-                        examples: ['OKR-System', 'Cascading Goals', 'Alignment']
-                    },
-                    { 
-                        id: 'recognitionSystem', 
-                        title: 'Anerkennungssystem',
-                        description: 'Gibt es ein Anerkennungssystem?',
-                        examples: ['Recognition Programme', 'Performance Awards', 'Wertschätzung']
+                        id: 'teamPride', 
+                        title: 'Team-Stolz und Identifikation',
+                        description: 'Gibt es Team-Stolz?',
+                        examples: ['Stolz', 'Identifikation', 'Zugehörigkeit', 'Engagement']
                     }
                 ]
             }
@@ -648,15 +647,15 @@
             if (descriptionDisplay) {
                 let description = '';
                 if (overallAverage <= 1.5) {
-                    description = 'Starr und unflexibel - Erhebliche Verbesserung der Struktur nötig';
+                    description = 'Schwache Team-Entwicklung - Erhebliche Verbesserung nötig';
                 } else if (overallAverage <= 2.5) {
-                    description = 'Teilweise flexibel - Strukturelle Verbesserungen erforderlich';
+                    description = 'Teilweise entwickelte Teams - Team-Verbesserungen erforderlich';
                 } else if (overallAverage <= 3.5) {
-                    description = 'Gut strukturiert - Weitere Optimierung möglich';
+                    description = 'Gute Team-Entwicklung - Weitere Optimierung möglich';
                 } else if (overallAverage <= 4.5) {
-                    description = 'Sehr flexibel - Kleine Verbesserungen möglich';
+                    description = 'Starke Team-Entwicklung - Kleine Verbesserungen möglich';
                 } else {
-                    description = 'Hervorragend strukturiert - Agile und anpassungsfähige Organisation';
+                    description = 'Hervorragende Team-Entwicklung - Exzellente Teams';
                 }
                 descriptionDisplay.textContent = description;
             }
