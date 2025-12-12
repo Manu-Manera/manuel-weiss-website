@@ -2032,12 +2032,19 @@
             generatePersonalizedInsights();
         }
         
-        function openDetailAssessment(dimension) {
-            // Save current workflow state
-            saveWorkflowProgress();
+        // Override with full implementation after DOM is ready
+        window.openDetailAssessment = function(dimension) {
+            // Save current progress if function exists
+            if (typeof saveProgress === 'function') {
+                try {
+                    saveProgress();
+                } catch (e) {
+                    console.warn('Could not save progress:', e);
+                }
+            }
             // Navigate to detail page
             window.location.href = `ki-assessment-detail-${dimension}.html`;
-        }
+        };
         
         function loadDetailAssessmentResults() {
             // Load aggregated results from localStorage and update sliders
@@ -2531,6 +2538,24 @@
                 
                 // Setup auto-save
                 setupAutoSave();
+                
+                // Setup click handlers for assessment categories as fallback
+                document.querySelectorAll('.clickable-category').forEach(category => {
+                    category.addEventListener('click', function(e) {
+                        // Don't trigger if clicking on slider
+                        if (e.target.tagName === 'INPUT' || e.target.closest('.slider-container')) {
+                            return;
+                        }
+                        const onclick = this.getAttribute('onclick');
+                        if (onclick) {
+                            const match = onclick.match(/openDetailAssessment\('([^']+)'\)/);
+                            if (match) {
+                                e.preventDefault();
+                                window.openDetailAssessment(match[1]);
+                            }
+                        }
+                    });
+                });
                 
                 console.log('✅ Smart KI-Strategy Workflow initialized successfully');
                 
