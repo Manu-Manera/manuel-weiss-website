@@ -2968,9 +2968,12 @@ a:hover {
         position: absolute !important; /* Statt fixed auf Mobile */
         height: auto !important;
         min-height: 100vh;
+        min-height: -webkit-fill-available;
         pointer-events: none !important;
         touch-action: none !important;
         will-change: transform;
+        /* Sicherstellen dass sie nicht scrollen blockieren */
+        overflow: visible !important;
     }
     
     /* Alle Sections müssen scrollbar sein */
