@@ -26,16 +26,32 @@ function fixMobileScroll() {
         }, 100);
     }
     
-    // Verhindere Scroll-Locking beim Mobile Menu
+    // Verhindere Scroll-Locking beim Mobile Menu - NUR wenn Menu offen ist
     const mobileMenu = document.getElementById('mobileMenu');
     const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
     
     if (mobileMenu && mobileMenuOverlay) {
         const observer = new MutationObserver(() => {
-            if (mobileMenu.classList.contains('active')) {
+            const isMenuActive = mobileMenu.classList.contains('active');
+            // Nur overflow: hidden setzen wenn Menu wirklich offen ist
+            if (isMenuActive) {
+                // Speichere aktuelle Scroll-Position
+                const scrollY = window.scrollY;
                 document.body.style.overflow = 'hidden';
+                document.body.style.position = 'fixed';
+                document.body.style.top = `-${scrollY}px`;
+                document.body.style.width = '100%';
             } else {
+                // Sicherstellen dass Scrollen wieder funktioniert
+                const scrollY = document.body.style.top;
                 document.body.style.overflow = '';
+                document.body.style.position = '';
+                document.body.style.top = '';
+                document.body.style.width = '';
+                // Stelle Scroll-Position wieder her
+                if (scrollY) {
+                    window.scrollTo(0, parseInt(scrollY || '0') * -1);
+                }
             }
         });
         
@@ -43,7 +59,35 @@ function fixMobileScroll() {
             attributes: true,
             attributeFilter: ['class']
         });
+        
+        // Initial check - STELLE SICHER dass Scrollen funktioniert wenn Menu geschlossen ist
+        if (!mobileMenu.classList.contains('active')) {
+            document.body.style.overflow = '';
+            document.body.style.position = '';
+            document.body.style.top = '';
+            document.body.style.width = '';
+            // Zusätzliche Sicherheit: Entferne alle inline styles die Scrollen blockieren könnten
+            document.documentElement.style.overflow = '';
+            document.documentElement.style.position = '';
+        }
     }
+    
+    // ZUSÄTZLICHER FIX: Stelle sicher dass body immer scrollbar ist (außer wenn Menu offen)
+    // Prüfe alle 500ms ob body scrollbar ist
+    setInterval(() => {
+        const mobileMenu = document.getElementById('mobileMenu');
+        const isMenuActive = mobileMenu && mobileMenu.classList.contains('active');
+        
+        if (!isMenuActive) {
+            // Stelle sicher dass Scrollen funktioniert
+            if (document.body.style.overflow === 'hidden' || document.body.style.position === 'fixed') {
+                document.body.style.overflow = '';
+                document.body.style.position = '';
+                document.body.style.top = '';
+                document.body.style.width = '';
+            }
+        }
+    }, 500);
     
     // Smooth Scroll für alle Browser
     if ('scrollBehavior' in document.documentElement.style) {
@@ -100,7 +144,16 @@ function initMobileMenu() {
         mobileMenuToggle.classList.toggle('active');
         mobileMenu.classList.toggle('active');
         mobileMenuOverlay.classList.toggle('active');
-        document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
+        const isMenuActive = mobileMenu.classList.contains('active');
+        if (isMenuActive) {
+            document.body.style.overflow = 'hidden';
+            document.body.style.position = 'fixed';
+            document.body.style.width = '100%';
+        } else {
+            document.body.style.overflow = '';
+            document.body.style.position = '';
+            document.body.style.width = '';
+        }
     });
     
     // Close Menu on Overlay Click
@@ -110,6 +163,8 @@ function initMobileMenu() {
             mobileMenu.classList.remove('active');
             mobileMenuOverlay.classList.remove('active');
             document.body.style.overflow = '';
+            document.body.style.position = '';
+            document.body.style.width = '';
         });
     }
     
@@ -121,6 +176,8 @@ function initMobileMenu() {
             mobileMenu.classList.remove('active');
             if (mobileMenuOverlay) mobileMenuOverlay.classList.remove('active');
             document.body.style.overflow = '';
+            document.body.style.position = '';
+            document.body.style.width = '';
         });
     });
     
@@ -143,6 +200,8 @@ function initMobileMenu() {
             mobileMenu.classList.remove('active');
             if (mobileMenuOverlay) mobileMenuOverlay.classList.remove('active');
             document.body.style.overflow = '';
+            document.body.style.position = '';
+            document.body.style.width = '';
         }
     });
 }

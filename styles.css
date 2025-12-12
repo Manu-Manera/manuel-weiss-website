@@ -184,8 +184,8 @@ body::after {
     min-height: 100vh;
     pointer-events: none;
     z-index: 50;
-    /* WICHTIG: Verhindert Scroll-Blocking */
-    touch-action: none;
+    /* WICHTIG: Verhindert Scroll-Blocking - touch-action: auto erlaubt Scrollen */
+    touch-action: auto;
     -webkit-overflow-scrolling: touch;
 }
 
@@ -2946,11 +2946,11 @@ a:hover {
         min-height: 100vh;
         min-height: -webkit-fill-available;
         overflow-x: hidden !important;
-        overflow-y: auto !important;
+        overflow-y: scroll !important; /* Scrollbar immer sichtbar auf Mobile */
         position: relative !important;
         -webkit-overflow-scrolling: touch;
-        touch-action: pan-y;
-        overscroll-behavior-y: contain;
+        touch-action: pan-y !important; /* Erlaubt vertikales Scrollen */
+        overscroll-behavior-y: auto !important; /* Erlaubt normales Scroll-Verhalten */
     }
     
     /* Fix für iOS Safari Viewport */
@@ -2970,7 +2970,7 @@ a:hover {
         min-height: 100vh;
         min-height: -webkit-fill-available;
         pointer-events: none !important;
-        touch-action: none !important;
+        touch-action: auto !important; /* ERLAUBT Scrollen statt zu blockieren */
         will-change: transform;
         /* Sicherstellen dass sie nicht scrollen blockieren */
         overflow: visible !important;
@@ -3348,13 +3348,13 @@ a:hover {
     html,
     body {
         -webkit-overflow-scrolling: touch;
-        touch-action: pan-y;
-        overscroll-behavior-y: contain;
+        touch-action: pan-y !important; /* Erlaubt vertikales Scrollen */
+        overscroll-behavior-y: auto !important; /* Erlaubt normales Scroll-Verhalten */
     }
     
-    /* Verhindere Pull-to-Refresh auf iOS */
+    /* Erlaube normales Scroll-Verhalten auf iOS - Pull-to-Refresh ist OK */
     body {
-        overscroll-behavior-y: none;
+        overscroll-behavior-y: auto !important;
     }
     
     /* Fix für iOS Safari - KEIN position: fixed mehr, das blockiert Scrollen */
