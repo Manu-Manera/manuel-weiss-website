@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Datenqualität & -verfügbarkeit - KI-Readiness Assessment - Manuel Weiss</title>
+    
+    <!-- Meta Tags -->
+    <meta name="description" content="Detaillierte Bewertung der Datenqualität und -verfügbarkeit für KI-Readiness in HR. Wissenschaftlich fundierte Kriterien basierend auf Stanford Research.">
+    <meta name="keywords" content="Datenqualität, HR-Daten, KI-Readiness, Datenverfügbarkeit, Data Quality Assessment">
+    <meta name="author" content="Manuel Weiss">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Custom Styles for Detail Assessment -->
+    <style>
+        .detail-assessment-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .detail-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem 2rem;
+            border-radius: 16px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .detail-header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+        
+        .detail-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(-4px);
+        }
+        
+        .criterion-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+        
+        .criterion-card:hover {
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
+        }
+        
+        .criterion-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .criterion-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+        
+        .criterion-title-section {
+            flex: 1;
+        }
+        
+        .criterion-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+        
+        .criterion-description {
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 0.75rem;
+        }
+        
+        .criterion-examples {
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            margin-top: 1rem;
+        }
+        
+        .criterion-examples h5 {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .criterion-examples ul {
+            margin: 0;
+            padding-left: 1.5rem;
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        
+        .criterion-examples li {
+            margin-bottom: 0.25rem;
+        }
+        
+        .slider-section {
+            margin-top: 1.5rem;
+        }
+        
+        .slider-wrapper {
+            position: relative;
+            margin-bottom: 1rem;
+        }
+        
+        .slider-labels-top {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        
+        .detail-slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: #e5e7eb;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        
+        .detail-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .detail-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.6);
+        }
+        
+        .detail-slider::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .detail-slider::-moz-range-thumb:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.6);
+        }
+        
+        .slider-value-display {
+            text-align: center;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #667eea;
+            margin-top: 0.5rem;
+        }
+        
+        .slider-scale {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: #9ca3af;
+            margin-top: 0.25rem;
+        }
+        
+        .aggregated-score {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 2rem;
+            border-radius: 16px;
+            text-align: center;
+            margin-top: 2rem;
+            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.3);
+        }
+        
+        .aggregated-score h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .score-display {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .score-circle-large {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            font-weight: 800;
+            backdrop-filter: blur(10px);
+        }
+        
+        .score-description {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .save-button {
+            display: block;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: white;
+            color: #667eea;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .save-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        @media (max-width: 768px) {
+            .detail-header h1 {
+                font-size: 2rem;
+            }
+            
+            .criterion-card {
+                padding: 1.5rem;
+            }
+            
+            .criterion-title {
+                font-size: 1.25rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="manuel-weiss-photo.svg" alt="MW" class="nav-logo">
+                <span class="nav-name">Manuel Weiss</span>
+            </div>
+            <div class="nav-menu" id="navMenu">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="ki-strategieentwicklung.html" class="nav-link">KI-Strategieentwicklung</a>
+                <a href="index.html#about" class="nav-link">Über mich</a>
+                <a href="index.html#contact" class="nav-link">Kontakt</a>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="detail-assessment-container">
+        <div class="detail-header">
+            <a href="ki-strategie-workflow.html" class="back-button">
+                <i class="fas fa-arrow-left"></i>
+                Zurück zur Übersicht
+            </a>
+            <h1><i class="fas fa-chart-bar"></i> Datenqualität & -verfügbarkeit</h1>
+            <p>Bewerten Sie die Qualität und Verfügbarkeit Ihrer HR-Daten für KI-Anwendungen. Strukturierte, integrierte und qualitativ hochwertige Daten sind die Grundlage für erfolgreiche KI-Projekte.</p>
+        </div>
+        
+        <div id="criteriaContainer">
+            <!-- Criteria will be dynamically loaded -->
+        </div>
+        
+        <div class="aggregated-score">
+            <h3>Gesamtbewertung</h3>
+            <div class="score-display">
+                <div class="score-circle-large" id="aggregatedScore">1.0</div>
+                <div class="score-description" id="scoreDescription">Bewerten Sie die Kriterien, um Ihre Gesamtbewertung zu sehen</div>
+            </div>
+            <button class="save-button" onclick="saveAndReturn()">
+                <i class="fas fa-save"></i> Bewertung speichern und zurück
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        // Criteria definitions for Data Quality & Availability
+        const dataQualityCriteria = [
+            {
+                id: 'dataCompleteness',
+                title: 'Datenvollständigkeit',
+                description: 'Wie vollständig sind Ihre HR-Daten? Fehlen wichtige Informationen oder Datensätze?',
+                icon: 'fa-check-circle',
+                examples: [
+                    'Alle Mitarbeiterdaten sind vollständig erfasst',
+                    'Keine fehlenden Felder in kritischen Datensätzen',
+                    'Historische Daten sind vollständig verfügbar'
+                ]
+            },
+            {
+                id: 'dataAccuracy',
+                title: 'Datenqualität & Genauigkeit',
+                description: 'Wie genau und fehlerfrei sind Ihre HR-Daten? Gibt es Duplikate, Inkonsistenzen oder Fehler?',
+                icon: 'fa-bullseye',
+                examples: [
+                    'Keine Duplikate in Mitarbeiterdaten',
+                    'Konsistente Dateneingabe über alle Systeme',
+                    'Regelmäßige Datenqualitätsprüfungen'
+                ]
+            },
+            {
+                id: 'dataIntegration',
+                title: 'System-Integration & Datenverbindung',
+                description: 'Wie gut sind Ihre HR-Systeme integriert? Gibt es eine zentrale Datenquelle oder isolierte Systeme?',
+                icon: 'fa-link',
+                examples: [
+                    'Zentrale HR-Datenplattform vorhanden',
+                    'APIs für System-Integration verfügbar',
+                    'Echtzeit-Synchronisation zwischen Systemen'
+                ]
+            },
+            {
+                id: 'dataStructure',
+                title: 'Datenstruktur & Standardisierung',
+                description: 'Wie strukturiert und standardisiert sind Ihre Daten? Folgen sie einem einheitlichen Schema?',
+                icon: 'fa-sitemap',
+                examples: [
+                    'Einheitliche Datenformate und -strukturen',
+                    'Standardisierte Kategorien und Klassifikationen',
+                    'Datenmodellierung nach Best Practices'
+                ]
+            },
+            {
+                id: 'dataAccessibility',
+                title: 'Datenzugriff & Verfügbarkeit',
+                description: 'Wie einfach ist der Zugriff auf HR-Daten? Gibt es technische oder organisatorische Barrieren?',
+                icon: 'fa-unlock',
+                examples: [
+                    'Selbstbedienungszugriff für autorisierte Nutzer',
+                    'Schnelle Datenabfragen möglich',
+                    'Keine langwierigen Genehmigungsprozesse'
+                ]
+            },
+            {
+                id: 'dataGovernance',
+                title: 'Daten-Governance & Verantwortlichkeiten',
+                description: 'Gibt es klare Verantwortlichkeiten und Prozesse für Datenqualität und -pflege?',
+                icon: 'fa-shield-alt',
+                examples: [
+                    'Klare Datenverantwortlichkeiten definiert',
+                    'Regelmäßige Datenqualitätsreviews',
+                    'Dokumentierte Datenqualitätsstandards'
+                ]
+            },
+            {
+                id: 'dataRealTime',
+                title: 'Echtzeit-Datenverfügbarkeit',
+                description: 'Wie aktuell sind Ihre Daten? Gibt es Echtzeit-Updates oder verzögerte Synchronisation?',
+                icon: 'fa-clock',
+                examples: [
+                    'Echtzeit-Updates bei Datenänderungen',
+                    'Minimale Verzögerung bei Datensynchronisation',
+                    'Aktuelle Daten für alle Stakeholder verfügbar'
+                ]
+            },
+            {
+                id: 'dataSecurity',
+                title: 'Datensicherheit & Compliance',
+                description: 'Wie sicher sind Ihre HR-Daten? Gibt es angemessene Sicherheitsmaßnahmen und Compliance?',
+                icon: 'fa-lock',
+                examples: [
+                    'Verschlüsselte Datenspeicherung',
+                    'Zugriffskontrollen und Berechtigungen',
+                    'DSGVO-konforme Datenverarbeitung'
+                ]
+            }
+        ];
+        
+        let assessmentValues = {};
+        
+        function initializeAssessment() {
+            // Load saved values
+            const saved = JSON.parse(localStorage.getItem('kiDetailAssessments') || '{}');
+            if (saved.dataQuality && saved.dataQuality.details) {
+                assessmentValues = saved.dataQuality.details;
+            }
+            
+            // Initialize all criteria with default value 1
+            dataQualityCriteria.forEach(criterion => {
+                if (!assessmentValues[criterion.id]) {
+                    assessmentValues[criterion.id] = 1;
+                }
+            });
+            
+            renderCriteria();
+            updateAggregatedScore();
+        }
+        
+        function renderCriteria() {
+            const container = document.getElementById('criteriaContainer');
+            container.innerHTML = dataQualityCriteria.map(criterion => `
+                <div class="criterion-card">
+                    <div class="criterion-header">
+                        <div class="criterion-icon">
+                            <i class="fas ${criterion.icon}"></i>
+                        </div>
+                        <div class="criterion-title-section">
+                            <h3 class="criterion-title">${criterion.title}</h3>
+                            <p class="criterion-description">${criterion.description}</p>
+                            <div class="criterion-examples" style="border-left-color: #764ba2;">
+                                <h5>Beispiele für hohe Bewertung:</h5>
+                                <ul>
+                                    ${criterion.examples.map(ex => `<li>${ex}</li>`).join('')}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slider-section">
+                        <div class="slider-wrapper">
+                            <div class="slider-labels-top">
+                                <span>Mangelhaft (1)</span>
+                                <span>Exzellent (5)</span>
+                            </div>
+                            <input 
+                                type="range" 
+                                min="1" 
+                                max="5" 
+                                step="1"
+                                value="${assessmentValues[criterion.id] || 1}"
+                                class="detail-slider" 
+                                id="slider-${criterion.id}"
+                                oninput="updateCriterionValue('${criterion.id}', this.value)"
+                            >
+                            <div class="slider-value-display" id="value-${criterion.id}">${assessmentValues[criterion.id] || 1}</div>
+                            <div class="slider-scale">
+                                <span>1</span>
+                                <span>2</span>
+                                <span>3</span>
+                                <span>4</span>
+                                <span>5</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function updateCriterionValue(criterionId, value) {
+            assessmentValues[criterionId] = parseInt(value);
+            document.getElementById(`value-${criterionId}`).textContent = value;
+            updateAggregatedScore();
+        }
+        
+        function updateAggregatedScore() {
+            const values = Object.values(assessmentValues);
+            const average = values.reduce((sum, val) => sum + val, 0) / values.length;
+            const roundedAverage = average.toFixed(1);
+            
+            document.getElementById('aggregatedScore').textContent = roundedAverage;
+            
+            let description = '';
+            if (roundedAverage <= 1.5) {
+                description = 'Mangelhaft - Erhebliche Verbesserungen erforderlich';
+            } else if (roundedAverage <= 2.5) {
+                description = 'Verbesserungswürdig - Grundlagen vorhanden, Optimierung nötig';
+            } else if (roundedAverage <= 3.5) {
+                description = 'Gut - Solide Basis, weitere Optimierung möglich';
+            } else if (roundedAverage <= 4.5) {
+                description = 'Sehr gut - Hohe Datenqualität, kleine Verbesserungen möglich';
+            } else {
+                description = 'Exzellent - Hervorragende Datenqualität für KI-Projekte';
+            }
+            
+            document.getElementById('scoreDescription').textContent = description;
+        }
+        
+        function saveAndReturn() {
+            // Calculate aggregated value
+            const values = Object.values(assessmentValues);
+            const aggregated = (values.reduce((sum, val) => sum + val, 0) / values.length).toFixed(1);
+            
+            // Save to localStorage
+            let saved = JSON.parse(localStorage.getItem('kiDetailAssessments') || '{}');
+            saved.dataQuality = {
+                aggregated: parseFloat(aggregated),
+                details: assessmentValues,
+                timestamp: new Date().toISOString()
+            };
+            localStorage.setItem('kiDetailAssessments', JSON.stringify(saved));
+            
+            // Return to workflow page
+            window.location.href = 'ki-strategie-workflow.html';
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', initializeAssessment);
+    </script>
+</body>
+</html>
+

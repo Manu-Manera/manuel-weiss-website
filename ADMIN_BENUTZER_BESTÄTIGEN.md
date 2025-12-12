@@ -108,3 +108,4 @@ aws cognito-idp admin-confirm-sign-up \
 **Ergebnis:** Benutzer ist sofort bestätigt und kann sich anmelden!
 
 
+

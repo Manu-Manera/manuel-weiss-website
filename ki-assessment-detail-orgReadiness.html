@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organisatorische Bereitschaft - KI-Readiness Assessment - Manuel Weiss</title>
+    <meta name="description" content="Detaillierte Bewertung der organisatorischen Bereitschaft für KI-Readiness in HR. Change Management, Führung und Organisationskultur.">
+    <meta name="keywords" content="Organisatorische Bereitschaft, Change Management, Führung, KI-Readiness">
+    <meta name="author" content="Manuel Weiss">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/ki-assessment-detail.css">
+    <style>
+        .detail-header { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .criterion-icon { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+        .detail-slider::-webkit-slider-thumb { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+        .detail-slider::-moz-range-thumb { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+        .slider-value-display { color: #00f2fe; }
+        .aggregated-score { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+        .save-button { color: #00f2fe; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="manuel-weiss-photo.svg" alt="MW" class="nav-logo">
+                <span class="nav-name">Manuel Weiss</span>
+            </div>
+            <div class="nav-menu" id="navMenu">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="ki-strategieentwicklung.html" class="nav-link">KI-Strategieentwicklung</a>
+                <a href="index.html#about" class="nav-link">Über mich</a>
+                <a href="index.html#contact" class="nav-link">Kontakt</a>
+            </div>
+        </div>
+    </nav>
+    <div class="detail-assessment-container">
+        <div class="detail-header">
+            <a href="ki-strategie-workflow.html" class="back-button">
+                <i class="fas fa-arrow-left"></i> Zurück zur Übersicht
+            </a>
+            <h1><i class="fas fa-users"></i> Organisatorische Bereitschaft</h1>
+            <p>Bewerten Sie die Bereitschaft Ihrer Organisation für KI-Transformation. Change Management, Führung und Organisationskultur sind entscheidend für erfolgreiche KI-Projekte.</p>
+        </div>
+        <div id="criteriaContainer"></div>
+        <div class="aggregated-score">
+            <h3>Gesamtbewertung</h3>
+            <div class="score-display">
+                <div class="score-circle-large" id="aggregatedScore">1.0</div>
+                <div class="score-description" id="scoreDescription">Bewerten Sie die Kriterien, um Ihre Gesamtbewertung zu sehen</div>
+            </div>
+            <button class="save-button" onclick="saveAndReturn()">
+                <i class="fas fa-save"></i> Bewertung speichern und zurück
+            </button>
+        </div>
+    </div>
+    <script>
+        const orgReadinessCriteria = [
+            { id: 'leadershipSupport', title: 'Führungsunterstützung', description: 'Wie stark wird KI-Transformation von der Führungsebene unterstützt?', icon: 'fa-user-tie', examples: ['Klare KI-Vision der Geschäftsführung', 'Dedizierte Budgets für KI-Projekte', 'Sichtbare Unterstützung durch Top-Management'] },
+            { id: 'changeManagement', title: 'Change Management Fähigkeiten', description: 'Wie gut ist Ihre Organisation im Umgang mit Veränderungen?', icon: 'fa-exchange-alt', examples: ['Erfahrene Change Manager im Team', 'Bewährte Change Management Prozesse', 'Erfolgreiche Transformationsprojekte in der Vergangenheit'] },
+            { id: 'organizationalCulture', title: 'Organisationskultur', description: 'Wie innovationsfreundlich ist Ihre Organisationskultur?', icon: 'fa-heart', examples: ['Offenheit für neue Technologien', 'Fehlerkultur und Lernbereitschaft', 'Agile und flexible Arbeitsweisen'] },
+            { id: 'stakeholderEngagement', title: 'Stakeholder-Engagement', description: 'Wie gut sind wichtige Stakeholder in KI-Projekte eingebunden?', icon: 'fa-handshake', examples: ['Frühzeitige Einbindung aller Stakeholder', 'Regelmäßige Kommunikation und Updates', 'Hohe Akzeptanz bei Mitarbeitenden'] },
+            { id: 'resourceAllocation', title: 'Ressourcen-Allokation', description: 'Gibt es ausreichende Ressourcen (Budget, Personal, Zeit) für KI-Projekte?', icon: 'fa-coins', examples: ['Dediziertes Budget für KI-Initiativen', 'Spezialisierte Teams für KI-Projekte', 'Ausreichende Zeit für Implementierung'] },
+            { id: 'communicationStrategy', title: 'Kommunikationsstrategie', description: 'Wie gut kommuniziert Ihre Organisation über KI-Transformation?', icon: 'fa-bullhorn', examples: ['Klare Kommunikationsstrategie vorhanden', 'Transparente Information über KI-Projekte', 'Regelmäßige Updates und Feedback-Loops'] },
+            { id: 'resistanceManagement', title: 'Widerstandsmanagement', description: 'Wie gut geht Ihre Organisation mit Widerständen gegen Veränderungen um?', icon: 'fa-shield-alt', examples: ['Proaktive Identifikation von Widerständen', 'Strategien zur Überwindung von Bedenken', 'Erfolgreiche Change-Adoption in der Vergangenheit'] },
+            { id: 'organizationalLearning', title: 'Organisatorisches Lernen', description: 'Wie gut lernt Ihre Organisation aus Projekten und passt sich an?', icon: 'fa-graduation-cap', examples: ['Lessons Learned Prozesse etabliert', 'Kontinuierliche Verbesserungskultur', 'Wissensmanagement und Dokumentation'] }
+        ];
+        let assessmentValues = {};
+        function initializeAssessment() {
+            const saved = JSON.parse(localStorage.getItem('kiDetailAssessments') || '{}');
+            if (saved.orgReadiness && saved.orgReadiness.details) {
+                assessmentValues = saved.orgReadiness.details;
+            }
+            orgReadinessCriteria.forEach(criterion => {
+                if (!assessmentValues[criterion.id]) assessmentValues[criterion.id] = 1;
+            });
+            renderCriteria();
+            updateAggregatedScore();
+        }
+        function renderCriteria() {
+            const container = document.getElementById('criteriaContainer');
+            container.innerHTML = orgReadinessCriteria.map(criterion => `
+                <div class="criterion-card">
+                    <div class="criterion-header">
+                        <div class="criterion-icon"><i class="fas ${criterion.icon}"></i></div>
+                        <div class="criterion-title-section">
+                            <h3 class="criterion-title">${criterion.title}</h3>
+                            <p class="criterion-description">${criterion.description}</p>
+                            <div class="criterion-examples" style="border-left-color: #00f2fe;">
+                                <h5>Beispiele für hohe Bewertung:</h5>
+                                <ul>${criterion.examples.map(ex => `<li>${ex}</li>`).join('')}</ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slider-section">
+                        <div class="slider-wrapper">
+                            <div class="slider-labels-top">
+                                <span>Widerstand (1)</span>
+                                <span>Sehr bereit (5)</span>
+                            </div>
+                            <input type="range" min="1" max="5" step="1" value="${assessmentValues[criterion.id] || 1}" class="detail-slider" id="slider-${criterion.id}" oninput="updateCriterionValue('${criterion.id}', this.value)">
+                            <div class="slider-value-display" id="value-${criterion.id}">${assessmentValues[criterion.id] || 1}</div>
+                            <div class="slider-scale"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        function updateCriterionValue(criterionId, value) {
+            assessmentValues[criterionId] = parseInt(value);
+            document.getElementById(`value-${criterionId}`).textContent = value;
+            updateAggregatedScore();
+        }
+        function updateAggregatedScore() {
+            const values = Object.values(assessmentValues);
+            const average = (values.reduce((sum, val) => sum + val, 0) / values.length).toFixed(1);
+            document.getElementById('aggregatedScore').textContent = average;
+            let description = '';
+            if (average <= 1.5) description = 'Widerstand - Erhebliche Change Management Maßnahmen erforderlich';
+            else if (average <= 2.5) description = 'Verbesserungswürdig - Grundlagen vorhanden, Change Management nötig';
+            else if (average <= 3.5) description = 'Gut - Solide Basis, weitere Optimierung möglich';
+            else if (average <= 4.5) description = 'Sehr gut - Hohe Bereitschaft, kleine Verbesserungen möglich';
+            else description = 'Sehr bereit - Hervorragende organisatorische Bereitschaft';
+            document.getElementById('scoreDescription').textContent = description;
+        }
+        function saveAndReturn() {
+            const values = Object.values(assessmentValues);
+            const aggregated = (values.reduce((sum, val) => sum + val, 0) / values.length).toFixed(1);
+            let saved = JSON.parse(localStorage.getItem('kiDetailAssessments') || '{}');
+            saved.orgReadiness = { aggregated: parseFloat(aggregated), details: assessmentValues, timestamp: new Date().toISOString() };
+            localStorage.setItem('kiDetailAssessments', JSON.stringify(saved));
+            window.location.href = 'ki-strategie-workflow.html';
+        }
+        document.addEventListener('DOMContentLoaded', initializeAssessment);
+    </script>
+</body>
+</html>
+
