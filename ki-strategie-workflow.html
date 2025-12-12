@@ -593,6 +593,17 @@
             border-radius: 12px;
             padding: 1.5rem;
             border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+        
+        .assessment-category.clickable-category {
+            transition: all 0.3s ease;
+        }
+        
+        .assessment-category.clickable-category:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border-color: #667eea;
         }
         
         .category-header {
@@ -1046,7 +1057,7 @@
                     <p>Bewerten Sie Ihre Organisation in den kritischen KI-Dimensionen. Diese Analyse bildet die Grundlage für Ihre maßgeschneiderte KI-Strategie.</p>
                     
                     <div class="assessment-grid">
-                        <div class="assessment-category">
+                        <div class="assessment-category clickable-category" onclick="openDetailAssessment('dataQuality')" style="cursor: pointer;">
                             <div class="category-header">
                                 <div class="category-icon" style="background: linear-gradient(135deg, #667eea, #764ba2);">
                                     <i class="fas fa-chart-bar"></i>
@@ -1055,9 +1066,12 @@
                                     <h4>Datenqualität & -verfügbarkeit</h4>
                                     <p style="font-size: 0.875rem; color: #6b7280; margin: 0;">Strukturierte, integrierte HR-Daten</p>
                                 </div>
+                                <div style="margin-left: auto; color: #667eea;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </div>
                             </div>
                             <div class="slider-container">
-                                <input type="range" min="1" max="5" value="1" class="slider" id="dataQualitySlider" oninput="updateAssessment('dataQuality', this.value)">
+                                <input type="range" min="1" max="5" value="1" class="slider" id="dataQualitySlider" oninput="updateAssessment('dataQuality', this.value)" onclick="event.stopPropagation();">
                                 <div class="slider-labels">
                                     <span>Mangelhaft</span>
                                     <span>Exzellent</span>
@@ -1065,7 +1079,7 @@
                             </div>
                         </div>
                         
-                        <div class="assessment-category">
+                        <div class="assessment-category clickable-category" onclick="openDetailAssessment('techInfra')" style="cursor: pointer;">
                             <div class="category-header">
                                 <div class="category-icon" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
                                     <i class="fas fa-cogs"></i>
@@ -1074,9 +1088,12 @@
                                     <h4>Technische Infrastruktur</h4>
                                     <p style="font-size: 0.875rem; color: #6b7280; margin: 0;">Cloud, APIs, System-Integration</p>
                                 </div>
+                                <div style="margin-left: auto; color: #f5576c;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </div>
                             </div>
                             <div class="slider-container">
-                                <input type="range" min="1" max="5" value="1" class="slider" id="techInfraSlider" oninput="updateAssessment('techInfra', this.value)">
+                                <input type="range" min="1" max="5" value="1" class="slider" id="techInfraSlider" oninput="updateAssessment('techInfra', this.value)" onclick="event.stopPropagation();">
                                 <div class="slider-labels">
                                     <span>Veraltet</span>
                                     <span>State-of-the-Art</span>
@@ -1084,7 +1101,7 @@
                             </div>
                         </div>
                         
-                        <div class="assessment-category">
+                        <div class="assessment-category clickable-category" onclick="openDetailAssessment('orgReadiness')" style="cursor: pointer;">
                             <div class="category-header">
                                 <div class="category-icon" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">
                                     <i class="fas fa-users"></i>
@@ -1093,9 +1110,12 @@
                                     <h4>Organisatorische Bereitschaft</h4>
                                     <p style="font-size: 0.875rem; color: #6b7280; margin: 0;">Change Management, Führung</p>
                                 </div>
+                                <div style="margin-left: auto; color: #00f2fe;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </div>
                             </div>
                             <div class="slider-container">
-                                <input type="range" min="1" max="5" value="1" class="slider" id="orgReadinessSlider" oninput="updateAssessment('orgReadiness', this.value)">
+                                <input type="range" min="1" max="5" value="1" class="slider" id="orgReadinessSlider" oninput="updateAssessment('orgReadiness', this.value)" onclick="event.stopPropagation();">
                                 <div class="slider-labels">
                                     <span>Widerstand</span>
                                     <span>Sehr bereit</span>
@@ -1103,7 +1123,7 @@
                             </div>
                         </div>
                         
-                        <div class="assessment-category">
+                        <div class="assessment-category clickable-category" onclick="openDetailAssessment('skills')" style="cursor: pointer;">
                             <div class="category-header">
                                 <div class="category-icon" style="background: linear-gradient(135deg, #43e97b, #38f9d7);">
                                     <i class="fas fa-graduation-cap"></i>
@@ -1112,9 +1132,12 @@
                                     <h4>Kompetenz & Skills</h4>
                                     <p style="font-size: 0.875rem; color: #6b7280; margin: 0;">Data Science, AI-Verständnis</p>
                                 </div>
+                                <div style="margin-left: auto; color: #38f9d7;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </div>
                             </div>
                             <div class="slider-container">
-                                <input type="range" min="1" max="5" value="1" class="slider" id="skillsSlider" oninput="updateAssessment('skills', this.value)">
+                                <input type="range" min="1" max="5" value="1" class="slider" id="skillsSlider" oninput="updateAssessment('skills', this.value)" onclick="event.stopPropagation();">
                                 <div class="slider-labels">
                                     <span>Grundlagen</span>
                                     <span>Expertenwissen</span>
@@ -1122,7 +1145,7 @@
                             </div>
                         </div>
                         
-                        <div class="assessment-category">
+                        <div class="assessment-category clickable-category" onclick="openDetailAssessment('governance')" style="cursor: pointer;">
                             <div class="category-header">
                                 <div class="category-icon" style="background: linear-gradient(135deg, #fa709a, #fee140);">
                                     <i class="fas fa-shield-alt"></i>
@@ -1131,9 +1154,12 @@
                                     <h4>Governance & Compliance</h4>
                                     <p style="font-size: 0.875rem; color: #6b7280; margin: 0;">DSGVO, Ethik-Richtlinien</p>
                                 </div>
+                                <div style="margin-left: auto; color: #fee140;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </div>
                             </div>
                             <div class="slider-container">
-                                <input type="range" min="1" max="5" value="1" class="slider" id="governanceSlider" oninput="updateAssessment('governance', this.value)">
+                                <input type="range" min="1" max="5" value="1" class="slider" id="governanceSlider" oninput="updateAssessment('governance', this.value)" onclick="event.stopPropagation();">
                                 <div class="slider-labels">
                                     <span>Unvollständig</span>
                                     <span>Vollständig</span>
@@ -1141,7 +1167,7 @@
                             </div>
                         </div>
                         
-                        <div class="assessment-category">
+                        <div class="assessment-category clickable-category" onclick="openDetailAssessment('innovation')" style="cursor: pointer;">
                             <div class="category-header">
                                 <div class="category-icon" style="background: linear-gradient(135deg, #a8edea, #fed6e3);">
                                     <i class="fas fa-lightbulb"></i>
@@ -1150,9 +1176,12 @@
                                     <h4>Innovation & Experimentierfreude</h4>
                                     <p style="font-size: 0.875rem; color: #6b7280; margin: 0;">Pilot-Projekte, Risikobereitschaft</p>
                                 </div>
+                                <div style="margin-left: auto; color: #fed6e3;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </div>
                             </div>
                             <div class="slider-container">
-                                <input type="range" min="1" max="5" value="1" class="slider" id="innovationSlider" oninput="updateAssessment('innovation', this.value)">
+                                <input type="range" min="1" max="5" value="1" class="slider" id="innovationSlider" oninput="updateAssessment('innovation', this.value)" onclick="event.stopPropagation();">
                                 <div class="slider-labels">
                                     <span>Konservativ</span>
                                     <span>Innovativ</span>
@@ -2003,6 +2032,44 @@
             generatePersonalizedInsights();
         }
         
+        function openDetailAssessment(dimension) {
+            // Save current workflow state
+            saveWorkflowProgress();
+            // Navigate to detail page
+            window.location.href = `ki-assessment-detail-${dimension}.html`;
+        }
+        
+        function loadDetailAssessmentResults() {
+            // Load aggregated results from localStorage and update sliders
+            const savedAssessments = JSON.parse(localStorage.getItem('kiDetailAssessments') || '{}');
+            
+            // Map dimension names
+            const dimensionMap = {
+                'dataQuality': 'dataQuality',
+                'techInfra': 'techInfra',
+                'orgReadiness': 'orgReadiness',
+                'skills': 'skills',
+                'governance': 'governance',
+                'innovation': 'innovation'
+            };
+            
+            Object.keys(dimensionMap).forEach(dimension => {
+                const savedKey = dimensionMap[dimension];
+                if (savedAssessments[savedKey] && savedAssessments[savedKey].aggregated) {
+                    const aggregatedValue = savedAssessments[savedKey].aggregated;
+                    maturityData[dimension] = aggregatedValue;
+                    const slider = document.getElementById(`${dimension}Slider`);
+                    if (slider) {
+                        slider.value = Math.round(aggregatedValue);
+                    }
+                }
+            });
+            
+            calculateOverallMaturity();
+            updateMaturityDisplay();
+            generatePersonalizedInsights();
+        }
+        
         function calculateOverallMaturity() {
             const sum = Object.values(maturityData).reduce((acc, val) => acc + val, 0);
             overallMaturity = (sum / Object.keys(maturityData).length).toFixed(1);
@@ -2442,6 +2509,9 @@
                 if (window.awsAuth) {
                     window.awsAuth.checkUserStatus();
                 }
+                
+                // Load detail assessment results if available
+                loadDetailAssessmentResults();
                 
                 // Load saved progress
                 loadProgress();

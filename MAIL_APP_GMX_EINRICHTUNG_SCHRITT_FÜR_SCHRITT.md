@@ -177,3 +177,4 @@ Falls es Probleme gibt, klicken Sie auf **"Erweiterte IMAP-Einstellungen"**:
 - **Mail.app Hilfe:** https://support.apple.com/de-de/guide/mail/
 
 
+

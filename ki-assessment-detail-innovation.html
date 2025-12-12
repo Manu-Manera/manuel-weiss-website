@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Innovation & Experimentierfreude - KI-Readiness Assessment - Manuel Weiss</title>
+    <meta name="description" content="Detaillierte Bewertung von Innovation und Experimentierfreude für KI-Readiness in HR. Pilot-Projekte, Risikobereitschaft und Innovationskultur.">
+    <meta name="keywords" content="Innovation, Experimentierfreude, Pilot-Projekte, Risikobereitschaft, KI-Readiness">
+    <meta name="author" content="Manuel Weiss">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/ki-assessment-detail.css">
+    <style>
+        .detail-header { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); }
+        .criterion-icon { background: linear-gradient(135deg, #a8edea, #fed6e3); }
+        .detail-slider::-webkit-slider-thumb { background: linear-gradient(135deg, #a8edea, #fed6e3); }
+        .detail-slider::-moz-range-thumb { background: linear-gradient(135deg, #a8edea, #fed6e3); }
+        .slider-value-display { color: #fed6e3; }
+        .aggregated-score { background: linear-gradient(135deg, #a8edea, #fed6e3); }
+        .save-button { color: #fed6e3; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="manuel-weiss-photo.svg" alt="MW" class="nav-logo">
+                <span class="nav-name">Manuel Weiss</span>
+            </div>
+            <div class="nav-menu" id="navMenu">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="ki-strategieentwicklung.html" class="nav-link">KI-Strategieentwicklung</a>
+                <a href="index.html#about" class="nav-link">Über mich</a>
+                <a href="index.html#contact" class="nav-link">Kontakt</a>
+            </div>
+        </div>
+    </nav>
+    <div class="detail-assessment-container">
+        <div class="detail-header">
+            <a href="ki-strategie-workflow.html" class="back-button">
+                <i class="fas fa-arrow-left"></i> Zurück zur Übersicht
+            </a>
+            <h1><i class="fas fa-lightbulb"></i> Innovation & Experimentierfreude</h1>
+            <p>Bewerten Sie die Innovationskultur und Experimentierfreude Ihrer Organisation für KI-Projekte. Pilot-Projekte, Risikobereitschaft und eine offene Innovationskultur sind entscheidend.</p>
+        </div>
+        <div id="criteriaContainer"></div>
+        <div class="aggregated-score">
+            <h3>Gesamtbewertung</h3>
+            <div class="score-display">
+                <div class="score-circle-large" id="aggregatedScore">1.0</div>
+                <div class="score-description" id="scoreDescription">Bewerten Sie die Kriterien, um Ihre Gesamtbewertung zu sehen</div>
+            </div>
+            <button class="save-button" onclick="saveAndReturn()">
+                <i class="fas fa-save"></i> Bewertung speichern und zurück
+            </button>
+        </div>
+    </div>
+    <script>
+        const innovationCriteria = [
+            { id: 'pilotProjects', title: 'Pilot-Projekte', description: 'Wie aktiv ist Ihre Organisation bei KI-Pilot-Projekten?', icon: 'fa-rocket', examples: ['Aktive KI-Pilot-Projekte', 'Schnelle Umsetzung von Proof-of-Concepts', 'Erfolgreiche Pilot-zu-Produktion Übergänge'] },
+            { id: 'riskTolerance', title: 'Risikobereitschaft', description: 'Wie risikobereit ist Ihre Organisation bei KI-Experimenten?', icon: 'fa-chart-line', examples: ['Bereitschaft für experimentelle Projekte', 'Akzeptanz von Fehlern als Lernchance', 'Schnelle Entscheidungen bei Innovationen'] },
+            { id: 'innovationBudget', title: 'Innovationsbudget', description: 'Gibt es dedizierte Budgets für KI-Innovationen?', icon: 'fa-wallet', examples: ['Separates Budget für Innovation', 'Forschung & Entwicklung Fonds', 'Investitionen in experimentelle Projekte'] },
+            { id: 'experimentationCulture', title: 'Experimentierkultur', description: 'Wie stark ist die Experimentierkultur in Ihrer Organisation?', icon: 'fa-flask', examples: ['Zeit für Experimente und Tests', 'Fehlerfreundliche Kultur', 'Schnelles Testen und Iterieren'] },
+            { id: 'innovationProcesses', title: 'Innovationsprozesse', description: 'Gibt es strukturierte Prozesse für Innovation?', icon: 'fa-cogs', examples: ['Definierte Innovationsprozesse', 'Idea Management Systeme', 'Strukturierte Evaluierung neuer Ideen'] },
+            { id: 'externalInnovation', title: 'Externe Innovation', description: 'Wie gut nutzt Ihre Organisation externe Innovationen?', icon: 'fa-handshake', examples: ['Partnerschaften mit Startups', 'Open Innovation Ansätze', 'Integration externer Technologien'] },
+            { id: 'speedToMarket', title: 'Time-to-Market', description: 'Wie schnell kann Ihre Organisation neue KI-Lösungen implementieren?', icon: 'fa-tachometer-alt', examples: ['Schnelle Implementierung von KI-Lösungen', 'Agile Entwicklungsprozesse', 'Minimale Time-to-Market'] },
+            { id: 'learningFromFailure', title: 'Lernen aus Fehlern', description: 'Wie gut lernt Ihre Organisation aus gescheiterten Projekten?', icon: 'fa-book', examples: ['Post-Mortem Analysen', 'Lessons Learned Prozesse', 'Kontinuierliche Verbesserung'] }
+        ];
+        let assessmentValues = {};
+        function initializeAssessment() {
+            const saved = JSON.parse(localStorage.getItem('kiDetailAssessments') || '{}');
+            if (saved.innovation && saved.innovation.details) {
+                assessmentValues = saved.innovation.details;
+            }
+            innovationCriteria.forEach(criterion => {
+                if (!assessmentValues[criterion.id]) assessmentValues[criterion.id] = 1;
+            });
+            renderCriteria();
+            updateAggregatedScore();
+        }
+        function renderCriteria() {
+            const container = document.getElementById('criteriaContainer');
+            container.innerHTML = innovationCriteria.map(criterion => `
+                <div class="criterion-card">
+                    <div class="criterion-header">
+                        <div class="criterion-icon"><i class="fas ${criterion.icon}"></i></div>
+                        <div class="criterion-title-section">
+                            <h3 class="criterion-title">${criterion.title}</h3>
+                            <p class="criterion-description">${criterion.description}</p>
+                            <div class="criterion-examples" style="border-left-color: #fed6e3;">
+                                <h5>Beispiele für hohe Bewertung:</h5>
+                                <ul>${criterion.examples.map(ex => `<li>${ex}</li>`).join('')}</ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slider-section">
+                        <div class="slider-wrapper">
+                            <div class="slider-labels-top">
+                                <span>Konservativ (1)</span>
+                                <span>Innovativ (5)</span>
+                            </div>
+                            <input type="range" min="1" max="5" step="1" value="${assessmentValues[criterion.id] || 1}" class="detail-slider" id="slider-${criterion.id}" oninput="updateCriterionValue('${criterion.id}', this.value)">
+                            <div class="slider-value-display" id="value-${criterion.id}">${assessmentValues[criterion.id] || 1}</div>
+                            <div class="slider-scale"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        function updateCriterionValue(criterionId, value) {
+            assessmentValues[criterionId] = parseInt(value);
+            document.getElementById(`value-${criterionId}`).textContent = value;
+            updateAggregatedScore();
+        }
+        function updateAggregatedScore() {
+            const values = Object.values(assessmentValues);
+            const average = (values.reduce((sum, val) => sum + val, 0) / values.length).toFixed(1);
+            document.getElementById('aggregatedScore').textContent = average;
+            let description = '';
+            if (average <= 1.5) description = 'Konservativ - Erhebliche Innovationsförderung erforderlich';
+            else if (average <= 2.5) description = 'Verbesserungswürdig - Grundlagen vorhanden, Innovation nötig';
+            else if (average <= 3.5) description = 'Gut - Solide Basis, weitere Innovation möglich';
+            else if (average <= 4.5) description = 'Sehr gut - Hohe Innovation, kleine Verbesserungen möglich';
+            else description = 'Innovativ - Hervorragende Innovationskultur';
+            document.getElementById('scoreDescription').textContent = description;
+        }
+        function saveAndReturn() {
+            const values = Object.values(assessmentValues);
+            const aggregated = (values.reduce((sum, val) => sum + val, 0) / values.length).toFixed(1);
+            let saved = JSON.parse(localStorage.getItem('kiDetailAssessments') || '{}');
+            saved.innovation = { aggregated: parseFloat(aggregated), details: assessmentValues, timestamp: new Date().toISOString() };
+            localStorage.setItem('kiDetailAssessments', JSON.stringify(saved));
+            window.location.href = 'ki-strategie-workflow.html';
+        }
+        document.addEventListener('DOMContentLoaded', initializeAssessment);
+    </script>
+</body>
+</html>
+
