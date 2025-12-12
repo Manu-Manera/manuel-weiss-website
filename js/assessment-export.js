@@ -44,6 +44,8 @@ class AssessmentExporter {
         // Create summary sheet
         const summaryData = this.prepareSummaryData(data);
         const summarySheet = window.XLSX.utils.aoa_to_sheet(summaryData);
+        // Set column widths
+        summarySheet['!cols'] = [{ wch: 30 }, { wch: 15 }, { wch: 20 }];
         window.XLSX.utils.book_append_sheet(workbook, summarySheet, 'Zusammenfassung');
 
         // Create detailed sheets for each dimension
@@ -51,13 +53,15 @@ class AssessmentExporter {
             Object.keys(data.dimensions).forEach(dimension => {
                 const dimensionData = this.prepareDimensionData(data.dimensions[dimension], dimension);
                 const dimensionSheet = window.XLSX.utils.aoa_to_sheet(dimensionData);
-                window.XLSX.utils.book_append_sheet(workbook, dimensionSheet, this.getDimensionName(dimension));
+                dimensionSheet['!cols'] = [{ wch: 40 }, { wch: 15 }, { wch: 20 }];
+                window.XLSX.utils.book_append_sheet(workbook, dimensionSheet, this.getDimensionName(dimension).substring(0, 31));
             });
         }
 
         // Create charts sheet with data for charts
         const chartsData = this.prepareChartsData(data);
         const chartsSheet = window.XLSX.utils.aoa_to_sheet(chartsData);
+        chartsSheet['!cols'] = [{ wch: 30 }, { wch: 15 }];
         window.XLSX.utils.book_append_sheet(workbook, chartsSheet, 'Diagramm-Daten');
 
         // Write file
@@ -233,6 +237,7 @@ class AssessmentExporter {
             ['KI-Readiness Assessment - Zusammenfassung'],
             [''],
             ['Erstellt am:', new Date().toLocaleDateString('de-DE')],
+            ['Uhrzeit:', new Date().toLocaleTimeString('de-DE')],
             [''],
             ['Dimension', 'Bewertung', 'Status'],
         ];
@@ -243,15 +248,18 @@ class AssessmentExporter {
                 const status = this.getStatusLabel(score);
                 summary.push([
                     this.getDimensionName(dimension),
-                    score.toFixed(1),
+                    parseFloat(score.toFixed(1)),
                     status
                 ]);
             });
         }
 
         summary.push(['']);
-        summary.push(['Gesamtbewertung:', data.overall || 0]);
+        summary.push(['Gesamtbewertung:', parseFloat((data.overall || 0).toFixed(1))]);
         summary.push(['Gesamtstatus:', this.getStatusLabel(data.overall || 0)]);
+        summary.push(['']);
+        summary.push(['Hinweis:', 'Bewertungen basieren auf einer Skala von 1-5']);
+        summary.push(['1 = Anfänger, 2 = Aufsteiger, 3 = Fortgeschritten, 4 = Experte, 5 = Exzellent']);
 
         return summary;
     }
@@ -266,15 +274,16 @@ class AssessmentExporter {
         if (dimensionData.criterionAverages) {
             dimensionData.criterionAverages.forEach(criterion => {
                 data.push([
-                    this.getCriterionName(criterion.criterionId),
-                    criterion.average.toFixed(1),
+                    criterion.criterionTitle || this.getCriterionName(criterion.criterionId),
+                    parseFloat(criterion.average.toFixed(1)),
                     this.getStatusLabel(criterion.average)
                 ]);
             });
         }
 
         data.push(['']);
-        data.push(['Gesamtbewertung:', dimensionData.aggregated || 0]);
+        data.push(['Gesamtbewertung:', parseFloat((dimensionData.aggregated || 0).toFixed(1))]);
+        data.push(['Status:', this.getStatusLabel(dimensionData.aggregated || 0)]);
 
         return data;
     }

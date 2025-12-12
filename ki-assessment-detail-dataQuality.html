@@ -352,9 +352,17 @@
                 <div class="score-circle-large" id="aggregatedScore">1.0</div>
                 <div class="score-description" id="scoreDescription">Bewerten Sie die Kriterien, um Ihre Gesamtbewertung zu sehen</div>
             </div>
-            <button class="save-button" onclick="saveAndReturn()">
-                <i class="fas fa-save"></i> Bewertung speichern und zurück
-            </button>
+            <div style="display: flex; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap;">
+                <button class="save-button" onclick="saveAndReturn()" style="flex: 1; min-width: 200px;">
+                    <i class="fas fa-save"></i> Bewertung speichern und zurück
+                </button>
+                <button class="export-button excel" onclick="exportToExcel()" style="background: #217346; color: white; border: none; padding: 1rem 2rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; flex: 1; min-width: 150px;">
+                    <i class="fas fa-file-excel"></i> Excel Export
+                </button>
+                <button class="export-button pdf" onclick="exportToPDF()" style="background: #dc3545; color: white; border: none; padding: 1rem 2rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; flex: 1; min-width: 150px;">
+                    <i class="fas fa-file-pdf"></i> PDF Export
+                </button>
+            </div>
         </div>
     </div>
     
@@ -792,9 +800,74 @@
             window.location.href = 'ki-strategie-workflow.html';
         }
         
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', initializeAssessment);
+        // Export functions
+        let exporter = null;
+        
+        async function exportToExcel() {
+            if (!exporter) {
+                exporter = new AssessmentExporter();
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+            const data = prepareExportData();
+            await exporter.exportToExcel(data, `KI-Readiness-Datenqualitaet-${new Date().toISOString().split('T')[0]}`);
+        }
+        
+        async function exportToPDF() {
+            if (!exporter) {
+                exporter = new AssessmentExporter();
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+            const data = prepareExportData();
+            await exporter.exportToPDF(data, `KI-Readiness-Datenqualitaet-${new Date().toISOString().split('T')[0]}`);
+        }
+        
+        function prepareExportData() {
+            const criterionAverages = dataQualityCriteria.map(criterion => {
+                const subValues = criterion.subCriteria.map(sub => {
+                    const key = `${criterion.id}_${sub.id}`;
+                    return assessmentValues[key] || 1;
+                });
+                return {
+                    criterionId: criterion.id,
+                    criterionTitle: criterion.title,
+                    average: subValues.reduce((sum, val) => sum + val, 0) / subValues.length
+                };
+            });
+            const overallAverage = (criterionAverages.reduce((sum, c) => sum + c.average, 0) / criterionAverages.length);
+            return {
+                dimension: 'dataQuality',
+                dimensionName: 'Datenqualität & -verfügbarkeit',
+                overall: overallAverage,
+                aggregated: overallAverage,
+                dimensions: {
+                    dataQuality: {
+                        aggregated: overallAverage,
+                        criteria: dataQualityCriteria.map(criterion => ({
+                            id: criterion.id,
+                            title: criterion.title,
+                            description: criterion.description,
+                            subCriteria: criterion.subCriteria.map(sub => ({
+                                id: sub.id,
+                                title: sub.title,
+                                description: sub.description,
+                                examples: sub.examples,
+                                value: assessmentValues[`${criterion.id}_${sub.id}`] || 1
+                            }))
+                        })),
+                        criterionAverages: criterionAverages
+                    }
+                },
+                details: assessmentValues,
+                timestamp: new Date().toISOString()
+            };
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeAssessment();
+            exporter = new AssessmentExporter();
+        });
     </script>
+    <script src="js/assessment-export.js"></script>
 </body>
 </html>
 
