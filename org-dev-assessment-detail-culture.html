@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kultur & Werte - Organisationsentwicklung Assessment - Manuel Weiss</title>
+    
+    <!-- Meta Tags -->
+    <meta name="description" content="Detaillierte Bewertung der kultur & werte für Organisationsentwicklung.">
+    <meta name="keywords" content="Unternehmenskultur, Werte, Kultur-Entwicklung, Organisationsentwicklung">
+    <meta name="author" content="Manuel Weiss">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="css/ki-assessment-detail.css">
+    <style>
+        .detail-header {
+            background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
+        }
+        
+        .criterion-icon {
+            background: linear-gradient(135deg, #ec4899, #be185d);
+        }
+        
+        .detail-slider::-webkit-slider-thumb {
+            background: linear-gradient(135deg, #ec4899, #be185d);
+        }
+        
+        .detail-slider::-moz-range-thumb {
+            background: linear-gradient(135deg, #ec4899, #be185d);
+        }
+        
+        .sub-criterion-slider::-webkit-slider-thumb {
+            background: linear-gradient(135deg, #ec4899, #be185d);
+        }
+        
+        .sub-criterion-slider::-moz-range-thumb {
+            background: linear-gradient(135deg, #ec4899, #be185d);
+        }
+        
+        .slider-value-display {
+            color: #be185d;
+        }
+        
+        .sub-criterion-value {
+            color: #be185d;
+        }
+        
+        .criterion-average-value {
+            color: #be185d;
+        }
+        
+        .aggregated-score {
+            background: linear-gradient(135deg, #ec4899, #be185d);
+        }
+        
+        .save-button {
+            color: #be185d;
+        }
+        
+        .criterion-examples {
+            border-left: 4px solid #ec4899;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="manuel-weiss-photo.svg" alt="Manuel Weiss" class="nav-logo">
+                <span class="nav-name">Manuel Weiss</span>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="hr-transformation.html">HR-Transformation</a>
+                <a href="index.html#about">Über mich</a>
+                <a href="index.html#contact">Kontakt</a>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="detail-assessment-container">
+        <div class="detail-header">
+            <a href="organisationsentwicklung-workflow.html" class="back-button">
+                <i class="fas fa-arrow-left"></i>
+                Zurück zur Übersicht
+            </a>
+            <h1><i class="fas fa-heart"></i> Kultur & Werte</h1>
+            <p>Bewerten Sie Ihre Unternehmenskultur und Werte. Wissenschaftlich fundierte Bewertung basierend auf modernen Kultur-Entwicklungs-Prinzipien.</p>
+        </div>
+        
+        <div id="criteriaContainer">
+            <!-- Criteria will be dynamically loaded -->
+        </div>
+        
+        <div class="aggregated-score">
+            <h3>Gesamtbewertung</h3>
+            <div class="score-display">
+                <div class="score-circle-large" id="aggregatedScore">1.0</div>
+                <div class="score-description" id="scoreDescription">Bewerten Sie die Kriterien, um Ihre Gesamtbewertung zu sehen</div>
+            </div>
+            <div style="display: flex; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap;">
+                <button class="save-button" onclick="saveAndReturn()" style="flex: 1; min-width: 200px;">
+                    <i class="fas fa-save"></i> Bewertung speichern und zurück
+                </button>
+                <button class="export-button excel" onclick="exportToExcel()" style="background: #217346; color: white; border: none; padding: 1rem 2rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; flex: 1; min-width: 150px;">
+                    <i class="fas fa-file-excel"></i> Excel Export
+                </button>
+                <button class="export-button pdf" onclick="exportToPDF()" style="background: #dc3545; color: white; border: none; padding: 1rem 2rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; flex: 1; min-width: 150px;">
+                    <i class="fas fa-file-pdf"></i> PDF Export
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const cultureCriteria = [
+            {
+                id: 'organizationalFlexibility',
+                title: 'Organisatorische Flexibilität',
+                description: 'Wie flexibel ist Ihre Organisationsstruktur?',
+                icon: 'fa-random',
+                subCriteria: [
+                    { 
+                        id: 'flatHierarchy', 
+                        title: 'Flache Hierarchien',
+                        description: 'Gibt es flache Hierarchien, die schnelle Entscheidungen ermöglichen?',
+                        examples: ['Maximal 3-4 Hierarchieebenen', 'Kurze Entscheidungswege', 'Delegation von Verantwortung']
+                    },
+                    { 
+                        id: 'crossFunctionalTeams', 
+                        title: 'Cross-funktionale Teams',
+                        description: 'Arbeiten Teams cross-funktional zusammen?',
+                        examples: ['Interdisziplinäre Teams', 'Regelmäßiger Austausch', 'Gemeinsame Ziele']
+                    },
+                    { 
+                        id: 'dynamicStructure', 
+                        title: 'Dynamische Strukturanpassung',
+                        description: 'Kann die Struktur schnell angepasst werden?',
+                        examples: ['Flexible Team-Formation', 'Schnelle Reorganisation', 'Anpassungsfähigkeit']
+                    },
+                    { 
+                        id: 'matrixOrganization', 
+                        title: 'Matrix-Organisationsstruktur',
+                        description: 'Gibt es eine Matrix-Struktur für bessere Zusammenarbeit?',
+                        examples: ['Duale Berichtslinien', 'Projekt-Matrix', 'Funktions-Matrix']
+                    },
+                    { 
+                        id: 'networkStructure', 
+                        title: 'Netzwerk-Organisationsstruktur',
+                        description: 'Nutzt die Organisation Netzwerkstrukturen?',
+                        examples: ['Interne Netzwerke', 'Externe Partnerschaften', 'Kollaborative Strukturen']
+                    }
+                ]
+            },
+            {
+                id: 'agileDesign',
+                title: 'Agiles Organisationsdesign',
+                description: 'Wie agil ist das Organisationsdesign?',
+                icon: 'fa-bolt',
+                subCriteria: [
+                    { 
+                        id: 'selfOrganizingTeams', 
+                        title: 'Selbstorganisierte Teams',
+                        description: 'Haben Teams Autonomie und Selbstorganisation?',
+                        examples: ['Eigene Entscheidungsbefugnis', 'Selbstverwaltung', 'Eigene Ressourcenverwaltung']
+                    },
+                    { 
+                        id: 'scrumFramework', 
+                        title: 'Scrum/Agile Frameworks',
+                        description: 'Werden agile Frameworks verwendet?',
+                        examples: ['Scrum Teams', 'Sprints', 'Retrospektiven']
+                    },
+                    { 
+                        id: 'iterativeApproach', 
+                        title: 'Iterative Arbeitsweise',
+                        description: 'Wird iterativ gearbeitet?',
+                        examples: ['Kurze Zyklen', 'Schnelle Feedback-Loops', 'Kontinuierliche Verbesserung']
+                    },
+                    { 
+                        id: 'customerCentricity', 
+                        title: 'Kundenorientierte Strukturen',
+                        description: 'Ist die Struktur kundenorientiert?',
+                        examples: ['Kundennähe', 'Customer Journey Fokus', 'Kundenfeedback integriert']
+                    },
+                    { 
+                        id: 'rapidResponse', 
+                        title: 'Schnelle Reaktionsfähigkeit',
+                        description: 'Kann die Organisation schnell reagieren?',
+                        examples: ['Kurze Entscheidungszeiten', 'Schnelle Umsetzung', 'Anpassungsfähigkeit']
+                    }
+                ]
+            },
+            {
+                id: 'organizationalClarity',
+                title: 'Organisatorische Klarheit',
+                description: 'Wie klar sind Rollen, Verantwortlichkeiten und Prozesse?',
+                icon: 'fa-eye',
+                subCriteria: [
+                    { 
+                        id: 'clearRoles', 
+                        title: 'Klare Rollen und Verantwortlichkeiten',
+                        description: 'Sind Rollen und Verantwortlichkeiten klar definiert?',
+                        examples: ['Rollenbeschreibungen', 'Verantwortlichkeitsmatrix', 'Klare Zuständigkeiten']
+                    },
+                    { 
+                        id: 'processDocumentation', 
+                        title: 'Dokumentierte Prozesse',
+                        description: 'Sind Prozesse dokumentiert?',
+                        examples: ['Prozessdokumentation', 'Standard Operating Procedures', 'Guidelines']
+                    },
+                    { 
+                        id: 'decisionMaking', 
+                        title: 'Klare Entscheidungsfindung',
+                        description: 'Gibt es klare Entscheidungsprozesse?',
+                        examples: ['Entscheidungsmatrizen', 'Approval-Prozesse', 'Klare Autoritäten']
+                    },
+                    { 
+                        id: 'communicationChannels', 
+                        title: 'Definierte Kommunikationskanäle',
+                        description: 'Gibt es definierte Kommunikationswege?',
+                        examples: ['Kommunikationsmatrix', 'Regelmäßige Meetings', 'Informationsfluss']
+                    },
+                    { 
+                        id: 'governanceStructure', 
+                        title: 'Governance-Struktur',
+                        description: 'Gibt es eine klare Governance-Struktur?',
+                        examples: ['Steuerungskreise', 'Governance Boards', 'Klare Regeln']
+                    }
+                ]
+            },
+            {
+                id: 'scalability',
+                title: 'Skalierbarkeit',
+                description: 'Wie gut skaliert die Organisationsstruktur?',
+                icon: 'fa-expand-arrows-alt',
+                subCriteria: [
+                    { 
+                        id: 'growthReadiness', 
+                        title: 'Wachstumsbereitschaft',
+                        description: 'Ist die Struktur wachstumsbereit?',
+                        examples: ['Skalierbare Teams', 'Erweiterbare Strukturen', 'Wachstumsplanung']
+                    },
+                    { 
+                        id: 'modularDesign', 
+                        title: 'Modulares Design',
+                        description: 'Ist die Struktur modular aufgebaut?',
+                        examples: ['Wiederverwendbare Module', 'Plug-and-Play Teams', 'Modulare Einheiten']
+                    },
+                    { 
+                        id: 'resourceFlexibility', 
+                        title: 'Ressourcenflexibilität',
+                        description: 'Können Ressourcen flexibel zugewiesen werden?',
+                        examples: ['Flexible Ressourcenzuweisung', 'Shared Resources', 'Dynamische Allokation']
+                    },
+                    { 
+                        id: 'internationalScalability', 
+                        title: 'Internationale Skalierbarkeit',
+                        description: 'Skaliert die Struktur international?',
+                        examples: ['Globales Modell', 'Regionale Anpassungen', 'Kulturelle Flexibilität']
+                    },
+                    { 
+                        id: 'technologyScalability', 
+                        title: 'Technologie-Skalierbarkeit',
+                        description: 'Unterstützt Technologie die Skalierung?',
+                        examples: ['Skalierbare IT-Systeme', 'Cloud-Infrastruktur', 'Automatisierung']
+                    }
+                ]
+            },
+            {
+                id: 'collaborationStructures',
+                title: 'Kollaborationsstrukturen',
+                description: 'Wie gut sind Kollaborationsstrukturen etabliert?',
+                icon: 'fa-users',
+                subCriteria: [
+                    { 
+                        id: 'crossFunctionalCollaboration', 
+                        title: 'Cross-funktionale Zusammenarbeit',
+                        description: 'Gibt es Strukturen für cross-funktionale Zusammenarbeit?',
+                        examples: ['Gemeinsame Projekte', 'Cross-Functional Teams', 'Interdisziplinäre Zusammenarbeit']
+                    },
+                    { 
+                        id: 'knowledgeSharing', 
+                        title: 'Wissensaustausch-Strukturen',
+                        description: 'Gibt es Strukturen für Wissensaustausch?',
+                        examples: ['Communities of Practice', 'Wissensplattformen', 'Regelmäßiger Austausch']
+                    },
+                    { 
+                        id: 'collaborativeTools', 
+                        title: 'Kollaborative Tools und Plattformen',
+                        description: 'Werden kollaborative Tools genutzt?',
+                        examples: ['Collaboration Software', 'Projektmanagement-Tools', 'Virtuelle Zusammenarbeit']
+                    },
+                    { 
+                        id: 'informalNetworks', 
+                        title: 'Informelle Netzwerke',
+                        description: 'Gibt es informelle Netzwerke?',
+                        examples: ['Mentoring-Programme', 'Peer Networks', 'Informelle Communities']
+                    },
+                    { 
+                        id: 'teamCohesion', 
+                        title: 'Team-Kohäsion',
+                        description: 'Wie stark ist die Team-Kohäsion?',
+                        examples: ['Team-Building', 'Gemeinsame Ziele', 'Starke Beziehungen']
+                    }
+                ]
+            },
+            {
+                id: 'innovationStructures',
+                title: 'Innovationsstrukturen',
+                description: 'Wie gut sind Strukturen für Innovation etabliert?',
+                icon: 'fa-lightbulb',
+                subCriteria: [
+                    { 
+                        id: 'innovationTeams', 
+                        title: 'Dedizierte Innovations-Teams',
+                        description: 'Gibt es Teams für Innovation?',
+                        examples: ['Innovation Labs', 'R&D Teams', 'Innovation Hubs']
+                    },
+                    { 
+                        id: 'experimentation', 
+                        title: 'Experimentier-Strukturen',
+                        description: 'Gibt es Strukturen für Experimente?',
+                        examples: ['Pilot-Projekte', 'Prototyping', 'Test-Environments']
+                    },
+                    { 
+                        id: 'ideaManagement', 
+                        title: 'Ideenmanagement-System',
+                        description: 'Gibt es ein Ideenmanagement?',
+                        examples: ['Ideenplattformen', 'Innovation Contests', 'Ideen-Pipeline']
+                    },
+                    { 
+                        id: 'startupCulture', 
+                        title: 'Startup-Kultur-Elemente',
+                        description: 'Gibt es Startup-Kultur-Elemente?',
+                        examples: ['Fail-Fast Kultur', 'Rapid Prototyping', 'Entrepreneurship']
+                    },
+                    { 
+                        id: 'externalInnovation', 
+                        title: 'Externe Innovationspartnerschaften',
+                        description: 'Gibt es externe Innovationspartnerschaften?',
+                        examples: ['Startup-Partnerschaften', 'Universitätskooperationen', 'Innovation Networks']
+                    }
+                ]
+            },
+            {
+                id: 'digitalTransformation',
+                title: 'Digitale Transformation',
+                description: 'Wie gut ist die Organisation für digitale Transformation aufgestellt?',
+                icon: 'fa-digital-tacho',
+                subCriteria: [
+                    { 
+                        id: 'digitalStrategy', 
+                        title: 'Digitale Strategie',
+                        description: 'Gibt es eine digitale Strategie?',
+                        examples: ['Digital Roadmap', 'Digitale Vision', 'Digital Transformation Plan']
+                    },
+                    { 
+                        id: 'digitalCapabilities', 
+                        title: 'Digitale Fähigkeiten',
+                        description: 'Hat die Organisation digitale Fähigkeiten?',
+                        examples: ['Digitale Skills', 'Digital Literacy', 'Technologie-Kompetenz']
+                    },
+                    { 
+                        id: 'dataDriven', 
+                        title: 'Datengetriebene Organisation',
+                        description: 'Ist die Organisation datengetrieben?',
+                        examples: ['Data Analytics', 'Business Intelligence', 'Datenbasierte Entscheidungen']
+                    },
+                    { 
+                        id: 'automation', 
+                        title: 'Automatisierungsgrad',
+                        description: 'Wie automatisiert ist die Organisation?',
+                        examples: ['Prozessautomatisierung', 'RPA', 'KI-gestützte Prozesse']
+                    },
+                    { 
+                        id: 'digitalCulture', 
+                        title: 'Digitale Kultur',
+                        description: 'Gibt es eine digitale Kultur?',
+                        examples: ['Digital Mindset', 'Agile Digitale Praktiken', 'Innovation Culture']
+                    }
+                ]
+            },
+            {
+                id: 'sustainabilityStructure',
+                title: 'Nachhaltigkeitsstruktur',
+                description: 'Wie gut ist Nachhaltigkeit in der Struktur verankert?',
+                icon: 'fa-leaf',
+                subCriteria: [
+                    { 
+                        id: 'sustainabilityIntegration', 
+                        title: 'Nachhaltigkeit in Struktur integriert',
+                        description: 'Ist Nachhaltigkeit strukturell verankert?',
+                        examples: ['Sustainability Teams', 'Nachhaltigkeitsziele', 'ESG-Integration']
+                    },
+                    { 
+                        id: 'resourceEfficiency', 
+                        title: 'Ressourceneffizienz',
+                        description: 'Wie effizient werden Ressourcen genutzt?',
+                        examples: ['Ressourcenoptimierung', 'Nachhaltige Prozesse', 'Effizienz-Metriken']
+                    },
+                    { 
+                        id: 'circularEconomy', 
+                        title: 'Kreislaufwirtschaft-Elemente',
+                        description: 'Gibt es Kreislaufwirtschaft-Elemente?',
+                        examples: ['Wiederverwendung', 'Recycling', 'Circular Design']
+                    },
+                    { 
+                        id: 'sustainabilityReporting', 
+                        title: 'Nachhaltigkeits-Reporting',
+                        description: 'Gibt es Nachhaltigkeits-Reporting?',
+                        examples: ['Sustainability Reports', 'ESG-Metriken', 'Transparenz']
+                    },
+                    { 
+                        id: 'longTermThinking', 
+                        title: 'Langfristiges Denken',
+                        description: 'Wird langfristig gedacht?',
+                        examples: ['Langfristige Strategie', 'Nachhaltige Investitionen', 'Zukunftsfähigkeit']
+                    }
+                ]
+            },
+            {
+                id: 'changeReadiness',
+                title: 'Change-Readiness',
+                description: 'Wie ready ist die Organisation für Veränderungen?',
+                icon: 'fa-sync-alt',
+                subCriteria: [
+                    { 
+                        id: 'changeManagement', 
+                        title: 'Change Management Strukturen',
+                        description: 'Gibt es Change Management Strukturen?',
+                        examples: ['Change Teams', 'Change Prozesse', 'Change Methodologie']
+                    },
+                    { 
+                        id: 'adaptability', 
+                        title: 'Anpassungsfähigkeit',
+                        description: 'Wie anpassungsfähig ist die Organisation?',
+                        examples: ['Schnelle Anpassung', 'Flexibilität', 'Resilienz']
+                    },
+                    { 
+                        id: 'learningOrganization', 
+                        title: 'Lernende Organisation',
+                        description: 'Ist die Organisation lernend?',
+                        examples: ['Lernkultur', 'Kontinuierliche Verbesserung', 'Reflexionsprozesse']
+                    },
+                    { 
+                        id: 'experimentationCulture', 
+                        title: 'Experimentier-Kultur',
+                        description: 'Gibt es eine Experimentier-Kultur?',
+                        examples: ['Test & Learn', 'Pilot-Projekte', 'Fail-Fast Mentalität']
+                    },
+                    { 
+                        id: 'futureOrientation', 
+                        title: 'Zukunftsorientierung',
+                        description: 'Ist die Organisation zukunftsorientiert?',
+                        examples: ['Trend-Monitoring', 'Zukunftsszenarien', 'Strategische Vorausschau']
+                    }
+                ]
+            },
+            {
+                id: 'performanceManagement',
+                title: 'Performance Management Strukturen',
+                description: 'Wie gut sind Performance Management Strukturen?',
+                icon: 'fa-chart-bar',
+                subCriteria: [
+                    { 
+                        id: 'performanceMetrics', 
+                        title: 'Performance-Metriken',
+                        description: 'Gibt es klare Performance-Metriken?',
+                        examples: ['KPIs definiert', 'Performance Dashboards', 'Regelmäßige Messung']
+                    },
+                    { 
+                        id: 'feedbackCulture', 
+                        title: 'Feedback-Kultur',
+                        description: 'Gibt es eine Feedback-Kultur?',
+                        examples: ['Regelmäßiges Feedback', '360-Grad-Feedback', 'Konstruktive Kritik']
+                    },
+                    { 
+                        id: 'performanceDevelopment', 
+                        title: 'Performance-Entwicklung',
+                        description: 'Gibt es Performance-Entwicklung?',
+                        examples: ['Performance Reviews', 'Entwicklungspläne', 'Coaching']
+                    },
+                    { 
+                        id: 'goalAlignment', 
+                        title: 'Zielausrichtung',
+                        description: 'Sind Ziele ausgerichtet?',
+                        examples: ['OKR-System', 'Cascading Goals', 'Alignment']
+                    },
+                    { 
+                        id: 'recognitionSystem', 
+                        title: 'Anerkennungssystem',
+                        description: 'Gibt es ein Anerkennungssystem?',
+                        examples: ['Recognition Programme', 'Performance Awards', 'Wertschätzung']
+                    }
+                ]
+            }
+        ];
+        
+        let assessmentData = {};
+        let assessmentExporter = null;
+        
+        function initializeAssessment() {
+            // Load saved data
+            const saved = localStorage.getItem('orgDevDetailAssessments');
+            if (saved) {
+                const allAssessments = JSON.parse(saved);
+                if (allAssessments.culture) {
+                    assessmentData = allAssessments.culture;
+                }
+            }
+            
+            // Initialize assessment data structure
+            cultureCriteria.forEach(criterion => {
+                if (!assessmentData[criterion.id]) {
+                    assessmentData[criterion.id] = {};
+                }
+                criterion.subCriteria.forEach(subCriterion => {
+                    if (!assessmentData[criterion.id][subCriterion.id]) {
+                        assessmentData[criterion.id][subCriterion.id] = 1;
+                    }
+                });
+            });
+            
+            renderCriteria();
+            updateAggregatedScore();
+            assessmentExporter = new AssessmentExporter();
+        }
+        
+        function renderCriteria() {
+            const container = document.getElementById('criteriaContainer');
+            container.innerHTML = '';
+            
+            cultureCriteria.forEach(criterion => {
+                const criterionCard = document.createElement('div');
+                criterionCard.className = 'criterion-card';
+                
+                const averageScore = calculateCriterionAverage(criterion.id);
+                
+                criterionCard.innerHTML = `
+                    <div class="criterion-header">
+                        <div class="criterion-icon">
+                            <i class="fas ${criterion.icon}"></i>
+                        </div>
+                        <div class="criterion-title-section">
+                            <h3 class="criterion-title">${criterion.title}</h3>
+                            <p class="criterion-description">${criterion.description}</p>
+                        </div>
+                        <div class="criterion-average">
+                            <div class="criterion-average-value">${averageScore.toFixed(1)}</div>
+                            <div style="font-size: 0.75rem; color: #6b7280;">Durchschnitt</div>
+                        </div>
+                    </div>
+                    
+                    <div class="sub-criteria-container">
+                        ${criterion.subCriteria.map(subCriterion => {
+                            const value = assessmentData[criterion.id][subCriterion.id] || 1;
+                            return `
+                                <div class="sub-criterion-item">
+                                    <div class="sub-criterion-label">
+                                        <h4>${subCriterion.title}</h4>
+                                        <p>${subCriterion.description}</p>
+                                        <div class="criterion-examples">
+                                            <strong>Beispiele:</strong>
+                                            <ul>
+                                                ${subCriterion.examples.map(ex => `<li>${ex}</li>`).join('')}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="sub-criterion-slider-wrapper">
+                                        <input type="range" min="1" max="5" value="${value}" 
+                                               class="sub-criterion-slider" 
+                                               id="${criterion.id}_${subCriterion.id}"
+                                               oninput="updateSubCriterionValue('${criterion.id}', '${subCriterion.id}', this.value)">
+                                        <div class="sub-criterion-value">${value}</div>
+                                        <div class="sub-criterion-scale">
+                                            <span>1</span>
+                                            <span>2</span>
+                                            <span>3</span>
+                                            <span>4</span>
+                                            <span>5</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+                
+                container.appendChild(criterionCard);
+            });
+        }
+        
+        function updateSubCriterionValue(criterionId, subCriterionId, value) {
+            if (!assessmentData[criterionId]) {
+                assessmentData[criterionId] = {};
+            }
+            assessmentData[criterionId][subCriterionId] = parseInt(value);
+            
+            const valueDisplay = document.querySelector(`#${criterionId}_${subCriterionId}`).nextElementSibling;
+            if (valueDisplay) {
+                valueDisplay.textContent = value;
+            }
+            
+            updateCriterionAverage(criterionId);
+            updateAggregatedScore();
+            saveAssessment();
+        }
+        
+        function calculateCriterionAverage(criterionId) {
+            const criterion = cultureCriteria.find(c => c.id === criterionId);
+            if (!criterion || !assessmentData[criterionId]) return 1.0;
+            
+            const values = criterion.subCriteria.map(sub => 
+                assessmentData[criterionId][sub.id] || 1
+            );
+            const sum = values.reduce((acc, val) => acc + val, 0);
+            return sum / values.length;
+        }
+        
+        function updateCriterionAverage(criterionId) {
+            const average = calculateCriterionAverage(criterionId);
+            const criterionCard = document.querySelector(`.criterion-card:has(#${criterionId}_${cultureCriteria.find(c => c.id === criterionId).subCriteria[0].id})`);
+            if (criterionCard) {
+                const averageDisplay = criterionCard.querySelector('.criterion-average-value');
+                if (averageDisplay) {
+                    averageDisplay.textContent = average.toFixed(1);
+                }
+            }
+        }
+        
+        function updateAggregatedScore() {
+            const averages = cultureCriteria.map(c => calculateCriterionAverage(c.id));
+            const overallAverage = averages.reduce((acc, val) => acc + val, 0) / averages.length;
+            
+            const scoreDisplay = document.getElementById('aggregatedScore');
+            const descriptionDisplay = document.getElementById('scoreDescription');
+            
+            if (scoreDisplay) {
+                scoreDisplay.textContent = overallAverage.toFixed(1);
+            }
+            
+            if (descriptionDisplay) {
+                let description = '';
+                if (overallAverage <= 1.5) {
+                    description = 'Starr und unflexibel - Erhebliche Verbesserung der Struktur nötig';
+                } else if (overallAverage <= 2.5) {
+                    description = 'Teilweise flexibel - Strukturelle Verbesserungen erforderlich';
+                } else if (overallAverage <= 3.5) {
+                    description = 'Gut strukturiert - Weitere Optimierung möglich';
+                } else if (overallAverage <= 4.5) {
+                    description = 'Sehr flexibel - Kleine Verbesserungen möglich';
+                } else {
+                    description = 'Hervorragend strukturiert - Agile und anpassungsfähige Organisation';
+                }
+                descriptionDisplay.textContent = description;
+            }
+        }
+        
+        function saveAssessment() {
+            const allAssessments = JSON.parse(localStorage.getItem('orgDevDetailAssessments') || '{}');
+            allAssessments.culture = {
+                criteria: assessmentData,
+                aggregated: parseFloat(cultureCriteria.map(c => calculateCriterionAverage(c.id)).reduce((acc, val) => acc + val, 0) / cultureCriteria.length).toFixed(1)
+            };
+            localStorage.setItem('orgDevDetailAssessments', JSON.stringify(allAssessments));
+        }
+        
+        function saveAndReturn() {
+            saveAssessment();
+            window.location.href = 'organisationsentwicklung-workflow.html';
+        }
+        
+        async function exportToExcel() {
+            if (!assessmentExporter) {
+                assessmentExporter = new AssessmentExporter();
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+            const data = prepareExportData();
+            await assessmentExporter.exportToExcel(data, `Organisationsentwicklung-Kultur-&-Werte-Assessment-${new Date().toISOString().split('T')[0]}`);
+        }
+        
+        async function exportToPDF() {
+            if (!assessmentExporter) {
+                assessmentExporter = new AssessmentExporter();
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+            const data = prepareExportData();
+            await assessmentExporter.exportToPDF(data, `Organisationsentwicklung-Kultur-&-Werte-Assessment-${new Date().toISOString().split('T')[0]}`);
+        }
+        
+        function prepareExportData() {
+            const aggregated = parseFloat(cultureCriteria.map(c => calculateCriterionAverage(c.id)).reduce((acc, val) => acc + val, 0) / cultureCriteria.length).toFixed(1);
+            
+            return {
+                dimension: 'culture',
+                dimensionName: 'Kultur & Werte',
+                overall: parseFloat(aggregated),
+                criteria: cultureCriteria.map(criterion => ({
+                    id: criterion.id,
+                    title: criterion.title,
+                    description: criterion.description,
+                    average: calculateCriterionAverage(criterion.id),
+                    subCriteria: criterion.subCriteria.map(sub => ({
+                        id: sub.id,
+                        title: sub.title,
+                        description: sub.description,
+                        examples: sub.examples,
+                        score: assessmentData[criterion.id][sub.id] || 1
+                    }))
+                })),
+                timestamp: new Date().toISOString()
+            };
+        }
+        
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', initializeAssessment);
+    </script>
+    
+    <!-- Assessment Export Script -->
+    <script src="js/assessment-export.js"></script>
+</body>
+</html>

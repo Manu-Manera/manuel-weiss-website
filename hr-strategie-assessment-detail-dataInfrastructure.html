@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daten- & Infrastruktur-Basis - HR-Readiness Assessment - Manuel Weiss</title>
+    <meta name="description" content="Detaillierte Bewertung der Daten- & Infrastruktur-Basis für HR-Readiness. Robuste HR-Datenbasis für faktenbasierte Entscheidungen.">
+    <meta name="keywords" content="Daten-Infrastruktur, HR-Datenbasis, Evidence-Based HR, HR-Readiness">
+    <meta name="author" content="Manuel Weiss">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/ki-assessment-detail.css">
+    <style>
+        .detail-header { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); }
+        .criterion-icon { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+        .detail-slider::-webkit-slider-thumb, .detail-slider::-moz-range-thumb,
+        .sub-criterion-slider::-webkit-slider-thumb, .sub-criterion-slider::-moz-range-thumb { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+        .slider-value-display, .sub-criterion-value, .criterion-average-value { color: #7c3aed; }
+        .aggregated-score { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+        .save-button { color: #7c3aed; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="manuel-weiss-photo.svg" alt="Manuel Weiss" class="nav-logo">
+                <span class="nav-name">Manuel Weiss</span>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="hr-transformation.html">HR-Transformation</a>
+                <a href="index.html#about">Über mich</a>
+                <a href="index.html#contact">Kontakt</a>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="detail-assessment-container">
+        <div class="detail-header">
+            <a href="hr-strategie-workflow.html" class="back-button"><i class="fas fa-arrow-left"></i> Zurück zur Übersicht</a>
+            <h1><i class="fas fa-database"></i> Daten- & Infrastruktur-Basis</h1>
+            <p>Bauen Sie eine robuste HR-Datenbasis auf für faktenbasierte Entscheidungen. Harvard: Menschenbezogene Daten als strategisches Asset. MIT: Fokus auf Workforce Analytics & "Evidence-Based HR".</p>
+        </div>
+        
+        <div id="criteriaContainer"></div>
+        
+        <div class="aggregated-score">
+            <h3>Gesamtbewertung</h3>
+            <div class="score-display">
+                <div class="score-circle-large" id="aggregatedScore">1.0</div>
+                <div class="score-description" id="scoreDescription">Bewerten Sie die Kriterien, um Ihre Gesamtbewertung zu sehen</div>
+            </div>
+            <div style="display: flex; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap;">
+                <button class="save-button" onclick="saveAndReturn()" style="flex: 1; min-width: 200px;"><i class="fas fa-save"></i> Bewertung speichern und zurück</button>
+                <button onclick="exportToExcel()" style="background: #217346; color: white; border: none; padding: 1rem 2rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; flex: 1; min-width: 150px;"><i class="fas fa-file-excel"></i> Excel Export</button>
+                <button onclick="exportToPDF()" style="background: #dc3545; color: white; border: none; padding: 1rem 2rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; flex: 1; min-width: 150px;"><i class="fas fa-file-pdf"></i> PDF Export</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const dataInfrastructureCriteria = [
+            {
+                id: 'hrSystems',
+                title: 'HR-Systeme & Technologie-Stack',
+                description: 'Welche HR-Systeme und Technologien nutzen Sie? Wie modern und integriert ist Ihr HR-Tech-Stack?',
+                icon: 'fa-server',
+                subCriteria: [
+                    { id: 'modernHris', title: 'Moderne HRIS-Systeme im Einsatz', description: 'Nutzen Sie moderne HRIS-Systeme?', examples: ['Workday, SAP SuccessFactors, BambooHR', 'Cloud-basierte Lösungen', 'Keine Legacy-Systeme'] },
+                    { id: 'integratedSystems', title: 'Integrierte HR-System-Landschaft', description: 'Sind die Systeme integriert?', examples: ['Nahtlose Integration', 'Single Sign-On', 'Unified Data Model'] },
+                    { id: 'atsIntegration', title: 'ATS-Integration für Recruiting', description: 'Gibt es ATS-Integration?', examples: ['Applicant Tracking System', 'Recruiting-Pipeline', 'Kandidaten-Datenbank'] },
+                    { id: 'lmsPlatform', title: 'LMS-Plattform für Learning & Development', description: 'Gibt es eine LMS-Plattform?', examples: ['Learning Management System', 'Kurs-Verwaltung', 'Zertifizierungen'] },
+                    { id: 'performanceTools', title: 'Performance Management Tools', description: 'Gibt es Performance-Tools?', examples: ['360° Feedback', 'Goal Setting', 'Performance Reviews'] }
+                ]
+            },
+            {
+                id: 'dataQuality',
+                title: 'Datenqualität & Vollständigkeit',
+                description: 'Wie gut ist die Qualität Ihrer HR-Daten? Sind sie vollständig, genau und konsistent?',
+                icon: 'fa-check-circle',
+                subCriteria: [
+                    { id: 'completeData', title: 'Vollständige Mitarbeiterdaten', description: 'Wie vollständig sind die Daten?', examples: ['100% Datenabdeckung', 'Alle Pflichtfelder', 'Vollständige Stammdaten'] },
+                    { id: 'dataAccuracy', title: 'Hohe Datenqualität und Genauigkeit', description: 'Wie genau sind die Daten?', examples: ['Keine Duplikate', 'Konsistente Formate', 'Validierungsregeln'] },
+                    { id: 'historicalData', title: 'Historische Daten verfügbar', description: 'Gibt es historische Daten?', examples: ['Vollständige Historie', 'Archivierte Daten', 'Trend-Analysen möglich'] },
+                    { id: 'dataCoverage', title: 'Vollständige Abdeckung aller HR-Prozesse', description: 'Werden alle Prozesse abgedeckt?', examples: ['Recruiting bis Offboarding', 'Alle Lifecycle-Events', 'Vollständige Prozessdaten'] },
+                    { id: 'dataValidation', title: 'Automatisierte Datenvalidierung', description: 'Gibt es Datenvalidierung?', examples: ['Automatische Prüfungen', 'Fehlererkennung', 'Korrekturprozesse'] }
+                ]
+            },
+            {
+                id: 'dataIntegration',
+                title: 'System-Integration & Datenverbindung',
+                description: 'Wie gut sind Ihre HR-Systeme integriert? Gibt es eine zentrale Datenquelle oder isolierte Systeme?',
+                icon: 'fa-link',
+                subCriteria: [
+                    { id: 'centralPlatform', title: 'Zentrale HR-Datenplattform', description: 'Gibt es eine zentrale Plattform?', examples: ['Single Source of Truth', 'Zentrales HRIS', 'Unified Data Platform'] },
+                    { id: 'apiIntegration', title: 'APIs für System-Integration', description: 'Gibt es API-Integration?', examples: ['REST/GraphQL APIs', 'Standardisierte Schnittstellen', 'API-First Architektur'] },
+                    { id: 'realtimeSync', title: 'Echtzeit-Synchronisation', description: 'Wie aktuell sind die Daten?', examples: ['Event-basierte Updates', 'Sub-Sekunden Latenz', 'Bidirektionale Sync'] },
+                    { id: 'dataConsistency', title: 'Konsistente Daten über alle Systeme', description: 'Sind die Daten konsistent?', examples: ['Einheitliche Datenmodelle', 'Synchronisierte Masterdaten', 'Keine Inkonsistenzen'] },
+                    { id: 'noDataSilos', title: 'Keine Daten-Silos vorhanden', description: 'Gibt es Daten-Silos?', examples: ['Vollständige Integration', 'Keine isolierten Systeme', 'Nahtloser Datenfluss'] }
+                ]
+            },
+            {
+                id: 'dataAccessibility',
+                title: 'Datenzugriff & Verfügbarkeit',
+                description: 'Wie einfach ist der Zugriff auf HR-Daten? Gibt es technische oder organisatorische Barrieren?',
+                icon: 'fa-unlock',
+                subCriteria: [
+                    { id: 'selfServiceAccess', title: 'Selbstbedienungszugriff für autorisierte Nutzer', description: 'Können Nutzer selbstständig zugreifen?', examples: ['Self-Service Portale', 'Benutzerfreundliche Interfaces', '24/7 Verfügbarkeit'] },
+                    { id: 'fastQueries', title: 'Schnelle Datenabfragen möglich', description: 'Wie schnell sind Abfragen?', examples: ['Sub-Sekunden Antwortzeiten', 'Optimierte Queries', 'Caching-Strategien'] },
+                    { id: 'noLongProcesses', title: 'Keine langwierigen Genehmigungsprozesse', description: 'Wie schnell ist der Zugriff?', examples: ['Automatisierte Berechtigungen', 'Schnelle Freigaben', 'Selbstbedienung'] },
+                    { id: 'dataPortals', title: 'Benutzerfreundliche Datenportale', description: 'Gibt es benutzerfreundliche Portale?', examples: ['Intuitive Dashboards', 'Suchfunktionen', 'Filter und Sortierung'] },
+                    { id: 'mobileAccess', title: 'Mobile Zugriffsmöglichkeiten', description: 'Gibt es Mobile-Zugriff?', examples: ['Mobile Apps', 'Responsive Design', 'Mobile-first Approach'] }
+                ]
+            },
+            {
+                id: 'dataGovernance',
+                title: 'Daten-Governance & Verantwortlichkeiten',
+                description: 'Gibt es klare Verantwortlichkeiten und Prozesse für Datenqualität und -pflege?',
+                icon: 'fa-shield-alt',
+                subCriteria: [
+                    { id: 'clearResponsibilities', title: 'Klare Datenverantwortlichkeiten', description: 'Gibt es klare Verantwortlichkeiten?', examples: ['Data Stewards', 'Klare Rollen', 'Verantwortlichkeitsmatrix'] },
+                    { id: 'regularReviews', title: 'Regelmäßige Datenqualitätsreviews', description: 'Wie regelmäßig werden Reviews durchgeführt?', examples: ['Monatliche Reviews', 'Quartalsweise Audits', 'Kontinuierliche Überwachung'] },
+                    { id: 'documentedStandards', title: 'Dokumentierte Datenqualitätsstandards', description: 'Gibt es dokumentierte Standards?', examples: ['Datenqualitätsrichtlinien', 'Best Practices', 'Standard Operating Procedures'] },
+                    { id: 'governanceFramework', title: 'Etabliertes Daten-Governance-Framework', description: 'Gibt es ein Governance-Framework?', examples: ['DAMA Framework', 'Strukturierte Prozesse', 'Governance Board'] },
+                    { id: 'dataStewardship', title: 'Data Stewardship Programm', description: 'Gibt es Data Stewardship?', examples: ['Dedizierte Data Stewards', 'Stewardship-Training', 'Kontinuierliche Verbesserung'] }
+                ]
+            },
+            {
+                id: 'dataSecurity',
+                title: 'Datensicherheit & Compliance',
+                description: 'Wie sicher sind Ihre HR-Daten? Gibt es angemessene Sicherheitsmaßnahmen und Compliance?',
+                icon: 'fa-lock',
+                subCriteria: [
+                    { id: 'encryptedStorage', title: 'Verschlüsselte Datenspeicherung', description: 'Sind die Daten verschlüsselt?', examples: ['Encryption at Rest', 'TLS in Transit', 'Strong Encryption'] },
+                    { id: 'accessControls', title: 'Zugriffskontrollen und Berechtigungen', description: 'Wie sind Zugriffe kontrolliert?', examples: ['Role-Based Access', 'Least Privilege', 'Access Logging'] },
+                    { id: 'gdprCompliance', title: 'DSGVO-konforme Datenverarbeitung', description: 'Ist die Datenverarbeitung DSGVO-konform?', examples: ['Privacy by Design', 'Data Minimization', 'Right to be Forgotten'] },
+                    { id: 'securityMonitoring', title: 'Kontinuierliches Sicherheitsmonitoring', description: 'Wie wird Sicherheit überwacht?', examples: ['SIEM-Systeme', 'Security Audits', 'Threat Detection'] },
+                    { id: 'backupRecovery', title: 'Backup- und Disaster-Recovery-Strategien', description: 'Gibt es Backup-Strategien?', examples: ['Automated Backups', 'Point-in-Time Recovery', 'Disaster Recovery Plan'] }
+                ]
+            },
+            {
+                id: 'analyticsCapabilities',
+                title: 'Analytics-Fähigkeiten & Tools',
+                description: 'Welche Analytics-Fähigkeiten haben Sie? Gibt es Tools für People Analytics und datenbasierte Entscheidungen?',
+                icon: 'fa-chart-bar',
+                subCriteria: [
+                    { id: 'analyticsTools', title: 'People Analytics Tools verfügbar', description: 'Gibt es Analytics-Tools?', examples: ['People Analytics Plattformen', 'BI-Tools', 'Analytics-Dashboards'] },
+                    { id: 'dataDriven', title: 'Datenbasierte HR-Entscheidungen', description: 'Werden Entscheidungen datenbasiert getroffen?', examples: ['Evidence-Based HR', 'Data-Driven Decisions', 'Analytics-Integration'] },
+                    { id: 'predictiveAnalytics', title: 'Predictive Analytics Fähigkeiten', description: 'Gibt es Predictive Analytics?', examples: ['Vorhersagemodelle', 'Trend-Analyse', 'Risiko-Identifikation'] },
+                    { id: 'hrMetrics', title: 'HR-Metriken und KPIs definiert', description: 'Gibt es HR-Metriken?', examples: ['HR-Dashboard', 'KPI-Tracking', 'Regelmäßige Reports'] },
+                    { id: 'reportingAutomation', title: 'Automatisierte Reporting-Prozesse', description: 'Gibt es automatisierte Reports?', examples: ['Scheduled Reports', 'Automated Dashboards', 'Real-time Metrics'] }
+                ]
+            },
+            {
+                id: 'dataArchitecture',
+                title: 'Datenarchitektur & -struktur',
+                description: 'Wie ist Ihre Datenarchitektur aufgebaut? Gibt es moderne Datenbanken und Storage-Lösungen?',
+                icon: 'fa-sitemap',
+                subCriteria: [
+                    { id: 'modernDatabases', title: 'Moderne Datenbanktechnologien', description: 'Welche Datenbanken nutzen Sie?', examples: ['PostgreSQL, MongoDB', 'Time-Series DBs', 'In-Memory Databases'] },
+                    { id: 'dataWarehouse', title: 'Data Warehouse oder Data Lake vorhanden', description: 'Gibt es Data Warehouse/Lake?', examples: ['Snowflake, BigQuery', 'Data Lake Architecture', 'ETL/ELT Pipelines'] },
+                    { id: 'efficientQueries', title: 'Effiziente Datenabfragen möglich', description: 'Wie effizient sind Abfragen?', examples: ['Optimierte Indizes', 'Query Performance Monitoring', 'Materialized Views'] },
+                    { id: 'dataModeling', title: 'Datenmodellierung nach Best Practices', description: 'Folgt die Modellierung Best Practices?', examples: ['Normalisierte Datenmodelle', 'Entity-Relationship-Diagramme', 'Dokumentierte Schemas'] },
+                    { id: 'scalableArchitecture', title: 'Skalierbare Datenarchitektur', description: 'Ist die Architektur skalierbar?', examples: ['Horizontal Scaling', 'Cloud-native', 'Elastische Ressourcen'] }
+                ]
+            },
+            {
+                id: 'dataRealTime',
+                title: 'Echtzeit-Datenverfügbarkeit',
+                description: 'Wie aktuell sind Ihre Daten? Gibt es Echtzeit-Updates oder verzögerte Synchronisation?',
+                icon: 'fa-clock',
+                subCriteria: [
+                    { id: 'realtimeUpdates', title: 'Echtzeit-Updates bei Datenänderungen', description: 'Wie schnell werden Daten aktualisiert?', examples: ['Sofortige Updates', 'Event-driven Architecture', 'Real-time Processing'] },
+                    { id: 'minimalDelay', title: 'Minimale Verzögerung bei Datensynchronisation', description: 'Wie gering ist die Verzögerung?', examples: ['Sub-Sekunden Latenz', 'Streaming Data', 'Minimaler Lag'] },
+                    { id: 'currentData', title: 'Aktuelle Daten für alle Stakeholder verfügbar', description: 'Sind die Daten für alle aktuell?', examples: ['Single Source of Truth', 'Konsistente Views', 'Aktuelle Informationen'] },
+                    { id: 'dataFreshness', title: 'Hohe Datenaktualität (Data Freshness)', description: 'Wie aktuell sind die Daten?', examples: ['Tägliche Updates', 'Kontinuierliche Synchronisation', 'Fresh Data Indicators'] },
+                    { id: 'eventDriven', title: 'Event-driven Datenarchitektur', description: 'Gibt es Event-driven Architektur?', examples: ['Event Streaming', 'Real-time Processing', 'Event Sourcing'] }
+                ]
+            },
+            {
+                id: 'infrastructureModernization',
+                title: 'Infrastruktur-Modernisierung',
+                description: 'Wie modern ist Ihre HR-Infrastruktur? Werden veraltete Systeme kontinuierlich modernisiert?',
+                icon: 'fa-sync-alt',
+                subCriteria: [
+                    { id: 'cloudInfrastructure', title: 'Cloud-basierte Infrastruktur', description: 'Nutzen Sie Cloud-Infrastruktur?', examples: ['SaaS-Lösungen', 'Cloud-native', 'Keine On-Premise Legacy'] },
+                    { id: 'regularUpdates', title: 'Regelmäßige Technologie-Updates', description: 'Wie regelmäßig werden Updates gemacht?', examples: ['Agile Release Cycles', 'Continuous Deployment', 'Feature Flags'] },
+                    { id: 'legacyMigration', title: 'Migration weg von Legacy-Systemen', description: 'Gibt es Legacy-Migration?', examples: ['Modernization Roadmap', 'Incremental Migration', 'Legacy System Retirement'] },
+                    { id: 'modernAdoption', title: 'Adoption moderner Technologien', description: 'Wie modern sind die Technologien?', examples: ['Cloud-Native Stack', 'Microservices', 'Container Orchestration'] },
+                    { id: 'techRoadmap', title: 'Klare Technologie-Roadmap vorhanden', description: 'Gibt es eine Tech-Roadmap?', examples: ['3-Jahres-Plan', 'Technology Radar', 'Innovation Budget'] }
+                ]
+            }
+        ];
+        
+        let assessmentValues = {};
+        
+        function initializeAssessment() {
+            const saved = JSON.parse(localStorage.getItem('hrStrategieAssessments') || '{}');
+            if (saved.dataInfrastructure && saved.dataInfrastructure.details) {
+                assessmentValues = saved.dataInfrastructure.details;
+            }
+            dataInfrastructureCriteria.forEach(criterion => {
+                criterion.subCriteria.forEach(subCriterion => {
+                    const key = `${criterion.id}_${subCriterion.id}`;
+                    if (!assessmentValues[key]) assessmentValues[key] = 1;
+                });
+            });
+            renderCriteria();
+            updateAggregatedScore();
+        }
+        
+        function renderCriteria() {
+            const container = document.getElementById('criteriaContainer');
+            container.innerHTML = dataInfrastructureCriteria.map(criterion => {
+                const subValues = criterion.subCriteria.map(sub => {
+                    const key = `${criterion.id}_${sub.id}`;
+                    return assessmentValues[key] || 1;
+                });
+                const criterionAverage = (subValues.reduce((sum, val) => sum + val, 0) / subValues.length).toFixed(1);
+                return `
+                <div class="criterion-card">
+                    <div class="criterion-header">
+                        <div class="criterion-icon"><i class="fas ${criterion.icon}"></i></div>
+                        <div class="criterion-title-section">
+                            <h3 class="criterion-title">${criterion.title}</h3>
+                            <p class="criterion-description">${criterion.description}</p>
+                        </div>
+                    </div>
+                    <div class="sub-criteria-container">
+                        ${criterion.subCriteria.map(subCriterion => {
+                            const key = `${criterion.id}_${subCriterion.id}`;
+                            const value = assessmentValues[key] || 1;
+                            return `
+                            <div class="sub-criterion-item" style="border-left-color: #7c3aed;">
+                                <div class="sub-criterion-label">${subCriterion.title}</div>
+                                ${subCriterion.description ? `<div class="sub-criterion-description" style="color: #6b7280; font-size: 0.875rem; margin-bottom: 0.5rem;">${subCriterion.description}</div>` : ''}
+                                ${subCriterion.examples && subCriterion.examples.length > 0 ? `
+                                <div class="sub-criterion-examples" style="background: #f8fafc; padding: 0.75rem; border-radius: 6px; margin-bottom: 0.75rem; font-size: 0.8rem; color: #6b7280;">
+                                    <strong style="color: #374151; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">Beispiele:</strong>
+                                    <ul style="margin: 0.5rem 0 0 1.25rem; padding: 0;">
+                                        ${subCriterion.examples.map(ex => `<li style="margin-bottom: 0.25rem;">${ex}</li>`).join('')}
+                                    </ul>
+                                </div>
+                                ` : ''}
+                                <div class="sub-criterion-slider-wrapper">
+                                    <input type="range" min="1" max="5" step="1" value="${value}" class="sub-criterion-slider" id="slider-${key}" style="accent-color: #7c3aed;" oninput="updateSubCriterionValue('${criterion.id}', '${subCriterion.id}', this.value)">
+                                    <div class="sub-criterion-value" id="value-${key}">${value}</div>
+                                    <div class="sub-criterion-scale"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
+                                </div>
+                            </div>
+                            `;
+                        }).join('')}
+                        <div class="criterion-average">
+                            <span class="criterion-average-label">Durchschnitt für "${criterion.title}":</span>
+                            <span class="criterion-average-value" id="avg-${criterion.id}">${criterionAverage}</span>
+                        </div>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+        
+        function updateSubCriterionValue(criterionId, subCriterionId, value) {
+            const key = `${criterionId}_${subCriterionId}`;
+            assessmentValues[key] = parseInt(value);
+            document.getElementById(`value-${key}`).textContent = value;
+            const criterion = dataInfrastructureCriteria.find(c => c.id === criterionId);
+            const subValues = criterion.subCriteria.map(sub => {
+                const subKey = `${criterionId}_${sub.id}`;
+                return assessmentValues[subKey] || 1;
+            });
+            const criterionAverage = (subValues.reduce((sum, val) => sum + val, 0) / subValues.length).toFixed(1);
+            document.getElementById(`avg-${criterionId}`).textContent = criterionAverage;
+            updateAggregatedScore();
+        }
+        
+        function updateAggregatedScore() {
+            const criterionAverages = dataInfrastructureCriteria.map(criterion => {
+                const subValues = criterion.subCriteria.map(sub => {
+                    const key = `${criterion.id}_${sub.id}`;
+                    return assessmentValues[key] || 1;
+                });
+                return subValues.reduce((sum, val) => sum + val, 0) / subValues.length;
+            });
+            const overallAverage = (criterionAverages.reduce((sum, val) => sum + val, 0) / criterionAverages.length).toFixed(1);
+            document.getElementById('aggregatedScore').textContent = overallAverage;
+            let description = '';
+            if (overallAverage <= 1.5) description = 'Schwach - Erhebliche Verbesserung der Daten-Infrastruktur erforderlich';
+            else if (overallAverage <= 2.5) description = 'Verbesserungswürdig - Grundlagen vorhanden, Daten-Infrastruktur entwickeln';
+            else if (overallAverage <= 3.5) description = 'Gut - Solide Daten-Infrastruktur, weitere Optimierung möglich';
+            else if (overallAverage <= 4.5) description = 'Sehr gut - Hohe Daten-Infrastruktur, kleine Verbesserungen möglich';
+            else description = 'Exzellent - Hervorragende Daten-Infrastruktur';
+            document.getElementById('scoreDescription').textContent = description;
+        }
+        
+        function saveAndReturn() {
+            const criterionAverages = dataInfrastructureCriteria.map(criterion => {
+                const subValues = criterion.subCriteria.map(sub => {
+                    const key = `${criterion.id}_${sub.id}`;
+                    return assessmentValues[key] || 1;
+                });
+                return subValues.reduce((sum, val) => sum + val, 0) / subValues.length;
+            });
+            const aggregated = (criterionAverages.reduce((sum, val) => sum + val, 0) / criterionAverages.length).toFixed(1);
+            let saved = JSON.parse(localStorage.getItem('hrStrategieAssessments') || '{}');
+            saved.dataInfrastructure = { 
+                aggregated: parseFloat(aggregated), 
+                details: assessmentValues,
+                criterionAverages: dataInfrastructureCriteria.map(criterion => {
+                    const subValues = criterion.subCriteria.map(sub => {
+                        const key = `${criterion.id}_${sub.id}`;
+                        return assessmentValues[key] || 1;
+                    });
+                    return {
+                        criterionId: criterion.id,
+                        average: subValues.reduce((sum, val) => sum + val, 0) / subValues.length
+                    };
+                }),
+                timestamp: new Date().toISOString() 
+            };
+            localStorage.setItem('hrStrategieAssessments', JSON.stringify(saved));
+            let workflowData = JSON.parse(localStorage.getItem('hrStrategieWorkflow') || '{}');
+            if (!workflowData.hrMaturityData) workflowData.hrMaturityData = {};
+            workflowData.hrMaturityData.dataInfrastructure = parseFloat(aggregated);
+            localStorage.setItem('hrStrategieWorkflow', JSON.stringify(workflowData));
+            window.location.href = 'hr-strategie-workflow.html';
+        }
+        
+        let exporter = null;
+        async function exportToExcel() {
+            if (!exporter) { exporter = new AssessmentExporter(); await new Promise(r => setTimeout(r, 1000)); }
+            const data = prepareExportData();
+            await exporter.exportToExcel(data, `HR-Strategie-Daten-Infrastruktur-${new Date().toISOString().split('T')[0]}`);
+        }
+        async function exportToPDF() {
+            if (!exporter) { exporter = new AssessmentExporter(); await new Promise(r => setTimeout(r, 1000)); }
+            const data = prepareExportData();
+            await exporter.exportToPDF(data, `HR-Strategie-Daten-Infrastruktur-${new Date().toISOString().split('T')[0]}`);
+        }
+        function prepareExportData() {
+            const criterionAverages = dataInfrastructureCriteria.map(c => {
+                const subValues = c.subCriteria.map(sub => assessmentValues[`${c.id}_${sub.id}`] || 1);
+                return { criterionId: c.id, criterionTitle: c.title, average: subValues.reduce((s, v) => s + v, 0) / subValues.length };
+            });
+            const overall = criterionAverages.reduce((s, c) => s + c.average, 0) / criterionAverages.length;
+            return {
+                dimension: 'dataInfrastructure', dimensionName: 'Daten- & Infrastruktur-Basis', overall, aggregated: overall,
+                dimensions: { dataInfrastructure: { aggregated: overall, criteria: dataInfrastructureCriteria.map(c => ({
+                    id: c.id, title: c.title, description: c.description, subCriteria: c.subCriteria.map(sub => ({
+                        id: sub.id, title: sub.title, value: assessmentValues[`${c.id}_${sub.id}`] || 1
+                    }))
+                })), criterionAverages }}, details: assessmentValues, timestamp: new Date().toISOString()
+            };
+        }
+        document.addEventListener('DOMContentLoaded', function() { initializeAssessment(); exporter = new AssessmentExporter(); });
+    </script>
+    <script src="js/assessment-export.js"></script>
+</body>
+</html>
+

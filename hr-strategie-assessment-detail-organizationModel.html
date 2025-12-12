@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organisation & HR Operating Model - HR-Readiness Assessment - Manuel Weiss</title>
+    <meta name="description" content="Detaillierte Bewertung der Organisation & HR Operating Model für HR-Readiness. Effektive HR-Organisation für maximale Zusammenarbeit.">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/ki-assessment-detail.css">
+    <style>
+        .detail-header { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+        .criterion-icon { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .detail-slider::-webkit-slider-thumb, .detail-slider::-moz-range-thumb,
+        .sub-criterion-slider::-webkit-slider-thumb, .sub-criterion-slider::-moz-range-thumb { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .slider-value-display, .sub-criterion-value, .criterion-average-value { color: #d97706; }
+        .aggregated-score { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .save-button { color: #d97706; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="manuel-weiss-photo.svg" alt="Manuel Weiss" class="nav-logo">
+                <span class="nav-name">Manuel Weiss</span>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="hr-transformation.html">HR-Transformation</a>
+                <a href="index.html#about">Über mich</a>
+                <a href="index.html#contact">Kontakt</a>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="detail-assessment-container">
+        <div class="detail-header">
+            <a href="hr-strategie-workflow.html" class="back-button"><i class="fas fa-arrow-left"></i> Zurück zur Übersicht</a>
+            <h1><i class="fas fa-sitemap"></i> Organisation & HR Operating Model</h1>
+            <p>Gestalten Sie Ihre HR-Organisation für maximale Effektivität und Zusammenarbeit. Harvard: HR-Organisation muss professionalisiert werden (Center of Excellence). MIT: Fokus auf Cross-Functional Collaboration.</p>
+        </div>
+        
+        <div id="criteriaContainer"></div>
+        
+        <div class="aggregated-score">
+            <h3>Gesamtbewertung</h3>
+            <div class="score-display">
+                <div class="score-circle-large" id="aggregatedScore">1.0</div>
+                <div class="score-description" id="scoreDescription">Bewerten Sie die Kriterien, um Ihre Gesamtbewertung zu sehen</div>
+            </div>
+            <div style="display: flex; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap;">
+                <button class="save-button" onclick="saveAndReturn()" style="flex: 1; min-width: 200px;"><i class="fas fa-save"></i> Bewertung speichern und zurück</button>
+                <button onclick="exportToExcel()" style="background: #217346; color: white; border: none; padding: 1rem 2rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; flex: 1; min-width: 150px;"><i class="fas fa-file-excel"></i> Excel Export</button>
+                <button onclick="exportToPDF()" style="background: #dc3545; color: white; border: none; padding: 1rem 2rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; flex: 1; min-width: 150px;"><i class="fas fa-file-pdf"></i> PDF Export</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const organizationModelCriteria = [
+            {
+                id: 'hrStructure',
+                title: 'HR-Organisationsstruktur',
+                description: 'Wie ist Ihre HR-Organisation strukturiert? Gibt es eine klare Struktur mit definierten Rollen?',
+                icon: 'fa-sitemap',
+                subCriteria: [
+                    { id: 'clearStructure', title: 'Klare HR-Organisationsstruktur', description: 'Gibt es eine klare Struktur?', examples: ['Definierte Hierarchie', 'Klare Rollen', 'Organigramm'] },
+                    { id: 'coeModel', title: 'Center of Excellence (CoE) Modell', description: 'Gibt es ein CoE-Modell?', examples: ['Spezialisierte CoEs', 'Service Delivery', 'Business Partner'] },
+                    { id: 'roleClarity', title: 'Klare Rollendefinitionen', description: 'Sind die Rollen klar definiert?', examples: ['Job Descriptions', 'Verantwortlichkeiten', 'Kompetenzen'] },
+                    { id: 'scalableStructure', title: 'Skalierbare Organisationsstruktur', description: 'Ist die Struktur skalierbar?', examples: ['Wachstumsfähig', 'Flexibel', 'Anpassungsfähig'] },
+                    { id: 'efficientLayers', title: 'Effiziente Hierarchie-Ebenen', description: 'Gibt es effiziente Hierarchie?', examples: ['Flache Hierarchie', 'Schnelle Entscheidungen', 'Wenige Ebenen'] }
+                ]
+            },
+            {
+                id: 'hrRoles',
+                title: 'HR-Rollen & Kompetenzen',
+                description: 'Welche HR-Rollen gibt es? Wie sind die Kompetenzen verteilt?',
+                icon: 'fa-users-cog',
+                subCriteria: [
+                    { id: 'businessPartners', title: 'HR Business Partner vorhanden', description: 'Gibt es HR Business Partner?', examples: ['Strategische HR-BP', 'Operative HR-BP', 'BP für Business Units'] },
+                    { id: 'specialists', title: 'HR-Spezialisten für Fachbereiche', description: 'Gibt es HR-Spezialisten?', examples: ['Recruiting-Spezialisten', 'L&D-Experten', 'Compensation & Benefits'] },
+                    { id: 'sharedServices', title: 'Shared Services für administrative Aufgaben', description: 'Gibt es Shared Services?', examples: ['HR-Service Center', 'Standardisierte Prozesse', 'Effiziente Administration'] },
+                    { id: 'competencyModel', title: 'Kompetenzmodell für HR-Rollen', description: 'Gibt es ein Kompetenzmodell?', examples: ['Rollenbasierte Kompetenzen', 'Skill-Matrix', 'Entwicklungspläne'] },
+                    { id: 'roleTraining', title: 'Training und Entwicklung für HR-Rollen', description: 'Gibt es Rollen-Training?', examples: ['Onboarding', 'Kontinuierliche Entwicklung', 'Zertifizierungen'] }
+                ]
+            },
+            {
+                id: 'collaboration',
+                title: 'Cross-Functional Collaboration',
+                description: 'Wie gut arbeitet HR mit anderen Abteilungen zusammen? Gibt es effektive Zusammenarbeit?',
+                icon: 'fa-handshake',
+                subCriteria: [
+                    { id: 'crossFunctional', title: 'Effektive Cross-Functional Zusammenarbeit', description: 'Gibt es Cross-Functional Zusammenarbeit?', examples: ['Regelmäßige Meetings', 'Gemeinsame Projekte', 'Interdisziplinäre Teams'] },
+                    { id: 'businessPartnership', title: 'Starke Business-Partnerships', description: 'Gibt es Business-Partnerships?', examples: ['Engagement mit Business', 'Strategische Partner', 'Win-Win-Kooperationen'] },
+                    { id: 'itCollaboration', title: 'Zusammenarbeit mit IT', description: 'Gibt es IT-Zusammenarbeit?', examples: ['HR-IT-Alignment', 'Gemeinsame Projekte', 'Technologie-Integration'] },
+                    { id: 'financeCollaboration', title: 'Zusammenarbeit mit Finance', description: 'Gibt es Finance-Zusammenarbeit?', examples: ['Budget-Planning', 'ROI-Analysen', 'Kostenoptimierung'] },
+                    { id: 'communicationChannels', title: 'Etablierte Kommunikationskanäle', description: 'Gibt es Kommunikationskanäle?', examples: ['Regelmäßige Updates', 'Transparente Kommunikation', 'Feedback-Loops'] }
+                ]
+            },
+            {
+                id: 'hrProcesses',
+                title: 'HR-Prozesse & Workflows',
+                description: 'Wie effizient sind Ihre HR-Prozesse? Gibt es standardisierte Workflows?',
+                icon: 'fa-cogs',
+                subCriteria: [
+                    { id: 'standardizedProcesses', title: 'Standardisierte HR-Prozesse', description: 'Gibt es standardisierte Prozesse?', examples: ['Prozess-Dokumentation', 'SOPs', 'Best Practices'] },
+                    { id: 'efficientWorkflows', title: 'Effiziente Workflows', description: 'Sind die Workflows effizient?', examples: ['Optimierte Prozesse', 'Wenige Schritte', 'Schnelle Durchlaufzeiten'] },
+                    { id: 'processAutomation', title: 'Automatisierung von HR-Prozessen', description: 'Gibt es Prozess-Automatisierung?', examples: ['Workflow-Automatisierung', 'Self-Service', 'Reduzierte manuelle Arbeit'] },
+                    { id: 'processMetrics', title: 'Prozess-Metriken und KPIs', description: 'Gibt es Prozess-Metriken?', examples: ['Prozess-Performance', 'Durchlaufzeiten', 'Qualitätsmetriken'] },
+                    { id: 'continuousImprovement', title: 'Kontinuierliche Prozessverbesserung', description: 'Gibt es kontinuierliche Verbesserung?', examples: ['Process Reviews', 'Optimierungsinitiativen', 'Lean HR'] }
+                ]
+            },
+            {
+                id: 'hrCapabilities',
+                title: 'HR-Fähigkeiten & Kompetenzen',
+                description: 'Welche Fähigkeiten hat Ihr HR-Team? Gibt es die notwendigen Kompetenzen?',
+                icon: 'fa-brain',
+                subCriteria: [
+                    { id: 'strategicCapabilities', title: 'Strategische HR-Fähigkeiten', description: 'Gibt es strategische Fähigkeiten?', examples: ['Strategisches Denken', 'Business Acumen', 'Analytische Fähigkeiten'] },
+                    { id: 'technicalCapabilities', title: 'Technische HR-Fähigkeiten', description: 'Gibt es technische Fähigkeiten?', examples: ['HR-Tech-Know-how', 'System-Kenntnisse', 'Data Analytics'] },
+                    { id: 'softSkills', title: 'Soft Skills im HR-Team', description: 'Gibt es Soft Skills?', examples: ['Kommunikation', 'Empathie', 'Change Management'] },
+                    { id: 'capabilityDevelopment', title: 'Entwicklung von HR-Fähigkeiten', description: 'Gibt es Fähigkeitsentwicklung?', examples: ['L&D-Programme', 'Coaching', 'Mentoring'] },
+                    { id: 'capabilityAssessment', title: 'Regelmäßige Kompetenz-Assessments', description: 'Gibt es Kompetenz-Assessments?', examples: ['Skill-Gap-Analysen', '360° Feedback', 'Entwicklungspläne'] }
+                ]
+            },
+            {
+                id: 'hrResources',
+                title: 'HR-Ressourcen & Budget',
+                description: 'Welche Ressourcen stehen HR zur Verfügung? Gibt es ausreichende Budgets?',
+                icon: 'fa-coins',
+                subCriteria: [
+                    { id: 'adequateBudget', title: 'Ausreichendes HR-Budget', description: 'Gibt es ausreichendes Budget?', examples: ['Dediziertes Budget', 'Mehrjahres-Investitionen', 'Ausreichende Mittel'] },
+                    { id: 'hrStaffing', title: 'Angemessene HR-Staffing', description: 'Gibt es angemessene Staffing?', examples: ['Richtige Teamgröße', 'Ressourcen-Planung', 'Workload-Management'] },
+                    { id: 'externalResources', title: 'Externe Ressourcen verfügbar', description: 'Gibt es externe Ressourcen?', examples: ['Beratungspartner', 'Temporäre Ressourcen', 'Outsourcing-Optionen'] },
+                    { id: 'technologyResources', title: 'Technologie-Ressourcen', description: 'Gibt es Tech-Ressourcen?', examples: ['HR-Tech-Stack', 'Tools & Software', 'Infrastruktur'] },
+                    { id: 'resourceOptimization', title: 'Optimierte Ressourcennutzung', description: 'Werden Ressourcen optimiert?', examples: ['Effiziente Nutzung', 'Kostenoptimierung', 'ROI-Maximierung'] }
+                ]
+            },
+            {
+                id: 'hrGovernance',
+                title: 'HR-Governance & Führung',
+                description: 'Wie ist HR geführt? Gibt es klare Governance-Strukturen?',
+                icon: 'fa-user-tie',
+                subCriteria: [
+                    { id: 'hrLeadership', title: 'Starke HR-Führung', description: 'Gibt es starke HR-Führung?', examples: ['Erfahrene HR-Leads', 'Visionäre Führung', 'Strategische Kompetenz'] },
+                    { id: 'governanceFramework', title: 'HR-Governance-Framework', description: 'Gibt es ein Governance-Framework?', examples: ['Klare Governance-Struktur', 'Entscheidungsprozesse', 'Verantwortlichkeiten'] },
+                    { id: 'decisionMaking', title: 'Effiziente Entscheidungsprozesse', description: 'Gibt es effiziente Entscheidungen?', examples: ['Schnelle Entscheidungen', 'Klare Prozesse', 'Delegation'] },
+                    { id: 'accountability', title: 'Klare Verantwortlichkeiten', description: 'Gibt es klare Verantwortlichkeiten?', examples: ['Accountability Framework', 'RACI-Matrix', 'Verantwortlichkeiten'] },
+                    { id: 'performanceManagement', title: 'Performance Management für HR', description: 'Gibt es HR-Performance Management?', examples: ['HR-KPIs', 'Performance Reviews', 'Zielsetzungen'] }
+                ]
+            },
+            {
+                id: 'agility',
+                title: 'Organisational Agility',
+                description: 'Wie agil ist Ihre HR-Organisation? Kann sie schnell auf Veränderungen reagieren?',
+                icon: 'fa-rocket',
+                subCriteria: [
+                    { id: 'flexibleStructure', title: 'Flexible Organisationsstruktur', description: 'Ist die Struktur flexibel?', examples: ['Anpassungsfähig', 'Schnelle Reaktion', 'Agile Struktur'] },
+                    { id: 'quickDecision', title: 'Schnelle Entscheidungsfindung', description: 'Gibt es schnelle Entscheidungen?', examples: ['Decentralized Decisions', 'Empowerment', 'Schnelle Prozesse'] },
+                    { id: 'changeReadiness', title: 'Change Readiness', description: 'Ist HR change-ready?', examples: ['Change-Kompetenz', 'Flexibilität', 'Anpassungsfähigkeit'] },
+                    { id: 'experimentation', title: 'Experimentierfreude', description: 'Gibt es Experimentierfreude?', examples: ['Pilot-Projekte', 'Test & Learn', 'Innovation'] },
+                    { id: 'adaptiveCulture', title: 'Adaptive HR-Kultur', description: 'Gibt es adaptive Kultur?', examples: ['Lernende Organisation', 'Kontinuierliche Anpassung', 'Agile Werte'] }
+                ]
+            },
+            {
+                id: 'hrInnovation',
+                title: 'HR-Innovation & Modernisierung',
+                description: 'Wie innovativ ist HR? Gibt es kontinuierliche Modernisierung?',
+                icon: 'fa-lightbulb',
+                subCriteria: [
+                    { id: 'innovativeSolutions', title: 'Innovative HR-Lösungen', description: 'Gibt es innovative Lösungen?', examples: ['Neue Technologien', 'Innovative Prozesse', 'Kreative Ansätze'] },
+                    { id: 'innovationCulture', title: 'Innovationsfreundliche Kultur', description: 'Gibt es Innovationskultur?', examples: ['Innovation Labs', 'Ideen-Management', 'Innovation Awards'] },
+                    { id: 'techAdoption', title: 'Schnelle Technologie-Adoption', description: 'Wie schnell wird Tech adoptiert?', examples: ['Early Adopters', 'Schnelle Implementation', 'Tech-Enthusiasmus'] },
+                    { id: 'bestPractices', title: 'Best Practices Sharing', description: 'Gibt es Best Practices Sharing?', examples: ['Knowledge Sharing', 'Best Practices Library', 'Community of Practice'] },
+                    { id: 'futureReadiness', title: 'Zukunftsfähigkeit', description: 'Wie zukunftsfähig ist HR?', examples: ['Trend-Monitoring', 'Zukunfts-Strategien', 'Agile Anpassung'] }
+                ]
+            },
+            {
+                id: 'stakeholderValue',
+                title: 'Stakeholder-Value & Service Excellence',
+                description: 'Wie gut erfüllt HR die Bedürfnisse der Stakeholder? Gibt es Service Excellence?',
+                icon: 'fa-star',
+                subCriteria: [
+                    { id: 'stakeholderSatisfaction', title: 'Hohe Stakeholder-Zufriedenheit', description: 'Wie zufrieden sind Stakeholder?', examples: ['Hohe Satisfaction Scores', 'Positive Feedback', 'Stakeholder-Engagement'] },
+                    { id: 'serviceExcellence', title: 'Service Excellence', description: 'Gibt es Service Excellence?', examples: ['Hohe Service-Qualität', 'Proaktiver Service', 'Exzellente Erfahrung'] },
+                    { id: 'responseTime', title: 'Schnelle Reaktionszeiten', description: 'Wie schnell wird reagiert?', examples: ['Schnelle Antworten', 'Service Level Agreements', 'SLA-Compliance'] },
+                    { id: 'stakeholderFeedback', title: 'Regelmäßiges Stakeholder-Feedback', description: 'Gibt es regelmäßiges Feedback?', examples: ['Feedback-Systeme', 'Regelmäßige Umfragen', 'Feedback-Loops'] },
+                    { id: 'continuousImprovement', title: 'Kontinuierliche Service-Verbesserung', description: 'Gibt es kontinuierliche Verbesserung?', examples: ['Service Reviews', 'Verbesserungsinitiativen', 'Optimierung'] }
+                ]
+            }
+        ];
+        
+        let assessmentValues = {};
+        
+        function initializeAssessment() {
+            const saved = JSON.parse(localStorage.getItem('hrStrategieAssessments') || '{}');
+            if (saved.organizationModel && saved.organizationModel.details) {
+                assessmentValues = saved.organizationModel.details;
+            }
+            organizationModelCriteria.forEach(criterion => {
+                criterion.subCriteria.forEach(subCriterion => {
+                    const key = `${criterion.id}_${subCriterion.id}`;
+                    if (!assessmentValues[key]) assessmentValues[key] = 1;
+                });
+            });
+            renderCriteria();
+            updateAggregatedScore();
+        }
+        
+        function renderCriteria() {
+            const container = document.getElementById('criteriaContainer');
+            container.innerHTML = organizationModelCriteria.map(criterion => {
+                const subValues = criterion.subCriteria.map(sub => {
+                    const key = `${criterion.id}_${sub.id}`;
+                    return assessmentValues[key] || 1;
+                });
+                const criterionAverage = (subValues.reduce((sum, val) => sum + val, 0) / subValues.length).toFixed(1);
+                return `
+                <div class="criterion-card">
+                    <div class="criterion-header">
+                        <div class="criterion-icon"><i class="fas ${criterion.icon}"></i></div>
+                        <div class="criterion-title-section">
+                            <h3 class="criterion-title">${criterion.title}</h3>
+                            <p class="criterion-description">${criterion.description}</p>
+                        </div>
+                    </div>
+                    <div class="sub-criteria-container">
+                        ${criterion.subCriteria.map(subCriterion => {
+                            const key = `${criterion.id}_${subCriterion.id}`;
+                            const value = assessmentValues[key] || 1;
+                            return `
+                            <div class="sub-criterion-item" style="border-left-color: #d97706;">
+                                <div class="sub-criterion-label">${subCriterion.title}</div>
+                                ${subCriterion.description ? `<div class="sub-criterion-description" style="color: #6b7280; font-size: 0.875rem; margin-bottom: 0.5rem;">${subCriterion.description}</div>` : ''}
+                                ${subCriterion.examples && subCriterion.examples.length > 0 ? `
+                                <div class="sub-criterion-examples" style="background: #f8fafc; padding: 0.75rem; border-radius: 6px; margin-bottom: 0.75rem; font-size: 0.8rem; color: #6b7280;">
+                                    <strong style="color: #374151; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">Beispiele:</strong>
+                                    <ul style="margin: 0.5rem 0 0 1.25rem; padding: 0;">
+                                        ${subCriterion.examples.map(ex => `<li style="margin-bottom: 0.25rem;">${ex}</li>`).join('')}
+                                    </ul>
+                                </div>
+                                ` : ''}
+                                <div class="sub-criterion-slider-wrapper">
+                                    <input type="range" min="1" max="5" step="1" value="${value}" class="sub-criterion-slider" id="slider-${key}" style="accent-color: #d97706;" oninput="updateSubCriterionValue('${criterion.id}', '${subCriterion.id}', this.value)">
+                                    <div class="sub-criterion-value" id="value-${key}">${value}</div>
+                                    <div class="sub-criterion-scale"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
+                                </div>
+                            </div>
+                            `;
+                        }).join('')}
+                        <div class="criterion-average">
+                            <span class="criterion-average-label">Durchschnitt für "${criterion.title}":</span>
+                            <span class="criterion-average-value" id="avg-${criterion.id}">${criterionAverage}</span>
+                        </div>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+        
+        function updateSubCriterionValue(criterionId, subCriterionId, value) {
+            const key = `${criterionId}_${subCriterionId}`;
+            assessmentValues[key] = parseInt(value);
+            document.getElementById(`value-${key}`).textContent = value;
+            const criterion = organizationModelCriteria.find(c => c.id === criterionId);
+            const subValues = criterion.subCriteria.map(sub => {
+                const subKey = `${criterionId}_${sub.id}`;
+                return assessmentValues[subKey] || 1;
+            });
+            const criterionAverage = (subValues.reduce((sum, val) => sum + val, 0) / subValues.length).toFixed(1);
+            document.getElementById(`avg-${criterionId}`).textContent = criterionAverage;
+            updateAggregatedScore();
+        }
+        
+        function updateAggregatedScore() {
+            const criterionAverages = organizationModelCriteria.map(criterion => {
+                const subValues = criterion.subCriteria.map(sub => {
+                    const key = `${criterion.id}_${sub.id}`;
+                    return assessmentValues[key] || 1;
+                });
+                return subValues.reduce((sum, val) => sum + val, 0) / subValues.length;
+            });
+            const overallAverage = (criterionAverages.reduce((sum, val) => sum + val, 0) / criterionAverages.length).toFixed(1);
+            document.getElementById('aggregatedScore').textContent = overallAverage;
+            let description = '';
+            if (overallAverage <= 1.5) description = 'Schwach - Erhebliche Verbesserung der HR-Organisation erforderlich';
+            else if (overallAverage <= 2.5) description = 'Verbesserungswürdig - Grundlagen vorhanden, HR-Organisation entwickeln';
+            else if (overallAverage <= 3.5) description = 'Gut - Solide HR-Organisation, weitere Optimierung möglich';
+            else if (overallAverage <= 4.5) description = 'Sehr gut - Hohe HR-Organisationsreife, kleine Verbesserungen möglich';
+            else description = 'Exzellent - Hervorragende HR-Organisation';
+            document.getElementById('scoreDescription').textContent = description;
+        }
+        
+        function saveAndReturn() {
+            const criterionAverages = organizationModelCriteria.map(criterion => {
+                const subValues = criterion.subCriteria.map(sub => {
+                    const key = `${criterion.id}_${sub.id}`;
+                    return assessmentValues[key] || 1;
+                });
+                return subValues.reduce((sum, val) => sum + val, 0) / subValues.length;
+            });
+            const aggregated = (criterionAverages.reduce((sum, val) => sum + val, 0) / criterionAverages.length).toFixed(1);
+            let saved = JSON.parse(localStorage.getItem('hrStrategieAssessments') || '{}');
+            saved.organizationModel = { 
+                aggregated: parseFloat(aggregated), 
+                details: assessmentValues,
+                criterionAverages: organizationModelCriteria.map(criterion => {
+                    const subValues = criterion.subCriteria.map(sub => {
+                        const key = `${criterion.id}_${sub.id}`;
+                        return assessmentValues[key] || 1;
+                    });
+                    return {
+                        criterionId: criterion.id,
+                        average: subValues.reduce((sum, val) => sum + val, 0) / subValues.length
+                    };
+                }),
+                timestamp: new Date().toISOString() 
+            };
+            localStorage.setItem('hrStrategieAssessments', JSON.stringify(saved));
+            let workflowData = JSON.parse(localStorage.getItem('hrStrategieWorkflow') || '{}');
+            if (!workflowData.hrMaturityData) workflowData.hrMaturityData = {};
+            workflowData.hrMaturityData.organizationModel = parseFloat(aggregated);
+            localStorage.setItem('hrStrategieWorkflow', JSON.stringify(workflowData));
+            window.location.href = 'hr-strategie-workflow.html';
+        }
+        
+        let exporter = null;
+        async function exportToExcel() {
+            if (!exporter) { exporter = new AssessmentExporter(); await new Promise(r => setTimeout(r, 1000)); }
+            const data = prepareExportData();
+            await exporter.exportToExcel(data, `HR-Strategie-Organisation-${new Date().toISOString().split('T')[0]}`);
+        }
+        async function exportToPDF() {
+            if (!exporter) { exporter = new AssessmentExporter(); await new Promise(r => setTimeout(r, 1000)); }
+            const data = prepareExportData();
+            await exporter.exportToPDF(data, `HR-Strategie-Organisation-${new Date().toISOString().split('T')[0]}`);
+        }
+        function prepareExportData() {
+            const criterionAverages = organizationModelCriteria.map(c => {
+                const subValues = c.subCriteria.map(sub => assessmentValues[`${c.id}_${sub.id}`] || 1);
+                return { criterionId: c.id, criterionTitle: c.title, average: subValues.reduce((s, v) => s + v, 0) / subValues.length };
+            });
+            const overall = criterionAverages.reduce((s, c) => s + c.average, 0) / criterionAverages.length;
+            return {
+                dimension: 'organizationModel', dimensionName: 'Organisation & HR Operating Model', overall, aggregated: overall,
+                dimensions: { organizationModel: { aggregated: overall, criteria: organizationModelCriteria.map(c => ({
+                    id: c.id, title: c.title, description: c.description, subCriteria: c.subCriteria.map(sub => ({
+                        id: sub.id, title: sub.title, value: assessmentValues[`${c.id}_${sub.id}`] || 1
+                    }))
+                })), criterionAverages }}, details: assessmentValues, timestamp: new Date().toISOString()
+            };
+        }
+        document.addEventListener('DOMContentLoaded', function() { initializeAssessment(); exporter = new AssessmentExporter(); });
+    </script>
+    <script src="js/assessment-export.js"></script>
+</body>
+</html>
+

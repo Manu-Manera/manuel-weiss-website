@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ethik, Fairness & Vertrauen - HR-Readiness Assessment - Manuel Weiss</title>
+    <meta name="description" content="Detaillierte Bewertung von Ethik, Fairness & Vertrauen für HR-Readiness. Ethische HR-Praktiken und Vertrauen.">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/ki-assessment-detail.css">
+    <style>
+        .detail-header { background: linear-gradient(135deg, #ec4899 0%, #be185d 100%); }
+        .criterion-icon { background: linear-gradient(135deg, #ec4899, #be185d); }
+        .detail-slider::-webkit-slider-thumb, .detail-slider::-moz-range-thumb,
+        .sub-criterion-slider::-webkit-slider-thumb, .sub-criterion-slider::-moz-range-thumb { background: linear-gradient(135deg, #ec4899, #be185d); }
+        .slider-value-display, .sub-criterion-value, .criterion-average-value { color: #be185d; }
+        .aggregated-score { background: linear-gradient(135deg, #ec4899, #be185d); }
+        .save-button { color: #be185d; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="manuel-weiss-photo.svg" alt="Manuel Weiss" class="nav-logo">
+                <span class="nav-name">Manuel Weiss</span>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="hr-transformation.html">HR-Transformation</a>
+                <a href="index.html#about">Über mich</a>
+                <a href="index.html#contact">Kontakt</a>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="detail-assessment-container">
+        <div class="detail-header">
+            <a href="hr-strategie-workflow.html" class="back-button"><i class="fas fa-arrow-left"></i> Zurück zur Übersicht</a>
+            <h1><i class="fas fa-balance-scale"></i> Ethik, Fairness & Vertrauen</h1>
+            <p>Sichern Sie ethische HR-Praktiken und Vertrauen. Harvard: Fairness und Transparenz in HR-Entscheidungen. MIT: Ethische KI und algorithmische Fairness.</p>
+        </div>
+        
+        <div id="criteriaContainer"></div>
+        
+        <div class="aggregated-score">
+            <h3>Gesamtbewertung</h3>
+            <div class="score-display">
+                <div class="score-circle-large" id="aggregatedScore">1.0</div>
+                <div class="score-description" id="scoreDescription">Bewerten Sie die Kriterien, um Ihre Gesamtbewertung zu sehen</div>
+            </div>
+            <div style="display: flex; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap;">
+                <button class="save-button" onclick="saveAndReturn()" style="flex: 1; min-width: 200px;"><i class="fas fa-save"></i> Bewertung speichern und zurück</button>
+                <button onclick="exportToExcel()" style="background: #217346; color: white; border: none; padding: 1rem 2rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; flex: 1; min-width: 150px;"><i class="fas fa-file-excel"></i> Excel Export</button>
+                <button onclick="exportToPDF()" style="background: #dc3545; color: white; border: none; padding: 1rem 2rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; flex: 1; min-width: 150px;"><i class="fas fa-file-pdf"></i> PDF Export</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const ethicsTrustCriteria = [
+            {
+                id: 'ethicalFramework',
+                title: 'Ethisches Framework & Richtlinien',
+                description: 'Gibt es ein ethisches Framework für HR? Welche Richtlinien und Standards existieren?',
+                icon: 'fa-balance-scale',
+                subCriteria: [
+                    { id: 'ethicsCode', title: 'HR-Ethik-Code definiert', description: 'Gibt es einen Ethik-Code?', examples: ['Ethik-Richtlinien', 'Code of Conduct', 'Ethische Standards'] },
+                    { id: 'ethicsPolicy', title: 'Ethische HR-Richtlinien dokumentiert', description: 'Gibt es dokumentierte Richtlinien?', examples: ['Ethics Policy', 'Richtlinien-Dokumentation', 'Best Practices'] },
+                    { id: 'ethicsTraining', title: 'Ethics-Training für HR-Mitarbeiter', description: 'Gibt es Ethics-Training?', examples: ['Regelmäßige Trainings', 'Ethics-Workshops', 'Zertifizierungen'] },
+                    { id: 'ethicsCompliance', title: 'Ethics-Compliance-Monitoring', description: 'Gibt es Compliance-Monitoring?', examples: ['Regelmäßige Audits', 'Compliance-Checks', 'Monitoring-Systeme'] },
+                    { id: 'ethicsReporting', title: 'Ethics-Reporting-Mechanismen', description: 'Gibt es Reporting-Mechanismen?', examples: ['Whistleblower-System', 'Ethics-Hotline', 'Confidential Reporting'] }
+                ]
+            },
+            {
+                id: 'fairness',
+                title: 'Fairness & Gerechtigkeit',
+                description: 'Wie fair sind Ihre HR-Entscheidungen? Gibt es faire Prozesse und Gerechtigkeit?',
+                icon: 'fa-gavel',
+                subCriteria: [
+                    { id: 'fairProcesses', title: 'Faire HR-Prozesse', description: 'Sind die Prozesse fair?', examples: ['Transparente Prozesse', 'Objektive Kriterien', 'Keine Diskriminierung'] },
+                    { id: 'fairRecruiting', title: 'Fairness im Recruiting', description: 'Ist Recruiting fair?', examples: ['Blind Recruiting', 'Diversity-Fokus', 'Faire Bewertung'] },
+                    { id: 'fairCompensation', title: 'Faire Vergütung', description: 'Gibt es faire Vergütung?', examples: ['Equal Pay', 'Transparente Bands', 'Fairness-Reviews'] },
+                    { id: 'fairPromotions', title: 'Faire Beförderungen', description: 'Gibt es faire Beförderungen?', examples: ['Transparente Kriterien', 'Objektive Bewertung', 'Keine Bias'] },
+                    { id: 'fairTreatment', title: 'Faire Behandlung aller Mitarbeiter', description: 'Werden alle fair behandelt?', examples: ['Gleichbehandlung', 'Keine Diskriminierung', 'Respektvolle Behandlung'] }
+                ]
+            },
+            {
+                id: 'transparency',
+                title: 'Transparenz & Offenheit',
+                description: 'Wie transparent ist HR? Gibt es Offenheit und Transparenz in Entscheidungen?',
+                icon: 'fa-eye',
+                subCriteria: [
+                    { id: 'transparentProcesses', title: 'Transparente HR-Prozesse', description: 'Sind die Prozesse transparent?', examples: ['Offene Kommunikation', 'Klare Prozesse', 'Transparente Kriterien'] },
+                    { id: 'transparentDecisions', title: 'Transparente Entscheidungen', description: 'Sind Entscheidungen transparent?', examples: ['Nachvollziehbare Entscheidungen', 'Klare Begründungen', 'Offene Kommunikation'] },
+                    { id: 'transparentMetrics', title: 'Transparente HR-Metriken', description: 'Gibt es transparente Metriken?', examples: ['Offene Dashboards', 'Transparente KPIs', 'Regelmäßige Reports'] },
+                    { id: 'transparentCommunication', title: 'Transparente Kommunikation', description: 'Gibt es transparente Kommunikation?', examples: ['Offene Kommunikation', 'Regelmäßige Updates', 'Transparente Informationen'] },
+                    { id: 'transparentFeedback', title: 'Transparente Feedback-Prozesse', description: 'Gibt es transparente Feedback-Prozesse?', examples: ['Offenes Feedback', 'Transparente Reviews', 'Klare Kriterien'] }
+                ]
+            },
+            {
+                id: 'privacy',
+                title: 'Datenschutz & Privacy',
+                description: 'Wie gut ist der Datenschutz? Gibt es angemessene Privacy-Maßnahmen?',
+                icon: 'fa-user-shield',
+                subCriteria: [
+                    { id: 'gdprCompliance', title: 'DSGVO-konforme Datenverarbeitung', description: 'Ist die Datenverarbeitung DSGVO-konform?', examples: ['Privacy by Design', 'Data Minimization', 'Right to be Forgotten'] },
+                    { id: 'dataPrivacy', title: 'Starker Datenschutz', description: 'Gibt es starken Datenschutz?', examples: ['Verschlüsselte Daten', 'Access Controls', 'Privacy-Policies'] },
+                    { id: 'consentManagement', title: 'Consent-Management-System', description: 'Gibt es Consent-Management?', examples: ['Einwilligungs-Management', 'Opt-in/Opt-out', 'Consent-Tracking'] },
+                    { id: 'privacyTraining', title: 'Privacy-Training für HR', description: 'Gibt es Privacy-Training?', examples: ['DSGVO-Training', 'Privacy-Workshops', 'Bewusstseinsschulung'] },
+                    { id: 'privacyMonitoring', title: 'Privacy-Monitoring & Audits', description: 'Gibt es Privacy-Monitoring?', examples: ['Regelmäßige Audits', 'Privacy-Checks', 'Compliance-Monitoring'] }
+                ]
+            },
+            {
+                id: 'trust',
+                title: 'Vertrauen & Glaubwürdigkeit',
+                description: 'Wie viel Vertrauen haben Stakeholder in HR? Gibt es Glaubwürdigkeit?',
+                icon: 'fa-handshake',
+                subCriteria: [
+                    { id: 'trustBuilding', title: 'Vertrauensaufbau-Initiativen', description: 'Gibt es Vertrauensaufbau?', examples: ['Trust-Building-Programme', 'Vertrauensinitiativen', 'Transparente Kommunikation'] },
+                    { id: 'credibility', title: 'Glaubwürdigkeit von HR', description: 'Wie glaubwürdig ist HR?', examples: ['Konsistente Kommunikation', 'Zuverlässigkeit', 'Integrität'] },
+                    { id: 'trustMetrics', title: 'Vertrauens-Metriken', description: 'Gibt es Vertrauens-Metriken?', examples: ['Trust-Surveys', 'Vertrauens-Index', 'Regelmäßige Messung'] },
+                    { id: 'trustRelationships', title: 'Vertrauensvolle Beziehungen', description: 'Gibt es vertrauensvolle Beziehungen?', examples: ['Starke Partnerschaften', 'Vertrauensvolle Zusammenarbeit', 'Positive Beziehungen'] },
+                    { id: 'trustReputation', title: 'Positive HR-Reputation', description: 'Gibt es positive Reputation?', examples: ['Positive Wahrnehmung', 'Gute Reputation', 'Vertrauen der Stakeholder'] }
+                ]
+            },
+            {
+                id: 'biasPrevention',
+                title: 'Bias-Prävention & Diversität',
+                description: 'Wie gut werden Bias und Diskriminierung verhindert? Gibt es Diversitäts-Fokus?',
+                icon: 'fa-users',
+                subCriteria: [
+                    { id: 'biasAwareness', title: 'Bias-Bewusstsein im HR-Team', description: 'Gibt es Bias-Bewusstsein?', examples: ['Bias-Training', 'Bewusstseinsschulung', 'Sensibilisierung'] },
+                    { id: 'biasPrevention', title: 'Bias-Präventionsmaßnahmen', description: 'Gibt es Bias-Prävention?', examples: ['Blind Recruiting', 'Strukturierte Interviews', 'Objektive Kriterien'] },
+                    { id: 'diversityFocus', title: 'Diversitäts-Fokus', description: 'Gibt es Diversitäts-Fokus?', examples: ['Diversity-Initiativen', 'Inklusive Praktiken', 'Diversity-Recruiting'] },
+                    { id: 'inclusion', title: 'Inklusive HR-Praktiken', description: 'Gibt es inklusive Praktiken?', examples: ['Inklusive Kultur', 'Gleichberechtigung', 'Respektvolle Behandlung'] },
+                    { id: 'diversityMetrics', title: 'Diversitäts-Metriken', description: 'Gibt es Diversitäts-Metriken?', examples: ['Diversity-Dashboard', 'Regelmäßige Messung', 'Zielsetzungen'] }
+                ]
+            },
+            {
+                id: 'employeeRights',
+                title: 'Mitarbeiterrechte & Schutz',
+                description: 'Wie gut werden Mitarbeiterrechte geschützt? Gibt es angemessene Schutzmaßnahmen?',
+                icon: 'fa-shield-alt',
+                subCriteria: [
+                    { id: 'rightsProtection', title: 'Schutz der Mitarbeiterrechte', description: 'Werden Rechte geschützt?', examples: ['Arbeitnehmerrechte', 'Schutzmaßnahmen', 'Rechtssicherheit'] },
+                    { id: 'complaintProcess', title: 'Beschwerde- und Konfliktlösungsprozesse', description: 'Gibt es Beschwerdeprozesse?', examples: ['Beschwerdestellen', 'Konfliktlösung', 'Mediation'] },
+                    { id: 'whistleblower', title: 'Whistleblower-Schutz', description: 'Gibt es Whistleblower-Schutz?', examples: ['Schutz-Mechanismen', 'Confidential Reporting', 'Sicherheit'] },
+                    { id: 'legalCompliance', title: 'Rechtliche Compliance', description: 'Gibt es rechtliche Compliance?', examples: ['Arbeitsrecht-Compliance', 'Gesetzeskonformität', 'Regulierung'] },
+                    { id: 'employeeAdvocacy', title: 'Mitarbeiter-Advocacy', description: 'Gibt es Mitarbeiter-Advocacy?', examples: ['Mitarbeitervertretung', 'Betriebsrat', 'Mitarbeiter-Interessen'] }
+                ]
+            },
+            {
+                id: 'ethicalAI',
+                title: 'Ethische KI & Algorithmen',
+                description: 'Wie ethisch sind Ihre KI-Anwendungen in HR? Gibt es ethische KI-Praktiken?',
+                icon: 'fa-robot',
+                subCriteria: [
+                    { id: 'ethicalAI', title: 'Ethische KI-Implementierung', description: 'Gibt es ethische KI?', examples: ['Ethics by Design', 'Fair AI', 'Ethische Algorithmen'] },
+                    { id: 'algorithmicFairness', title: 'Algorithmische Fairness', description: 'Gibt es algorithmische Fairness?', examples: ['Fairness-Tests', 'Bias-Testing', 'Fairness-Monitoring'] },
+                    { id: 'aiTransparency', title: 'KI-Transparenz & Erklärbarkeit', description: 'Gibt es KI-Transparenz?', examples: ['Explainable AI', 'Transparente Algorithmen', 'Nachvollziehbarkeit'] },
+                    { id: 'aiGovernance', title: 'KI-Governance-Framework', description: 'Gibt es KI-Governance?', examples: ['KI-Ethik-Board', 'Governance-Richtlinien', 'KI-Überwachung'] },
+                    { id: 'humanOversight', title: 'Menschliche Aufsicht über KI', description: 'Gibt es menschliche Aufsicht?', examples: ['Human-in-the-Loop', 'KI-Überwachung', 'Menschliche Kontrolle'] }
+                ]
+            },
+            {
+                id: 'ethicalCulture',
+                title: 'Ethische Kultur & Werte',
+                description: 'Gibt es eine ethische Kultur in HR? Werden ethische Werte gelebt?',
+                icon: 'fa-heart',
+                subCriteria: [
+                    { id: 'ethicsValues', title: 'Ethische Werte gelebt', description: 'Werden ethische Werte gelebt?', examples: ['Werte-Integration', 'Ethische Kultur', 'Werte-basierte Entscheidungen'] },
+                    { id: 'ethicsLeaders', title: 'Ethische Führung', description: 'Gibt es ethische Führung?', examples: ['Ethics-Leadership', 'Vorbildfunktion', 'Ethisches Verhalten'] },
+                    { id: 'ethicsRecognition', title: 'Anerkennung ethischen Verhaltens', description: 'Gibt es Anerkennung?', examples: ['Ethics-Awards', 'Anerkennung', 'Positive Beispiele'] },
+                    { id: 'ethicsDialogue', title: 'Offener Dialog über Ethik', description: 'Gibt es offenen Dialog?', examples: ['Ethics-Diskussionen', 'Offene Gespräche', 'Dialog-Kultur'] },
+                    { id: 'ethicsIntegration', title: 'Ethik in alle HR-Prozesse integriert', description: 'Ist Ethik integriert?', examples: ['Ethics by Design', 'Prozess-Integration', 'Kontinuierliche Berücksichtigung'] }
+                ]
+            },
+            {
+                id: 'stakeholderTrust',
+                title: 'Stakeholder-Vertrauen & Reputation',
+                description: 'Wie viel Vertrauen haben Stakeholder in HR? Gibt es positive Reputation?',
+                icon: 'fa-star',
+                subCriteria: [
+                    { id: 'stakeholderConfidence', title: 'Stakeholder-Vertrauen in HR', description: 'Gibt es Stakeholder-Vertrauen?', examples: ['Hohes Vertrauen', 'Positive Wahrnehmung', 'Glaubwürdigkeit'] },
+                    { id: 'reputation', title: 'Positive HR-Reputation', description: 'Gibt es positive Reputation?', examples: ['Gute Reputation', 'Positive Wahrnehmung', 'Vertrauen'] },
+                    { id: 'trustBuildingInitiatives', title: 'Vertrauensaufbau-Initiativen', description: 'Gibt es Vertrauensaufbau?', examples: ['Trust-Building-Programme', 'Transparente Kommunikation', 'Engagement'] },
+                    { id: 'stakeholderFeedback', title: 'Positives Stakeholder-Feedback', description: 'Gibt es positives Feedback?', examples: ['Positive Rückmeldungen', 'Hohe Zufriedenheit', 'Empfehlungen'] },
+                    { id: 'trustMetrics', title: 'Vertrauens-Metriken & Tracking', description: 'Gibt es Vertrauens-Metriken?', examples: ['Trust-Surveys', 'Vertrauens-Index', 'Regelmäßige Messung'] }
+                ]
+            }
+        ];
+        
+        let assessmentValues = {};
+        
+        function initializeAssessment() {
+            const saved = JSON.parse(localStorage.getItem('hrStrategieAssessments') || '{}');
+            if (saved.ethicsTrust && saved.ethicsTrust.details) {
+                assessmentValues = saved.ethicsTrust.details;
+            }
+            ethicsTrustCriteria.forEach(criterion => {
+                criterion.subCriteria.forEach(subCriterion => {
+                    const key = `${criterion.id}_${subCriterion.id}`;
+                    if (!assessmentValues[key]) assessmentValues[key] = 1;
+                });
+            });
+            renderCriteria();
+            updateAggregatedScore();
+        }
+        
+        function renderCriteria() {
+            const container = document.getElementById('criteriaContainer');
+            container.innerHTML = ethicsTrustCriteria.map(criterion => {
+                const subValues = criterion.subCriteria.map(sub => {
+                    const key = `${criterion.id}_${sub.id}`;
+                    return assessmentValues[key] || 1;
+                });
+                const criterionAverage = (subValues.reduce((sum, val) => sum + val, 0) / subValues.length).toFixed(1);
+                return `
+                <div class="criterion-card">
+                    <div class="criterion-header">
+                        <div class="criterion-icon"><i class="fas ${criterion.icon}"></i></div>
+                        <div class="criterion-title-section">
+                            <h3 class="criterion-title">${criterion.title}</h3>
+                            <p class="criterion-description">${criterion.description}</p>
+                        </div>
+                    </div>
+                    <div class="sub-criteria-container">
+                        ${criterion.subCriteria.map(subCriterion => {
+                            const key = `${criterion.id}_${subCriterion.id}`;
+                            const value = assessmentValues[key] || 1;
+                            return `
+                            <div class="sub-criterion-item" style="border-left-color: #be185d;">
+                                <div class="sub-criterion-label">${subCriterion.title}</div>
+                                ${subCriterion.description ? `<div class="sub-criterion-description" style="color: #6b7280; font-size: 0.875rem; margin-bottom: 0.5rem;">${subCriterion.description}</div>` : ''}
+                                ${subCriterion.examples && subCriterion.examples.length > 0 ? `
+                                <div class="sub-criterion-examples" style="background: #f8fafc; padding: 0.75rem; border-radius: 6px; margin-bottom: 0.75rem; font-size: 0.8rem; color: #6b7280;">
+                                    <strong style="color: #374151; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">Beispiele:</strong>
+                                    <ul style="margin: 0.5rem 0 0 1.25rem; padding: 0;">
+                                        ${subCriterion.examples.map(ex => `<li style="margin-bottom: 0.25rem;">${ex}</li>`).join('')}
+                                    </ul>
+                                </div>
+                                ` : ''}
+                                <div class="sub-criterion-slider-wrapper">
+                                    <input type="range" min="1" max="5" step="1" value="${value}" class="sub-criterion-slider" id="slider-${key}" style="accent-color: #be185d;" oninput="updateSubCriterionValue('${criterion.id}', '${subCriterion.id}', this.value)">
+                                    <div class="sub-criterion-value" id="value-${key}">${value}</div>
+                                    <div class="sub-criterion-scale"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
+                                </div>
+                            </div>
+                            `;
+                        }).join('')}
+                        <div class="criterion-average">
+                            <span class="criterion-average-label">Durchschnitt für "${criterion.title}":</span>
+                            <span class="criterion-average-value" id="avg-${criterion.id}">${criterionAverage}</span>
+                        </div>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+        
+        function updateSubCriterionValue(criterionId, subCriterionId, value) {
+            const key = `${criterionId}_${subCriterionId}`;
+            assessmentValues[key] = parseInt(value);
+            document.getElementById(`value-${key}`).textContent = value;
+            const criterion = ethicsTrustCriteria.find(c => c.id === criterionId);
+            const subValues = criterion.subCriteria.map(sub => {
+                const subKey = `${criterionId}_${sub.id}`;
+                return assessmentValues[subKey] || 1;
+            });
+            const criterionAverage = (subValues.reduce((sum, val) => sum + val, 0) / subValues.length).toFixed(1);
+            document.getElementById(`avg-${criterionId}`).textContent = criterionAverage;
+            updateAggregatedScore();
+        }
+        
+        function updateAggregatedScore() {
+            const criterionAverages = ethicsTrustCriteria.map(criterion => {
+                const subValues = criterion.subCriteria.map(sub => {
+                    const key = `${criterion.id}_${sub.id}`;
+                    return assessmentValues[key] || 1;
+                });
+                return subValues.reduce((sum, val) => sum + val, 0) / subValues.length;
+            });
+            const overallAverage = (criterionAverages.reduce((sum, val) => sum + val, 0) / criterionAverages.length).toFixed(1);
+            document.getElementById('aggregatedScore').textContent = overallAverage;
+            let description = '';
+            if (overallAverage <= 1.5) description = 'Schwach - Erhebliche Verbesserung von Ethik & Vertrauen erforderlich';
+            else if (overallAverage <= 2.5) description = 'Verbesserungswürdig - Grundlagen vorhanden, Ethik & Vertrauen entwickeln';
+            else if (overallAverage <= 3.5) description = 'Gut - Solide Ethik & Vertrauen, weitere Optimierung möglich';
+            else if (overallAverage <= 4.5) description = 'Sehr gut - Hohe ethische Standards & Vertrauen, kleine Verbesserungen möglich';
+            else description = 'Exzellent - Hervorragende ethische Standards & Vertrauen';
+            document.getElementById('scoreDescription').textContent = description;
+        }
+        
+        function saveAndReturn() {
+            const criterionAverages = ethicsTrustCriteria.map(criterion => {
+                const subValues = criterion.subCriteria.map(sub => {
+                    const key = `${criterion.id}_${sub.id}`;
+                    return assessmentValues[key] || 1;
+                });
+                return subValues.reduce((sum, val) => sum + val, 0) / subValues.length;
+            });
+            const aggregated = (criterionAverages.reduce((sum, val) => sum + val, 0) / criterionAverages.length).toFixed(1);
+            let saved = JSON.parse(localStorage.getItem('hrStrategieAssessments') || '{}');
+            saved.ethicsTrust = { 
+                aggregated: parseFloat(aggregated), 
+                details: assessmentValues,
+                criterionAverages: ethicsTrustCriteria.map(criterion => {
+                    const subValues = criterion.subCriteria.map(sub => {
+                        const key = `${criterion.id}_${sub.id}`;
+                        return assessmentValues[key] || 1;
+                    });
+                    return {
+                        criterionId: criterion.id,
+                        average: subValues.reduce((sum, val) => sum + val, 0) / subValues.length
+                    };
+                }),
+                timestamp: new Date().toISOString() 
+            };
+            localStorage.setItem('hrStrategieAssessments', JSON.stringify(saved));
+            let workflowData = JSON.parse(localStorage.getItem('hrStrategieWorkflow') || '{}');
+            if (!workflowData.hrMaturityData) workflowData.hrMaturityData = {};
+            workflowData.hrMaturityData.ethicsTrust = parseFloat(aggregated);
+            localStorage.setItem('hrStrategieWorkflow', JSON.stringify(workflowData));
+            window.location.href = 'hr-strategie-workflow.html';
+        }
+        
+        let exporter = null;
+        async function exportToExcel() {
+            if (!exporter) { exporter = new AssessmentExporter(); await new Promise(r => setTimeout(r, 1000)); }
+            const data = prepareExportData();
+            await exporter.exportToExcel(data, `HR-Strategie-Ethik-Vertrauen-${new Date().toISOString().split('T')[0]}`);
+        }
+        async function exportToPDF() {
+            if (!exporter) { exporter = new AssessmentExporter(); await new Promise(r => setTimeout(r, 1000)); }
+            const data = prepareExportData();
+            await exporter.exportToPDF(data, `HR-Strategie-Ethik-Vertrauen-${new Date().toISOString().split('T')[0]}`);
+        }
+        function prepareExportData() {
+            const criterionAverages = ethicsTrustCriteria.map(c => {
+                const subValues = c.subCriteria.map(sub => assessmentValues[`${c.id}_${sub.id}`] || 1);
+                return { criterionId: c.id, criterionTitle: c.title, average: subValues.reduce((s, v) => s + v, 0) / subValues.length };
+            });
+            const overall = criterionAverages.reduce((s, c) => s + c.average, 0) / criterionAverages.length;
+            return {
+                dimension: 'ethicsTrust', dimensionName: 'Ethik, Fairness & Vertrauen', overall, aggregated: overall,
+                dimensions: { ethicsTrust: { aggregated: overall, criteria: ethicsTrustCriteria.map(c => ({
+                    id: c.id, title: c.title, description: c.description, subCriteria: c.subCriteria.map(sub => ({
+                        id: sub.id, title: sub.title, value: assessmentValues[`${c.id}_${sub.id}`] || 1
+                    }))
+                })), criterionAverages }}, details: assessmentValues, timestamp: new Date().toISOString()
+            };
+        }
+        document.addEventListener('DOMContentLoaded', function() { initializeAssessment(); exporter = new AssessmentExporter(); });
+    </script>
+    <script src="js/assessment-export.js"></script>
+</body>
+</html>
+
