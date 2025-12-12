@@ -11,25 +11,224 @@
     <!-- Custom Styles for HR Strategy Workflow -->
     <style>
         .hr-strategy-container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 2rem;
+            position: relative;
+        }
+        
+        /* Workflow Sidebar */
+        .workflow-sidebar {
+            position: fixed;
+            right: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 280px;
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+        
+        .workflow-sidebar.collapsed {
+            width: 60px;
+            padding: 1rem;
+        }
+        
+        .sidebar-toggle {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .progress-summary {
+            margin-bottom: 1rem;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        .current-state-indicator {
+            background: #eff6ff;
+            border: 2px solid #3b82f6;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .maturity-score {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+        }
+        
+        .score-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: white;
+            background: #3b82f6;
+        }
+        
+        /* Assessment System Styles */
+        .assessment-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .assessment-category {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+        
+        .assessment-category.clickable-category {
+            cursor: pointer;
+        }
+        
+        .assessment-category.clickable-category:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border-color: #3b82f6;
+        }
+        
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        
+        .category-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+        }
+        
+        .slider-container {
+            margin-top: 1rem;
+        }
+        
+        .slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: #e5e7eb;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #3b82f6;
+            cursor: pointer;
+        }
+        
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-top: 0.5rem;
         }
         
         .workflow-header {
             text-align: center;
             margin-bottom: 2rem;
-            padding: 2rem 2rem;
+            padding: 3rem 2rem;
             background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
             color: white;
-            border-radius: 12px;
+            border-radius: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .workflow-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="white" opacity="0.1"/><circle cx="80" cy="40" r="1.5" fill="white" opacity="0.1"/><circle cx="40" cy="70" r="1" fill="white" opacity="0.1"/></svg>');
+            opacity: 0.3;
+        }
+        
+        .workflow-header .content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .smart-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
         .workflow-header h1 {
             font-size: 2rem;
             font-weight: 800;
             margin-bottom: 0.75rem;
+        }
+        
         .workflow-header p {
             font-size: 1rem;
             opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
         .workflow-progress {
             display: flex;
             justify-content: center;
@@ -279,30 +478,282 @@
         </div>
     </div>
     <div class="hr-strategy-container">
+        <!-- Smart Workflow Sidebar -->
+        <div class="workflow-sidebar" id="workflowSidebar">
+            <button class="sidebar-toggle" onclick="toggleSidebar()">
+                <i class="fas fa-chevron-left" id="sidebarToggleIcon"></i>
+            </button>
+            
+            <div class="sidebar-content" id="sidebarContent">
+                <div class="progress-summary">
+                    <h4 style="margin: 0 0 1rem; font-size: 1rem;">Fortschritt</h4>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="overallProgress" style="width: 0%;"></div>
+                    </div>
+                    <span class="progress-text" id="progressText">0% abgeschlossen</span>
+                </div>
+                
+                <div class="current-state-indicator">
+                    <div class="maturity-score">
+                        <div class="score-circle" id="maturityCircle">1</div>
+                        <div>
+                            <div style="font-size: 0.875rem; color: #6b7280;">HR-Reifegrad</div>
+                            <div id="maturityLevel">Anfänger</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 0.75rem; margin-top: 1rem; flex-wrap: wrap;">
+                    <button onclick="exportAllToExcel()" style="background: #217346; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; flex: 1; min-width: 120px;">
+                        <i class="fas fa-file-excel"></i> Excel
+                    </button>
+                    <button onclick="exportAllToPDF()" style="background: #dc3545; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; flex: 1; min-width: 120px;">
+                        <i class="fas fa-file-pdf"></i> PDF
+                    </button>
+                </div>
+            </div>
+        </div>
+        
         <!-- Header -->
         <div class="workflow-header">
+            <div class="smart-badge">
+                <i class="fas fa-graduation-cap ai-icon"></i>
+                Harvard & MIT Methodologie
+            </div>
             <h1><i class="fas fa-chart-line"></i> HR-Strategieentwicklung</h1>
-            <p>Entwickeln Sie eine umfassende HR-Strategie mit bewährten Harvard & MIT Methoden</p>
+            <p>Entwickeln Sie eine umfassende HR-Strategie mit bewährten Harvard & MIT Methoden. Strategische Verankerung, Wertschöpfung und ethische Implementierung für nachhaltigen Erfolg.</p>
         </div>
+        
         <!-- Progress Indicator -->
         <div class="workflow-progress">
-            <div class="progress-step active" id="step1-progress">
-                <i class="fas fa-eye"></i> Vision
+            <div class="progress-step active" data-step="0">
+                <i class="fas fa-search"></i>
+                <span>Ist-Analyse</span>
             </div>
-            <div class="progress-step" id="step2-progress">
-                <i class="fas fa-chart-bar"></i> Wertschöpfung
-            <div class="progress-step" id="step3-progress">
-                <i class="fas fa-database"></i> Datenbasis
-            <div class="progress-step" id="step4-progress">
-                <i class="fas fa-users"></i> Organisation
-            <div class="progress-step" id="step5-progress">
-                <i class="fas fa-shield-alt"></i> Ethik
-            <div class="progress-step" id="step6-progress">
-                <i class="fas fa-expand-arrows-alt"></i> Skalierung
-            <div class="progress-step" id="step7-progress">
-                <i class="fas fa-sync-alt"></i> Lernen
+            <div class="progress-step" data-step="1">
+                <i class="fas fa-eye"></i>
+                <span>Vision</span>
+            </div>
+            <div class="progress-step" data-step="2">
+                <i class="fas fa-chart-bar"></i>
+                <span>Wertschöpfung</span>
+            </div>
+            <div class="progress-step" data-step="3">
+                <i class="fas fa-database"></i>
+                <span>Datenbasis</span>
+            </div>
+            <div class="progress-step" data-step="4">
+                <i class="fas fa-users"></i>
+                <span>Organisation</span>
+            </div>
+            <div class="progress-step" data-step="5">
+                <i class="fas fa-shield-alt"></i>
+                <span>Ethik</span>
+            </div>
+            <div class="progress-step" data-step="6">
+                <i class="fas fa-expand-arrows-alt"></i>
+                <span>Skalierung</span>
+            </div>
+            <div class="progress-step" data-step="7">
+                <i class="fas fa-sync-alt"></i>
+                <span>Lernen</span>
+            </div>
+        </div>
+        
+        <!-- Step 0: HR-Reifegrad Analyse -->
+        <div class="workflow-step active" data-step="0">
+            <div class="step-header">
+                <div class="step-number">🔍</div>
+                <div class="step-title">
+                    <h2>HR-Reifegrad Analyse</h2>
+                    <p>Harvard & MIT Research: Systematische Bewertung der aktuellen HR-Readiness in 7 Dimensionen</p>
+                </div>
+            </div>
+            
+            <div class="step-content">
+                <div class="maturity-assessment-card" style="background: #f8fafc; border-radius: 16px; padding: 2rem; margin-bottom: 2rem; border: 2px solid #3b82f6;">
+                    <h3 style="color: #1f2937; margin-bottom: 1rem;">🎯 Intelligente Ist-Zustand-Bewertung</h3>
+                    <p style="color: #6b7280; margin-bottom: 1.5rem;">Bewerten Sie Ihre HR-Organisation in den kritischen Dimensionen. Diese Analyse bildet die Grundlage für Ihre maßgeschneiderte HR-Strategie.</p>
+                    
+                    <div class="assessment-grid">
+                        <div class="assessment-category clickable-category" onclick="openDetailAssessment('strategicAnchoring')" style="cursor: pointer;">
+                            <div class="category-header">
+                                <div class="category-icon" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);">
+                                    <i class="fas fa-anchor"></i>
+                                </div>
+                                <div>
+                                    <h4>Strategische Verankerung</h4>
+                                    <p style="font-size: 0.875rem; color: #6b7280; margin: 0;">HR als strategischer Business Partner</p>
+                                </div>
+                                <div style="margin-left: auto; color: #3b82f6;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </div>
+                            </div>
+                            <div class="slider-container">
+                                <input type="range" min="1" max="5" value="1" class="slider" id="strategicAnchoringSlider" oninput="updateAssessment('strategicAnchoring', this.value)" onclick="event.stopPropagation();">
+                                <div class="slider-value-display" id="strategicAnchoringValue" style="text-align: center; font-size: 1.25rem; font-weight: 700; color: #1d4ed8; margin: 0.5rem 0;">1</div>
+                                <div class="slider-labels">
+                                    <span>Schwach</span>
+                                    <span>Exzellent</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="assessment-category clickable-category" onclick="openDetailAssessment('valueCreation')" style="cursor: pointer;">
+                            <div class="category-header">
+                                <div class="category-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
+                                <div>
+                                    <h4>Wertschöpfung & Schlüsselfelder</h4>
+                                    <p style="font-size: 0.875rem; color: #6b7280; margin: 0;">Messbarer Beitrag zum Unternehmenserfolg</p>
+                                </div>
+                                <div style="margin-left: auto; color: #10b981;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </div>
+                            </div>
+                            <div class="slider-container">
+                                <input type="range" min="1" max="5" value="1" class="slider" id="valueCreationSlider" oninput="updateAssessment('valueCreation', this.value)" onclick="event.stopPropagation();">
+                                <div class="slider-value-display" id="valueCreationValue" style="text-align: center; font-size: 1.25rem; font-weight: 700; color: #059669; margin: 0.5rem 0;">1</div>
+                                <div class="slider-labels">
+                                    <span>Niedrig</span>
+                                    <span>Hoch</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="assessment-category clickable-category" onclick="openDetailAssessment('dataInfrastructure')" style="cursor: pointer;">
+                            <div class="category-header">
+                                <div class="category-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
+                                    <i class="fas fa-database"></i>
+                                </div>
+                                <div>
+                                    <h4>Daten- & Infrastruktur-Basis</h4>
+                                    <p style="font-size: 0.875rem; color: #6b7280; margin: 0;">Robuste HR-Datenbasis für faktenbasierte Entscheidungen</p>
+                                </div>
+                                <div style="margin-left: auto; color: #8b5cf6;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </div>
+                            </div>
+                            <div class="slider-container">
+                                <input type="range" min="1" max="5" value="1" class="slider" id="dataInfrastructureSlider" oninput="updateAssessment('dataInfrastructure', this.value)" onclick="event.stopPropagation();">
+                                <div class="slider-value-display" id="dataInfrastructureValue" style="text-align: center; font-size: 1.25rem; font-weight: 700; color: #7c3aed; margin: 0.5rem 0;">1</div>
+                                <div class="slider-labels">
+                                    <span>Schwach</span>
+                                    <span>Stark</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="assessment-category clickable-category" onclick="openDetailAssessment('organizationModel')" style="cursor: pointer;">
+                            <div class="category-header">
+                                <div class="category-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                                    <i class="fas fa-sitemap"></i>
+                                </div>
+                                <div>
+                                    <h4>Organisation & HR Operating Model</h4>
+                                    <p style="font-size: 0.875rem; color: #6b7280; margin: 0;">Effektive HR-Organisation für maximale Zusammenarbeit</p>
+                                </div>
+                                <div style="margin-left: auto; color: #f59e0b;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </div>
+                            </div>
+                            <div class="slider-container">
+                                <input type="range" min="1" max="5" value="1" class="slider" id="organizationModelSlider" oninput="updateAssessment('organizationModel', this.value)" onclick="event.stopPropagation();">
+                                <div class="slider-value-display" id="organizationModelValue" style="text-align: center; font-size: 1.25rem; font-weight: 700; color: #d97706; margin: 0.5rem 0;">1</div>
+                                <div class="slider-labels">
+                                    <span>Traditionell</span>
+                                    <span>Modern</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="assessment-category clickable-category" onclick="openDetailAssessment('ethicsTrust')" style="cursor: pointer;">
+                            <div class="category-header">
+                                <div class="category-icon" style="background: linear-gradient(135deg, #ec4899, #be185d);">
+                                    <i class="fas fa-balance-scale"></i>
+                                </div>
+                                <div>
+                                    <h4>Ethik, Fairness & Vertrauen</h4>
+                                    <p style="font-size: 0.875rem; color: #6b7280; margin: 0;">Ethische HR-Praktiken und Vertrauen</p>
+                                </div>
+                                <div style="margin-left: auto; color: #ec4899;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </div>
+                            </div>
+                            <div class="slider-container">
+                                <input type="range" min="1" max="5" value="1" class="slider" id="ethicsTrustSlider" oninput="updateAssessment('ethicsTrust', this.value)" onclick="event.stopPropagation();">
+                                <div class="slider-value-display" id="ethicsTrustValue" style="text-align: center; font-size: 1.25rem; font-weight: 700; color: #be185d; margin: 0.5rem 0;">1</div>
+                                <div class="slider-labels">
+                                    <span>Unvollständig</span>
+                                    <span>Vollständig</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="assessment-category clickable-category" onclick="openDetailAssessment('scalingEcosystem')" style="cursor: pointer;">
+                            <div class="category-header">
+                                <div class="category-icon" style="background: linear-gradient(135deg, #06b6d4, #0891b2);">
+                                    <i class="fas fa-expand-arrows-alt"></i>
+                                </div>
+                                <div>
+                                    <h4>Skalierung & HR-Ökosystem</h4>
+                                    <p style="font-size: 0.875rem; color: #6b7280; margin: 0;">Skalierbare HR-Lösungen und Ökosystem-Nutzung</p>
+                                </div>
+                                <div style="margin-left: auto; color: #06b6d4;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </div>
+                            </div>
+                            <div class="slider-container">
+                                <input type="range" min="1" max="5" value="1" class="slider" id="scalingEcosystemSlider" oninput="updateAssessment('scalingEcosystem', this.value)" onclick="event.stopPropagation();">
+                                <div class="slider-value-display" id="scalingEcosystemValue" style="text-align: center; font-size: 1.25rem; font-weight: 700; color: #0891b2; margin: 0.5rem 0;">1</div>
+                                <div class="slider-labels">
+                                    <span>Begrenzt</span>
+                                    <span>Umfassend</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="assessment-category clickable-category" onclick="openDetailAssessment('learningAdaptation')" style="cursor: pointer;">
+                            <div class="category-header">
+                                <div class="category-icon" style="background: linear-gradient(135deg, #14b8a6, #0d9488);">
+                                    <i class="fas fa-sync-alt"></i>
+                                </div>
+                                <div>
+                                    <h4>Kontinuierliches Lernen & Anpassung</h4>
+                                    <p style="font-size: 0.875rem; color: #6b7280; margin: 0;">Lernende Organisation und kontinuierliche Verbesserung</p>
+                                </div>
+                                <div style="margin-left: auto; color: #14b8a6;">
+                                    <i class="fas fa-chevron-right"></i>
+                                </div>
+                            </div>
+                            <div class="slider-container">
+                                <input type="range" min="1" max="5" value="1" class="slider" id="learningAdaptationSlider" oninput="updateAssessment('learningAdaptation', this.value)" onclick="event.stopPropagation();">
+                                <div class="slider-value-display" id="learningAdaptationValue" style="text-align: center; font-size: 1.25rem; font-weight: 700; color: #0d9488; margin: 0.5rem 0;">1</div>
+                                <div class="slider-labels">
+                                    <span>Statisch</span>
+                                    <span>Agil</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="background: white; border-radius: 12px; padding: 1.5rem; margin-top: 2rem; text-align: center;">
+                        <h4 style="color: #1f2937; margin-bottom: 1rem;">📊 Ihre HR-Readiness Bewertung</h4>
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 1rem;">
+                            <div class="score-circle" id="overallMaturityScore" style="width: 60px; height: 60px; font-size: 1.5rem;">1.0</div>
+                            <div>
+                                <div style="font-size: 1.25rem; font-weight: 700; color: #1f2937;" id="maturityDescription">HR-Einsteiger</div>
+                                <div style="font-size: 0.875rem; color: #6b7280;" id="maturityRecommendation">Fokus auf Grundlagen und strategische Verankerung</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <!-- Step 1: Vision & strategische Verankerung -->
-        <div class="workflow-step" id="step1">
+        <div class="workflow-step" id="step1" data-step="1" style="display: none;">
             <div class="step-header">
                 <div class="step-number">1</div>
                 <div class="step-title">Vision & strategische Verankerung</div>
@@ -346,7 +797,7 @@
                         <input type="checkbox" id="agility" value="agility">
                         <label for="agility">Organisational Agility</label>
         <!-- Step 2: Wertschöpfung & Schlüsselfelder -->
-        <div class="workflow-step" id="step2" style="display: none;">
+        <div class="workflow-step" id="step2" data-step="2" style="display: none;">
                 <div class="step-number">2</div>
                 <div class="step-title">Wertschöpfung & Schlüsselfelder der HR-Strategie</div>
                 <p>Definieren Sie die strategischen Handlungsfelder, die messbar zum Unternehmenserfolg beitragen.</p>
@@ -368,7 +819,7 @@
                 <label for="keyMetrics">Wichtige HR-Metriken</label>
                 <textarea id="keyMetrics" rows="4" placeholder="Definieren Sie die wichtigsten KPIs für Ihre HR-Strategie..."></textarea>
         <!-- Step 3: Daten- und Infrastruktur-Basis -->
-        <div class="workflow-step" id="step3" style="display: none;">
+        <div class="workflow-step" id="step3" data-step="3" style="display: none;">
                 <div class="step-number">3</div>
                 <div class="step-title">Daten- und Infrastruktur-Basis</div>
                 <p>Bauen Sie eine robuste HR-Datenbasis auf für faktenbasierte Entscheidungen.</p>
@@ -390,7 +841,7 @@
                 <label for="dataGovernance">Data Governance</label>
                 <textarea id="dataGovernance" rows="3" placeholder="Beschreiben Sie Ihre Datenrichtlinien und -sicherheit..."></textarea>
         <!-- Step 4: Organisation & HR Operating Model -->
-        <div class="workflow-step" id="step4" style="display: none;">
+        <div class="workflow-step" id="step4" data-step="4" style="display: none;">
                 <div class="step-number">4</div>
                 <div class="step-title">Organisation & HR Operating Model</div>
                 <p>Gestalten Sie Ihre HR-Organisation für maximale Effektivität und Zusammenarbeit.</p>
@@ -410,7 +861,7 @@
                         <input type="checkbox" id="diversityManager" value="diversity-manager">
                         <label for="diversityManager">Diversity & Inclusion Manager</label>
         <!-- Step 5: Ethik, Fairness & Vertrauen -->
-        <div class="workflow-step" id="step5" style="display: none;">
+        <div class="workflow-step" id="step5" data-step="5" style="display: none;">
                 <div class="step-number">5</div>
                 <div class="step-title">Ethik, Fairness & Vertrauen</div>
                 <p>Etablieren Sie ethische Grundsätze und Vertrauen als Basis für nachhaltige HR-Strategie.</p>
@@ -429,7 +880,7 @@
                         <input type="checkbox" id="transparency" value="transparency">
                         <label for="transparency">Transparente Kommunikation</label>
         <!-- Step 6: Skalierung & HR-Ökosystem -->
-        <div class="workflow-step" id="step6" style="display: none;">
+        <div class="workflow-step" id="step6" data-step="6" style="display: none;">
                 <div class="step-number">6</div>
                 <div class="step-title">Skalierung & HR-Ökosystem</div>
                 <p>Nutzen Sie externe Partnerschaften und Ökosysteme für skalierbare HR-Lösungen.</p>
@@ -449,7 +900,7 @@
                         <input type="checkbox" id="benchmarks" value="benchmarks">
                         <label for="benchmarks">Benchmarking-Partner</label>
         <!-- Step 7: Kontinuierliches Lernen & Anpassung -->
-        <div class="workflow-step" id="step7" style="display: none;">
+        <div class="workflow-step" id="step7" data-step="7" style="display: none;">
                 <div class="step-number">7</div>
                 <div class="step-title">Kontinuierliches Lernen & Anpassung</div>
                 <p>Etablieren Sie Feedback-Loops und kontinuierliche Verbesserung für Ihre HR-Strategie.</p>
@@ -523,8 +974,7 @@
 <!-- Auth Modals -->
 <div id="authModalsContainer"></div>
 <script>
-        let currentStep = 1;
-        const totalSteps = 7;
+        // Old variables removed - using new assessment system below
     // Load auth modals
     async function loadAuthModals() {
         try {
@@ -563,10 +1013,14 @@
                 updateNavigation();
         function updateStepDisplay() {
             // Hide all steps
-            for (let i = 1; i <= totalSteps; i++) {
-                document.getElementById(`step${i}`).style.display = 'none';
+            document.querySelectorAll('.workflow-step').forEach(step => {
+                step.style.display = 'none';
+            });
             // Show current step
-            document.getElementById(`step${currentStep}`).style.display = 'block';
+            const currentStepElement = document.querySelector(`.workflow-step[data-step="${currentStep}"]`);
+            if (currentStepElement) {
+                currentStepElement.style.display = 'block';
+            }
         function updateProgress() {
                 const progressStep = document.getElementById(`step${i}-progress`);
                 if (i < currentStep) {
@@ -581,14 +1035,20 @@
         function updateNavigation() {
             const prevBtn = document.getElementById('prevBtn');
             const nextBtn = document.getElementById('nextBtn');
-            prevBtn.style.display = currentStep > 1 ? 'inline-block' : 'none';
-            if (currentStep === totalSteps) {
-                nextBtn.innerHTML = '<i class="fas fa-download"></i> Strategie generieren';
-                nextBtn.onclick = generateHRStrategy;
-            } else {
-                nextBtn.innerHTML = 'Weiter <i class="fas fa-arrow-right"></i>';
-                nextBtn.onclick = () => changeStep(1);
-        function generateHRStrategy() {
+            const currentStepSpan = document.getElementById('currentStep');
+            const totalStepsSpan = document.getElementById('totalSteps');
+            
+            if (prevBtn) prevBtn.disabled = currentStep === 0;
+            if (nextBtn) {
+                nextBtn.innerHTML = currentStep === totalSteps - 1 
+                    ? '<i class="fas fa-download"></i> Strategie generieren'
+                    : 'Weiter <i class="fas fa-arrow-right"></i>';
+            }
+            if (currentStepSpan) currentStepSpan.textContent = currentStep + 1;
+            if (totalStepsSpan) totalStepsSpan.textContent = totalSteps;
+        }
+        
+        function generateStrategy() {
             // Collect all form data
             const strategyData = {
                 companyVision: document.getElementById('companyVision').value || '',
@@ -700,11 +1160,250 @@ Entwickelt mit Harvard & MIT Methodologie`;
                 if (index < value) {
                     star.classList.add('active');
                     star.classList.remove('active');
+        // HR-Readiness Assessment System
+        let hrMaturityData = {
+            strategicAnchoring: 1,
+            valueCreation: 1,
+            dataInfrastructure: 1,
+            organizationModel: 1,
+            ethicsTrust: 1,
+            scalingEcosystem: 1,
+            learningAdaptation: 1
+        };
+        let overallHrMaturity = 1.0;
+        let currentStep = 0;
+        const totalSteps = 8; // 0 = Assessment, 1-7 = Workflow steps
+        
+        // Sidebar functionality
+        function toggleSidebar() {
+            const sidebar = document.getElementById('workflowSidebar');
+            const icon = document.getElementById('sidebarToggleIcon');
+            const content = document.getElementById('sidebarContent');
+            
+            if (sidebar.classList.contains('collapsed')) {
+                sidebar.classList.remove('collapsed');
+                icon.className = 'fas fa-chevron-left';
+                content.style.display = 'block';
+            } else {
+                sidebar.classList.add('collapsed');
+                icon.className = 'fas fa-chevron-right';
+                content.style.display = 'none';
+            }
+        }
+        
+        // Assessment functions
+        function updateAssessment(dimension, value) {
+            hrMaturityData[dimension] = parseInt(value);
+            const valueDisplay = document.getElementById(`${dimension}Value`);
+            if (valueDisplay) {
+                valueDisplay.textContent = value;
+            }
+            calculateOverallMaturity();
+            updateMaturityDisplay();
+        }
+        
+        function calculateOverallMaturity() {
+            const sum = Object.values(hrMaturityData).reduce((acc, val) => acc + val, 0);
+            overallHrMaturity = (sum / Object.keys(hrMaturityData).length).toFixed(1);
+        }
+        
+        function updateMaturityDisplay() {
+            const circle = document.getElementById('overallMaturityScore');
+            const description = document.getElementById('maturityDescription');
+            const recommendation = document.getElementById('maturityRecommendation');
+            const sidebarCircle = document.getElementById('maturityCircle');
+            const sidebarLevel = document.getElementById('maturityLevel');
+            
+            if (circle) circle.textContent = overallHrMaturity;
+            
+            let level, desc, rec, colorClass;
+            if (overallHrMaturity <= 1.5) {
+                level = 'Anfänger';
+                desc = 'HR-Einsteiger';
+                rec = 'Fokus auf Grundlagen und strategische Verankerung';
+                colorClass = 'score-beginner';
+            } else if (overallHrMaturity <= 2.5) {
+                level = 'Aufsteiger';
+                desc = 'HR-Aufsteiger';
+                rec = 'Grundlagen vorhanden, weitere Entwicklung nötig';
+                colorClass = 'score-intermediate';
+            } else if (overallHrMaturity <= 3.5) {
+                level = 'Fortgeschritten';
+                desc = 'HR-Fortgeschritten';
+                rec = 'Solide Basis, Optimierung möglich';
+                colorClass = 'score-advanced';
+            } else if (overallHrMaturity <= 4.5) {
+                level = 'Experte';
+                desc = 'HR-Experte';
+                rec = 'Hohe Reife, kleine Verbesserungen möglich';
+                colorClass = 'score-expert';
+            } else {
+                level = 'Exzellent';
+                desc = 'HR-Exzellenz';
+                rec = 'Hervorragende HR-Organisation';
+                colorClass = 'score-expert';
+            }
+            
+            if (description) description.textContent = desc;
+            if (recommendation) recommendation.textContent = rec;
+            if (sidebarCircle) {
+                sidebarCircle.textContent = Math.round(overallHrMaturity);
+                sidebarCircle.className = `score-circle ${colorClass}`;
+            }
+            if (sidebarLevel) sidebarLevel.textContent = level;
+        }
+        
+        function openDetailAssessment(dimension) {
+            // Save current progress
+            saveProgress();
+            // Navigate to detail page (to be created)
+            window.location.href = `hr-strategie-assessment-detail-${dimension}.html`;
+        }
+        
+        // Navigation functions
+        function nextStep() {
+            if (currentStep < totalSteps - 1) {
+                currentStep++;
+                updateProgress();
+                saveProgress();
+            } else {
+                generateStrategy();
+            }
+        }
+        
+        function previousStep() {
+            if (currentStep > 0) {
+                currentStep--;
+                updateProgress();
+            }
+        }
+        
+        function updateProgress() {
+            // Update progress indicators
+            document.querySelectorAll('.progress-step').forEach((step, index) => {
+                step.classList.remove('active', 'completed');
+                if (index < currentStep) {
+                    step.classList.add('completed');
+                } else if (index === currentStep) {
+                    step.classList.add('active');
+                }
+            });
+            
+            // Update step visibility
+            document.querySelectorAll('.workflow-step').forEach((step, index) => {
+                step.classList.remove('active');
+                step.style.display = 'none';
+                if (index === currentStep) {
+                    step.classList.add('active');
+                    step.style.display = 'block';
+                }
+            });
+            
+            // Update navigation buttons
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            if (prevBtn) prevBtn.disabled = currentStep === 0;
+            if (nextBtn) {
+                nextBtn.textContent = currentStep === totalSteps - 1 ? 'Strategie generieren' : 'Weiter';
+            }
+            
+            // Update sidebar progress
+            updateOverallProgress();
+        }
+        
+        function updateOverallProgress() {
+            const progress = ((currentStep + 1) / totalSteps) * 100;
+            const progressFill = document.getElementById('overallProgress');
+            const progressText = document.getElementById('progressText');
+            if (progressFill) progressFill.style.width = `${progress}%`;
+            if (progressText) progressText.textContent = `${Math.round(progress)}% abgeschlossen`;
+        }
+        
+        function saveProgress() {
+            const progressData = {
+                currentStep: currentStep,
+                hrMaturityData: hrMaturityData,
+                overallMaturity: overallHrMaturity,
+                timestamp: new Date().toISOString()
+            };
+            localStorage.setItem('hrStrategieWorkflow', JSON.stringify(progressData));
+        }
+        
+        function loadProgress() {
+            const saved = localStorage.getItem('hrStrategieWorkflow');
+            if (saved) {
+                const data = JSON.parse(saved);
+                currentStep = data.currentStep || 0;
+                if (data.hrMaturityData) {
+                    hrMaturityData = data.hrMaturityData;
+                    Object.keys(hrMaturityData).forEach(dimension => {
+                        const slider = document.getElementById(`${dimension}Slider`);
+                        const valueDisplay = document.getElementById(`${dimension}Value`);
+                        if (slider) slider.value = hrMaturityData[dimension];
+                        if (valueDisplay) valueDisplay.textContent = hrMaturityData[dimension];
+                    });
+                }
+                calculateOverallMaturity();
+                updateMaturityDisplay();
+                updateProgress();
+            }
+        }
+        
+        function generateStrategy() {
+            // Generate final HR strategy
+            alert('HR-Strategie wird generiert...');
+        }
+        
+        // Export functions
+        let workflowExporter = null;
+        
+        async function exportAllToExcel() {
+            if (!workflowExporter) {
+                workflowExporter = new AssessmentExporter();
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+            const data = prepareCompleteExportData();
+            await workflowExporter.exportToExcel(data, `HR-Strategie-Gesamt-Assessment-${new Date().toISOString().split('T')[0]}`);
+        }
+        
+        async function exportAllToPDF() {
+            if (!workflowExporter) {
+                workflowExporter = new AssessmentExporter();
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+            const data = prepareCompleteExportData();
+            await workflowExporter.exportToPDF(data, `HR-Strategie-Gesamt-Assessment-${new Date().toISOString().split('T')[0]}`);
+        }
+        
+        function prepareCompleteExportData() {
+            return {
+                overall: overallHrMaturity,
+                dimensions: {
+                    strategicAnchoring: { aggregated: hrMaturityData.strategicAnchoring },
+                    valueCreation: { aggregated: hrMaturityData.valueCreation },
+                    dataInfrastructure: { aggregated: hrMaturityData.dataInfrastructure },
+                    organizationModel: { aggregated: hrMaturityData.organizationModel },
+                    ethicsTrust: { aggregated: hrMaturityData.ethicsTrust },
+                    scalingEcosystem: { aggregated: hrMaturityData.scalingEcosystem },
+                    learningAdaptation: { aggregated: hrMaturityData.learningAdaptation }
+                },
+                maturityData: hrMaturityData,
+                timestamp: new Date().toISOString()
+            };
+        }
+        
         // Initialize
-        updateStepDisplay();
-        updateProgress();
-        updateNavigation();
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProgress();
+            calculateOverallMaturity();
+            updateMaturityDisplay();
+            updateProgress();
+            workflowExporter = new AssessmentExporter();
+        });
     </script>
+    
+    <!-- Assessment Export Script -->
+    <script src="js/assessment-export.js"></script>
 
     <!-- AWS Configuration -->
     <script>
