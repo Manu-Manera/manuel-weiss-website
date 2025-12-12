@@ -58,14 +58,54 @@
     </div>
     <script>
         const innovationCriteria = [
-            { id: 'pilotProjects', title: 'Pilot-Projekte', description: 'Wie aktiv ist Ihre Organisation bei KI-Pilot-Projekten?', icon: 'fa-rocket', examples: ['Aktive KI-Pilot-Projekte', 'Schnelle Umsetzung von Proof-of-Concepts', 'Erfolgreiche Pilot-zu-Produktion Übergänge'] },
-            { id: 'riskTolerance', title: 'Risikobereitschaft', description: 'Wie risikobereit ist Ihre Organisation bei KI-Experimenten?', icon: 'fa-chart-line', examples: ['Bereitschaft für experimentelle Projekte', 'Akzeptanz von Fehlern als Lernchance', 'Schnelle Entscheidungen bei Innovationen'] },
-            { id: 'innovationBudget', title: 'Innovationsbudget', description: 'Gibt es dedizierte Budgets für KI-Innovationen?', icon: 'fa-wallet', examples: ['Separates Budget für Innovation', 'Forschung & Entwicklung Fonds', 'Investitionen in experimentelle Projekte'] },
-            { id: 'experimentationCulture', title: 'Experimentierkultur', description: 'Wie stark ist die Experimentierkultur in Ihrer Organisation?', icon: 'fa-flask', examples: ['Zeit für Experimente und Tests', 'Fehlerfreundliche Kultur', 'Schnelles Testen und Iterieren'] },
-            { id: 'innovationProcesses', title: 'Innovationsprozesse', description: 'Gibt es strukturierte Prozesse für Innovation?', icon: 'fa-cogs', examples: ['Definierte Innovationsprozesse', 'Idea Management Systeme', 'Strukturierte Evaluierung neuer Ideen'] },
-            { id: 'externalInnovation', title: 'Externe Innovation', description: 'Wie gut nutzt Ihre Organisation externe Innovationen?', icon: 'fa-handshake', examples: ['Partnerschaften mit Startups', 'Open Innovation Ansätze', 'Integration externer Technologien'] },
-            { id: 'speedToMarket', title: 'Time-to-Market', description: 'Wie schnell kann Ihre Organisation neue KI-Lösungen implementieren?', icon: 'fa-tachometer-alt', examples: ['Schnelle Implementierung von KI-Lösungen', 'Agile Entwicklungsprozesse', 'Minimale Time-to-Market'] },
-            { id: 'learningFromFailure', title: 'Lernen aus Fehlern', description: 'Wie gut lernt Ihre Organisation aus gescheiterten Projekten?', icon: 'fa-book', examples: ['Post-Mortem Analysen', 'Lessons Learned Prozesse', 'Kontinuierliche Verbesserung'] }
+            { id: 'pilotProjects', title: 'Pilot-Projekte', description: 'Wie aktiv ist Ihre Organisation bei KI-Pilot-Projekten?', icon: 'fa-rocket', subCriteria: [
+                { id: 'activePilots', title: 'Aktive KI-Pilot-Projekte' },
+                { id: 'fastPoc', title: 'Schnelle Umsetzung von Proof-of-Concepts' },
+                { id: 'pilotToProd', title: 'Erfolgreiche Pilot-zu-Produktion Übergänge' },
+                { id: 'pilotPortfolio', title: 'Vielfältiges Portfolio an Pilot-Projekten' }
+            ]},
+            { id: 'riskTolerance', title: 'Risikobereitschaft', description: 'Wie risikobereit ist Ihre Organisation bei KI-Experimenten?', icon: 'fa-chart-line', subCriteria: [
+                { id: 'experimentalProjects', title: 'Bereitschaft für experimentelle Projekte' },
+                { id: 'errorAcceptance', title: 'Akzeptanz von Fehlern als Lernchance' },
+                { id: 'fastDecisions', title: 'Schnelle Entscheidungen bei Innovationen' },
+                { id: 'calculatedRisks', title: 'Bereitschaft für kalkulierte Risiken' }
+            ]},
+            { id: 'innovationBudget', title: 'Innovationsbudget', description: 'Gibt es dedizierte Budgets für KI-Innovationen?', icon: 'fa-wallet', subCriteria: [
+                { id: 'separateBudget', title: 'Separates Budget für Innovation' },
+                { id: 'rdFunds', title: 'Forschung & Entwicklung Fonds' },
+                { id: 'experimentalInvestment', title: 'Investitionen in experimentelle Projekte' },
+                { id: 'innovationAllocation', title: 'Klare Budget-Allokation für Innovation' }
+            ]},
+            { id: 'experimentationCulture', title: 'Experimentierkultur', description: 'Wie stark ist die Experimentierkultur in Ihrer Organisation?', icon: 'fa-flask', subCriteria: [
+                { id: 'timeForExperiments', title: 'Zeit für Experimente und Tests' },
+                { id: 'errorFriendly', title: 'Fehlerfreundliche Kultur' },
+                { id: 'fastIteration', title: 'Schnelles Testen und Iterieren' },
+                { id: 'experimentSpaces', title: 'Dedizierte Räume für Experimente' }
+            ]},
+            { id: 'innovationProcesses', title: 'Innovationsprozesse', description: 'Gibt es strukturierte Prozesse für Innovation?', icon: 'fa-cogs', subCriteria: [
+                { id: 'definedProcesses', title: 'Definierte Innovationsprozesse' },
+                { id: 'ideaManagement', title: 'Idea Management Systeme' },
+                { id: 'structuredEvaluation', title: 'Strukturierte Evaluierung neuer Ideen' },
+                { id: 'innovationFunnel', title: 'Klare Innovations-Pipeline' }
+            ]},
+            { id: 'externalInnovation', title: 'Externe Innovation', description: 'Wie gut nutzt Ihre Organisation externe Innovationen?', icon: 'fa-handshake', subCriteria: [
+                { id: 'startupPartnerships', title: 'Partnerschaften mit Startups' },
+                { id: 'openInnovation', title: 'Open Innovation Ansätze' },
+                { id: 'externalTech', title: 'Integration externer Technologien' },
+                { id: 'innovationEcosystem', title: 'Aktive Teilnahme am Innovations-Ökosystem' }
+            ]},
+            { id: 'speedToMarket', title: 'Time-to-Market', description: 'Wie schnell kann Ihre Organisation neue KI-Lösungen implementieren?', icon: 'fa-tachometer-alt', subCriteria: [
+                { id: 'fastImplementation', title: 'Schnelle Implementierung von KI-Lösungen' },
+                { id: 'agileProcesses', title: 'Agile Entwicklungsprozesse' },
+                { id: 'minimalTime', title: 'Minimale Time-to-Market' },
+                { id: 'rapidPrototyping', title: 'Rapid Prototyping Fähigkeiten' }
+            ]},
+            { id: 'learningFromFailure', title: 'Lernen aus Fehlern', description: 'Wie gut lernt Ihre Organisation aus gescheiterten Projekten?', icon: 'fa-book', subCriteria: [
+                { id: 'postMortem', title: 'Post-Mortem Analysen' },
+                { id: 'lessonsLearned', title: 'Lessons Learned Prozesse' },
+                { id: 'continuousImprovement', title: 'Kontinuierliche Verbesserung' },
+                { id: 'failureCulture', title: 'Positive Fehlerkultur und Lernen' }
+            ]}
         ];
         let assessmentValues = {};
         function initializeAssessment() {
@@ -74,62 +114,111 @@
                 assessmentValues = saved.innovation.details;
             }
             innovationCriteria.forEach(criterion => {
-                if (!assessmentValues[criterion.id]) assessmentValues[criterion.id] = 1;
+                criterion.subCriteria.forEach(subCriterion => {
+                    const key = `${criterion.id}_${subCriterion.id}`;
+                    if (!assessmentValues[key]) assessmentValues[key] = 1;
+                });
             });
             renderCriteria();
             updateAggregatedScore();
         }
         function renderCriteria() {
             const container = document.getElementById('criteriaContainer');
-            container.innerHTML = innovationCriteria.map(criterion => `
+            container.innerHTML = innovationCriteria.map(criterion => {
+                const subValues = criterion.subCriteria.map(sub => {
+                    const key = `${criterion.id}_${sub.id}`;
+                    return assessmentValues[key] || 1;
+                });
+                const criterionAverage = (subValues.reduce((sum, val) => sum + val, 0) / subValues.length).toFixed(1);
+                return `
                 <div class="criterion-card">
                     <div class="criterion-header">
                         <div class="criterion-icon"><i class="fas ${criterion.icon}"></i></div>
                         <div class="criterion-title-section">
                             <h3 class="criterion-title">${criterion.title}</h3>
                             <p class="criterion-description">${criterion.description}</p>
-                            <div class="criterion-examples" style="border-left-color: #fed6e3;">
-                                <h5>Beispiele für hohe Bewertung:</h5>
-                                <ul>${criterion.examples.map(ex => `<li>${ex}</li>`).join('')}</ul>
-                            </div>
                         </div>
                     </div>
-                    <div class="slider-section">
-                        <div class="slider-wrapper">
-                            <div class="slider-labels-top">
-                                <span>Konservativ (1)</span>
-                                <span>Innovativ (5)</span>
+                    <div class="sub-criteria-container">
+                        ${criterion.subCriteria.map(subCriterion => {
+                            const key = `${criterion.id}_${subCriterion.id}`;
+                            const value = assessmentValues[key] || 1;
+                            return `
+                            <div class="sub-criterion-item" style="border-left-color: #fed6e3;">
+                                <div class="sub-criterion-label">${subCriterion.title}</div>
+                                <div class="sub-criterion-slider-wrapper">
+                                    <input type="range" min="1" max="5" step="1" value="${value}" class="sub-criterion-slider" id="slider-${key}" style="accent-color: #fed6e3;" oninput="updateSubCriterionValue('${criterion.id}', '${subCriterion.id}', this.value)">
+                                    <div class="sub-criterion-value" id="value-${key}">${value}</div>
+                                    <div class="sub-criterion-scale"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
+                                </div>
                             </div>
-                            <input type="range" min="1" max="5" step="1" value="${assessmentValues[criterion.id] || 1}" class="detail-slider" id="slider-${criterion.id}" oninput="updateCriterionValue('${criterion.id}', this.value)">
-                            <div class="slider-value-display" id="value-${criterion.id}">${assessmentValues[criterion.id] || 1}</div>
-                            <div class="slider-scale"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
+                            `;
+                        }).join('')}
+                        <div class="criterion-average">
+                            <span class="criterion-average-label">Durchschnitt für "${criterion.title}":</span>
+                            <span class="criterion-average-value" id="avg-${criterion.id}">${criterionAverage}</span>
                         </div>
                     </div>
                 </div>
-            `).join('');
+                `;
+            }).join('');
         }
-        function updateCriterionValue(criterionId, value) {
-            assessmentValues[criterionId] = parseInt(value);
-            document.getElementById(`value-${criterionId}`).textContent = value;
+        function updateSubCriterionValue(criterionId, subCriterionId, value) {
+            const key = `${criterionId}_${subCriterionId}`;
+            assessmentValues[key] = parseInt(value);
+            document.getElementById(`value-${key}`).textContent = value;
+            const criterion = innovationCriteria.find(c => c.id === criterionId);
+            const subValues = criterion.subCriteria.map(sub => {
+                const subKey = `${criterionId}_${sub.id}`;
+                return assessmentValues[subKey] || 1;
+            });
+            const criterionAverage = (subValues.reduce((sum, val) => sum + val, 0) / subValues.length).toFixed(1);
+            document.getElementById(`avg-${criterionId}`).textContent = criterionAverage;
             updateAggregatedScore();
         }
         function updateAggregatedScore() {
-            const values = Object.values(assessmentValues);
-            const average = (values.reduce((sum, val) => sum + val, 0) / values.length).toFixed(1);
-            document.getElementById('aggregatedScore').textContent = average;
+            const criterionAverages = innovationCriteria.map(criterion => {
+                const subValues = criterion.subCriteria.map(sub => {
+                    const key = `${criterion.id}_${sub.id}`;
+                    return assessmentValues[key] || 1;
+                });
+                return subValues.reduce((sum, val) => sum + val, 0) / subValues.length;
+            });
+            const overallAverage = (criterionAverages.reduce((sum, val) => sum + val, 0) / criterionAverages.length).toFixed(1);
+            document.getElementById('aggregatedScore').textContent = overallAverage;
             let description = '';
-            if (average <= 1.5) description = 'Konservativ - Erhebliche Innovationsförderung erforderlich';
-            else if (average <= 2.5) description = 'Verbesserungswürdig - Grundlagen vorhanden, Innovation nötig';
-            else if (average <= 3.5) description = 'Gut - Solide Basis, weitere Innovation möglich';
-            else if (average <= 4.5) description = 'Sehr gut - Hohe Innovation, kleine Verbesserungen möglich';
+            if (overallAverage <= 1.5) description = 'Konservativ - Erhebliche Innovationsförderung erforderlich';
+            else if (overallAverage <= 2.5) description = 'Verbesserungswürdig - Grundlagen vorhanden, Innovation nötig';
+            else if (overallAverage <= 3.5) description = 'Gut - Solide Basis, weitere Innovation möglich';
+            else if (overallAverage <= 4.5) description = 'Sehr gut - Hohe Innovation, kleine Verbesserungen möglich';
             else description = 'Innovativ - Hervorragende Innovationskultur';
             document.getElementById('scoreDescription').textContent = description;
         }
         function saveAndReturn() {
-            const values = Object.values(assessmentValues);
-            const aggregated = (values.reduce((sum, val) => sum + val, 0) / values.length).toFixed(1);
+            const criterionAverages = innovationCriteria.map(criterion => {
+                const subValues = criterion.subCriteria.map(sub => {
+                    const key = `${criterion.id}_${sub.id}`;
+                    return assessmentValues[key] || 1;
+                });
+                return subValues.reduce((sum, val) => sum + val, 0) / subValues.length;
+            });
+            const aggregated = (criterionAverages.reduce((sum, val) => sum + val, 0) / criterionAverages.length).toFixed(1);
             let saved = JSON.parse(localStorage.getItem('kiDetailAssessments') || '{}');
-            saved.innovation = { aggregated: parseFloat(aggregated), details: assessmentValues, timestamp: new Date().toISOString() };
+            saved.innovation = { 
+                aggregated: parseFloat(aggregated), 
+                details: assessmentValues,
+                criterionAverages: innovationCriteria.map(criterion => {
+                    const subValues = criterion.subCriteria.map(sub => {
+                        const key = `${criterion.id}_${sub.id}`;
+                        return assessmentValues[key] || 1;
+                    });
+                    return {
+                        criterionId: criterion.id,
+                        average: subValues.reduce((sum, val) => sum + val, 0) / subValues.length
+                    };
+                }),
+                timestamp: new Date().toISOString() 
+            };
             localStorage.setItem('kiDetailAssessments', JSON.stringify(saved));
             window.location.href = 'ki-strategie-workflow.html';
         }

@@ -58,14 +58,54 @@
     </div>
     <script>
         const orgReadinessCriteria = [
-            { id: 'leadershipSupport', title: 'Führungsunterstützung', description: 'Wie stark wird KI-Transformation von der Führungsebene unterstützt?', icon: 'fa-user-tie', examples: ['Klare KI-Vision der Geschäftsführung', 'Dedizierte Budgets für KI-Projekte', 'Sichtbare Unterstützung durch Top-Management'] },
-            { id: 'changeManagement', title: 'Change Management Fähigkeiten', description: 'Wie gut ist Ihre Organisation im Umgang mit Veränderungen?', icon: 'fa-exchange-alt', examples: ['Erfahrene Change Manager im Team', 'Bewährte Change Management Prozesse', 'Erfolgreiche Transformationsprojekte in der Vergangenheit'] },
-            { id: 'organizationalCulture', title: 'Organisationskultur', description: 'Wie innovationsfreundlich ist Ihre Organisationskultur?', icon: 'fa-heart', examples: ['Offenheit für neue Technologien', 'Fehlerkultur und Lernbereitschaft', 'Agile und flexible Arbeitsweisen'] },
-            { id: 'stakeholderEngagement', title: 'Stakeholder-Engagement', description: 'Wie gut sind wichtige Stakeholder in KI-Projekte eingebunden?', icon: 'fa-handshake', examples: ['Frühzeitige Einbindung aller Stakeholder', 'Regelmäßige Kommunikation und Updates', 'Hohe Akzeptanz bei Mitarbeitenden'] },
-            { id: 'resourceAllocation', title: 'Ressourcen-Allokation', description: 'Gibt es ausreichende Ressourcen (Budget, Personal, Zeit) für KI-Projekte?', icon: 'fa-coins', examples: ['Dediziertes Budget für KI-Initiativen', 'Spezialisierte Teams für KI-Projekte', 'Ausreichende Zeit für Implementierung'] },
-            { id: 'communicationStrategy', title: 'Kommunikationsstrategie', description: 'Wie gut kommuniziert Ihre Organisation über KI-Transformation?', icon: 'fa-bullhorn', examples: ['Klare Kommunikationsstrategie vorhanden', 'Transparente Information über KI-Projekte', 'Regelmäßige Updates und Feedback-Loops'] },
-            { id: 'resistanceManagement', title: 'Widerstandsmanagement', description: 'Wie gut geht Ihre Organisation mit Widerständen gegen Veränderungen um?', icon: 'fa-shield-alt', examples: ['Proaktive Identifikation von Widerständen', 'Strategien zur Überwindung von Bedenken', 'Erfolgreiche Change-Adoption in der Vergangenheit'] },
-            { id: 'organizationalLearning', title: 'Organisatorisches Lernen', description: 'Wie gut lernt Ihre Organisation aus Projekten und passt sich an?', icon: 'fa-graduation-cap', examples: ['Lessons Learned Prozesse etabliert', 'Kontinuierliche Verbesserungskultur', 'Wissensmanagement und Dokumentation'] }
+            { id: 'leadershipSupport', title: 'Führungsunterstützung', description: 'Wie stark wird KI-Transformation von der Führungsebene unterstützt?', icon: 'fa-user-tie', subCriteria: [
+                { id: 'clearVision', title: 'Klare KI-Vision der Geschäftsführung' },
+                { id: 'dedicatedBudget', title: 'Dedizierte Budgets für KI-Projekte' },
+                { id: 'topManagementSupport', title: 'Sichtbare Unterstützung durch Top-Management' },
+                { id: 'strategicAlignment', title: 'KI-Strategie in Unternehmensstrategie integriert' }
+            ]},
+            { id: 'changeManagement', title: 'Change Management Fähigkeiten', description: 'Wie gut ist Ihre Organisation im Umgang mit Veränderungen?', icon: 'fa-exchange-alt', subCriteria: [
+                { id: 'experiencedManagers', title: 'Erfahrene Change Manager im Team' },
+                { id: 'provenProcesses', title: 'Bewährte Change Management Prozesse' },
+                { id: 'successfulProjects', title: 'Erfolgreiche Transformationsprojekte in der Vergangenheit' },
+                { id: 'changeMethodology', title: 'Etablierte Change Management Methodologie' }
+            ]},
+            { id: 'organizationalCulture', title: 'Organisationskultur', description: 'Wie innovationsfreundlich ist Ihre Organisationskultur?', icon: 'fa-heart', subCriteria: [
+                { id: 'opennessTech', title: 'Offenheit für neue Technologien' },
+                { id: 'errorCulture', title: 'Fehlerkultur und Lernbereitschaft' },
+                { id: 'agileWork', title: 'Agile und flexible Arbeitsweisen' },
+                { id: 'innovationMindset', title: 'Innovationsfreundliche Denkweise' }
+            ]},
+            { id: 'stakeholderEngagement', title: 'Stakeholder-Engagement', description: 'Wie gut sind wichtige Stakeholder in KI-Projekte eingebunden?', icon: 'fa-handshake', subCriteria: [
+                { id: 'earlyInvolvement', title: 'Frühzeitige Einbindung aller Stakeholder' },
+                { id: 'regularCommunication', title: 'Regelmäßige Kommunikation und Updates' },
+                { id: 'highAcceptance', title: 'Hohe Akzeptanz bei Mitarbeitenden' },
+                { id: 'stakeholderMapping', title: 'Systematisches Stakeholder-Mapping' }
+            ]},
+            { id: 'resourceAllocation', title: 'Ressourcen-Allokation', description: 'Gibt es ausreichende Ressourcen (Budget, Personal, Zeit) für KI-Projekte?', icon: 'fa-coins', subCriteria: [
+                { id: 'dedicatedBudget', title: 'Dediziertes Budget für KI-Initiativen' },
+                { id: 'specializedTeams', title: 'Spezialisierte Teams für KI-Projekte' },
+                { id: 'sufficientTime', title: 'Ausreichende Zeit für Implementierung' },
+                { id: 'resourcePlanning', title: 'Klare Ressourcenplanung und -allokation' }
+            ]},
+            { id: 'communicationStrategy', title: 'Kommunikationsstrategie', description: 'Wie gut kommuniziert Ihre Organisation über KI-Transformation?', icon: 'fa-bullhorn', subCriteria: [
+                { id: 'clearStrategy', title: 'Klare Kommunikationsstrategie vorhanden' },
+                { id: 'transparentInfo', title: 'Transparente Information über KI-Projekte' },
+                { id: 'regularUpdates', title: 'Regelmäßige Updates und Feedback-Loops' },
+                { id: 'multiChannel', title: 'Multi-Kanal Kommunikationsansatz' }
+            ]},
+            { id: 'resistanceManagement', title: 'Widerstandsmanagement', description: 'Wie gut geht Ihre Organisation mit Widerständen gegen Veränderungen um?', icon: 'fa-shield-alt', subCriteria: [
+                { id: 'proactiveIdentification', title: 'Proaktive Identifikation von Widerständen' },
+                { id: 'overcomeStrategies', title: 'Strategien zur Überwindung von Bedenken' },
+                { id: 'successfulAdoption', title: 'Erfolgreiche Change-Adoption in der Vergangenheit' },
+                { id: 'resistanceFramework', title: 'Systematisches Widerstandsmanagement-Framework' }
+            ]},
+            { id: 'organizationalLearning', title: 'Organisatorisches Lernen', description: 'Wie gut lernt Ihre Organisation aus Projekten und passt sich an?', icon: 'fa-graduation-cap', subCriteria: [
+                { id: 'lessonsLearned', title: 'Lessons Learned Prozesse etabliert' },
+                { id: 'continuousImprovement', title: 'Kontinuierliche Verbesserungskultur' },
+                { id: 'knowledgeManagement', title: 'Wissensmanagement und Dokumentation' },
+                { id: 'learningCulture', title: 'Starke Lernkultur und Adaptionsfähigkeit' }
+            ]}
         ];
         let assessmentValues = {};
         function initializeAssessment() {
@@ -74,62 +114,111 @@
                 assessmentValues = saved.orgReadiness.details;
             }
             orgReadinessCriteria.forEach(criterion => {
-                if (!assessmentValues[criterion.id]) assessmentValues[criterion.id] = 1;
+                criterion.subCriteria.forEach(subCriterion => {
+                    const key = `${criterion.id}_${subCriterion.id}`;
+                    if (!assessmentValues[key]) assessmentValues[key] = 1;
+                });
             });
             renderCriteria();
             updateAggregatedScore();
         }
         function renderCriteria() {
             const container = document.getElementById('criteriaContainer');
-            container.innerHTML = orgReadinessCriteria.map(criterion => `
+            container.innerHTML = orgReadinessCriteria.map(criterion => {
+                const subValues = criterion.subCriteria.map(sub => {
+                    const key = `${criterion.id}_${sub.id}`;
+                    return assessmentValues[key] || 1;
+                });
+                const criterionAverage = (subValues.reduce((sum, val) => sum + val, 0) / subValues.length).toFixed(1);
+                return `
                 <div class="criterion-card">
                     <div class="criterion-header">
                         <div class="criterion-icon"><i class="fas ${criterion.icon}"></i></div>
                         <div class="criterion-title-section">
                             <h3 class="criterion-title">${criterion.title}</h3>
                             <p class="criterion-description">${criterion.description}</p>
-                            <div class="criterion-examples" style="border-left-color: #00f2fe;">
-                                <h5>Beispiele für hohe Bewertung:</h5>
-                                <ul>${criterion.examples.map(ex => `<li>${ex}</li>`).join('')}</ul>
-                            </div>
                         </div>
                     </div>
-                    <div class="slider-section">
-                        <div class="slider-wrapper">
-                            <div class="slider-labels-top">
-                                <span>Widerstand (1)</span>
-                                <span>Sehr bereit (5)</span>
+                    <div class="sub-criteria-container">
+                        ${criterion.subCriteria.map(subCriterion => {
+                            const key = `${criterion.id}_${subCriterion.id}`;
+                            const value = assessmentValues[key] || 1;
+                            return `
+                            <div class="sub-criterion-item" style="border-left-color: #00f2fe;">
+                                <div class="sub-criterion-label">${subCriterion.title}</div>
+                                <div class="sub-criterion-slider-wrapper">
+                                    <input type="range" min="1" max="5" step="1" value="${value}" class="sub-criterion-slider" id="slider-${key}" style="accent-color: #00f2fe;" oninput="updateSubCriterionValue('${criterion.id}', '${subCriterion.id}', this.value)">
+                                    <div class="sub-criterion-value" id="value-${key}">${value}</div>
+                                    <div class="sub-criterion-scale"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
+                                </div>
                             </div>
-                            <input type="range" min="1" max="5" step="1" value="${assessmentValues[criterion.id] || 1}" class="detail-slider" id="slider-${criterion.id}" oninput="updateCriterionValue('${criterion.id}', this.value)">
-                            <div class="slider-value-display" id="value-${criterion.id}">${assessmentValues[criterion.id] || 1}</div>
-                            <div class="slider-scale"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
+                            `;
+                        }).join('')}
+                        <div class="criterion-average">
+                            <span class="criterion-average-label">Durchschnitt für "${criterion.title}":</span>
+                            <span class="criterion-average-value" id="avg-${criterion.id}">${criterionAverage}</span>
                         </div>
                     </div>
                 </div>
-            `).join('');
+                `;
+            }).join('');
         }
-        function updateCriterionValue(criterionId, value) {
-            assessmentValues[criterionId] = parseInt(value);
-            document.getElementById(`value-${criterionId}`).textContent = value;
+        function updateSubCriterionValue(criterionId, subCriterionId, value) {
+            const key = `${criterionId}_${subCriterionId}`;
+            assessmentValues[key] = parseInt(value);
+            document.getElementById(`value-${key}`).textContent = value;
+            const criterion = orgReadinessCriteria.find(c => c.id === criterionId);
+            const subValues = criterion.subCriteria.map(sub => {
+                const subKey = `${criterionId}_${sub.id}`;
+                return assessmentValues[subKey] || 1;
+            });
+            const criterionAverage = (subValues.reduce((sum, val) => sum + val, 0) / subValues.length).toFixed(1);
+            document.getElementById(`avg-${criterionId}`).textContent = criterionAverage;
             updateAggregatedScore();
         }
         function updateAggregatedScore() {
-            const values = Object.values(assessmentValues);
-            const average = (values.reduce((sum, val) => sum + val, 0) / values.length).toFixed(1);
-            document.getElementById('aggregatedScore').textContent = average;
+            const criterionAverages = orgReadinessCriteria.map(criterion => {
+                const subValues = criterion.subCriteria.map(sub => {
+                    const key = `${criterion.id}_${sub.id}`;
+                    return assessmentValues[key] || 1;
+                });
+                return subValues.reduce((sum, val) => sum + val, 0) / subValues.length;
+            });
+            const overallAverage = (criterionAverages.reduce((sum, val) => sum + val, 0) / criterionAverages.length).toFixed(1);
+            document.getElementById('aggregatedScore').textContent = overallAverage;
             let description = '';
-            if (average <= 1.5) description = 'Widerstand - Erhebliche Change Management Maßnahmen erforderlich';
-            else if (average <= 2.5) description = 'Verbesserungswürdig - Grundlagen vorhanden, Change Management nötig';
-            else if (average <= 3.5) description = 'Gut - Solide Basis, weitere Optimierung möglich';
-            else if (average <= 4.5) description = 'Sehr gut - Hohe Bereitschaft, kleine Verbesserungen möglich';
+            if (overallAverage <= 1.5) description = 'Widerstand - Erhebliche Change Management Maßnahmen erforderlich';
+            else if (overallAverage <= 2.5) description = 'Verbesserungswürdig - Grundlagen vorhanden, Change Management nötig';
+            else if (overallAverage <= 3.5) description = 'Gut - Solide Basis, weitere Optimierung möglich';
+            else if (overallAverage <= 4.5) description = 'Sehr gut - Hohe Bereitschaft, kleine Verbesserungen möglich';
             else description = 'Sehr bereit - Hervorragende organisatorische Bereitschaft';
             document.getElementById('scoreDescription').textContent = description;
         }
         function saveAndReturn() {
-            const values = Object.values(assessmentValues);
-            const aggregated = (values.reduce((sum, val) => sum + val, 0) / values.length).toFixed(1);
+            const criterionAverages = orgReadinessCriteria.map(criterion => {
+                const subValues = criterion.subCriteria.map(sub => {
+                    const key = `${criterion.id}_${sub.id}`;
+                    return assessmentValues[key] || 1;
+                });
+                return subValues.reduce((sum, val) => sum + val, 0) / subValues.length;
+            });
+            const aggregated = (criterionAverages.reduce((sum, val) => sum + val, 0) / criterionAverages.length).toFixed(1);
             let saved = JSON.parse(localStorage.getItem('kiDetailAssessments') || '{}');
-            saved.orgReadiness = { aggregated: parseFloat(aggregated), details: assessmentValues, timestamp: new Date().toISOString() };
+            saved.orgReadiness = { 
+                aggregated: parseFloat(aggregated), 
+                details: assessmentValues,
+                criterionAverages: orgReadinessCriteria.map(criterion => {
+                    const subValues = criterion.subCriteria.map(sub => {
+                        const key = `${criterion.id}_${sub.id}`;
+                        return assessmentValues[key] || 1;
+                    });
+                    return {
+                        criterionId: criterion.id,
+                        average: subValues.reduce((sum, val) => sum + val, 0) / subValues.length
+                    };
+                }),
+                timestamp: new Date().toISOString() 
+            };
             localStorage.setItem('kiDetailAssessments', JSON.stringify(saved));
             window.location.href = 'ki-strategie-workflow.html';
         }

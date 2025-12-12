@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <!-- Custom Styles for Detail Assessment -->
+    <link rel="stylesheet" href="css/ki-assessment-detail.css">
     <style>
         .detail-assessment-container {
             max-width: 1200px;
@@ -349,10 +350,11 @@
                 title: 'Datenvollständigkeit',
                 description: 'Wie vollständig sind Ihre HR-Daten? Fehlen wichtige Informationen oder Datensätze?',
                 icon: 'fa-check-circle',
-                examples: [
-                    'Alle Mitarbeiterdaten sind vollständig erfasst',
-                    'Keine fehlenden Felder in kritischen Datensätzen',
-                    'Historische Daten sind vollständig verfügbar'
+                subCriteria: [
+                    { id: 'completeEmployeeData', title: 'Alle Mitarbeiterdaten sind vollständig erfasst' },
+                    { id: 'noMissingFields', title: 'Keine fehlenden Felder in kritischen Datensätzen' },
+                    { id: 'historicalData', title: 'Historische Daten sind vollständig verfügbar' },
+                    { id: 'dataCoverage', title: 'Vollständige Abdeckung aller HR-Prozesse' }
                 ]
             },
             {
@@ -360,10 +362,11 @@
                 title: 'Datenqualität & Genauigkeit',
                 description: 'Wie genau und fehlerfrei sind Ihre HR-Daten? Gibt es Duplikate, Inkonsistenzen oder Fehler?',
                 icon: 'fa-bullseye',
-                examples: [
-                    'Keine Duplikate in Mitarbeiterdaten',
-                    'Konsistente Dateneingabe über alle Systeme',
-                    'Regelmäßige Datenqualitätsprüfungen'
+                subCriteria: [
+                    { id: 'noDuplicates', title: 'Keine Duplikate in Mitarbeiterdaten' },
+                    { id: 'consistentData', title: 'Konsistente Dateneingabe über alle Systeme' },
+                    { id: 'dataQualityChecks', title: 'Regelmäßige Datenqualitätsprüfungen' },
+                    { id: 'errorCorrection', title: 'Schnelle Fehlerkorrekturprozesse' }
                 ]
             },
             {
@@ -371,10 +374,11 @@
                 title: 'System-Integration & Datenverbindung',
                 description: 'Wie gut sind Ihre HR-Systeme integriert? Gibt es eine zentrale Datenquelle oder isolierte Systeme?',
                 icon: 'fa-link',
-                examples: [
-                    'Zentrale HR-Datenplattform vorhanden',
-                    'APIs für System-Integration verfügbar',
-                    'Echtzeit-Synchronisation zwischen Systemen'
+                subCriteria: [
+                    { id: 'centralPlatform', title: 'Zentrale HR-Datenplattform vorhanden' },
+                    { id: 'apiIntegration', title: 'APIs für System-Integration verfügbar' },
+                    { id: 'realtimeSync', title: 'Echtzeit-Synchronisation zwischen Systemen' },
+                    { id: 'dataConsistency', title: 'Konsistente Daten über alle Systeme' }
                 ]
             },
             {
@@ -382,10 +386,11 @@
                 title: 'Datenstruktur & Standardisierung',
                 description: 'Wie strukturiert und standardisiert sind Ihre Daten? Folgen sie einem einheitlichen Schema?',
                 icon: 'fa-sitemap',
-                examples: [
-                    'Einheitliche Datenformate und -strukturen',
-                    'Standardisierte Kategorien und Klassifikationen',
-                    'Datenmodellierung nach Best Practices'
+                subCriteria: [
+                    { id: 'uniformFormats', title: 'Einheitliche Datenformate und -strukturen' },
+                    { id: 'standardizedCategories', title: 'Standardisierte Kategorien und Klassifikationen' },
+                    { id: 'dataModeling', title: 'Datenmodellierung nach Best Practices' },
+                    { id: 'metadata', title: 'Vollständige Metadaten und Dokumentation' }
                 ]
             },
             {
@@ -393,10 +398,11 @@
                 title: 'Datenzugriff & Verfügbarkeit',
                 description: 'Wie einfach ist der Zugriff auf HR-Daten? Gibt es technische oder organisatorische Barrieren?',
                 icon: 'fa-unlock',
-                examples: [
-                    'Selbstbedienungszugriff für autorisierte Nutzer',
-                    'Schnelle Datenabfragen möglich',
-                    'Keine langwierigen Genehmigungsprozesse'
+                subCriteria: [
+                    { id: 'selfServiceAccess', title: 'Selbstbedienungszugriff für autorisierte Nutzer' },
+                    { id: 'fastQueries', title: 'Schnelle Datenabfragen möglich' },
+                    { id: 'noLongProcesses', title: 'Keine langwierigen Genehmigungsprozesse' },
+                    { id: 'dataPortals', title: 'Benutzerfreundliche Datenportale verfügbar' }
                 ]
             },
             {
@@ -404,10 +410,11 @@
                 title: 'Daten-Governance & Verantwortlichkeiten',
                 description: 'Gibt es klare Verantwortlichkeiten und Prozesse für Datenqualität und -pflege?',
                 icon: 'fa-shield-alt',
-                examples: [
-                    'Klare Datenverantwortlichkeiten definiert',
-                    'Regelmäßige Datenqualitätsreviews',
-                    'Dokumentierte Datenqualitätsstandards'
+                subCriteria: [
+                    { id: 'clearResponsibilities', title: 'Klare Datenverantwortlichkeiten definiert' },
+                    { id: 'regularReviews', title: 'Regelmäßige Datenqualitätsreviews' },
+                    { id: 'documentedStandards', title: 'Dokumentierte Datenqualitätsstandards' },
+                    { id: 'governanceFramework', title: 'Etabliertes Daten-Governance-Framework' }
                 ]
             },
             {
@@ -415,10 +422,11 @@
                 title: 'Echtzeit-Datenverfügbarkeit',
                 description: 'Wie aktuell sind Ihre Daten? Gibt es Echtzeit-Updates oder verzögerte Synchronisation?',
                 icon: 'fa-clock',
-                examples: [
-                    'Echtzeit-Updates bei Datenänderungen',
-                    'Minimale Verzögerung bei Datensynchronisation',
-                    'Aktuelle Daten für alle Stakeholder verfügbar'
+                subCriteria: [
+                    { id: 'realtimeUpdates', title: 'Echtzeit-Updates bei Datenänderungen' },
+                    { id: 'minimalDelay', title: 'Minimale Verzögerung bei Datensynchronisation' },
+                    { id: 'currentData', title: 'Aktuelle Daten für alle Stakeholder verfügbar' },
+                    { id: 'dataFreshness', title: 'Hohe Datenaktualität (Data Freshness)' }
                 ]
             },
             {
@@ -426,10 +434,11 @@
                 title: 'Datensicherheit & Compliance',
                 description: 'Wie sicher sind Ihre HR-Daten? Gibt es angemessene Sicherheitsmaßnahmen und Compliance?',
                 icon: 'fa-lock',
-                examples: [
-                    'Verschlüsselte Datenspeicherung',
-                    'Zugriffskontrollen und Berechtigungen',
-                    'DSGVO-konforme Datenverarbeitung'
+                subCriteria: [
+                    { id: 'encryptedStorage', title: 'Verschlüsselte Datenspeicherung' },
+                    { id: 'accessControls', title: 'Zugriffskontrollen und Berechtigungen' },
+                    { id: 'gdprCompliance', title: 'DSGVO-konforme Datenverarbeitung' },
+                    { id: 'securityMonitoring', title: 'Kontinuierliches Sicherheitsmonitoring' }
                 ]
             }
         ];
@@ -437,17 +446,19 @@
         let assessmentValues = {};
         
         function initializeAssessment() {
-            // Load saved values
             const saved = JSON.parse(localStorage.getItem('kiDetailAssessments') || '{}');
             if (saved.dataQuality && saved.dataQuality.details) {
                 assessmentValues = saved.dataQuality.details;
             }
             
-            // Initialize all criteria with default value 1
+            // Initialize sub-criteria values if not present
             dataQualityCriteria.forEach(criterion => {
-                if (!assessmentValues[criterion.id]) {
-                    assessmentValues[criterion.id] = 1;
-                }
+                criterion.subCriteria.forEach(subCriterion => {
+                    const key = `${criterion.id}_${subCriterion.id}`;
+                    if (!assessmentValues[key]) {
+                        assessmentValues[key] = 1;
+                    }
+                });
             });
             
             renderCriteria();
@@ -456,7 +467,15 @@
         
         function renderCriteria() {
             const container = document.getElementById('criteriaContainer');
-            container.innerHTML = dataQualityCriteria.map(criterion => `
+            container.innerHTML = dataQualityCriteria.map(criterion => {
+                // Calculate average for this criterion
+                const subValues = criterion.subCriteria.map(sub => {
+                    const key = `${criterion.id}_${sub.id}`;
+                    return assessmentValues[key] || 1;
+                });
+                const criterionAverage = (subValues.reduce((sum, val) => sum + val, 0) / subValues.length).toFixed(1);
+                
+                return `
                 <div class="criterion-card">
                     <div class="criterion-header">
                         <div class="criterion-icon">
@@ -465,65 +484,88 @@
                         <div class="criterion-title-section">
                             <h3 class="criterion-title">${criterion.title}</h3>
                             <p class="criterion-description">${criterion.description}</p>
-                            <div class="criterion-examples" style="border-left-color: #764ba2;">
-                                <h5>Beispiele für hohe Bewertung:</h5>
-                                <ul>
-                                    ${criterion.examples.map(ex => `<li>${ex}</li>`).join('')}
-                                </ul>
-                            </div>
                         </div>
                     </div>
-                    <div class="slider-section">
-                        <div class="slider-wrapper">
-                            <div class="slider-labels-top">
-                                <span>Mangelhaft (1)</span>
-                                <span>Exzellent (5)</span>
+                    <div class="sub-criteria-container">
+                        ${criterion.subCriteria.map(subCriterion => {
+                            const key = `${criterion.id}_${subCriterion.id}`;
+                            const value = assessmentValues[key] || 1;
+                            return `
+                            <div class="sub-criterion-item" style="border-left-color: #764ba2;">
+                                <div class="sub-criterion-label">${subCriterion.title}</div>
+                                <div class="sub-criterion-slider-wrapper">
+                                    <input 
+                                        type="range" 
+                                        min="1" 
+                                        max="5" 
+                                        step="1"
+                                        value="${value}"
+                                        class="sub-criterion-slider" 
+                                        id="slider-${key}"
+                                        style="accent-color: #764ba2;"
+                                        oninput="updateSubCriterionValue('${criterion.id}', '${subCriterion.id}', this.value)"
+                                    >
+                                    <div class="sub-criterion-value" id="value-${key}">${value}</div>
+                                    <div class="sub-criterion-scale">
+                                        <span>1</span>
+                                        <span>2</span>
+                                        <span>3</span>
+                                        <span>4</span>
+                                        <span>5</span>
+                                    </div>
+                                </div>
                             </div>
-                            <input 
-                                type="range" 
-                                min="1" 
-                                max="5" 
-                                step="1"
-                                value="${assessmentValues[criterion.id] || 1}"
-                                class="detail-slider" 
-                                id="slider-${criterion.id}"
-                                oninput="updateCriterionValue('${criterion.id}', this.value)"
-                            >
-                            <div class="slider-value-display" id="value-${criterion.id}">${assessmentValues[criterion.id] || 1}</div>
-                            <div class="slider-scale">
-                                <span>1</span>
-                                <span>2</span>
-                                <span>3</span>
-                                <span>4</span>
-                                <span>5</span>
-                            </div>
+                            `;
+                        }).join('')}
+                        <div class="criterion-average">
+                            <span class="criterion-average-label">Durchschnitt für "${criterion.title}":</span>
+                            <span class="criterion-average-value" id="avg-${criterion.id}">${criterionAverage}</span>
                         </div>
                     </div>
                 </div>
-            `).join('');
+                `;
+            }).join('');
         }
         
-        function updateCriterionValue(criterionId, value) {
-            assessmentValues[criterionId] = parseInt(value);
-            document.getElementById(`value-${criterionId}`).textContent = value;
+        function updateSubCriterionValue(criterionId, subCriterionId, value) {
+            const key = `${criterionId}_${subCriterionId}`;
+            assessmentValues[key] = parseInt(value);
+            document.getElementById(`value-${key}`).textContent = value;
+            
+            // Update criterion average
+            const criterion = dataQualityCriteria.find(c => c.id === criterionId);
+            const subValues = criterion.subCriteria.map(sub => {
+                const subKey = `${criterionId}_${sub.id}`;
+                return assessmentValues[subKey] || 1;
+            });
+            const criterionAverage = (subValues.reduce((sum, val) => sum + val, 0) / subValues.length).toFixed(1);
+            document.getElementById(`avg-${criterionId}`).textContent = criterionAverage;
+            
             updateAggregatedScore();
         }
         
         function updateAggregatedScore() {
-            const values = Object.values(assessmentValues);
-            const average = values.reduce((sum, val) => sum + val, 0) / values.length;
-            const roundedAverage = average.toFixed(1);
+            // Calculate average for each main criterion, then overall average
+            const criterionAverages = dataQualityCriteria.map(criterion => {
+                const subValues = criterion.subCriteria.map(sub => {
+                    const key = `${criterion.id}_${sub.id}`;
+                    return assessmentValues[key] || 1;
+                });
+                return subValues.reduce((sum, val) => sum + val, 0) / subValues.length;
+            });
             
-            document.getElementById('aggregatedScore').textContent = roundedAverage;
+            const overallAverage = (criterionAverages.reduce((sum, val) => sum + val, 0) / criterionAverages.length).toFixed(1);
+            
+            document.getElementById('aggregatedScore').textContent = overallAverage;
             
             let description = '';
-            if (roundedAverage <= 1.5) {
+            if (overallAverage <= 1.5) {
                 description = 'Mangelhaft - Erhebliche Verbesserungen erforderlich';
-            } else if (roundedAverage <= 2.5) {
+            } else if (overallAverage <= 2.5) {
                 description = 'Verbesserungswürdig - Grundlagen vorhanden, Optimierung nötig';
-            } else if (roundedAverage <= 3.5) {
+            } else if (overallAverage <= 3.5) {
                 description = 'Gut - Solide Basis, weitere Optimierung möglich';
-            } else if (roundedAverage <= 4.5) {
+            } else if (overallAverage <= 4.5) {
                 description = 'Sehr gut - Hohe Datenqualität, kleine Verbesserungen möglich';
             } else {
                 description = 'Exzellent - Hervorragende Datenqualität für KI-Projekte';
@@ -533,20 +575,35 @@
         }
         
         function saveAndReturn() {
-            // Calculate aggregated value
-            const values = Object.values(assessmentValues);
-            const aggregated = (values.reduce((sum, val) => sum + val, 0) / values.length).toFixed(1);
+            // Calculate overall average from criterion averages
+            const criterionAverages = dataQualityCriteria.map(criterion => {
+                const subValues = criterion.subCriteria.map(sub => {
+                    const key = `${criterion.id}_${sub.id}`;
+                    return assessmentValues[key] || 1;
+                });
+                return subValues.reduce((sum, val) => sum + val, 0) / subValues.length;
+            });
             
-            // Save to localStorage
+            const aggregated = (criterionAverages.reduce((sum, val) => sum + val, 0) / criterionAverages.length).toFixed(1);
+            
             let saved = JSON.parse(localStorage.getItem('kiDetailAssessments') || '{}');
             saved.dataQuality = {
                 aggregated: parseFloat(aggregated),
                 details: assessmentValues,
+                criterionAverages: dataQualityCriteria.map(criterion => {
+                    const subValues = criterion.subCriteria.map(sub => {
+                        const key = `${criterion.id}_${sub.id}`;
+                        return assessmentValues[key] || 1;
+                    });
+                    return {
+                        criterionId: criterion.id,
+                        average: subValues.reduce((sum, val) => sum + val, 0) / subValues.length
+                    };
+                }),
                 timestamp: new Date().toISOString()
             };
             localStorage.setItem('kiDetailAssessments', JSON.stringify(saved));
             
-            // Return to workflow page
             window.location.href = 'ki-strategie-workflow.html';
         }
         
