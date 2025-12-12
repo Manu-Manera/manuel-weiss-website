@@ -1445,7 +1445,20 @@ Entwickelt mit Harvard & MIT Methodologie`;
             workflowExporter = new AssessmentExporter();
             
             // Setup click handlers for assessment categories as fallback
-            document.querySelectorAll('.clickable-category').forEach(category => {
+            const categories = document.querySelectorAll('.clickable-category');
+            console.log('Found', categories.length, 'clickable categories');
+            
+            categories.forEach((category, index) => {
+                // Extract dimension from onclick and store in data attribute
+                const onclick = category.getAttribute('onclick');
+                const dimensionMatch = onclick ? onclick.match(/openDetailAssessment\('([^']+)'\)/) : null;
+                const dimension = dimensionMatch ? dimensionMatch[1] : category.getAttribute('data-dimension');
+                
+                if (dimension) {
+                    category.setAttribute('data-dimension', dimension);
+                    console.log(`Category ${index + 1} dimension:`, dimension);
+                }
+                
                 category.addEventListener('click', function(e) {
                     // Don't trigger if clicking on slider, slider container, or slider labels
                     const clickedElement = e.target;
@@ -1455,29 +1468,25 @@ Entwickelt mit Harvard & MIT Methodologie`;
                         clickedElement.closest('input[type="range"]') ||
                         clickedElement.closest('.slider-labels') ||
                         clickedElement.closest('.slider-value-display')) {
+                        console.log('Click on slider, ignoring');
                         return;
                     }
                     
-                    // Get dimension from onclick attribute or data attribute
-                    let dimension = null;
-                    const onclick = this.getAttribute('onclick');
-                    if (onclick) {
-                        const match = onclick.match(/openDetailAssessment\('([^']+)'\)/);
-                        if (match) {
-                            dimension = match[1];
-                        }
-                    }
+                    // Get dimension from data attribute or onclick
+                    const dim = this.getAttribute('data-dimension') || 
+                               (this.getAttribute('onclick')?.match(/openDetailAssessment\('([^']+)'\)/)?.[1]);
                     
-                    // Fallback: try to get from data attribute
-                    if (!dimension) {
-                        dimension = this.getAttribute('data-dimension');
-                    }
-                    
-                    if (dimension) {
+                    if (dim) {
                         e.preventDefault();
                         e.stopPropagation();
-                        console.log('Opening detail assessment for:', dimension);
-                        window.openDetailAssessment(dimension);
+                        console.log('Opening detail assessment for:', dim);
+                        if (window.openDetailAssessment) {
+                            window.openDetailAssessment(dim);
+                        } else {
+                            console.error('window.openDetailAssessment is not defined!');
+                        }
+                    } else {
+                        console.warn('No dimension found for category');
                     }
                 }, true); // Use capture phase to ensure it fires
             });
