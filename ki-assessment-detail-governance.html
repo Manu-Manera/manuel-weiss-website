@@ -58,14 +58,54 @@
     </div>
     <script>
         const governanceCriteria = [
-            { id: 'gdprCompliance', title: 'DSGVO-Konformität', description: 'Wie gut ist Ihre Organisation auf DSGVO-Anforderungen für KI vorbereitet?', icon: 'fa-gavel', examples: ['DSGVO-konforme Datenverarbeitung', 'Rechtliche Grundlagen für KI-Projekte', 'Datenschutz-Folgenabschätzungen durchgeführt'] },
-            { id: 'ethicsGuidelines', title: 'Ethik-Richtlinien', description: 'Gibt es klare Ethik-Richtlinien für den Einsatz von KI?', icon: 'fa-balance-scale', examples: ['Ethik-Richtlinien für KI definiert', 'Ethik-Komitee oder Review-Prozesse', 'Transparente KI-Entscheidungen'] },
-            { id: 'dataGovernance', title: 'Daten-Governance', description: 'Wie gut ist Ihre Daten-Governance für KI-Projekte organisiert?', icon: 'fa-database', examples: ['Klare Datenverantwortlichkeiten', 'Datenqualitätsstandards definiert', 'Datenlebenszyklus-Management'] },
-            { id: 'riskManagement', title: 'Risikomanagement', description: 'Wie gut ist das Risikomanagement für KI-Projekte?', icon: 'fa-exclamation-triangle', examples: ['Risiko-Assessments für KI-Projekte', 'Mitigation-Strategien vorhanden', 'Regelmäßige Risiko-Reviews'] },
-            { id: 'auditTrail', title: 'Audit-Trail & Nachverfolgbarkeit', description: 'Gibt es vollständige Nachverfolgbarkeit von KI-Entscheidungen?', icon: 'fa-clipboard-list', examples: ['Vollständige Dokumentation von KI-Modellen', 'Nachvollziehbare Entscheidungsprozesse', 'Audit-Logs für alle KI-Aktivitäten'] },
-            { id: 'biasMitigation', title: 'Bias-Mitigation', description: 'Wie gut geht Ihre Organisation mit Bias in KI-Systemen um?', icon: 'fa-equals', examples: ['Bias-Tests für KI-Modelle', 'Diverse Trainingsdaten', 'Regelmäßige Fairness-Überprüfungen'] },
-            { id: 'transparency', title: 'Transparenz & Erklärbarkeit', description: 'Wie transparent und erklärbar sind Ihre KI-Systeme?', icon: 'fa-eye', examples: ['Erklärbare KI-Modelle (XAI)', 'Transparente Kommunikation über KI-Nutzung', 'Nachvollziehbare Entscheidungen'] },
-            { id: 'complianceMonitoring', title: 'Compliance-Monitoring', description: 'Wie gut wird die Compliance kontinuierlich überwacht?', icon: 'fa-search', examples: ['Regelmäßige Compliance-Audits', 'Automatisierte Compliance-Checks', 'Kontinuierliche Überwachung'] }
+            { id: 'gdprCompliance', title: 'DSGVO-Konformität', description: 'Wie gut ist Ihre Organisation auf DSGVO-Anforderungen für KI vorbereitet?', icon: 'fa-gavel', subCriteria: [
+                { id: 'gdprDataProcessing', title: 'DSGVO-konforme Datenverarbeitung' },
+                { id: 'legalBasis', title: 'Rechtliche Grundlagen für KI-Projekte' },
+                { id: 'privacyImpact', title: 'Datenschutz-Folgenabschätzungen durchgeführt' },
+                { id: 'dataSubjectRights', title: 'Respektierung der Betroffenenrechte' }
+            ]},
+            { id: 'ethicsGuidelines', title: 'Ethik-Richtlinien', description: 'Gibt es klare Ethik-Richtlinien für den Einsatz von KI?', icon: 'fa-balance-scale', subCriteria: [
+                { id: 'ethicsDefined', title: 'Ethik-Richtlinien für KI definiert' },
+                { id: 'ethicsCommittee', title: 'Ethik-Komitee oder Review-Prozesse' },
+                { id: 'transparentDecisions', title: 'Transparente KI-Entscheidungen' },
+                { id: 'ethicsTraining', title: 'Ethik-Schulungen für Mitarbeitende' }
+            ]},
+            { id: 'dataGovernance', title: 'Daten-Governance', description: 'Wie gut ist Ihre Daten-Governance für KI-Projekte organisiert?', icon: 'fa-database', subCriteria: [
+                { id: 'clearResponsibilities', title: 'Klare Datenverantwortlichkeiten' },
+                { id: 'qualityStandards', title: 'Datenqualitätsstandards definiert' },
+                { id: 'dataLifecycle', title: 'Datenlebenszyklus-Management' },
+                { id: 'dataCatalog', title: 'Datenkatalog oder Dateninventar vorhanden' }
+            ]},
+            { id: 'riskManagement', title: 'Risikomanagement', description: 'Wie gut ist das Risikomanagement für KI-Projekte?', icon: 'fa-exclamation-triangle', subCriteria: [
+                { id: 'riskAssessments', title: 'Risiko-Assessments für KI-Projekte' },
+                { id: 'mitigationStrategies', title: 'Mitigation-Strategien vorhanden' },
+                { id: 'regularReviews', title: 'Regelmäßige Risiko-Reviews' },
+                { id: 'riskFramework', title: 'Etabliertes Risikomanagement-Framework' }
+            ]},
+            { id: 'auditTrail', title: 'Audit-Trail & Nachverfolgbarkeit', description: 'Gibt es vollständige Nachverfolgbarkeit von KI-Entscheidungen?', icon: 'fa-clipboard-list', subCriteria: [
+                { id: 'modelDocumentation', title: 'Vollständige Dokumentation von KI-Modellen' },
+                { id: 'traceableProcesses', title: 'Nachvollziehbare Entscheidungsprozesse' },
+                { id: 'auditLogs', title: 'Audit-Logs für alle KI-Aktivitäten' },
+                { id: 'versionControl', title: 'Versionskontrolle für KI-Modelle' }
+            ]},
+            { id: 'biasMitigation', title: 'Bias-Mitigation', description: 'Wie gut geht Ihre Organisation mit Bias in KI-Systemen um?', icon: 'fa-equals', subCriteria: [
+                { id: 'biasTests', title: 'Bias-Tests für KI-Modelle' },
+                { id: 'diverseData', title: 'Diverse Trainingsdaten' },
+                { id: 'fairnessChecks', title: 'Regelmäßige Fairness-Überprüfungen' },
+                { id: 'biasMonitoring', title: 'Kontinuierliches Bias-Monitoring' }
+            ]},
+            { id: 'transparency', title: 'Transparenz & Erklärbarkeit', description: 'Wie transparent und erklärbar sind Ihre KI-Systeme?', icon: 'fa-eye', subCriteria: [
+                { id: 'explainableAi', title: 'Erklärbare KI-Modelle (XAI)' },
+                { id: 'transparentCommunication', title: 'Transparente Kommunikation über KI-Nutzung' },
+                { id: 'understandableDecisions', title: 'Nachvollziehbare Entscheidungen' },
+                { id: 'aiDisclosure', title: 'Klare Offenlegung von KI-Nutzung' }
+            ]},
+            { id: 'complianceMonitoring', title: 'Compliance-Monitoring', description: 'Wie gut wird die Compliance kontinuierlich überwacht?', icon: 'fa-search', subCriteria: [
+                { id: 'regularAudits', title: 'Regelmäßige Compliance-Audits' },
+                { id: 'automatedChecks', title: 'Automatisierte Compliance-Checks' },
+                { id: 'continuousMonitoring', title: 'Kontinuierliche Überwachung' },
+                { id: 'complianceReporting', title: 'Regelmäßige Compliance-Berichterstattung' }
+            ]}
         ];
         let assessmentValues = {};
         function initializeAssessment() {
@@ -74,62 +114,111 @@
                 assessmentValues = saved.governance.details;
             }
             governanceCriteria.forEach(criterion => {
-                if (!assessmentValues[criterion.id]) assessmentValues[criterion.id] = 1;
+                criterion.subCriteria.forEach(subCriterion => {
+                    const key = `${criterion.id}_${subCriterion.id}`;
+                    if (!assessmentValues[key]) assessmentValues[key] = 1;
+                });
             });
             renderCriteria();
             updateAggregatedScore();
         }
         function renderCriteria() {
             const container = document.getElementById('criteriaContainer');
-            container.innerHTML = governanceCriteria.map(criterion => `
+            container.innerHTML = governanceCriteria.map(criterion => {
+                const subValues = criterion.subCriteria.map(sub => {
+                    const key = `${criterion.id}_${sub.id}`;
+                    return assessmentValues[key] || 1;
+                });
+                const criterionAverage = (subValues.reduce((sum, val) => sum + val, 0) / subValues.length).toFixed(1);
+                return `
                 <div class="criterion-card">
                     <div class="criterion-header">
                         <div class="criterion-icon"><i class="fas ${criterion.icon}"></i></div>
                         <div class="criterion-title-section">
                             <h3 class="criterion-title">${criterion.title}</h3>
                             <p class="criterion-description">${criterion.description}</p>
-                            <div class="criterion-examples" style="border-left-color: #fee140;">
-                                <h5>Beispiele für hohe Bewertung:</h5>
-                                <ul>${criterion.examples.map(ex => `<li>${ex}</li>`).join('')}</ul>
-                            </div>
                         </div>
                     </div>
-                    <div class="slider-section">
-                        <div class="slider-wrapper">
-                            <div class="slider-labels-top">
-                                <span>Unvollständig (1)</span>
-                                <span>Vollständig (5)</span>
+                    <div class="sub-criteria-container">
+                        ${criterion.subCriteria.map(subCriterion => {
+                            const key = `${criterion.id}_${subCriterion.id}`;
+                            const value = assessmentValues[key] || 1;
+                            return `
+                            <div class="sub-criterion-item" style="border-left-color: #fee140;">
+                                <div class="sub-criterion-label">${subCriterion.title}</div>
+                                <div class="sub-criterion-slider-wrapper">
+                                    <input type="range" min="1" max="5" step="1" value="${value}" class="sub-criterion-slider" id="slider-${key}" style="accent-color: #fee140;" oninput="updateSubCriterionValue('${criterion.id}', '${subCriterion.id}', this.value)">
+                                    <div class="sub-criterion-value" id="value-${key}">${value}</div>
+                                    <div class="sub-criterion-scale"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
+                                </div>
                             </div>
-                            <input type="range" min="1" max="5" step="1" value="${assessmentValues[criterion.id] || 1}" class="detail-slider" id="slider-${criterion.id}" oninput="updateCriterionValue('${criterion.id}', this.value)">
-                            <div class="slider-value-display" id="value-${criterion.id}">${assessmentValues[criterion.id] || 1}</div>
-                            <div class="slider-scale"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
+                            `;
+                        }).join('')}
+                        <div class="criterion-average">
+                            <span class="criterion-average-label">Durchschnitt für "${criterion.title}":</span>
+                            <span class="criterion-average-value" id="avg-${criterion.id}">${criterionAverage}</span>
                         </div>
                     </div>
                 </div>
-            `).join('');
+                `;
+            }).join('');
         }
-        function updateCriterionValue(criterionId, value) {
-            assessmentValues[criterionId] = parseInt(value);
-            document.getElementById(`value-${criterionId}`).textContent = value;
+        function updateSubCriterionValue(criterionId, subCriterionId, value) {
+            const key = `${criterionId}_${subCriterionId}`;
+            assessmentValues[key] = parseInt(value);
+            document.getElementById(`value-${key}`).textContent = value;
+            const criterion = governanceCriteria.find(c => c.id === criterionId);
+            const subValues = criterion.subCriteria.map(sub => {
+                const subKey = `${criterionId}_${sub.id}`;
+                return assessmentValues[subKey] || 1;
+            });
+            const criterionAverage = (subValues.reduce((sum, val) => sum + val, 0) / subValues.length).toFixed(1);
+            document.getElementById(`avg-${criterionId}`).textContent = criterionAverage;
             updateAggregatedScore();
         }
         function updateAggregatedScore() {
-            const values = Object.values(assessmentValues);
-            const average = (values.reduce((sum, val) => sum + val, 0) / values.length).toFixed(1);
-            document.getElementById('aggregatedScore').textContent = average;
+            const criterionAverages = governanceCriteria.map(criterion => {
+                const subValues = criterion.subCriteria.map(sub => {
+                    const key = `${criterion.id}_${sub.id}`;
+                    return assessmentValues[key] || 1;
+                });
+                return subValues.reduce((sum, val) => sum + val, 0) / subValues.length;
+            });
+            const overallAverage = (criterionAverages.reduce((sum, val) => sum + val, 0) / criterionAverages.length).toFixed(1);
+            document.getElementById('aggregatedScore').textContent = overallAverage;
             let description = '';
-            if (average <= 1.5) description = 'Unvollständig - Erhebliche Governance-Maßnahmen erforderlich';
-            else if (average <= 2.5) description = 'Verbesserungswürdig - Grundlagen vorhanden, Governance-Aufbau nötig';
-            else if (average <= 3.5) description = 'Gut - Solide Basis, weitere Optimierung möglich';
-            else if (average <= 4.5) description = 'Sehr gut - Hohe Governance, kleine Verbesserungen möglich';
+            if (overallAverage <= 1.5) description = 'Unvollständig - Erhebliche Governance-Maßnahmen erforderlich';
+            else if (overallAverage <= 2.5) description = 'Verbesserungswürdig - Grundlagen vorhanden, Governance-Aufbau nötig';
+            else if (overallAverage <= 3.5) description = 'Gut - Solide Basis, weitere Optimierung möglich';
+            else if (overallAverage <= 4.5) description = 'Sehr gut - Hohe Governance, kleine Verbesserungen möglich';
             else description = 'Vollständig - Hervorragende Governance & Compliance';
             document.getElementById('scoreDescription').textContent = description;
         }
         function saveAndReturn() {
-            const values = Object.values(assessmentValues);
-            const aggregated = (values.reduce((sum, val) => sum + val, 0) / values.length).toFixed(1);
+            const criterionAverages = governanceCriteria.map(criterion => {
+                const subValues = criterion.subCriteria.map(sub => {
+                    const key = `${criterion.id}_${sub.id}`;
+                    return assessmentValues[key] || 1;
+                });
+                return subValues.reduce((sum, val) => sum + val, 0) / subValues.length;
+            });
+            const aggregated = (criterionAverages.reduce((sum, val) => sum + val, 0) / criterionAverages.length).toFixed(1);
             let saved = JSON.parse(localStorage.getItem('kiDetailAssessments') || '{}');
-            saved.governance = { aggregated: parseFloat(aggregated), details: assessmentValues, timestamp: new Date().toISOString() };
+            saved.governance = { 
+                aggregated: parseFloat(aggregated), 
+                details: assessmentValues,
+                criterionAverages: governanceCriteria.map(criterion => {
+                    const subValues = criterion.subCriteria.map(sub => {
+                        const key = `${criterion.id}_${sub.id}`;
+                        return assessmentValues[key] || 1;
+                    });
+                    return {
+                        criterionId: criterion.id,
+                        average: subValues.reduce((sum, val) => sum + val, 0) / subValues.length
+                    };
+                }),
+                timestamp: new Date().toISOString() 
+            };
             localStorage.setItem('kiDetailAssessments', JSON.stringify(saved));
             window.location.href = 'ki-strategie-workflow.html';
         }

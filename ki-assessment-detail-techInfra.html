@@ -98,10 +98,11 @@
                 title: 'Cloud-Infrastruktur',
                 description: 'Wie modern ist Ihre Cloud-Infrastruktur? Nutzen Sie Cloud-Services für Skalierbarkeit und Flexibilität?',
                 icon: 'fa-cloud',
-                examples: [
-                    'Cloud-basierte HR-Systeme im Einsatz',
-                    'Skalierbare Cloud-Infrastruktur verfügbar',
-                    'Multi-Cloud oder Hybrid-Cloud Strategie'
+                subCriteria: [
+                    { id: 'cloudHrSystems', title: 'Cloud-basierte HR-Systeme im Einsatz' },
+                    { id: 'scalableCloud', title: 'Skalierbare Cloud-Infrastruktur verfügbar' },
+                    { id: 'multiCloudStrategy', title: 'Multi-Cloud oder Hybrid-Cloud Strategie' },
+                    { id: 'cloudGovernance', title: 'Cloud-Governance und Best Practices etabliert' }
                 ]
             },
             {
@@ -109,10 +110,11 @@
                 title: 'API-Integration & Schnittstellen',
                 description: 'Wie gut sind Ihre Systeme über APIs verbunden? Gibt es moderne REST/GraphQL APIs?',
                 icon: 'fa-plug',
-                examples: [
-                    'Moderne REST oder GraphQL APIs verfügbar',
-                    'Dokumentierte API-Schnittstellen',
-                    'Einfache Integration neuer Systeme möglich'
+                subCriteria: [
+                    { id: 'modernApis', title: 'Moderne REST oder GraphQL APIs verfügbar' },
+                    { id: 'documentedApis', title: 'Dokumentierte API-Schnittstellen' },
+                    { id: 'easyIntegration', title: 'Einfache Integration neuer Systeme möglich' },
+                    { id: 'apiSecurity', title: 'API-Sicherheit und Authentifizierung implementiert' }
                 ]
             },
             {
@@ -120,10 +122,11 @@
                 title: 'System-Integration & Datenfluss',
                 description: 'Wie gut sind Ihre HR-Systeme untereinander integriert? Gibt es nahtlosen Datenfluss?',
                 icon: 'fa-network-wired',
-                examples: [
-                    'Nahtlose Integration zwischen HR-Systemen',
-                    'Automatisierter Datenfluss zwischen Systemen',
-                    'Keine manuellen Datenübertragungen nötig'
+                subCriteria: [
+                    { id: 'seamlessIntegration', title: 'Nahtlose Integration zwischen HR-Systemen' },
+                    { id: 'automatedDataflow', title: 'Automatisierter Datenfluss zwischen Systemen' },
+                    { id: 'noManualTransfer', title: 'Keine manuellen Datenübertragungen nötig' },
+                    { id: 'realTimeSync', title: 'Echtzeit-Synchronisation zwischen Systemen' }
                 ]
             },
             {
@@ -131,10 +134,11 @@
                 title: 'Skalierbarkeit & Performance',
                 description: 'Kann Ihre Infrastruktur mit wachsenden Datenmengen und Nutzern mithalten?',
                 icon: 'fa-chart-line',
-                examples: [
-                    'Automatische Skalierung bei Lastspitzen',
-                    'Hohe Performance auch bei großen Datenmengen',
-                    'Elastische Ressourcenallokation'
+                subCriteria: [
+                    { id: 'autoScaling', title: 'Automatische Skalierung bei Lastspitzen' },
+                    { id: 'highPerformance', title: 'Hohe Performance auch bei großen Datenmengen' },
+                    { id: 'elasticResources', title: 'Elastische Ressourcenallokation' },
+                    { id: 'loadBalancing', title: 'Load Balancing und Performance-Optimierung' }
                 ]
             },
             {
@@ -142,10 +146,11 @@
                 title: 'Sicherheitsinfrastruktur',
                 description: 'Wie sicher ist Ihre technische Infrastruktur? Gibt es moderne Sicherheitsmaßnahmen?',
                 icon: 'fa-shield-alt',
-                examples: [
-                    'Moderne Verschlüsselungstechnologien',
-                    'Identity & Access Management (IAM)',
-                    'Regelmäßige Sicherheitsaudits'
+                subCriteria: [
+                    { id: 'modernEncryption', title: 'Moderne Verschlüsselungstechnologien' },
+                    { id: 'iam', title: 'Identity & Access Management (IAM)' },
+                    { id: 'securityAudits', title: 'Regelmäßige Sicherheitsaudits' },
+                    { id: 'threatDetection', title: 'Threat Detection und Incident Response' }
                 ]
             },
             {
@@ -153,10 +158,11 @@
                 title: 'Datenspeicherung & -architektur',
                 description: 'Wie ist Ihre Datenarchitektur aufgebaut? Gibt es moderne Datenbanken und Storage-Lösungen?',
                 icon: 'fa-database',
-                examples: [
-                    'Moderne Datenbanktechnologien (SQL/NoSQL)',
-                    'Data Warehouse oder Data Lake vorhanden',
-                    'Effiziente Datenabfragen möglich'
+                subCriteria: [
+                    { id: 'modernDatabases', title: 'Moderne Datenbanktechnologien (SQL/NoSQL)' },
+                    { id: 'dataWarehouse', title: 'Data Warehouse oder Data Lake vorhanden' },
+                    { id: 'efficientQueries', title: 'Effiziente Datenabfragen möglich' },
+                    { id: 'dataBackup', title: 'Backup- und Disaster-Recovery-Strategien' }
                 ]
             },
             {
@@ -164,10 +170,11 @@
                 title: 'Monitoring & Observability',
                 description: 'Wie gut können Sie Ihre Systeme überwachen? Gibt es moderne Monitoring-Tools?',
                 icon: 'fa-chart-area',
-                examples: [
-                    'Echtzeit-Monitoring der Systeme',
-                    'Logging und Tracing verfügbar',
-                    'Proaktive Fehlererkennung'
+                subCriteria: [
+                    { id: 'realtimeMonitoring', title: 'Echtzeit-Monitoring der Systeme' },
+                    { id: 'loggingTracing', title: 'Logging und Tracing verfügbar' },
+                    { id: 'proactiveDetection', title: 'Proaktive Fehlererkennung' },
+                    { id: 'performanceMetrics', title: 'Umfassende Performance-Metriken' }
                 ]
             },
             {
@@ -175,10 +182,11 @@
                 title: 'Technologie-Modernisierung',
                 description: 'Wie aktuell sind Ihre Technologien? Werden veraltete Systeme kontinuierlich modernisiert?',
                 icon: 'fa-sync-alt',
-                examples: [
-                    'Regelmäßige Technologie-Updates',
-                    'Migration weg von Legacy-Systemen',
-                    'Adoption moderner Technologien'
+                subCriteria: [
+                    { id: 'regularUpdates', title: 'Regelmäßige Technologie-Updates' },
+                    { id: 'legacyMigration', title: 'Migration weg von Legacy-Systemen' },
+                    { id: 'modernAdoption', title: 'Adoption moderner Technologien' },
+                    { id: 'techRoadmap', title: 'Klare Technologie-Roadmap vorhanden' }
                 ]
             }
         ];
@@ -191,10 +199,14 @@
                 assessmentValues = saved.techInfra.details;
             }
             
+            // Initialize sub-criteria values if not present
             techInfraCriteria.forEach(criterion => {
-                if (!assessmentValues[criterion.id]) {
-                    assessmentValues[criterion.id] = 1;
-                }
+                criterion.subCriteria.forEach(subCriterion => {
+                    const key = `${criterion.id}_${subCriterion.id}`;
+                    if (!assessmentValues[key]) {
+                        assessmentValues[key] = 1;
+                    }
+                });
             });
             
             renderCriteria();
@@ -203,7 +215,15 @@
         
         function renderCriteria() {
             const container = document.getElementById('criteriaContainer');
-            container.innerHTML = techInfraCriteria.map(criterion => `
+            container.innerHTML = techInfraCriteria.map(criterion => {
+                // Calculate average for this criterion
+                const subValues = criterion.subCriteria.map(sub => {
+                    const key = `${criterion.id}_${sub.id}`;
+                    return assessmentValues[key] || 1;
+                });
+                const criterionAverage = (subValues.reduce((sum, val) => sum + val, 0) / subValues.length).toFixed(1);
+                
+                return `
                 <div class="criterion-card">
                     <div class="criterion-header">
                         <div class="criterion-icon">
@@ -212,65 +232,88 @@
                         <div class="criterion-title-section">
                             <h3 class="criterion-title">${criterion.title}</h3>
                             <p class="criterion-description">${criterion.description}</p>
-                            <div class="criterion-examples" style="border-left-color: #f5576c;">
-                                <h5>Beispiele für hohe Bewertung:</h5>
-                                <ul>
-                                    ${criterion.examples.map(ex => `<li>${ex}</li>`).join('')}
-                                </ul>
-                            </div>
                         </div>
                     </div>
-                    <div class="slider-section">
-                        <div class="slider-wrapper">
-                            <div class="slider-labels-top">
-                                <span>Veraltet (1)</span>
-                                <span>State-of-the-Art (5)</span>
+                    <div class="sub-criteria-container">
+                        ${criterion.subCriteria.map(subCriterion => {
+                            const key = `${criterion.id}_${subCriterion.id}`;
+                            const value = assessmentValues[key] || 1;
+                            return `
+                            <div class="sub-criterion-item" style="border-left-color: #f5576c;">
+                                <div class="sub-criterion-label">${subCriterion.title}</div>
+                                <div class="sub-criterion-slider-wrapper">
+                                    <input 
+                                        type="range" 
+                                        min="1" 
+                                        max="5" 
+                                        step="1"
+                                        value="${value}"
+                                        class="sub-criterion-slider" 
+                                        id="slider-${key}"
+                                        style="accent-color: #f5576c;"
+                                        oninput="updateSubCriterionValue('${criterion.id}', '${subCriterion.id}', this.value)"
+                                    >
+                                    <div class="sub-criterion-value" id="value-${key}">${value}</div>
+                                    <div class="sub-criterion-scale">
+                                        <span>1</span>
+                                        <span>2</span>
+                                        <span>3</span>
+                                        <span>4</span>
+                                        <span>5</span>
+                                    </div>
+                                </div>
                             </div>
-                            <input 
-                                type="range" 
-                                min="1" 
-                                max="5" 
-                                step="1"
-                                value="${assessmentValues[criterion.id] || 1}"
-                                class="detail-slider" 
-                                id="slider-${criterion.id}"
-                                oninput="updateCriterionValue('${criterion.id}', this.value)"
-                            >
-                            <div class="slider-value-display" id="value-${criterion.id}">${assessmentValues[criterion.id] || 1}</div>
-                            <div class="slider-scale">
-                                <span>1</span>
-                                <span>2</span>
-                                <span>3</span>
-                                <span>4</span>
-                                <span>5</span>
-                            </div>
+                            `;
+                        }).join('')}
+                        <div class="criterion-average">
+                            <span class="criterion-average-label">Durchschnitt für "${criterion.title}":</span>
+                            <span class="criterion-average-value" id="avg-${criterion.id}">${criterionAverage}</span>
                         </div>
                     </div>
                 </div>
-            `).join('');
+                `;
+            }).join('');
         }
         
-        function updateCriterionValue(criterionId, value) {
-            assessmentValues[criterionId] = parseInt(value);
-            document.getElementById(`value-${criterionId}`).textContent = value;
+        function updateSubCriterionValue(criterionId, subCriterionId, value) {
+            const key = `${criterionId}_${subCriterionId}`;
+            assessmentValues[key] = parseInt(value);
+            document.getElementById(`value-${key}`).textContent = value;
+            
+            // Update criterion average
+            const criterion = techInfraCriteria.find(c => c.id === criterionId);
+            const subValues = criterion.subCriteria.map(sub => {
+                const subKey = `${criterionId}_${sub.id}`;
+                return assessmentValues[subKey] || 1;
+            });
+            const criterionAverage = (subValues.reduce((sum, val) => sum + val, 0) / subValues.length).toFixed(1);
+            document.getElementById(`avg-${criterionId}`).textContent = criterionAverage;
+            
             updateAggregatedScore();
         }
         
         function updateAggregatedScore() {
-            const values = Object.values(assessmentValues);
-            const average = values.reduce((sum, val) => sum + val, 0) / values.length;
-            const roundedAverage = average.toFixed(1);
+            // Calculate average for each main criterion, then overall average
+            const criterionAverages = techInfraCriteria.map(criterion => {
+                const subValues = criterion.subCriteria.map(sub => {
+                    const key = `${criterion.id}_${sub.id}`;
+                    return assessmentValues[key] || 1;
+                });
+                return subValues.reduce((sum, val) => sum + val, 0) / subValues.length;
+            });
             
-            document.getElementById('aggregatedScore').textContent = roundedAverage;
+            const overallAverage = (criterionAverages.reduce((sum, val) => sum + val, 0) / criterionAverages.length).toFixed(1);
+            
+            document.getElementById('aggregatedScore').textContent = overallAverage;
             
             let description = '';
-            if (roundedAverage <= 1.5) {
+            if (overallAverage <= 1.5) {
                 description = 'Veraltet - Erhebliche Modernisierung erforderlich';
-            } else if (roundedAverage <= 2.5) {
+            } else if (overallAverage <= 2.5) {
                 description = 'Verbesserungswürdig - Grundlagen vorhanden, Modernisierung nötig';
-            } else if (roundedAverage <= 3.5) {
+            } else if (overallAverage <= 3.5) {
                 description = 'Gut - Solide Basis, weitere Optimierung möglich';
-            } else if (roundedAverage <= 4.5) {
+            } else if (overallAverage <= 4.5) {
                 description = 'Sehr gut - Moderne Infrastruktur, kleine Verbesserungen möglich';
             } else {
                 description = 'State-of-the-Art - Hervorragende technische Infrastruktur';
@@ -280,13 +323,31 @@
         }
         
         function saveAndReturn() {
-            const values = Object.values(assessmentValues);
-            const aggregated = (values.reduce((sum, val) => sum + val, 0) / values.length).toFixed(1);
+            // Calculate overall average from criterion averages
+            const criterionAverages = techInfraCriteria.map(criterion => {
+                const subValues = criterion.subCriteria.map(sub => {
+                    const key = `${criterion.id}_${sub.id}`;
+                    return assessmentValues[key] || 1;
+                });
+                return subValues.reduce((sum, val) => sum + val, 0) / subValues.length;
+            });
+            
+            const aggregated = (criterionAverages.reduce((sum, val) => sum + val, 0) / criterionAverages.length).toFixed(1);
             
             let saved = JSON.parse(localStorage.getItem('kiDetailAssessments') || '{}');
             saved.techInfra = {
                 aggregated: parseFloat(aggregated),
                 details: assessmentValues,
+                criterionAverages: techInfraCriteria.map(criterion => {
+                    const subValues = criterion.subCriteria.map(sub => {
+                        const key = `${criterion.id}_${sub.id}`;
+                        return assessmentValues[key] || 1;
+                    });
+                    return {
+                        criterionId: criterion.id,
+                        average: subValues.reduce((sum, val) => sum + val, 0) / subValues.length
+                    };
+                }),
                 timestamp: new Date().toISOString()
             };
             localStorage.setItem('kiDetailAssessments', JSON.stringify(saved));
