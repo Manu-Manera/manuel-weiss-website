@@ -480,6 +480,48 @@
     </style>
 </head>
 <body data-page-id="hr-strategie-workflow">
+    <!-- Critical Functions - Must be available immediately for onclick handlers -->
+    <script>
+        // Make functions globally available IMMEDIATELY (before HTML parsing)
+        window.toggleSidebar = function() {
+            const sidebar = document.getElementById('workflowSidebar');
+            const icon = document.getElementById('sidebarToggleIcon');
+            const content = document.getElementById('sidebarContent');
+            
+            if (!sidebar) {
+                console.error('Sidebar not found');
+                return;
+            }
+            
+            if (sidebar.classList.contains('collapsed')) {
+                sidebar.classList.remove('collapsed');
+                if (icon) icon.className = 'fas fa-chevron-left';
+                if (content) content.style.display = 'block';
+            } else {
+                sidebar.classList.add('collapsed');
+                if (icon) icon.className = 'fas fa-chevron-right';
+                if (content) content.style.display = 'none';
+            }
+        };
+        
+        window.openDetailAssessment = function(dimension) {
+            console.log('openDetailAssessment called with dimension:', dimension);
+            // Save current progress if function exists
+            if (typeof saveProgress === 'function') {
+                try {
+                    saveProgress();
+                } catch (e) {
+                    console.warn('Could not save progress:', e);
+                }
+            }
+            // Navigate to detail page
+            const url = `hr-strategie-assessment-detail-${dimension}.html`;
+            console.log('Navigating to:', url);
+            window.location.href = url;
+        };
+        
+        console.log('✅ Critical functions defined immediately - toggleSidebar:', typeof window.toggleSidebar, 'openDetailAssessment:', typeof window.openDetailAssessment);
+    </script>
 
     <!-- Progress Badge -->
     <div class="user-progress-badge" style="display: none;">
@@ -1279,30 +1321,17 @@ Entwickelt mit Harvard & MIT Methodologie`;
             if (sidebarLevel) sidebarLevel.textContent = level;
         }
         
-        // Make openDetailAssessment globally available IMMEDIATELY
-        window.openDetailAssessment = function(dimension) {
-            console.log('openDetailAssessment called with dimension:', dimension);
-            // Save current progress if function exists
-            if (typeof saveProgress === 'function') {
-                try {
-                    saveProgress();
-                } catch (e) {
-                    console.warn('Could not save progress:', e);
-                }
-            }
-            // Navigate to detail page
-            const url = `hr-strategie-assessment-detail-${dimension}.html`;
-            console.log('Navigating to:', url);
-            window.location.href = url;
-        };
-        
-        // Also keep local function for backwards compatibility
+        // openDetailAssessment already defined in head, just keep local reference
         function openDetailAssessment(dimension) {
-            window.openDetailAssessment(dimension);
+            if (window.openDetailAssessment) {
+                window.openDetailAssessment(dimension);
+            } else {
+                console.error('window.openDetailAssessment not available');
+            }
         }
         
-        // Verify functions are available
-        console.log('Functions defined - toggleSidebar:', typeof window.toggleSidebar, 'openDetailAssessment:', typeof window.openDetailAssessment);
+        // Verify functions are still available
+        console.log('Functions verified - toggleSidebar:', typeof window.toggleSidebar, 'openDetailAssessment:', typeof window.openDetailAssessment);
         
         // Navigation functions
         function nextStep() {
