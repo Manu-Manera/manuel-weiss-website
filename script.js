@@ -2,8 +2,26 @@
 
 // DOM Content Loaded
 document.addEventListener('DOMContentLoaded', () => {
+    // KRITISCH: Stelle sicher dass Scrollen beim Laden funktioniert
+    document.body.style.overflow = '';
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.width = '';
+    document.documentElement.style.overflow = '';
+    
     initializeWebsite();
     fixMobileScroll();
+    
+    // Zusätzliche Sicherheit: Prüfe nach kurzer Verzögerung nochmal
+    setTimeout(() => {
+        const mobileMenu = document.getElementById('mobileMenu');
+        if (!mobileMenu || !mobileMenu.classList.contains('active')) {
+            document.body.style.overflow = '';
+            document.body.style.position = '';
+            document.body.style.top = '';
+            document.body.style.width = '';
+        }
+    }, 500);
 });
 
 // Mobile Scroll Fixes
