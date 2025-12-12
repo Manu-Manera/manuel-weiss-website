@@ -431,10 +431,30 @@
                 description: 'Wie gut sind Ihre HR-Systeme integriert? Gibt es eine zentrale Datenquelle oder isolierte Systeme?',
                 icon: 'fa-link',
                 subCriteria: [
-                    { id: 'centralPlatform', title: 'Zentrale HR-Datenplattform vorhanden' },
-                    { id: 'apiIntegration', title: 'APIs für System-Integration verfügbar' },
-                    { id: 'realtimeSync', title: 'Echtzeit-Synchronisation zwischen Systemen' },
-                    { id: 'dataConsistency', title: 'Konsistente Daten über alle Systeme' }
+                    { 
+                        id: 'centralPlatform', 
+                        title: 'Zentrale HR-Datenplattform vorhanden',
+                        description: 'Gibt es eine zentrale Plattform für alle HR-Daten?',
+                        examples: ['Single Source of Truth', 'Zentrales HRIS', 'Unified Data Platform']
+                    },
+                    { 
+                        id: 'apiIntegration', 
+                        title: 'APIs für System-Integration verfügbar',
+                        description: 'Wie gut sind Ihre Systeme über APIs verbunden?',
+                        examples: ['REST/GraphQL APIs', 'Standardisierte Schnittstellen', 'API-First Architektur']
+                    },
+                    { 
+                        id: 'realtimeSync', 
+                        title: 'Echtzeit-Synchronisation zwischen Systemen',
+                        description: 'Wie aktuell sind die Daten zwischen Systemen?',
+                        examples: ['Event-basierte Updates', 'Sub-Sekunden Latenz', 'Bidirektionale Sync']
+                    },
+                    { 
+                        id: 'dataConsistency', 
+                        title: 'Konsistente Daten über alle Systeme',
+                        description: 'Sind die Daten über alle Systeme konsistent?',
+                        examples: ['Einheitliche Datenmodelle', 'Synchronisierte Masterdaten', 'Keine Inkonsistenzen']
+                    }
                 ]
             },
             {
@@ -443,10 +463,30 @@
                 description: 'Wie strukturiert und standardisiert sind Ihre Daten? Folgen sie einem einheitlichen Schema?',
                 icon: 'fa-sitemap',
                 subCriteria: [
-                    { id: 'uniformFormats', title: 'Einheitliche Datenformate und -strukturen' },
-                    { id: 'standardizedCategories', title: 'Standardisierte Kategorien und Klassifikationen' },
-                    { id: 'dataModeling', title: 'Datenmodellierung nach Best Practices' },
-                    { id: 'metadata', title: 'Vollständige Metadaten und Dokumentation' }
+                    { 
+                        id: 'uniformFormats', 
+                        title: 'Einheitliche Datenformate und -strukturen',
+                        description: 'Nutzen Sie einheitliche Datenformate?',
+                        examples: ['JSON/XML Standards', 'Einheitliche Feldnamen', 'Konsistente Datentypen']
+                    },
+                    { 
+                        id: 'standardizedCategories', 
+                        title: 'Standardisierte Kategorien und Klassifikationen',
+                        description: 'Gibt es standardisierte Kategorien?',
+                        examples: ['ISO-Standards', 'Einheitliche Taxonomien', 'Klare Klassifikationen']
+                    },
+                    { 
+                        id: 'dataModeling', 
+                        title: 'Datenmodellierung nach Best Practices',
+                        description: 'Folgt Ihre Datenmodellierung Best Practices?',
+                        examples: ['Normalisierte Datenmodelle', 'Entity-Relationship-Diagramme', 'Dokumentierte Schemas']
+                    },
+                    { 
+                        id: 'metadata', 
+                        title: 'Vollständige Metadaten und Dokumentation',
+                        description: 'Gibt es vollständige Metadaten?',
+                        examples: ['Data Dictionary', 'Vollständige Dokumentation', 'Metadata Management']
+                    }
                 ]
             },
             {
@@ -455,10 +495,30 @@
                 description: 'Wie einfach ist der Zugriff auf HR-Daten? Gibt es technische oder organisatorische Barrieren?',
                 icon: 'fa-unlock',
                 subCriteria: [
-                    { id: 'selfServiceAccess', title: 'Selbstbedienungszugriff für autorisierte Nutzer' },
-                    { id: 'fastQueries', title: 'Schnelle Datenabfragen möglich' },
-                    { id: 'noLongProcesses', title: 'Keine langwierigen Genehmigungsprozesse' },
-                    { id: 'dataPortals', title: 'Benutzerfreundliche Datenportale verfügbar' }
+                    { 
+                        id: 'selfServiceAccess', 
+                        title: 'Selbstbedienungszugriff für autorisierte Nutzer',
+                        description: 'Können Nutzer selbstständig auf Daten zugreifen?',
+                        examples: ['Self-Service Portale', 'Benutzerfreundliche Interfaces', '24/7 Verfügbarkeit']
+                    },
+                    { 
+                        id: 'fastQueries', 
+                        title: 'Schnelle Datenabfragen möglich',
+                        description: 'Wie schnell sind Datenabfragen?',
+                        examples: ['Sub-Sekunden Antwortzeiten', 'Optimierte Queries', 'Caching-Strategien']
+                    },
+                    { 
+                        id: 'noLongProcesses', 
+                        title: 'Keine langwierigen Genehmigungsprozesse',
+                        description: 'Wie schnell ist der Datenzugriff genehmigt?',
+                        examples: ['Automatisierte Berechtigungen', 'Schnelle Freigaben', 'Selbstbedienung']
+                    },
+                    { 
+                        id: 'dataPortals', 
+                        title: 'Benutzerfreundliche Datenportale verfügbar',
+                        description: 'Gibt es benutzerfreundliche Portale?',
+                        examples: ['Intuitive Dashboards', 'Suchfunktionen', 'Filter und Sortierung']
+                    }
                 ]
             },
             {
@@ -467,10 +527,30 @@
                 description: 'Gibt es klare Verantwortlichkeiten und Prozesse für Datenqualität und -pflege?',
                 icon: 'fa-shield-alt',
                 subCriteria: [
-                    { id: 'clearResponsibilities', title: 'Klare Datenverantwortlichkeiten definiert' },
-                    { id: 'regularReviews', title: 'Regelmäßige Datenqualitätsreviews' },
-                    { id: 'documentedStandards', title: 'Dokumentierte Datenqualitätsstandards' },
-                    { id: 'governanceFramework', title: 'Etabliertes Daten-Governance-Framework' }
+                    { 
+                        id: 'clearResponsibilities', 
+                        title: 'Klare Datenverantwortlichkeiten definiert',
+                        description: 'Gibt es klare Verantwortlichkeiten?',
+                        examples: ['Data Stewards', 'Klare Rollen', 'Verantwortlichkeitsmatrix']
+                    },
+                    { 
+                        id: 'regularReviews', 
+                        title: 'Regelmäßige Datenqualitätsreviews',
+                        description: 'Wie regelmäßig werden Reviews durchgeführt?',
+                        examples: ['Monatliche Reviews', 'Quartalsweise Audits', 'Kontinuierliche Überwachung']
+                    },
+                    { 
+                        id: 'documentedStandards', 
+                        title: 'Dokumentierte Datenqualitätsstandards',
+                        description: 'Gibt es dokumentierte Standards?',
+                        examples: ['Datenqualitätsrichtlinien', 'Best Practices', 'Standard Operating Procedures']
+                    },
+                    { 
+                        id: 'governanceFramework', 
+                        title: 'Etabliertes Daten-Governance-Framework',
+                        description: 'Gibt es ein Governance-Framework?',
+                        examples: ['DAMA Framework', 'Strukturierte Prozesse', 'Governance Board']
+                    }
                 ]
             },
             {
@@ -479,10 +559,30 @@
                 description: 'Wie aktuell sind Ihre Daten? Gibt es Echtzeit-Updates oder verzögerte Synchronisation?',
                 icon: 'fa-clock',
                 subCriteria: [
-                    { id: 'realtimeUpdates', title: 'Echtzeit-Updates bei Datenänderungen' },
-                    { id: 'minimalDelay', title: 'Minimale Verzögerung bei Datensynchronisation' },
-                    { id: 'currentData', title: 'Aktuelle Daten für alle Stakeholder verfügbar' },
-                    { id: 'dataFreshness', title: 'Hohe Datenaktualität (Data Freshness)' }
+                    { 
+                        id: 'realtimeUpdates', 
+                        title: 'Echtzeit-Updates bei Datenänderungen',
+                        description: 'Wie schnell werden Daten aktualisiert?',
+                        examples: ['Sofortige Updates', 'Event-driven Architecture', 'Real-time Processing']
+                    },
+                    { 
+                        id: 'minimalDelay', 
+                        title: 'Minimale Verzögerung bei Datensynchronisation',
+                        description: 'Wie gering ist die Verzögerung?',
+                        examples: ['Sub-Sekunden Latenz', 'Streaming Data', 'Minimaler Lag']
+                    },
+                    { 
+                        id: 'currentData', 
+                        title: 'Aktuelle Daten für alle Stakeholder verfügbar',
+                        description: 'Sind die Daten für alle aktuell?',
+                        examples: ['Single Source of Truth', 'Konsistente Views', 'Aktuelle Informationen']
+                    },
+                    { 
+                        id: 'dataFreshness', 
+                        title: 'Hohe Datenaktualität (Data Freshness)',
+                        description: 'Wie aktuell sind die Daten?',
+                        examples: ['Tägliche Updates', 'Kontinuierliche Synchronisation', 'Fresh Data Indicators']
+                    }
                 ]
             },
             {
@@ -491,10 +591,30 @@
                 description: 'Wie sicher sind Ihre HR-Daten? Gibt es angemessene Sicherheitsmaßnahmen und Compliance?',
                 icon: 'fa-lock',
                 subCriteria: [
-                    { id: 'encryptedStorage', title: 'Verschlüsselte Datenspeicherung' },
-                    { id: 'accessControls', title: 'Zugriffskontrollen und Berechtigungen' },
-                    { id: 'gdprCompliance', title: 'DSGVO-konforme Datenverarbeitung' },
-                    { id: 'securityMonitoring', title: 'Kontinuierliches Sicherheitsmonitoring' }
+                    { 
+                        id: 'encryptedStorage', 
+                        title: 'Verschlüsselte Datenspeicherung',
+                        description: 'Sind die Daten verschlüsselt?',
+                        examples: ['Encryption at Rest', 'TLS in Transit', 'Strong Encryption']
+                    },
+                    { 
+                        id: 'accessControls', 
+                        title: 'Zugriffskontrollen und Berechtigungen',
+                        description: 'Wie sind Zugriffe kontrolliert?',
+                        examples: ['Role-Based Access', 'Least Privilege', 'Access Logging']
+                    },
+                    { 
+                        id: 'gdprCompliance', 
+                        title: 'DSGVO-konforme Datenverarbeitung',
+                        description: 'Ist die Datenverarbeitung DSGVO-konform?',
+                        examples: ['Privacy by Design', 'Data Minimization', 'Right to be Forgotten']
+                    },
+                    { 
+                        id: 'securityMonitoring', 
+                        title: 'Kontinuierliches Sicherheitsmonitoring',
+                        description: 'Wie wird Sicherheit überwacht?',
+                        examples: ['SIEM-Systeme', 'Security Audits', 'Threat Detection']
+                    }
                 ]
             }
         ];
