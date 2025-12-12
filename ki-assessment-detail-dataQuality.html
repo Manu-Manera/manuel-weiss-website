@@ -367,10 +367,30 @@
                 description: 'Wie vollständig sind Ihre HR-Daten? Fehlen wichtige Informationen oder Datensätze?',
                 icon: 'fa-check-circle',
                 subCriteria: [
-                    { id: 'completeEmployeeData', title: 'Alle Mitarbeiterdaten sind vollständig erfasst' },
-                    { id: 'noMissingFields', title: 'Keine fehlenden Felder in kritischen Datensätzen' },
-                    { id: 'historicalData', title: 'Historische Daten sind vollständig verfügbar' },
-                    { id: 'dataCoverage', title: 'Vollständige Abdeckung aller HR-Prozesse' }
+                    { 
+                        id: 'completeEmployeeData', 
+                        title: 'Alle Mitarbeiterdaten sind vollständig erfasst',
+                        description: 'Wie vollständig sind die Mitarbeiterdaten?',
+                        examples: ['100% Datenabdeckung', 'Alle Pflichtfelder ausgefüllt', 'Vollständige Stammdaten']
+                    },
+                    { 
+                        id: 'noMissingFields', 
+                        title: 'Keine fehlenden Felder in kritischen Datensätzen',
+                        description: 'Gibt es fehlende Felder in wichtigen Datensätzen?',
+                        examples: ['Keine Lücken in kritischen Feldern', 'Datenvalidierung aktiv', 'Automatische Prüfungen']
+                    },
+                    { 
+                        id: 'historicalData', 
+                        title: 'Historische Daten sind vollständig verfügbar',
+                        description: 'Wie vollständig ist der historische Datenbestand?',
+                        examples: ['Vollständige Historie seit Systemstart', 'Archivierte Daten zugänglich', 'Keine Datenverluste']
+                    },
+                    { 
+                        id: 'dataCoverage', 
+                        title: 'Vollständige Abdeckung aller HR-Prozesse',
+                        description: 'Werden alle HR-Prozesse durch Daten abgedeckt?',
+                        examples: ['Recruiting bis Offboarding', 'Alle HR-Lifecycle-Events', 'Vollständige Prozessdaten']
+                    }
                 ]
             },
             {
@@ -379,10 +399,30 @@
                 description: 'Wie genau und fehlerfrei sind Ihre HR-Daten? Gibt es Duplikate, Inkonsistenzen oder Fehler?',
                 icon: 'fa-bullseye',
                 subCriteria: [
-                    { id: 'noDuplicates', title: 'Keine Duplikate in Mitarbeiterdaten' },
-                    { id: 'consistentData', title: 'Konsistente Dateneingabe über alle Systeme' },
-                    { id: 'dataQualityChecks', title: 'Regelmäßige Datenqualitätsprüfungen' },
-                    { id: 'errorCorrection', title: 'Schnelle Fehlerkorrekturprozesse' }
+                    { 
+                        id: 'noDuplicates', 
+                        title: 'Keine Duplikate in Mitarbeiterdaten',
+                        description: 'Gibt es Duplikate in den Mitarbeiterdaten?',
+                        examples: ['Deduplizierung aktiv', 'Einheitliche Mitarbeiter-IDs', 'Automatische Duplikatserkennung']
+                    },
+                    { 
+                        id: 'consistentData', 
+                        title: 'Konsistente Dateneingabe über alle Systeme',
+                        description: 'Wie konsistent ist die Dateneingabe?',
+                        examples: ['Einheitliche Formate', 'Standardisierte Eingabemasken', 'Validierungsregeln']
+                    },
+                    { 
+                        id: 'dataQualityChecks', 
+                        title: 'Regelmäßige Datenqualitätsprüfungen',
+                        description: 'Wie regelmäßig werden Datenqualitätsprüfungen durchgeführt?',
+                        examples: ['Monatliche Qualitätsreviews', 'Automatisierte Checks', 'Datenqualitäts-Dashboards']
+                    },
+                    { 
+                        id: 'errorCorrection', 
+                        title: 'Schnelle Fehlerkorrekturprozesse',
+                        description: 'Wie schnell werden Datenfehler korrigiert?',
+                        examples: ['Sofortige Fehlerbenachrichtigung', 'Klarer Korrekturprozess', 'Verantwortlichkeiten definiert']
+                    }
                 ]
             },
             {
