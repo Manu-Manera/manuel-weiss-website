@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nachhaltige Verankerung - Change Management Assessment - Manuel Weiss</title>
+    
+    <!-- Meta Tags -->
+    <meta name="description" content="Detaillierte Bewertung der nachhaltige verankerung für Change Management.">
+    <meta name="keywords" content="Change-Nachhaltigkeit, Change-Verankerung, Change Management">
+    <meta name="author" content="Manuel Weiss">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="css/ki-assessment-detail.css">
+    <style>
+        .detail-header {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+        
+        .criterion-icon {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .detail-slider::-webkit-slider-thumb {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .detail-slider::-moz-range-thumb {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .sub-criterion-slider::-webkit-slider-thumb {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .sub-criterion-slider::-moz-range-thumb {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .slider-value-display {
+            color: #d97706;
+        }
+        
+        .sub-criterion-value {
+            color: #d97706;
+        }
+        
+        .criterion-average-value {
+            color: #d97706;
+        }
+        
+        .aggregated-score {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .save-button {
+            color: #d97706;
+        }
+        
+        .criterion-examples {
+            border-left: 4px solid #f59e0b;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="manuel-weiss-photo.svg" alt="Manuel Weiss" class="nav-logo">
+                <span class="nav-name">Manuel Weiss</span>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="hr-transformation.html">HR-Transformation</a>
+                <a href="index.html#about">Über mich</a>
+                <a href="index.html#contact">Kontakt</a>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="detail-assessment-container">
+        <div class="detail-header">
+            <a href="change-management-workflow.html" class="back-button">
+                <i class="fas fa-arrow-left"></i>
+                Zurück zur Übersicht
+            </a>
+            <h1><i class="fas fa-anchor"></i> Nachhaltige Verankerung</h1>
+            <p>Bewerten Sie die nachhaltige Verankerung von Veränderungen. Wissenschaftlich fundierte Bewertung basierend auf modernen Change-Nachhaltigkeits-Prinzipien.</p>
+        </div>
+        
+        <div id="criteriaContainer">
+            <!-- Criteria will be dynamically loaded -->
+        </div>
+        
+        <div class="aggregated-score">
+            <h3>Gesamtbewertung</h3>
+            <div class="score-display">
+                <div class="score-circle-large" id="aggregatedScore">1.0</div>
+                <div class="score-description" id="scoreDescription">Bewerten Sie die Kriterien, um Ihre Gesamtbewertung zu sehen</div>
+            </div>
+            <div style="display: flex; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap;">
+                <button class="save-button" onclick="saveAndReturn()" style="flex: 1; min-width: 200px;">
+                    <i class="fas fa-save"></i> Bewertung speichern und zurück
+                </button>
+                <button class="export-button excel" onclick="exportToExcel()" style="background: #217346; color: white; border: none; padding: 1rem 2rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; flex: 1; min-width: 150px;">
+                    <i class="fas fa-file-excel"></i> Excel Export
+                </button>
+                <button class="export-button pdf" onclick="exportToPDF()" style="background: #dc3545; color: white; border: none; padding: 1rem 2rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; flex: 1; min-width: 150px;">
+                    <i class="fas fa-file-pdf"></i> PDF Export
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const sustainabilityCriteria = [            {
+                id: 'changeAnchoring',
+                title: 'Change-Verankerung',
+                description: 'Wie gut ist die Change-Verankerung?',
+                icon: 'fa-anchor',
+                subCriteria: [
+                    { 
+                        id: 'structuralAnchoring', 
+                        title: 'Strukturelle Verankerung',
+                        description: 'Ist Change strukturell verankert?',
+                        examples: ['Struktur', 'Organisation', 'Prozesse', 'Systeme']
+                    },
+                    { 
+                        id: 'culturalAnchoring', 
+                        title: 'Kulturelle Verankerung',
+                        description: 'Ist Change kulturell verankert?',
+                        examples: ['Kultur', 'Werte', 'Normen', 'Praktiken']
+                    },
+                    { 
+                        id: 'processAnchoring', 
+                        title: 'Prozess-Verankerung',
+                        description: 'Ist Change prozessual verankert?',
+                        examples: ['Prozesse', 'Strukturen', 'Methodologie', 'Framework']
+                    },
+                    { 
+                        id: 'systemAnchoring', 
+                        title: 'System-Verankerung',
+                        description: 'Ist Change systemisch verankert?',
+                        examples: ['Systeme', 'Tools', 'Plattformen', 'Technologie']
+                    },
+                    { 
+                        id: 'behavioralAnchoring', 
+                        title: 'Verhaltens-Verankerung',
+                        description: 'Ist Change verhaltensmäßig verankert?',
+                        examples: ['Verhalten', 'Praktiken', 'Handlungen', 'Aktivitäten']
+                    }
+                ]
+            },
+            {
+                id: 'reinforcement',
+                title: 'Verstärkung',
+                description: 'Wie gut ist die Change-Verstärkung?',
+                icon: 'fa-bullhorn',
+                subCriteria: [
+                    { 
+                        id: 'reinforcementStrategies', 
+                        title: 'Verstärkungs-Strategien',
+                        description: 'Gibt es Verstärkungs-Strategien?',
+                        examples: ['Strategien', 'Ansätze', 'Methoden', 'Techniken']
+                    },
+                    { 
+                        id: 'positiveReinforcement', 
+                        title: 'Positive Verstärkung',
+                        description: 'Gibt es positive Verstärkung?',
+                        examples: ['Positive Verstärkung', 'Belohnungen', 'Anerkennung', 'Incentives']
+                    },
+                    { 
+                        id: 'reinforcementFrequency', 
+                        title: 'Verstärkungs-Frequenz',
+                        description: 'Wie häufig wird verstärkt?',
+                        examples: ['Häufigkeit', 'Regelmäßigkeit', 'Konsistenz', 'Kontinuität']
+                    },
+                    { 
+                        id: 'reinforcementTiming', 
+                        title: 'Verstärkungs-Timing',
+                        description: 'Ist das Timing optimal?',
+                        examples: ['Timing', 'Zeitpunkt', 'Häufigkeit', 'Rhythmus']
+                    },
+                    { 
+                        id: 'reinforcementEffectiveness', 
+                        title: 'Verstärkungs-Effektivität',
+                        description: 'Wie effektiv ist die Verstärkung?',
+                        examples: ['Effektivität', 'Wirksamkeit', 'Impact', 'Ergebnisse']
+                    }
+                ]
+            },
+            {
+                id: 'institutionalization',
+                title: 'Institutionalisierung',
+                description: 'Wie gut ist die Change-Institutionalisierung?',
+                icon: 'fa-building',
+                subCriteria: [
+                    { 
+                        id: 'structuralIntegration', 
+                        title: 'Strukturelle Integration',
+                        description: 'Ist Change strukturell integriert?',
+                        examples: ['Integration', 'Struktur', 'Organisation', 'Systeme']
+                    },
+                    { 
+                        id: 'processIntegration', 
+                        title: 'Prozess-Integration',
+                        description: 'Ist Change prozessual integriert?',
+                        examples: ['Integration', 'Prozesse', 'Strukturen', 'Methodologie']
+                    },
+                    { 
+                        id: 'systemIntegration', 
+                        title: 'System-Integration',
+                        description: 'Ist Change systemisch integriert?',
+                        examples: ['Integration', 'Systeme', 'Tools', 'Plattformen']
+                    },
+                    { 
+                        id: 'culturalIntegration', 
+                        title: 'Kulturelle Integration',
+                        description: 'Ist Change kulturell integriert?',
+                        examples: ['Integration', 'Kultur', 'Werte', 'Normen']
+                    },
+                    { 
+                        id: 'governanceIntegration', 
+                        title: 'Governance-Integration',
+                        description: 'Ist Change governance-integriert?',
+                        examples: ['Integration', 'Governance', 'Steuerung', 'Kontrolle']
+                    }
+                ]
+            },
+            {
+                id: 'longTermSuccess',
+                title: 'Langfristiger Erfolg',
+                description: 'Wie nachhaltig ist der Change-Erfolg?',
+                icon: 'fa-trophy',
+                subCriteria: [
+                    { 
+                        id: 'successMetrics', 
+                        title: 'Erfolgs-Metriken',
+                        description: 'Gibt es Erfolgs-Metriken?',
+                        examples: ['Metriken', 'KPIs', 'Indikatoren', 'Messung']
+                    },
+                    { 
+                        id: 'longTermTracking', 
+                        title: 'Langfristiges Tracking',
+                        description: 'Gibt es langfristiges Tracking?',
+                        examples: ['Tracking', 'Monitoring', 'Evaluation', 'Assessment']
+                    },
+                    { 
+                        id: 'successSustainability', 
+                        title: 'Erfolgs-Nachhaltigkeit',
+                        description: 'Ist der Erfolg nachhaltig?',
+                        examples: ['Nachhaltigkeit', 'Dauerhaftigkeit', 'Stabilität', 'Kontinuität']
+                    },
+                    { 
+                        id: 'successReplication', 
+                        title: 'Erfolgs-Replikation',
+                        description: 'Kann Erfolg repliziert werden?',
+                        examples: ['Replikation', 'Skalierung', 'Transfer', 'Anwendung']
+                    },
+                    { 
+                        id: 'successScaling', 
+                        title: 'Erfolgs-Skalierung',
+                        description: 'Kann Erfolg skaliert werden?',
+                        examples: ['Skalierung', 'Wachstum', 'Expansion', 'Rollout']
+                    }
+                ]
+            },
+            {
+                id: 'culturalEmbedding',
+                title: 'Kulturelle Einbettung',
+                description: 'Wie gut ist die kulturelle Einbettung?',
+                icon: 'fa-heart',
+                subCriteria: [
+                    { 
+                        id: 'valueIntegration', 
+                        title: 'Werte-Integration',
+                        description: 'Sind Werte integriert?',
+                        examples: ['Werte', 'Prinzipien', 'Gemeinsamkeiten', 'Integration']
+                    },
+                    { 
+                        id: 'normIntegration', 
+                        title: 'Normen-Integration',
+                        description: 'Sind Normen integriert?',
+                        examples: ['Normen', 'Regeln', 'Standards', 'Integration']
+                    },
+                    { 
+                        id: 'ritualIntegration', 
+                        title: 'Rituale-Integration',
+                        description: 'Sind Rituale integriert?',
+                        examples: ['Rituale', 'Traditionen', 'Praktiken', 'Integration']
+                    },
+                    { 
+                        id: 'storyIntegration', 
+                        title: 'Story-Integration',
+                        description: 'Sind Stories integriert?',
+                        examples: ['Stories', 'Narrative', 'Erzählungen', 'Integration']
+                    },
+                    { 
+                        id: 'symbolIntegration', 
+                        title: 'Symbole-Integration',
+                        description: 'Sind Symbole integriert?',
+                        examples: ['Symbole', 'Zeichen', 'Visualisierung', 'Integration']
+                    }
+                ]
+            },
+            {
+                id: 'leadershipCommitment',
+                title: 'Führungs-Commitment',
+                description: 'Wie stark ist das Führungs-Commitment?',
+                icon: 'fa-user-tie',
+                subCriteria: [
+                    { 
+                        id: 'ongoingSupport', 
+                        title: 'Laufende Unterstützung',
+                        description: 'Gibt es laufende Unterstützung?',
+                        examples: ['Unterstützung', 'Support', 'Commitment', 'Engagement']
+                    },
+                    { 
+                        id: 'leadershipVisibility', 
+                        title: 'Führungs-Sichtbarkeit',
+                        description: 'Ist die Führung sichtbar?',
+                        examples: ['Sichtbarkeit', 'Präsenz', 'Engagement', 'Kommunikation']
+                    },
+                    { 
+                        id: 'leadershipAlignment', 
+                        title: 'Führungs-Alignment',
+                        description: 'Gibt es Führungs-Alignment?',
+                        examples: ['Alignment', 'Einigkeit', 'Konsens', 'Ausrichtung']
+                    },
+                    { 
+                        id: 'leadershipAccountability', 
+                        title: 'Führungs-Accountability',
+                        description: 'Gibt es Führungs-Accountability?',
+                        examples: ['Accountability', 'Verantwortung', 'Commitment', 'Ownership']
+                    },
+                    { 
+                        id: 'leadershipModeling', 
+                        title: 'Führungs-Modellierung',
+                        description: 'Modelliert die Führung Change?',
+                        examples: ['Modellierung', 'Vorbild', 'Beispiel', 'Demonstration']
+                    }
+                ]
+            },
+            {
+                id: 'employeeOwnership',
+                title: 'Mitarbeiter-Ownership',
+                description: 'Wie stark ist Mitarbeiter-Ownership?',
+                icon: 'fa-users',
+                subCriteria: [
+                    { 
+                        id: 'ownershipLevel', 
+                        title: 'Ownership-Niveau',
+                        description: 'Wie hoch ist das Ownership-Niveau?',
+                        examples: ['Niveau', 'Intensität', 'Stärke', 'Commitment']
+                    },
+                    { 
+                        id: 'employeeEngagement', 
+                        title: 'Mitarbeiter-Engagement',
+                        description: 'Gibt es Mitarbeiter-Engagement?',
+                        examples: ['Engagement', 'Einbindung', 'Partizipation', 'Beteiligung']
+                    },
+                    { 
+                        id: 'employeeEmpowerment', 
+                        title: 'Mitarbeiter-Empowerment',
+                        description: 'Gibt es Mitarbeiter-Empowerment?',
+                        examples: ['Empowerment', 'Autonomie', 'Selbstbestimmung', 'Freiheit']
+                    },
+                    { 
+                        id: 'employeeAdvocacy', 
+                        title: 'Mitarbeiter-Advocacy',
+                        description: 'Gibt es Mitarbeiter-Advocacy?',
+                        examples: ['Advocacy', 'Fürsprache', 'Unterstützung', 'Promotion']
+                    },
+                    { 
+                        id: 'employeeChampions', 
+                        title: 'Mitarbeiter-Champions',
+                        description: 'Gibt es Mitarbeiter-Champions?',
+                        examples: ['Champions', 'Botschafter', 'Promotoren', 'Treiber']
+                    }
+                ]
+            },
+            {
+                id: 'continuousImprovement',
+                title: 'Kontinuierliche Verbesserung',
+                description: 'Wie gut ist kontinuierliche Verbesserung?',
+                icon: 'fa-sync-alt',
+                subCriteria: [
+                    { 
+                        id: 'improvementCulture', 
+                        title: 'Verbesserungs-Kultur',
+                        description: 'Gibt es eine Verbesserungs-Kultur?',
+                        examples: ['Kultur', 'Werte', 'Normen', 'Praktiken']
+                    },
+                    { 
+                        id: 'improvementProcess', 
+                        title: 'Verbesserungs-Prozess',
+                        description: 'Gibt es einen Verbesserungs-Prozess?',
+                        examples: ['Prozess', 'Struktur', 'Methodologie', 'Framework']
+                    },
+                    { 
+                        id: 'improvementActions', 
+                        title: 'Verbesserungs-Aktionen',
+                        description: 'Gibt es Verbesserungs-Aktionen?',
+                        examples: ['Aktionen', 'Maßnahmen', 'Initiativen', 'Projekte']
+                    },
+                    { 
+                        id: 'improvementTracking', 
+                        title: 'Verbesserungs-Tracking',
+                        description: 'Gibt es Verbesserungs-Tracking?',
+                        examples: ['Tracking', 'Monitoring', 'Evaluation', 'Assessment']
+                    },
+                    { 
+                        id: 'improvementImpact', 
+                        title: 'Verbesserungs-Impact',
+                        description: 'Wird Verbesserungs-Impact gemessen?',
+                        examples: ['Impact', 'Ergebnisse', 'Wert', 'Outcomes']
+                    }
+                ]
+            },
+            {
+                id: 'resilience',
+                title: 'Resilienz',
+                description: 'Wie resilient ist die Change-Verankerung?',
+                icon: 'fa-shield-alt',
+                subCriteria: [
+                    { 
+                        id: 'resilienceLevel', 
+                        title: 'Resilienz-Niveau',
+                        description: 'Wie hoch ist das Resilienz-Niveau?',
+                        examples: ['Niveau', 'Intensität', 'Stärke', 'Robustheit']
+                    },
+                    { 
+                        id: 'crisisResilience', 
+                        title: 'Krisen-Resilienz',
+                        description: 'Gibt es Krisen-Resilienz?',
+                        examples: ['Krisen-Resilienz', 'Widerstandsfähigkeit', 'Stärke', 'Robustheit']
+                    },
+                    { 
+                        id: 'adaptability', 
+                        title: 'Anpassungsfähigkeit',
+                        description: 'Gibt es Anpassungsfähigkeit?',
+                        examples: ['Anpassungsfähigkeit', 'Flexibilität', 'Agilität', 'Beweglichkeit']
+                    },
+                    { 
+                        id: 'recoveryCapability', 
+                        title: 'Erholungs-Fähigkeit',
+                        description: 'Gibt es Erholungs-Fähigkeit?',
+                        examples: ['Erholung', 'Recovery', 'Wiederherstellung', 'Resilienz']
+                    },
+                    { 
+                        id: 'sustainabilityStrength', 
+                        title: 'Nachhaltigkeits-Stärke',
+                        description: 'Wie stark ist die Nachhaltigkeit?',
+                        examples: ['Stärke', 'Robustheit', 'Dauerhaftigkeit', 'Stabilität']
+                    }
+                ]
+            },
+            {
+                id: 'knowledgeManagement',
+                title: 'Wissensmanagement',
+                description: 'Wie gut ist das Wissensmanagement?',
+                icon: 'fa-book',
+                subCriteria: [
+                    { 
+                        id: 'knowledgeCapture', 
+                        title: 'Wissens-Erfassung',
+                        description: 'Gibt es Wissens-Erfassung?',
+                        examples: ['Erfassung', 'Dokumentation', 'Aufzeichnung', 'Sammlung']
+                    },
+                    { 
+                        id: 'knowledgeStorage', 
+                        title: 'Wissens-Speicherung',
+                        description: 'Gibt es Wissens-Speicherung?',
+                        examples: ['Speicherung', 'Dokumentation', 'Archivierung', 'Systeme']
+                    },
+                    { 
+                        id: 'knowledgeSharing', 
+                        title: 'Wissens-Sharing',
+                        description: 'Gibt es Wissens-Sharing?',
+                        examples: ['Sharing', 'Austausch', 'Kommunikation', 'Dialog']
+                    },
+                    { 
+                        id: 'knowledgeApplication', 
+                        title: 'Wissens-Anwendung',
+                        description: 'Wird Wissen angewendet?',
+                        examples: ['Anwendung', 'Umsetzung', 'Action', 'Verbesserung']
+                    },
+                    { 
+                        id: 'knowledgeEvolution', 
+                        title: 'Wissens-Evolution',
+                        description: 'Gibt es Wissens-Evolution?',
+                        examples: ['Evolution', 'Entwicklung', 'Wachstum', 'Lernen']
+                    }
+                ]
+            }
+        ];
+        
+        let assessmentData = {};
+        let assessmentExporter = null;
+        
+        function initializeAssessment() {
+            // Load saved data
+            const saved = localStorage.getItem('changeMgmtDetailAssessments');
+            if (saved) {
+                const allAssessments = JSON.parse(saved);
+                if (allAssessments.sustainability) {
+                    assessmentData = allAssessments.sustainability;
+                }
+            }
+            
+            // Initialize assessment data structure
+            sustainabilityCriteria.forEach(criterion => {
+                if (!assessmentData[criterion.id]) {
+                    assessmentData[criterion.id] = {};
+                }
+                criterion.subCriteria.forEach(subCriterion => {
+                    if (!assessmentData[criterion.id][subCriterion.id]) {
+                        assessmentData[criterion.id][subCriterion.id] = 1;
+                    }
+                });
+            });
+            
+            renderCriteria();
+            updateAggregatedScore();
+            assessmentExporter = new AssessmentExporter();
+        }
+        
+        function renderCriteria() {
+            const container = document.getElementById('criteriaContainer');
+            container.innerHTML = '';
+            
+            sustainabilityCriteria.forEach(criterion => {
+                const criterionCard = document.createElement('div');
+                criterionCard.className = 'criterion-card';
+                
+                const averageScore = calculateCriterionAverage(criterion.id);
+                
+                criterionCard.innerHTML = `
+                    <div class="criterion-header">
+                        <div class="criterion-icon">
+                            <i class="fas ${criterion.icon}"></i>
+                        </div>
+                        <div class="criterion-title-section">
+                            <h3 class="criterion-title">${criterion.title}</h3>
+                            <p class="criterion-description">${criterion.description}</p>
+                        </div>
+                        <div class="criterion-average">
+                            <div class="criterion-average-value">${averageScore.toFixed(1)}</div>
+                            <div style="font-size: 0.75rem; color: #6b7280;">Durchschnitt</div>
+                        </div>
+                    </div>
+                    
+                    <div class="sub-criteria-container">
+                        ${criterion.subCriteria.map(subCriterion => {
+                            const value = assessmentData[criterion.id][subCriterion.id] || 1;
+                            return `
+                                <div class="sub-criterion-item">
+                                    <div class="sub-criterion-label">
+                                        <h4>${subCriterion.title}</h4>
+                                        <p>${subCriterion.description}</p>
+                                        <div class="criterion-examples">
+                                            <strong>Beispiele:</strong>
+                                            <ul>
+                                                ${subCriterion.examples.map(ex => `<li>${ex}</li>`).join('')}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="sub-criterion-slider-wrapper">
+                                        <input type="range" min="1" max="5" value="${value}" 
+                                               class="sub-criterion-slider" 
+                                               id="${criterion.id}_${subCriterion.id}"
+                                               oninput="updateSubCriterionValue('${criterion.id}', '${subCriterion.id}', this.value)">
+                                        <div class="sub-criterion-value">${value}</div>
+                                        <div class="sub-criterion-scale">
+                                            <span>1</span>
+                                            <span>2</span>
+                                            <span>3</span>
+                                            <span>4</span>
+                                            <span>5</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+                
+                container.appendChild(criterionCard);
+            });
+        }
+        
+        function updateSubCriterionValue(criterionId, subCriterionId, value) {
+            if (!assessmentData[criterionId]) {
+                assessmentData[criterionId] = {};
+            }
+            assessmentData[criterionId][subCriterionId] = parseInt(value);
+            
+            const valueDisplay = document.querySelector(`#${criterionId}_${subCriterionId}`).nextElementSibling;
+            if (valueDisplay) {
+                valueDisplay.textContent = value;
+            }
+            
+            updateCriterionAverage(criterionId);
+            updateAggregatedScore();
+            saveAssessment();
+        }
+        
+        function calculateCriterionAverage(criterionId) {
+            const criterion = sustainabilityCriteria.find(c => c.id === criterionId);
+            if (!criterion || !assessmentData[criterionId]) return 1.0;
+            
+            const values = criterion.subCriteria.map(sub => 
+                assessmentData[criterionId][sub.id] || 1
+            );
+            const sum = values.reduce((acc, val) => acc + val, 0);
+            return sum / values.length;
+        }
+        
+        function updateCriterionAverage(criterionId) {
+            const average = calculateCriterionAverage(criterionId);
+            const criterionCard = document.querySelector(`.criterion-card:has(#${criterionId}_${sustainabilityCriteria.find(c => c.id === criterionId).subCriteria[0].id})`);
+            if (criterionCard) {
+                const averageDisplay = criterionCard.querySelector('.criterion-average-value');
+                if (averageDisplay) {
+                    averageDisplay.textContent = average.toFixed(1);
+                }
+            }
+        }
+        
+        function updateAggregatedScore() {
+            const averages = sustainabilityCriteria.map(c => calculateCriterionAverage(c.id));
+            const overallAverage = averages.reduce((acc, val) => acc + val, 0) / averages.length;
+            
+            const scoreDisplay = document.getElementById('aggregatedScore');
+            const descriptionDisplay = document.getElementById('scoreDescription');
+            
+            if (scoreDisplay) {
+                scoreDisplay.textContent = overallAverage.toFixed(1);
+            }
+            
+            if (descriptionDisplay) {
+                let description = '';
+                if (overallAverage <= 1.5) {
+                    description = 'Schwache Change-Verankerung - Erhebliche Verbesserung nötig';
+                } else if (overallAverage <= 2.5) {
+                    description = 'Teilweise entwickelte Change-Verankerung - Verbesserungen erforderlich';
+                } else if (overallAverage <= 3.5) {
+                    description = 'Gute Change-Verankerung - Weitere Optimierung möglich';
+                } else if (overallAverage <= 4.5) {
+                    description = 'Starke Change-Verankerung - Kleine Verbesserungen möglich';
+                } else {
+                    description = 'Exzellente Change-Verankerung - Hervorragende Nachhaltigkeit';
+                }
+                descriptionDisplay.textContent = description;
+            }
+        }
+        
+        function saveAssessment() {
+            const allAssessments = JSON.parse(localStorage.getItem('changeMgmtDetailAssessments') || '{}');
+            allAssessments.sustainability = {
+                criteria: assessmentData,
+                aggregated: parseFloat(sustainabilityCriteria.map(c => calculateCriterionAverage(c.id)).reduce((acc, val) => acc + val, 0) / sustainabilityCriteria.length).toFixed(1)
+            };
+            localStorage.setItem('changeMgmtDetailAssessments', JSON.stringify(allAssessments));
+        }
+        
+        function saveAndReturn() {
+            saveAssessment();
+            window.location.href = 'organisationsentwicklung-workflow.html';
+        }
+        
+        async function exportToExcel() {
+            if (!assessmentExporter) {
+                assessmentExporter = new AssessmentExporter();
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+            const data = prepareExportData();
+            await assessmentExporter.exportToExcel(data, `Change-Management-Nachhaltige-Verankerung-Assessment-${new Date().toISOString().split('T')[0]}`);
+        }
+        
+        async function exportToPDF() {
+            if (!assessmentExporter) {
+                assessmentExporter = new AssessmentExporter();
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+            const data = prepareExportData();
+            await assessmentExporter.exportToPDF(data, `Change-Management-Nachhaltige-Verankerung-Assessment-${new Date().toISOString().split('T')[0]}`);
+        }
+        
+        function prepareExportData() {
+            const aggregated = parseFloat(sustainabilityCriteria.map(c => calculateCriterionAverage(c.id)).reduce((acc, val) => acc + val, 0) / sustainabilityCriteria.length).toFixed(1);
+            
+            return {
+                dimension: 'sustainability',
+                dimensionName: 'Nachhaltige Verankerung',
+                overall: parseFloat(aggregated),
+                criteria: sustainabilityCriteria.map(criterion => ({
+                    id: criterion.id,
+                    title: criterion.title,
+                    description: criterion.description,
+                    average: calculateCriterionAverage(criterion.id),
+                    subCriteria: criterion.subCriteria.map(sub => ({
+                        id: sub.id,
+                        title: sub.title,
+                        description: sub.description,
+                        examples: sub.examples,
+                        score: assessmentData[criterion.id][sub.id] || 1
+                    }))
+                })),
+                timestamp: new Date().toISOString()
+            };
+        }
+        
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', initializeAssessment);
+    </script>
+    
+    <!-- Assessment Export Script -->
+    <script src="js/assessment-export.js"></script>
+</body>
+</html>

@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitoring & Evaluation - Change Management Assessment - Manuel Weiss</title>
+    
+    <!-- Meta Tags -->
+    <meta name="description" content="Detaillierte Bewertung der monitoring & evaluation für Change Management.">
+    <meta name="keywords" content="Change Monitoring, Change Evaluation, Change Management">
+    <meta name="author" content="Manuel Weiss">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="css/ki-assessment-detail.css">
+    <style>
+        .detail-header {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+        
+        .criterion-icon {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .detail-slider::-webkit-slider-thumb {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .detail-slider::-moz-range-thumb {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .sub-criterion-slider::-webkit-slider-thumb {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .sub-criterion-slider::-moz-range-thumb {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .slider-value-display {
+            color: #d97706;
+        }
+        
+        .sub-criterion-value {
+            color: #d97706;
+        }
+        
+        .criterion-average-value {
+            color: #d97706;
+        }
+        
+        .aggregated-score {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .save-button {
+            color: #d97706;
+        }
+        
+        .criterion-examples {
+            border-left: 4px solid #f59e0b;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="manuel-weiss-photo.svg" alt="Manuel Weiss" class="nav-logo">
+                <span class="nav-name">Manuel Weiss</span>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="hr-transformation.html">HR-Transformation</a>
+                <a href="index.html#about">Über mich</a>
+                <a href="index.html#contact">Kontakt</a>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="detail-assessment-container">
+        <div class="detail-header">
+            <a href="change-management-workflow.html" class="back-button">
+                <i class="fas fa-arrow-left"></i>
+                Zurück zur Übersicht
+            </a>
+            <h1><i class="fas fa-chart-line"></i> Monitoring & Evaluation</h1>
+            <p>Bewerten Sie Monitoring und Evaluation von Change-Projekten. Wissenschaftlich fundierte Bewertung basierend auf modernen Change-Monitoring-Prinzipien.</p>
+        </div>
+        
+        <div id="criteriaContainer">
+            <!-- Criteria will be dynamically loaded -->
+        </div>
+        
+        <div class="aggregated-score">
+            <h3>Gesamtbewertung</h3>
+            <div class="score-display">
+                <div class="score-circle-large" id="aggregatedScore">1.0</div>
+                <div class="score-description" id="scoreDescription">Bewerten Sie die Kriterien, um Ihre Gesamtbewertung zu sehen</div>
+            </div>
+            <div style="display: flex; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap;">
+                <button class="save-button" onclick="saveAndReturn()" style="flex: 1; min-width: 200px;">
+                    <i class="fas fa-save"></i> Bewertung speichern und zurück
+                </button>
+                <button class="export-button excel" onclick="exportToExcel()" style="background: #217346; color: white; border: none; padding: 1rem 2rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; flex: 1; min-width: 150px;">
+                    <i class="fas fa-file-excel"></i> Excel Export
+                </button>
+                <button class="export-button pdf" onclick="exportToPDF()" style="background: #dc3545; color: white; border: none; padding: 1rem 2rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; flex: 1; min-width: 150px;">
+                    <i class="fas fa-file-pdf"></i> PDF Export
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const monitoringCriteria = [            {
+                id: 'monitoringFramework',
+                title: 'Monitoring-Framework',
+                description: 'Wie gut ist das Monitoring-Framework?',
+                icon: 'fa-chart-line',
+                subCriteria: [
+                    { 
+                        id: 'frameworkDefinition', 
+                        title: 'Framework-Definition',
+                        description: 'Gibt es eine Framework-Definition?',
+                        examples: ['Definition', 'Struktur', 'Methodologie', 'Framework']
+                    },
+                    { 
+                        id: 'monitoringProcess', 
+                        title: 'Monitoring-Prozess',
+                        description: 'Gibt es einen Monitoring-Prozess?',
+                        examples: ['Prozess', 'Struktur', 'Methodologie', 'Framework']
+                    },
+                    { 
+                        id: 'monitoringTools', 
+                        title: 'Monitoring-Tools',
+                        description: 'Gibt es Monitoring-Tools?',
+                        examples: ['Tools', 'Plattformen', 'Software', 'Systeme']
+                    },
+                    { 
+                        id: 'monitoringRoles', 
+                        title: 'Monitoring-Rollen',
+                        description: 'Gibt es klare Monitoring-Rollen?',
+                        examples: ['Rollen', 'Verantwortlichkeiten', 'Zuständigkeiten', 'Klarheit']
+                    },
+                    { 
+                        id: 'monitoringGovernance', 
+                        title: 'Monitoring-Governance',
+                        description: 'Gibt es Monitoring-Governance?',
+                        examples: ['Governance', 'Steuerung', 'Kontrolle', 'Management']
+                    }
+                ]
+            },
+            {
+                id: 'kpiDefinition',
+                title: 'KPI-Definition',
+                description: 'Wie gut sind KPIs definiert?',
+                icon: 'fa-bullseye',
+                subCriteria: [
+                    { 
+                        id: 'kpiSelection', 
+                        title: 'KPI-Auswahl',
+                        description: 'Werden KPIs ausgewählt?',
+                        examples: ['Auswahl', 'Definition', 'Kriterien', 'Standards']
+                    },
+                    { 
+                        id: 'kpiAlignment', 
+                        title: 'KPI-Alignment',
+                        description: 'Sind KPIs ausgerichtet?',
+                        examples: ['Alignment', 'Ausrichtung', 'Konsens', 'Einigkeit']
+                    },
+                    { 
+                        id: 'kpiRelevance', 
+                        title: 'KPI-Relevanz',
+                        description: 'Sind KPIs relevant?',
+                        examples: ['Relevanz', 'Bedeutung', 'Wert', 'Impact']
+                    },
+                    { 
+                        id: 'kpiMeasurement', 
+                        title: 'KPI-Messung',
+                        description: 'Werden KPIs gemessen?',
+                        examples: ['Messung', 'Tracking', 'Monitoring', 'Evaluation']
+                    },
+                    { 
+                        id: 'kpiReporting', 
+                        title: 'KPI-Reporting',
+                        description: 'Gibt es KPI-Reporting?',
+                        examples: ['Reporting', 'Kommunikation', 'Transparenz', 'Offenheit']
+                    }
+                ]
+            },
+            {
+                id: 'dataCollection',
+                title: 'Datensammlung',
+                description: 'Wie gut ist die Datensammlung?',
+                icon: 'fa-database',
+                subCriteria: [
+                    { 
+                        id: 'collectionMethods', 
+                        title: 'Sammlungs-Methoden',
+                        description: 'Gibt es Sammlungs-Methoden?',
+                        examples: ['Methoden', 'Ansätze', 'Techniken', 'Tools']
+                    },
+                    { 
+                        id: 'dataQuality', 
+                        title: 'Datenqualität',
+                        description: 'Wie gut ist die Datenqualität?',
+                        examples: ['Qualität', 'Genauigkeit', 'Zuverlässigkeit', 'Validität']
+                    },
+                    { 
+                        id: 'dataFrequency', 
+                        title: 'Datenfrequenz',
+                        description: 'Wie häufig werden Daten gesammelt?',
+                        examples: ['Häufigkeit', 'Regelmäßigkeit', 'Konsistenz', 'Kontinuität']
+                    },
+                    { 
+                        id: 'dataAccess', 
+                        title: 'Datenzugang',
+                        description: 'Gibt es Datenzugang?',
+                        examples: ['Zugang', 'Access', 'Verfügbarkeit', 'Transparenz']
+                    },
+                    { 
+                        id: 'dataSecurity', 
+                        title: 'Datensicherheit',
+                        description: 'Gibt es Datensicherheit?',
+                        examples: ['Sicherheit', 'Schutz', 'Compliance', 'Governance']
+                    }
+                ]
+            },
+            {
+                id: 'progressTracking',
+                title: 'Fortschritts-Tracking',
+                description: 'Wie gut ist das Fortschritts-Tracking?',
+                icon: 'fa-tasks',
+                subCriteria: [
+                    { 
+                        id: 'milestoneTracking', 
+                        title: 'Meilenstein-Tracking',
+                        description: 'Gibt es Meilenstein-Tracking?',
+                        examples: ['Meilensteine', 'Tracking', 'Monitoring', 'Evaluation']
+                    },
+                    { 
+                        id: 'activityTracking', 
+                        title: 'Aktivitäts-Tracking',
+                        description: 'Gibt es Aktivitäts-Tracking?',
+                        examples: ['Aktivitäten', 'Tracking', 'Monitoring', 'Evaluation']
+                    },
+                    { 
+                        id: 'outcomeTracking', 
+                        title: 'Ergebnis-Tracking',
+                        description: 'Gibt es Ergebnis-Tracking?',
+                        examples: ['Ergebnisse', 'Outcomes', 'Impact', 'Wert']
+                    },
+                    { 
+                        id: 'realTimeTracking', 
+                        title: 'Echtzeit-Tracking',
+                        description: 'Gibt es Echtzeit-Tracking?',
+                        examples: ['Echtzeit', 'Live', 'Aktuell', 'Sofort']
+                    },
+                    { 
+                        id: 'historicalTracking', 
+                        title: 'Historisches Tracking',
+                        description: 'Gibt es historisches Tracking?',
+                        examples: ['Historie', 'Vergangenheit', 'Trends', 'Entwicklung']
+                    }
+                ]
+            },
+            {
+                id: 'evaluationMethods',
+                title: 'Evaluations-Methoden',
+                description: 'Wie gut sind Evaluations-Methoden?',
+                icon: 'fa-clipboard-check',
+                subCriteria: [
+                    { 
+                        id: 'evaluationFramework', 
+                        title: 'Evaluations-Framework',
+                        description: 'Gibt es ein Evaluations-Framework?',
+                        examples: ['Framework', 'Struktur', 'Methodologie', 'Ansatz']
+                    },
+                    { 
+                        id: 'evaluationDesign', 
+                        title: 'Evaluations-Design',
+                        description: 'Gibt es Evaluations-Design?',
+                        examples: ['Design', 'Konzept', 'Struktur', 'Framework']
+                    },
+                    { 
+                        id: 'evaluationTools', 
+                        title: 'Evaluations-Tools',
+                        description: 'Gibt es Evaluations-Tools?',
+                        examples: ['Tools', 'Plattformen', 'Software', 'Systeme']
+                    },
+                    { 
+                        id: 'evaluationFrequency', 
+                        title: 'Evaluations-Frequenz',
+                        description: 'Wie häufig wird evaluiert?',
+                        examples: ['Häufigkeit', 'Regelmäßigkeit', 'Konsistenz', 'Kontinuität']
+                    },
+                    { 
+                        id: 'evaluationQuality', 
+                        title: 'Evaluations-Qualität',
+                        description: 'Wie gut ist die Evaluations-Qualität?',
+                        examples: ['Qualität', 'Exzellenz', 'Profession', 'Standards']
+                    }
+                ]
+            },
+            {
+                id: 'reporting',
+                title: 'Reporting',
+                description: 'Wie gut ist das Reporting?',
+                icon: 'fa-file-alt',
+                subCriteria: [
+                    { 
+                        id: 'reportingStructure', 
+                        title: 'Reporting-Struktur',
+                        description: 'Gibt es eine Reporting-Struktur?',
+                        examples: ['Struktur', 'Format', 'Template', 'Framework']
+                    },
+                    { 
+                        id: 'reportingFrequency', 
+                        title: 'Reporting-Frequenz',
+                        description: 'Wie häufig wird berichtet?',
+                        examples: ['Häufigkeit', 'Regelmäßigkeit', 'Konsistenz', 'Kontinuität']
+                    },
+                    { 
+                        id: 'reportingAudience', 
+                        title: 'Reporting-Zielgruppen',
+                        description: 'Sind Zielgruppen definiert?',
+                        examples: ['Zielgruppen', 'Audience', 'Stakeholder', 'Empfänger']
+                    },
+                    { 
+                        id: 'reportingClarity', 
+                        title: 'Reporting-Klarheit',
+                        description: 'Ist das Reporting klar?',
+                        examples: ['Klarheit', 'Verständlichkeit', 'Präzision', 'Eindeutigkeit']
+                    },
+                    { 
+                        id: 'reportingActionability', 
+                        title: 'Reporting-Handlungsfähigkeit',
+                        description: 'Ist das Reporting handlungsfähig?',
+                        examples: ['Handlungsfähigkeit', 'Actionability', 'Relevanz', 'Impact']
+                    }
+                ]
+            },
+            {
+                id: 'dashboard',
+                title: 'Dashboard und Visualisierung',
+                description: 'Wie gut sind Dashboard und Visualisierung?',
+                icon: 'fa-tachometer-alt',
+                subCriteria: [
+                    { 
+                        id: 'dashboardDesign', 
+                        title: 'Dashboard-Design',
+                        description: 'Gibt es gutes Dashboard-Design?',
+                        examples: ['Design', 'Layout', 'Visualisierung', 'UX']
+                    },
+                    { 
+                        id: 'realTimeDashboard', 
+                        title: 'Echtzeit-Dashboard',
+                        description: 'Gibt es Echtzeit-Dashboard?',
+                        examples: ['Echtzeit', 'Live', 'Aktuell', 'Sofort']
+                    },
+                    { 
+                        id: 'visualization', 
+                        title: 'Visualisierung',
+                        description: 'Gibt es gute Visualisierung?',
+                        examples: ['Visualisierung', 'Charts', 'Grafiken', 'Diagramme']
+                    },
+                    { 
+                        id: 'dashboardAccess', 
+                        title: 'Dashboard-Zugang',
+                        description: 'Gibt es Dashboard-Zugang?',
+                        examples: ['Zugang', 'Access', 'Verfügbarkeit', 'Transparenz']
+                    },
+                    { 
+                        id: 'dashboardUsability', 
+                        title: 'Dashboard-Usability',
+                        description: 'Wie gut ist die Dashboard-Usability?',
+                        examples: ['Usability', 'Benutzerfreundlichkeit', 'UX', 'Design']
+                    }
+                ]
+            },
+            {
+                id: 'lessonsLearned',
+                title: 'Lessons Learned',
+                description: 'Wie gut werden Lessons Learned genutzt?',
+                icon: 'fa-book',
+                subCriteria: [
+                    { 
+                        id: 'lessonsCollection', 
+                        title: 'Lessons-Sammlung',
+                        description: 'Gibt es Lessons-Sammlung?',
+                        examples: ['Sammlung', 'Erhebung', 'Dokumentation', 'Aufzeichnung']
+                    },
+                    { 
+                        id: 'lessonsAnalysis', 
+                        title: 'Lessons-Analyse',
+                        description: 'Gibt es Lessons-Analyse?',
+                        examples: ['Analyse', 'Bewertung', 'Evaluation', 'Assessment']
+                    },
+                    { 
+                        id: 'lessonsSharing', 
+                        title: 'Lessons-Sharing',
+                        description: 'Gibt es Lessons-Sharing?',
+                        examples: ['Sharing', 'Austausch', 'Kommunikation', 'Dialog']
+                    },
+                    { 
+                        id: 'lessonsIntegration', 
+                        title: 'Lessons-Integration',
+                        description: 'Werden Lessons integriert?',
+                        examples: ['Integration', 'Umsetzung', 'Action', 'Verbesserung']
+                    },
+                    { 
+                        id: 'lessonsApplication', 
+                        title: 'Lessons-Anwendung',
+                        description: 'Werden Lessons angewendet?',
+                        examples: ['Anwendung', 'Umsetzung', 'Action', 'Verbesserung']
+                    }
+                ]
+            },
+            {
+                id: 'continuousImprovement',
+                title: 'Kontinuierliche Verbesserung',
+                description: 'Wie gut ist kontinuierliche Verbesserung?',
+                icon: 'fa-sync-alt',
+                subCriteria: [
+                    { 
+                        id: 'improvementCulture', 
+                        title: 'Verbesserungs-Kultur',
+                        description: 'Gibt es eine Verbesserungs-Kultur?',
+                        examples: ['Kultur', 'Werte', 'Normen', 'Praktiken']
+                    },
+                    { 
+                        id: 'improvementProcess', 
+                        title: 'Verbesserungs-Prozess',
+                        description: 'Gibt es einen Verbesserungs-Prozess?',
+                        examples: ['Prozess', 'Struktur', 'Methodologie', 'Framework']
+                    },
+                    { 
+                        id: 'improvementActions', 
+                        title: 'Verbesserungs-Aktionen',
+                        description: 'Gibt es Verbesserungs-Aktionen?',
+                        examples: ['Aktionen', 'Maßnahmen', 'Initiativen', 'Projekte']
+                    },
+                    { 
+                        id: 'improvementTracking', 
+                        title: 'Verbesserungs-Tracking',
+                        description: 'Gibt es Verbesserungs-Tracking?',
+                        examples: ['Tracking', 'Monitoring', 'Evaluation', 'Assessment']
+                    },
+                    { 
+                        id: 'improvementImpact', 
+                        title: 'Verbesserungs-Impact',
+                        description: 'Wird Verbesserungs-Impact gemessen?',
+                        examples: ['Impact', 'Ergebnisse', 'Wert', 'Outcomes']
+                    }
+                ]
+            },
+            {
+                id: 'stakeholderReporting',
+                title: 'Stakeholder-Reporting',
+                description: 'Wie gut ist das Stakeholder-Reporting?',
+                icon: 'fa-user-friends',
+                subCriteria: [
+                    { 
+                        id: 'stakeholderReports', 
+                        title: 'Stakeholder-Reports',
+                        description: 'Gibt es Stakeholder-Reports?',
+                        examples: ['Reports', 'Berichte', 'Kommunikation', 'Information']
+                    },
+                    { 
+                        id: 'tailoredReports', 
+                        title: 'Maßgeschneiderte Reports',
+                        description: 'Gibt es maßgeschneiderte Reports?',
+                        examples: ['Anpassung', 'Personalisierung', 'Relevanz', 'Zielgruppen']
+                    },
+                    { 
+                        id: 'reportingFrequency', 
+                        title: 'Reporting-Frequenz',
+                        description: 'Wie häufig wird berichtet?',
+                        examples: ['Häufigkeit', 'Regelmäßigkeit', 'Konsistenz', 'Kontinuität']
+                    },
+                    { 
+                        id: 'reportingTransparency', 
+                        title: 'Reporting-Transparenz',
+                        description: 'Ist das Reporting transparent?',
+                        examples: ['Transparenz', 'Offenheit', 'Ehrlichkeit', 'Klärheit']
+                    },
+                    { 
+                        id: 'reportingEngagement', 
+                        title: 'Reporting-Engagement',
+                        description: 'Gibt es Reporting-Engagement?',
+                        examples: ['Engagement', 'Einbindung', 'Partizipation', 'Beteiligung']
+                    }
+                ]
+            }
+        ];
+        
+        let assessmentData = {};
+        let assessmentExporter = null;
+        
+        function initializeAssessment() {
+            // Load saved data
+            const saved = localStorage.getItem('changeMgmtDetailAssessments');
+            if (saved) {
+                const allAssessments = JSON.parse(saved);
+                if (allAssessments.monitoring) {
+                    assessmentData = allAssessments.monitoring;
+                }
+            }
+            
+            // Initialize assessment data structure
+            monitoringCriteria.forEach(criterion => {
+                if (!assessmentData[criterion.id]) {
+                    assessmentData[criterion.id] = {};
+                }
+                criterion.subCriteria.forEach(subCriterion => {
+                    if (!assessmentData[criterion.id][subCriterion.id]) {
+                        assessmentData[criterion.id][subCriterion.id] = 1;
+                    }
+                });
+            });
+            
+            renderCriteria();
+            updateAggregatedScore();
+            assessmentExporter = new AssessmentExporter();
+        }
+        
+        function renderCriteria() {
+            const container = document.getElementById('criteriaContainer');
+            container.innerHTML = '';
+            
+            monitoringCriteria.forEach(criterion => {
+                const criterionCard = document.createElement('div');
+                criterionCard.className = 'criterion-card';
+                
+                const averageScore = calculateCriterionAverage(criterion.id);
+                
+                criterionCard.innerHTML = `
+                    <div class="criterion-header">
+                        <div class="criterion-icon">
+                            <i class="fas ${criterion.icon}"></i>
+                        </div>
+                        <div class="criterion-title-section">
+                            <h3 class="criterion-title">${criterion.title}</h3>
+                            <p class="criterion-description">${criterion.description}</p>
+                        </div>
+                        <div class="criterion-average">
+                            <div class="criterion-average-value">${averageScore.toFixed(1)}</div>
+                            <div style="font-size: 0.75rem; color: #6b7280;">Durchschnitt</div>
+                        </div>
+                    </div>
+                    
+                    <div class="sub-criteria-container">
+                        ${criterion.subCriteria.map(subCriterion => {
+                            const value = assessmentData[criterion.id][subCriterion.id] || 1;
+                            return `
+                                <div class="sub-criterion-item">
+                                    <div class="sub-criterion-label">
+                                        <h4>${subCriterion.title}</h4>
+                                        <p>${subCriterion.description}</p>
+                                        <div class="criterion-examples">
+                                            <strong>Beispiele:</strong>
+                                            <ul>
+                                                ${subCriterion.examples.map(ex => `<li>${ex}</li>`).join('')}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="sub-criterion-slider-wrapper">
+                                        <input type="range" min="1" max="5" value="${value}" 
+                                               class="sub-criterion-slider" 
+                                               id="${criterion.id}_${subCriterion.id}"
+                                               oninput="updateSubCriterionValue('${criterion.id}', '${subCriterion.id}', this.value)">
+                                        <div class="sub-criterion-value">${value}</div>
+                                        <div class="sub-criterion-scale">
+                                            <span>1</span>
+                                            <span>2</span>
+                                            <span>3</span>
+                                            <span>4</span>
+                                            <span>5</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+                
+                container.appendChild(criterionCard);
+            });
+        }
+        
+        function updateSubCriterionValue(criterionId, subCriterionId, value) {
+            if (!assessmentData[criterionId]) {
+                assessmentData[criterionId] = {};
+            }
+            assessmentData[criterionId][subCriterionId] = parseInt(value);
+            
+            const valueDisplay = document.querySelector(`#${criterionId}_${subCriterionId}`).nextElementSibling;
+            if (valueDisplay) {
+                valueDisplay.textContent = value;
+            }
+            
+            updateCriterionAverage(criterionId);
+            updateAggregatedScore();
+            saveAssessment();
+        }
+        
+        function calculateCriterionAverage(criterionId) {
+            const criterion = monitoringCriteria.find(c => c.id === criterionId);
+            if (!criterion || !assessmentData[criterionId]) return 1.0;
+            
+            const values = criterion.subCriteria.map(sub => 
+                assessmentData[criterionId][sub.id] || 1
+            );
+            const sum = values.reduce((acc, val) => acc + val, 0);
+            return sum / values.length;
+        }
+        
+        function updateCriterionAverage(criterionId) {
+            const average = calculateCriterionAverage(criterionId);
+            const criterionCard = document.querySelector(`.criterion-card:has(#${criterionId}_${monitoringCriteria.find(c => c.id === criterionId).subCriteria[0].id})`);
+            if (criterionCard) {
+                const averageDisplay = criterionCard.querySelector('.criterion-average-value');
+                if (averageDisplay) {
+                    averageDisplay.textContent = average.toFixed(1);
+                }
+            }
+        }
+        
+        function updateAggregatedScore() {
+            const averages = monitoringCriteria.map(c => calculateCriterionAverage(c.id));
+            const overallAverage = averages.reduce((acc, val) => acc + val, 0) / averages.length;
+            
+            const scoreDisplay = document.getElementById('aggregatedScore');
+            const descriptionDisplay = document.getElementById('scoreDescription');
+            
+            if (scoreDisplay) {
+                scoreDisplay.textContent = overallAverage.toFixed(1);
+            }
+            
+            if (descriptionDisplay) {
+                let description = '';
+                if (overallAverage <= 1.5) {
+                    description = 'Schwaches Change-Monitoring - Erhebliche Verbesserung nötig';
+                } else if (overallAverage <= 2.5) {
+                    description = 'Teilweise entwickeltes Change-Monitoring - Verbesserungen erforderlich';
+                } else if (overallAverage <= 3.5) {
+                    description = 'Gutes Change-Monitoring - Weitere Optimierung möglich';
+                } else if (overallAverage <= 4.5) {
+                    description = 'Starkes Change-Monitoring - Kleine Verbesserungen möglich';
+                } else {
+                    description = 'Exzellentes Change-Monitoring - Hervorragende Change-Messung';
+                }
+                descriptionDisplay.textContent = description;
+            }
+        }
+        
+        function saveAssessment() {
+            const allAssessments = JSON.parse(localStorage.getItem('changeMgmtDetailAssessments') || '{}');
+            allAssessments.monitoring = {
+                criteria: assessmentData,
+                aggregated: parseFloat(monitoringCriteria.map(c => calculateCriterionAverage(c.id)).reduce((acc, val) => acc + val, 0) / monitoringCriteria.length).toFixed(1)
+            };
+            localStorage.setItem('changeMgmtDetailAssessments', JSON.stringify(allAssessments));
+        }
+        
+        function saveAndReturn() {
+            saveAssessment();
+            window.location.href = 'organisationsentwicklung-workflow.html';
+        }
+        
+        async function exportToExcel() {
+            if (!assessmentExporter) {
+                assessmentExporter = new AssessmentExporter();
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+            const data = prepareExportData();
+            await assessmentExporter.exportToExcel(data, `Change-Management-Monitoring-&-Evaluation-Assessment-${new Date().toISOString().split('T')[0]}`);
+        }
+        
+        async function exportToPDF() {
+            if (!assessmentExporter) {
+                assessmentExporter = new AssessmentExporter();
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+            const data = prepareExportData();
+            await assessmentExporter.exportToPDF(data, `Change-Management-Monitoring-&-Evaluation-Assessment-${new Date().toISOString().split('T')[0]}`);
+        }
+        
+        function prepareExportData() {
+            const aggregated = parseFloat(monitoringCriteria.map(c => calculateCriterionAverage(c.id)).reduce((acc, val) => acc + val, 0) / monitoringCriteria.length).toFixed(1);
+            
+            return {
+                dimension: 'monitoring',
+                dimensionName: 'Monitoring & Evaluation',
+                overall: parseFloat(aggregated),
+                criteria: monitoringCriteria.map(criterion => ({
+                    id: criterion.id,
+                    title: criterion.title,
+                    description: criterion.description,
+                    average: calculateCriterionAverage(criterion.id),
+                    subCriteria: criterion.subCriteria.map(sub => ({
+                        id: sub.id,
+                        title: sub.title,
+                        description: sub.description,
+                        examples: sub.examples,
+                        score: assessmentData[criterion.id][sub.id] || 1
+                    }))
+                })),
+                timestamp: new Date().toISOString()
+            };
+        }
+        
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', initializeAssessment);
+    </script>
+    
+    <!-- Assessment Export Script -->
+    <script src="js/assessment-export.js"></script>
+</body>
+</html>

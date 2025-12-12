@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Change Readiness Assessment - Change Management Assessment - Manuel Weiss</title>
+    
+    <!-- Meta Tags -->
+    <meta name="description" content="Detaillierte Bewertung der change readiness assessment für Change Management.">
+    <meta name="keywords" content="Change Readiness, Change Assessment, Organisationsbereitschaft, Change Management">
+    <meta name="author" content="Manuel Weiss">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="css/ki-assessment-detail.css">
+    <style>
+        .detail-header {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+        
+        .criterion-icon {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .detail-slider::-webkit-slider-thumb {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .detail-slider::-moz-range-thumb {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .sub-criterion-slider::-webkit-slider-thumb {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .sub-criterion-slider::-moz-range-thumb {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .slider-value-display {
+            color: #d97706;
+        }
+        
+        .sub-criterion-value {
+            color: #d97706;
+        }
+        
+        .criterion-average-value {
+            color: #d97706;
+        }
+        
+        .aggregated-score {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .save-button {
+            color: #d97706;
+        }
+        
+        .criterion-examples {
+            border-left: 4px solid #f59e0b;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="manuel-weiss-photo.svg" alt="Manuel Weiss" class="nav-logo">
+                <span class="nav-name">Manuel Weiss</span>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="hr-transformation.html">HR-Transformation</a>
+                <a href="index.html#about">Über mich</a>
+                <a href="index.html#contact">Kontakt</a>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="detail-assessment-container">
+        <div class="detail-header">
+            <a href="change-management-workflow.html" class="back-button">
+                <i class="fas fa-arrow-left"></i>
+                Zurück zur Übersicht
+            </a>
+            <h1><i class="fas fa-clipboard-check"></i> Change Readiness Assessment</h1>
+            <p>Bewerten Sie die Bereitschaft Ihrer Organisation für Veränderungen. Wissenschaftlich fundierte Bewertung basierend auf modernen Change-Readiness-Prinzipien.</p>
+        </div>
+        
+        <div id="criteriaContainer">
+            <!-- Criteria will be dynamically loaded -->
+        </div>
+        
+        <div class="aggregated-score">
+            <h3>Gesamtbewertung</h3>
+            <div class="score-display">
+                <div class="score-circle-large" id="aggregatedScore">1.0</div>
+                <div class="score-description" id="scoreDescription">Bewerten Sie die Kriterien, um Ihre Gesamtbewertung zu sehen</div>
+            </div>
+            <div style="display: flex; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap;">
+                <button class="save-button" onclick="saveAndReturn()" style="flex: 1; min-width: 200px;">
+                    <i class="fas fa-save"></i> Bewertung speichern und zurück
+                </button>
+                <button class="export-button excel" onclick="exportToExcel()" style="background: #217346; color: white; border: none; padding: 1rem 2rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; flex: 1; min-width: 150px;">
+                    <i class="fas fa-file-excel"></i> Excel Export
+                </button>
+                <button class="export-button pdf" onclick="exportToPDF()" style="background: #dc3545; color: white; border: none; padding: 1rem 2rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; flex: 1; min-width: 150px;">
+                    <i class="fas fa-file-pdf"></i> PDF Export
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const readinessCriteria = [            {
+                id: 'changeAwareness',
+                title: 'Change-Bewusstsein',
+                description: 'Wie stark ist das Change-Bewusstsein in der Organisation?',
+                icon: 'fa-lightbulb',
+                subCriteria: [
+                    { 
+                        id: 'awarenessLevel', 
+                        title: 'Bewusstseinsniveau',
+                        description: 'Wie hoch ist das Bewusstsein für Change?',
+                        examples: ['Hohes Bewusstsein', 'Sensibilität', 'Verständnis', 'Awareness']
+                    },
+                    { 
+                        id: 'changeUnderstanding', 
+                        title: 'Change-Verständnis',
+                        description: 'Gibt es ein tiefes Change-Verständnis?',
+                        examples: ['Verständnis', 'Wissen', 'Kompetenz', 'Bildung']
+                    },
+                    { 
+                        id: 'changeNecessity', 
+                        title: 'Wahrgenommene Notwendigkeit',
+                        description: 'Wird Change als notwendig wahrgenommen?',
+                        examples: ['Notwendigkeit', 'Dringlichkeit', 'Relevanz', 'Bedeutung']
+                    },
+                    { 
+                        id: 'changeBenefits', 
+                        title: 'Verstandene Vorteile',
+                        description: 'Werden die Vorteile von Change verstanden?',
+                        examples: ['Vorteile', 'Nutzen', 'Value', 'Benefits']
+                    },
+                    { 
+                        id: 'changeUrgency', 
+                        title: 'Wahrgenommene Dringlichkeit',
+                        description: 'Wie dringend wird Change wahrgenommen?',
+                        examples: ['Dringlichkeit', 'Priorität', 'Zeitdruck', 'Notwendigkeit']
+                    }
+                ]
+            },
+            {
+                id: 'organizationalCapability',
+                title: 'Organisatorische Change-Fähigkeit',
+                description: 'Wie fähig ist die Organisation für Change?',
+                icon: 'fa-cogs',
+                subCriteria: [
+                    { 
+                        id: 'changeExperience', 
+                        title: 'Change-Erfahrung',
+                        description: 'Gibt es Change-Erfahrung in der Organisation?',
+                        examples: ['Erfahrung', 'Historie', 'Lessons Learned', 'Best Practices']
+                    },
+                    { 
+                        id: 'changeSkills', 
+                        title: 'Change-Skills und Kompetenzen',
+                        description: 'Gibt es Change-Skills im Team?',
+                        examples: ['Skills', 'Kompetenzen', 'Fähigkeiten', 'Expertise']
+                    },
+                    { 
+                        id: 'changeResources', 
+                        title: 'Change-Ressourcen',
+                        description: 'Gibt es ausreichende Change-Ressourcen?',
+                        examples: ['Ressourcen', 'Budget', 'Mitarbeiter', 'Tools']
+                    },
+                    { 
+                        id: 'changeInfrastructure', 
+                        title: 'Change-Infrastruktur',
+                        description: 'Gibt es eine Change-Infrastruktur?',
+                        examples: ['Infrastruktur', 'Strukturen', 'Prozesse', 'Systeme']
+                    },
+                    { 
+                        id: 'changeCapacity', 
+                        title: 'Change-Kapazität',
+                        description: 'Gibt es Change-Kapazität?',
+                        examples: ['Kapazität', 'Zeit', 'Ressourcen', 'Möglichkeiten']
+                    }
+                ]
+            },
+            {
+                id: 'leadershipReadiness',
+                title: 'Führungs-Readiness',
+                description: 'Wie ready ist die Führung für Change?',
+                icon: 'fa-user-tie',
+                subCriteria: [
+                    { 
+                        id: 'leadershipSupport', 
+                        title: 'Führungsunterstützung',
+                        description: 'Gibt es starke Führungsunterstützung?',
+                        examples: ['Support', 'Commitment', 'Engagement', 'Unterstützung']
+                    },
+                    { 
+                        id: 'leadershipVision', 
+                        title: 'Führungs-Vision und Strategie',
+                        description: 'Gibt es eine klare Führungs-Vision?',
+                        examples: ['Vision', 'Strategie', 'Ausrichtung', 'Ziele']
+                    },
+                    { 
+                        id: 'leadershipCommunication', 
+                        title: 'Führungskommunikation',
+                        description: 'Wie gut ist die Führungskommunikation?',
+                        examples: ['Kommunikation', 'Dialog', 'Transparenz', 'Offenheit']
+                    },
+                    { 
+                        id: 'leadershipAlignment', 
+                        title: 'Führungs-Alignment',
+                        description: 'Gibt es Alignment in der Führung?',
+                        examples: ['Alignment', 'Einigkeit', 'Konsens', 'Ausrichtung']
+                    },
+                    { 
+                        id: 'leadershipCapability', 
+                        title: 'Führungs-Change-Fähigkeit',
+                        description: 'Gibt es Führungs-Change-Fähigkeit?',
+                        examples: ['Fähigkeit', 'Kompetenz', 'Skills', 'Expertise']
+                    }
+                ]
+            },
+            {
+                id: 'culturalReadiness',
+                title: 'Kulturelle Readiness',
+                description: 'Wie ready ist die Kultur für Change?',
+                icon: 'fa-heart',
+                subCriteria: [
+                    { 
+                        id: 'changeCulture', 
+                        title: 'Change-Kultur',
+                        description: 'Gibt es eine Change-Kultur?',
+                        examples: ['Kultur', 'Werte', 'Normen', 'Praktiken']
+                    },
+                    { 
+                        id: 'opennessToChange', 
+                        title: 'Offenheit für Change',
+                        description: 'Gibt es Offenheit für Change?',
+                        examples: ['Offenheit', 'Akzeptanz', 'Bereitschaft', 'Willigkeit']
+                    },
+                    { 
+                        id: 'riskTolerance', 
+                        title: 'Risikotoleranz',
+                        description: 'Wie hoch ist die Risikotoleranz?',
+                        examples: ['Risikobereitschaft', 'Fehlertoleranz', 'Experimente', 'Mut']
+                    },
+                    { 
+                        id: 'learningCulture', 
+                        title: 'Lernkultur',
+                        description: 'Gibt es eine Lernkultur?',
+                        examples: ['Lernkultur', 'Lernen', 'Entwicklung', 'Wachstum']
+                    },
+                    { 
+                        id: 'innovationCulture', 
+                        title: 'Innovationskultur',
+                        description: 'Gibt es eine Innovationskultur?',
+                        examples: ['Innovation', 'Kreativität', 'Experimentierfreude', 'Neue Ideen']
+                    }
+                ]
+            },
+            {
+                id: 'structuralReadiness',
+                title: 'Strukturelle Readiness',
+                description: 'Wie ready ist die Struktur für Change?',
+                icon: 'fa-sitemap',
+                subCriteria: [
+                    { 
+                        id: 'flexibleStructure', 
+                        title: 'Flexible Organisationsstruktur',
+                        description: 'Ist die Struktur flexibel?',
+                        examples: ['Flexibilität', 'Anpassungsfähigkeit', 'Agilität', 'Beweglichkeit']
+                    },
+                    { 
+                        id: 'decisionSpeed', 
+                        title: 'Entscheidungsgeschwindigkeit',
+                        description: 'Wie schnell werden Entscheidungen getroffen?',
+                        examples: ['Schnelligkeit', 'Effizienz', 'Zeit', 'Agilität']
+                    },
+                    { 
+                        id: 'processFlexibility', 
+                        title: 'Prozess-Flexibilität',
+                        description: 'Sind Prozesse flexibel?',
+                        examples: ['Flexibilität', 'Anpassung', 'Agilität', 'Beweglichkeit']
+                    },
+                    { 
+                        id: 'resourceFlexibility', 
+                        title: 'Ressourcen-Flexibilität',
+                        description: 'Sind Ressourcen flexibel?',
+                        examples: ['Flexibilität', 'Anpassung', 'Dynamik', 'Beweglichkeit']
+                    },
+                    { 
+                        id: 'systemFlexibility', 
+                        title: 'System-Flexibilität',
+                        description: 'Sind Systeme flexibel?',
+                        examples: ['Flexibilität', 'Anpassung', 'Integration', 'Kompatibilität']
+                    }
+                ]
+            },
+            {
+                id: 'resourceReadiness',
+                title: 'Ressourcen-Readiness',
+                description: 'Wie ready sind die Ressourcen für Change?',
+                icon: 'fa-tools',
+                subCriteria: [
+                    { 
+                        id: 'financialResources', 
+                        title: 'Finanzielle Ressourcen',
+                        description: 'Gibt es ausreichende finanzielle Ressourcen?',
+                        examples: ['Budget', 'Finanzen', 'Mittel', 'Investitionen']
+                    },
+                    { 
+                        id: 'humanResources', 
+                        title: 'Human Resources und Talente',
+                        description: 'Gibt es ausreichende Human Resources?',
+                        examples: ['Mitarbeiter', 'Talente', 'Kompetenzen', 'Kapazität']
+                    },
+                    { 
+                        id: 'technicalResources', 
+                        title: 'Technische Ressourcen',
+                        description: 'Gibt es technische Ressourcen?',
+                        examples: ['Technologie', 'Tools', 'Systeme', 'Infrastruktur']
+                    },
+                    { 
+                        id: 'timeResources', 
+                        title: 'Zeitressourcen',
+                        description: 'Gibt es ausreichende Zeitressourcen?',
+                        examples: ['Zeit', 'Kapazität', 'Freiheit', 'Räume']
+                    },
+                    { 
+                        id: 'externalResources', 
+                        title: 'Externe Ressourcen',
+                        description: 'Gibt es externe Ressourcen?',
+                        examples: ['Beratung', 'Partnerschaften', 'Netzwerke', 'Support']
+                    }
+                ]
+            },
+            {
+                id: 'riskReadiness',
+                title: 'Risiko-Readiness',
+                description: 'Wie ready ist die Organisation für Change-Risiken?',
+                icon: 'fa-shield-alt',
+                subCriteria: [
+                    { 
+                        id: 'riskAwareness', 
+                        title: 'Risikobewusstsein',
+                        description: 'Gibt es Risikobewusstsein?',
+                        examples: ['Bewusstsein', 'Sensibilität', 'Verständnis', 'Awareness']
+                    },
+                    { 
+                        id: 'riskAssessment', 
+                        title: 'Risikobewertung',
+                        description: 'Gibt es Risikobewertung?',
+                        examples: ['Bewertung', 'Analyse', 'Evaluation', 'Assessment']
+                    },
+                    { 
+                        id: 'riskMitigation', 
+                        title: 'Risikominderung',
+                        description: 'Gibt es Risikominderung?',
+                        examples: ['Minderung', 'Management', 'Strategien', 'Maßnahmen']
+                    },
+                    { 
+                        id: 'riskTolerance', 
+                        title: 'Risikotoleranz',
+                        description: 'Wie hoch ist die Risikotoleranz?',
+                        examples: ['Toleranz', 'Bereitschaft', 'Akzeptanz', 'Offenheit']
+                    },
+                    { 
+                        id: 'contingencyPlanning', 
+                        title: 'Notfallplanung',
+                        description: 'Gibt es Notfallplanung?',
+                        examples: ['Planung', 'Strategien', 'Backup', 'Alternativen']
+                    }
+                ]
+            },
+            {
+                id: 'communicationReadiness',
+                title: 'Kommunikations-Readiness',
+                description: 'Wie ready ist die Kommunikation für Change?',
+                icon: 'fa-comments',
+                subCriteria: [
+                    { 
+                        id: 'communicationChannels', 
+                        title: 'Kommunikationskanäle',
+                        description: 'Gibt es ausreichende Kommunikationskanäle?',
+                        examples: ['Kanäle', 'Tools', 'Plattformen', 'Systeme']
+                    },
+                    { 
+                        id: 'communicationCapability', 
+                        title: 'Kommunikations-Fähigkeit',
+                        description: 'Gibt es Kommunikations-Fähigkeit?',
+                        examples: ['Fähigkeit', 'Kompetenz', 'Skills', 'Expertise']
+                    },
+                    { 
+                        id: 'transparency', 
+                        title: 'Transparenz',
+                        description: 'Gibt es Transparenz?',
+                        examples: ['Transparenz', 'Offenheit', 'Ehrlichkeit', 'Klärheit']
+                    },
+                    { 
+                        id: 'feedbackCulture', 
+                        title: 'Feedback-Kultur',
+                        description: 'Gibt es eine Feedback-Kultur?',
+                        examples: ['Feedback', 'Rückmeldung', 'Kommunikation', 'Dialog']
+                    },
+                    { 
+                        id: 'twoWayCommunication', 
+                        title: 'Zwei-Wege-Kommunikation',
+                        description: 'Gibt es Zwei-Wege-Kommunikation?',
+                        examples: ['Dialog', 'Austausch', 'Interaktion', 'Feedback']
+                    }
+                ]
+            },
+            {
+                id: 'stakeholderReadiness',
+                title: 'Stakeholder-Readiness',
+                description: 'Wie ready sind Stakeholder für Change?',
+                icon: 'fa-user-friends',
+                subCriteria: [
+                    { 
+                        id: 'stakeholderAwareness', 
+                        title: 'Stakeholder-Bewusstsein',
+                        description: 'Gibt es Stakeholder-Bewusstsein?',
+                        examples: ['Bewusstsein', 'Sensibilität', 'Verständnis', 'Awareness']
+                    },
+                    { 
+                        id: 'stakeholderEngagement', 
+                        title: 'Stakeholder-Engagement',
+                        description: 'Gibt es Stakeholder-Engagement?',
+                        examples: ['Engagement', 'Einbindung', 'Partizipation', 'Beteiligung']
+                    },
+                    { 
+                        id: 'stakeholderAlignment', 
+                        title: 'Stakeholder-Alignment',
+                        description: 'Gibt es Stakeholder-Alignment?',
+                        examples: ['Alignment', 'Ausrichtung', 'Konsens', 'Einigkeit']
+                    },
+                    { 
+                        id: 'stakeholderSupport', 
+                        title: 'Stakeholder-Unterstützung',
+                        description: 'Gibt es Stakeholder-Unterstützung?',
+                        examples: ['Unterstützung', 'Support', 'Commitment', 'Engagement']
+                    },
+                    { 
+                        id: 'stakeholderInfluence', 
+                        title: 'Stakeholder-Einfluss',
+                        description: 'Wie stark ist der Stakeholder-Einfluss?',
+                        examples: ['Einfluss', 'Macht', 'Autorität', 'Relevanz']
+                    }
+                ]
+            },
+            {
+                id: 'measurementReadiness',
+                title: 'Messungs-Readiness',
+                description: 'Wie ready ist die Messung für Change?',
+                icon: 'fa-chart-bar',
+                subCriteria: [
+                    { 
+                        id: 'measurementCapability', 
+                        title: 'Messungs-Fähigkeit',
+                        description: 'Gibt es Messungs-Fähigkeit?',
+                        examples: ['Fähigkeit', 'Kompetenz', 'Skills', 'Expertise']
+                    },
+                    { 
+                        id: 'measurementTools', 
+                        title: 'Messungs-Tools',
+                        description: 'Gibt es Messungs-Tools?',
+                        examples: ['Tools', 'Plattformen', 'Software', 'Systeme']
+                    },
+                    { 
+                        id: 'baselineData', 
+                        title: 'Baseline-Daten',
+                        description: 'Gibt es Baseline-Daten?',
+                        examples: ['Daten', 'Baseline', 'Ausgangslage', 'Ist-Zustand']
+                    },
+                    { 
+                        id: 'kpiDefinition', 
+                        title: 'KPI-Definition',
+                        description: 'Gibt es KPI-Definitionen?',
+                        examples: ['KPIs', 'Metriken', 'Ziele', 'Indikatoren']
+                    },
+                    { 
+                        id: 'measurementProcess', 
+                        title: 'Messungs-Prozess',
+                        description: 'Gibt es einen Messungs-Prozess?',
+                        examples: ['Prozess', 'Struktur', 'Methodologie', 'Framework']
+                    }
+                ]
+            },
+            {
+                id: 'sustainabilityReadiness',
+                title: 'Nachhaltigkeits-Readiness',
+                description: 'Wie ready ist die Nachhaltigkeit für Change?',
+                icon: 'fa-leaf',
+                subCriteria: [
+                    { 
+                        id: 'sustainabilityAwareness', 
+                        title: 'Nachhaltigkeits-Bewusstsein',
+                        description: 'Gibt es Nachhaltigkeits-Bewusstsein?',
+                        examples: ['Bewusstsein', 'Sensibilität', 'Verständnis', 'Awareness']
+                    },
+                    { 
+                        id: 'sustainabilityPlanning', 
+                        title: 'Nachhaltigkeits-Planung',
+                        description: 'Gibt es Nachhaltigkeits-Planung?',
+                        examples: ['Planung', 'Strategie', 'Roadmap', 'Konzept']
+                    },
+                    { 
+                        id: 'sustainabilityResources', 
+                        title: 'Nachhaltigkeits-Ressourcen',
+                        description: 'Gibt es Nachhaltigkeits-Ressourcen?',
+                        examples: ['Ressourcen', 'Budget', 'Mitarbeiter', 'Tools']
+                    },
+                    { 
+                        id: 'sustainabilityProcesses', 
+                        title: 'Nachhaltigkeits-Prozesse',
+                        description: 'Gibt es Nachhaltigkeits-Prozesse?',
+                        examples: ['Prozesse', 'Strukturen', 'Methodologie', 'Framework']
+                    },
+                    { 
+                        id: 'longTermThinking', 
+                        title: 'Langfristiges Denken',
+                        description: 'Wird langfristig gedacht?',
+                        examples: ['Langfristigkeit', 'Zukunftsfähigkeit', 'Nachhaltigkeit', 'Strategie']
+                    }
+                ]
+            }
+        ];
+        
+        let assessmentData = {};
+        let assessmentExporter = null;
+        
+        function initializeAssessment() {
+            // Load saved data
+            const saved = localStorage.getItem('changeMgmtDetailAssessments');
+            if (saved) {
+                const allAssessments = JSON.parse(saved);
+                if (allAssessments.readiness) {
+                    assessmentData = allAssessments.readiness;
+                }
+            }
+            
+            // Initialize assessment data structure
+            readinessCriteria.forEach(criterion => {
+                if (!assessmentData[criterion.id]) {
+                    assessmentData[criterion.id] = {};
+                }
+                criterion.subCriteria.forEach(subCriterion => {
+                    if (!assessmentData[criterion.id][subCriterion.id]) {
+                        assessmentData[criterion.id][subCriterion.id] = 1;
+                    }
+                });
+            });
+            
+            renderCriteria();
+            updateAggregatedScore();
+            assessmentExporter = new AssessmentExporter();
+        }
+        
+        function renderCriteria() {
+            const container = document.getElementById('criteriaContainer');
+            container.innerHTML = '';
+            
+            readinessCriteria.forEach(criterion => {
+                const criterionCard = document.createElement('div');
+                criterionCard.className = 'criterion-card';
+                
+                const averageScore = calculateCriterionAverage(criterion.id);
+                
+                criterionCard.innerHTML = `
+                    <div class="criterion-header">
+                        <div class="criterion-icon">
+                            <i class="fas ${criterion.icon}"></i>
+                        </div>
+                        <div class="criterion-title-section">
+                            <h3 class="criterion-title">${criterion.title}</h3>
+                            <p class="criterion-description">${criterion.description}</p>
+                        </div>
+                        <div class="criterion-average">
+                            <div class="criterion-average-value">${averageScore.toFixed(1)}</div>
+                            <div style="font-size: 0.75rem; color: #6b7280;">Durchschnitt</div>
+                        </div>
+                    </div>
+                    
+                    <div class="sub-criteria-container">
+                        ${criterion.subCriteria.map(subCriterion => {
+                            const value = assessmentData[criterion.id][subCriterion.id] || 1;
+                            return `
+                                <div class="sub-criterion-item">
+                                    <div class="sub-criterion-label">
+                                        <h4>${subCriterion.title}</h4>
+                                        <p>${subCriterion.description}</p>
+                                        <div class="criterion-examples">
+                                            <strong>Beispiele:</strong>
+                                            <ul>
+                                                ${subCriterion.examples.map(ex => `<li>${ex}</li>`).join('')}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="sub-criterion-slider-wrapper">
+                                        <input type="range" min="1" max="5" value="${value}" 
+                                               class="sub-criterion-slider" 
+                                               id="${criterion.id}_${subCriterion.id}"
+                                               oninput="updateSubCriterionValue('${criterion.id}', '${subCriterion.id}', this.value)">
+                                        <div class="sub-criterion-value">${value}</div>
+                                        <div class="sub-criterion-scale">
+                                            <span>1</span>
+                                            <span>2</span>
+                                            <span>3</span>
+                                            <span>4</span>
+                                            <span>5</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+                
+                container.appendChild(criterionCard);
+            });
+        }
+        
+        function updateSubCriterionValue(criterionId, subCriterionId, value) {
+            if (!assessmentData[criterionId]) {
+                assessmentData[criterionId] = {};
+            }
+            assessmentData[criterionId][subCriterionId] = parseInt(value);
+            
+            const valueDisplay = document.querySelector(`#${criterionId}_${subCriterionId}`).nextElementSibling;
+            if (valueDisplay) {
+                valueDisplay.textContent = value;
+            }
+            
+            updateCriterionAverage(criterionId);
+            updateAggregatedScore();
+            saveAssessment();
+        }
+        
+        function calculateCriterionAverage(criterionId) {
+            const criterion = readinessCriteria.find(c => c.id === criterionId);
+            if (!criterion || !assessmentData[criterionId]) return 1.0;
+            
+            const values = criterion.subCriteria.map(sub => 
+                assessmentData[criterionId][sub.id] || 1
+            );
+            const sum = values.reduce((acc, val) => acc + val, 0);
+            return sum / values.length;
+        }
+        
+        function updateCriterionAverage(criterionId) {
+            const average = calculateCriterionAverage(criterionId);
+            const criterionCard = document.querySelector(`.criterion-card:has(#${criterionId}_${readinessCriteria.find(c => c.id === criterionId).subCriteria[0].id})`);
+            if (criterionCard) {
+                const averageDisplay = criterionCard.querySelector('.criterion-average-value');
+                if (averageDisplay) {
+                    averageDisplay.textContent = average.toFixed(1);
+                }
+            }
+        }
+        
+        function updateAggregatedScore() {
+            const averages = readinessCriteria.map(c => calculateCriterionAverage(c.id));
+            const overallAverage = averages.reduce((acc, val) => acc + val, 0) / averages.length;
+            
+            const scoreDisplay = document.getElementById('aggregatedScore');
+            const descriptionDisplay = document.getElementById('scoreDescription');
+            
+            if (scoreDisplay) {
+                scoreDisplay.textContent = overallAverage.toFixed(1);
+            }
+            
+            if (descriptionDisplay) {
+                let description = '';
+                if (overallAverage <= 1.5) {
+                    description = 'Niedrige Change-Readiness - Erhebliche Verbesserung nötig';
+                } else if (overallAverage <= 2.5) {
+                    description = 'Teilweise Change-Readiness - Verbesserungen erforderlich';
+                } else if (overallAverage <= 3.5) {
+                    description = 'Gute Change-Readiness - Weitere Optimierung möglich';
+                } else if (overallAverage <= 4.5) {
+                    description = 'Hohe Change-Readiness - Kleine Verbesserungen möglich';
+                } else {
+                    description = 'Exzellente Change-Readiness - Hervorragende Bereitschaft';
+                }
+                descriptionDisplay.textContent = description;
+            }
+        }
+        
+        function saveAssessment() {
+            const allAssessments = JSON.parse(localStorage.getItem('changeMgmtDetailAssessments') || '{}');
+            allAssessments.readiness = {
+                criteria: assessmentData,
+                aggregated: parseFloat(readinessCriteria.map(c => calculateCriterionAverage(c.id)).reduce((acc, val) => acc + val, 0) / readinessCriteria.length).toFixed(1)
+            };
+            localStorage.setItem('changeMgmtDetailAssessments', JSON.stringify(allAssessments));
+        }
+        
+        function saveAndReturn() {
+            saveAssessment();
+            window.location.href = 'organisationsentwicklung-workflow.html';
+        }
+        
+        async function exportToExcel() {
+            if (!assessmentExporter) {
+                assessmentExporter = new AssessmentExporter();
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+            const data = prepareExportData();
+            await assessmentExporter.exportToExcel(data, `Change-Management-Change-Readiness-Assessment-Assessment-${new Date().toISOString().split('T')[0]}`);
+        }
+        
+        async function exportToPDF() {
+            if (!assessmentExporter) {
+                assessmentExporter = new AssessmentExporter();
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+            const data = prepareExportData();
+            await assessmentExporter.exportToPDF(data, `Change-Management-Change-Readiness-Assessment-Assessment-${new Date().toISOString().split('T')[0]}`);
+        }
+        
+        function prepareExportData() {
+            const aggregated = parseFloat(readinessCriteria.map(c => calculateCriterionAverage(c.id)).reduce((acc, val) => acc + val, 0) / readinessCriteria.length).toFixed(1);
+            
+            return {
+                dimension: 'readiness',
+                dimensionName: 'Change Readiness Assessment',
+                overall: parseFloat(aggregated),
+                criteria: readinessCriteria.map(criterion => ({
+                    id: criterion.id,
+                    title: criterion.title,
+                    description: criterion.description,
+                    average: calculateCriterionAverage(criterion.id),
+                    subCriteria: criterion.subCriteria.map(sub => ({
+                        id: sub.id,
+                        title: sub.title,
+                        description: sub.description,
+                        examples: sub.examples,
+                        score: assessmentData[criterion.id][sub.id] || 1
+                    }))
+                })),
+                timestamp: new Date().toISOString()
+            };
+        }
+        
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', initializeAssessment);
+    </script>
+    
+    <!-- Assessment Export Script -->
+    <script src="js/assessment-export.js"></script>
+</body>
+</html>

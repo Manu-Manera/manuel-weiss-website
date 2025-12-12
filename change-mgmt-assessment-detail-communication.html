@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kommunikationsstrategie - Change Management Assessment - Manuel Weiss</title>
+    
+    <!-- Meta Tags -->
+    <meta name="description" content="Detaillierte Bewertung der kommunikationsstrategie für Change Management.">
+    <meta name="keywords" content="Change-Kommunikation, Kommunikationsstrategie, Change Management">
+    <meta name="author" content="Manuel Weiss">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="css/ki-assessment-detail.css">
+    <style>
+        .detail-header {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+        
+        .criterion-icon {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .detail-slider::-webkit-slider-thumb {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .detail-slider::-moz-range-thumb {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .sub-criterion-slider::-webkit-slider-thumb {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .sub-criterion-slider::-moz-range-thumb {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .slider-value-display {
+            color: #d97706;
+        }
+        
+        .sub-criterion-value {
+            color: #d97706;
+        }
+        
+        .criterion-average-value {
+            color: #d97706;
+        }
+        
+        .aggregated-score {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .save-button {
+            color: #d97706;
+        }
+        
+        .criterion-examples {
+            border-left: 4px solid #f59e0b;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="manuel-weiss-photo.svg" alt="Manuel Weiss" class="nav-logo">
+                <span class="nav-name">Manuel Weiss</span>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="hr-transformation.html">HR-Transformation</a>
+                <a href="index.html#about">Über mich</a>
+                <a href="index.html#contact">Kontakt</a>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="detail-assessment-container">
+        <div class="detail-header">
+            <a href="change-management-workflow.html" class="back-button">
+                <i class="fas fa-arrow-left"></i>
+                Zurück zur Übersicht
+            </a>
+            <h1><i class="fas fa-comments"></i> Kommunikationsstrategie</h1>
+            <p>Bewerten Sie Ihre Change-Kommunikationsstrategie. Wissenschaftlich fundierte Bewertung basierend auf modernen Change-Kommunikations-Prinzipien.</p>
+        </div>
+        
+        <div id="criteriaContainer">
+            <!-- Criteria will be dynamically loaded -->
+        </div>
+        
+        <div class="aggregated-score">
+            <h3>Gesamtbewertung</h3>
+            <div class="score-display">
+                <div class="score-circle-large" id="aggregatedScore">1.0</div>
+                <div class="score-description" id="scoreDescription">Bewerten Sie die Kriterien, um Ihre Gesamtbewertung zu sehen</div>
+            </div>
+            <div style="display: flex; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap;">
+                <button class="save-button" onclick="saveAndReturn()" style="flex: 1; min-width: 200px;">
+                    <i class="fas fa-save"></i> Bewertung speichern und zurück
+                </button>
+                <button class="export-button excel" onclick="exportToExcel()" style="background: #217346; color: white; border: none; padding: 1rem 2rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; flex: 1; min-width: 150px;">
+                    <i class="fas fa-file-excel"></i> Excel Export
+                </button>
+                <button class="export-button pdf" onclick="exportToPDF()" style="background: #dc3545; color: white; border: none; padding: 1rem 2rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; flex: 1; min-width: 150px;">
+                    <i class="fas fa-file-pdf"></i> PDF Export
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const communicationCriteria = [            {
+                id: 'communicationStrategy',
+                title: 'Kommunikationsstrategie',
+                description: 'Wie gut ist die Change-Kommunikationsstrategie?',
+                icon: 'fa-bullhorn',
+                subCriteria: [
+                    { 
+                        id: 'strategyDefinition', 
+                        title: 'Strategie-Definition',
+                        description: 'Gibt es eine klare Strategie-Definition?',
+                        examples: ['Definition', 'Planung', 'Konzept', 'Roadmap']
+                    },
+                    { 
+                        id: 'targetAudience', 
+                        title: 'Zielgruppen-Definition',
+                        description: 'Sind Zielgruppen definiert?',
+                        examples: ['Zielgruppen', 'Audience', 'Segmentierung', 'Kategorisierung']
+                    },
+                    { 
+                        id: 'keyMessages', 
+                        title: 'Kernbotschaften',
+                        description: 'Gibt es klare Kernbotschaften?',
+                        examples: ['Botschaften', 'Messages', 'Content', 'Narrative']
+                    },
+                    { 
+                        id: 'communicationTiming', 
+                        title: 'Kommunikations-Timing',
+                        description: 'Ist das Timing optimal?',
+                        examples: ['Timing', 'Zeitpunkt', 'Häufigkeit', 'Rhythmus']
+                    },
+                    { 
+                        id: 'communicationChannels', 
+                        title: 'Kommunikationskanäle',
+                        description: 'Gibt es passende Kanäle?',
+                        examples: ['Kanäle', 'Tools', 'Plattformen', 'Systeme']
+                    }
+                ]
+            },
+            {
+                id: 'messageDevelopment',
+                title: 'Botschafts-Entwicklung',
+                description: 'Wie gut sind die Botschaften entwickelt?',
+                icon: 'fa-comment-alt',
+                subCriteria: [
+                    { 
+                        id: 'messageClarity', 
+                        title: 'Botschafts-Klarheit',
+                        description: 'Sind die Botschaften klar?',
+                        examples: ['Klarheit', 'Verständlichkeit', 'Präzision', 'Eindeutigkeit']
+                    },
+                    { 
+                        id: 'messageConsistency', 
+                        title: 'Botschafts-Konsistenz',
+                        description: 'Sind die Botschaften konsistent?',
+                        examples: ['Konsistenz', 'Einheitlichkeit', 'Kohärenz', 'Alignment']
+                    },
+                    { 
+                        id: 'messageRelevance', 
+                        title: 'Botschafts-Relevanz',
+                        description: 'Sind die Botschaften relevant?',
+                        examples: ['Relevanz', 'Bedeutung', 'Wert', 'Impact']
+                    },
+                    { 
+                        id: 'messageEmotionality', 
+                        title: 'Emotionale Ansprache',
+                        description: 'Sprechen die Botschaften emotional an?',
+                        examples: ['Emotion', 'Ansprache', 'Verbindung', 'Engagement']
+                    },
+                    { 
+                        id: 'messageTailoring', 
+                        title: 'Botschafts-Anpassung',
+                        description: 'Werden Botschaften angepasst?',
+                        examples: ['Anpassung', 'Personalisierung', 'Zielgruppen', 'Relevanz']
+                    }
+                ]
+            },
+            {
+                id: 'communicationExecution',
+                title: 'Kommunikations-Umsetzung',
+                description: 'Wie gut ist die Kommunikations-Umsetzung?',
+                icon: 'fa-paper-plane',
+                subCriteria: [
+                    { 
+                        id: 'executionPlan', 
+                        title: 'Umsetzungsplan',
+                        description: 'Gibt es einen Umsetzungsplan?',
+                        examples: ['Plan', 'Roadmap', 'Timeline', 'Strategie']
+                    },
+                    { 
+                        id: 'executionQuality', 
+                        title: 'Umsetzungsqualität',
+                        description: 'Wie gut ist die Umsetzungsqualität?',
+                        examples: ['Qualität', 'Exzellenz', 'Profession', 'Standards']
+                    },
+                    { 
+                        id: 'executionConsistency', 
+                        title: 'Umsetzungskonsistenz',
+                        description: 'Ist die Umsetzung konsistent?',
+                        examples: ['Konsistenz', 'Einheitlichkeit', 'Kohärenz', 'Alignment']
+                    },
+                    { 
+                        id: 'executionFrequency', 
+                        title: 'Umsetzungsfrequenz',
+                        description: 'Wie häufig wird kommuniziert?',
+                        examples: ['Häufigkeit', 'Regelmäßigkeit', 'Kontinuität', 'Rhythmus']
+                    },
+                    { 
+                        id: 'executionReach', 
+                        title: 'Reichweite',
+                        description: 'Wie groß ist die Reichweite?',
+                        examples: ['Reichweite', 'Coverage', 'Verbreitung', 'Zugang']
+                    }
+                ]
+            },
+            {
+                id: 'twoWayCommunication',
+                title: 'Zwei-Wege-Kommunikation',
+                description: 'Wie gut ist die Zwei-Wege-Kommunikation?',
+                icon: 'fa-exchange-alt',
+                subCriteria: [
+                    { 
+                        id: 'dialogueCulture', 
+                        title: 'Dialog-Kultur',
+                        description: 'Gibt es eine Dialog-Kultur?',
+                        examples: ['Dialog', 'Austausch', 'Interaktion', 'Kommunikation']
+                    },
+                    { 
+                        id: 'feedbackMechanisms', 
+                        title: 'Feedback-Mechanismen',
+                        description: 'Gibt es Feedback-Mechanismen?',
+                        examples: ['Mechanismen', 'Tools', 'Plattformen', 'Systeme']
+                    },
+                    { 
+                        id: 'listeningCapability', 
+                        title: 'Zuhör-Fähigkeit',
+                        description: 'Gibt es Zuhör-Fähigkeit?',
+                        examples: ['Zuhören', 'Aufmerksamkeit', 'Verständnis', 'Empathie']
+                    },
+                    { 
+                        id: 'responseCapability', 
+                        title: 'Reaktions-Fähigkeit',
+                        description: 'Gibt es Reaktions-Fähigkeit?',
+                        examples: ['Reaktion', 'Antwort', 'Response', 'Feedback']
+                    },
+                    { 
+                        id: 'interactiveChannels', 
+                        title: 'Interaktive Kanäle',
+                        description: 'Gibt es interaktive Kanäle?',
+                        examples: ['Interaktiv', 'Dialog', 'Austausch', 'Kommunikation']
+                    }
+                ]
+            },
+            {
+                id: 'transparencyCommunication',
+                title: 'Transparente Kommunikation',
+                description: 'Wie transparent ist die Kommunikation?',
+                icon: 'fa-eye',
+                subCriteria: [
+                    { 
+                        id: 'informationSharing', 
+                        title: 'Informations-Sharing',
+                        description: 'Wie gut ist das Informations-Sharing?',
+                        examples: ['Sharing', 'Transparenz', 'Offenheit', 'Information']
+                    },
+                    { 
+                        id: 'honestCommunication', 
+                        title: 'Ehrliche Kommunikation',
+                        description: 'Ist die Kommunikation ehrlich?',
+                        examples: ['Ehrlichkeit', 'Authentizität', 'Offenheit', 'Transparenz']
+                    },
+                    { 
+                        id: 'openDialogue', 
+                        title: 'Offener Dialog',
+                        description: 'Gibt es offenen Dialog?',
+                        examples: ['Dialog', 'Offenheit', 'Transparenz', 'Kommunikation']
+                    },
+                    { 
+                        id: 'informationAccess', 
+                        title: 'Informationszugang',
+                        description: 'Gibt es Informationszugang?',
+                        examples: ['Zugang', 'Access', 'Verfügbarkeit', 'Transparenz']
+                    },
+                    { 
+                        id: 'transparencyMetrics', 
+                        title: 'Transparenz-Metriken',
+                        description: 'Gibt es Transparenz-Metriken?',
+                        examples: ['Metriken', 'KPIs', 'Messung', 'Tracking']
+                    }
+                ]
+            },
+            {
+                id: 'crisisCommunication',
+                title: 'Krisenkommunikation',
+                description: 'Wie gut ist die Krisenkommunikation?',
+                icon: 'fa-exclamation-circle',
+                subCriteria: [
+                    { 
+                        id: 'crisisPlan', 
+                        title: 'Krisenkommunikationsplan',
+                        description: 'Gibt es einen Krisenplan?',
+                        examples: ['Plan', 'Vorbereitung', 'Strategie', 'Prozesse']
+                    },
+                    { 
+                        id: 'rapidResponse', 
+                        title: 'Schnelle Reaktionsfähigkeit',
+                        description: 'Kann schnell reagiert werden?',
+                        examples: ['Schnelligkeit', 'Reaktion', 'Agilität', 'Effizienz']
+                    },
+                    { 
+                        id: 'clearCrisisMessages', 
+                        title: 'Klare Krisen-Botschaften',
+                        description: 'Sind die Krisen-Botschaften klar?',
+                        examples: ['Klarheit', 'Präzision', 'Verständlichkeit', 'Eindeutigkeit']
+                    },
+                    { 
+                        id: 'stakeholderCrisisCommunication', 
+                        title: 'Stakeholder-Krisenkommunikation',
+                        description: 'Wie gut ist die Stakeholder-Krisenkommunikation?',
+                        examples: ['Stakeholder', 'Kommunikation', 'Engagement', 'Information']
+                    },
+                    { 
+                        id: 'reputationProtection', 
+                        title: 'Reputationsschutz',
+                        description: 'Gibt es Reputationsschutz?',
+                        examples: ['Reputation', 'Schutz', 'Management', 'Strategie']
+                    }
+                ]
+            },
+            {
+                id: 'communicationMeasurement',
+                title: 'Kommunikations-Messung',
+                description: 'Wie gut wird Kommunikation gemessen?',
+                icon: 'fa-chart-bar',
+                subCriteria: [
+                    { 
+                        id: 'reachMetrics', 
+                        title: 'Reichweiten-Metriken',
+                        description: 'Gibt es Reichweiten-Metriken?',
+                        examples: ['Metriken', 'KPIs', 'Messung', 'Tracking']
+                    },
+                    { 
+                        id: 'engagementMetrics', 
+                        title: 'Engagement-Metriken',
+                        description: 'Gibt es Engagement-Metriken?',
+                        examples: ['Metriken', 'KPIs', 'Messung', 'Tracking']
+                    },
+                    { 
+                        id: 'effectivenessMeasurement', 
+                        title: 'Effektivitäts-Messung',
+                        description: 'Wird die Effektivität gemessen?',
+                        examples: ['Effektivität', 'Messung', 'Evaluation', 'Analyse']
+                    },
+                    { 
+                        id: 'understandingMeasurement', 
+                        title: 'Verständnis-Messung',
+                        description: 'Wird das Verständnis gemessen?',
+                        examples: ['Verständnis', 'Messung', 'Evaluation', 'Analyse']
+                    },
+                    { 
+                        id: 'continuousImprovement', 
+                        title: 'Kontinuierliche Verbesserung',
+                        description: 'Gibt es kontinuierliche Verbesserung?',
+                        examples: ['Verbesserung', 'Optimierung', 'Lernen', 'Evolution']
+                    }
+                ]
+            },
+            {
+                id: 'communicationTraining',
+                title: 'Kommunikations-Training',
+                description: 'Wie gut ist das Kommunikations-Training?',
+                icon: 'fa-graduation-cap',
+                subCriteria: [
+                    { 
+                        id: 'trainingPrograms', 
+                        title: 'Trainingsprogramme',
+                        description: 'Gibt es Trainingsprogramme?',
+                        examples: ['Programme', 'Training', 'Bildung', 'Workshops']
+                    },
+                    { 
+                        id: 'communicationSkills', 
+                        title: 'Kommunikations-Skills',
+                        description: 'Gibt es Kommunikations-Skills-Training?',
+                        examples: ['Skills', 'Kompetenzen', 'Fähigkeiten', 'Training']
+                    },
+                    { 
+                        id: 'changeCommunicationTraining', 
+                        title: 'Change-Kommunikations-Training',
+                        description: 'Gibt es Change-Kommunikations-Training?',
+                        examples: ['Training', 'Bildung', 'Workshops', 'Programme']
+                    },
+                    { 
+                        id: 'crisisCommunicationTraining', 
+                        title: 'Krisenkommunikations-Training',
+                        description: 'Gibt es Krisenkommunikations-Training?',
+                        examples: ['Training', 'Bildung', 'Workshops', 'Programme']
+                    },
+                    { 
+                        id: 'continuousLearning', 
+                        title: 'Kontinuierliches Lernen',
+                        description: 'Gibt es kontinuierliches Lernen?',
+                        examples: ['Lernen', 'Entwicklung', 'Wachstum', 'Bildung']
+                    }
+                ]
+            },
+            {
+                id: 'communicationChannels',
+                title: 'Kommunikationskanäle',
+                description: 'Wie gut sind die Kommunikationskanäle?',
+                icon: 'fa-broadcast-tower',
+                subCriteria: [
+                    { 
+                        id: 'channelDiversity', 
+                        title: 'Kanal-Vielfalt',
+                        description: 'Gibt es Kanal-Vielfalt?',
+                        examples: ['Vielfalt', 'Diversität', 'Auswahl', 'Optionen']
+                    },
+                    { 
+                        id: 'channelEffectiveness', 
+                        title: 'Kanal-Effektivität',
+                        description: 'Wie effektiv sind die Kanäle?',
+                        examples: ['Effektivität', 'Wirksamkeit', 'Impact', 'Ergebnisse']
+                    },
+                    { 
+                        id: 'channelIntegration', 
+                        title: 'Kanal-Integration',
+                        description: 'Sind Kanäle integriert?',
+                        examples: ['Integration', 'Zusammenarbeit', 'Alignment', 'Kohärenz']
+                    },
+                    { 
+                        id: 'digitalChannels', 
+                        title: 'Digitale Kanäle',
+                        description: 'Gibt es digitale Kanäle?',
+                        examples: ['Digital', 'Online', 'Plattformen', 'Tools']
+                    },
+                    { 
+                        id: 'traditionalChannels', 
+                        title: 'Traditionelle Kanäle',
+                        description: 'Gibt es traditionelle Kanäle?',
+                        examples: ['Traditionell', 'Offline', 'Persönlich', 'Face-to-Face']
+                    }
+                ]
+            },
+            {
+                id: 'communicationCulture',
+                title: 'Kommunikations-Kultur',
+                description: 'Wie stark ist die Kommunikations-Kultur?',
+                icon: 'fa-comments',
+                subCriteria: [
+                    { 
+                        id: 'openCommunication', 
+                        title: 'Offene Kommunikation',
+                        description: 'Gibt es offene Kommunikation?',
+                        examples: ['Offenheit', 'Transparenz', 'Kommunikation', 'Dialog']
+                    },
+                    { 
+                        id: 'honestCommunication', 
+                        title: 'Ehrliche Kommunikation',
+                        description: 'Gibt es ehrliche Kommunikation?',
+                        examples: ['Ehrlichkeit', 'Authentizität', 'Offenheit', 'Transparenz']
+                    },
+                    { 
+                        id: 'respectfulCommunication', 
+                        title: 'Respektvolle Kommunikation',
+                        description: 'Gibt es respektvolle Kommunikation?',
+                        examples: ['Respekt', 'Höflichkeit', 'Wertschätzung', 'Anerkennung']
+                    },
+                    { 
+                        id: 'constructiveCommunication', 
+                        title: 'Konstruktive Kommunikation',
+                        description: 'Gibt es konstruktive Kommunikation?',
+                        examples: ['Konstruktiv', 'Hilfreich', 'Wertvoll', 'Entwicklungsorientiert']
+                    },
+                    { 
+                        id: 'inclusiveCommunication', 
+                        title: 'Inklusive Kommunikation',
+                        description: 'Gibt es inklusive Kommunikation?',
+                        examples: ['Inklusiv', 'Vielfältig', 'Zugänglich', 'Partizipativ']
+                    }
+                ]
+            }
+        ];
+        
+        let assessmentData = {};
+        let assessmentExporter = null;
+        
+        function initializeAssessment() {
+            // Load saved data
+            const saved = localStorage.getItem('changeMgmtDetailAssessments');
+            if (saved) {
+                const allAssessments = JSON.parse(saved);
+                if (allAssessments.communication) {
+                    assessmentData = allAssessments.communication;
+                }
+            }
+            
+            // Initialize assessment data structure
+            communicationCriteria.forEach(criterion => {
+                if (!assessmentData[criterion.id]) {
+                    assessmentData[criterion.id] = {};
+                }
+                criterion.subCriteria.forEach(subCriterion => {
+                    if (!assessmentData[criterion.id][subCriterion.id]) {
+                        assessmentData[criterion.id][subCriterion.id] = 1;
+                    }
+                });
+            });
+            
+            renderCriteria();
+            updateAggregatedScore();
+            assessmentExporter = new AssessmentExporter();
+        }
+        
+        function renderCriteria() {
+            const container = document.getElementById('criteriaContainer');
+            container.innerHTML = '';
+            
+            communicationCriteria.forEach(criterion => {
+                const criterionCard = document.createElement('div');
+                criterionCard.className = 'criterion-card';
+                
+                const averageScore = calculateCriterionAverage(criterion.id);
+                
+                criterionCard.innerHTML = `
+                    <div class="criterion-header">
+                        <div class="criterion-icon">
+                            <i class="fas ${criterion.icon}"></i>
+                        </div>
+                        <div class="criterion-title-section">
+                            <h3 class="criterion-title">${criterion.title}</h3>
+                            <p class="criterion-description">${criterion.description}</p>
+                        </div>
+                        <div class="criterion-average">
+                            <div class="criterion-average-value">${averageScore.toFixed(1)}</div>
+                            <div style="font-size: 0.75rem; color: #6b7280;">Durchschnitt</div>
+                        </div>
+                    </div>
+                    
+                    <div class="sub-criteria-container">
+                        ${criterion.subCriteria.map(subCriterion => {
+                            const value = assessmentData[criterion.id][subCriterion.id] || 1;
+                            return `
+                                <div class="sub-criterion-item">
+                                    <div class="sub-criterion-label">
+                                        <h4>${subCriterion.title}</h4>
+                                        <p>${subCriterion.description}</p>
+                                        <div class="criterion-examples">
+                                            <strong>Beispiele:</strong>
+                                            <ul>
+                                                ${subCriterion.examples.map(ex => `<li>${ex}</li>`).join('')}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="sub-criterion-slider-wrapper">
+                                        <input type="range" min="1" max="5" value="${value}" 
+                                               class="sub-criterion-slider" 
+                                               id="${criterion.id}_${subCriterion.id}"
+                                               oninput="updateSubCriterionValue('${criterion.id}', '${subCriterion.id}', this.value)">
+                                        <div class="sub-criterion-value">${value}</div>
+                                        <div class="sub-criterion-scale">
+                                            <span>1</span>
+                                            <span>2</span>
+                                            <span>3</span>
+                                            <span>4</span>
+                                            <span>5</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+                
+                container.appendChild(criterionCard);
+            });
+        }
+        
+        function updateSubCriterionValue(criterionId, subCriterionId, value) {
+            if (!assessmentData[criterionId]) {
+                assessmentData[criterionId] = {};
+            }
+            assessmentData[criterionId][subCriterionId] = parseInt(value);
+            
+            const valueDisplay = document.querySelector(`#${criterionId}_${subCriterionId}`).nextElementSibling;
+            if (valueDisplay) {
+                valueDisplay.textContent = value;
+            }
+            
+            updateCriterionAverage(criterionId);
+            updateAggregatedScore();
+            saveAssessment();
+        }
+        
+        function calculateCriterionAverage(criterionId) {
+            const criterion = communicationCriteria.find(c => c.id === criterionId);
+            if (!criterion || !assessmentData[criterionId]) return 1.0;
+            
+            const values = criterion.subCriteria.map(sub => 
+                assessmentData[criterionId][sub.id] || 1
+            );
+            const sum = values.reduce((acc, val) => acc + val, 0);
+            return sum / values.length;
+        }
+        
+        function updateCriterionAverage(criterionId) {
+            const average = calculateCriterionAverage(criterionId);
+            const criterionCard = document.querySelector(`.criterion-card:has(#${criterionId}_${communicationCriteria.find(c => c.id === criterionId).subCriteria[0].id})`);
+            if (criterionCard) {
+                const averageDisplay = criterionCard.querySelector('.criterion-average-value');
+                if (averageDisplay) {
+                    averageDisplay.textContent = average.toFixed(1);
+                }
+            }
+        }
+        
+        function updateAggregatedScore() {
+            const averages = communicationCriteria.map(c => calculateCriterionAverage(c.id));
+            const overallAverage = averages.reduce((acc, val) => acc + val, 0) / averages.length;
+            
+            const scoreDisplay = document.getElementById('aggregatedScore');
+            const descriptionDisplay = document.getElementById('scoreDescription');
+            
+            if (scoreDisplay) {
+                scoreDisplay.textContent = overallAverage.toFixed(1);
+            }
+            
+            if (descriptionDisplay) {
+                let description = '';
+                if (overallAverage <= 1.5) {
+                    description = 'Schwache Change-Kommunikation - Erhebliche Verbesserung nötig';
+                } else if (overallAverage <= 2.5) {
+                    description = 'Teilweise entwickelte Change-Kommunikation - Verbesserungen erforderlich';
+                } else if (overallAverage <= 3.5) {
+                    description = 'Gute Change-Kommunikation - Weitere Optimierung möglich';
+                } else if (overallAverage <= 4.5) {
+                    description = 'Starke Change-Kommunikation - Kleine Verbesserungen möglich';
+                } else {
+                    description = 'Exzellente Change-Kommunikation - Hervorragende Kommunikationsstrategie';
+                }
+                descriptionDisplay.textContent = description;
+            }
+        }
+        
+        function saveAssessment() {
+            const allAssessments = JSON.parse(localStorage.getItem('changeMgmtDetailAssessments') || '{}');
+            allAssessments.communication = {
+                criteria: assessmentData,
+                aggregated: parseFloat(communicationCriteria.map(c => calculateCriterionAverage(c.id)).reduce((acc, val) => acc + val, 0) / communicationCriteria.length).toFixed(1)
+            };
+            localStorage.setItem('changeMgmtDetailAssessments', JSON.stringify(allAssessments));
+        }
+        
+        function saveAndReturn() {
+            saveAssessment();
+            window.location.href = 'organisationsentwicklung-workflow.html';
+        }
+        
+        async function exportToExcel() {
+            if (!assessmentExporter) {
+                assessmentExporter = new AssessmentExporter();
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+            const data = prepareExportData();
+            await assessmentExporter.exportToExcel(data, `Change-Management-Kommunikationsstrategie-Assessment-${new Date().toISOString().split('T')[0]}`);
+        }
+        
+        async function exportToPDF() {
+            if (!assessmentExporter) {
+                assessmentExporter = new AssessmentExporter();
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+            const data = prepareExportData();
+            await assessmentExporter.exportToPDF(data, `Change-Management-Kommunikationsstrategie-Assessment-${new Date().toISOString().split('T')[0]}`);
+        }
+        
+        function prepareExportData() {
+            const aggregated = parseFloat(communicationCriteria.map(c => calculateCriterionAverage(c.id)).reduce((acc, val) => acc + val, 0) / communicationCriteria.length).toFixed(1);
+            
+            return {
+                dimension: 'communication',
+                dimensionName: 'Kommunikationsstrategie',
+                overall: parseFloat(aggregated),
+                criteria: communicationCriteria.map(criterion => ({
+                    id: criterion.id,
+                    title: criterion.title,
+                    description: criterion.description,
+                    average: calculateCriterionAverage(criterion.id),
+                    subCriteria: criterion.subCriteria.map(sub => ({
+                        id: sub.id,
+                        title: sub.title,
+                        description: sub.description,
+                        examples: sub.examples,
+                        score: assessmentData[criterion.id][sub.id] || 1
+                    }))
+                })),
+                timestamp: new Date().toISOString()
+            };
+        }
+        
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', initializeAssessment);
+    </script>
+    
+    <!-- Assessment Export Script -->
+    <script src="js/assessment-export.js"></script>
+</body>
+</html>
