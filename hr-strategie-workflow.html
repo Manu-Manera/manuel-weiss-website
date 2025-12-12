@@ -129,13 +129,17 @@
             border-color: #3b82f6;
         }
         
-        .assessment-category.clickable-category * {
+        /* Allow clicks on the category itself, but prevent child elements from blocking */
+        .assessment-category.clickable-category .category-header,
+        .assessment-category.clickable-category .category-header * {
             pointer-events: none;
         }
         
-        .assessment-category.clickable-category input[type="range"],
+        /* Allow slider interactions */
         .assessment-category.clickable-category .slider-container,
-        .assessment-category.clickable-category .slider-container * {
+        .assessment-category.clickable-category input[type="range"],
+        .assessment-category.clickable-category .slider-labels,
+        .assessment-category.clickable-category .slider-value-display {
             pointer-events: auto;
         }
         
