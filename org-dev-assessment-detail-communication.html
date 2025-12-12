@@ -119,384 +119,383 @@
     </div>
     
     <script>
-        const communicationCriteria = [
-            {
-                id: 'organizationalFlexibility',
-                title: 'Organisatorische Flexibilität',
-                description: 'Wie flexibel ist Ihre Organisationsstruktur?',
-                icon: 'fa-random',
+        const communicationCriteria = [            {
+                id: 'internalCommunication',
+                title: 'Interne Kommunikation',
+                description: 'Wie gut ist die interne Kommunikation?',
+                icon: 'fa-comments',
                 subCriteria: [
                     { 
-                        id: 'flatHierarchy', 
-                        title: 'Flache Hierarchien',
-                        description: 'Gibt es flache Hierarchien, die schnelle Entscheidungen ermöglichen?',
-                        examples: ['Maximal 3-4 Hierarchieebenen', 'Kurze Entscheidungswege', 'Delegation von Verantwortung']
+                        id: 'communicationChannels', 
+                        title: 'Kommunikationskanäle',
+                        description: 'Gibt es ausreichende Kommunikationskanäle?',
+                        examples: ['Kanäle', 'Tools', 'Plattformen', 'Systeme']
                     },
                     { 
-                        id: 'crossFunctionalTeams', 
-                        title: 'Cross-funktionale Teams',
-                        description: 'Arbeiten Teams cross-funktional zusammen?',
-                        examples: ['Interdisziplinäre Teams', 'Regelmäßiger Austausch', 'Gemeinsame Ziele']
+                        id: 'regularUpdates', 
+                        title: 'Regelmäßige Updates und Informationen',
+                        description: 'Gibt es regelmäßige Updates?',
+                        examples: ['Updates', 'Newsletter', 'Mitteilungen', 'Information']
                     },
                     { 
-                        id: 'dynamicStructure', 
-                        title: 'Dynamische Strukturanpassung',
-                        description: 'Kann die Struktur schnell angepasst werden?',
-                        examples: ['Flexible Team-Formation', 'Schnelle Reorganisation', 'Anpassungsfähigkeit']
+                        id: 'twoWayCommunication', 
+                        title: 'Zwei-Wege-Kommunikation',
+                        description: 'Gibt es Zwei-Wege-Kommunikation?',
+                        examples: ['Dialog', 'Feedback', 'Austausch', 'Interaktion']
                     },
                     { 
-                        id: 'matrixOrganization', 
-                        title: 'Matrix-Organisationsstruktur',
-                        description: 'Gibt es eine Matrix-Struktur für bessere Zusammenarbeit?',
-                        examples: ['Duale Berichtslinien', 'Projekt-Matrix', 'Funktions-Matrix']
+                        id: 'communicationFrequency', 
+                        title: 'Kommunikationsfrequenz',
+                        description: 'Wie häufig wird kommuniziert?',
+                        examples: ['Häufigkeit', 'Regelmäßigkeit', 'Konsistenz', 'Kontinuität']
                     },
                     { 
-                        id: 'networkStructure', 
-                        title: 'Netzwerk-Organisationsstruktur',
-                        description: 'Nutzt die Organisation Netzwerkstrukturen?',
-                        examples: ['Interne Netzwerke', 'Externe Partnerschaften', 'Kollaborative Strukturen']
+                        id: 'messageClarity', 
+                        title: 'Klarheit der Botschaften',
+                        description: 'Sind die Botschaften klar?',
+                        examples: ['Klarheit', 'Verständlichkeit', 'Präzision', 'Eindeutigkeit']
                     }
                 ]
             },
             {
-                id: 'agileDesign',
-                title: 'Agiles Organisationsdesign',
-                description: 'Wie agil ist das Organisationsdesign?',
-                icon: 'fa-bolt',
+                id: 'transparency',
+                title: 'Transparenz',
+                description: 'Wie transparent ist die Organisation?',
+                icon: 'fa-eye',
                 subCriteria: [
                     { 
-                        id: 'selfOrganizingTeams', 
-                        title: 'Selbstorganisierte Teams',
-                        description: 'Haben Teams Autonomie und Selbstorganisation?',
-                        examples: ['Eigene Entscheidungsbefugnis', 'Selbstverwaltung', 'Eigene Ressourcenverwaltung']
+                        id: 'informationSharing', 
+                        title: 'Informations-Sharing',
+                        description: 'Wie gut ist das Informations-Sharing?',
+                        examples: ['Sharing', 'Transparenz', 'Offenheit', 'Information']
                     },
                     { 
-                        id: 'scrumFramework', 
-                        title: 'Scrum/Agile Frameworks',
-                        description: 'Werden agile Frameworks verwendet?',
-                        examples: ['Scrum Teams', 'Sprints', 'Retrospektiven']
+                        id: 'decisionTransparency', 
+                        title: 'Entscheidungstransparenz',
+                        description: 'Sind Entscheidungen transparent?',
+                        examples: ['Transparenz', 'Nachvollziehbarkeit', 'Offenheit', 'Kommunikation']
                     },
                     { 
-                        id: 'iterativeApproach', 
-                        title: 'Iterative Arbeitsweise',
-                        description: 'Wird iterativ gearbeitet?',
-                        examples: ['Kurze Zyklen', 'Schnelle Feedback-Loops', 'Kontinuierliche Verbesserung']
+                        id: 'financialTransparency', 
+                        title: 'Finanzielle Transparenz',
+                        description: 'Gibt es finanzielle Transparenz?',
+                        examples: ['Finanzen', 'Transparenz', 'Offenheit', 'Information']
                     },
                     { 
-                        id: 'customerCentricity', 
-                        title: 'Kundenorientierte Strukturen',
-                        description: 'Ist die Struktur kundenorientiert?',
-                        examples: ['Kundennähe', 'Customer Journey Fokus', 'Kundenfeedback integriert']
+                        id: 'strategyTransparency', 
+                        title: 'Strategie-Transparenz',
+                        description: 'Ist die Strategie transparent?',
+                        examples: ['Strategie', 'Transparenz', 'Kommunikation', 'Offenheit']
+                    },
+                    { 
+                        id: 'performanceTransparency', 
+                        title: 'Performance-Transparenz',
+                        description: 'Ist die Performance transparent?',
+                        examples: ['Performance', 'Metriken', 'Transparenz', 'Offenheit']
+                    }
+                ]
+            },
+            {
+                id: 'leadershipCommunication',
+                title: 'Führungskommunikation',
+                description: 'Wie gut ist die Führungskommunikation?',
+                icon: 'fa-bullhorn',
+                subCriteria: [
+                    { 
+                        id: 'visibleLeadership', 
+                        title: 'Sichtbare Führung',
+                        description: 'Ist die Führung sichtbar?',
+                        examples: ['Sichtbarkeit', 'Präsenz', 'Engagement', 'Kommunikation']
+                    },
+                    { 
+                        id: 'regularLeadershipUpdates', 
+                        title: 'Regelmäßige Führungs-Updates',
+                        description: 'Gibt es regelmäßige Updates?',
+                        examples: ['Updates', 'Kommunikation', 'Information', 'News']
+                    },
+                    { 
+                        id: 'authenticCommunication', 
+                        title: 'Authentische Kommunikation',
+                        description: 'Ist die Kommunikation authentisch?',
+                        examples: ['Authentizität', 'Ehrlichkeit', 'Offenheit', 'Glaubwürdigkeit']
+                    },
+                    { 
+                        id: 'visionCommunication', 
+                        title: 'Vision-Kommunikation',
+                        description: 'Wird die Vision kommuniziert?',
+                        examples: ['Vision', 'Strategie', 'Kommunikation', 'Vermittlung']
+                    },
+                    { 
+                        id: 'changeCommunication', 
+                        title: 'Change-Kommunikation',
+                        description: 'Wie gut ist die Change-Kommunikation?',
+                        examples: ['Change', 'Kommunikation', 'Transformation', 'Wandel']
+                    }
+                ]
+            },
+            {
+                id: 'feedbackCulture',
+                title: 'Feedback-Kultur',
+                description: 'Wie stark ist die Feedback-Kultur?',
+                icon: 'fa-comment-dots',
+                subCriteria: [
+                    { 
+                        id: 'regularFeedback', 
+                        title: 'Regelmäßiges Feedback',
+                        description: 'Gibt es regelmäßiges Feedback?',
+                        examples: ['Feedback', 'Rückmeldung', 'Regelmäßigkeit', 'Konsistenz']
+                    },
+                    { 
+                        id: '360Feedback', 
+                        title: '360° Feedback',
+                        description: 'Gibt es 360° Feedback?',
+                        examples: ['360°', 'Umfassend', 'Vielseitig', 'Komplett']
+                    },
+                    { 
+                        id: 'constructiveFeedback', 
+                        title: 'Konstruktives Feedback',
+                        description: 'Ist das Feedback konstruktiv?',
+                        examples: ['Konstruktiv', 'Hilfreich', 'Wertvoll', 'Entwicklungsorientiert']
+                    },
+                    { 
+                        id: 'feedbackReceptivity', 
+                        title: 'Feedback-Aufnahmebereitschaft',
+                        description: 'Wie aufnahmebereit ist die Organisation?',
+                        examples: ['Aufnahmebereitschaft', 'Offenheit', 'Lernbereitschaft', 'Akzeptanz']
+                    },
+                    { 
+                        id: 'feedbackImplementation', 
+                        title: 'Feedback-Umsetzung',
+                        description: 'Wird Feedback umgesetzt?',
+                        examples: ['Umsetzung', 'Action', 'Verbesserung', 'Change']
+                    }
+                ]
+            },
+            {
+                id: 'crisisCommunication',
+                title: 'Krisenkommunikation',
+                description: 'Wie gut ist die Krisenkommunikation?',
+                icon: 'fa-exclamation-circle',
+                subCriteria: [
+                    { 
+                        id: 'crisisPlan', 
+                        title: 'Krisenkommunikationsplan',
+                        description: 'Gibt es einen Krisenplan?',
+                        examples: ['Plan', 'Vorbereitung', 'Strategie', 'Prozesse']
                     },
                     { 
                         id: 'rapidResponse', 
                         title: 'Schnelle Reaktionsfähigkeit',
-                        description: 'Kann die Organisation schnell reagieren?',
-                        examples: ['Kurze Entscheidungszeiten', 'Schnelle Umsetzung', 'Anpassungsfähigkeit']
+                        description: 'Kann schnell reagiert werden?',
+                        examples: ['Schnelligkeit', 'Reaktion', 'Agilität', 'Effizienz']
+                    },
+                    { 
+                        id: 'clearMessages', 
+                        title: 'Klare Botschaften in Krisen',
+                        description: 'Sind die Botschaften klar?',
+                        examples: ['Klarheit', 'Präzision', 'Verständlichkeit', 'Eindeutigkeit']
+                    },
+                    { 
+                        id: 'stakeholderCommunication', 
+                        title: 'Stakeholder-Kommunikation',
+                        description: 'Wie gut ist die Stakeholder-Kommunikation?',
+                        examples: ['Stakeholder', 'Kommunikation', 'Engagement', 'Information']
+                    },
+                    { 
+                        id: 'reputationManagement', 
+                        title: 'Reputationsmanagement',
+                        description: 'Gibt es Reputationsmanagement?',
+                        examples: ['Reputation', 'Management', 'Schutz', 'Aufbau']
                     }
                 ]
             },
             {
-                id: 'organizationalClarity',
-                title: 'Organisatorische Klarheit',
-                description: 'Wie klar sind Rollen, Verantwortlichkeiten und Prozesse?',
-                icon: 'fa-eye',
-                subCriteria: [
-                    { 
-                        id: 'clearRoles', 
-                        title: 'Klare Rollen und Verantwortlichkeiten',
-                        description: 'Sind Rollen und Verantwortlichkeiten klar definiert?',
-                        examples: ['Rollenbeschreibungen', 'Verantwortlichkeitsmatrix', 'Klare Zuständigkeiten']
-                    },
-                    { 
-                        id: 'processDocumentation', 
-                        title: 'Dokumentierte Prozesse',
-                        description: 'Sind Prozesse dokumentiert?',
-                        examples: ['Prozessdokumentation', 'Standard Operating Procedures', 'Guidelines']
-                    },
-                    { 
-                        id: 'decisionMaking', 
-                        title: 'Klare Entscheidungsfindung',
-                        description: 'Gibt es klare Entscheidungsprozesse?',
-                        examples: ['Entscheidungsmatrizen', 'Approval-Prozesse', 'Klare Autoritäten']
-                    },
-                    { 
-                        id: 'communicationChannels', 
-                        title: 'Definierte Kommunikationskanäle',
-                        description: 'Gibt es definierte Kommunikationswege?',
-                        examples: ['Kommunikationsmatrix', 'Regelmäßige Meetings', 'Informationsfluss']
-                    },
-                    { 
-                        id: 'governanceStructure', 
-                        title: 'Governance-Struktur',
-                        description: 'Gibt es eine klare Governance-Struktur?',
-                        examples: ['Steuerungskreise', 'Governance Boards', 'Klare Regeln']
-                    }
-                ]
-            },
-            {
-                id: 'scalability',
-                title: 'Skalierbarkeit',
-                description: 'Wie gut skaliert die Organisationsstruktur?',
-                icon: 'fa-expand-arrows-alt',
-                subCriteria: [
-                    { 
-                        id: 'growthReadiness', 
-                        title: 'Wachstumsbereitschaft',
-                        description: 'Ist die Struktur wachstumsbereit?',
-                        examples: ['Skalierbare Teams', 'Erweiterbare Strukturen', 'Wachstumsplanung']
-                    },
-                    { 
-                        id: 'modularDesign', 
-                        title: 'Modulares Design',
-                        description: 'Ist die Struktur modular aufgebaut?',
-                        examples: ['Wiederverwendbare Module', 'Plug-and-Play Teams', 'Modulare Einheiten']
-                    },
-                    { 
-                        id: 'resourceFlexibility', 
-                        title: 'Ressourcenflexibilität',
-                        description: 'Können Ressourcen flexibel zugewiesen werden?',
-                        examples: ['Flexible Ressourcenzuweisung', 'Shared Resources', 'Dynamische Allokation']
-                    },
-                    { 
-                        id: 'internationalScalability', 
-                        title: 'Internationale Skalierbarkeit',
-                        description: 'Skaliert die Struktur international?',
-                        examples: ['Globales Modell', 'Regionale Anpassungen', 'Kulturelle Flexibilität']
-                    },
-                    { 
-                        id: 'technologyScalability', 
-                        title: 'Technologie-Skalierbarkeit',
-                        description: 'Unterstützt Technologie die Skalierung?',
-                        examples: ['Skalierbare IT-Systeme', 'Cloud-Infrastruktur', 'Automatisierung']
-                    }
-                ]
-            },
-            {
-                id: 'collaborationStructures',
-                title: 'Kollaborationsstrukturen',
-                description: 'Wie gut sind Kollaborationsstrukturen etabliert?',
-                icon: 'fa-users',
-                subCriteria: [
-                    { 
-                        id: 'crossFunctionalCollaboration', 
-                        title: 'Cross-funktionale Zusammenarbeit',
-                        description: 'Gibt es Strukturen für cross-funktionale Zusammenarbeit?',
-                        examples: ['Gemeinsame Projekte', 'Cross-Functional Teams', 'Interdisziplinäre Zusammenarbeit']
-                    },
-                    { 
-                        id: 'knowledgeSharing', 
-                        title: 'Wissensaustausch-Strukturen',
-                        description: 'Gibt es Strukturen für Wissensaustausch?',
-                        examples: ['Communities of Practice', 'Wissensplattformen', 'Regelmäßiger Austausch']
-                    },
-                    { 
-                        id: 'collaborativeTools', 
-                        title: 'Kollaborative Tools und Plattformen',
-                        description: 'Werden kollaborative Tools genutzt?',
-                        examples: ['Collaboration Software', 'Projektmanagement-Tools', 'Virtuelle Zusammenarbeit']
-                    },
-                    { 
-                        id: 'informalNetworks', 
-                        title: 'Informelle Netzwerke',
-                        description: 'Gibt es informelle Netzwerke?',
-                        examples: ['Mentoring-Programme', 'Peer Networks', 'Informelle Communities']
-                    },
-                    { 
-                        id: 'teamCohesion', 
-                        title: 'Team-Kohäsion',
-                        description: 'Wie stark ist die Team-Kohäsion?',
-                        examples: ['Team-Building', 'Gemeinsame Ziele', 'Starke Beziehungen']
-                    }
-                ]
-            },
-            {
-                id: 'innovationStructures',
-                title: 'Innovationsstrukturen',
-                description: 'Wie gut sind Strukturen für Innovation etabliert?',
-                icon: 'fa-lightbulb',
-                subCriteria: [
-                    { 
-                        id: 'innovationTeams', 
-                        title: 'Dedizierte Innovations-Teams',
-                        description: 'Gibt es Teams für Innovation?',
-                        examples: ['Innovation Labs', 'R&D Teams', 'Innovation Hubs']
-                    },
-                    { 
-                        id: 'experimentation', 
-                        title: 'Experimentier-Strukturen',
-                        description: 'Gibt es Strukturen für Experimente?',
-                        examples: ['Pilot-Projekte', 'Prototyping', 'Test-Environments']
-                    },
-                    { 
-                        id: 'ideaManagement', 
-                        title: 'Ideenmanagement-System',
-                        description: 'Gibt es ein Ideenmanagement?',
-                        examples: ['Ideenplattformen', 'Innovation Contests', 'Ideen-Pipeline']
-                    },
-                    { 
-                        id: 'startupCulture', 
-                        title: 'Startup-Kultur-Elemente',
-                        description: 'Gibt es Startup-Kultur-Elemente?',
-                        examples: ['Fail-Fast Kultur', 'Rapid Prototyping', 'Entrepreneurship']
-                    },
-                    { 
-                        id: 'externalInnovation', 
-                        title: 'Externe Innovationspartnerschaften',
-                        description: 'Gibt es externe Innovationspartnerschaften?',
-                        examples: ['Startup-Partnerschaften', 'Universitätskooperationen', 'Innovation Networks']
-                    }
-                ]
-            },
-            {
-                id: 'digitalTransformation',
-                title: 'Digitale Transformation',
-                description: 'Wie gut ist die Organisation für digitale Transformation aufgestellt?',
+                id: 'digitalCommunication',
+                title: 'Digitale Kommunikation',
+                description: 'Wie gut ist die digitale Kommunikation?',
                 icon: 'fa-digital-tacho',
                 subCriteria: [
                     { 
-                        id: 'digitalStrategy', 
-                        title: 'Digitale Strategie',
-                        description: 'Gibt es eine digitale Strategie?',
-                        examples: ['Digital Roadmap', 'Digitale Vision', 'Digital Transformation Plan']
+                        id: 'digitalTools', 
+                        title: 'Digitale Kommunikationstools',
+                        description: 'Gibt es digitale Tools?',
+                        examples: ['Tools', 'Plattformen', 'Software', 'Technologie']
                     },
                     { 
-                        id: 'digitalCapabilities', 
-                        title: 'Digitale Fähigkeiten',
-                        description: 'Hat die Organisation digitale Fähigkeiten?',
-                        examples: ['Digitale Skills', 'Digital Literacy', 'Technologie-Kompetenz']
+                        id: 'socialMedia', 
+                        title: 'Social Media Kommunikation',
+                        description: 'Wie gut ist die Social Media Kommunikation?',
+                        examples: ['Social Media', 'Plattformen', 'Engagement', 'Kommunikation']
                     },
                     { 
-                        id: 'dataDriven', 
-                        title: 'Datengetriebene Organisation',
-                        description: 'Ist die Organisation datengetrieben?',
-                        examples: ['Data Analytics', 'Business Intelligence', 'Datenbasierte Entscheidungen']
+                        id: 'internalPlatforms', 
+                        title: 'Interne Kommunikationsplattformen',
+                        description: 'Gibt es interne Plattformen?',
+                        examples: ['Plattformen', 'Tools', 'Systeme', 'Technologie']
                     },
                     { 
-                        id: 'automation', 
-                        title: 'Automatisierungsgrad',
-                        description: 'Wie automatisiert ist die Organisation?',
-                        examples: ['Prozessautomatisierung', 'RPA', 'KI-gestützte Prozesse']
+                        id: 'mobileCommunication', 
+                        title: 'Mobile Kommunikation',
+                        description: 'Wie gut ist die mobile Kommunikation?',
+                        examples: ['Mobile', 'Apps', 'Zugriff', 'Flexibilität']
                     },
                     { 
-                        id: 'digitalCulture', 
-                        title: 'Digitale Kultur',
-                        description: 'Gibt es eine digitale Kultur?',
-                        examples: ['Digital Mindset', 'Agile Digitale Praktiken', 'Innovation Culture']
+                        id: 'digitalLiteracy', 
+                        title: 'Digitale Kompetenz',
+                        description: 'Gibt es digitale Kompetenz?',
+                        examples: ['Kompetenz', 'Skills', 'Literacy', 'Fähigkeiten']
                     }
                 ]
             },
             {
-                id: 'sustainabilityStructure',
-                title: 'Nachhaltigkeitsstruktur',
-                description: 'Wie gut ist Nachhaltigkeit in der Struktur verankert?',
-                icon: 'fa-leaf',
+                id: 'crossFunctionalCommunication',
+                title: 'Cross-funktionale Kommunikation',
+                description: 'Wie gut ist die cross-funktionale Kommunikation?',
+                icon: 'fa-project-diagram',
                 subCriteria: [
                     { 
-                        id: 'sustainabilityIntegration', 
-                        title: 'Nachhaltigkeit in Struktur integriert',
-                        description: 'Ist Nachhaltigkeit strukturell verankert?',
-                        examples: ['Sustainability Teams', 'Nachhaltigkeitsziele', 'ESG-Integration']
+                        id: 'interdepartmental', 
+                        title: 'Abteilungsübergreifende Kommunikation',
+                        description: 'Gibt es abteilungsübergreifende Kommunikation?',
+                        examples: ['Abteilungen', 'Zusammenarbeit', 'Kommunikation', 'Integration']
                     },
                     { 
-                        id: 'resourceEfficiency', 
-                        title: 'Ressourceneffizienz',
-                        description: 'Wie effizient werden Ressourcen genutzt?',
-                        examples: ['Ressourcenoptimierung', 'Nachhaltige Prozesse', 'Effizienz-Metriken']
+                        id: 'knowledgeExchange', 
+                        title: 'Wissensaustausch',
+                        description: 'Wie gut ist der Wissensaustausch?',
+                        examples: ['Austausch', 'Sharing', 'Lernen', 'Wissen']
                     },
                     { 
-                        id: 'circularEconomy', 
-                        title: 'Kreislaufwirtschaft-Elemente',
-                        description: 'Gibt es Kreislaufwirtschaft-Elemente?',
-                        examples: ['Wiederverwendung', 'Recycling', 'Circular Design']
+                        id: 'sharedProjects', 
+                        title: 'Gemeinsame Projekte und Kommunikation',
+                        description: 'Gibt es gemeinsame Projekte?',
+                        examples: ['Projekte', 'Zusammenarbeit', 'Kommunikation', 'Integration']
                     },
                     { 
-                        id: 'sustainabilityReporting', 
-                        title: 'Nachhaltigkeits-Reporting',
-                        description: 'Gibt es Nachhaltigkeits-Reporting?',
-                        examples: ['Sustainability Reports', 'ESG-Metriken', 'Transparenz']
+                        id: 'breakdownSilos', 
+                        title: 'Abbau von Kommunikations-Silos',
+                        description: 'Werden Silos abgebaut?',
+                        examples: ['Silos', 'Integration', 'Offenheit', 'Zusammenarbeit']
                     },
                     { 
-                        id: 'longTermThinking', 
-                        title: 'Langfristiges Denken',
-                        description: 'Wird langfristig gedacht?',
-                        examples: ['Langfristige Strategie', 'Nachhaltige Investitionen', 'Zukunftsfähigkeit']
+                        id: 'collaborativeCommunication', 
+                        title: 'Kollaborative Kommunikation',
+                        description: 'Wie gut ist die kollaborative Kommunikation?',
+                        examples: ['Kollaboration', 'Kommunikation', 'Zusammenarbeit', 'Dialog']
                     }
                 ]
             },
             {
-                id: 'changeReadiness',
-                title: 'Change-Readiness',
-                description: 'Wie ready ist die Organisation für Veränderungen?',
-                icon: 'fa-sync-alt',
-                subCriteria: [
-                    { 
-                        id: 'changeManagement', 
-                        title: 'Change Management Strukturen',
-                        description: 'Gibt es Change Management Strukturen?',
-                        examples: ['Change Teams', 'Change Prozesse', 'Change Methodologie']
-                    },
-                    { 
-                        id: 'adaptability', 
-                        title: 'Anpassungsfähigkeit',
-                        description: 'Wie anpassungsfähig ist die Organisation?',
-                        examples: ['Schnelle Anpassung', 'Flexibilität', 'Resilienz']
-                    },
-                    { 
-                        id: 'learningOrganization', 
-                        title: 'Lernende Organisation',
-                        description: 'Ist die Organisation lernend?',
-                        examples: ['Lernkultur', 'Kontinuierliche Verbesserung', 'Reflexionsprozesse']
-                    },
-                    { 
-                        id: 'experimentationCulture', 
-                        title: 'Experimentier-Kultur',
-                        description: 'Gibt es eine Experimentier-Kultur?',
-                        examples: ['Test & Learn', 'Pilot-Projekte', 'Fail-Fast Mentalität']
-                    },
-                    { 
-                        id: 'futureOrientation', 
-                        title: 'Zukunftsorientierung',
-                        description: 'Ist die Organisation zukunftsorientiert?',
-                        examples: ['Trend-Monitoring', 'Zukunftsszenarien', 'Strategische Vorausschau']
-                    }
-                ]
-            },
-            {
-                id: 'performanceManagement',
-                title: 'Performance Management Strukturen',
-                description: 'Wie gut sind Performance Management Strukturen?',
+                id: 'communicationMeasurement',
+                title: 'Kommunikations-Messung',
+                description: 'Wie gut wird Kommunikation gemessen?',
                 icon: 'fa-chart-bar',
                 subCriteria: [
                     { 
-                        id: 'performanceMetrics', 
-                        title: 'Performance-Metriken',
-                        description: 'Gibt es klare Performance-Metriken?',
-                        examples: ['KPIs definiert', 'Performance Dashboards', 'Regelmäßige Messung']
+                        id: 'communicationMetrics', 
+                        title: 'Kommunikations-Metriken',
+                        description: 'Gibt es Kommunikations-Metriken?',
+                        examples: ['Metriken', 'KPIs', 'Messung', 'Tracking']
                     },
                     { 
-                        id: 'feedbackCulture', 
-                        title: 'Feedback-Kultur',
-                        description: 'Gibt es eine Feedback-Kultur?',
-                        examples: ['Regelmäßiges Feedback', '360-Grad-Feedback', 'Konstruktive Kritik']
+                        id: 'effectivenessMeasurement', 
+                        title: 'Effektivitäts-Messung',
+                        description: 'Wird die Effektivität gemessen?',
+                        examples: ['Effektivität', 'Messung', 'Evaluation', 'Analyse']
                     },
                     { 
-                        id: 'performanceDevelopment', 
-                        title: 'Performance-Entwicklung',
-                        description: 'Gibt es Performance-Entwicklung?',
-                        examples: ['Performance Reviews', 'Entwicklungspläne', 'Coaching']
+                        id: 'satisfactionSurveys', 
+                        title: 'Zufriedenheits-Umfragen',
+                        description: 'Gibt es Zufriedenheits-Umfragen?',
+                        examples: ['Umfragen', 'Surveys', 'Feedback', 'Bewertung']
                     },
                     { 
-                        id: 'goalAlignment', 
-                        title: 'Zielausrichtung',
-                        description: 'Sind Ziele ausgerichtet?',
-                        examples: ['OKR-System', 'Cascading Goals', 'Alignment']
+                        id: 'communicationAudits', 
+                        title: 'Kommunikations-Audits',
+                        description: 'Gibt es Kommunikations-Audits?',
+                        examples: ['Audits', 'Bewertung', 'Analyse', 'Review']
                     },
                     { 
-                        id: 'recognitionSystem', 
-                        title: 'Anerkennungssystem',
-                        description: 'Gibt es ein Anerkennungssystem?',
-                        examples: ['Recognition Programme', 'Performance Awards', 'Wertschätzung']
+                        id: 'continuousImprovement', 
+                        title: 'Kontinuierliche Verbesserung',
+                        description: 'Gibt es kontinuierliche Verbesserung?',
+                        examples: ['Verbesserung', 'Optimierung', 'Lernen', 'Evolution']
+                    }
+                ]
+            },
+            {
+                id: 'listeningCulture',
+                title: 'Zuhör-Kultur',
+                description: 'Wie stark ist die Zuhör-Kultur?',
+                icon: 'fa-ear-listen',
+                subCriteria: [
+                    { 
+                        id: 'activeListening', 
+                        title: 'Aktives Zuhören',
+                        description: 'Gibt es aktives Zuhören?',
+                        examples: ['Zuhören', 'Aufmerksamkeit', 'Verständnis', 'Empathie']
+                    },
+                    { 
+                        id: 'employeeVoice', 
+                        title: 'Mitarbeiter-Stimme',
+                        description: 'Wird die Mitarbeiter-Stimme gehört?',
+                        examples: ['Stimme', 'Einbindung', 'Partizipation', 'Beteiligung']
+                    },
+                    { 
+                        id: 'suggestionSystems', 
+                        title: 'Vorschlagssysteme',
+                        description: 'Gibt es Vorschlagssysteme?',
+                        examples: ['Vorschläge', 'Ideen', 'Systeme', 'Plattformen']
+                    },
+                    { 
+                        id: 'pulseSurveys', 
+                        title: 'Pulse Surveys und regelmäßige Umfragen',
+                        description: 'Gibt es Pulse Surveys?',
+                        examples: ['Surveys', 'Umfragen', 'Feedback', 'Monitoring']
+                    },
+                    { 
+                        id: 'listeningActions', 
+                        title: 'Umsetzung von Feedback',
+                        description: 'Wird Feedback umgesetzt?',
+                        examples: ['Umsetzung', 'Action', 'Verbesserung', 'Change']
+                    }
+                ]
+            },
+            {
+                id: 'communicationTraining',
+                title: 'Kommunikations-Training',
+                description: 'Wie gut ist das Kommunikations-Training?',
+                icon: 'fa-graduation-cap',
+                subCriteria: [
+                    { 
+                        id: 'communicationSkills', 
+                        title: 'Kommunikations-Skills Training',
+                        description: 'Gibt es Skills-Training?',
+                        examples: ['Training', 'Skills', 'Bildung', 'Entwicklung']
+                    },
+                    { 
+                        id: 'presentationSkills', 
+                        title: 'Präsentations-Skills',
+                        description: 'Gibt es Präsentations-Training?',
+                        examples: ['Präsentation', 'Skills', 'Training', 'Kompetenzen']
+                    },
+                    { 
+                        id: 'conflictCommunication', 
+                        title: 'Konflikt-Kommunikation',
+                        description: 'Gibt es Konflikt-Kommunikations-Training?',
+                        examples: ['Konflikt', 'Kommunikation', 'Training', 'Skills']
+                    },
+                    { 
+                        id: 'digitalCommunicationSkills', 
+                        title: 'Digitale Kommunikations-Skills',
+                        description: 'Gibt es digitale Skills-Training?',
+                        examples: ['Digital', 'Skills', 'Training', 'Kompetenzen']
+                    },
+                    { 
+                        id: 'interculturalCommunication', 
+                        title: 'Interkulturelle Kommunikation',
+                        description: 'Gibt es interkulturelles Training?',
+                        examples: ['Interkulturell', 'Kommunikation', 'Training', 'Kompetenzen']
                     }
                 ]
             }
@@ -648,15 +647,15 @@
             if (descriptionDisplay) {
                 let description = '';
                 if (overallAverage <= 1.5) {
-                    description = 'Starr und unflexibel - Erhebliche Verbesserung der Struktur nötig';
+                    description = 'Schwache Kommunikation - Erhebliche Verbesserung nötig';
                 } else if (overallAverage <= 2.5) {
-                    description = 'Teilweise flexibel - Strukturelle Verbesserungen erforderlich';
+                    description = 'Teilweise entwickelte Kommunikation - Verbesserungen erforderlich';
                 } else if (overallAverage <= 3.5) {
-                    description = 'Gut strukturiert - Weitere Optimierung möglich';
+                    description = 'Gute Kommunikation - Weitere Optimierung möglich';
                 } else if (overallAverage <= 4.5) {
-                    description = 'Sehr flexibel - Kleine Verbesserungen möglich';
+                    description = 'Starke Kommunikation - Kleine Verbesserungen möglich';
                 } else {
-                    description = 'Hervorragend strukturiert - Agile und anpassungsfähige Organisation';
+                    description = 'Hervorragende Kommunikation - Exzellente Transparenz';
                 }
                 descriptionDisplay.textContent = description;
             }
