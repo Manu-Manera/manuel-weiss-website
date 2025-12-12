@@ -1231,32 +1231,13 @@ Entwickelt mit Harvard & MIT Methodologie`;
         let currentStep = 0;
         const totalSteps = 8; // 0 = Assessment, 1-7 = Workflow steps
         
-        // Make functions globally available IMMEDIATELY (before DOMContentLoaded)
-        // Sidebar functionality - Make globally available
-        window.toggleSidebar = function() {
-            const sidebar = document.getElementById('workflowSidebar');
-            const icon = document.getElementById('sidebarToggleIcon');
-            const content = document.getElementById('sidebarContent');
-            
-            if (!sidebar) {
-                console.error('Sidebar not found');
-                return;
-            }
-            
-            if (sidebar.classList.contains('collapsed')) {
-                sidebar.classList.remove('collapsed');
-                if (icon) icon.className = 'fas fa-chevron-left';
-                if (content) content.style.display = 'block';
-            } else {
-                sidebar.classList.add('collapsed');
-                if (icon) icon.className = 'fas fa-chevron-right';
-                if (content) content.style.display = 'none';
-            }
-        };
-        
-        // Also keep local function for backwards compatibility
+        // Sidebar functionality - Functions already defined in head, just keep local reference
         function toggleSidebar() {
-            window.toggleSidebar();
+            if (window.toggleSidebar) {
+                window.toggleSidebar();
+            } else {
+                console.error('window.toggleSidebar not available');
+            }
         }
         
         // Assessment functions
@@ -1470,7 +1451,7 @@ Entwickelt mit Harvard & MIT Methodologie`;
             loadProgress();
             calculateOverallMaturity();
             updateMaturityDisplay();
-            updateProgress();
+        updateProgress();
             workflowExporter = new AssessmentExporter();
             
             // Setup click handlers for assessment categories as fallback
