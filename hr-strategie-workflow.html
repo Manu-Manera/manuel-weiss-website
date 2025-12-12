@@ -1268,7 +1268,12 @@ Entwickelt mit Harvard & MIT Methodologie`;
         
         // Assessment functions
         function updateAssessment(dimension, value) {
-            hrMaturityData[dimension] = parseInt(value);
+            // Update both local and global
+            const intValue = parseInt(value);
+            hrMaturityData[dimension] = intValue;
+            if (window.hrMaturityData) {
+                window.hrMaturityData[dimension] = intValue;
+            }
             const valueDisplay = document.getElementById(`${dimension}Value`);
             if (valueDisplay) {
                 valueDisplay.textContent = value;
