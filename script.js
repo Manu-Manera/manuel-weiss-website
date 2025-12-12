@@ -146,25 +146,50 @@ function initMobileMenu() {
         mobileMenuOverlay.classList.toggle('active');
         const isMenuActive = mobileMenu.classList.contains('active');
         if (isMenuActive) {
+            // Speichere Scroll-Position
+            const scrollY = window.scrollY;
             document.body.style.overflow = 'hidden';
             document.body.style.position = 'fixed';
+            document.body.style.top = `-${scrollY}px`;
             document.body.style.width = '100%';
         } else {
+            // Stelle Scroll-Position wieder her
+            const scrollY = document.body.style.top;
             document.body.style.overflow = '';
             document.body.style.position = '';
+            document.body.style.top = '';
             document.body.style.width = '';
+            if (scrollY) {
+                window.scrollTo(0, parseInt(scrollY || '0') * -1);
+            }
         }
     });
+    
+    // KRITISCH: Stelle sicher dass Menu initial geschlossen ist und Scrollen funktioniert
+    if (!mobileMenu.classList.contains('active')) {
+        document.body.style.overflow = '';
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
+        document.documentElement.style.overflow = '';
+        document.documentElement.style.position = '';
+    }
     
     // Close Menu on Overlay Click
     if (mobileMenuOverlay) {
         mobileMenuOverlay.addEventListener('click', function() {
+            const scrollY = document.body.style.top;
             mobileMenuToggle.classList.remove('active');
             mobileMenu.classList.remove('active');
             mobileMenuOverlay.classList.remove('active');
             document.body.style.overflow = '';
             document.body.style.position = '';
+            document.body.style.top = '';
             document.body.style.width = '';
+            // Stelle Scroll-Position wieder her
+            if (scrollY) {
+                window.scrollTo(0, parseInt(scrollY || '0') * -1);
+            }
         });
     }
     
@@ -172,12 +197,18 @@ function initMobileMenu() {
     const mobileLinks = mobileMenu.querySelectorAll('.nav-link');
     mobileLinks.forEach(link => {
         link.addEventListener('click', function() {
+            const scrollY = document.body.style.top;
             mobileMenuToggle.classList.remove('active');
             mobileMenu.classList.remove('active');
             if (mobileMenuOverlay) mobileMenuOverlay.classList.remove('active');
             document.body.style.overflow = '';
             document.body.style.position = '';
+            document.body.style.top = '';
             document.body.style.width = '';
+            // Stelle Scroll-Position wieder her
+            if (scrollY) {
+                window.scrollTo(0, parseInt(scrollY || '0') * -1);
+            }
         });
     });
     
@@ -239,12 +270,18 @@ function initMobileMenu() {
                             window.openAuthModal();
                         }
                         // Schließe Mobile Menu
+                        const scrollY = document.body.style.top;
                         mobileMenuToggle.classList.remove('active');
                         mobileMenu.classList.remove('active');
                         if (mobileMenuOverlay) mobileMenuOverlay.classList.remove('active');
                         document.body.style.overflow = '';
                         document.body.style.position = '';
+                        document.body.style.top = '';
                         document.body.style.width = '';
+                        // Stelle Scroll-Position wieder her
+                        if (scrollY) {
+                            window.scrollTo(0, parseInt(scrollY || '0') * -1);
+                        }
                     });
                 }
             }
@@ -265,12 +302,18 @@ function initMobileMenu() {
     // Close Menu on Escape Key
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape' && mobileMenu.classList.contains('active')) {
+            const scrollY = document.body.style.top;
             mobileMenuToggle.classList.remove('active');
             mobileMenu.classList.remove('active');
             if (mobileMenuOverlay) mobileMenuOverlay.classList.remove('active');
             document.body.style.overflow = '';
             document.body.style.position = '';
+            document.body.style.top = '';
             document.body.style.width = '';
+            // Stelle Scroll-Position wieder her
+            if (scrollY) {
+                window.scrollTo(0, parseInt(scrollY || '0') * -1);
+            }
         }
     });
 }
