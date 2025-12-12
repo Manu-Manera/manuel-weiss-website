@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stakeholder-Analyse - Change Management Assessment - Manuel Weiss</title>
+    
+    <!-- Meta Tags -->
+    <meta name="description" content="Detaillierte Bewertung der stakeholder-analyse für Change Management.">
+    <meta name="keywords" content="Stakeholder-Management, Stakeholder-Analyse, Change Management">
+    <meta name="author" content="Manuel Weiss">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="css/ki-assessment-detail.css">
+    <style>
+        .detail-header {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+        
+        .criterion-icon {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .detail-slider::-webkit-slider-thumb {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .detail-slider::-moz-range-thumb {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .sub-criterion-slider::-webkit-slider-thumb {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .sub-criterion-slider::-moz-range-thumb {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .slider-value-display {
+            color: #d97706;
+        }
+        
+        .sub-criterion-value {
+            color: #d97706;
+        }
+        
+        .criterion-average-value {
+            color: #d97706;
+        }
+        
+        .aggregated-score {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .save-button {
+            color: #d97706;
+        }
+        
+        .criterion-examples {
+            border-left: 4px solid #f59e0b;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="manuel-weiss-photo.svg" alt="Manuel Weiss" class="nav-logo">
+                <span class="nav-name">Manuel Weiss</span>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="hr-transformation.html">HR-Transformation</a>
+                <a href="index.html#about">Über mich</a>
+                <a href="index.html#contact">Kontakt</a>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="detail-assessment-container">
+        <div class="detail-header">
+            <a href="change-management-workflow.html" class="back-button">
+                <i class="fas fa-arrow-left"></i>
+                Zurück zur Übersicht
+            </a>
+            <h1><i class="fas fa-users"></i> Stakeholder-Analyse</h1>
+            <p>Bewerten Sie Ihr Stakeholder-Management für Change-Projekte. Wissenschaftlich fundierte Bewertung basierend auf modernen Stakeholder-Management-Prinzipien.</p>
+        </div>
+        
+        <div id="criteriaContainer">
+            <!-- Criteria will be dynamically loaded -->
+        </div>
+        
+        <div class="aggregated-score">
+            <h3>Gesamtbewertung</h3>
+            <div class="score-display">
+                <div class="score-circle-large" id="aggregatedScore">1.0</div>
+                <div class="score-description" id="scoreDescription">Bewerten Sie die Kriterien, um Ihre Gesamtbewertung zu sehen</div>
+            </div>
+            <div style="display: flex; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap;">
+                <button class="save-button" onclick="saveAndReturn()" style="flex: 1; min-width: 200px;">
+                    <i class="fas fa-save"></i> Bewertung speichern und zurück
+                </button>
+                <button class="export-button excel" onclick="exportToExcel()" style="background: #217346; color: white; border: none; padding: 1rem 2rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; flex: 1; min-width: 150px;">
+                    <i class="fas fa-file-excel"></i> Excel Export
+                </button>
+                <button class="export-button pdf" onclick="exportToPDF()" style="background: #dc3545; color: white; border: none; padding: 1rem 2rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; flex: 1; min-width: 150px;">
+                    <i class="fas fa-file-pdf"></i> PDF Export
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const stakeholderCriteria = [            {
+                id: 'stakeholderMapping',
+                title: 'Stakeholder-Mapping',
+                description: 'Wie gut ist das Stakeholder-Mapping?',
+                icon: 'fa-map',
+                subCriteria: [
+                    { 
+                        id: 'stakeholderIdentification', 
+                        title: 'Stakeholder-Identifikation',
+                        description: 'Werden alle Stakeholder identifiziert?',
+                        examples: ['Identifikation', 'Analyse', 'Kategorisierung', 'Mapping']
+                    },
+                    { 
+                        id: 'stakeholderCategorization', 
+                        title: 'Stakeholder-Kategorisierung',
+                        description: 'Werden Stakeholder kategorisiert?',
+                        examples: ['Kategorisierung', 'Klassifizierung', 'Gruppierung', 'Segmentierung']
+                    },
+                    { 
+                        id: 'stakeholderInfluence', 
+                        title: 'Einfluss-Analyse',
+                        description: 'Wird der Einfluss analysiert?',
+                        examples: ['Einfluss', 'Macht', 'Autorität', 'Relevanz']
+                    },
+                    { 
+                        id: 'stakeholderInterest', 
+                        title: 'Interessen-Analyse',
+                        description: 'Werden Interessen analysiert?',
+                        examples: ['Interessen', 'Bedürfnisse', 'Erwartungen', 'Anforderungen']
+                    },
+                    { 
+                        id: 'stakeholderMatrix', 
+                        title: 'Stakeholder-Matrix',
+                        description: 'Gibt es eine Stakeholder-Matrix?',
+                        examples: ['Matrix', 'Visualisierung', 'Übersicht', 'Dashboard']
+                    }
+                ]
+            },
+            {
+                id: 'stakeholderEngagement',
+                title: 'Stakeholder-Engagement',
+                description: 'Wie gut ist das Stakeholder-Engagement?',
+                icon: 'fa-handshake',
+                subCriteria: [
+                    { 
+                        id: 'engagementStrategy', 
+                        title: 'Engagement-Strategie',
+                        description: 'Gibt es eine Engagement-Strategie?',
+                        examples: ['Strategie', 'Planung', 'Konzept', 'Roadmap']
+                    },
+                    { 
+                        id: 'engagementLevels', 
+                        title: 'Engagement-Ebenen',
+                        description: 'Gibt es verschiedene Engagement-Ebenen?',
+                        examples: ['Ebenen', 'Stufen', 'Intensität', 'Tiefe']
+                    },
+                    { 
+                        id: 'regularEngagement', 
+                        title: 'Regelmäßiges Engagement',
+                        description: 'Gibt es regelmäßiges Engagement?',
+                        examples: ['Regelmäßigkeit', 'Konsistenz', 'Kontinuität', 'Häufigkeit']
+                    },
+                    { 
+                        id: 'meaningfulEngagement', 
+                        title: 'Bedeutungsvolles Engagement',
+                        description: 'Ist das Engagement bedeutungsvoll?',
+                        examples: ['Bedeutung', 'Wert', 'Impact', 'Relevanz']
+                    },
+                    { 
+                        id: 'twoWayEngagement', 
+                        title: 'Zwei-Wege-Engagement',
+                        description: 'Gibt es Zwei-Wege-Engagement?',
+                        examples: ['Dialog', 'Austausch', 'Interaktion', 'Feedback']
+                    }
+                ]
+            },
+            {
+                id: 'stakeholderCommunication',
+                title: 'Stakeholder-Kommunikation',
+                description: 'Wie gut ist die Stakeholder-Kommunikation?',
+                icon: 'fa-comments',
+                subCriteria: [
+                    { 
+                        id: 'communicationStrategy', 
+                        title: 'Kommunikationsstrategie',
+                        description: 'Gibt es eine Kommunikationsstrategie?',
+                        examples: ['Strategie', 'Planung', 'Konzept', 'Roadmap']
+                    },
+                    { 
+                        id: 'tailoredMessages', 
+                        title: 'Maßgeschneiderte Botschaften',
+                        description: 'Gibt es maßgeschneiderte Botschaften?',
+                        examples: ['Anpassung', 'Personalisierung', 'Relevanz', 'Zielgruppen']
+                    },
+                    { 
+                        id: 'communicationChannels', 
+                        title: 'Kommunikationskanäle',
+                        description: 'Gibt es passende Kommunikationskanäle?',
+                        examples: ['Kanäle', 'Tools', 'Plattformen', 'Systeme']
+                    },
+                    { 
+                        id: 'communicationFrequency', 
+                        title: 'Kommunikationsfrequenz',
+                        description: 'Wie häufig wird kommuniziert?',
+                        examples: ['Häufigkeit', 'Regelmäßigkeit', 'Konsistenz', 'Kontinuität']
+                    },
+                    { 
+                        id: 'feedbackLoops', 
+                        title: 'Feedback-Loops',
+                        description: 'Gibt es Feedback-Loops?',
+                        examples: ['Feedback', 'Rückmeldung', 'Dialog', 'Austausch']
+                    }
+                ]
+            },
+            {
+                id: 'stakeholderAlignment',
+                title: 'Stakeholder-Alignment',
+                description: 'Wie gut ist das Stakeholder-Alignment?',
+                icon: 'fa-bullseye',
+                subCriteria: [
+                    { 
+                        id: 'sharedVision', 
+                        title: 'Gemeinsame Vision',
+                        description: 'Gibt es eine gemeinsame Vision?',
+                        examples: ['Vision', 'Ziele', 'Ausrichtung', 'Alignment']
+                    },
+                    { 
+                        id: 'commonGoals', 
+                        title: 'Gemeinsame Ziele',
+                        description: 'Gibt es gemeinsame Ziele?',
+                        examples: ['Ziele', 'Objectives', 'Targets', 'KPIs']
+                    },
+                    { 
+                        id: 'valueAlignment', 
+                        title: 'Werte-Alignment',
+                        description: 'Gibt es Werte-Alignment?',
+                        examples: ['Werte', 'Prinzipien', 'Gemeinsamkeiten', 'Alignment']
+                    },
+                    { 
+                        id: 'interestAlignment', 
+                        title: 'Interessen-Alignment',
+                        description: 'Gibt es Interessen-Alignment?',
+                        examples: ['Interessen', 'Bedürfnisse', 'Erwartungen', 'Alignment']
+                    },
+                    { 
+                        id: 'expectationAlignment', 
+                        title: 'Erwartungs-Alignment',
+                        description: 'Gibt es Erwartungs-Alignment?',
+                        examples: ['Erwartungen', 'Anforderungen', 'Bedürfnisse', 'Alignment']
+                    }
+                ]
+            },
+            {
+                id: 'stakeholderSupport',
+                title: 'Stakeholder-Unterstützung',
+                description: 'Wie stark ist die Stakeholder-Unterstützung?',
+                icon: 'fa-hands-helping',
+                subCriteria: [
+                    { 
+                        id: 'supportLevel', 
+                        title: 'Unterstützungsniveau',
+                        description: 'Wie hoch ist das Unterstützungsniveau?',
+                        examples: ['Niveau', 'Intensität', 'Stärke', 'Commitment']
+                    },
+                    { 
+                        id: 'champions', 
+                        title: 'Change Champions',
+                        description: 'Gibt es Change Champions?',
+                        examples: ['Champions', 'Botschafter', 'Promotoren', 'Treiber']
+                    },
+                    { 
+                        id: 'sponsorship', 
+                        title: 'Sponsorship',
+                        description: 'Gibt es Sponsorship?',
+                        examples: ['Sponsorship', 'Unterstützung', 'Commitment', 'Engagement']
+                    },
+                    { 
+                        id: 'advocacy', 
+                        title: 'Advocacy und Fürsprache',
+                        description: 'Gibt es Advocacy?',
+                        examples: ['Advocacy', 'Fürsprache', 'Unterstützung', 'Promotion']
+                    },
+                    { 
+                        id: 'resourceCommitment', 
+                        title: 'Ressourcen-Commitment',
+                        description: 'Gibt es Ressourcen-Commitment?',
+                        examples: ['Commitment', 'Ressourcen', 'Budget', 'Support']
+                    }
+                ]
+            },
+            {
+                id: 'resistanceManagement',
+                title: 'Widerstandsmanagement',
+                description: 'Wie gut ist das Widerstandsmanagement?',
+                icon: 'fa-exclamation-triangle',
+                subCriteria: [
+                    { 
+                        id: 'resistanceIdentification', 
+                        title: 'Widerstands-Identifikation',
+                        description: 'Werden Widerstände identifiziert?',
+                        examples: ['Identifikation', 'Erkennung', 'Analyse', 'Assessment']
+                    },
+                    { 
+                        id: 'resistanceAnalysis', 
+                        title: 'Widerstands-Analyse',
+                        description: 'Werden Widerstände analysiert?',
+                        examples: ['Analyse', 'Bewertung', 'Evaluation', 'Assessment']
+                    },
+                    { 
+                        id: 'resistanceStrategies', 
+                        title: 'Widerstands-Strategien',
+                        description: 'Gibt es Widerstands-Strategien?',
+                        examples: ['Strategien', 'Maßnahmen', 'Ansätze', 'Lösungen']
+                    },
+                    { 
+                        id: 'resistancePrevention', 
+                        title: 'Widerstands-Prävention',
+                        description: 'Gibt es Widerstands-Prävention?',
+                        examples: ['Prävention', 'Vorbeugung', 'Proaktiv', 'Früherkennung']
+                    },
+                    { 
+                        id: 'resistanceResolution', 
+                        title: 'Widerstands-Lösung',
+                        description: 'Gibt es Widerstands-Lösung?',
+                        examples: ['Lösung', 'Mediation', 'Kompromisse', 'Konsens']
+                    }
+                ]
+            },
+            {
+                id: 'stakeholderInfluence',
+                title: 'Stakeholder-Einfluss',
+                description: 'Wie gut wird Stakeholder-Einfluss gemanagt?',
+                icon: 'fa-balance-scale',
+                subCriteria: [
+                    { 
+                        id: 'influenceMapping', 
+                        title: 'Einfluss-Mapping',
+                        description: 'Gibt es Einfluss-Mapping?',
+                        examples: ['Mapping', 'Visualisierung', 'Analyse', 'Assessment']
+                    },
+                    { 
+                        id: 'influenceManagement', 
+                        title: 'Einfluss-Management',
+                        description: 'Gibt es Einfluss-Management?',
+                        examples: ['Management', 'Steuerung', 'Kontrolle', 'Strategie']
+                    },
+                    { 
+                        id: 'powerDynamics', 
+                        title: 'Macht-Dynamiken',
+                        description: 'Werden Macht-Dynamiken verstanden?',
+                        examples: ['Macht', 'Dynamiken', 'Beziehungen', 'Strukturen']
+                    },
+                    { 
+                        id: 'influenceStrategies', 
+                        title: 'Einfluss-Strategien',
+                        description: 'Gibt es Einfluss-Strategien?',
+                        examples: ['Strategien', 'Ansätze', 'Methoden', 'Techniken']
+                    },
+                    { 
+                        id: 'influenceMonitoring', 
+                        title: 'Einfluss-Monitoring',
+                        description: 'Gibt es Einfluss-Monitoring?',
+                        examples: ['Monitoring', 'Tracking', 'Beobachtung', 'Analyse']
+                    }
+                ]
+            },
+            {
+                id: 'stakeholderRelationships',
+                title: 'Stakeholder-Beziehungen',
+                description: 'Wie gut sind Stakeholder-Beziehungen?',
+                icon: 'fa-network-wired',
+                subCriteria: [
+                    { 
+                        id: 'relationshipBuilding', 
+                        title: 'Beziehungsaufbau',
+                        description: 'Gibt es Beziehungsaufbau?',
+                        examples: ['Aufbau', 'Entwicklung', 'Pflege', 'Stärkung']
+                    },
+                    { 
+                        id: 'trustBuilding', 
+                        title: 'Vertrauensaufbau',
+                        description: 'Gibt es Vertrauensaufbau?',
+                        examples: ['Vertrauen', 'Glaubwürdigkeit', 'Integrität', 'Transparenz']
+                    },
+                    { 
+                        id: 'relationshipQuality', 
+                        title: 'Beziehungsqualität',
+                        description: 'Wie gut ist die Beziehungsqualität?',
+                        examples: ['Qualität', 'Stärke', 'Tiefe', 'Intensität']
+                    },
+                    { 
+                        id: 'relationshipMaintenance', 
+                        title: 'Beziehungspflege',
+                        description: 'Gibt es Beziehungspflege?',
+                        examples: ['Pflege', 'Wartung', 'Kontinuität', 'Konsistenz']
+                    },
+                    { 
+                        id: 'longTermRelationships', 
+                        title: 'Langfristige Beziehungen',
+                        description: 'Gibt es langfristige Beziehungen?',
+                        examples: ['Langfristigkeit', 'Nachhaltigkeit', 'Kontinuität', 'Stabilität']
+                    }
+                ]
+            },
+            {
+                id: 'stakeholderFeedback',
+                title: 'Stakeholder-Feedback',
+                description: 'Wie gut ist das Stakeholder-Feedback?',
+                icon: 'fa-comment-dots',
+                subCriteria: [
+                    { 
+                        id: 'feedbackCollection', 
+                        title: 'Feedback-Sammlung',
+                        description: 'Gibt es Feedback-Sammlung?',
+                        examples: ['Sammlung', 'Erhebung', 'Umfragen', 'Surveys']
+                    },
+                    { 
+                        id: 'feedbackAnalysis', 
+                        title: 'Feedback-Analyse',
+                        description: 'Gibt es Feedback-Analyse?',
+                        examples: ['Analyse', 'Bewertung', 'Evaluation', 'Assessment']
+                    },
+                    { 
+                        id: 'feedbackIntegration', 
+                        title: 'Feedback-Integration',
+                        description: 'Wird Feedback integriert?',
+                        examples: ['Integration', 'Umsetzung', 'Action', 'Verbesserung']
+                    },
+                    { 
+                        id: 'feedbackCommunication', 
+                        title: 'Feedback-Kommunikation',
+                        description: 'Wird Feedback kommuniziert?',
+                        examples: ['Kommunikation', 'Transparenz', 'Offenheit', 'Dialog']
+                    },
+                    { 
+                        id: 'continuousFeedback', 
+                        title: 'Kontinuierliches Feedback',
+                        description: 'Gibt es kontinuierliches Feedback?',
+                        examples: ['Kontinuität', 'Regelmäßigkeit', 'Konsistenz', 'Häufigkeit']
+                    }
+                ]
+            },
+            {
+                id: 'stakeholderSuccess',
+                title: 'Stakeholder-Erfolg',
+                description: 'Wie gut wird Stakeholder-Erfolg gemessen?',
+                icon: 'fa-trophy',
+                subCriteria: [
+                    { 
+                        id: 'successMetrics', 
+                        title: 'Erfolgs-Metriken',
+                        description: 'Gibt es Erfolgs-Metriken?',
+                        examples: ['Metriken', 'KPIs', 'Indikatoren', 'Messung']
+                    },
+                    { 
+                        id: 'satisfactionMeasurement', 
+                        title: 'Zufriedenheits-Messung',
+                        description: 'Wird Zufriedenheit gemessen?',
+                        examples: ['Zufriedenheit', 'Surveys', 'Umfragen', 'Bewertung']
+                    },
+                    { 
+                        id: 'engagementMetrics', 
+                        title: 'Engagement-Metriken',
+                        description: 'Gibt es Engagement-Metriken?',
+                        examples: ['Metriken', 'KPIs', 'Indikatoren', 'Messung']
+                    },
+                    { 
+                        id: 'valueCreation', 
+                        title: 'Wertschöpfung',
+                        description: 'Wird Wertschöpfung gemessen?',
+                        examples: ['Wert', 'Value', 'Impact', 'Ergebnisse']
+                    },
+                    { 
+                        id: 'roiMeasurement', 
+                        title: 'ROI-Messung',
+                        description: 'Wird ROI gemessen?',
+                        examples: ['ROI', 'Return', 'Impact', 'Wert']
+                    }
+                ]
+            }
+        ];
+        
+        let assessmentData = {};
+        let assessmentExporter = null;
+        
+        function initializeAssessment() {
+            // Load saved data
+            const saved = localStorage.getItem('changeMgmtDetailAssessments');
+            if (saved) {
+                const allAssessments = JSON.parse(saved);
+                if (allAssessments.stakeholder) {
+                    assessmentData = allAssessments.stakeholder;
+                }
+            }
+            
+            // Initialize assessment data structure
+            stakeholderCriteria.forEach(criterion => {
+                if (!assessmentData[criterion.id]) {
+                    assessmentData[criterion.id] = {};
+                }
+                criterion.subCriteria.forEach(subCriterion => {
+                    if (!assessmentData[criterion.id][subCriterion.id]) {
+                        assessmentData[criterion.id][subCriterion.id] = 1;
+                    }
+                });
+            });
+            
+            renderCriteria();
+            updateAggregatedScore();
+            assessmentExporter = new AssessmentExporter();
+        }
+        
+        function renderCriteria() {
+            const container = document.getElementById('criteriaContainer');
+            container.innerHTML = '';
+            
+            stakeholderCriteria.forEach(criterion => {
+                const criterionCard = document.createElement('div');
+                criterionCard.className = 'criterion-card';
+                
+                const averageScore = calculateCriterionAverage(criterion.id);
+                
+                criterionCard.innerHTML = `
+                    <div class="criterion-header">
+                        <div class="criterion-icon">
+                            <i class="fas ${criterion.icon}"></i>
+                        </div>
+                        <div class="criterion-title-section">
+                            <h3 class="criterion-title">${criterion.title}</h3>
+                            <p class="criterion-description">${criterion.description}</p>
+                        </div>
+                        <div class="criterion-average">
+                            <div class="criterion-average-value">${averageScore.toFixed(1)}</div>
+                            <div style="font-size: 0.75rem; color: #6b7280;">Durchschnitt</div>
+                        </div>
+                    </div>
+                    
+                    <div class="sub-criteria-container">
+                        ${criterion.subCriteria.map(subCriterion => {
+                            const value = assessmentData[criterion.id][subCriterion.id] || 1;
+                            return `
+                                <div class="sub-criterion-item">
+                                    <div class="sub-criterion-label">
+                                        <h4>${subCriterion.title}</h4>
+                                        <p>${subCriterion.description}</p>
+                                        <div class="criterion-examples">
+                                            <strong>Beispiele:</strong>
+                                            <ul>
+                                                ${subCriterion.examples.map(ex => `<li>${ex}</li>`).join('')}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="sub-criterion-slider-wrapper">
+                                        <input type="range" min="1" max="5" value="${value}" 
+                                               class="sub-criterion-slider" 
+                                               id="${criterion.id}_${subCriterion.id}"
+                                               oninput="updateSubCriterionValue('${criterion.id}', '${subCriterion.id}', this.value)">
+                                        <div class="sub-criterion-value">${value}</div>
+                                        <div class="sub-criterion-scale">
+                                            <span>1</span>
+                                            <span>2</span>
+                                            <span>3</span>
+                                            <span>4</span>
+                                            <span>5</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+                
+                container.appendChild(criterionCard);
+            });
+        }
+        
+        function updateSubCriterionValue(criterionId, subCriterionId, value) {
+            if (!assessmentData[criterionId]) {
+                assessmentData[criterionId] = {};
+            }
+            assessmentData[criterionId][subCriterionId] = parseInt(value);
+            
+            const valueDisplay = document.querySelector(`#${criterionId}_${subCriterionId}`).nextElementSibling;
+            if (valueDisplay) {
+                valueDisplay.textContent = value;
+            }
+            
+            updateCriterionAverage(criterionId);
+            updateAggregatedScore();
+            saveAssessment();
+        }
+        
+        function calculateCriterionAverage(criterionId) {
+            const criterion = stakeholderCriteria.find(c => c.id === criterionId);
+            if (!criterion || !assessmentData[criterionId]) return 1.0;
+            
+            const values = criterion.subCriteria.map(sub => 
+                assessmentData[criterionId][sub.id] || 1
+            );
+            const sum = values.reduce((acc, val) => acc + val, 0);
+            return sum / values.length;
+        }
+        
+        function updateCriterionAverage(criterionId) {
+            const average = calculateCriterionAverage(criterionId);
+            const criterionCard = document.querySelector(`.criterion-card:has(#${criterionId}_${stakeholderCriteria.find(c => c.id === criterionId).subCriteria[0].id})`);
+            if (criterionCard) {
+                const averageDisplay = criterionCard.querySelector('.criterion-average-value');
+                if (averageDisplay) {
+                    averageDisplay.textContent = average.toFixed(1);
+                }
+            }
+        }
+        
+        function updateAggregatedScore() {
+            const averages = stakeholderCriteria.map(c => calculateCriterionAverage(c.id));
+            const overallAverage = averages.reduce((acc, val) => acc + val, 0) / averages.length;
+            
+            const scoreDisplay = document.getElementById('aggregatedScore');
+            const descriptionDisplay = document.getElementById('scoreDescription');
+            
+            if (scoreDisplay) {
+                scoreDisplay.textContent = overallAverage.toFixed(1);
+            }
+            
+            if (descriptionDisplay) {
+                let description = '';
+                if (overallAverage <= 1.5) {
+                    description = 'Schwaches Stakeholder-Management - Erhebliche Verbesserung nötig';
+                } else if (overallAverage <= 2.5) {
+                    description = 'Teilweise entwickeltes Stakeholder-Management - Verbesserungen erforderlich';
+                } else if (overallAverage <= 3.5) {
+                    description = 'Gutes Stakeholder-Management - Weitere Optimierung möglich';
+                } else if (overallAverage <= 4.5) {
+                    description = 'Starkes Stakeholder-Management - Kleine Verbesserungen möglich';
+                } else {
+                    description = 'Exzellentes Stakeholder-Management - Hervorragende Stakeholder-Führung';
+                }
+                descriptionDisplay.textContent = description;
+            }
+        }
+        
+        function saveAssessment() {
+            const allAssessments = JSON.parse(localStorage.getItem('changeMgmtDetailAssessments') || '{}');
+            allAssessments.stakeholder = {
+                criteria: assessmentData,
+                aggregated: parseFloat(stakeholderCriteria.map(c => calculateCriterionAverage(c.id)).reduce((acc, val) => acc + val, 0) / stakeholderCriteria.length).toFixed(1)
+            };
+            localStorage.setItem('changeMgmtDetailAssessments', JSON.stringify(allAssessments));
+        }
+        
+        function saveAndReturn() {
+            saveAssessment();
+            window.location.href = 'organisationsentwicklung-workflow.html';
+        }
+        
+        async function exportToExcel() {
+            if (!assessmentExporter) {
+                assessmentExporter = new AssessmentExporter();
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+            const data = prepareExportData();
+            await assessmentExporter.exportToExcel(data, `Change-Management-Stakeholder-Analyse-Assessment-${new Date().toISOString().split('T')[0]}`);
+        }
+        
+        async function exportToPDF() {
+            if (!assessmentExporter) {
+                assessmentExporter = new AssessmentExporter();
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+            const data = prepareExportData();
+            await assessmentExporter.exportToPDF(data, `Change-Management-Stakeholder-Analyse-Assessment-${new Date().toISOString().split('T')[0]}`);
+        }
+        
+        function prepareExportData() {
+            const aggregated = parseFloat(stakeholderCriteria.map(c => calculateCriterionAverage(c.id)).reduce((acc, val) => acc + val, 0) / stakeholderCriteria.length).toFixed(1);
+            
+            return {
+                dimension: 'stakeholder',
+                dimensionName: 'Stakeholder-Analyse',
+                overall: parseFloat(aggregated),
+                criteria: stakeholderCriteria.map(criterion => ({
+                    id: criterion.id,
+                    title: criterion.title,
+                    description: criterion.description,
+                    average: calculateCriterionAverage(criterion.id),
+                    subCriteria: criterion.subCriteria.map(sub => ({
+                        id: sub.id,
+                        title: sub.title,
+                        description: sub.description,
+                        examples: sub.examples,
+                        score: assessmentData[criterion.id][sub.id] || 1
+                    }))
+                })),
+                timestamp: new Date().toISOString()
+            };
+        }
+        
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', initializeAssessment);
+    </script>
+    
+    <!-- Assessment Export Script -->
+    <script src="js/assessment-export.js"></script>
+</body>
+</html>

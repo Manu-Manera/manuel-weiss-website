@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Training & Development - Change Management Assessment - Manuel Weiss</title>
+    
+    <!-- Meta Tags -->
+    <meta name="description" content="Detaillierte Bewertung der training & development für Change Management.">
+    <meta name="keywords" content="Change Training, Kompetenzentwicklung, Change Management">
+    <meta name="author" content="Manuel Weiss">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="css/ki-assessment-detail.css">
+    <style>
+        .detail-header {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+        
+        .criterion-icon {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .detail-slider::-webkit-slider-thumb {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .detail-slider::-moz-range-thumb {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .sub-criterion-slider::-webkit-slider-thumb {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .sub-criterion-slider::-moz-range-thumb {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .slider-value-display {
+            color: #d97706;
+        }
+        
+        .sub-criterion-value {
+            color: #d97706;
+        }
+        
+        .criterion-average-value {
+            color: #d97706;
+        }
+        
+        .aggregated-score {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .save-button {
+            color: #d97706;
+        }
+        
+        .criterion-examples {
+            border-left: 4px solid #f59e0b;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="manuel-weiss-photo.svg" alt="Manuel Weiss" class="nav-logo">
+                <span class="nav-name">Manuel Weiss</span>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="hr-transformation.html">HR-Transformation</a>
+                <a href="index.html#about">Über mich</a>
+                <a href="index.html#contact">Kontakt</a>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="detail-assessment-container">
+        <div class="detail-header">
+            <a href="change-management-workflow.html" class="back-button">
+                <i class="fas fa-arrow-left"></i>
+                Zurück zur Übersicht
+            </a>
+            <h1><i class="fas fa-graduation-cap"></i> Training & Development</h1>
+            <p>Bewerten Sie Training und Kompetenzentwicklung für Change. Wissenschaftlich fundierte Bewertung basierend auf modernen Change-Training-Prinzipien.</p>
+        </div>
+        
+        <div id="criteriaContainer">
+            <!-- Criteria will be dynamically loaded -->
+        </div>
+        
+        <div class="aggregated-score">
+            <h3>Gesamtbewertung</h3>
+            <div class="score-display">
+                <div class="score-circle-large" id="aggregatedScore">1.0</div>
+                <div class="score-description" id="scoreDescription">Bewerten Sie die Kriterien, um Ihre Gesamtbewertung zu sehen</div>
+            </div>
+            <div style="display: flex; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap;">
+                <button class="save-button" onclick="saveAndReturn()" style="flex: 1; min-width: 200px;">
+                    <i class="fas fa-save"></i> Bewertung speichern und zurück
+                </button>
+                <button class="export-button excel" onclick="exportToExcel()" style="background: #217346; color: white; border: none; padding: 1rem 2rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; flex: 1; min-width: 150px;">
+                    <i class="fas fa-file-excel"></i> Excel Export
+                </button>
+                <button class="export-button pdf" onclick="exportToPDF()" style="background: #dc3545; color: white; border: none; padding: 1rem 2rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; flex: 1; min-width: 150px;">
+                    <i class="fas fa-file-pdf"></i> PDF Export
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const trainingCriteria = [            {
+                id: 'trainingNeeds',
+                title: 'Trainingsbedarfs-Analyse',
+                description: 'Wie gut ist die Trainingsbedarfs-Analyse?',
+                icon: 'fa-clipboard-list',
+                subCriteria: [
+                    { 
+                        id: 'needsAssessment', 
+                        title: 'Bedarfs-Assessment',
+                        description: 'Gibt es ein Bedarfs-Assessment?',
+                        examples: ['Assessment', 'Analyse', 'Evaluation', 'Bewertung']
+                    },
+                    { 
+                        id: 'skillGapAnalysis', 
+                        title: 'Skills-Gap-Analyse',
+                        description: 'Gibt es eine Skills-Gap-Analyse?',
+                        examples: ['Gap-Analyse', 'Lücken', 'Bedarf', 'Anforderungen']
+                    },
+                    { 
+                        id: 'competencyMapping', 
+                        title: 'Kompetenz-Mapping',
+                        description: 'Gibt es Kompetenz-Mapping?',
+                        examples: ['Mapping', 'Visualisierung', 'Analyse', 'Assessment']
+                    },
+                    { 
+                        id: 'trainingPriorities', 
+                        title: 'Trainings-Prioritäten',
+                        description: 'Gibt es Trainings-Prioritäten?',
+                        examples: ['Prioritäten', 'Fokus', 'Ausrichtung', 'Strategie']
+                    },
+                    { 
+                        id: 'targetAudience', 
+                        title: 'Zielgruppen-Definition',
+                        description: 'Sind Zielgruppen definiert?',
+                        examples: ['Zielgruppen', 'Audience', 'Segmentierung', 'Kategorisierung']
+                    }
+                ]
+            },
+            {
+                id: 'trainingPrograms',
+                title: 'Trainingsprogramme',
+                description: 'Wie gut sind die Trainingsprogramme?',
+                icon: 'fa-graduation-cap',
+                subCriteria: [
+                    { 
+                        id: 'programDesign', 
+                        title: 'Programm-Design',
+                        description: 'Gibt es gutes Programm-Design?',
+                        examples: ['Design', 'Konzept', 'Struktur', 'Framework']
+                    },
+                    { 
+                        id: 'programContent', 
+                        title: 'Programm-Inhalt',
+                        description: 'Wie gut ist der Programm-Inhalt?',
+                        examples: ['Inhalt', 'Content', 'Materialien', 'Ressourcen']
+                    },
+                    { 
+                        id: 'programDelivery', 
+                        title: 'Programm-Durchführung',
+                        description: 'Wie gut ist die Programm-Durchführung?',
+                        examples: ['Durchführung', 'Delivery', 'Umsetzung', 'Execution']
+                    },
+                    { 
+                        id: 'programEvaluation', 
+                        title: 'Programm-Evaluation',
+                        description: 'Gibt es Programm-Evaluation?',
+                        examples: ['Evaluation', 'Bewertung', 'Analyse', 'Assessment']
+                    },
+                    { 
+                        id: 'programImprovement', 
+                        title: 'Programm-Verbesserung',
+                        description: 'Gibt es Programm-Verbesserung?',
+                        examples: ['Verbesserung', 'Optimierung', 'Lernen', 'Evolution']
+                    }
+                ]
+            },
+            {
+                id: 'changeCompetencies',
+                title: 'Change-Kompetenzen',
+                description: 'Wie gut sind Change-Kompetenzen entwickelt?',
+                icon: 'fa-brain',
+                subCriteria: [
+                    { 
+                        id: 'changeAwareness', 
+                        title: 'Change-Bewusstsein',
+                        description: 'Gibt es Change-Bewusstsein?',
+                        examples: ['Bewusstsein', 'Sensibilität', 'Verständnis', 'Awareness']
+                    },
+                    { 
+                        id: 'changeSkills', 
+                        title: 'Change-Skills',
+                        description: 'Gibt es Change-Skills?',
+                        examples: ['Skills', 'Kompetenzen', 'Fähigkeiten', 'Expertise']
+                    },
+                    { 
+                        id: 'changeKnowledge', 
+                        title: 'Change-Wissen',
+                        description: 'Gibt es Change-Wissen?',
+                        examples: ['Wissen', 'Bildung', 'Kompetenz', 'Expertise']
+                    },
+                    { 
+                        id: 'changeAttitude', 
+                        title: 'Change-Einstellung',
+                        description: 'Gibt es positive Change-Einstellung?',
+                        examples: ['Einstellung', 'Mindset', 'Haltung', 'Werte']
+                    },
+                    { 
+                        id: 'changeBehavior', 
+                        title: 'Change-Verhalten',
+                        description: 'Gibt es Change-Verhalten?',
+                        examples: ['Verhalten', 'Praktiken', 'Handlungen', 'Aktivitäten']
+                    }
+                ]
+            },
+            {
+                id: 'trainingDelivery',
+                title: 'Trainings-Durchführung',
+                description: 'Wie gut ist die Trainings-Durchführung?',
+                icon: 'fa-chalkboard-teacher',
+                subCriteria: [
+                    { 
+                        id: 'deliveryMethods', 
+                        title: 'Durchführungs-Methoden',
+                        description: 'Gibt es verschiedene Methoden?',
+                        examples: ['Methoden', 'Ansätze', 'Formate', 'Techniken']
+                    },
+                    { 
+                        id: 'deliveryQuality', 
+                        title: 'Durchführungs-Qualität',
+                        description: 'Wie gut ist die Durchführungs-Qualität?',
+                        examples: ['Qualität', 'Exzellenz', 'Profession', 'Standards']
+                    },
+                    { 
+                        id: 'deliveryAccessibility', 
+                        title: 'Durchführungs-Zugänglichkeit',
+                        description: 'Ist die Durchführung zugänglich?',
+                        examples: ['Zugänglichkeit', 'Access', 'Verfügbarkeit', 'Inklusion']
+                    },
+                    { 
+                        id: 'deliveryFlexibility', 
+                        title: 'Durchführungs-Flexibilität',
+                        description: 'Ist die Durchführung flexibel?',
+                        examples: ['Flexibilität', 'Anpassung', 'Agilität', 'Beweglichkeit']
+                    },
+                    { 
+                        id: 'deliveryEffectiveness', 
+                        title: 'Durchführungs-Effektivität',
+                        description: 'Wie effektiv ist die Durchführung?',
+                        examples: ['Effektivität', 'Wirksamkeit', 'Impact', 'Ergebnisse']
+                    }
+                ]
+            },
+            {
+                id: 'learningSupport',
+                title: 'Lernunterstützung',
+                description: 'Wie gut ist die Lernunterstützung?',
+                icon: 'fa-hands-helping',
+                subCriteria: [
+                    { 
+                        id: 'supportSystems', 
+                        title: 'Unterstützungs-Systeme',
+                        description: 'Gibt es Unterstützungs-Systeme?',
+                        examples: ['Systeme', 'Strukturen', 'Prozesse', 'Tools']
+                    },
+                    { 
+                        id: 'mentoring', 
+                        title: 'Mentoring',
+                        description: 'Gibt es Mentoring?',
+                        examples: ['Mentoring', 'Unterstützung', 'Hilfe', 'Beratung']
+                    },
+                    { 
+                        id: 'coaching', 
+                        title: 'Coaching',
+                        description: 'Gibt es Coaching?',
+                        examples: ['Coaching', 'Unterstützung', 'Hilfe', 'Beratung']
+                    },
+                    { 
+                        id: 'peerLearning', 
+                        title: 'Peer Learning',
+                        description: 'Gibt es Peer Learning?',
+                        examples: ['Peer Learning', 'Austausch', 'Lernen', 'Sharing']
+                    },
+                    { 
+                        id: 'resources', 
+                        title: 'Lernressourcen',
+                        description: 'Gibt es Lernressourcen?',
+                        examples: ['Ressourcen', 'Materialien', 'Tools', 'Plattformen']
+                    }
+                ]
+            },
+            {
+                id: 'trainingEvaluation',
+                title: 'Trainings-Evaluation',
+                description: 'Wie gut ist die Trainings-Evaluation?',
+                icon: 'fa-chart-bar',
+                subCriteria: [
+                    { 
+                        id: 'evaluationMethods', 
+                        title: 'Evaluations-Methoden',
+                        description: 'Gibt es Evaluations-Methoden?',
+                        examples: ['Methoden', 'Ansätze', 'Techniken', 'Tools']
+                    },
+                    { 
+                        id: 'kirkpatrickModel', 
+                        title: 'Kirkpatrick-Modell',
+                        description: 'Wird das Kirkpatrick-Modell verwendet?',
+                        examples: ['Kirkpatrick', 'Evaluation', 'Bewertung', 'Assessment']
+                    },
+                    { 
+                        id: 'learningMetrics', 
+                        title: 'Lern-Metriken',
+                        description: 'Gibt es Lern-Metriken?',
+                        examples: ['Metriken', 'KPIs', 'Indikatoren', 'Messung']
+                    },
+                    { 
+                        id: 'behaviorChange', 
+                        title: 'Verhaltensänderung',
+                        description: 'Wird Verhaltensänderung gemessen?',
+                        examples: ['Verhaltensänderung', 'Transfer', 'Anwendung', 'Impact']
+                    },
+                    { 
+                        id: 'businessImpact', 
+                        title: 'Business Impact',
+                        description: 'Wird Business Impact gemessen?',
+                        examples: ['Business Impact', 'ROI', 'Ergebnisse', 'Wert']
+                    }
+                ]
+            },
+            {
+                id: 'continuousLearning',
+                title: 'Kontinuierliches Lernen',
+                description: 'Wie gut ist kontinuierliches Lernen?',
+                icon: 'fa-sync-alt',
+                subCriteria: [
+                    { 
+                        id: 'learningCulture', 
+                        title: 'Lernkultur',
+                        description: 'Gibt es eine Lernkultur?',
+                        examples: ['Lernkultur', 'Lernen', 'Entwicklung', 'Wachstum']
+                    },
+                    { 
+                        id: 'ongoingTraining', 
+                        title: 'Laufendes Training',
+                        description: 'Gibt es laufendes Training?',
+                        examples: ['Kontinuität', 'Regelmäßigkeit', 'Konsistenz', 'Häufigkeit']
+                    },
+                    { 
+                        id: 'justInTime', 
+                        title: 'Just-in-Time Training',
+                        description: 'Gibt es Just-in-Time Training?',
+                        examples: ['Just-in-Time', 'Bedarf', 'Relevanz', 'Timing']
+                    },
+                    { 
+                        id: 'microLearning', 
+                        title: 'Micro-Learning',
+                        description: 'Gibt es Micro-Learning?',
+                        examples: ['Micro-Learning', 'Kurzformate', 'Flexibilität', 'Zugänglichkeit']
+                    },
+                    { 
+                        id: 'selfDirectedLearning', 
+                        title: 'Selbstgesteuertes Lernen',
+                        description: 'Gibt es selbstgesteuertes Lernen?',
+                        examples: ['Selbstgesteuert', 'Autonomie', 'Flexibilität', 'Empowerment']
+                    }
+                ]
+            },
+            {
+                id: 'trainingResources',
+                title: 'Trainings-Ressourcen',
+                description: 'Wie gut sind Trainings-Ressourcen?',
+                icon: 'fa-tools',
+                subCriteria: [
+                    { 
+                        id: 'financialResources', 
+                        title: 'Finanzielle Ressourcen',
+                        description: 'Gibt es finanzielle Ressourcen?',
+                        examples: ['Budget', 'Finanzen', 'Mittel', 'Investitionen']
+                    },
+                    { 
+                        id: 'humanResources', 
+                        title: 'Human Resources',
+                        description: 'Gibt es Human Resources?',
+                        examples: ['Mitarbeiter', 'Talente', 'Kompetenzen', 'Kapazität']
+                    },
+                    { 
+                        id: 'technicalResources', 
+                        title: 'Technische Ressourcen',
+                        description: 'Gibt es technische Ressourcen?',
+                        examples: ['Technologie', 'Tools', 'Plattformen', 'Systeme']
+                    },
+                    { 
+                        id: 'timeResources', 
+                        title: 'Zeitressourcen',
+                        description: 'Gibt es Zeitressourcen?',
+                        examples: ['Zeit', 'Kapazität', 'Freiheit', 'Räume']
+                    },
+                    { 
+                        id: 'externalResources', 
+                        title: 'Externe Ressourcen',
+                        description: 'Gibt es externe Ressourcen?',
+                        examples: ['Beratung', 'Partnerschaften', 'Netzwerke', 'Support']
+                    }
+                ]
+            },
+            {
+                id: 'trainingTechnology',
+                title: 'Trainings-Technologie',
+                description: 'Wie gut ist die Trainings-Technologie?',
+                icon: 'fa-laptop',
+                subCriteria: [
+                    { 
+                        id: 'lms', 
+                        title: 'Learning Management System',
+                        description: 'Gibt es ein LMS?',
+                        examples: ['LMS', 'Plattform', 'System', 'Technologie']
+                    },
+                    { 
+                        id: 'elearning', 
+                        title: 'E-Learning',
+                        description: 'Gibt es E-Learning?',
+                        examples: ['E-Learning', 'Online', 'Digital', 'Technologie']
+                    },
+                    { 
+                        id: 'virtualTraining', 
+                        title: 'Virtuelles Training',
+                        description: 'Gibt es virtuelles Training?',
+                        examples: ['Virtuell', 'Online', 'Remote', 'Digital']
+                    },
+                    { 
+                        id: 'mobileLearning', 
+                        title: 'Mobile Learning',
+                        description: 'Gibt es Mobile Learning?',
+                        examples: ['Mobile', 'Apps', 'Zugriff', 'Flexibilität']
+                    },
+                    { 
+                        id: 'aiLearning', 
+                        title: 'KI-gestütztes Lernen',
+                        description: 'Gibt es KI-gestütztes Lernen?',
+                        examples: ['KI', 'AI', 'Technologie', 'Innovation']
+                    }
+                ]
+            },
+            {
+                id: 'trainingSustainability',
+                title: 'Trainings-Nachhaltigkeit',
+                description: 'Wie nachhaltig ist das Training?',
+                icon: 'fa-leaf',
+                subCriteria: [
+                    { 
+                        id: 'knowledgeRetention', 
+                        title: 'Wissens-Retention',
+                        description: 'Gibt es Wissens-Retention?',
+                        examples: ['Retention', 'Beibehaltung', 'Nachhaltigkeit', 'Kontinuität']
+                    },
+                    { 
+                        id: 'behaviorChange', 
+                        title: 'Nachhaltige Verhaltensänderung',
+                        description: 'Gibt es nachhaltige Verhaltensänderung?',
+                        examples: ['Verhaltensänderung', 'Transfer', 'Anwendung', 'Nachhaltigkeit']
+                    },
+                    { 
+                        id: 'reinforcement', 
+                        title: 'Verstärkung',
+                        description: 'Gibt es Verstärkung?',
+                        examples: ['Verstärkung', 'Reinforcement', 'Konsolidierung', 'Stabilisierung']
+                    },
+                    { 
+                        id: 'longTermImpact', 
+                        title: 'Langfristiger Impact',
+                        description: 'Gibt es langfristigen Impact?',
+                        examples: ['Langfristigkeit', 'Nachhaltigkeit', 'Impact', 'Ergebnisse']
+                    },
+                    { 
+                        id: 'continuousImprovement', 
+                        title: 'Kontinuierliche Verbesserung',
+                        description: 'Gibt es kontinuierliche Verbesserung?',
+                        examples: ['Verbesserung', 'Optimierung', 'Lernen', 'Evolution']
+                    }
+                ]
+            }
+        ];
+        
+        let assessmentData = {};
+        let assessmentExporter = null;
+        
+        function initializeAssessment() {
+            // Load saved data
+            const saved = localStorage.getItem('changeMgmtDetailAssessments');
+            if (saved) {
+                const allAssessments = JSON.parse(saved);
+                if (allAssessments.training) {
+                    assessmentData = allAssessments.training;
+                }
+            }
+            
+            // Initialize assessment data structure
+            trainingCriteria.forEach(criterion => {
+                if (!assessmentData[criterion.id]) {
+                    assessmentData[criterion.id] = {};
+                }
+                criterion.subCriteria.forEach(subCriterion => {
+                    if (!assessmentData[criterion.id][subCriterion.id]) {
+                        assessmentData[criterion.id][subCriterion.id] = 1;
+                    }
+                });
+            });
+            
+            renderCriteria();
+            updateAggregatedScore();
+            assessmentExporter = new AssessmentExporter();
+        }
+        
+        function renderCriteria() {
+            const container = document.getElementById('criteriaContainer');
+            container.innerHTML = '';
+            
+            trainingCriteria.forEach(criterion => {
+                const criterionCard = document.createElement('div');
+                criterionCard.className = 'criterion-card';
+                
+                const averageScore = calculateCriterionAverage(criterion.id);
+                
+                criterionCard.innerHTML = `
+                    <div class="criterion-header">
+                        <div class="criterion-icon">
+                            <i class="fas ${criterion.icon}"></i>
+                        </div>
+                        <div class="criterion-title-section">
+                            <h3 class="criterion-title">${criterion.title}</h3>
+                            <p class="criterion-description">${criterion.description}</p>
+                        </div>
+                        <div class="criterion-average">
+                            <div class="criterion-average-value">${averageScore.toFixed(1)}</div>
+                            <div style="font-size: 0.75rem; color: #6b7280;">Durchschnitt</div>
+                        </div>
+                    </div>
+                    
+                    <div class="sub-criteria-container">
+                        ${criterion.subCriteria.map(subCriterion => {
+                            const value = assessmentData[criterion.id][subCriterion.id] || 1;
+                            return `
+                                <div class="sub-criterion-item">
+                                    <div class="sub-criterion-label">
+                                        <h4>${subCriterion.title}</h4>
+                                        <p>${subCriterion.description}</p>
+                                        <div class="criterion-examples">
+                                            <strong>Beispiele:</strong>
+                                            <ul>
+                                                ${subCriterion.examples.map(ex => `<li>${ex}</li>`).join('')}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="sub-criterion-slider-wrapper">
+                                        <input type="range" min="1" max="5" value="${value}" 
+                                               class="sub-criterion-slider" 
+                                               id="${criterion.id}_${subCriterion.id}"
+                                               oninput="updateSubCriterionValue('${criterion.id}', '${subCriterion.id}', this.value)">
+                                        <div class="sub-criterion-value">${value}</div>
+                                        <div class="sub-criterion-scale">
+                                            <span>1</span>
+                                            <span>2</span>
+                                            <span>3</span>
+                                            <span>4</span>
+                                            <span>5</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+                
+                container.appendChild(criterionCard);
+            });
+        }
+        
+        function updateSubCriterionValue(criterionId, subCriterionId, value) {
+            if (!assessmentData[criterionId]) {
+                assessmentData[criterionId] = {};
+            }
+            assessmentData[criterionId][subCriterionId] = parseInt(value);
+            
+            const valueDisplay = document.querySelector(`#${criterionId}_${subCriterionId}`).nextElementSibling;
+            if (valueDisplay) {
+                valueDisplay.textContent = value;
+            }
+            
+            updateCriterionAverage(criterionId);
+            updateAggregatedScore();
+            saveAssessment();
+        }
+        
+        function calculateCriterionAverage(criterionId) {
+            const criterion = trainingCriteria.find(c => c.id === criterionId);
+            if (!criterion || !assessmentData[criterionId]) return 1.0;
+            
+            const values = criterion.subCriteria.map(sub => 
+                assessmentData[criterionId][sub.id] || 1
+            );
+            const sum = values.reduce((acc, val) => acc + val, 0);
+            return sum / values.length;
+        }
+        
+        function updateCriterionAverage(criterionId) {
+            const average = calculateCriterionAverage(criterionId);
+            const criterionCard = document.querySelector(`.criterion-card:has(#${criterionId}_${trainingCriteria.find(c => c.id === criterionId).subCriteria[0].id})`);
+            if (criterionCard) {
+                const averageDisplay = criterionCard.querySelector('.criterion-average-value');
+                if (averageDisplay) {
+                    averageDisplay.textContent = average.toFixed(1);
+                }
+            }
+        }
+        
+        function updateAggregatedScore() {
+            const averages = trainingCriteria.map(c => calculateCriterionAverage(c.id));
+            const overallAverage = averages.reduce((acc, val) => acc + val, 0) / averages.length;
+            
+            const scoreDisplay = document.getElementById('aggregatedScore');
+            const descriptionDisplay = document.getElementById('scoreDescription');
+            
+            if (scoreDisplay) {
+                scoreDisplay.textContent = overallAverage.toFixed(1);
+            }
+            
+            if (descriptionDisplay) {
+                let description = '';
+                if (overallAverage <= 1.5) {
+                    description = 'Schwaches Change-Training - Erhebliche Verbesserung nötig';
+                } else if (overallAverage <= 2.5) {
+                    description = 'Teilweise entwickeltes Change-Training - Verbesserungen erforderlich';
+                } else if (overallAverage <= 3.5) {
+                    description = 'Gutes Change-Training - Weitere Optimierung möglich';
+                } else if (overallAverage <= 4.5) {
+                    description = 'Starkes Change-Training - Kleine Verbesserungen möglich';
+                } else {
+                    description = 'Exzellentes Change-Training - Hervorragende Kompetenzentwicklung';
+                }
+                descriptionDisplay.textContent = description;
+            }
+        }
+        
+        function saveAssessment() {
+            const allAssessments = JSON.parse(localStorage.getItem('changeMgmtDetailAssessments') || '{}');
+            allAssessments.training = {
+                criteria: assessmentData,
+                aggregated: parseFloat(trainingCriteria.map(c => calculateCriterionAverage(c.id)).reduce((acc, val) => acc + val, 0) / trainingCriteria.length).toFixed(1)
+            };
+            localStorage.setItem('changeMgmtDetailAssessments', JSON.stringify(allAssessments));
+        }
+        
+        function saveAndReturn() {
+            saveAssessment();
+            window.location.href = 'organisationsentwicklung-workflow.html';
+        }
+        
+        async function exportToExcel() {
+            if (!assessmentExporter) {
+                assessmentExporter = new AssessmentExporter();
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+            const data = prepareExportData();
+            await assessmentExporter.exportToExcel(data, `Change-Management-Training-&-Development-Assessment-${new Date().toISOString().split('T')[0]}`);
+        }
+        
+        async function exportToPDF() {
+            if (!assessmentExporter) {
+                assessmentExporter = new AssessmentExporter();
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+            const data = prepareExportData();
+            await assessmentExporter.exportToPDF(data, `Change-Management-Training-&-Development-Assessment-${new Date().toISOString().split('T')[0]}`);
+        }
+        
+        function prepareExportData() {
+            const aggregated = parseFloat(trainingCriteria.map(c => calculateCriterionAverage(c.id)).reduce((acc, val) => acc + val, 0) / trainingCriteria.length).toFixed(1);
+            
+            return {
+                dimension: 'training',
+                dimensionName: 'Training & Development',
+                overall: parseFloat(aggregated),
+                criteria: trainingCriteria.map(criterion => ({
+                    id: criterion.id,
+                    title: criterion.title,
+                    description: criterion.description,
+                    average: calculateCriterionAverage(criterion.id),
+                    subCriteria: criterion.subCriteria.map(sub => ({
+                        id: sub.id,
+                        title: sub.title,
+                        description: sub.description,
+                        examples: sub.examples,
+                        score: assessmentData[criterion.id][sub.id] || 1
+                    }))
+                })),
+                timestamp: new Date().toISOString()
+            };
+        }
+        
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', initializeAssessment);
+    </script>
+    
+    <!-- Assessment Export Script -->
+    <script src="js/assessment-export.js"></script>
+</body>
+</html>

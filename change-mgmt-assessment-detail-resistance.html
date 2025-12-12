@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Widerstandsmanagement - Change Management Assessment - Manuel Weiss</title>
+    
+    <!-- Meta Tags -->
+    <meta name="description" content="Detaillierte Bewertung der widerstandsmanagement für Change Management.">
+    <meta name="keywords" content="Widerstandsmanagement, Change Resistance, Change Management">
+    <meta name="author" content="Manuel Weiss">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="css/ki-assessment-detail.css">
+    <style>
+        .detail-header {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+        
+        .criterion-icon {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .detail-slider::-webkit-slider-thumb {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .detail-slider::-moz-range-thumb {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .sub-criterion-slider::-webkit-slider-thumb {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .sub-criterion-slider::-moz-range-thumb {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .slider-value-display {
+            color: #d97706;
+        }
+        
+        .sub-criterion-value {
+            color: #d97706;
+        }
+        
+        .criterion-average-value {
+            color: #d97706;
+        }
+        
+        .aggregated-score {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .save-button {
+            color: #d97706;
+        }
+        
+        .criterion-examples {
+            border-left: 4px solid #f59e0b;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="manuel-weiss-photo.svg" alt="Manuel Weiss" class="nav-logo">
+                <span class="nav-name">Manuel Weiss</span>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="hr-transformation.html">HR-Transformation</a>
+                <a href="index.html#about">Über mich</a>
+                <a href="index.html#contact">Kontakt</a>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="detail-assessment-container">
+        <div class="detail-header">
+            <a href="change-management-workflow.html" class="back-button">
+                <i class="fas fa-arrow-left"></i>
+                Zurück zur Übersicht
+            </a>
+            <h1><i class="fas fa-exclamation-triangle"></i> Widerstandsmanagement</h1>
+            <p>Bewerten Sie Ihr Widerstandsmanagement. Wissenschaftlich fundierte Bewertung basierend auf modernen Widerstandsmanagement-Prinzipien.</p>
+        </div>
+        
+        <div id="criteriaContainer">
+            <!-- Criteria will be dynamically loaded -->
+        </div>
+        
+        <div class="aggregated-score">
+            <h3>Gesamtbewertung</h3>
+            <div class="score-display">
+                <div class="score-circle-large" id="aggregatedScore">1.0</div>
+                <div class="score-description" id="scoreDescription">Bewerten Sie die Kriterien, um Ihre Gesamtbewertung zu sehen</div>
+            </div>
+            <div style="display: flex; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap;">
+                <button class="save-button" onclick="saveAndReturn()" style="flex: 1; min-width: 200px;">
+                    <i class="fas fa-save"></i> Bewertung speichern und zurück
+                </button>
+                <button class="export-button excel" onclick="exportToExcel()" style="background: #217346; color: white; border: none; padding: 1rem 2rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; flex: 1; min-width: 150px;">
+                    <i class="fas fa-file-excel"></i> Excel Export
+                </button>
+                <button class="export-button pdf" onclick="exportToPDF()" style="background: #dc3545; color: white; border: none; padding: 1rem 2rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; flex: 1; min-width: 150px;">
+                    <i class="fas fa-file-pdf"></i> PDF Export
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const resistanceCriteria = [            {
+                id: 'resistanceIdentification',
+                title: 'Widerstands-Identifikation',
+                description: 'Wie gut werden Widerstände identifiziert?',
+                icon: 'fa-search',
+                subCriteria: [
+                    { 
+                        id: 'earlyIdentification', 
+                        title: 'Frühzeitige Identifikation',
+                        description: 'Werden Widerstände frühzeitig identifiziert?',
+                        examples: ['Frühzeitigkeit', 'Proaktiv', 'Vorbeugung', 'Früherkennung']
+                    },
+                    { 
+                        id: 'resistanceSignals', 
+                        title: 'Widerstands-Signale',
+                        description: 'Werden Widerstands-Signale erkannt?',
+                        examples: ['Signale', 'Indikatoren', 'Anzeichen', 'Hinweise']
+                    },
+                    { 
+                        id: 'resistanceSources', 
+                        title: 'Widerstands-Quellen',
+                        description: 'Werden Widerstands-Quellen identifiziert?',
+                        examples: ['Quellen', 'Ursachen', 'Gründe', 'Faktoren']
+                    },
+                    { 
+                        id: 'resistanceTypes', 
+                        title: 'Widerstands-Typen',
+                        description: 'Werden Widerstands-Typen unterschieden?',
+                        examples: ['Typen', 'Kategorien', 'Klassifizierung', 'Segmentierung']
+                    },
+                    { 
+                        id: 'resistanceIntensity', 
+                        title: 'Widerstands-Intensität',
+                        description: 'Wird die Intensität gemessen?',
+                        examples: ['Intensität', 'Stärke', 'Ausmaß', 'Grad']
+                    }
+                ]
+            },
+            {
+                id: 'resistanceAnalysis',
+                title: 'Widerstands-Analyse',
+                description: 'Wie gut werden Widerstände analysiert?',
+                icon: 'fa-chart-line',
+                subCriteria: [
+                    { 
+                        id: 'rootCauseAnalysis', 
+                        title: 'Ursachen-Analyse',
+                        description: 'Werden Ursachen analysiert?',
+                        examples: ['Ursachen', 'Gründe', 'Faktoren', 'Analyse']
+                    },
+                    { 
+                        id: 'impactAnalysis', 
+                        title: 'Impact-Analyse',
+                        description: 'Wird der Impact analysiert?',
+                        examples: ['Impact', 'Auswirkungen', 'Konsequenzen', 'Risiken']
+                    },
+                    { 
+                        id: 'resistancePatterns', 
+                        title: 'Widerstands-Muster',
+                        description: 'Werden Muster erkannt?',
+                        examples: ['Muster', 'Patterns', 'Trends', 'Strukturen']
+                    },
+                    { 
+                        id: 'stakeholderResistance', 
+                        title: 'Stakeholder-Widerstand',
+                        description: 'Wird Stakeholder-Widerstand analysiert?',
+                        examples: ['Stakeholder', 'Gruppen', 'Individuen', 'Bereiche']
+                    },
+                    { 
+                        id: 'resistanceDynamics', 
+                        title: 'Widerstands-Dynamiken',
+                        description: 'Werden Dynamiken verstanden?',
+                        examples: ['Dynamiken', 'Entwicklung', 'Veränderung', 'Evolution']
+                    }
+                ]
+            },
+            {
+                id: 'resistancePrevention',
+                title: 'Widerstands-Prävention',
+                description: 'Wie gut ist die Widerstands-Prävention?',
+                icon: 'fa-shield-alt',
+                subCriteria: [
+                    { 
+                        id: 'proactiveApproach', 
+                        title: 'Proaktiver Ansatz',
+                        description: 'Gibt es einen proaktiven Ansatz?',
+                        examples: ['Proaktiv', 'Vorbeugung', 'Prävention', 'Früherkennung']
+                    },
+                    { 
+                        id: 'earlyInvolvement', 
+                        title: 'Frühzeitige Einbindung',
+                        description: 'Werden Stakeholder früh eingebunden?',
+                        examples: ['Einbindung', 'Partizipation', 'Beteiligung', 'Engagement']
+                    },
+                    { 
+                        id: 'transparency', 
+                        title: 'Transparenz',
+                        description: 'Gibt es Transparenz?',
+                        examples: ['Transparenz', 'Offenheit', 'Ehrlichkeit', 'Klärheit']
+                    },
+                    { 
+                        id: 'benefitCommunication', 
+                        title: 'Vorteils-Kommunikation',
+                        description: 'Werden Vorteile kommuniziert?',
+                        examples: ['Vorteile', 'Nutzen', 'Value', 'Benefits']
+                    },
+                    { 
+                        id: 'participation', 
+                        title: 'Partizipation',
+                        description: 'Gibt es Partizipation?',
+                        examples: ['Partizipation', 'Einbindung', 'Beteiligung', 'Engagement']
+                    }
+                ]
+            },
+            {
+                id: 'resistanceStrategies',
+                title: 'Widerstands-Strategien',
+                description: 'Wie gut sind Widerstands-Strategien?',
+                icon: 'fa-chess',
+                subCriteria: [
+                    { 
+                        id: 'strategyDevelopment', 
+                        title: 'Strategie-Entwicklung',
+                        description: 'Gibt es Strategie-Entwicklung?',
+                        examples: ['Entwicklung', 'Planung', 'Konzept', 'Roadmap']
+                    },
+                    { 
+                        id: 'tailoredStrategies', 
+                        title: 'Maßgeschneiderte Strategien',
+                        description: 'Gibt es maßgeschneiderte Strategien?',
+                        examples: ['Anpassung', 'Personalisierung', 'Relevanz', 'Zielgruppen']
+                    },
+                    { 
+                        id: 'engagementStrategies', 
+                        title: 'Engagement-Strategien',
+                        description: 'Gibt es Engagement-Strategien?',
+                        examples: ['Engagement', 'Einbindung', 'Partizipation', 'Strategien']
+                    },
+                    { 
+                        id: 'communicationStrategies', 
+                        title: 'Kommunikations-Strategien',
+                        description: 'Gibt es Kommunikations-Strategien?',
+                        examples: ['Kommunikation', 'Dialog', 'Strategien', 'Ansätze']
+                    },
+                    { 
+                        id: 'supportStrategies', 
+                        title: 'Unterstützungs-Strategien',
+                        description: 'Gibt es Unterstützungs-Strategien?',
+                        examples: ['Unterstützung', 'Support', 'Hilfe', 'Strategien']
+                    }
+                ]
+            },
+            {
+                id: 'resistanceResolution',
+                title: 'Widerstands-Lösung',
+                description: 'Wie gut ist die Widerstands-Lösung?',
+                icon: 'fa-handshake',
+                subCriteria: [
+                    { 
+                        id: 'conflictResolution', 
+                        title: 'Konfliktlösung',
+                        description: 'Gibt es Konfliktlösung?',
+                        examples: ['Lösung', 'Mediation', 'Kompromisse', 'Konsens']
+                    },
+                    { 
+                        id: 'negotiation', 
+                        title: 'Verhandlung',
+                        description: 'Gibt es Verhandlung?',
+                        examples: ['Verhandlung', 'Dialog', 'Austausch', 'Kompromisse']
+                    },
+                    { 
+                        id: 'mediation', 
+                        title: 'Mediation',
+                        description: 'Gibt es Mediation?',
+                        examples: ['Mediation', 'Vermittlung', 'Lösung', 'Kompromisse']
+                    },
+                    { 
+                        id: 'compromise', 
+                        title: 'Kompromisse',
+                        description: 'Gibt es Kompromisse?',
+                        examples: ['Kompromisse', 'Lösungen', 'Vereinbarungen', 'Konsens']
+                    },
+                    { 
+                        id: 'winWinSolutions', 
+                        title: 'Win-Win-Lösungen',
+                        description: 'Gibt es Win-Win-Lösungen?',
+                        examples: ['Win-Win', 'Lösungen', 'Vorteile', 'Ergebnisse']
+                    }
+                ]
+            },
+            {
+                id: 'resistanceSupport',
+                title: 'Widerstands-Unterstützung',
+                description: 'Wie gut ist die Widerstands-Unterstützung?',
+                icon: 'fa-hands-helping',
+                subCriteria: [
+                    { 
+                        id: 'supportSystems', 
+                        title: 'Unterstützungs-Systeme',
+                        description: 'Gibt es Unterstützungs-Systeme?',
+                        examples: ['Systeme', 'Strukturen', 'Prozesse', 'Tools']
+                    },
+                    { 
+                        id: 'coaching', 
+                        title: 'Coaching',
+                        description: 'Gibt es Coaching?',
+                        examples: ['Coaching', 'Unterstützung', 'Hilfe', 'Beratung']
+                    },
+                    { 
+                        id: 'training', 
+                        title: 'Training',
+                        description: 'Gibt es Training?',
+                        examples: ['Training', 'Bildung', 'Workshops', 'Programme']
+                    },
+                    { 
+                        id: 'resources', 
+                        title: 'Ressourcen',
+                        description: 'Gibt es Ressourcen?',
+                        examples: ['Ressourcen', 'Budget', 'Mitarbeiter', 'Tools']
+                    },
+                    { 
+                        id: 'emotionalSupport', 
+                        title: 'Emotionale Unterstützung',
+                        description: 'Gibt es emotionale Unterstützung?',
+                        examples: ['Emotionale Unterstützung', 'Empathie', 'Verständnis', 'Hilfe']
+                    }
+                ]
+            },
+            {
+                id: 'resistanceMonitoring',
+                title: 'Widerstands-Monitoring',
+                description: 'Wie gut ist das Widerstands-Monitoring?',
+                icon: 'fa-eye',
+                subCriteria: [
+                    { 
+                        id: 'continuousMonitoring', 
+                        title: 'Kontinuierliches Monitoring',
+                        description: 'Gibt es kontinuierliches Monitoring?',
+                        examples: ['Monitoring', 'Tracking', 'Beobachtung', 'Überwachung']
+                    },
+                    { 
+                        id: 'resistanceMetrics', 
+                        title: 'Widerstands-Metriken',
+                        description: 'Gibt es Widerstands-Metriken?',
+                        examples: ['Metriken', 'KPIs', 'Indikatoren', 'Messung']
+                    },
+                    { 
+                        id: 'earlyWarning', 
+                        title: 'Frühwarnsystem',
+                        description: 'Gibt es ein Frühwarnsystem?',
+                        examples: ['Frühwarnung', 'Signale', 'Indikatoren', 'Alerts']
+                    },
+                    { 
+                        id: 'trendAnalysis', 
+                        title: 'Trend-Analyse',
+                        description: 'Gibt es Trend-Analyse?',
+                        examples: ['Trends', 'Analyse', 'Entwicklung', 'Muster']
+                    },
+                    { 
+                        id: 'responseMechanisms', 
+                        title: 'Reaktions-Mechanismen',
+                        description: 'Gibt es Reaktions-Mechanismen?',
+                        examples: ['Mechanismen', 'Prozesse', 'Strategien', 'Maßnahmen']
+                    }
+                ]
+            },
+            {
+                id: 'changeChampions',
+                title: 'Change Champions',
+                description: 'Wie gut sind Change Champions?',
+                icon: 'fa-star',
+                subCriteria: [
+                    { 
+                        id: 'championIdentification', 
+                        title: 'Champion-Identifikation',
+                        description: 'Werden Champions identifiziert?',
+                        examples: ['Identifikation', 'Auswahl', 'Rekrutierung', 'Entwicklung']
+                    },
+                    { 
+                        id: 'championDevelopment', 
+                        title: 'Champion-Entwicklung',
+                        description: 'Gibt es Champion-Entwicklung?',
+                        examples: ['Entwicklung', 'Training', 'Bildung', 'Programme']
+                    },
+                    { 
+                        id: 'championNetwork', 
+                        title: 'Champion-Netzwerk',
+                        description: 'Gibt es ein Champion-Netzwerk?',
+                        examples: ['Netzwerk', 'Community', 'Gruppe', 'Team']
+                    },
+                    { 
+                        id: 'championSupport', 
+                        title: 'Champion-Unterstützung',
+                        description: 'Gibt es Champion-Unterstützung?',
+                        examples: ['Unterstützung', 'Support', 'Ressourcen', 'Tools']
+                    },
+                    { 
+                        id: 'championRecognition', 
+                        title: 'Champion-Anerkennung',
+                        description: 'Gibt es Champion-Anerkennung?',
+                        examples: ['Anerkennung', 'Recognition', 'Belohnungen', 'Incentives']
+                    }
+                ]
+            },
+            {
+                id: 'resistanceLearning',
+                title: 'Lernen aus Widerstand',
+                description: 'Wie gut wird aus Widerstand gelernt?',
+                icon: 'fa-book',
+                subCriteria: [
+                    { 
+                        id: 'lessonsLearned', 
+                        title: 'Lessons Learned',
+                        description: 'Werden Lessons Learned dokumentiert?',
+                        examples: ['Lessons Learned', 'Dokumentation', 'Lernen', 'Erfahrung']
+                    },
+                    { 
+                        id: 'resistanceAnalysis', 
+                        title: 'Widerstands-Analyse',
+                        description: 'Gibt es Widerstands-Analyse?',
+                        examples: ['Analyse', 'Bewertung', 'Evaluation', 'Assessment']
+                    },
+                    { 
+                        id: 'bestPractices', 
+                        title: 'Best Practices',
+                        description: 'Gibt es Best Practices?',
+                        examples: ['Best Practices', 'Erfolgsfaktoren', 'Lernen', 'Sharing']
+                    },
+                    { 
+                        id: 'continuousImprovement', 
+                        title: 'Kontinuierliche Verbesserung',
+                        description: 'Gibt es kontinuierliche Verbesserung?',
+                        examples: ['Verbesserung', 'Optimierung', 'Lernen', 'Evolution']
+                    },
+                    { 
+                        id: 'knowledgeSharing', 
+                        title: 'Wissensaustausch',
+                        description: 'Gibt es Wissensaustausch?',
+                        examples: ['Sharing', 'Austausch', 'Lernen', 'Wissen']
+                    }
+                ]
+            },
+            {
+                id: 'resistanceCulture',
+                title: 'Widerstands-Kultur',
+                description: 'Wie gut ist die Widerstands-Kultur?',
+                icon: 'fa-heart',
+                subCriteria: [
+                    { 
+                        id: 'openDialogue', 
+                        title: 'Offener Dialog',
+                        description: 'Gibt es offenen Dialog?',
+                        examples: ['Dialog', 'Offenheit', 'Transparenz', 'Kommunikation']
+                    },
+                    { 
+                        id: 'constructiveConflict', 
+                        title: 'Konstruktive Konflikte',
+                        description: 'Werden Konflikte konstruktiv genutzt?',
+                        examples: ['Konstruktiv', 'Lernen', 'Verbesserung', 'Innovation']
+                    },
+                    { 
+                        id: 'respectfulDisagreement', 
+                        title: 'Respektvolle Meinungsverschiedenheiten',
+                        description: 'Gibt es respektvolle Meinungsverschiedenheiten?',
+                        examples: ['Respekt', 'Höflichkeit', 'Wertschätzung', 'Anerkennung']
+                    },
+                    { 
+                        id: 'learningFromResistance', 
+                        title: 'Lernen aus Widerstand',
+                        description: 'Wird aus Widerstand gelernt?',
+                        examples: ['Lernen', 'Verbesserung', 'Optimierung', 'Evolution']
+                    },
+                    { 
+                        id: 'positiveChangeCulture', 
+                        title: 'Positive Change-Kultur',
+                        description: 'Gibt es eine positive Change-Kultur?',
+                        examples: ['Kultur', 'Werte', 'Normen', 'Praktiken']
+                    }
+                ]
+            }
+        ];
+        
+        let assessmentData = {};
+        let assessmentExporter = null;
+        
+        function initializeAssessment() {
+            // Load saved data
+            const saved = localStorage.getItem('changeMgmtDetailAssessments');
+            if (saved) {
+                const allAssessments = JSON.parse(saved);
+                if (allAssessments.resistance) {
+                    assessmentData = allAssessments.resistance;
+                }
+            }
+            
+            // Initialize assessment data structure
+            resistanceCriteria.forEach(criterion => {
+                if (!assessmentData[criterion.id]) {
+                    assessmentData[criterion.id] = {};
+                }
+                criterion.subCriteria.forEach(subCriterion => {
+                    if (!assessmentData[criterion.id][subCriterion.id]) {
+                        assessmentData[criterion.id][subCriterion.id] = 1;
+                    }
+                });
+            });
+            
+            renderCriteria();
+            updateAggregatedScore();
+            assessmentExporter = new AssessmentExporter();
+        }
+        
+        function renderCriteria() {
+            const container = document.getElementById('criteriaContainer');
+            container.innerHTML = '';
+            
+            resistanceCriteria.forEach(criterion => {
+                const criterionCard = document.createElement('div');
+                criterionCard.className = 'criterion-card';
+                
+                const averageScore = calculateCriterionAverage(criterion.id);
+                
+                criterionCard.innerHTML = `
+                    <div class="criterion-header">
+                        <div class="criterion-icon">
+                            <i class="fas ${criterion.icon}"></i>
+                        </div>
+                        <div class="criterion-title-section">
+                            <h3 class="criterion-title">${criterion.title}</h3>
+                            <p class="criterion-description">${criterion.description}</p>
+                        </div>
+                        <div class="criterion-average">
+                            <div class="criterion-average-value">${averageScore.toFixed(1)}</div>
+                            <div style="font-size: 0.75rem; color: #6b7280;">Durchschnitt</div>
+                        </div>
+                    </div>
+                    
+                    <div class="sub-criteria-container">
+                        ${criterion.subCriteria.map(subCriterion => {
+                            const value = assessmentData[criterion.id][subCriterion.id] || 1;
+                            return `
+                                <div class="sub-criterion-item">
+                                    <div class="sub-criterion-label">
+                                        <h4>${subCriterion.title}</h4>
+                                        <p>${subCriterion.description}</p>
+                                        <div class="criterion-examples">
+                                            <strong>Beispiele:</strong>
+                                            <ul>
+                                                ${subCriterion.examples.map(ex => `<li>${ex}</li>`).join('')}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="sub-criterion-slider-wrapper">
+                                        <input type="range" min="1" max="5" value="${value}" 
+                                               class="sub-criterion-slider" 
+                                               id="${criterion.id}_${subCriterion.id}"
+                                               oninput="updateSubCriterionValue('${criterion.id}', '${subCriterion.id}', this.value)">
+                                        <div class="sub-criterion-value">${value}</div>
+                                        <div class="sub-criterion-scale">
+                                            <span>1</span>
+                                            <span>2</span>
+                                            <span>3</span>
+                                            <span>4</span>
+                                            <span>5</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+                
+                container.appendChild(criterionCard);
+            });
+        }
+        
+        function updateSubCriterionValue(criterionId, subCriterionId, value) {
+            if (!assessmentData[criterionId]) {
+                assessmentData[criterionId] = {};
+            }
+            assessmentData[criterionId][subCriterionId] = parseInt(value);
+            
+            const valueDisplay = document.querySelector(`#${criterionId}_${subCriterionId}`).nextElementSibling;
+            if (valueDisplay) {
+                valueDisplay.textContent = value;
+            }
+            
+            updateCriterionAverage(criterionId);
+            updateAggregatedScore();
+            saveAssessment();
+        }
+        
+        function calculateCriterionAverage(criterionId) {
+            const criterion = resistanceCriteria.find(c => c.id === criterionId);
+            if (!criterion || !assessmentData[criterionId]) return 1.0;
+            
+            const values = criterion.subCriteria.map(sub => 
+                assessmentData[criterionId][sub.id] || 1
+            );
+            const sum = values.reduce((acc, val) => acc + val, 0);
+            return sum / values.length;
+        }
+        
+        function updateCriterionAverage(criterionId) {
+            const average = calculateCriterionAverage(criterionId);
+            const criterionCard = document.querySelector(`.criterion-card:has(#${criterionId}_${resistanceCriteria.find(c => c.id === criterionId).subCriteria[0].id})`);
+            if (criterionCard) {
+                const averageDisplay = criterionCard.querySelector('.criterion-average-value');
+                if (averageDisplay) {
+                    averageDisplay.textContent = average.toFixed(1);
+                }
+            }
+        }
+        
+        function updateAggregatedScore() {
+            const averages = resistanceCriteria.map(c => calculateCriterionAverage(c.id));
+            const overallAverage = averages.reduce((acc, val) => acc + val, 0) / averages.length;
+            
+            const scoreDisplay = document.getElementById('aggregatedScore');
+            const descriptionDisplay = document.getElementById('scoreDescription');
+            
+            if (scoreDisplay) {
+                scoreDisplay.textContent = overallAverage.toFixed(1);
+            }
+            
+            if (descriptionDisplay) {
+                let description = '';
+                if (overallAverage <= 1.5) {
+                    description = 'Schwaches Widerstandsmanagement - Erhebliche Verbesserung nötig';
+                } else if (overallAverage <= 2.5) {
+                    description = 'Teilweise entwickeltes Widerstandsmanagement - Verbesserungen erforderlich';
+                } else if (overallAverage <= 3.5) {
+                    description = 'Gutes Widerstandsmanagement - Weitere Optimierung möglich';
+                } else if (overallAverage <= 4.5) {
+                    description = 'Starkes Widerstandsmanagement - Kleine Verbesserungen möglich';
+                } else {
+                    description = 'Exzellentes Widerstandsmanagement - Hervorragende Widerstands-Führung';
+                }
+                descriptionDisplay.textContent = description;
+            }
+        }
+        
+        function saveAssessment() {
+            const allAssessments = JSON.parse(localStorage.getItem('changeMgmtDetailAssessments') || '{}');
+            allAssessments.resistance = {
+                criteria: assessmentData,
+                aggregated: parseFloat(resistanceCriteria.map(c => calculateCriterionAverage(c.id)).reduce((acc, val) => acc + val, 0) / resistanceCriteria.length).toFixed(1)
+            };
+            localStorage.setItem('changeMgmtDetailAssessments', JSON.stringify(allAssessments));
+        }
+        
+        function saveAndReturn() {
+            saveAssessment();
+            window.location.href = 'organisationsentwicklung-workflow.html';
+        }
+        
+        async function exportToExcel() {
+            if (!assessmentExporter) {
+                assessmentExporter = new AssessmentExporter();
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+            const data = prepareExportData();
+            await assessmentExporter.exportToExcel(data, `Change-Management-Widerstandsmanagement-Assessment-${new Date().toISOString().split('T')[0]}`);
+        }
+        
+        async function exportToPDF() {
+            if (!assessmentExporter) {
+                assessmentExporter = new AssessmentExporter();
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+            const data = prepareExportData();
+            await assessmentExporter.exportToPDF(data, `Change-Management-Widerstandsmanagement-Assessment-${new Date().toISOString().split('T')[0]}`);
+        }
+        
+        function prepareExportData() {
+            const aggregated = parseFloat(resistanceCriteria.map(c => calculateCriterionAverage(c.id)).reduce((acc, val) => acc + val, 0) / resistanceCriteria.length).toFixed(1);
+            
+            return {
+                dimension: 'resistance',
+                dimensionName: 'Widerstandsmanagement',
+                overall: parseFloat(aggregated),
+                criteria: resistanceCriteria.map(criterion => ({
+                    id: criterion.id,
+                    title: criterion.title,
+                    description: criterion.description,
+                    average: calculateCriterionAverage(criterion.id),
+                    subCriteria: criterion.subCriteria.map(sub => ({
+                        id: sub.id,
+                        title: sub.title,
+                        description: sub.description,
+                        examples: sub.examples,
+                        score: assessmentData[criterion.id][sub.id] || 1
+                    }))
+                })),
+                timestamp: new Date().toISOString()
+            };
+        }
+        
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', initializeAssessment);
+    </script>
+    
+    <!-- Assessment Export Script -->
+    <script src="js/assessment-export.js"></script>
+</body>
+</html>
