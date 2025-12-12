@@ -21,6 +21,14 @@ class UserProfile {
         
         // Check if we need to migrate local data to AWS
         this.migrateLocalDataIfNeeded();
+        
+        // Aktiviere Auto-Save wenn User angemeldet ist
+        this.setupAutoSave();
+        
+        // Aktiviere Auto-Save auch nach Login
+        document.addEventListener('userLoggedIn', () => {
+            this.setupAutoSave();
+        });
     }
     
     handleHashNavigation() {
@@ -493,6 +501,41 @@ class UserProfile {
         
             activityList.appendChild(activityItem);
         });
+    }
+
+    /**
+     * Automatische Speicherung bei Änderungen (wenn angemeldet)
+     */
+    setupAutoSave() {
+        // Prüfe ob User angemeldet ist
+        if (!window.realUserAuth?.isLoggedIn() || !this.awsProfileAPI) {
+            return;
+        }
+        
+        // Alle Input-Felder im Profil finden
+        const profileInputs = document.querySelectorAll('#userProfileForm input, #userProfileForm textarea, #userProfileForm select');
+        
+        // Debounce-Funktion für Auto-Save
+        let autoSaveTimeout;
+        const autoSave = async () => {
+            clearTimeout(autoSaveTimeout);
+            autoSaveTimeout = setTimeout(async () => {
+                try {
+                    await this.saveProfileData();
+                    console.log('✅ Profil automatisch gespeichert');
+                } catch (error) {
+                    console.warn('⚠️ Auto-Save fehlgeschlagen:', error);
+                }
+            }, 2000); // 2 Sekunden nach letzter Änderung
+        };
+        
+        // Event-Listener für alle Inputs
+        profileInputs.forEach(input => {
+            input.addEventListener('input', autoSave);
+            input.addEventListener('change', autoSave);
+        });
+        
+        console.log('✅ Auto-Save aktiviert für', profileInputs.length, 'Felder');
     }
 
     async saveProfileData() {

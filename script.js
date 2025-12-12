@@ -181,16 +181,85 @@ function initMobileMenu() {
         });
     });
     
-    // Copy Auth Section to Mobile Menu
-    if (authSection && mobileAuthSection) {
+    // Copy Auth Section to Mobile Menu - VERBESSERT
+    if (mobileAuthSection) {
         const updateMobileAuth = () => {
-            const authClone = authSection.cloneNode(true);
-            mobileAuthSection.innerHTML = '';
-            mobileAuthSection.appendChild(authClone);
+            // Versuche zuerst die Desktop Auth Section zu finden
+            const desktopAuthSection = document.querySelector('.nav-menu .auth-section') || 
+                                      document.querySelector('.auth-section');
+            
+            if (desktopAuthSection) {
+                const authClone = desktopAuthSection.cloneNode(true);
+                mobileAuthSection.innerHTML = '';
+                mobileAuthSection.appendChild(authClone);
+                
+                // Event-Listener für geklonte Buttons neu setzen
+                const clonedAuthButton = mobileAuthSection.querySelector('#realAuthButton');
+                if (clonedAuthButton) {
+                    clonedAuthButton.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        // Öffne Auth Modal oder führe Login aus
+                        if (window.realUserAuth && typeof window.realUserAuth.showLoginModal === 'function') {
+                            window.realUserAuth.showLoginModal();
+                        } else if (window.openAuthModal && typeof window.openAuthModal === 'function') {
+                            window.openAuthModal();
+                        } else {
+                            // Fallback: Suche nach dem originalen Button und trigger ihn
+                            const originalButton = document.querySelector('#realAuthButton');
+                            if (originalButton) {
+                                originalButton.click();
+                            }
+                        }
+                        // Schließe Mobile Menu nach Klick
+                        mobileMenuToggle.classList.remove('active');
+                        mobileMenu.classList.remove('active');
+                        if (mobileMenuOverlay) mobileMenuOverlay.classList.remove('active');
+                        document.body.style.overflow = '';
+                        document.body.style.position = '';
+                        document.body.style.width = '';
+                    });
+                }
+            } else {
+                // Fallback: Erstelle eigenen Anmelden-Button
+                mobileAuthSection.innerHTML = `
+                    <button id="mobileAuthButton" class="nav-login-btn" style="width: 100%; justify-content: center;">
+                        <i class="fas fa-user"></i>
+                        <span data-de="Anmelden" data-en="Login">Anmelden</span>
+                    </button>
+                `;
+                const mobileAuthButton = mobileAuthSection.querySelector('#mobileAuthButton');
+                if (mobileAuthButton) {
+                    mobileAuthButton.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (window.realUserAuth && typeof window.realUserAuth.showLoginModal === 'function') {
+                            window.realUserAuth.showLoginModal();
+                        } else if (window.openAuthModal && typeof window.openAuthModal === 'function') {
+                            window.openAuthModal();
+                        }
+                        // Schließe Mobile Menu
+                        mobileMenuToggle.classList.remove('active');
+                        mobileMenu.classList.remove('active');
+                        if (mobileMenuOverlay) mobileMenuOverlay.classList.remove('active');
+                        document.body.style.overflow = '';
+                        document.body.style.position = '';
+                        document.body.style.width = '';
+                    });
+                }
+            }
         };
+        
+        // Initial update
         updateMobileAuth();
-        // Update when auth state changes
-        setInterval(updateMobileAuth, 1000);
+        
+        // Update when auth state changes (alle 2 Sekunden, nicht zu häufig)
+        setInterval(updateMobileAuth, 2000);
+        
+        // Update auch bei Auth-Events
+        document.addEventListener('authStateChanged', updateMobileAuth);
+        document.addEventListener('userLoggedIn', updateMobileAuth);
+        document.addEventListener('userLoggedOut', updateMobileAuth);
     }
     
     // Close Menu on Escape Key

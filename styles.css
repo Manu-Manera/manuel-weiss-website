@@ -427,6 +427,35 @@ a:hover {
     }
 }
 
+@media (max-width: 768px) {
+    /* Verstecke Desktop Navigation auf Mobile */
+    .nav-menu {
+        display: none !important;
+    }
+    
+    /* Zeige Mobile Menu Toggle nur rechts oben */
+    .mobile-menu-toggle {
+        display: flex !important;
+        position: absolute;
+        right: var(--spacing-xl);
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 1001;
+    }
+    
+    /* Nav Brand nimmt volle Breite ein, Toggle rechts */
+    .nav-brand {
+        justify-content: space-between;
+        width: 100%;
+        position: relative;
+    }
+    
+    /* Nav Container Layout für Mobile */
+    .nav-container {
+        position: relative;
+    }
+}
+
 @media (max-width: 640px) {
     .nav-menu {
         flex-direction: column;
@@ -436,6 +465,10 @@ a:hover {
 
     .nav-brand {
         justify-content: space-between;
+    }
+    
+    .mobile-menu-toggle {
+        right: var(--spacing-md);
     }
 }
 
