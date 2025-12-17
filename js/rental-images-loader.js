@@ -31,9 +31,9 @@
     };
 
     /**
-     * Lädt Bilder für einen Rental-Typ
+     * Lädt Bilder für einen Rental-Typ - API-First
      */
-    function loadRentalImages(rentalType) {
+    async function loadRentalImages(rentalType) {
         const config = rentalMapping[rentalType];
         if (!config) {
             console.warn(`⚠️ Kein Mapping für Rental-Typ: ${rentalType}`);
@@ -41,31 +41,37 @@
         }
 
         try {
-            // Prüfe zuerst, ob ein Hauptbild gesetzt ist
-            const displayImageKey = `${rentalType}_display_image`;
-            let displayImageUrl = localStorage.getItem(displayImageKey);
+            let displayImageUrl = null;
             
-            // Falls kein Hauptbild gesetzt, lade Bilder aus dem Array
+            // Versuche zuerst AWS API
+            if (window.awsRentalImagesAPI) {
+                try {
+                    const data = await window.awsRentalImagesAPI.getRentalImages(rentalType);
+                    displayImageUrl = data.displayImage || (data.images && data.images.length > 0 ? data.images[0].url : null);
+                    console.log(`✅ Bilder von AWS API geladen für ${rentalType}`);
+                } catch (apiError) {
+                    console.warn(`⚠️ AWS API Fehler für ${rentalType}, verwende Fallback:`, apiError);
+                }
+            }
+            
+            // Fallback: LocalStorage (für Migration)
             if (!displayImageUrl) {
-                const stored = localStorage.getItem(config.storageKey);
-                if (!stored) {
-                    console.log(`ℹ️ Keine Bilder gefunden für ${rentalType}`);
-                    return;
+                const displayImageKey = `${rentalType}_display_image`;
+                displayImageUrl = localStorage.getItem(displayImageKey);
+                
+                if (!displayImageUrl) {
+                    const stored = localStorage.getItem(config.storageKey);
+                    if (stored) {
+                        const images = JSON.parse(stored);
+                        if (images && images.length > 0) {
+                            displayImageUrl = images[0].url || images[0].imageData || images[0].s3Url || images[0].src;
+                        }
+                    }
                 }
-
-                const images = JSON.parse(stored);
-                if (!images || images.length === 0) {
-                    console.log(`ℹ️ Keine Bilder im Array für ${rentalType}`);
-                    return;
-                }
-
-                // Finde das erste Bild (Hauptbild)
-                const firstImage = images[0];
-                displayImageUrl = firstImage.url || firstImage.imageData || firstImage.s3Url || firstImage.src;
             }
 
             if (!displayImageUrl) {
-                console.warn(`⚠️ Keine gültige Bild-URL für ${rentalType}`);
+                console.log(`ℹ️ Keine Bilder gefunden für ${rentalType}`);
                 return;
             }
 
@@ -93,14 +99,24 @@
     }
 
     /**
-     * Lädt alle Rental-Bilder
+     * Lädt alle Rental-Bilder - API-First
      */
-    function loadAllRentalImages() {
-        console.log('🖼️ Lade Rental-Bilder...');
+    async function loadAllRentalImages() {
+        console.log('🖼️ Lade Rental-Bilder von AWS API...');
         
-        Object.keys(rentalMapping).forEach(rentalType => {
-            loadRentalImages(rentalType);
-        });
+        // Warte auf API-Initialisierung
+        if (window.awsRentalImagesAPI) {
+            await window.awsRentalImagesAPI.waitForInit();
+        }
+        
+        // Lade alle Bilder parallel
+        const promises = Object.keys(rentalMapping).map(rentalType => 
+            loadRentalImages(rentalType).catch(err => {
+                console.error(`Fehler beim Laden von ${rentalType}:`, err);
+            })
+        );
+        
+        await Promise.all(promises);
     }
 
     /**
@@ -153,41 +169,19 @@
             loadAllRentalImages();
         }
 
-        // Höre auf Storage-Events, um Bilder automatisch zu aktualisieren
-        window.addEventListener('storage', (e) => {
-            if (e.key && e.key.endsWith('_images')) {
-                const rentalType = e.key.replace('_images', '');
-                if (rentalMapping[rentalType]) {
-                    console.log(`🔄 Storage-Event erkannt für ${rentalType}, aktualisiere Bild...`);
-                    loadRentalImages(rentalType);
-                }
-            }
-        });
-
-        // Auch auf Custom Events hören (für Updates innerhalb desselben Tabs)
-        window.addEventListener('rentalImagesUpdated', (e) => {
+        // Höre auf Custom Events für Updates (API-basiert)
+        window.addEventListener('rentalImagesUpdated', async (e) => {
             if (e.detail && e.detail.rentalType) {
-                console.log(`🔄 Custom Event erkannt für ${e.detail.rentalType}, aktualisiere Bild...`);
-                loadRentalImages(e.detail.rentalType);
+                console.log(`🔄 Custom Event erkannt für ${e.detail.rentalType}, aktualisiere Bild von API...`);
+                await loadRentalImages(e.detail.rentalType);
             }
         });
         
         // Höre auf Display Image Updates
-        window.addEventListener('rentalDisplayImageUpdated', (e) => {
+        window.addEventListener('rentalDisplayImageUpdated', async (e) => {
             if (e.detail && e.detail.rentalType) {
-                console.log(`🔄 Display Image Update für ${e.detail.rentalType}, aktualisiere Bild...`);
-                loadRentalImages(e.detail.rentalType);
-            }
-        });
-        
-        // Höre auf Storage Events für Display Images
-        window.addEventListener('storage', (e) => {
-            if (e.key && e.key.endsWith('_display_image')) {
-                const rentalType = e.key.replace('_display_image', '');
-                if (rentalMapping[rentalType]) {
-                    console.log(`🔄 Display Image Storage-Event für ${rentalType}, aktualisiere Bild...`);
-                    loadRentalImages(rentalType);
-                }
+                console.log(`🔄 Display Image Update für ${e.detail.rentalType}, aktualisiere Bild von API...`);
+                await loadRentalImages(e.detail.rentalType);
             }
         });
     }
