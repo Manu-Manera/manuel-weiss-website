@@ -319,14 +319,47 @@ function decodeQuotedPrintable(text) {
     // Entferne Soft-Line-Breaks (= am Ende einer Zeile)
     text = text.replace(/=\r?\n/g, '');
     
-    // Ersetze =XX Hex-Codes durch entsprechende Bytes
-    return text.replace(/=([0-9A-Fa-f]{2})/g, (match, hex) => {
-        try {
-            return String.fromCharCode(parseInt(hex, 16));
-        } catch (e) {
-            return match; // Falls Fehler, Original zurückgeben
+    // Sammle alle Bytes aus =XX Hex-Codes
+    const bytes = [];
+    let i = 0;
+    
+    while (i < text.length) {
+        if (text[i] === '=' && i + 2 < text.length) {
+            const hex = text.substring(i + 1, i + 3);
+            if (/[0-9A-Fa-f]{2}/.test(hex)) {
+                bytes.push(parseInt(hex, 16));
+                i += 3;
+                continue;
+            }
         }
-    });
+        // Normales Zeichen - konvertiere zu UTF-8 Byte
+        const charCode = text.charCodeAt(i);
+        if (charCode < 128) {
+            // ASCII-Zeichen
+            bytes.push(charCode);
+        } else {
+            // Multi-Byte UTF-8 Zeichen - konvertiere zu Bytes
+            const utf8Bytes = Buffer.from(text[i], 'utf8');
+            for (let j = 0; j < utf8Bytes.length; j++) {
+                bytes.push(utf8Bytes[j]);
+            }
+        }
+        i++;
+    }
+    
+    // Konvertiere Bytes zu UTF-8 String
+    try {
+        return Buffer.from(bytes).toString('utf-8');
+    } catch (e) {
+        // Fallback: Einfache Ersetzung wenn UTF-8 Dekodierung fehlschlägt
+        return text.replace(/=([0-9A-Fa-f]{2})/g, (match, hex) => {
+            try {
+                return String.fromCharCode(parseInt(hex, 16));
+            } catch (e2) {
+                return match;
+            }
+        });
+    }
 }
 
 /**

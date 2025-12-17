@@ -1,0 +1,26 @@
+{
+  "Records": [
+    {
+      "eventSource": "aws:ses",
+      "ses": {
+        "mail": {
+          "messageId": "test-message-id-12345",
+          "source": "test@example.com",
+          "destination": ["mail@manuel-weiss.ch"],
+          "timestamp": "2025-01-15T12:00:00.000Z"
+        },
+        "receipt": {
+          "recipients": ["mail@manuel-weiss.ch"],
+          "action": {
+            "type": "S3",
+            "s3Action": {
+              "bucketName": "manu-email-storage-038333965110",
+              "objectKey": "emails/test-email-12345"
+            }
+          }
+        }
+      }
+    }
+  ]
+}
+
