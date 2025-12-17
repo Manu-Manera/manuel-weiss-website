@@ -231,7 +231,7 @@ class RentalsSection {
     }
 
     /**
-     * Bilder hochladen - verwendet Smart Media Upload
+     * Bilder hochladen - API-First mit AWS
      */
     async handleImageUpload(files) {
         if (!files || files.length === 0) return;
@@ -239,77 +239,65 @@ class RentalsSection {
         const previewContainer = document.getElementById('rentalImagePreview');
         if (!previewContainer) return;
 
-        this.toast('Bilder werden hochgeladen...', 'info');
-
-        const uploadedImages = [];
+        this.toast('Bilder werden zu AWS hochgeladen...', 'info');
 
         for (let i = 0; i < files.length; i++) {
             const file = files[i];
             
             try {
-                // Verwende Smart Media Upload
-                if (window.smartMediaUpload) {
-                    const result = await window.smartMediaUpload.upload(file, {
-                        category: 'rental',
-                        userId: 'owner',
-                        metadata: {
-                            rentalType: this.currentRentalType
-                        },
-                        onProgress: (progress) => {
-                            console.log(`📤 Upload Progress: ${progress}%`);
-                        },
-                        onSuccess: (data) => {
-                            uploadedImages.push({
-                                url: data.url,
-                                filename: file.name,
-                                uploadedAt: new Date().toISOString(),
-                                isUploaded: !!data.s3Url
-                            });
-
-                            // Vorschau hinzufügen
-                            const preview = document.createElement('div');
-                            preview.style.position = 'relative';
-                            preview.innerHTML = `
-                                <img src="${data.url}" alt="${file.name}" 
-                                     style="width: 100%; height: 150px; object-fit: cover; border-radius: 6px; border: 2px solid #ddd;">
-                                <button type="button" class="remove-image-btn" data-url="${data.url}"
-                                        style="position: absolute; top: 5px; right: 5px; background: rgba(239, 68, 68, 0.9); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
-                                    <i class="fas fa-times" style="font-size: 0.75rem;"></i>
-                                </button>
-                            `;
-                            
-                            previewContainer.appendChild(preview);
-
-                            // Remove-Button Event Listener
-                            const removeBtn = preview.querySelector('.remove-image-btn');
-                            if (removeBtn) {
-                                removeBtn.addEventListener('click', () => {
-                                    this.removeImage(data.url);
-                                    preview.remove();
-                                });
-                            }
-
-                            this.toast(`Bild ${i + 1} erfolgreich hochgeladen`, 'success');
-                        },
-                        onError: (error) => {
-                            console.error('❌ Upload-Fehler:', error);
-                            this.toast(`Fehler beim Upload von ${file.name}`, 'error');
+                // Verwende AWS Rental Images API
+                if (window.awsRentalImagesAPI) {
+                    const result = await window.awsRentalImagesAPI.uploadRentalImage(file, this.currentRentalType);
+                    
+                    // Vorschau hinzufügen
+                    const preview = document.createElement('div');
+                    preview.style.position = 'relative';
+                    preview.style.cursor = 'pointer';
+                    preview.dataset.url = result.url;
+                    preview.dataset.imageId = result.id;
+                    preview.innerHTML = `
+                        <img src="${result.url}" alt="${file.name}" 
+                             style="width: 100%; height: 150px; object-fit: cover; border-radius: 6px; border: 2px solid #10b981;">
+                        <div style="position: absolute; top: 5px; left: 5px; background: #10b981; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem;">
+                            ✓ AWS
+                        </div>
+                        <button type="button" class="remove-image-btn" data-image-id="${result.id}" data-url="${result.url}"
+                                style="position: absolute; top: 5px; right: 5px; background: rgba(239, 68, 68, 0.9); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-times" style="font-size: 0.75rem;"></i>
+                        </button>
+                    `;
+                    
+                    // Klick-Handler für Hauptbild-Auswahl
+                    preview.addEventListener('click', (e) => {
+                        if (!e.target.closest('.remove-image-btn')) {
+                            this.setDisplayImage(result.url);
                         }
                     });
+                    
+                    previewContainer.appendChild(preview);
+
+                    // Remove-Button Event Listener
+                    const removeBtn = preview.querySelector('.remove-image-btn');
+                    if (removeBtn) {
+                        removeBtn.addEventListener('click', async (e) => {
+                            e.stopPropagation();
+                            await this.removeImage(result.id, result.url);
+                            preview.remove();
+                        });
+                    }
+
+                    this.toast(`Bild ${i + 1} erfolgreich zu AWS hochgeladen`, 'success');
                 } else {
-                    // Fallback: Alte Methode
-                    console.warn('⚠️ Smart Media Upload nicht verfügbar, verwende Fallback');
-                    await this.handleImageUploadFallback(files);
-                    return;
+                    throw new Error('AWS Rental Images API nicht verfügbar');
                 }
             } catch (error) {
                 console.error('❌ Upload-Fehler:', error);
-                this.toast(`Fehler beim Upload von ${file.name}`, 'error');
+                this.toast(`Fehler beim Upload von ${file.name}: ${error.message}`, 'error');
             }
         }
 
-        // Bilder in LocalStorage speichern
-        this.saveUploadedImages(uploadedImages);
+        // Lade aktualisierte Bilder von API
+        await this.loadRentalData();
     }
     
     /**
@@ -408,112 +396,57 @@ class RentalsSection {
     }
 
     /**
-     * Hauptbild für Anzeige setzen
+     * Hauptbild für Anzeige setzen - API-First
      */
-    setDisplayImage(imageUrl) {
-        const storageKey = `${this.currentRentalType}_display_image`;
-        localStorage.setItem(storageKey, imageUrl);
-        
-        // Aktualisiere UI - markiere ausgewähltes Bild
-        this.loadImagePreviews();
-        
-        this.toast('Hauptbild für Website-Anzeige gesetzt', 'success');
-        
-        // Trigger Event für Website-Update
-        window.dispatchEvent(new CustomEvent('rentalDisplayImageUpdated', {
-            detail: { rentalType: this.currentRentalType, imageUrl }
-        }));
+    async setDisplayImage(imageUrl) {
+        try {
+            if (window.awsRentalImagesAPI) {
+                await window.awsRentalImagesAPI.setDisplayImage(this.currentRentalType, imageUrl);
+                this.toast('Hauptbild für Website-Anzeige gesetzt', 'success');
+                
+                // Lade aktualisierte Daten
+                await this.loadRentalData();
+                
+                // Trigger Event für Website-Update
+                window.dispatchEvent(new CustomEvent('rentalDisplayImageUpdated', {
+                    detail: { rentalType: this.currentRentalType, imageUrl }
+                }));
+            } else {
+                throw new Error('AWS Rental Images API nicht verfügbar');
+            }
+        } catch (error) {
+            console.error('❌ Fehler beim Setzen des Hauptbilds:', error);
+            this.toast(`Fehler: ${error.message}`, 'error');
+        }
     }
 
     /**
-     * Hochgeladene Bilder speichern
+     * Hochgeladene Bilder speichern - ENTFERNT (wird jetzt über API gemacht)
+     * Diese Funktion wird nicht mehr verwendet, da alles über AWS API läuft
      */
     saveUploadedImages(newImages) {
-        // WICHTIG: Speichere mit dem Key, den die Website erwartet
-        // Die Website erwartet: ${activityName}_images (z.B. fotobox_images)
-        const websiteStorageKey = `${this.currentRentalType}_images`;
-        
-        // Auch im alten Format speichern für Kompatibilität
-        const adminStorageKey = `rentalImages_${this.currentRentalType}`;
-        
-        let existingImages = [];
-        
-        try {
-            // Lade aus dem Website-Format (hat Priorität)
-            const websiteStored = localStorage.getItem(websiteStorageKey);
-            if (websiteStored) {
-                existingImages = JSON.parse(websiteStored);
-            } else {
-                // Fallback: Lade aus Admin-Format
-                const adminStored = localStorage.getItem(adminStorageKey);
-                if (adminStored) {
-                    existingImages = JSON.parse(adminStored);
-                }
-            }
-        } catch (e) {
-            console.warn('Fehler beim Laden gespeicherter Bilder:', e);
-        }
-
-        // Neue Bilder hinzufügen (konvertiere Format für Website)
-        const formattedNewImages = newImages.map(img => ({
-            url: img.url || img.s3Url,
-            s3Url: img.s3Url || null,
-            imageData: img.url || img.s3Url, // Website erwartet imageData
-            filename: img.filename || 'uploaded-image.jpg',
-            uploadedAt: img.uploadedAt || new Date().toISOString(),
-            isUploaded: img.isUploaded || !!img.s3Url,
-            rentalType: img.rentalType || this.currentRentalType
-        }));
-
-        existingImages = [...existingImages, ...formattedNewImages];
-        
-        // Duplikate entfernen (basierend auf URL)
-        existingImages = existingImages.filter((img, index, self) => {
-            const imgUrl = img.url || img.imageData || img.s3Url;
-            return index === self.findIndex(i => (i.url || i.imageData || i.s3Url) === imgUrl);
-        });
-
-        // Speichere in beiden Formaten für Kompatibilität
-        localStorage.setItem(websiteStorageKey, JSON.stringify(existingImages));
-        localStorage.setItem(adminStorageKey, JSON.stringify(existingImages));
-        
-        // Trigger Custom Event für sofortige Aktualisierung auf der Website
-        window.dispatchEvent(new CustomEvent('rentalImagesUpdated', {
-            detail: { rentalType: this.currentRentalType }
-        }));
-        
-        console.log('✅ Bilder gespeichert:', existingImages);
-        console.log(`✅ Gespeichert in: ${websiteStorageKey} und ${adminStorageKey}`);
+        console.warn('⚠️ saveUploadedImages wird nicht mehr verwendet - Bilder werden über AWS API gespeichert');
+        // Bilder werden bereits über handleImageUpload in AWS gespeichert
     }
 
     /**
-     * Bild entfernen
+     * Bild entfernen - API-First
      */
-    removeImage(imageUrl) {
-        const websiteStorageKey = `${this.currentRentalType}_images`;
-        const adminStorageKey = `rentalImages_${this.currentRentalType}`;
-        
-        let images = [];
-        
+    async removeImage(imageId, imageUrl) {
         try {
-            const stored = localStorage.getItem(websiteStorageKey);
-            if (stored) {
-                images = JSON.parse(stored);
+            if (window.awsRentalImagesAPI) {
+                await window.awsRentalImagesAPI.deleteRentalImage(this.currentRentalType, imageId);
+                this.toast('Bild von AWS gelöscht', 'success');
+                
+                // Lade aktualisierte Daten
+                await this.loadRentalData();
+            } else {
+                throw new Error('AWS Rental Images API nicht verfügbar');
             }
-        } catch (e) {
-            console.warn('Fehler beim Laden gespeicherter Bilder:', e);
+        } catch (error) {
+            console.error('❌ Fehler beim Löschen des Bilds:', error);
+            this.toast(`Fehler: ${error.message}`, 'error');
         }
-
-        images = images.filter(img => {
-            const imgUrl = img.url || img.imageData;
-            return imgUrl !== imageUrl;
-        });
-        
-        // Speichere in beiden Formaten
-        localStorage.setItem(websiteStorageKey, JSON.stringify(images));
-        localStorage.setItem(adminStorageKey, JSON.stringify(images));
-        
-        this.toast('Bild entfernt', 'info');
     }
 
     /**
@@ -537,9 +470,10 @@ class RentalsSection {
     }
 
     /**
-     * Rental-Daten laden
+     * Rental-Daten laden - API-First
      */
-    loadRentalData() {
+    async loadRentalData() {
+        // Lade Formular-Daten aus LocalStorage (falls vorhanden)
         const storageKey = `rentalData_${this.currentRentalType}`;
         
         try {
@@ -559,85 +493,92 @@ class RentalsSection {
                 if (document.getElementById('rentalDeposit')) {
                     document.getElementById('rentalDeposit').value = data.deposit || '';
                 }
-
-                // Bilder-Vorschau laden
-                this.loadImagePreviews();
             }
         } catch (e) {
             console.warn('Fehler beim Laden der Rental-Daten:', e);
         }
+
+        // Lade Bilder von AWS API
+        await this.loadImagePreviews();
     }
 
     /**
-     * Gespeicherte Bilder laden und anzeigen
+     * Gespeicherte Bilder laden und anzeigen - API-First
      */
-    loadImagePreviews() {
+    async loadImagePreviews() {
         const previewContainer = document.getElementById('rentalImagePreview');
         if (!previewContainer) return;
 
-        const images = this.getStoredImages();
-        const displayImageUrl = this.getDisplayImage();
-        
-        previewContainer.innerHTML = '';
-        
-        images.forEach((img, index) => {
-            const imageUrl = img.url || img.imageData || img.s3Url;
-            const isDisplayImage = imageUrl === displayImageUrl;
-            
-            const preview = document.createElement('div');
-            preview.style.position = 'relative';
-            preview.style.cursor = 'pointer';
-            preview.dataset.url = imageUrl;
-            preview.innerHTML = `
-                <img src="${imageUrl}" alt="${img.filename || 'Bild'}" 
-                     style="width: 100%; height: 150px; object-fit: cover; border-radius: 6px; border: ${isDisplayImage ? '3px solid #6366f1' : '2px solid #ddd'};">
-                ${img.isUploaded || img.s3Url ? '<div style="position: absolute; top: 5px; left: 5px; background: #10b981; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem;">✓ AWS</div>' : '<div style="position: absolute; top: 5px; left: 5px; background: #f59e0b; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem;">⚠ Local</div>'}
-                <button type="button" class="remove-image-btn" data-url="${imageUrl}"
-                        style="position: absolute; top: 5px; right: 5px; background: rgba(239, 68, 68, 0.9); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
-                    <i class="fas fa-times" style="font-size: 0.75rem;"></i>
-                </button>
-                ${isDisplayImage ? '<div style="position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%); background: rgba(99, 102, 241, 0.9); color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold;">Als Hauptbild</div>' : ''}
-            `;
-            
-            // Klick-Handler für Hauptbild-Auswahl
-            preview.addEventListener('click', (e) => {
-                if (!e.target.closest('.remove-image-btn')) {
-                    this.setDisplayImage(imageUrl);
-                }
-            });
-            
-            previewContainer.appendChild(preview);
+        try {
+            // Lade Bilder von AWS API
+            if (window.awsRentalImagesAPI) {
+                const data = await window.awsRentalImagesAPI.getRentalImages(this.currentRentalType);
+                const images = data.images || [];
+                const displayImageUrl = data.displayImage || null;
+                
+                previewContainer.innerHTML = '';
+                
+                images.forEach((img) => {
+                    const imageUrl = img.url;
+                    const isDisplayImage = imageUrl === displayImageUrl;
+                    
+                    const preview = document.createElement('div');
+                    preview.style.position = 'relative';
+                    preview.style.cursor = 'pointer';
+                    preview.dataset.url = imageUrl;
+                    preview.dataset.imageId = img.id;
+                    preview.innerHTML = `
+                        <img src="${imageUrl}" alt="${img.filename || 'Bild'}" 
+                             style="width: 100%; height: 150px; object-fit: cover; border-radius: 6px; border: ${isDisplayImage ? '3px solid #6366f1' : '2px solid #10b981'};">
+                        <div style="position: absolute; top: 5px; left: 5px; background: #10b981; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem;">
+                            ✓ AWS
+                        </div>
+                        <button type="button" class="remove-image-btn" data-image-id="${img.id}" data-url="${imageUrl}"
+                                style="position: absolute; top: 5px; right: 5px; background: rgba(239, 68, 68, 0.9); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-times" style="font-size: 0.75rem;"></i>
+                        </button>
+                        ${isDisplayImage ? '<div style="position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%); background: rgba(99, 102, 241, 0.9); color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold;">Als Hauptbild</div>' : ''}
+                    `;
+                    
+                    // Klick-Handler für Hauptbild-Auswahl
+                    preview.addEventListener('click', (e) => {
+                        if (!e.target.closest('.remove-image-btn')) {
+                            this.setDisplayImage(imageUrl);
+                        }
+                    });
+                    
+                    previewContainer.appendChild(preview);
 
-            const removeBtn = preview.querySelector('.remove-image-btn');
-            if (removeBtn) {
-                removeBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    this.removeImage(imageUrl);
-                    preview.remove();
+                    const removeBtn = preview.querySelector('.remove-image-btn');
+                    if (removeBtn) {
+                        removeBtn.addEventListener('click', async (e) => {
+                            e.stopPropagation();
+                            await this.removeImage(img.id, imageUrl);
+                        });
+                    }
                 });
+                
+                // Update Display Image Info
+                this.updateDisplayImageInfo(displayImageUrl);
+                
+                console.log(`✅ ${images.length} Bilder von AWS geladen`);
+            } else {
+                console.warn('⚠️ AWS Rental Images API nicht verfügbar');
+                previewContainer.innerHTML = '<p style="color: #f59e0b;">⚠️ API nicht verfügbar - bitte Seite neu laden</p>';
             }
-        });
-        
-        // Update Display Image Info
-        this.updateDisplayImageInfo();
-    }
-    
-    /**
-     * Hauptbild abrufen
-     */
-    getDisplayImage() {
-        const storageKey = `${this.currentRentalType}_display_image`;
-        return localStorage.getItem(storageKey) || null;
+        } catch (error) {
+            console.error('❌ Fehler beim Laden der Bilder:', error);
+            previewContainer.innerHTML = `<p style="color: #ef4444;">❌ Fehler: ${error.message}</p>`;
+        }
     }
     
     /**
      * Display Image Info aktualisieren
      */
-    updateDisplayImageInfo() {
+    updateDisplayImageInfo(displayImageUrl = null) {
         const infoText = document.getElementById('rentalDisplayImageText');
         if (!infoText) return;
         
-        const displayImageUrl = this.getDisplayImage();
         if (displayImageUrl) {
             infoText.textContent = `Hauptbild gesetzt. Dieses Bild wird auf der Website angezeigt.`;
         } else {
@@ -646,28 +587,11 @@ class RentalsSection {
     }
 
     /**
-     * Gespeicherte Bilder abrufen
+     * Gespeicherte Bilder abrufen - ENTFERNT (wird jetzt über API gemacht)
+     * Diese Funktion wird nicht mehr verwendet, da alles über AWS API läuft
      */
     getStoredImages() {
-        const websiteStorageKey = `${this.currentRentalType}_images`;
-        const adminStorageKey = `rentalImages_${this.currentRentalType}`;
-        
-        try {
-            // Versuche zuerst Website-Format
-            const websiteStored = localStorage.getItem(websiteStorageKey);
-            if (websiteStored) {
-                return JSON.parse(websiteStored);
-            }
-            
-            // Fallback: Admin-Format
-            const adminStored = localStorage.getItem(adminStorageKey);
-            if (adminStored) {
-                return JSON.parse(adminStored);
-            }
-        } catch (e) {
-            console.warn('Fehler beim Laden gespeicherter Bilder:', e);
-        }
-        
+        console.warn('⚠️ getStoredImages wird nicht mehr verwendet - Bilder werden über AWS API geladen');
         return [];
     }
 
