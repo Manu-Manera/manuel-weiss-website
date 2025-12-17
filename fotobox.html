@@ -52,7 +52,7 @@
     <!-- Hero Section -->
     <section class="activity-hero">
         <div class="hero-background">
-            <img src="images/fotobox/fotobox-1.jpg" alt="Fotobox" class="hero-image">
+            <img src="images/fotobox/fotobox-1.jpg" alt="Fotobox" class="hero-image" id="fotoboxHeroBackground">
             <div class="hero-overlay"></div>
         </div>
         <div class="container">
@@ -131,9 +131,10 @@
             </div>
             
             <div class="image-gallery" id="fotoboxGallery">
-                <div class="gallery-grid">
-                    <div class="gallery-item">
-                        <img src="images/fotobox/fotobox-1.jpg" alt="Fotobox Setup" loading="lazy">
+                <div class="gallery-grid" id="fotoboxGalleryGrid">
+                    <!-- Bilder werden dynamisch geladen -->
+                    <div class="gallery-item" style="display: none;">
+                        <img src="images/fotobox/fotobox-1.jpg" alt="Fotobox Setup" loading="lazy" id="fotoboxHeroImage">
                         <div class="gallery-overlay">
                             <i class="fas fa-expand"></i>
                         </div>
@@ -322,9 +323,9 @@
                 </div>
                 <div class="col-lg-4 mb-4">
                     <h5>Kontakt</h5>
-                    <p><i class="fas fa-phone"></i> +41 76 338 38 13</p>
-                    <p><i class="fas fa-envelope"></i> weissmanuel94@gmail.com</p>
-                    <p><i class="fas fa-map-marker-alt"></i> 8803 Rüschlikon, Schweiz</p>
+                    <p><i class="fas fa-phone"></i> <a href="tel:+41798385590">+41 79 838 55 90</a></p>
+                    <p><i class="fas fa-envelope"></i> <a href="mailto:info@manuel-weiss.ch">info@manuel-weiss.ch</a></p>
+                    <p><i class="fas fa-map-marker-alt"></i> Pilatusstrasse 40, 8330 Pfäffikon ZH</p>
                 </div>
             </div>
             <hr class="footer-divider">
@@ -335,6 +336,7 @@
     </footer>
 
     <!-- Scripts -->
+    <script src="js/rental-images-loader.js"></script>
     <script src="js/image-gallery.js"></script>
     <script src="script.js"></script>
     <script>

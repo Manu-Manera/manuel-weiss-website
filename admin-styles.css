@@ -274,6 +274,11 @@
     --gray-50: #f8fafc;
     --white: #ffffff;
     
+    /* Text Colors für bessere Lesbarkeit */
+    --text-dark: #1e293b;
+    --text-gray: #334155;
+    --text-muted-dark: #475569;
+    
     /* Spacing */
     --spacing-xs: 4px;
     --spacing-sm: 8px;
