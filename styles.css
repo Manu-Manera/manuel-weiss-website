@@ -3659,6 +3659,18 @@ a:hover {
     font-weight: 700;
 }
 
+/* Sicherstellen dass hero-title-line-2 auch mit Gradient gut sichtbar ist */
+.hero .gradient-text .hero-title-line-2 {
+    /* Gradient wird vererbt, aber zusätzliche Sichtbarkeit */
+    -webkit-text-fill-color: transparent;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(224, 231, 255, 0.95) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    /* Fallback für Browser ohne Gradient-Support */
+    color: rgba(255, 255, 255, 0.95);
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
 /* Fallback für Browser ohne background-clip Support */
 @supports not (-webkit-background-clip: text) {
     .hero .gradient-text {
