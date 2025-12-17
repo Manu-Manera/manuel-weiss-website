@@ -162,11 +162,15 @@ class RentalsSection {
                                 <i class="fas fa-upload"></i> Bilder auswählen
                             </button>
                             <p style="margin-top: 0.5rem; color: #666; font-size: 0.875rem;">
-                                Mehrere Bilder können gleichzeitig hochgeladen werden
+                                Mehrere Bilder können gleichzeitig hochgeladen werden. Klicken Sie auf ein Bild, um es als Hauptbild für die Website zu setzen.
                             </p>
                         </div>
                         <div id="rentalImagePreview" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem; margin-top: 1rem;">
                             <!-- Vorschau wird hier angezeigt -->
+                        </div>
+                        <div id="rentalDisplayImageInfo" style="margin-top: 1rem; padding: 0.75rem; background: #e0e7ff; border-radius: 6px; font-size: 0.875rem; color: #4338ca;">
+                            <i class="fas fa-info-circle"></i> 
+                            <span id="rentalDisplayImageText">Kein Hauptbild gesetzt. Klicken Sie auf ein Bild, um es als Hauptbild zu setzen.</span>
                         </div>
                     </div>
                     
@@ -404,11 +408,29 @@ class RentalsSection {
     }
 
     /**
+     * Hauptbild für Anzeige setzen
+     */
+    setDisplayImage(imageUrl) {
+        const storageKey = `${this.currentRentalType}_display_image`;
+        localStorage.setItem(storageKey, imageUrl);
+        
+        // Aktualisiere UI - markiere ausgewähltes Bild
+        this.loadImagePreviews();
+        
+        this.toast('Hauptbild für Website-Anzeige gesetzt', 'success');
+        
+        // Trigger Event für Website-Update
+        window.dispatchEvent(new CustomEvent('rentalDisplayImageUpdated', {
+            detail: { rentalType: this.currentRentalType, imageUrl }
+        }));
+    }
+
+    /**
      * Hochgeladene Bilder speichern
      */
     saveUploadedImages(newImages) {
         // WICHTIG: Speichere mit dem Key, den die Website erwartet
-        // Die Website erwartet: ${activityName}_images (z.B. wohnmobil_images)
+        // Die Website erwartet: ${activityName}_images (z.B. fotobox_images)
         const websiteStorageKey = `${this.currentRentalType}_images`;
         
         // Auch im alten Format speichern für Kompatibilität
@@ -434,19 +456,21 @@ class RentalsSection {
 
         // Neue Bilder hinzufügen (konvertiere Format für Website)
         const formattedNewImages = newImages.map(img => ({
-            url: img.url,
-            imageData: img.url, // Website erwartet imageData
+            url: img.url || img.s3Url,
+            s3Url: img.s3Url || null,
+            imageData: img.url || img.s3Url, // Website erwartet imageData
             filename: img.filename || 'uploaded-image.jpg',
             uploadedAt: img.uploadedAt || new Date().toISOString(),
-            isUploaded: true
+            isUploaded: img.isUploaded || !!img.s3Url,
+            rentalType: img.rentalType || this.currentRentalType
         }));
 
         existingImages = [...existingImages, ...formattedNewImages];
         
         // Duplikate entfernen (basierend auf URL)
         existingImages = existingImages.filter((img, index, self) => {
-            const imgUrl = img.url || img.imageData;
-            return index === self.findIndex(i => (i.url || i.imageData) === imgUrl);
+            const imgUrl = img.url || img.imageData || img.s3Url;
+            return index === self.findIndex(i => (i.url || i.imageData || i.s3Url) === imgUrl);
         });
 
         // Speichere in beiden Formaten für Kompatibilität
@@ -552,31 +576,73 @@ class RentalsSection {
         if (!previewContainer) return;
 
         const images = this.getStoredImages();
+        const displayImageUrl = this.getDisplayImage();
         
         previewContainer.innerHTML = '';
         
-        images.forEach(img => {
+        images.forEach((img, index) => {
+            const imageUrl = img.url || img.imageData || img.s3Url;
+            const isDisplayImage = imageUrl === displayImageUrl;
+            
             const preview = document.createElement('div');
             preview.style.position = 'relative';
+            preview.style.cursor = 'pointer';
+            preview.dataset.url = imageUrl;
             preview.innerHTML = `
-                <img src="${img.url}" alt="${img.filename || 'Bild'}" 
-                     style="width: 100%; height: 150px; object-fit: cover; border-radius: 6px; border: 2px solid #ddd;">
-                <button type="button" class="remove-image-btn" data-url="${img.url}"
+                <img src="${imageUrl}" alt="${img.filename || 'Bild'}" 
+                     style="width: 100%; height: 150px; object-fit: cover; border-radius: 6px; border: ${isDisplayImage ? '3px solid #6366f1' : '2px solid #ddd'};">
+                ${img.isUploaded || img.s3Url ? '<div style="position: absolute; top: 5px; left: 5px; background: #10b981; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem;">✓ AWS</div>' : '<div style="position: absolute; top: 5px; left: 5px; background: #f59e0b; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem;">⚠ Local</div>'}
+                <button type="button" class="remove-image-btn" data-url="${imageUrl}"
                         style="position: absolute; top: 5px; right: 5px; background: rgba(239, 68, 68, 0.9); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
                     <i class="fas fa-times" style="font-size: 0.75rem;"></i>
                 </button>
+                ${isDisplayImage ? '<div style="position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%); background: rgba(99, 102, 241, 0.9); color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold;">Als Hauptbild</div>' : ''}
             `;
+            
+            // Klick-Handler für Hauptbild-Auswahl
+            preview.addEventListener('click', (e) => {
+                if (!e.target.closest('.remove-image-btn')) {
+                    this.setDisplayImage(imageUrl);
+                }
+            });
             
             previewContainer.appendChild(preview);
 
             const removeBtn = preview.querySelector('.remove-image-btn');
             if (removeBtn) {
-                removeBtn.addEventListener('click', () => {
-                    this.removeImage(img.url);
+                removeBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.removeImage(imageUrl);
                     preview.remove();
                 });
             }
         });
+        
+        // Update Display Image Info
+        this.updateDisplayImageInfo();
+    }
+    
+    /**
+     * Hauptbild abrufen
+     */
+    getDisplayImage() {
+        const storageKey = `${this.currentRentalType}_display_image`;
+        return localStorage.getItem(storageKey) || null;
+    }
+    
+    /**
+     * Display Image Info aktualisieren
+     */
+    updateDisplayImageInfo() {
+        const infoText = document.getElementById('rentalDisplayImageText');
+        if (!infoText) return;
+        
+        const displayImageUrl = this.getDisplayImage();
+        if (displayImageUrl) {
+            infoText.textContent = `Hauptbild gesetzt. Dieses Bild wird auf der Website angezeigt.`;
+        } else {
+            infoText.textContent = 'Kein Hauptbild gesetzt. Klicken Sie auf ein Bild, um es als Hauptbild zu setzen.';
+        }
     }
 
     /**
