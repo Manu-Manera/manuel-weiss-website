@@ -121,7 +121,7 @@ exports.handler = async (event) => {
 };
 
 /**
- * E-Mail parsen (einfache Implementierung)
+ * E-Mail parsen (erweiterte Implementierung mit quoted-printable Support)
  */
 function parseEmail(rawEmail) {
     const lines = rawEmail.split('\n');
@@ -129,37 +129,65 @@ function parseEmail(rawEmail) {
     let from = '';
     let to = '';
     let date = '';
+    let contentType = '';
+    let contentTransferEncoding = '';
     let body = '';
     let inHeaders = true;
     let headerEnd = false;
+    let currentHeader = '';
     
     for (let i = 0; i < lines.length; i++) {
-        const line = lines[i];
+        let line = lines[i];
         
         // Header-Bereich
         if (inHeaders && !headerEnd) {
+            // Fortsetzung von mehrzeiligen Headern (beginnt mit Leerzeichen oder Tab)
+            if ((line.startsWith(' ') || line.startsWith('\t')) && currentHeader) {
+                line = line.trim();
+                if (currentHeader === 'subject') {
+                    subject += ' ' + line;
+                } else if (currentHeader === 'from') {
+                    from += ' ' + line;
+                } else if (currentHeader === 'to') {
+                    to += ' ' + line;
+                } else if (currentHeader === 'date') {
+                    date += ' ' + line;
+                } else if (currentHeader === 'content-type') {
+                    contentType += ' ' + line;
+                } else if (currentHeader === 'content-transfer-encoding') {
+                    contentTransferEncoding += ' ' + line;
+                }
+                continue;
+            }
+            
             if (line.trim() === '') {
                 headerEnd = true;
                 inHeaders = false;
+                currentHeader = '';
                 continue;
             }
             
             const lowerLine = line.toLowerCase();
             if (lowerLine.startsWith('subject:')) {
                 subject = line.substring(8).trim();
-                // Remove "=?UTF-8?B?" encoding if present
-                subject = subject.replace(/=\?UTF-8\?B\?/gi, '').replace(/\?=/g, '');
+                currentHeader = 'subject';
             } else if (lowerLine.startsWith('from:')) {
                 from = line.substring(5).trim();
-                // Extract email from "Name <email@domain.com>"
-                const emailMatch = from.match(/<([^>]+)>/);
-                if (emailMatch) {
-                    from = emailMatch[1];
-                }
+                currentHeader = 'from';
             } else if (lowerLine.startsWith('to:')) {
                 to = line.substring(3).trim();
+                currentHeader = 'to';
             } else if (lowerLine.startsWith('date:')) {
                 date = line.substring(5).trim();
+                currentHeader = 'date';
+            } else if (lowerLine.startsWith('content-type:')) {
+                contentType = line.substring(14).trim();
+                currentHeader = 'content-type';
+            } else if (lowerLine.startsWith('content-transfer-encoding:')) {
+                contentTransferEncoding = line.substring(27).trim();
+                currentHeader = 'content-transfer-encoding';
+            } else {
+                currentHeader = '';
             }
         } else {
             // Body-Bereich
@@ -167,8 +195,31 @@ function parseEmail(rawEmail) {
         }
     }
     
+    // Body dekodieren basierend auf Content-Transfer-Encoding
+    const encoding = (contentTransferEncoding || '').toLowerCase();
+    if (encoding.includes('quoted-printable')) {
+        body = decodeQuotedPrintable(body);
+    } else if (encoding.includes('base64')) {
+        try {
+            body = Buffer.from(body.replace(/\s/g, ''), 'base64').toString('utf-8');
+        } catch (e) {
+            console.log('⚠️ Base64 Dekodierung fehlgeschlagen:', e.message);
+        }
+    }
+    
+    // Subject dekodieren
+    subject = decodeHeader(subject);
+    
+    // From dekodieren
+    from = decodeHeader(from);
+    // Extract email from "Name <email@domain.com>"
+    const emailMatch = from.match(/<([^>]+)>/);
+    if (emailMatch) {
+        from = emailMatch[1];
+    }
+    
     return {
-        subject: decodeHeader(subject),
+        subject: subject,
         from: from || 'unknown',
         to: to || 'unknown',
         date: date || new Date().toISOString(),
@@ -177,24 +228,80 @@ function parseEmail(rawEmail) {
 }
 
 /**
- * Header dekodieren (einfache Implementierung)
+ * Header dekodieren (erweiterte Implementierung)
  */
 function decodeHeader(header) {
     if (!header) return '';
     
-    // Base64 dekodieren wenn vorhanden
+    // Entferne Leerzeichen zwischen kodierten Teilen
+    header = header.replace(/\s*=\?/g, '=?');
+    
+    // Base64 dekodieren wenn vorhanden (=?UTF-8?B?...?=)
     try {
-        if (header.includes('=?UTF-8?B?')) {
-            const base64Part = header.match(/=\?UTF-8\?B\?([^?]+)\?=/);
-            if (base64Part) {
-                return Buffer.from(base64Part[1], 'base64').toString('utf-8');
+        if (header.includes('=?UTF-8?B?') || header.includes('=?utf-8?b?')) {
+            const base64Parts = header.match(/=\?UTF-8\?B\?([^?]+)\?=/gi);
+            if (base64Parts) {
+                base64Parts.forEach(part => {
+                    const match = part.match(/=\?UTF-8\?B\?([^?]+)\?=/i);
+                    if (match) {
+                        try {
+                            const decoded = Buffer.from(match[1], 'base64').toString('utf-8');
+                            header = header.replace(part, decoded);
+                        } catch (e) {
+                            // Ignore decoding errors
+                        }
+                    }
+                });
+            }
+        }
+        
+        // Quoted-Printable dekodieren wenn vorhanden (=?UTF-8?Q?...?=)
+        if (header.includes('=?UTF-8?Q?') || header.includes('=?utf-8?q?')) {
+            const qpParts = header.match(/=\?UTF-8\?Q\?([^?]+)\?=/gi);
+            if (qpParts) {
+                qpParts.forEach(part => {
+                    const match = part.match(/=\?UTF-8\?Q\?([^?]+)\?=/i);
+                    if (match) {
+                        try {
+                            const decoded = decodeQuotedPrintable(match[1].replace(/_/g, ' '));
+                            header = header.replace(part, decoded);
+                        } catch (e) {
+                            // Ignore decoding errors
+                        }
+                    }
+                });
             }
         }
     } catch (e) {
         // Ignore decoding errors
     }
     
+    // Falls noch quoted-printable Zeichen vorhanden sind, dekodieren
+    if (header.includes('=') && /=[0-9A-Fa-f]{2}/.test(header)) {
+        header = decodeQuotedPrintable(header);
+    }
+    
     return header;
+}
+
+/**
+ * Quoted-Printable dekodieren
+ * Konvertiert =XX Hex-Codes zu Bytes und dekodiert als UTF-8
+ */
+function decodeQuotedPrintable(text) {
+    if (!text) return '';
+    
+    // Entferne Soft-Line-Breaks (= am Ende einer Zeile)
+    text = text.replace(/=\r?\n/g, '');
+    
+    // Ersetze =XX Hex-Codes durch entsprechende Bytes
+    return text.replace(/=([0-9A-Fa-f]{2})/g, (match, hex) => {
+        try {
+            return String.fromCharCode(parseInt(hex, 16));
+        } catch (e) {
+            return match; // Falls Fehler, Original zurückgeben
+        }
+    });
 }
 
 /**
@@ -228,8 +335,8 @@ function buildForwardedEmailHtml(emailParts, rawEmail, originalFrom, originalTo)
     </div>
     
     <div class="original-email">
-        <h4>Original-E-Mail:</h4>
-        <pre>${escapeHtml(rawEmail)}</pre>
+        <h4>E-Mail-Inhalt:</h4>
+        <div style="white-space: pre-wrap; word-wrap: break-word;">${escapeHtml(emailParts.body)}</div>
     </div>
 </body>
 </html>
@@ -240,6 +347,9 @@ function buildForwardedEmailHtml(emailParts, rawEmail, originalFrom, originalTo)
  * Text-Version der weitergeleiteten E-Mail erstellen
  */
 function buildForwardedEmailText(emailParts, rawEmail, originalFrom, originalTo) {
+    // Dekodiere den Body für die Text-Version
+    let decodedBody = emailParts.body;
+    
     return `
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📧 WEITERGELEITETE E-MAIL
@@ -251,10 +361,10 @@ Datum: ${emailParts.date}
 Betreff: ${emailParts.subject || '(Kein Betreff)'}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-ORIGINAL-E-MAIL:
+E-MAIL-INHALT:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-${rawEmail}
+${decodedBody}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     `.trim();

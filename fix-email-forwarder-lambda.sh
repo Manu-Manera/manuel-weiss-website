@@ -47,13 +47,22 @@ if [ $? -eq 0 ]; then
     echo "✅ Lambda Function Update abgeschlossen"
     echo ""
     
-    # 5. Aktualisiere Handler
-    echo "5️⃣ Aktualisiere Handler auf index-v3.handler..."
-    aws lambda update-function-configuration \
+    # 5. Aktualisiere Handler (behalte aktuellen Handler)
+    echo "5️⃣ Prüfe aktuellen Handler..."
+    CURRENT_HANDLER=$(aws lambda get-function-configuration \
       --function-name "$LAMBDA_FUNCTION_NAME" \
-      --handler "index-v3.handler" \
       --region "$REGION" \
-      --output json > /tmp/lambda-config.json
+      --query "Handler" \
+      --output text)
+    
+    echo "   Aktueller Handler: $CURRENT_HANDLER"
+    
+    # Verwende den aktuellen Handler (index.handler oder index-v3.handler)
+    if [[ "$CURRENT_HANDLER" == *"index-v3"* ]]; then
+        echo "   ✅ Handler ist bereits index-v3.handler"
+    else
+        echo "   ℹ️  Handler ist $CURRENT_HANDLER (behalten)"
+    fi
     
     if [ $? -eq 0 ]; then
         echo "✅ Handler aktualisiert"
