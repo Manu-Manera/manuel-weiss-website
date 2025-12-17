@@ -378,25 +378,14 @@ body::after {
 }
 
 body::before {
-    background-image:
-        radial-gradient(circle at 18% 20%, rgba(255,255,255,0.55) 0%, transparent 55%),
-        radial-gradient(circle at 35% 12%, rgba(255,255,255,0.3) 0%, transparent 45%),
-        radial-gradient(circle at 70% 22%, rgba(255,255,255,0.4) 0%, transparent 50%),
-        radial-gradient(circle at 82% 40%, rgba(255,255,255,0.25) 0%, transparent 45%),
-        radial-gradient(circle at 28% 72%, rgba(255,255,255,0.3) 0%, transparent 45%),
-        radial-gradient(circle at 55% 78%, rgba(255,255,255,0.28) 0%, transparent 45%),
-        radial-gradient(circle at 88% 75%, rgba(255,255,255,0.2) 0%, transparent 45%);
-    opacity: 0.6;
-    animation: adminTwinkle 14s ease-in-out infinite alternate;
+    /* Weißer Nebel entfernt - Opacity auf 0 gesetzt */
+    opacity: 0 !important;
+    animation: none !important;
 }
 
 body::after {
-    background-image:
-        radial-gradient(circle, rgba(255,255,255,0.25) 15%, transparent 60%),
-        radial-gradient(circle, rgba(255,255,255,0.15) 12%, transparent 65%),
-        radial-gradient(circle, rgba(255,255,255,0.12) 10%, transparent 70%);
-    background-repeat: no-repeat;
-    background-size: 200% 200%;
+    /* Weißer Nebel entfernt - Opacity auf 0 gesetzt */
+    opacity: 0 !important;
     background-position: 0% 0%, 30% 25%, 60% 60%;
     opacity: 0.35;
     mix-blend-mode: screen;
@@ -5478,5 +5467,114 @@ textarea::placeholder {
 .admin-card span,
 .admin-card div:not(.btn):not(.badge):not(.status-badge) {
     color: #334155 !important;
+}
+
+/* ============================================
+   KRITISCH: Schrift bei dunklem Hintergrund = WEISS
+   ============================================ */
+
+/* Alle Texte auf dunklem Hintergrund sollen weiß sein */
+.admin-content[style*="background"][style*="dark"],
+.admin-section.dark,
+.admin-card.dark,
+.admin-panel.dark,
+.card.dark,
+.card-content.dark,
+.modal-content.dark,
+.modal-body.dark,
+.section-content.dark,
+.content-card.dark,
+.rental-form.dark,
+.rental-card.dark,
+[style*="background"][style*="#0a1635"],
+[style*="background"][style*="#050b1c"],
+[style*="background"][style*="#0f2146"],
+[style*="background"][style*="#030816"],
+[style*="background"][style*="#01040b"],
+[style*="background"][style*="#07132a"] {
+    color: #ffffff !important;
+}
+
+/* Überschreibe alle Textelemente auf dunklem Hintergrund */
+.admin-content[style*="background"][style*="dark"] h1,
+.admin-content[style*="background"][style*="dark"] h2,
+.admin-content[style*="background"][style*="dark"] h3,
+.admin-content[style*="background"][style*="dark"] h4,
+.admin-content[style*="background"][style*="dark"] h5,
+.admin-content[style*="background"][style*="dark"] h6,
+.admin-section.dark h1,
+.admin-section.dark h2,
+.admin-section.dark h3,
+.admin-section.dark h4,
+.admin-section.dark h5,
+.admin-section.dark h6,
+.card.dark h1,
+.card.dark h2,
+.card.dark h3,
+.card.dark h4,
+.card.dark h5,
+.card.dark h6,
+.modal-content.dark h1,
+.modal-content.dark h2,
+.modal-content.dark h3,
+.modal-content.dark h4,
+.modal-content.dark h5,
+.modal-content.dark h6,
+.section-title[style*="background"][style*="dark"],
+.section-subtitle[style*="background"][style*="dark"],
+.card-title[style*="background"][style*="dark"],
+.card-text[style*="background"][style*="dark"],
+.form-label[style*="background"][style*="dark"],
+.form-group.dark label,
+.rental-form.dark label,
+.rental-card.dark h3,
+.rental-card.dark p {
+    color: #ffffff !important;
+}
+
+/* Text in Cards und Sections mit dunklem Hintergrund */
+.card.dark p,
+.card.dark span,
+.card.dark div:not(.btn):not(.badge):not(.status-badge),
+.section-content.dark p,
+.section-content.dark span,
+.section-content.dark div:not(.btn):not(.badge):not(.status-badge),
+.admin-card.dark p,
+.admin-card.dark span,
+.admin-card.dark div:not(.btn):not(.badge):not(.status-badge) {
+    color: #ffffff !important;
+}
+
+/* Spezielle Bereiche mit dunklem Hintergrund */
+.sidebar,
+.sidebar-nav,
+.admin-sidebar,
+[class*="sidebar"],
+[class*="nav"][style*="background"][style*="dark"],
+[class*="nav"][style*="background"][style*="#0a1635"],
+[class*="nav"][style*="background"][style*="#050b1c"] {
+    color: #ffffff !important;
+}
+
+.sidebar *,
+.sidebar-nav *,
+.admin-sidebar *,
+[class*="sidebar"] * {
+    color: #ffffff !important;
+}
+
+/* Labels und Texte in Formularen mit dunklem Hintergrund */
+.form-group.dark label,
+.form-group.dark .form-label,
+.form-group.dark .form-hint,
+.form-group.dark .form-text {
+    color: #ffffff !important;
+}
+
+/* Spezielle Selektoren für alle möglichen dunklen Hintergründe */
+body[style*="background"][style*="dark"] .admin-content,
+body[style*="background"][style*="#0a1635"] .admin-content,
+body[style*="background"][style*="#050b1c"] .admin-content {
+    color: #ffffff !important;
 }
 

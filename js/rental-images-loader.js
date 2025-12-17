@@ -41,24 +41,30 @@
         }
 
         try {
-            // Lade Bilder aus LocalStorage
-            const stored = localStorage.getItem(config.storageKey);
-            if (!stored) {
-                console.log(`ℹ️ Keine Bilder gefunden für ${rentalType}`);
-                return;
+            // Prüfe zuerst, ob ein Hauptbild gesetzt ist
+            const displayImageKey = `${rentalType}_display_image`;
+            let displayImageUrl = localStorage.getItem(displayImageKey);
+            
+            // Falls kein Hauptbild gesetzt, lade Bilder aus dem Array
+            if (!displayImageUrl) {
+                const stored = localStorage.getItem(config.storageKey);
+                if (!stored) {
+                    console.log(`ℹ️ Keine Bilder gefunden für ${rentalType}`);
+                    return;
+                }
+
+                const images = JSON.parse(stored);
+                if (!images || images.length === 0) {
+                    console.log(`ℹ️ Keine Bilder im Array für ${rentalType}`);
+                    return;
+                }
+
+                // Finde das erste Bild (Hauptbild)
+                const firstImage = images[0];
+                displayImageUrl = firstImage.url || firstImage.imageData || firstImage.s3Url || firstImage.src;
             }
 
-            const images = JSON.parse(stored);
-            if (!images || images.length === 0) {
-                console.log(`ℹ️ Keine Bilder im Array für ${rentalType}`);
-                return;
-            }
-
-            // Finde das erste Bild (Hauptbild)
-            const firstImage = images[0];
-            const imageUrl = firstImage.url || firstImage.imageData || firstImage.src;
-
-            if (!imageUrl) {
+            if (!displayImageUrl) {
                 console.warn(`⚠️ Keine gültige Bild-URL für ${rentalType}`);
                 return;
             }
@@ -71,8 +77,8 @@
             }
 
             // Setze das Bild
-            imgElement.src = imageUrl;
-            imgElement.alt = firstImage.filename || firstImage.alt || rentalType;
+            imgElement.src = displayImageUrl;
+            imgElement.alt = rentalType;
             
             // Entferne onerror-Handler, damit das Bild angezeigt wird
             imgElement.onerror = null;
@@ -80,7 +86,7 @@
             // Zeige das Bild an (falls es versteckt war)
             imgElement.style.display = '';
             
-            console.log(`✅ Bild geladen für ${rentalType}:`, imageUrl);
+            console.log(`✅ Bild geladen für ${rentalType}:`, displayImageUrl);
         } catch (error) {
             console.error(`❌ Fehler beim Laden der Bilder für ${rentalType}:`, error);
         }
@@ -163,6 +169,25 @@
             if (e.detail && e.detail.rentalType) {
                 console.log(`🔄 Custom Event erkannt für ${e.detail.rentalType}, aktualisiere Bild...`);
                 loadRentalImages(e.detail.rentalType);
+            }
+        });
+        
+        // Höre auf Display Image Updates
+        window.addEventListener('rentalDisplayImageUpdated', (e) => {
+            if (e.detail && e.detail.rentalType) {
+                console.log(`🔄 Display Image Update für ${e.detail.rentalType}, aktualisiere Bild...`);
+                loadRentalImages(e.detail.rentalType);
+            }
+        });
+        
+        // Höre auf Storage Events für Display Images
+        window.addEventListener('storage', (e) => {
+            if (e.key && e.key.endsWith('_display_image')) {
+                const rentalType = e.key.replace('_display_image', '');
+                if (rentalMapping[rentalType]) {
+                    console.log(`🔄 Display Image Storage-Event für ${rentalType}, aktualisiere Bild...`);
+                    loadRentalImages(rentalType);
+                }
             }
         });
     }
