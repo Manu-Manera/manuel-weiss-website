@@ -343,6 +343,93 @@
     <script>
         // Initialize page functionality
         document.addEventListener('DOMContentLoaded', function() {
+            // Lade Fotobox-Bilder (Hero und Galerie)
+            function loadFotoboxImages() {
+                try {
+                    // Prüfe zuerst, ob ein Hauptbild gesetzt ist
+                    let displayImageUrl = localStorage.getItem('fotobox_display_image');
+                    
+                    // Falls kein Hauptbild gesetzt, lade aus dem Array
+                    if (!displayImageUrl) {
+                        const stored = localStorage.getItem('fotobox_images');
+                        if (stored) {
+                            const images = JSON.parse(stored);
+                            if (images && images.length > 0) {
+                                displayImageUrl = images[0].url || images[0].imageData || images[0].s3Url || images[0].src;
+                            }
+                        }
+                    }
+
+                    if (displayImageUrl) {
+                        // Aktualisiere Hero-Bild
+                        const heroImage = document.getElementById('fotoboxHeroBackground');
+                        const heroImageGallery = document.getElementById('fotoboxHeroImage');
+                        if (heroImage) {
+                            heroImage.src = displayImageUrl;
+                            heroImage.onerror = null;
+                        }
+                        if (heroImageGallery) {
+                            heroImageGallery.src = displayImageUrl;
+                            heroImageGallery.onerror = null;
+                        }
+                        console.log('✅ Fotobox Hero-Bild geladen:', displayImageUrl);
+                    }
+
+                    // Aktualisiere Galerie (alle Bilder)
+                    const galleryGrid = document.getElementById('fotoboxGalleryGrid');
+                    if (galleryGrid) {
+                        const stored = localStorage.getItem('fotobox_images');
+                        if (stored) {
+                            const images = JSON.parse(stored);
+                            if (images && images.length > 0) {
+                                galleryGrid.innerHTML = '';
+                                images.forEach((img, index) => {
+                                    const imageUrl = img.url || img.imageData || img.s3Url || img.src;
+                                    if (imageUrl) {
+                                        const galleryItem = document.createElement('div');
+                                        galleryItem.className = 'gallery-item';
+                                        galleryItem.innerHTML = `
+                                            <img src="${imageUrl}" alt="Fotobox ${index + 1}" loading="lazy">
+                                            <div class="gallery-overlay">
+                                                <i class="fas fa-expand"></i>
+                                            </div>
+                                        `;
+                                        galleryGrid.appendChild(galleryItem);
+                                    }
+                                });
+                                console.log(`✅ ${images.length} Fotobox-Galerie-Bilder geladen`);
+                            }
+                        }
+                    }
+                } catch (error) {
+                    console.error('❌ Fehler beim Laden der Fotobox-Bilder:', error);
+                }
+            }
+
+            // Initiales Laden
+            loadFotoboxImages();
+
+            // Höre auf Storage-Events für Live-Updates
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'fotobox_images' || e.key === 'fotobox_display_image') {
+                    loadFotoboxImages();
+                }
+            });
+
+            // Höre auf Custom Events für Updates innerhalb desselben Tabs
+            window.addEventListener('rentalImagesUpdated', (e) => {
+                if (e.detail && e.detail.rentalType === 'fotobox') {
+                    loadFotoboxImages();
+                }
+            });
+            
+            // Höre auf Display Image Updates
+            window.addEventListener('rentalDisplayImageUpdated', (e) => {
+                if (e.detail && e.detail.rentalType === 'fotobox') {
+                    loadFotoboxImages();
+                }
+            });
+
             // Booking form handling
             const bookingForm = document.getElementById('bookingForm');
             if (bookingForm) {

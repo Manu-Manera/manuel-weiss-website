@@ -515,7 +515,7 @@ body::after {
 .sidebar-brand h3 {
     font-size: var(--font-size-lg);
     font-weight: 600;
-    color: var(--text-primary);
+    color: #ffffff !important;
 }
 
 .sidebar-brand p {
