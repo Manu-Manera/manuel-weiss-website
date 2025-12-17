@@ -1,0 +1,10 @@
+{
+  "name": "contact-email-api",
+  "version": "1.0.0",
+  "description": "AWS Lambda API for Contact Email Sending",
+  "main": "index.js",
+  "dependencies": {
+    "@aws-sdk/client-ses": "^3.0.0"
+  }
+}
+

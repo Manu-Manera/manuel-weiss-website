@@ -1,11 +1,19 @@
 /**
  * Wiederverwendbare Funktion zum Senden von Booking-E-Mails
+ * API-First mit AWS Lambda (kein Netlify mehr)
  * Kann von allen Vermietungsseiten verwendet werden
  */
 
 async function sendBookingEmail(formData) {
     try {
-        const response = await fetch('/.netlify/functions/send-contact-email', {
+        // Verwende AWS API (wie Rental Images API)
+        const apiBaseUrl = window.AWS_CONFIG?.apiBaseUrl || '';
+        
+        if (!apiBaseUrl) {
+            throw new Error('AWS API Base URL nicht konfiguriert');
+        }
+        
+        const response = await fetch(`${apiBaseUrl}/contact/send`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
