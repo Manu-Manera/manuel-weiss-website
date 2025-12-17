@@ -599,9 +599,11 @@ a:hover {
 }
 
 .hero-title-line-2 {
-    font-size: 0.75em; /* Etwas kleiner für die zweite Zeile */
+    font-size: 0.85em; /* Etwas kleiner für die zweite Zeile, aber gut lesbar */
     font-weight: 600;
-    opacity: 0.95;
+    opacity: 1; /* Volle Sichtbarkeit */
+    color: rgba(255, 255, 255, 0.95); /* Explizite weiße Farbe für bessere Lesbarkeit */
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4); /* Text-Shadow für besseren Kontrast */
 }
 
 @keyframes heroTitleFade {
@@ -3665,6 +3667,12 @@ a:hover {
         -webkit-text-fill-color: unset;
         text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     }
+    
+    /* Sicherstellen dass hero-title-line-2 auch ohne Gradient sichtbar ist */
+    .hero .gradient-text .hero-title-line-2 {
+        color: rgba(255, 255, 255, 0.95) !important;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4) !important;
+    }
 }
 
 /* Firefox: -webkit-text-fill-color Fallback */
@@ -3674,6 +3682,12 @@ a:hover {
         background: none;
         -webkit-text-fill-color: unset;
         text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    
+    /* Sicherstellen dass hero-title-line-2 auch in Firefox sichtbar ist */
+    .hero .gradient-text .hero-title-line-2 {
+        color: rgba(255, 255, 255, 0.95) !important;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4) !important;
     }
 }
 
