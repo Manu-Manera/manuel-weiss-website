@@ -1,20 +1,18 @@
 /**
  * Wiederverwendbare Funktion zum Senden von Booking-E-Mails
- * API-First mit AWS Lambda
- * Nutzt bevorzugt die AWS API, fällt bei Fehlern aber sauber auf Netlify zurück,
- * damit das Formular zuverlässig funktioniert, bis die AWS Contact API voll deployed ist.
+ * Reines API-First Setup über AWS (API Gateway + Lambda + SES)
+ * Keine Netlify Function mehr im Einsatz.
  */
 
 async function sendBookingEmail(formData) {
-    // 1) Primärer Weg: AWS API (API Gateway + Lambda)
     const apiBaseUrl = window.AWS_CONFIG?.apiBaseUrl || '';
 
-    // Kleine Hilfsfunktion für den eigentlichen Request
-    const callAwsApi = async () => {
-        if (!apiBaseUrl) {
-            throw new Error('AWS API Base URL nicht konfiguriert');
-        }
+    if (!apiBaseUrl) {
+        console.error('❌ AWS API Base URL nicht konfiguriert (window.AWS_CONFIG.apiBaseUrl fehlt)');
+        throw new Error('Server-Konfiguration für den Mailversand fehlt (AWS API Base URL).');
+    }
 
+    try {
         const response = await fetch(`${apiBaseUrl}/contact/send`, {
             method: 'POST',
             headers: {
@@ -23,56 +21,37 @@ async function sendBookingEmail(formData) {
             body: JSON.stringify(formData)
         });
 
-        const result = await response.json();
+        let result = {};
+        try {
+            result = await response.json();
+        } catch {
+            // Falls keine gültige JSON-Antwort kommt
+            console.warn('⚠️ Antwort vom Server war kein gültiges JSON.');
+        }
 
         if (response.ok && result.success) {
+            console.log('✅ Booking-E-Mail erfolgreich über AWS gesendet:', result);
             return {
                 success: true,
                 messageId: result.messageId,
-                message: 'E-Mail erfolgreich gesendet (AWS)'
+                message: 'E-Mail erfolgreich gesendet'
             };
-        } else {
-            throw new Error(result.error || `Fehler beim Senden der E-Mail (AWS, Status ${response.status})`);
         }
-    };
 
-    // 2) Fallback: bestehende Netlify Function (bis AWS vollständig eingerichtet ist)
-    const callNetlify = async () => {
-        const response = await fetch('/.netlify/functions/send-contact-email', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(formData)
+        const errorMessage =
+            result.error ||
+            `Fehler beim Senden der E-Mail (HTTP ${response.status})`;
+
+        console.error('❌ Fehler-Antwort von AWS Contact API:', {
+            status: response.status,
+            statusText: response.statusText,
+            body: result
         });
 
-        const result = await response.json();
-
-        if (response.ok && result.success) {
-            return {
-                success: true,
-                messageId: result.messageId,
-                message: 'E-Mail erfolgreich gesendet (Netlify Fallback)'
-            };
-        } else {
-            throw new Error(result.error || `Fehler beim Senden der E-Mail (Netlify, Status ${response.status})`);
-        }
-    };
-
-    try {
-        // Versuche zuerst AWS
-        return await callAwsApi();
-    } catch (awsError) {
-        console.warn('⚠️ AWS Contact API fehlgeschlagen, versuche Netlify Fallback:', awsError);
-
-        try {
-            // Fallback auf Netlify, damit der User trotzdem eine Bestätigung bekommt
-            return await callNetlify();
-        } catch (netlifyError) {
-            console.error('❌ Netlify Fallback ebenfalls fehlgeschlagen:', netlifyError);
-            // Beide Wege fehlgeschlagen → Fehler nach außen geben
-            throw netlifyError;
-        }
+        throw new Error(errorMessage);
+    } catch (error) {
+        console.error('❌ Fehler beim Aufruf der AWS Contact API:', error);
+        throw error;
     }
 }
 
