@@ -26,18 +26,95 @@ class IkigaiExportFunctions {
             version: '1.0'
         };
 
-        // Lade Step-Daten
+        // PRÜFE ZUERST: Neues Format (ikigaiSmartWorkflow)
+        const smartWorkflowData = localStorage.getItem('ikigaiSmartWorkflow');
+        if (smartWorkflowData) {
+            try {
+                const workflowData = JSON.parse(smartWorkflowData);
+                
+                // Konvertiere neues Format in altes Format für Kompatibilität
+                this.exportData.workflow = {
+                    step1: {
+                        step: 1,
+                        timestamp: new Date().toISOString(),
+                        selfReflection: workflowData.selfReflection || ''
+                    },
+                    step2: {
+                        step: 2,
+                        timestamp: new Date().toISOString(),
+                        passion: workflowData.passion || ''
+                    },
+                    step3: {
+                        step: 3,
+                        timestamp: new Date().toISOString(),
+                        mission: workflowData.mission || ''
+                    },
+                    step4: {
+                        step: 4,
+                        timestamp: new Date().toISOString(),
+                        profession: workflowData.profession || ''
+                    },
+                    step5: {
+                        step: 5,
+                        timestamp: new Date().toISOString(),
+                        vocation: workflowData.vocation || ''
+                    },
+                    step6: {
+                        step: 6,
+                        timestamp: new Date().toISOString(),
+                        synthesis: workflowData.synthesis || '',
+                        synthesisPassionMission: workflowData.synthesisPassionMission || '',
+                        synthesisMissionProfession: workflowData.synthesisMissionProfession || '',
+                        synthesisProfessionVocation: workflowData.synthesisProfessionVocation || '',
+                        synthesisVocationPassion: workflowData.synthesisVocationPassion || ''
+                    },
+                    step7: {
+                        step: 7,
+                        timestamp: new Date().toISOString(),
+                        actionPlan: workflowData.actionPlan || ''
+                    }
+                };
+                
+                // Erstelle Analyse-Daten
+                this.exportData.analysis = {
+                    timestamp: new Date().toISOString(),
+                    ikigai: {
+                        passion: workflowData.passion || '',
+                        mission: workflowData.mission || '',
+                        profession: workflowData.profession || '',
+                        vocation: workflowData.vocation || '',
+                        synthesis: workflowData.synthesis || '',
+                        actionPlan: workflowData.actionPlan || ''
+                    }
+                };
+                
+                console.log('✅ Daten aus neuem Format geladen');
+                return;
+            } catch (error) {
+                console.warn('⚠️ Fehler beim Laden des neuen Formats:', error);
+            }
+        }
+
+        // FALLBACK: Altes Format (ikigaiStep1, ikigaiStep2, etc.)
         for (let i = 1; i <= 7; i++) {
             const stepData = localStorage.getItem(`ikigaiStep${i}`);
             if (stepData) {
-                this.exportData.workflow[`step${i}`] = JSON.parse(stepData);
+                try {
+                    this.exportData.workflow[`step${i}`] = JSON.parse(stepData);
+                } catch (error) {
+                    console.warn(`⚠️ Fehler beim Parsen von Step ${i}:`, error);
+                }
             }
         }
 
         // Lade Analyse-Daten
         const analysisData = localStorage.getItem('ikigaiFinalAnalysis');
         if (analysisData) {
-            this.exportData.analysis = JSON.parse(analysisData);
+            try {
+                this.exportData.analysis = JSON.parse(analysisData);
+            } catch (error) {
+                console.warn('⚠️ Fehler beim Laden der Analyse-Daten:', error);
+            }
         }
 
         // Lade Diagramm-Daten
@@ -46,7 +123,11 @@ class IkigaiExportFunctions {
         areas.forEach(area => {
             const items = localStorage.getItem(`ikigai-${area}-items`);
             if (items) {
-                this.exportData.diagram[area] = JSON.parse(items);
+                try {
+                    this.exportData.diagram[area] = JSON.parse(items);
+                } catch (error) {
+                    console.warn(`⚠️ Fehler beim Laden von ${area}-Daten:`, error);
+                }
             }
         });
     }
@@ -235,16 +316,18 @@ class IkigaiExportFunctions {
             step7: 'Aktionsplan'
         };
 
-        Object.entries(this.exportData.workflow).forEach(([stepKey, stepData]) => {
-            if (stepData) {
-                content += `
-                    <div class="step-content">
-                        <h3>Schritt ${stepKey.replace('step', '')}: ${stepTitles[stepKey]}</h3>
-                        ${this.formatStepData(stepData)}
-                    </div>
-                `;
-            }
-        });
+        // Zeige alle Schritte an, auch wenn leer
+        for (let i = 1; i <= 7; i++) {
+            const stepKey = `step${i}`;
+            const stepData = this.exportData.workflow[stepKey] || {};
+            
+            content += `
+                <div class="step-content">
+                    <h3>Schritt ${i}: ${stepTitles[stepKey]}</h3>
+                    ${this.formatStepData(stepData, stepKey)}
+                </div>
+            `;
+        }
         
         content += '</div>';
         return content;
@@ -271,6 +354,7 @@ class IkigaiExportFunctions {
 
     getFieldLabel(field) {
         const labels = {
+            // Alte Feldnamen
             values: 'Lebenswerte',
             strengths: 'Stärken & Talente',
             passions: 'Leidenschaften',
@@ -297,7 +381,18 @@ class IkigaiExportFunctions {
             longTerm: 'Langfristige Ziele',
             resources: 'Ressourcen',
             obstacles: 'Hindernisse',
-            support: 'Unterstützung'
+            support: 'Unterstützung',
+            // Neue Feldnamen (ikigai-smart-workflow.js)
+            selfReflection: 'Selbstreflexion',
+            passion: 'Passion - Was du liebst',
+            mission: 'Mission - Was die Welt braucht',
+            profession: 'Profession - Womit du Geld verdienen kannst',
+            vocation: 'Vocation - Was du gut kannst',
+            actionPlan: 'Aktionsplan',
+            synthesisPassionMission: 'Schnittmenge: Passion & Mission',
+            synthesisMissionProfession: 'Schnittmenge: Mission & Profession',
+            synthesisProfessionVocation: 'Schnittmenge: Profession & Vocation',
+            synthesisVocationPassion: 'Schnittmenge: Vocation & Passion'
         };
         
         return labels[field] || field;

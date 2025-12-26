@@ -735,8 +735,14 @@ class IkigaiSmartWorkflow {
         // Save to localStorage (Fallback)
         localStorage.setItem('ikigaiSmartWorkflow', JSON.stringify(this.workflowData));
         
-        // Show success message
-        alert('🎉 Dein Ikigai wurde gespeichert! Nutze diese Erkenntnisse als Leitfaden für dein Leben.');
+        // Speichere auch im alten Format für PDF-Export-Kompatibilität
+        this.saveDataForExport();
+        
+        // Show success message with PDF export option
+        const exportPDF = confirm('🎉 Dein Ikigai wurde gespeichert!\n\nMöchtest du jetzt ein PDF mit allen deinen Antworten erstellen?');
+        if (exportPDF) {
+            this.exportToPDF();
+        }
         
         // Close workflow
         this.close();
@@ -1161,6 +1167,336 @@ Antworte NUR mit dem JSON-Objekt, ohne zusätzlichen Text.`;
                 }
             }, 300);
         }, 5000);
+    }
+    
+    /**
+     * Speichert Daten im Format für PDF-Export-Kompatibilität
+     */
+    saveDataForExport() {
+        // Speichere im alten Format für Export-Funktionen
+        const stepData = {
+            step1: {
+                step: 1,
+                timestamp: new Date().toISOString(),
+                selfReflection: this.workflowData.selfReflection || ''
+            },
+            step2: {
+                step: 2,
+                timestamp: new Date().toISOString(),
+                passion: this.workflowData.passion || ''
+            },
+            step3: {
+                step: 3,
+                timestamp: new Date().toISOString(),
+                mission: this.workflowData.mission || ''
+            },
+            step4: {
+                step: 4,
+                timestamp: new Date().toISOString(),
+                profession: this.workflowData.profession || ''
+            },
+            step5: {
+                step: 5,
+                timestamp: new Date().toISOString(),
+                vocation: this.workflowData.vocation || ''
+            },
+            step6: {
+                step: 6,
+                timestamp: new Date().toISOString(),
+                synthesis: this.workflowData.synthesis || '',
+                synthesisPassionMission: this.workflowData.synthesisPassionMission || '',
+                synthesisMissionProfession: this.workflowData.synthesisMissionProfession || '',
+                synthesisProfessionVocation: this.workflowData.synthesisProfessionVocation || '',
+                synthesisVocationPassion: this.workflowData.synthesisVocationPassion || ''
+            },
+            step7: {
+                step: 7,
+                timestamp: new Date().toISOString(),
+                actionPlan: this.workflowData.actionPlan || ''
+            }
+        };
+        
+        // Speichere jeden Schritt einzeln für Export-Kompatibilität
+        for (let i = 1; i <= 7; i++) {
+            localStorage.setItem(`ikigaiStep${i}`, JSON.stringify(stepData[`step${i}`]));
+        }
+        
+        // Speichere auch finale Analyse
+        const finalAnalysis = {
+            timestamp: new Date().toISOString(),
+            steps: stepData,
+            ikigai: {
+                passion: this.workflowData.passion || '',
+                mission: this.workflowData.mission || '',
+                profession: this.workflowData.profession || '',
+                vocation: this.workflowData.vocation || '',
+                synthesis: this.workflowData.synthesis || '',
+                actionPlan: this.workflowData.actionPlan || ''
+            }
+        };
+        localStorage.setItem('ikigaiFinalAnalysis', JSON.stringify(finalAnalysis));
+        
+        console.log('✅ Daten für PDF-Export gespeichert');
+    }
+    
+    /**
+     * Exportiert den Workflow als PDF
+     */
+    exportToPDF() {
+        // Stelle sicher, dass Daten für Export gespeichert sind
+        this.saveDataForExport();
+        
+        // Rufe die Export-Funktion auf
+        if (typeof exportIkigaiToPDF === 'function') {
+            exportIkigaiToPDF();
+        } else if (window.ikigaiExportFunctions) {
+            window.ikigaiExportFunctions.updateExportData();
+            window.ikigaiExportFunctions.exportToPDF();
+        } else {
+            // Fallback: Erstelle Export-Funktion
+            this.createPDFExport();
+        }
+    }
+    
+    /**
+     * Erstellt PDF-Export direkt
+     */
+    createPDFExport() {
+        const pdfContent = this.generatePDFContent();
+        const blob = new Blob([pdfContent], { type: 'text/html' });
+        
+        // Öffne in neuem Fenster für PDF-Druck
+        const newWindow = window.open('', '_blank');
+        newWindow.document.write(pdfContent);
+        newWindow.document.close();
+        
+        // Warte kurz und dann drucke
+        setTimeout(() => {
+            newWindow.print();
+        }, 1000);
+    }
+    
+    /**
+     * Generiert PDF-Inhalt mit allen Workflow-Daten
+     */
+    generatePDFContent() {
+        const date = new Date().toLocaleDateString('de-DE');
+        const data = this.workflowData;
+        
+        return `
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ikigai Workflow - ${date}</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #667eea;
+            font-size: 2.5rem;
+            margin: 0;
+        }
+        .section {
+            margin-bottom: 30px;
+            page-break-inside: avoid;
+        }
+        .section h2 {
+            color: #667eea;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .step-content {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .step-content h3 {
+            color: #333;
+            margin-top: 0;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            font-weight: 600;
+            color: #555;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group .value {
+            background: white;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            min-height: 50px;
+            white-space: pre-wrap;
+        }
+        .ikigai-summary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 30px 0;
+        }
+        .ikigai-summary h2 {
+            color: white;
+            border: none;
+            margin-bottom: 20px;
+        }
+        @media print {
+            body { margin: 0; padding: 15px; }
+            .section { page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎯 Ikigai Workflow</h1>
+        <p>Dein persönlicher Lebenszweck - ${date}</p>
+    </div>
+
+    ${this.generatePDFStepContent()}
+    
+    ${this.generatePDFSynthesis()}
+    
+    <div style="text-align: center; margin-top: 50px; padding-top: 20px; border-top: 1px solid #ddd; color: #666;">
+        <p>Erstellt mit dem Ikigai Workflow von Manuel Weiss</p>
+    </div>
+</body>
+</html>`;
+    }
+    
+    generatePDFStepContent() {
+        const steps = [
+            { num: 1, title: 'Selbstreflexion', data: this.workflowData.selfReflection, field: 'selfReflection', placeholder: 'Reflektiere über dein Leben: Was macht dich glücklich? Was belastet dich? Wo siehst du dich in 5 Jahren?' },
+            { num: 2, title: 'Passion - Was du liebst', data: this.workflowData.passion, field: 'passion', placeholder: 'Beschreibe deine Leidenschaften: Welche Aktivitäten machen dir Spaß? Wofür brennst du?' },
+            { num: 3, title: 'Mission - Was die Welt braucht', data: this.workflowData.mission, field: 'mission', placeholder: 'Überlege, wie du der Welt helfen kannst: Welche Probleme siehst du? Wie möchtest du die Welt verbessern?' },
+            { num: 4, title: 'Profession - Womit du Geld verdienen kannst', data: this.workflowData.profession, field: 'profession', placeholder: 'Überlege deine beruflichen Möglichkeiten: Welche Fähigkeiten hast du? Wofür würden andere bezahlen?' },
+            { num: 5, title: 'Vocation - Was du gut kannst', data: this.workflowData.vocation, field: 'vocation', placeholder: 'Beschreibe deine Talente: Was kannst du gut? Was kommt dir natürlich? Wofür loben dich andere?' },
+            { num: 7, title: 'Aktionsplan', data: this.workflowData.actionPlan, field: 'actionPlan', placeholder: 'Erstelle einen konkreten Aktionsplan: Was sind deine nächsten Schritte? Welche Ziele setzt du dir?' }
+        ];
+        
+        let content = '<div class="section"><h2>📝 Workflow-Schritte</h2>';
+        
+        steps.forEach(step => {
+            const hasData = step.data && step.data.trim();
+            const lines = hasData ? Math.max(3, Math.ceil(step.data.length / 80)) : 8; // Mehr Zeilen wenn leer
+            
+            content += `
+                <div class="step-content">
+                    <h3>Schritt ${step.num}: ${step.title}</h3>
+                    <div class="form-group">
+                        <div class="value" style="min-height: ${lines * 20}px; ${hasData ? '' : 'color: #999; font-style: italic;'}">
+                            ${hasData ? this.escapeHtml(step.data) : this.generateEmptyLines(lines, step.placeholder)}
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        content += '</div>';
+        return content;
+    }
+    
+    /**
+     * Generiert leere Zeilen zum manuellen Ausfüllen
+     */
+    generateEmptyLines(count, placeholder = '') {
+        let lines = '';
+        for (let i = 0; i < count; i++) {
+            if (i === 0 && placeholder) {
+                lines += `<div style="border-bottom: 1px dashed #ccc; padding-bottom: 2px; margin-bottom: 8px;">${this.escapeHtml(placeholder)}</div>`;
+            } else {
+                lines += '<div style="border-bottom: 1px dashed #ccc; padding-bottom: 2px; margin-bottom: 8px; min-height: 18px;">&nbsp;</div>';
+            }
+        }
+        return lines;
+    }
+    
+    generatePDFSynthesis() {
+        let content = '<div class="section"><h2>🎯 Ikigai-Synthese</h2>';
+        
+        // Hauptsynthese - immer anzeigen
+        const hasMainSynthesis = this.workflowData.synthesis && this.workflowData.synthesis.trim();
+        const mainLines = hasMainSynthesis ? Math.max(4, Math.ceil(this.workflowData.synthesis.length / 80)) : 10;
+        
+        content += `
+            <div class="ikigai-summary">
+                <h2>Dein Ikigai</h2>
+                <div style="text-align: left; margin-top: 20px; background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px;">
+                    <div style="white-space: pre-wrap; ${hasMainSynthesis ? '' : 'color: rgba(255,255,255,0.7); font-style: italic;'}">
+                        ${hasMainSynthesis ? this.escapeHtml(this.workflowData.synthesis) : this.generateEmptyLines(mainLines, 'Deine persönliche Ikigai-Synthese - die Schnittmenge aller vier Bereiche')}
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Schnittmengen - immer anzeigen
+        const intersections = [
+            { 
+                title: 'Schnittmenge: Passion & Mission', 
+                data: this.workflowData.synthesisPassionMission, 
+                placeholder: 'Wie verbinden sich deine Leidenschaften mit dem, was die Welt braucht?' 
+            },
+            { 
+                title: 'Schnittmenge: Mission & Profession', 
+                data: this.workflowData.synthesisMissionProfession, 
+                placeholder: 'Wie verbindet sich deine Mission mit deinen beruflichen Möglichkeiten?' 
+            },
+            { 
+                title: 'Schnittmenge: Profession & Vocation', 
+                data: this.workflowData.synthesisProfessionVocation, 
+                placeholder: 'Wie verbinden sich deine beruflichen Möglichkeiten mit deinen Talenten?' 
+            },
+            { 
+                title: 'Schnittmenge: Vocation & Passion', 
+                data: this.workflowData.synthesisVocationPassion, 
+                placeholder: 'Wie verbinden sich deine Talente mit deinen Leidenschaften?' 
+            }
+        ];
+        
+        intersections.forEach(intersection => {
+            const hasData = intersection.data && intersection.data.trim();
+            const lines = hasData ? Math.max(3, Math.ceil(intersection.data.length / 80)) : 6;
+            
+            content += `
+                <div class="step-content">
+                    <h3>${intersection.title}</h3>
+                    <div class="form-group">
+                        <div class="value" style="min-height: ${lines * 20}px; ${hasData ? '' : 'color: #999; font-style: italic;'}">
+                            ${hasData ? this.escapeHtml(intersection.data) : this.generateEmptyLines(lines, intersection.placeholder)}
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        content += '</div>';
+        return content;
+    }
+    
+    escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
     }
     
     /**
