@@ -6,12 +6,12 @@ class UserDashboard {
         this.init();
     }
 
-    init() {
+    async init() {
         this.currentUser = window.userAuth ? window.userAuth.getCurrentUser() : null;
         if (this.currentUser) {
-            this.loadProgressData();
+            await this.loadProgressData();
             this.setupEventListeners();
-            this.renderDashboard();
+            await this.renderDashboard();
         }
     }
 
@@ -32,7 +32,8 @@ class UserDashboard {
         });
     }
 
-    renderDashboard() {
+    async renderDashboard() {
+        await this.loadProgressData();
         this.renderOverview();
         this.renderProgress();
         this.renderCompletedMethods();
@@ -338,9 +339,68 @@ class UserDashboard {
         }
     }
 
-    loadProgressData() {
+    async loadProgressData() {
+        // Lade von UserProgressTracker (falls verfügbar)
+        if (window.userProgressTracker && window.userProgressTracker.isInitialized) {
+            const pageProgress = window.userProgressTracker.getPageProgress('ikigai-workflow');
+            if (pageProgress && pageProgress.formData) {
+                this.progressData['ikigai'] = {
+                    currentStep: pageProgress.formData.currentStep || 1,
+                    totalSteps: pageProgress.formData.totalSteps || 7,
+                    completionPercentage: pageProgress.completionPercentage || 0,
+                    lastUpdated: pageProgress.lastUpdate || new Date().toISOString()
+                };
+            }
+        }
+        
+        // Lade auch direkt aus Profil (für Ikigai-Workflow)
+        if (window.awsProfileAPI && window.realUserAuth && window.realUserAuth.isLoggedIn && window.realUserAuth.isLoggedIn()) {
+            try {
+                // Warte auf Initialisierung falls nötig
+                if (!window.awsProfileAPI.isInitialized) {
+                    await window.awsProfileAPI.waitForInit();
+                }
+                
+                if (window.awsProfileAPI.isInitialized) {
+                    const profile = await window.awsProfileAPI.loadProfile();
+                    if (profile && profile.ikigaiWorkflow) {
+                        const ikigaiWorkflow = profile.ikigaiWorkflow;
+                        this.progressData['ikigai'] = {
+                            currentStep: ikigaiWorkflow.currentStep || 1,
+                            totalSteps: ikigaiWorkflow.totalSteps || 7,
+                            completionPercentage: ikigaiWorkflow.completionPercentage || 0,
+                            lastUpdated: ikigaiWorkflow.lastUpdated || new Date().toISOString(),
+                            status: ikigaiWorkflow.status || 'in-progress'
+                        };
+                        
+                        // Wenn abgeschlossen, markiere als completed
+                        if (ikigaiWorkflow.status === 'completed' && this.currentUser && this.currentUser.profile) {
+                            if (!this.currentUser.profile.completedMethods) {
+                                this.currentUser.profile.completedMethods = [];
+                            }
+                            const isAlreadyCompleted = this.currentUser.profile.completedMethods.some(
+                                m => m.methodId === 'ikigai'
+                            );
+                            if (!isAlreadyCompleted) {
+                                this.currentUser.profile.completedMethods.push({
+                                    methodId: 'ikigai',
+                                    completedAt: ikigaiWorkflow.completedAt || new Date().toISOString()
+                                });
+                            }
+                        }
+                    }
+                }
+            } catch (error) {
+                console.warn('⚠️ Konnte Ikigai-Workflow-Daten nicht aus Profil laden:', error);
+            }
+        }
+        
+        // Fallback: Lade von userAuth (falls vorhanden)
         if (window.userAuth) {
-            this.progressData = window.userAuth.getUserProgress();
+            const userProgress = window.userAuth.getUserProgress();
+            if (userProgress) {
+                this.progressData = { ...this.progressData, ...userProgress };
+            }
         }
     }
 
@@ -423,14 +483,34 @@ class UserDashboard {
     }
 
     calculateProgressPercentage(progress) {
-        const steps = Object.keys(progress).length;
-        const totalSteps = 7; // Assuming 7 steps per method
+        // Wenn progress bereits completionPercentage enthält (z.B. von Ikigai-Workflow)
+        if (progress.completionPercentage !== undefined) {
+            return progress.completionPercentage;
+        }
+        
+        // Fallback: Berechne basierend auf Schritten
+        const steps = Object.keys(progress).filter(key => key !== 'completionPercentage' && key !== 'currentStep' && key !== 'totalSteps' && key !== 'status').length;
+        const totalSteps = progress.totalSteps || 7; // Verwende totalSteps aus progress oder Standard 7
         return Math.round((steps / totalSteps) * 100);
     }
 
     getLastActivity(methodId) {
         const progress = this.getMethodProgress(methodId);
-        const steps = Object.values(progress);
+        
+        // Wenn lastUpdated direkt im progress vorhanden ist (z.B. von Ikigai-Workflow)
+        if (progress.lastUpdated) {
+            const date = new Date(progress.lastUpdated);
+            const now = new Date();
+            const diffDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
+            
+            if (diffDays === 0) return 'Heute';
+            if (diffDays === 1) return 'Gestern';
+            if (diffDays < 7) return `vor ${diffDays} Tagen`;
+            return date.toLocaleDateString('de-DE');
+        }
+        
+        // Fallback: Berechne aus Schritten
+        const steps = Object.values(progress).filter(step => step && typeof step === 'object' && step.completedAt);
         
         if (steps.length === 0) return 'Nie';
         
