@@ -1347,6 +1347,16 @@ Antworte NUR mit dem JSON-Objekt, ohne zusätzlichen Text.`;
             min-height: 50px;
             white-space: pre-wrap;
         }
+        .form-group .value .empty-line {
+            border-bottom: 1px dashed #ccc;
+            padding-bottom: 2px;
+            margin-bottom: 8px;
+            min-height: 18px;
+        }
+        .form-group .value .empty-line:first-child {
+            color: #999;
+            font-style: italic;
+        }
         .ikigai-summary {
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;

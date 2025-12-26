@@ -333,23 +333,88 @@ class IkigaiExportFunctions {
         return content;
     }
 
-    formatStepData(stepData) {
+    formatStepData(stepData, stepKey) {
         let content = '';
-        const fields = Object.keys(stepData).filter(key => 
-            key !== 'step' && key !== 'timestamp' && stepData[key]
+        
+        // Definiere erwartete Felder für jeden Schritt
+        const expectedFields = {
+            step1: ['selfReflection'],
+            step2: ['passion'],
+            step3: ['mission'],
+            step4: ['profession'],
+            step5: ['vocation'],
+            step6: ['synthesis', 'synthesisPassionMission', 'synthesisMissionProfession', 'synthesisProfessionVocation', 'synthesisVocationPassion'],
+            step7: ['actionPlan']
+        };
+        
+        const fields = expectedFields[stepKey] || Object.keys(stepData).filter(key => 
+            key !== 'step' && key !== 'timestamp'
         );
         
         fields.forEach(field => {
+            const value = stepData[field] || '';
+            const hasData = value && value.trim();
             const label = this.getFieldLabel(field);
+            
+            // Mehr Zeilen wenn leer, weniger wenn ausgefüllt
+            const lines = hasData ? Math.max(3, Math.ceil(value.length / 80)) : 8;
+            
             content += `
                 <div class="form-group">
                     <label>${label}</label>
-                    <div class="value">${stepData[field]}</div>
+                    <div class="value" style="min-height: ${lines * 20}px; ${hasData ? '' : 'color: #999; font-style: italic;'}">
+                        ${hasData ? this.escapeHtml(value) : this.generateEmptyLines(lines, this.getPlaceholder(field))}
+                    </div>
                 </div>
             `;
         });
         
         return content;
+    }
+    
+    /**
+     * Generiert leere Zeilen zum manuellen Ausfüllen
+     */
+    generateEmptyLines(count, placeholder = '') {
+        let lines = '';
+        for (let i = 0; i < count; i++) {
+            if (i === 0 && placeholder) {
+                lines += `<div style="border-bottom: 1px dashed #ccc; padding-bottom: 2px; margin-bottom: 8px;">${this.escapeHtml(placeholder)}</div>`;
+            } else {
+                lines += '<div style="border-bottom: 1px dashed #ccc; padding-bottom: 2px; margin-bottom: 8px; min-height: 18px;">&nbsp;</div>';
+            }
+        }
+        return lines;
+    }
+    
+    /**
+     * Gibt Platzhalter-Text für Felder zurück
+     */
+    getPlaceholder(field) {
+        const placeholders = {
+            selfReflection: 'Reflektiere über dein Leben: Was macht dich glücklich? Was belastet dich?',
+            passion: 'Beschreibe deine Leidenschaften: Welche Aktivitäten machen dir Spaß?',
+            mission: 'Überlege, wie du der Welt helfen kannst: Welche Probleme siehst du?',
+            profession: 'Überlege deine beruflichen Möglichkeiten: Welche Fähigkeiten hast du?',
+            vocation: 'Beschreibe deine Talente: Was kannst du gut? Was kommt dir natürlich?',
+            synthesis: 'Deine persönliche Ikigai-Synthese - die Schnittmenge aller vier Bereiche',
+            synthesisPassionMission: 'Wie verbinden sich deine Leidenschaften mit dem, was die Welt braucht?',
+            synthesisMissionProfession: 'Wie verbindet sich deine Mission mit deinen beruflichen Möglichkeiten?',
+            synthesisProfessionVocation: 'Wie verbinden sich deine beruflichen Möglichkeiten mit deinen Talenten?',
+            synthesisVocationPassion: 'Wie verbinden sich deine Talente mit deinen Leidenschaften?',
+            actionPlan: 'Erstelle einen konkreten Aktionsplan: Was sind deine nächsten Schritte?'
+        };
+        return placeholders[field] || 'Hier ausfüllen...';
+    }
+    
+    /**
+     * Escaped HTML für sichere Ausgabe
+     */
+    escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
     }
 
     getFieldLabel(field) {
