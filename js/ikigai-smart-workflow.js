@@ -14,6 +14,10 @@ class IkigaiSmartWorkflow {
             profession: '',
             vocation: '',
             synthesis: '',
+            synthesisPassionMission: '',
+            synthesisMissionProfession: '',
+            synthesisProfessionVocation: '',
+            synthesisVocationPassion: '',
             actionPlan: ''
         };
         
@@ -187,6 +191,28 @@ class IkigaiSmartWorkflow {
                     vocation.value = this.workflowData.vocation;
                 }
                 break;
+            case 6:
+                const synthesis = document.getElementById('ikigai-synthesis');
+                if (synthesis && this.workflowData.synthesis) {
+                    synthesis.value = this.workflowData.synthesis;
+                }
+                const synthesisPassionMission = document.getElementById('synthesis-passion-mission');
+                if (synthesisPassionMission && this.workflowData.synthesisPassionMission) {
+                    synthesisPassionMission.value = this.workflowData.synthesisPassionMission;
+                }
+                const synthesisMissionProfession = document.getElementById('synthesis-mission-profession');
+                if (synthesisMissionProfession && this.workflowData.synthesisMissionProfession) {
+                    synthesisMissionProfession.value = this.workflowData.synthesisMissionProfession;
+                }
+                const synthesisProfessionVocation = document.getElementById('synthesis-profession-vocation');
+                if (synthesisProfessionVocation && this.workflowData.synthesisProfessionVocation) {
+                    synthesisProfessionVocation.value = this.workflowData.synthesisProfessionVocation;
+                }
+                const synthesisVocationPassion = document.getElementById('synthesis-vocation-passion');
+                if (synthesisVocationPassion && this.workflowData.synthesisVocationPassion) {
+                    synthesisVocationPassion.value = this.workflowData.synthesisVocationPassion;
+                }
+                break;
             case 7:
                 const actionPlan = document.getElementById('action-plan');
                 if (actionPlan && this.workflowData.actionPlan) {
@@ -351,7 +377,12 @@ class IkigaiSmartWorkflow {
     }
     
     generateStep6() {
-        const ikigai = this.calculateIkigai();
+        // Lade gespeicherte Daten für die Zusammenfassung
+        const passion = this.workflowData.passion || '';
+        const mission = this.workflowData.mission || '';
+        const profession = this.workflowData.profession || '';
+        const vocation = this.workflowData.vocation || '';
+        const synthesis = this.workflowData.synthesis || '';
         
         return `
             <div style="text-align: center; margin-bottom: 2rem;">
@@ -359,33 +390,87 @@ class IkigaiSmartWorkflow {
                 <p style="color: #6b7280; margin-bottom: 2rem;">Finde die Schnittmenge aller vier Bereiche</p>
             </div>
             
-            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 2rem; border-radius: 12px; margin-bottom: 2rem; text-align: center;">
-                <h4 style="margin: 0 0 1rem 0; font-size: 1.5rem;">🎯 Dein Ikigai</h4>
-                <p style="margin: 0; font-size: 1.2rem; line-height: 1.6;">${ikigai}</p>
+            <!-- KI-Synthese Button -->
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; text-align: center;">
+                <h4 style="color: white; margin: 0 0 1rem 0; font-size: 1.2rem;">🤖 KI-Synthese erstellen</h4>
+                <p style="color: rgba(255,255,255,0.9); margin: 0 0 1.5rem 0; font-size: 0.95rem;">Lass die KI eine ausführliche Synthese deiner Ikigai-Antworten erstellen</p>
+                <button id="generate-ai-synthesis-btn" onclick="window.ikigaiSmartWorkflow.generateAISynthesis()" style="padding: 0.875rem 2rem; background: white; color: #667eea; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 1rem; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                    <span id="ai-synthesis-btn-text">✨ Synthese von KI erstellen lassen</span>
+                    <span id="ai-synthesis-loading" style="display: none;">⏳ KI analysiert...</span>
+                </button>
             </div>
             
+            <!-- Zusammenfassung der vier Bereiche -->
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
                 <div style="background: #f8fafc; padding: 1.5rem; border-radius: 8px; border: 2px solid #e5e7eb;">
                     <h5 style="color: #374151; margin: 0 0 0.5rem 0;">🔥 Was du liebst</h5>
-                    <p style="color: #6b7280; margin: 0; font-size: 0.9rem;" id="summary-passion">-</p>
+                    <p style="color: #6b7280; margin: 0; font-size: 0.9rem;" id="summary-passion">${passion ? (passion.substring(0, 100) + (passion.length > 100 ? '...' : '')) : '-'}</p>
                 </div>
                 <div style="background: #f8fafc; padding: 1.5rem; border-radius: 8px; border: 2px solid #e5e7eb;">
                     <h5 style="color: #374151; margin: 0 0 0.5rem 0;">🌍 Was die Welt braucht</h5>
-                    <p style="color: #6b7280; margin: 0; font-size: 0.9rem;" id="summary-mission">-</p>
+                    <p style="color: #6b7280; margin: 0; font-size: 0.9rem;" id="summary-mission">${mission ? (mission.substring(0, 100) + (mission.length > 100 ? '...' : '')) : '-'}</p>
                 </div>
                 <div style="background: #f8fafc; padding: 1.5rem; border-radius: 8px; border: 2px solid #e5e7eb;">
                     <h5 style="color: #374151; margin: 0 0 0.5rem 0;">💼 Womit du Geld verdienen kannst</h5>
-                    <p style="color: #6b7280; margin: 0; font-size: 0.9rem;" id="summary-profession">-</p>
+                    <p style="color: #6b7280; margin: 0; font-size: 0.9rem;" id="summary-profession">${profession ? (profession.substring(0, 100) + (profession.length > 100 ? '...' : '')) : '-'}</p>
                 </div>
                 <div style="background: #f8fafc; padding: 1.5rem; border-radius: 8px; border: 2px solid #e5e7eb;">
                     <h5 style="color: #374151; margin: 0 0 0.5rem 0;">🎯 Was du gut kannst</h5>
-                    <p style="color: #6b7280; margin: 0; font-size: 0.9rem;" id="summary-vocation">-</p>
+                    <p style="color: #6b7280; margin: 0; font-size: 0.9rem;" id="summary-vocation">${vocation ? (vocation.substring(0, 100) + (vocation.length > 100 ? '...' : '')) : '-'}</p>
+                </div>
+            </div>
+            
+            <!-- Haupt-Ikigai Synthese Feld -->
+            <div style="margin-bottom: 2rem;">
+                <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">
+                    🎯 Dein Ikigai - Die Synthese aller vier Bereiche
+                </label>
+                <textarea id="ikigai-synthesis" placeholder="Hier erscheint deine persönliche Ikigai-Synthese, die die Schnittmenge deiner Leidenschaft, Mission, Profession und Vocation beschreibt. Du kannst die KI-Synthese verwenden oder deine eigene Formulierung schreiben..." 
+                    style="width: 100%; min-height: 200px; padding: 1rem; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 1rem; resize: vertical; font-family: inherit; transition: border-color 0.3s ease;"
+                    onfocus="this.style.borderColor='#667eea'"
+                    onblur="this.style.borderColor='#e5e7eb'">${synthesis}</textarea>
+            </div>
+            
+            <!-- Detaillierte Synthese-Felder -->
+            <div style="margin-bottom: 2rem;">
+                <h4 style="color: #374151; margin-bottom: 1rem; font-size: 1.1rem;">Detaillierte Synthese-Bereiche</h4>
+                
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">Schnittmenge: Passion & Mission</label>
+                    <textarea id="synthesis-passion-mission" placeholder="Wie verbinden sich deine Leidenschaften mit dem, was die Welt braucht?" 
+                        style="width: 100%; height: 100px; padding: 1rem; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 0.95rem; resize: vertical; font-family: inherit; transition: border-color 0.3s ease;"
+                        onfocus="this.style.borderColor='#667eea'"
+                        onblur="this.style.borderColor='#e5e7eb'">${this.workflowData.synthesisPassionMission || ''}</textarea>
+                </div>
+                
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">Schnittmenge: Mission & Profession</label>
+                    <textarea id="synthesis-mission-profession" placeholder="Wie verbindet sich deine Mission mit deinen beruflichen Möglichkeiten?" 
+                        style="width: 100%; height: 100px; padding: 1rem; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 0.95rem; resize: vertical; font-family: inherit; transition: border-color 0.3s ease;"
+                        onfocus="this.style.borderColor='#667eea'"
+                        onblur="this.style.borderColor='#e5e7eb'">${this.workflowData.synthesisMissionProfession || ''}</textarea>
+                </div>
+                
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">Schnittmenge: Profession & Vocation</label>
+                    <textarea id="synthesis-profession-vocation" placeholder="Wie verbinden sich deine beruflichen Möglichkeiten mit deinen Talenten?" 
+                        style="width: 100%; height: 100px; padding: 1rem; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 0.95rem; resize: vertical; font-family: inherit; transition: border-color 0.3s ease;"
+                        onfocus="this.style.borderColor='#667eea'"
+                        onblur="this.style.borderColor='#e5e7eb'">${this.workflowData.synthesisProfessionVocation || ''}</textarea>
+                </div>
+                
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">Schnittmenge: Vocation & Passion</label>
+                    <textarea id="synthesis-vocation-passion" placeholder="Wie verbinden sich deine Talente mit deinen Leidenschaften?" 
+                        style="width: 100%; height: 100px; padding: 1rem; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 0.95rem; resize: vertical; font-family: inherit; transition: border-color 0.3s ease;"
+                        onfocus="this.style.borderColor='#667eea'"
+                        onblur="this.style.borderColor='#e5e7eb'">${this.workflowData.synthesisVocationPassion || ''}</textarea>
                 </div>
             </div>
             
             <div style="background: #f0f9ff; padding: 1.5rem; border-radius: 8px; border-left: 4px solid #0ea5e9;">
-                <h4 style="color: #0c4a6e; margin: 0 0 1rem 0;">🎉 Dein Ikigai gefunden!</h4>
-                <p style="color: #0c4a6e; margin: 0;">Das ist der Schnittpunkt deiner Leidenschaft, Mission, Profession und Vocation. Nutze dies als Leitfaden für deine Lebensentscheidungen.</p>
+                <h4 style="color: #0c4a6e; margin: 0 0 1rem 0;">💡 Tipp</h4>
+                <p style="color: #0c4a6e; margin: 0;">Die KI-Synthese analysiert deine Antworten aus allen vorherigen Schritten und erstellt eine ausführliche, persönliche Synthese. Du kannst diese Vorschläge dann nach deinen Wünschen anpassen.</p>
             </div>
         `;
     }
@@ -551,6 +636,13 @@ class IkigaiSmartWorkflow {
                 break;
             case 5:
                 this.workflowData.vocation = document.getElementById('vocation')?.value || '';
+                break;
+            case 6:
+                this.workflowData.synthesis = document.getElementById('ikigai-synthesis')?.value || '';
+                this.workflowData.synthesisPassionMission = document.getElementById('synthesis-passion-mission')?.value || '';
+                this.workflowData.synthesisMissionProfession = document.getElementById('synthesis-mission-profession')?.value || '';
+                this.workflowData.synthesisProfessionVocation = document.getElementById('synthesis-profession-vocation')?.value || '';
+                this.workflowData.synthesisVocationPassion = document.getElementById('synthesis-vocation-passion')?.value || '';
                 break;
             case 7:
                 this.workflowData.actionPlan = document.getElementById('action-plan')?.value || '';
@@ -812,6 +904,263 @@ class IkigaiSmartWorkflow {
             // Bei Fehler starte mit Schritt 1
             this.currentStep = 1;
         }
+    }
+    
+    /**
+     * Generiert eine KI-basierte Synthese der Ikigai-Antworten
+     */
+    async generateAISynthesis() {
+        try {
+            // Sammle alle Daten aus den vorherigen Schritten
+            this.saveCurrentStep();
+            
+            const selfReflection = this.workflowData.selfReflection || '';
+            const passion = this.workflowData.passion || '';
+            const mission = this.workflowData.mission || '';
+            const profession = this.workflowData.profession || '';
+            const vocation = this.workflowData.vocation || '';
+            
+            // Prüfe ob genug Daten vorhanden sind
+            if (!passion && !mission && !profession && !vocation) {
+                alert('⚠️ Bitte fülle zuerst die Schritte 2-5 aus, bevor du eine KI-Synthese erstellen kannst.');
+                return;
+            }
+            
+            // Zeige Loading-Status
+            const btn = document.getElementById('generate-ai-synthesis-btn');
+            const btnText = document.getElementById('ai-synthesis-btn-text');
+            const btnLoading = document.getElementById('ai-synthesis-loading');
+            
+            if (btn) {
+                btn.disabled = true;
+                btn.style.opacity = '0.7';
+                btn.style.cursor = 'not-allowed';
+            }
+            if (btnText) btnText.style.display = 'none';
+            if (btnLoading) btnLoading.style.display = 'inline';
+            
+            // Lade API Key
+            let apiKey = null;
+            
+            // Versuche verschiedene Quellen für den API Key
+            if (window.globalAIService && window.globalAIService.apiKey) {
+                apiKey = window.globalAIService.apiKey;
+            } else if (window.secureAPIManager) {
+                apiKey = window.secureAPIManager.getAPIKey();
+            } else if (localStorage.getItem('openai_api_key')) {
+                apiKey = localStorage.getItem('openai_api_key');
+            }
+            
+            if (!apiKey || !apiKey.startsWith('sk-')) {
+                alert('⚠️ Kein OpenAI API Key gefunden!\n\nBitte konfiguriere deinen API Key im Admin Panel unter KI-Einstellungen.');
+                if (btn) {
+                    btn.disabled = false;
+                    btn.style.opacity = '1';
+                    btn.style.cursor = 'pointer';
+                }
+                if (btnText) btnText.style.display = 'inline';
+                if (btnLoading) btnLoading.style.display = 'none';
+                return;
+            }
+            
+            // Erstelle den Prompt für die KI
+            const prompt = `Du bist ein Experte für Ikigai, die japanische Methode zur Findung des Lebenszwecks. 
+
+Analysiere die folgenden Antworten einer Person aus einem Ikigai-Workflow und erstelle eine ausführliche, persönliche Synthese:
+
+**Selbstreflexion:**
+${selfReflection || 'Nicht ausgefüllt'}
+
+**Passion - Was die Person liebt:**
+${passion || 'Nicht ausgefüllt'}
+
+**Mission - Was die Welt braucht:**
+${mission || 'Nicht ausgefüllt'}
+
+**Profession - Womit die Person Geld verdienen kann:**
+${profession || 'Nicht ausgefüllt'}
+
+**Vocation - Was die Person gut kann:**
+${vocation || 'Nicht ausgefüllt'}
+
+Erstelle eine umfassende Ikigai-Synthese im folgenden Format (als JSON):
+
+{
+  "mainSynthesis": "Eine ausführliche, 3-4 Absätze lange Hauptsynthese, die die Schnittmenge aller vier Bereiche beschreibt. Diese sollte inspirierend, persönlich und konkret sein.",
+  "passionMission": "Wie verbinden sich die Leidenschaften mit dem, was die Welt braucht? (2-3 Sätze)",
+  "missionProfession": "Wie verbindet sich die Mission mit den beruflichen Möglichkeiten? (2-3 Sätze)",
+  "professionVocation": "Wie verbinden sich die beruflichen Möglichkeiten mit den Talenten? (2-3 Sätze)",
+  "vocationPassion": "Wie verbinden sich die Talente mit den Leidenschaften? (2-3 Sätze)"
+}
+
+Die Synthese sollte:
+- Alle vier Bereiche intelligent verknüpfen
+- Konkrete, umsetzbare Erkenntnisse liefern
+- Inspirierend und motivierend sein
+- In der Du-Form geschrieben sein
+- Auf Deutsch sein
+
+Antworte NUR mit dem JSON-Objekt, ohne zusätzlichen Text.`;
+
+            // Rufe die OpenAI API auf
+            const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${apiKey}`
+                },
+                body: JSON.stringify({
+                    model: 'gpt-4o-mini',
+                    messages: [
+                        {
+                            role: 'system',
+                            content: 'Du bist ein Experte für Ikigai und Persönlichkeitsentwicklung. Du erstellst präzise, inspirierende Synthesen im JSON-Format.'
+                        },
+                        {
+                            role: 'user',
+                            content: prompt
+                        }
+                    ],
+                    temperature: 0.7,
+                    max_tokens: 2000
+                })
+            });
+            
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(`API Fehler: ${errorData.error?.message || response.statusText}`);
+            }
+            
+            const data = await response.json();
+            const aiResponse = data.choices[0].message.content;
+            
+            // Parse die JSON-Antwort
+            let synthesisData;
+            try {
+                // Entferne mögliche Markdown-Code-Blöcke
+                const cleanedResponse = aiResponse.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+                synthesisData = JSON.parse(cleanedResponse);
+            } catch (parseError) {
+                console.error('JSON Parse Error:', parseError);
+                console.error('AI Response:', aiResponse);
+                // Fallback: Versuche die Antwort direkt zu verwenden
+                synthesisData = {
+                    mainSynthesis: aiResponse,
+                    passionMission: '',
+                    missionProfession: '',
+                    professionVocation: '',
+                    vocationPassion: ''
+                };
+            }
+            
+            // Fülle die Felder mit der KI-Synthese
+            const mainSynthesisField = document.getElementById('ikigai-synthesis');
+            if (mainSynthesisField && synthesisData.mainSynthesis) {
+                mainSynthesisField.value = synthesisData.mainSynthesis;
+            }
+            
+            const passionMissionField = document.getElementById('synthesis-passion-mission');
+            if (passionMissionField && synthesisData.passionMission) {
+                passionMissionField.value = synthesisData.passionMission;
+            }
+            
+            const missionProfessionField = document.getElementById('synthesis-mission-profession');
+            if (missionProfessionField && synthesisData.missionProfession) {
+                missionProfessionField.value = synthesisData.missionProfession;
+            }
+            
+            const professionVocationField = document.getElementById('synthesis-profession-vocation');
+            if (professionVocationField && synthesisData.professionVocation) {
+                professionVocationField.value = synthesisData.professionVocation;
+            }
+            
+            const vocationPassionField = document.getElementById('synthesis-vocation-passion');
+            if (vocationPassionField && synthesisData.vocationPassion) {
+                vocationPassionField.value = synthesisData.vocationPassion;
+            }
+            
+            // Speichere die Synthese-Daten
+            this.workflowData.synthesis = synthesisData.mainSynthesis || '';
+            this.workflowData.synthesisPassionMission = synthesisData.passionMission || '';
+            this.workflowData.synthesisMissionProfession = synthesisData.missionProfession || '';
+            this.workflowData.synthesisProfessionVocation = synthesisData.professionVocation || '';
+            this.workflowData.synthesisVocationPassion = synthesisData.vocationPassion || '';
+            
+            // Zeige Erfolgs-Benachrichtigung
+            this.showAISynthesisNotification();
+            
+            console.log('✅ KI-Synthese erfolgreich erstellt');
+            
+        } catch (error) {
+            console.error('❌ Fehler bei der KI-Synthese-Erstellung:', error);
+            alert('⚠️ Fehler beim Erstellen der KI-Synthese: ' + (error.message || 'Unbekannter Fehler'));
+        } finally {
+            // Stelle Button wieder her
+            const btn = document.getElementById('generate-ai-synthesis-btn');
+            const btnText = document.getElementById('ai-synthesis-btn-text');
+            const btnLoading = document.getElementById('ai-synthesis-loading');
+            
+            if (btn) {
+                btn.disabled = false;
+                btn.style.opacity = '1';
+                btn.style.cursor = 'pointer';
+            }
+            if (btnText) btnText.style.display = 'inline';
+            if (btnLoading) btnLoading.style.display = 'none';
+        }
+    }
+    
+    /**
+     * Zeigt eine Benachrichtigung nach erfolgreicher KI-Synthese
+     */
+    showAISynthesisNotification() {
+        // Entferne bestehende Notification falls vorhanden
+        const existingNotification = document.getElementById('ikigai-ai-synthesis-notification');
+        if (existingNotification) {
+            existingNotification.remove();
+        }
+        
+        // Erstelle Notification-Element
+        const notification = document.createElement('div');
+        notification.id = 'ikigai-ai-synthesis-notification';
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 10001;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 600;
+            animation: ikigaiSlideIn 0.3s ease;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 400px;
+        `;
+        
+        notification.innerHTML = `
+            <span style="font-size: 1.5rem;">✨</span>
+            <div>
+                <div style="font-size: 1rem; margin-bottom: 0.25rem;">KI-Synthese erstellt!</div>
+                <div style="font-size: 0.85rem; opacity: 0.9;">Du kannst die Vorschläge jetzt anpassen</div>
+            </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Entferne nach 5 Sekunden
+        setTimeout(() => {
+            notification.style.animation = 'ikigaiSlideOut 0.3s ease';
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 300);
+        }, 5000);
     }
     
     /**
