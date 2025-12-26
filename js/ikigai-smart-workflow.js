@@ -38,10 +38,16 @@ class IkigaiSmartWorkflow {
         this.init();
     }
     
-    init() {
+    async init() {
         console.log('🎯 Initializing Ikigai Smart Workflow...');
         this.createWorkflowInterface();
-        this.loadStep(1);
+        try {
+            await this.loadSavedProgress();
+        } catch (error) {
+            console.warn('⚠️ Fehler beim Laden des gespeicherten Stands, starte mit Schritt 1:', error);
+            this.currentStep = 1;
+        }
+        this.loadStep(this.currentStep);
     }
     
     createWorkflowInterface() {
@@ -88,12 +94,15 @@ class IkigaiSmartWorkflow {
                 </div>
                 
                 <!-- Navigation -->
-                <div style="background: #f8fafc; padding: 1.5rem 2rem; border-top: 1px solid #e5e7eb; display: flex; justify-content: space-between;">
-                    <button id="prev-btn" onclick="window.ikigaiSmartWorkflow.previousStep()" style="padding: 0.75rem 1.5rem; background: #6b7280; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; display: none; transition: all 0.3s ease;">
+                <div style="background: #f8fafc; padding: 1.5rem 2rem; border-top: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;">
+                    <button id="prev-btn" onclick="window.ikigaiSmartWorkflow.previousStep()" style="padding: 0.75rem 1.5rem; background: #6b7280; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; display: none; transition: all 0.3s ease; white-space: nowrap;">
                         ← Zurück
                     </button>
-                    <div style="flex: 1;"></div>
-                    <button id="next-btn" onclick="window.ikigaiSmartWorkflow.nextStep()" style="padding: 0.75rem 1.5rem; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">
+                    <button id="save-later-btn" onclick="window.ikigaiSmartWorkflow.saveProgressForLater()" style="padding: 0.75rem 1.5rem; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; transition: all 0.3s ease; white-space: nowrap; flex: 0 0 auto;">
+                        💾 Später weitermachen
+                    </button>
+                    <div style="flex: 1; min-width: 0;"></div>
+                    <button id="next-btn" onclick="window.ikigaiSmartWorkflow.nextStep()" style="padding: 0.75rem 1.5rem; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; transition: all 0.3s ease; white-space: nowrap;">
                         Weiter →
                     </button>
                 </div>
@@ -139,6 +148,52 @@ class IkigaiSmartWorkflow {
         content.innerHTML = stepContent;
         this.updateNavigation();
         this.addHoverEffects();
+        this.restoreStepData(step);
+    }
+    
+    /**
+     * Stellt gespeicherte Daten für den aktuellen Schritt wieder her
+     */
+    restoreStepData(step) {
+        // Lade gespeicherte Daten in die Textfelder
+        switch(step) {
+            case 1:
+                const selfReflection = document.getElementById('self-reflection');
+                if (selfReflection && this.workflowData.selfReflection) {
+                    selfReflection.value = this.workflowData.selfReflection;
+                }
+                break;
+            case 2:
+                const passion = document.getElementById('passion');
+                if (passion && this.workflowData.passion) {
+                    passion.value = this.workflowData.passion;
+                }
+                break;
+            case 3:
+                const mission = document.getElementById('mission');
+                if (mission && this.workflowData.mission) {
+                    mission.value = this.workflowData.mission;
+                }
+                break;
+            case 4:
+                const profession = document.getElementById('profession');
+                if (profession && this.workflowData.profession) {
+                    profession.value = this.workflowData.profession;
+                }
+                break;
+            case 5:
+                const vocation = document.getElementById('vocation');
+                if (vocation && this.workflowData.vocation) {
+                    vocation.value = this.workflowData.vocation;
+                }
+                break;
+            case 7:
+                const actionPlan = document.getElementById('action-plan');
+                if (actionPlan && this.workflowData.actionPlan) {
+                    actionPlan.value = this.workflowData.actionPlan;
+                }
+                break;
+        }
     }
     
     generateStep1() {
@@ -503,7 +558,7 @@ class IkigaiSmartWorkflow {
         }
     }
     
-    finish() {
+    async finish() {
         this.saveCurrentStep();
         
         // Update summary in step 6
@@ -517,7 +572,75 @@ class IkigaiSmartWorkflow {
         if (summaryProfession) summaryProfession.textContent = this.workflowData.profession.substring(0, 100) + '...';
         if (summaryVocation) summaryVocation.textContent = this.workflowData.vocation.substring(0, 100) + '...';
         
-        // Save to localStorage
+        // Speichere als abgeschlossen in AWS
+        try {
+            if (window.realUserAuth && window.realUserAuth.isLoggedIn && window.realUserAuth.isLoggedIn()) {
+                // Markiere als abgeschlossen über UserProgressTracker
+                if (window.userProgressTracker) {
+                    if (!window.userProgressTracker.isInitialized) {
+                        await window.userProgressTracker.init();
+                    }
+                    
+                    // Tracke alle Schritte als abgeschlossen
+                    for (let i = 1; i <= this.totalSteps; i++) {
+                        await window.userProgressTracker.trackStepCompletion('ikigai-workflow', `step-${i}`, this.totalSteps);
+                    }
+                    
+                    // Speichere finale Daten
+                    await window.userProgressTracker.trackFormData('ikigai-workflow', {
+                        currentStep: this.totalSteps,
+                        totalSteps: this.totalSteps,
+                        workflowData: this.workflowData,
+                        completed: true,
+                        completedAt: new Date().toISOString()
+                    });
+                }
+                
+                // Speichere auch im Profil als abgeschlossen
+                if (window.awsProfileAPI) {
+                    try {
+                        // Warte auf Initialisierung falls nötig
+                        if (!window.awsProfileAPI.isInitialized) {
+                            await window.awsProfileAPI.waitForInit();
+                        }
+                        
+                        if (window.awsProfileAPI.isInitialized) {
+                            const user = window.realUserAuth.getCurrentUser();
+                            const userId = user?.id || user?.userId || user?.email;
+                            
+                            if (userId) {
+                                const profile = await window.awsProfileAPI.loadProfile();
+                                const updatedProfile = {
+                                    ...profile,
+                                    userId: userId,
+                                    ikigaiWorkflow: {
+                                        methodId: 'ikigai',
+                                        methodName: 'Ikigai-Workflow',
+                                        currentStep: this.totalSteps,
+                                        totalSteps: this.totalSteps,
+                                        workflowData: this.workflowData,
+                                        completionPercentage: 100,
+                                        lastUpdated: new Date().toISOString(),
+                                        completedAt: new Date().toISOString(),
+                                        status: 'completed'
+                                    },
+                                    updatedAt: new Date().toISOString()
+                                };
+                                
+                                await window.awsProfileAPI.saveProfile(updatedProfile);
+                            }
+                        }
+                    } catch (profileError) {
+                        console.warn('⚠️ Konnte nicht im Profil speichern:', profileError);
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('❌ Fehler beim Speichern des abgeschlossenen Workflows:', error);
+            // Weiter mit lokaler Speicherung als Fallback
+        }
+        
+        // Save to localStorage (Fallback)
         localStorage.setItem('ikigaiSmartWorkflow', JSON.stringify(this.workflowData));
         
         // Show success message
@@ -532,6 +655,244 @@ class IkigaiSmartWorkflow {
         if (container) {
             container.remove();
         }
+    }
+    
+    /**
+     * Speichert den aktuellen Workflow-Stand in AWS für späteres Fortsetzen
+     */
+    async saveProgressForLater() {
+        try {
+            // Sammle alle aktuellen Daten
+            this.saveCurrentStep();
+            
+            // Prüfe ob User angemeldet ist
+            if (!window.realUserAuth || !window.realUserAuth.isLoggedIn || !window.realUserAuth.isLoggedIn()) {
+                alert('⚠️ Bitte melde dich an, um deinen Fortschritt zu speichern.');
+                return;
+            }
+            
+            // Bereite Workflow-Daten vor
+            const workflowProgress = {
+                methodId: 'ikigai',
+                methodName: 'Ikigai-Workflow',
+                currentStep: this.currentStep,
+                totalSteps: this.totalSteps,
+                workflowData: this.workflowData,
+                completionPercentage: Math.round((this.currentStep / this.totalSteps) * 100),
+                lastUpdated: new Date().toISOString(),
+                status: 'in-progress'
+            };
+            
+            // Speichere über UserProgressTracker (für Dashboard-Integration)
+            if (window.userProgressTracker) {
+                // Stelle sicher, dass Progress Tracker initialisiert ist
+                if (!window.userProgressTracker.isInitialized) {
+                    await window.userProgressTracker.init();
+                }
+                
+                // Speichere als Workflow-Progress
+                await window.userProgressTracker.trackFormData('ikigai-workflow', {
+                    currentStep: this.currentStep,
+                    totalSteps: this.totalSteps,
+                    workflowData: this.workflowData
+                });
+                
+                // Tracke Schritt-Fortschritt
+                await window.userProgressTracker.trackStepCompletion('ikigai-workflow', `step-${this.currentStep}`, this.totalSteps);
+            }
+            
+            // Speichere auch direkt im Profil für einfachen Zugriff
+            if (window.awsProfileAPI) {
+                try {
+                    // Warte auf Initialisierung falls nötig
+                    if (!window.awsProfileAPI.isInitialized) {
+                        await window.awsProfileAPI.waitForInit();
+                    }
+                    
+                    if (window.awsProfileAPI.isInitialized) {
+                        const user = window.realUserAuth.getCurrentUser();
+                        const userId = user?.id || user?.userId || user?.email;
+                        
+                        if (userId) {
+                            // Lade aktuelles Profil
+                            const profile = await window.awsProfileAPI.loadProfile();
+                            
+                            // Füge Ikigai-Workflow-Daten hinzu
+                            const updatedProfile = {
+                                ...profile,
+                                userId: userId,
+                                ikigaiWorkflow: workflowProgress,
+                                updatedAt: new Date().toISOString()
+                            };
+                            
+                            // Speichere in AWS
+                            await window.awsProfileAPI.saveProfile(updatedProfile);
+                        }
+                    }
+                } catch (profileError) {
+                    console.warn('⚠️ Konnte nicht direkt im Profil speichern:', profileError);
+                    // Weiter mit Progress Tracker
+                }
+            }
+            
+            // Zeige Erfolgs-Benachrichtigung
+            this.showSaveNotification();
+            
+            console.log('✅ Ikigai-Workflow Fortschritt gespeichert:', workflowProgress);
+            
+        } catch (error) {
+            console.error('❌ Fehler beim Speichern des Fortschritts:', error);
+            alert('⚠️ Fehler beim Speichern: ' + (error.message || 'Unbekannter Fehler'));
+        }
+    }
+    
+    /**
+     * Lädt gespeicherten Workflow-Stand beim Start
+     */
+    async loadSavedProgress() {
+        try {
+            // Prüfe ob User angemeldet ist
+            if (!window.realUserAuth || !window.realUserAuth.isLoggedIn || !window.realUserAuth.isLoggedIn()) {
+                console.log('ℹ️ User nicht angemeldet - starte mit Schritt 1');
+                this.currentStep = 1;
+                return;
+            }
+            
+            // Warte auf AWS Profile API Initialisierung (falls noch nicht fertig)
+            if (window.awsProfileAPI) {
+                if (!window.awsProfileAPI.isInitialized) {
+                    await window.awsProfileAPI.waitForInit();
+                }
+                
+                if (window.awsProfileAPI.isInitialized) {
+                    const profile = await window.awsProfileAPI.loadProfile();
+                    
+                    if (profile && profile.ikigaiWorkflow) {
+                        const savedProgress = profile.ikigaiWorkflow;
+                        
+                        // Stelle sicher, dass es ein Ikigai-Workflow ist
+                        if (savedProgress.methodId === 'ikigai' && savedProgress.status === 'in-progress') {
+                            this.currentStep = savedProgress.currentStep || 1;
+                            this.workflowData = savedProgress.workflowData || this.workflowData;
+                            
+                            console.log('✅ Gespeicherter Ikigai-Workflow-Stand geladen:', {
+                                step: this.currentStep,
+                                completion: savedProgress.completionPercentage + '%'
+                            });
+                            
+                            return;
+                        }
+                    }
+                }
+            }
+            
+            // Fallback: Lade von UserProgressTracker
+            if (window.userProgressTracker) {
+                if (!window.userProgressTracker.isInitialized) {
+                    await window.userProgressTracker.init();
+                }
+                
+                const pageProgress = window.userProgressTracker.getPageProgress('ikigai-workflow');
+                
+                if (pageProgress && pageProgress.formData) {
+                    this.currentStep = pageProgress.formData.currentStep || 1;
+                    this.workflowData = pageProgress.formData.workflowData || this.workflowData;
+                    
+                    console.log('✅ Gespeicherter Stand von Progress Tracker geladen');
+                    return;
+                }
+            }
+            
+            // Kein gespeicherter Stand gefunden - starte mit Schritt 1
+            console.log('ℹ️ Kein gespeicherter Stand gefunden - starte mit Schritt 1');
+            this.currentStep = 1;
+            
+        } catch (error) {
+            console.error('❌ Fehler beim Laden des gespeicherten Stands:', error);
+            // Bei Fehler starte mit Schritt 1
+            this.currentStep = 1;
+        }
+    }
+    
+    /**
+     * Zeigt eine Benachrichtigung nach dem Speichern
+     */
+    showSaveNotification() {
+        // Entferne bestehende Notification falls vorhanden
+        const existingNotification = document.getElementById('ikigai-save-notification');
+        if (existingNotification) {
+            existingNotification.remove();
+        }
+        
+        // Füge Animation-Style hinzu (nur einmal)
+        if (!document.getElementById('ikigai-notification-styles')) {
+            const style = document.createElement('style');
+            style.id = 'ikigai-notification-styles';
+            style.textContent = `
+                @keyframes ikigaiSlideIn {
+                    from {
+                        transform: translateX(400px);
+                        opacity: 0;
+                    }
+                    to {
+                        transform: translateX(0);
+                        opacity: 1;
+                    }
+                }
+                @keyframes ikigaiSlideOut {
+                    from {
+                        transform: translateX(0);
+                        opacity: 1;
+                    }
+                    to {
+                        transform: translateX(400px);
+                        opacity: 0;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
+        // Erstelle Notification-Element
+        const notification = document.createElement('div');
+        notification.id = 'ikigai-save-notification';
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 10001;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 600;
+            animation: ikigaiSlideIn 0.3s ease;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        `;
+        
+        notification.innerHTML = `
+            <span style="font-size: 1.5rem;">✅</span>
+            <div>
+                <div style="font-size: 1rem; margin-bottom: 0.25rem;">Fortschritt gespeichert!</div>
+                <div style="font-size: 0.85rem; opacity: 0.9;">Du kannst später an Schritt ${this.currentStep} weitermachen</div>
+            </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Entferne nach 4 Sekunden
+        setTimeout(() => {
+            notification.style.animation = 'ikigaiSlideOut 0.3s ease';
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 300);
+        }, 4000);
     }
 }
 
