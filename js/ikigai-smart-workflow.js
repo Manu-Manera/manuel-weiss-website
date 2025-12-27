@@ -44,6 +44,14 @@ class IkigaiSmartWorkflow {
     
     async init() {
         console.log('🎯 Initializing Ikigai Smart Workflow...');
+        
+        // Prüfe Authentifizierung beim Start
+        if (!window.realUserAuth || !window.realUserAuth.isLoggedIn || !window.realUserAuth.isLoggedIn()) {
+            console.warn('⚠️ User nicht angemeldet beim Workflow-Start');
+            // Zeige Warnung aber erlaube Workflow (kann lokal arbeiten)
+            this.showAuthWarning();
+        }
+        
         this.createWorkflowInterface();
         try {
             await this.loadSavedProgress();
@@ -52,6 +60,68 @@ class IkigaiSmartWorkflow {
             this.currentStep = 1;
         }
         this.loadStep(this.currentStep);
+    }
+    
+    /**
+     * Zeigt Warnung wenn User nicht angemeldet ist
+     */
+    showAuthWarning() {
+        const warning = document.createElement('div');
+        warning.id = 'ikigai-auth-warning';
+        warning.style.cssText = `
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 10002;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 600;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 500px;
+        `;
+        
+        warning.innerHTML = `
+            <span style="font-size: 1.5rem;">⚠️</span>
+            <div style="flex: 1;">
+                <div style="font-size: 1rem; margin-bottom: 0.25rem;">Nicht angemeldet</div>
+                <div style="font-size: 0.85rem; opacity: 0.9;">Dein Fortschritt kann nicht gespeichert werden. <a href="#" onclick="window.ikigaiSmartWorkflow.showLoginPrompt(); return false;" style="color: white; text-decoration: underline;">Jetzt anmelden</a></div>
+            </div>
+            <button onclick="document.getElementById('ikigai-auth-warning')?.remove();" style="background: rgba(255,255,255,0.2); border: none; color: white; font-size: 1.2rem; cursor: pointer; padding: 0 0.5rem; border-radius: 4px;">&times;</button>
+        `;
+        
+        document.body.appendChild(warning);
+        
+        // Entferne nach 10 Sekunden
+        setTimeout(() => {
+            if (warning.parentNode) {
+                warning.style.opacity = '0';
+                warning.style.transition = 'opacity 0.3s';
+                setTimeout(() => warning.remove(), 300);
+            }
+        }, 10000);
+    }
+    
+    /**
+     * Zeigt Login-Prompt
+     */
+    showLoginPrompt() {
+        if (window.authRequiredAction) {
+            window.authRequiredAction.requireAuth(null, {
+                message: 'Bitte melde dich an, um deinen Fortschritt zu speichern und später fortzusetzen.',
+                forcePrompt: true
+            });
+        } else if (window.realUserAuth && window.realUserAuth.showLoginModal) {
+            window.realUserAuth.showLoginModal();
+        } else {
+            alert('Bitte melde dich über das Menü an, um deinen Fortschritt zu speichern.');
+        }
     }
     
     createWorkflowInterface() {
@@ -732,16 +802,24 @@ class IkigaiSmartWorkflow {
             // Weiter mit lokaler Speicherung als Fallback
         }
         
+        // Stelle sicher, dass ALLE aktuellen Daten gespeichert sind
+        this.saveCurrentStep();
+        
         // Save to localStorage (Fallback)
         localStorage.setItem('ikigaiSmartWorkflow', JSON.stringify(this.workflowData));
         
         // Speichere auch im alten Format für PDF-Export-Kompatibilität
         this.saveDataForExport();
         
+        console.log('💾 Workflow-Daten gespeichert:', this.workflowData);
+        
         // Show success message with PDF export option
         const exportPDF = confirm('🎉 Dein Ikigai wurde gespeichert!\n\nMöchtest du jetzt ein PDF mit allen deinen Antworten erstellen?');
         if (exportPDF) {
-            this.exportToPDF();
+            // Warte kurz, damit Daten gespeichert sind
+            setTimeout(() => {
+                this.exportToPDF();
+            }, 100);
         }
         
         // Close workflow
@@ -1243,19 +1321,16 @@ Antworte NUR mit dem JSON-Objekt, ohne zusätzlichen Text.`;
      * Exportiert den Workflow als PDF
      */
     exportToPDF() {
+        // Stelle sicher, dass ALLE aktuellen Daten gespeichert sind
+        this.saveCurrentStep();
+        
         // Stelle sicher, dass Daten für Export gespeichert sind
         this.saveDataForExport();
         
-        // Rufe die Export-Funktion auf
-        if (typeof exportIkigaiToPDF === 'function') {
-            exportIkigaiToPDF();
-        } else if (window.ikigaiExportFunctions) {
-            window.ikigaiExportFunctions.updateExportData();
-            window.ikigaiExportFunctions.exportToPDF();
-        } else {
-            // Fallback: Erstelle Export-Funktion
-            this.createPDFExport();
-        }
+        console.log('📄 Exportiere PDF mit Daten:', this.workflowData);
+        
+        // Verwende die direkte PDF-Generierung (enthält alle Daten)
+        this.createPDFExport();
     }
     
     /**
