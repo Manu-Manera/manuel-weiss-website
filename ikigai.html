@@ -303,7 +303,33 @@
     
     <!-- Ikigai Smart Workflow Starter -->
     <script>
-        function startIkigaiWorkflow() {
+        async function startIkigaiWorkflow() {
+            // Prüfe Authentifizierung VOR dem Start
+            if (!window.realUserAuth || !window.realUserAuth.isLoggedIn || !window.realUserAuth.isLoggedIn()) {
+                // Zeige Login-Prompt
+                if (window.authRequiredAction) {
+                    const proceed = await window.authRequiredAction.requireAuth(null, {
+                        message: 'Bitte melde dich an, um den Ikigai-Workflow zu starten und deinen Fortschritt zu speichern.',
+                        forcePrompt: true
+                    });
+                    if (!proceed) {
+                        return; // Workflow nicht starten wenn nicht angemeldet
+                    }
+                } else {
+                    // Fallback: Zeige einfachen Alert
+                    const proceed = confirm('⚠️ Bitte melde dich an, um den Ikigai-Workflow zu starten.\n\nMöchtest du dich jetzt anmelden?');
+                    if (proceed) {
+                        // Versuche Login-Modal zu öffnen
+                        if (window.realUserAuth && window.realUserAuth.showLoginModal) {
+                            window.realUserAuth.showLoginModal();
+                        } else {
+                            alert('Bitte melde dich über das Menü an.');
+                        }
+                    }
+                    return; // Workflow nicht starten
+                }
+            }
+            
             // Close existing workflow if open
             const existingWorkflow = document.getElementById('ikigai-smart-workflow');
             if (existingWorkflow) {
