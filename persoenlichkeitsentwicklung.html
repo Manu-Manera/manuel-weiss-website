@@ -102,10 +102,27 @@
                 </div>
             </div>
             
-            <div class="nav-toggle" id="navToggle">
+            <!-- Mobile Menu Toggle -->
+            <button class="nav-toggle" id="navToggle" aria-label="Menü öffnen">
                 <span></span>
                 <span></span>
                 <span></span>
+            </button>
+            
+            <!-- Mobile Menu Overlay -->
+            <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
+            
+            <!-- Mobile Menu -->
+            <div class="mobile-menu" id="mobileMenu">
+                <a href="index.html?from_service=true" class="nav-link" nav.home">Home</a>
+                <a href="index.html?from_service=true#services" class="nav-link" nav.services">Services</a>
+                <a href="index.html?from_service=true#about" class="nav-link" nav.about">Über mich</a>
+                <a href="index.html?from_service=true#contact" class="nav-link" nav.contact">Kontakt</a>
+                
+                <!-- Auth Section Mobile -->
+                <div class="auth-section mobile-auth-section" id="mobileAuthSection" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255, 255, 255, 0.2);">
+                    <!-- Wird dynamisch gefüllt -->
+                </div>
             </div>
         </div>
     </nav>
@@ -1519,5 +1536,183 @@
     <!-- Auth & Core - mit Cache-Busting -->
     <script src="js/real-user-auth-system.js?v=20250116" 
             onerror="console.error('Fehler beim Laden von real-user-auth-system.js');"></script>
+    
+    <!-- Mobile Menu Script -->
+    <script>
+        // Mobile Menu Initialisierung
+        document.addEventListener('DOMContentLoaded', function() {
+            const navToggle = document.getElementById('navToggle');
+            const mobileMenu = document.getElementById('mobileMenu');
+            const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+            const mobileAuthSection = document.getElementById('mobileAuthSection');
+            
+            if (!navToggle || !mobileMenu) {
+                console.warn('Mobile Menu Elemente nicht gefunden');
+                return;
+            }
+            
+            // Toggle Menu
+            navToggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                navToggle.classList.toggle('active');
+                mobileMenu.classList.toggle('active');
+                if (mobileMenuOverlay) {
+                    mobileMenuOverlay.classList.toggle('active');
+                }
+                
+                const isMenuActive = mobileMenu.classList.contains('active');
+                if (isMenuActive) {
+                    // Speichere Scroll-Position
+                    const scrollY = window.scrollY;
+                    document.body.style.overflow = 'hidden';
+                    document.body.style.position = 'fixed';
+                    document.body.style.top = `-${scrollY}px`;
+                    document.body.style.width = '100%';
+                } else {
+                    // Stelle Scroll-Position wieder her
+                    const scrollY = document.body.style.top;
+                    document.body.style.overflow = '';
+                    document.body.style.position = '';
+                    document.body.style.top = '';
+                    document.body.style.width = '';
+                    if (scrollY) {
+                        window.scrollTo(0, parseInt(scrollY || '0') * -1);
+                    }
+                }
+            });
+            
+            // Close Menu on Overlay Click
+            if (mobileMenuOverlay) {
+                mobileMenuOverlay.addEventListener('click', function() {
+                    const scrollY = document.body.style.top;
+                    navToggle.classList.remove('active');
+                    mobileMenu.classList.remove('active');
+                    mobileMenuOverlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                    document.body.style.position = '';
+                    document.body.style.top = '';
+                    document.body.style.width = '';
+                    if (scrollY) {
+                        window.scrollTo(0, parseInt(scrollY || '0') * -1);
+                    }
+                });
+            }
+            
+            // Close Menu on Link Click
+            const mobileLinks = mobileMenu.querySelectorAll('.nav-link');
+            mobileLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    const scrollY = document.body.style.top;
+                    navToggle.classList.remove('active');
+                    mobileMenu.classList.remove('active');
+                    if (mobileMenuOverlay) mobileMenuOverlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                    document.body.style.position = '';
+                    document.body.style.top = '';
+                    document.body.style.width = '';
+                    if (scrollY) {
+                        window.scrollTo(0, parseInt(scrollY || '0') * -1);
+                    }
+                });
+            });
+            
+            // Mobile Auth Section - Kopiere Desktop Auth oder erstelle eigenen Button
+            if (mobileAuthSection) {
+                const updateMobileAuth = () => {
+                    const desktopAuthSection = document.querySelector('.auth-section');
+                    const realAuthButton = document.getElementById('realAuthButton');
+                    const realUserMenu = document.getElementById('realUserMenu');
+                    
+                    // Prüfe ob User angemeldet ist
+                    const isLoggedIn = window.realUserAuth && window.realUserAuth.isLoggedIn && window.realUserAuth.isLoggedIn();
+                    
+                    if (isLoggedIn && realUserMenu) {
+                        // User ist angemeldet - zeige User-Menü
+                        const userName = document.getElementById('userName')?.textContent || 'Benutzer';
+                        const userAvatar = document.getElementById('userAvatarImg')?.src || 'manuel-weiss-photo.svg';
+                        
+                        mobileAuthSection.innerHTML = `
+                            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                                <div style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background: rgba(255,255,255,0.1); border-radius: 8px;">
+                                    <img src="${userAvatar}" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
+                                    <span style="color: white; font-weight: 600;">${userName}</span>
+                                </div>
+                                <a href="user-profile-dashboard.html" class="nav-link" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem; background: rgba(255,255,255,0.1); border-radius: 8px; text-decoration: none;">
+                                    <i class="fas fa-chart-line"></i>
+                                    <span>Dashboard</span>
+                                </a>
+                                <button onclick="window.realUserAuth.logout(); document.getElementById('navToggle')?.click();" class="nav-link" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem; background: rgba(255,255,255,0.1); border-radius: 8px; border: none; color: white; cursor: pointer; width: 100%; text-align: left;">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    <span>Abmelden</span>
+                                </button>
+                            </div>
+                        `;
+                    } else {
+                        // User nicht angemeldet - zeige Login-Button
+                        mobileAuthSection.innerHTML = `
+                            <button id="mobileAuthButton" class="btn-auth" style="width: 100%; justify-content: center; margin: 0;">
+                                <i class="fas fa-user"></i>
+                                <span>Anmelden</span>
+                            </button>
+                        `;
+                        
+                        const mobileAuthButton = document.getElementById('mobileAuthButton');
+                        if (mobileAuthButton) {
+                            mobileAuthButton.addEventListener('click', function(e) {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                
+                                // Öffne Login-Modal
+                                if (window.realUserAuth && typeof window.realUserAuth.showLoginModal === 'function') {
+                                    window.realUserAuth.showLoginModal();
+                                } else if (realAuthButton) {
+                                    realAuthButton.click();
+                                }
+                                
+                                // Schließe Mobile Menu
+                                const scrollY = document.body.style.top;
+                                navToggle.classList.remove('active');
+                                mobileMenu.classList.remove('active');
+                                if (mobileMenuOverlay) mobileMenuOverlay.classList.remove('active');
+                                document.body.style.overflow = '';
+                                document.body.style.position = '';
+                                document.body.style.top = '';
+                                document.body.style.width = '';
+                                if (scrollY) {
+                                    window.scrollTo(0, parseInt(scrollY || '0') * -1);
+                                }
+                            });
+                        }
+                    }
+                };
+                
+                // Initial update
+                setTimeout(updateMobileAuth, 500); // Warte auf Auth-System
+                
+                // Update bei Auth-Änderungen
+                setInterval(updateMobileAuth, 2000);
+                document.addEventListener('authStateChanged', updateMobileAuth);
+                document.addEventListener('userLoggedIn', updateMobileAuth);
+                document.addEventListener('userLoggedOut', updateMobileAuth);
+            }
+            
+            // Close Menu on Escape Key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && mobileMenu.classList.contains('active')) {
+                    const scrollY = document.body.style.top;
+                    navToggle.classList.remove('active');
+                    mobileMenu.classList.remove('active');
+                    if (mobileMenuOverlay) mobileMenuOverlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                    document.body.style.position = '';
+                    document.body.style.top = '';
+                    document.body.style.width = '';
+                    if (scrollY) {
+                        window.scrollTo(0, parseInt(scrollY || '0') * -1);
+                    }
+                }
+            });
+        });
+    </script>
 </body>
 </html>
