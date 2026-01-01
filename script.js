@@ -481,8 +481,34 @@ function initContactForm() {
             submitBtn.disabled = true;
             
             try {
-                // Simulate sending (replace with actual API call)
-                await new Promise(resolve => setTimeout(resolve, 2000));
+                // Sende E-Mail über AWS API
+                const apiBaseUrl = window.AWS_CONFIG?.apiBaseUrl || '';
+                
+                if (!apiBaseUrl) {
+                    throw new Error('API-Konfiguration fehlt. Bitte Seite neu laden.');
+                }
+                
+                // Formulardaten für API vorbereiten
+                const emailData = {
+                    name: data.name,
+                    email: data.email,
+                    subject: data.subject || 'Kontaktanfrage von manuel-weiss.ch',
+                    message: data.message
+                };
+                
+                const response = await fetch(`${apiBaseUrl}/contact/send`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(emailData)
+                });
+                
+                const result = await response.json();
+                
+                if (!response.ok || !result.success) {
+                    throw new Error(result.error || 'Fehler beim Senden der E-Mail');
+                }
                 
                 // Success
                 submitBtn.innerHTML = '<i class="fas fa-check"></i> Erfolgreich gesendet!';
@@ -499,7 +525,7 @@ function initContactForm() {
                 // Show success notification
                 showNotification('Nachricht erfolgreich gesendet!', 'success');
                 
-    } catch (error) {
+            } catch (error) {
                 // Error
                 submitBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Fehler!';
                 submitBtn.style.background = 'var(--danger)';

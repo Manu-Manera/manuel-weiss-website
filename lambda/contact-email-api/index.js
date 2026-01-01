@@ -11,7 +11,8 @@ const { SESClient, SendEmailCommand } = require('@aws-sdk/client-ses');
 const sesClient = new SESClient({ region: process.env.AWS_REGION || 'eu-central-1' });
 
 const FROM_EMAIL = process.env.FROM_EMAIL || 'mail@manuel-weiss.ch';
-const TO_EMAIL = process.env.TO_EMAIL || 'mail@manuel-weiss.ch';
+// Sende an info@manuel-weiss.ch (kann über Environment Variable überschrieben werden)
+const TO_EMAIL = process.env.TO_EMAIL || 'info@manuel-weiss.ch';
 
 const ALLOWED_ORIGINS = [
     'https://mawps.netlify.app',
