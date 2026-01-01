@@ -223,10 +223,15 @@ Gesendet am: ${new Date().toLocaleString('de-CH', { timeZone: 'Europe/Zurich' })
         `.trim();
 
         // E-Mail über AWS SES senden
+        // Sende an info@manuel-weiss.ch (und optional weitere Adressen)
+        const toAddresses = [TO_EMAIL];
+        // Falls eine zusätzliche CC-Adresse gewünscht ist, kann sie hier hinzugefügt werden
+        // toAddresses.push('mail@manuel-weiss.ch');
+        
         const command = new SendEmailCommand({
             Source: FROM_EMAIL,
             Destination: {
-                ToAddresses: [TO_EMAIL]
+                ToAddresses: toAddresses
             },
             Message: {
                 Subject: {
