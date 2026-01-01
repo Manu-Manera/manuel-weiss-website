@@ -438,20 +438,24 @@ a:hover {
         display: none !important;
     }
     
-    /* Zeige Mobile Menu Toggle nur rechts oben */
-    .mobile-menu-toggle,
-    .nav-toggle {
+    /* Zeige Mobile Menu Toggle nur links im nav-brand */
+    .nav-brand .nav-toggle {
         display: flex !important;
-        position: absolute;
-        right: var(--spacing-xl);
-        top: 50%;
-        transform: translateY(-50%);
-        z-index: 1001;
+        position: relative;
+        margin-right: var(--spacing-md);
+        order: -1; /* Zeige Toggle vor Logo */
     }
     
-    /* Nav Brand nimmt volle Breite ein, Toggle rechts */
+    /* Verstecke alle anderen Toggle-Buttons */
+    .mobile-menu-toggle,
+    .nav-toggle:not(.nav-brand .nav-toggle) {
+        display: none !important;
+    }
+    
+    /* Nav Brand Layout für Mobile */
     .nav-brand {
-        justify-content: space-between;
+        display: flex !important;
+        align-items: center;
         width: 100%;
         position: relative;
     }
@@ -3114,14 +3118,18 @@ a:hover {
     }
     
     /* Navigation Mobile */
-    .mobile-menu-toggle,
-    .nav-toggle {
+    /* Toggle nur links im nav-brand */
+    .nav-brand .nav-toggle {
         display: flex !important;
-        position: absolute;
-        right: var(--spacing-xl);
-        top: 50%;
-        transform: translateY(-50%);
-        z-index: 1001;
+        position: relative;
+        margin-right: var(--spacing-md);
+        order: -1;
+    }
+    
+    /* Verstecke alle anderen Toggle-Buttons */
+    .mobile-menu-toggle,
+    .nav-toggle:not(.nav-brand .nav-toggle) {
+        display: none !important;
     }
     
     .nav-menu {
