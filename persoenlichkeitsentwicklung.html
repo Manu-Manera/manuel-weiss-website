@@ -1615,7 +1615,7 @@
             // Toggle Menu
             navToggle.addEventListener('click', function(e) {
                 e.stopPropagation();
-                e.preventDefault();
+                e.preventDefault(); // Verhindere Default-Verhalten
                 
                 const isMenuActive = mobileMenu.classList.contains('active');
                 
