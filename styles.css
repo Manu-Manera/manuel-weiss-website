@@ -2929,10 +2929,11 @@ a:hover {
     position: fixed;
     top: 0;
     right: -100%;
+    left: auto !important; /* Stelle sicher dass es nur rechts ist */
     width: 80%;
     max-width: 320px;
     height: 100vh;
-    background: var(--white);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
     z-index: 1000;
     transition: right 0.3s ease;
@@ -2942,6 +2943,7 @@ a:hover {
 
 .mobile-menu.active {
     right: 0;
+    left: auto !important; /* Stelle sicher dass es nur rechts ist */
 }
 
 .mobile-menu .nav-link {
@@ -2963,12 +2965,9 @@ a:hover {
 }
 
 .mobile-menu .auth-section {
-    margin-top: var(--spacing-lg);
-    padding-top: var(--spacing-lg);
-    border-top: 1px solid rgba(255, 255, 255, 0.2);
     margin-top: var(--spacing-xl);
     padding-top: var(--spacing-xl);
-    border-top: 2px solid var(--gray-200);
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 /* Touch-freundliche Buttons (min. 44x44px) */
@@ -3010,11 +3009,18 @@ a:hover {
         min-height: 100vh;
         min-height: -webkit-fill-available;
         overflow-x: hidden !important;
-        overflow-y: scroll !important; /* Scrollbar immer sichtbar auf Mobile */
+        overflow-y: auto !important; /* Auto statt scroll für bessere Performance */
         position: relative !important;
         -webkit-overflow-scrolling: touch;
         touch-action: pan-y !important; /* Erlaubt vertikales Scrollen */
         overscroll-behavior-y: auto !important; /* Erlaubt normales Scroll-Verhalten */
+    }
+    
+    /* Nur wenn mobile-menu aktiv ist, blockiere Scrollen */
+    body.menu-open {
+        overflow: hidden !important;
+        position: fixed !important;
+        width: 100% !important;
     }
     
     /* Fix für iOS Safari Viewport */
@@ -3121,22 +3127,18 @@ a:hover {
         display: none !important;
     }
     
-    .auth-section {
+    .auth-section:not(.mobile-auth-section) {
         display: none !important;
     }
     
+    /* Verhindere dass nav-menu als mobiles Menü erscheint */
     .nav-menu.mobile-active {
-        display: flex;
-        flex-direction: column;
-        position: fixed;
-        top: 80px;
-        left: 0;
-        right: 0;
-        background: var(--white);
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        padding: var(--spacing-lg);
-        z-index: 998;
-        gap: var(--spacing-md);
+        display: none !important;
+    }
+    
+    /* Stelle sicher dass nur mobile-menu sichtbar ist */
+    .mobile-menu {
+        display: block !important;
     }
     
     .nav-container {
