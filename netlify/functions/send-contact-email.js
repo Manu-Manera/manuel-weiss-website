@@ -16,7 +16,7 @@ const ses = new AWS.SES({
 
 // E-Mail-Konfiguration
 const FROM_EMAIL = process.env.FROM_EMAIL || 'mail@manuel-weiss.ch';
-const TO_EMAIL = process.env.TO_EMAIL || 'mail@manuel-weiss.ch';
+const TO_EMAIL = process.env.TO_EMAIL || 'info@manuel-weiss.ch';
 
 exports.handler = async (event, context) => {
     // CORS Headers für Browser-Anfragen
