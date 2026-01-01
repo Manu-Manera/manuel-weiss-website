@@ -1539,8 +1539,36 @@
     
     <!-- Mobile Menu Script -->
     <script>
+        // KRITISCH: Stelle sicher dass Scrollen beim Laden funktioniert
+        (function() {
+            if (document.body) {
+                document.body.style.overflow = '';
+                document.body.style.position = '';
+                document.body.style.top = '';
+                document.body.style.width = '';
+                document.body.classList.remove('menu-open');
+            }
+            if (document.documentElement) {
+                document.documentElement.style.overflow = '';
+            }
+        })();
+        
         // Mobile Menu Initialisierung
         document.addEventListener('DOMContentLoaded', function() {
+            // KRITISCH: Stelle sicher dass Scrollen beim Laden funktioniert
+            document.body.style.overflow = '';
+            document.body.style.position = '';
+            document.body.style.top = '';
+            document.body.style.width = '';
+            document.body.classList.remove('menu-open');
+            document.documentElement.style.overflow = '';
+            
+            // Verstecke Desktop nav-menu auf Mobile
+            const navMenu = document.getElementById('navMenu');
+            if (navMenu) {
+                navMenu.style.display = 'none';
+            }
+            
             const navToggle = document.getElementById('navToggle');
             const mobileMenu = document.getElementById('mobileMenu');
             const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
@@ -1551,50 +1579,72 @@
                 return;
             }
             
+            // Stelle sicher dass Menu initial geschlossen ist
+            navToggle.classList.remove('active');
+            mobileMenu.classList.remove('active');
+            if (mobileMenuOverlay) {
+                mobileMenuOverlay.classList.remove('active');
+            }
+            
+            // Funktion zum Wiederherstellen des Scrollens
+            function restoreScroll() {
+                const scrollY = document.body.getAttribute('data-scroll-y') || 
+                               (document.body.style.top ? parseInt(document.body.style.top.replace('px', '')) * -1 : 0);
+                document.body.classList.remove('menu-open');
+                document.body.style.overflow = '';
+                document.body.style.position = '';
+                document.body.style.top = '';
+                document.body.style.width = '';
+                document.body.removeAttribute('data-scroll-y');
+                document.documentElement.style.overflow = '';
+                // Stelle Scroll-Position wieder her
+                if (scrollY) {
+                    window.scrollTo(0, scrollY);
+                }
+            }
+            
+            // Funktion zum Blockieren des Scrollens
+            function blockScroll() {
+                const scrollY = window.scrollY;
+                document.body.classList.add('menu-open');
+                document.body.style.top = `-${scrollY}px`;
+                // Speichere Scroll-Position für später
+                document.body.setAttribute('data-scroll-y', scrollY);
+            }
+            
             // Toggle Menu
             navToggle.addEventListener('click', function(e) {
                 e.stopPropagation();
-                navToggle.classList.toggle('active');
-                mobileMenu.classList.toggle('active');
-                if (mobileMenuOverlay) {
-                    mobileMenuOverlay.classList.toggle('active');
-                }
+                e.preventDefault();
                 
                 const isMenuActive = mobileMenu.classList.contains('active');
+                
                 if (isMenuActive) {
-                    // Speichere Scroll-Position
-                    const scrollY = window.scrollY;
-                    document.body.style.overflow = 'hidden';
-                    document.body.style.position = 'fixed';
-                    document.body.style.top = `-${scrollY}px`;
-                    document.body.style.width = '100%';
-                } else {
-                    // Stelle Scroll-Position wieder her
-                    const scrollY = document.body.style.top;
-                    document.body.style.overflow = '';
-                    document.body.style.position = '';
-                    document.body.style.top = '';
-                    document.body.style.width = '';
-                    if (scrollY) {
-                        window.scrollTo(0, parseInt(scrollY || '0') * -1);
+                    // Schließe Menü
+                    navToggle.classList.remove('active');
+                    mobileMenu.classList.remove('active');
+                    if (mobileMenuOverlay) {
+                        mobileMenuOverlay.classList.remove('active');
                     }
+                    restoreScroll();
+                } else {
+                    // Öffne Menü
+                    navToggle.classList.add('active');
+                    mobileMenu.classList.add('active');
+                    if (mobileMenuOverlay) {
+                        mobileMenuOverlay.classList.add('active');
+                    }
+                    blockScroll();
                 }
             });
             
             // Close Menu on Overlay Click
             if (mobileMenuOverlay) {
                 mobileMenuOverlay.addEventListener('click', function() {
-                    const scrollY = document.body.style.top;
                     navToggle.classList.remove('active');
                     mobileMenu.classList.remove('active');
                     mobileMenuOverlay.classList.remove('active');
-                    document.body.style.overflow = '';
-                    document.body.style.position = '';
-                    document.body.style.top = '';
-                    document.body.style.width = '';
-                    if (scrollY) {
-                        window.scrollTo(0, parseInt(scrollY || '0') * -1);
-                    }
+                    restoreScroll();
                 });
             }
             
@@ -1602,17 +1652,10 @@
             const mobileLinks = mobileMenu.querySelectorAll('.nav-link');
             mobileLinks.forEach(link => {
                 link.addEventListener('click', function() {
-                    const scrollY = document.body.style.top;
                     navToggle.classList.remove('active');
                     mobileMenu.classList.remove('active');
                     if (mobileMenuOverlay) mobileMenuOverlay.classList.remove('active');
-                    document.body.style.overflow = '';
-                    document.body.style.position = '';
-                    document.body.style.top = '';
-                    document.body.style.width = '';
-                    if (scrollY) {
-                        window.scrollTo(0, parseInt(scrollY || '0') * -1);
-                    }
+                    restoreScroll();
                 });
             });
             
@@ -1670,17 +1713,12 @@
                                 }
                                 
                                 // Schließe Mobile Menu
-                                const scrollY = document.body.style.top;
                                 navToggle.classList.remove('active');
                                 mobileMenu.classList.remove('active');
-                                if (mobileMenuOverlay) mobileMenuOverlay.classList.remove('active');
-                                document.body.style.overflow = '';
-                                document.body.style.position = '';
-                                document.body.style.top = '';
-                                document.body.style.width = '';
-                                if (scrollY) {
-                                    window.scrollTo(0, parseInt(scrollY || '0') * -1);
+                                if (mobileMenuOverlay) {
+                                    mobileMenuOverlay.classList.remove('active');
                                 }
+                                restoreScroll();
                             });
                         }
                     }
@@ -1699,19 +1737,19 @@
             // Close Menu on Escape Key
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape' && mobileMenu.classList.contains('active')) {
-                    const scrollY = document.body.style.top;
                     navToggle.classList.remove('active');
                     mobileMenu.classList.remove('active');
                     if (mobileMenuOverlay) mobileMenuOverlay.classList.remove('active');
-                    document.body.style.overflow = '';
-                    document.body.style.position = '';
-                    document.body.style.top = '';
-                    document.body.style.width = '';
-                    if (scrollY) {
-                        window.scrollTo(0, parseInt(scrollY || '0') * -1);
-                    }
+                    restoreScroll();
                 }
             });
+            
+            // Zusätzliche Sicherheit: Stelle sicher dass Scrollen nach kurzer Verzögerung funktioniert
+            setTimeout(function() {
+                if (!mobileMenu.classList.contains('active')) {
+                    restoreScroll();
+                }
+            }, 100);
         });
     </script>
 </body>
