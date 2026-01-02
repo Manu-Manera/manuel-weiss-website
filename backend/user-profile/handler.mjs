@@ -108,7 +108,8 @@ async function getUserProfile(userId) {
       };
     }
 
-    return {
+    // Parse all profile fields from DynamoDB
+    const profile = {
       userId: result.Item.userId?.S || userId,
       name: result.Item.name?.S || '',
       email: result.Item.email?.S || '',
@@ -117,6 +118,30 @@ async function getUserProfile(userId) {
       createdAt: result.Item.createdAt?.S,
       updatedAt: result.Item.updatedAt?.S
     };
+
+    // Load all additional profile fields if they exist
+    if (result.Item.profileData?.S) {
+      const profileData = JSON.parse(result.Item.profileData.S);
+      Object.assign(profile, profileData);
+    } else {
+      // Fallback: Load individual fields if profileData doesn't exist
+      if (result.Item.firstName?.S) profile.firstName = result.Item.firstName.S;
+      if (result.Item.lastName?.S) profile.lastName = result.Item.lastName.S;
+      if (result.Item.phone?.S) profile.phone = result.Item.phone.S;
+      if (result.Item.birthDate?.S) profile.birthDate = result.Item.birthDate.S;
+      if (result.Item.location?.S) profile.location = result.Item.location.S;
+      if (result.Item.profession?.S) profile.profession = result.Item.profession.S;
+      if (result.Item.company?.S) profile.company = result.Item.company.S;
+      if (result.Item.experience?.S) profile.experience = result.Item.experience.S;
+      if (result.Item.industry?.S) profile.industry = result.Item.industry.S;
+      if (result.Item.goals?.S) profile.goals = result.Item.goals.S;
+      if (result.Item.interests?.S) profile.interests = result.Item.interests.S;
+      if (result.Item.profileImageUrl?.S) profile.profileImageUrl = result.Item.profileImageUrl.S;
+      if (result.Item.personal?.S) profile.personal = JSON.parse(result.Item.personal.S);
+      if (result.Item.type?.S) profile.type = result.Item.type.S;
+    }
+
+    return profile;
   } catch (error) {
     console.error('Error getting user profile:', error);
     throw error;
@@ -124,33 +149,70 @@ async function getUserProfile(userId) {
 }
 
 async function saveUserProfile(userId, profileData) {
+  const timestamp = new Date().toISOString();
+  
+  // Build complete profile object with all fields
   const profile = {
     userId,
     name: profileData.name || '',
     email: profileData.email || '',
     preferences: profileData.preferences || {},
     settings: profileData.settings || {},
-    updatedAt: new Date().toISOString()
+    updatedAt: timestamp,
+    createdAt: profileData.createdAt || timestamp
   };
 
-  // If no createdAt, add it
-  if (!profileData.createdAt) {
-    profile.createdAt = new Date().toISOString();
-  }
+  // Include all additional profile fields
+  if (profileData.firstName !== undefined) profile.firstName = profileData.firstName;
+  if (profileData.lastName !== undefined) profile.lastName = profileData.lastName;
+  if (profileData.phone !== undefined) profile.phone = profileData.phone;
+  if (profileData.birthDate !== undefined) profile.birthDate = profileData.birthDate;
+  if (profileData.location !== undefined) profile.location = profileData.location;
+  if (profileData.profession !== undefined) profile.profession = profileData.profession;
+  if (profileData.company !== undefined) profile.company = profileData.company;
+  if (profileData.experience !== undefined) profile.experience = profileData.experience;
+  if (profileData.industry !== undefined) profile.industry = profileData.industry;
+  if (profileData.goals !== undefined) profile.goals = profileData.goals;
+  if (profileData.interests !== undefined) profile.interests = profileData.interests;
+  if (profileData.profileImageUrl !== undefined) profile.profileImageUrl = profileData.profileImageUrl;
+  if (profileData.personal !== undefined) profile.personal = profileData.personal;
+  if (profileData.type !== undefined) profile.type = profileData.type;
+
+  // Build DynamoDB item
+  const item = {
+    pk: { S: `user#${userId}` },
+    sk: { S: 'profile' },
+    userId: { S: profile.userId },
+    name: { S: profile.name },
+    email: { S: profile.email },
+    preferences: { S: JSON.stringify(profile.preferences) },
+    settings: { S: JSON.stringify(profile.settings) },
+    createdAt: { S: profile.createdAt },
+    updatedAt: { S: profile.updatedAt }
+  };
+
+  // Add all additional fields to DynamoDB item
+  if (profile.firstName !== undefined && profile.firstName !== '') item.firstName = { S: String(profile.firstName) };
+  if (profile.lastName !== undefined && profile.lastName !== '') item.lastName = { S: String(profile.lastName) };
+  if (profile.phone !== undefined && profile.phone !== '') item.phone = { S: String(profile.phone) };
+  if (profile.birthDate !== undefined && profile.birthDate !== '') item.birthDate = { S: String(profile.birthDate) };
+  if (profile.location !== undefined && profile.location !== '') item.location = { S: String(profile.location) };
+  if (profile.profession !== undefined && profile.profession !== '') item.profession = { S: String(profile.profession) };
+  if (profile.company !== undefined && profile.company !== '') item.company = { S: String(profile.company) };
+  if (profile.experience !== undefined && profile.experience !== '') item.experience = { S: String(profile.experience) };
+  if (profile.industry !== undefined && profile.industry !== '') item.industry = { S: String(profile.industry) };
+  if (profile.goals !== undefined && profile.goals !== '') item.goals = { S: String(profile.goals) };
+  if (profile.interests !== undefined && profile.interests !== '') item.interests = { S: String(profile.interests) };
+  if (profile.profileImageUrl !== undefined && profile.profileImageUrl !== '') item.profileImageUrl = { S: String(profile.profileImageUrl) };
+  if (profile.personal !== undefined) item.personal = { S: JSON.stringify(profile.personal) };
+  if (profile.type !== undefined) item.type = { S: String(profile.type) };
+
+  // Also store complete profileData as JSON for easy retrieval
+  item.profileData = { S: JSON.stringify(profile) };
 
   await getDynamoDB().send(new PutItemCommand({
     TableName: process.env.TABLE,
-    Item: {
-      pk: { S: `user#${userId}` },
-      sk: { S: 'profile' },
-      userId: { S: profile.userId },
-      name: { S: profile.name },
-      email: { S: profile.email },
-      preferences: { S: JSON.stringify(profile.preferences) },
-      settings: { S: JSON.stringify(profile.settings) },
-      createdAt: { S: profile.createdAt || new Date().toISOString() },
-      updatedAt: { S: profile.updatedAt }
-    }
+    Item: item
   }));
 
   return profile;
