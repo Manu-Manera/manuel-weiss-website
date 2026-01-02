@@ -51,6 +51,10 @@ Falls du nur den Base64-String hast (ohne BEGIN/END), wird er jetzt automatisch 
 
 ### Schritt 2: In Postman setzen
 
+**WICHTIG:** Postman escaped Newlines automatisch in JSON. Es gibt zwei Möglichkeiten:
+
+#### Option A: Direkt in Environment Variable (Empfohlen)
+
 1. **Environment öffnen** (oben rechts)
 2. **Finde Variable:** `publicKey`
 3. **Füge den KOMPLETTEN Public Key ein:**
@@ -63,9 +67,31 @@ Falls du nur den Base64-String hast (ohne BEGIN/END), wird er jetzt automatisch 
    ```
 4. **Klicke auf Save**
 
+**Postman wird Newlines automatisch als `\n` in JSON escaped!**
+
+#### Option B: Manuell escaped (falls Option A nicht funktioniert)
+
+Falls du den Fehler "Unexpected token \n in JSON" bekommst:
+
+1. **Öffne die Public Key Datei**
+2. **Ersetze alle Newlines manuell:**
+   - Suche: `\n` (Newline)
+   - Ersetze: `\\n` (escaped Newline)
+3. **Oder:** Verwende einen Text-Editor, der JSON-Formatierung unterstützt
+
+**Aber:** Normalerweise sollte Option A funktionieren, da Postman automatisch escaped!
+
+### Schritt 3: Prüfen
+
+Nach dem Setzen sollte die Variable so aussehen:
+```
+-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA...\n...\nQIDAQAB\n-----END PUBLIC KEY-----
+```
+
 **Wichtig:**
 - ✅ Kopiere ALLES (inkl. BEGIN/END Zeilen)
-- ✅ Newlines werden automatisch von Postman escaped
+- ✅ Postman escaped Newlines automatisch als `\n`
+- ✅ Im Request Body wird es dann korrekt als JSON-String gesendet
 - ❌ Nicht nur den Base64-String kopieren
 
 ---

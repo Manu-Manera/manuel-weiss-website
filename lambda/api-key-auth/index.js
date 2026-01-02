@@ -218,23 +218,60 @@ exports.handler = async (event) => {
         if (event.body) {
             try {
                 if (typeof event.body === 'string') {
-                    // Versuche JSON zu parsen
-                    body = JSON.parse(event.body);
+                    // API Gateway kann Body als String oder bereits geparstes Objekt senden
+                    // Versuche zuerst zu parsen
+                    try {
+                        body = JSON.parse(event.body);
+                    } catch (parseError) {
+                        // Falls Parsing fehlschlägt, könnte es Base64 encoded sein (bei binary content)
+                        if (event.isBase64Encoded) {
+                            const decodedBody = Buffer.from(event.body, 'base64').toString('utf-8');
+                            body = JSON.parse(decodedBody);
+                        } else {
+                            // Versuche Body als String zu behandeln (falls es kein JSON ist)
+                            throw parseError;
+                        }
+                    }
                 } else {
                     body = event.body;
                 }
                 console.log('✅ Body parsed successfully');
+                console.log('📋 Body keys:', Object.keys(body));
             } catch (parseError) {
                 console.error('❌ Body parse error:', parseError);
-                console.error('❌ Body (first 200 chars):', event.body?.substring(0, 200));
-                return {
-                    statusCode: 400,
-                    headers,
-                    body: JSON.stringify({ 
-                        error: 'Invalid JSON in request body',
-                        details: parseError.message
-                    })
-                };
+                console.error('❌ Body type:', typeof event.body);
+                console.error('❌ Body (first 300 chars):', event.body?.substring(0, 300));
+                console.error('❌ isBase64Encoded:', event.isBase64Encoded);
+                
+                // Versuche Body manuell zu bereinigen (entferne ungültige Newlines)
+                if (typeof event.body === 'string') {
+                    try {
+                        // Ersetze unescaped Newlines in JSON-Strings
+                        const cleanedBody = event.body.replace(/([^\\])\n/g, '$1\\n').replace(/^\n/g, '\\n');
+                        body = JSON.parse(cleanedBody);
+                        console.log('✅ Body nach Bereinigung geparst');
+                    } catch (cleanError) {
+                        console.error('❌ Body-Bereinigung fehlgeschlagen:', cleanError);
+                        return {
+                            statusCode: 400,
+                            headers,
+                            body: JSON.stringify({ 
+                                error: 'Invalid JSON in request body',
+                                details: parseError.message,
+                                hint: 'Stelle sicher, dass Newlines im Public Key als \\n escaped sind'
+                            })
+                        };
+                    }
+                } else {
+                    return {
+                        statusCode: 400,
+                        headers,
+                        body: JSON.stringify({ 
+                            error: 'Invalid JSON in request body',
+                            details: parseError.message
+                        })
+                    };
+                }
             }
         }
         
