@@ -1,5 +1,18 @@
 # 🤖 Postman - Vollständig automatischer Workflow
 
+## ⚠️ WICHTIG: Environment Setup (einmalig)
+
+**Damit deine Werte (Public Key, Private Key, etc.) beim Neuladen der Collection erhalten bleiben:**
+
+1. **Importiere das Environment:** `API-Key-Authentication.postman_environment.json`
+2. **Aktiviere das Environment** (Dropdown oben rechts)
+3. **Setze deine Werte** (apiKeyId, publicKey, privateKey) im Environment
+4. **Fertig!** - Jetzt kannst du die Collection beliebig oft neu laden, ohne Werte zu verlieren!
+
+**📖 Detaillierte Anleitung:** Siehe `ENVIRONMENT_SETUP_ANLEITUNG.md`
+
+---
+
 ## 🎯 Lösung: Separater Request für Signature
 
 **Problem:** Postman Pre-request Scripts können nicht zuverlässig auf asynchrone Requests warten.
