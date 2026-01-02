@@ -84,7 +84,74 @@ export const handler = async (event) => {
 
 async function getUserProfile(userId) {
   try {
-    const result = await getDynamoDB().send(new GetItemCommand({
+    // Prüfe ob userId eine apiKeyId ist (UUID-Format)
+    const isApiKeyId = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userId);
+    
+    // Wenn es eine apiKeyId ist, verwende direkt userId als Key (für mawps-user-profiles)
+    // Ansonsten verwende pk/sk Schema (für andere Tabellen)
+    let result;
+    if (isApiKeyId) {
+      // Für API Key Auth: Tabelle mawps-user-profiles mit userId als HASH Key
+      const { DynamoDBClient } = await import('@aws-sdk/client-dynamodb');
+      const { DynamoDBDocumentClient, GetCommand } = await import('@aws-sdk/lib-dynamodb');
+      const client = new DynamoDBClient({ region: process.env.AWS_REGION || 'eu-central-1' });
+      const docClient = DynamoDBDocumentClient.from(client);
+      
+      result = await docClient.send(new GetCommand({
+        TableName: 'mawps-user-profiles',
+        Key: { userId }
+      }));
+      
+      // Wenn kein Item gefunden, gebe Standard-Profil zurück
+      if (!result.Item) {
+        return {
+          userId,
+          name: '',
+          email: `${userId}@api-key`,
+          preferences: {},
+          settings: {
+            language: 'de',
+            theme: 'light',
+            notifications: true
+          },
+          authType: 'api-key',
+          apiKeyId: userId,
+          createdAt: new Date().toISOString()
+        };
+      }
+      
+      // Konvertiere Item zu Standard-Format
+      return {
+        userId: result.Item.userId || userId,
+        name: result.Item.name || '',
+        email: result.Item.email || `${userId}@api-key`,
+        firstName: result.Item.firstName || '',
+        lastName: result.Item.lastName || '',
+        phone: result.Item.phone || '',
+        birthDate: result.Item.birthDate || '',
+        location: result.Item.location || '',
+        profession: result.Item.profession || '',
+        company: result.Item.company || '',
+        experience: result.Item.experience || '',
+        industry: result.Item.industry || '',
+        goals: result.Item.goals || '',
+        interests: result.Item.interests || '',
+        profileImageUrl: result.Item.profileImageUrl || '',
+        preferences: result.Item.preferences || {},
+        settings: result.Item.settings || {
+          language: 'de',
+          theme: 'light',
+          notifications: true
+        },
+        authType: 'api-key',
+        apiKeyId: userId,
+        createdAt: result.Item.createdAt || new Date().toISOString(),
+        updatedAt: result.Item.updatedAt || new Date().toISOString()
+      };
+    }
+    
+    // Standard-Verhalten für normale User (Cognito)
+    result = await getDynamoDB().send(new GetItemCommand({
       TableName: process.env.TABLE,
       Key: {
         pk: { S: `user#${userId}` },
