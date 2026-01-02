@@ -428,17 +428,31 @@ async function saveUserProfile(userId, profileData) {
     profile.resume = profileData.resume;
   }
 
-  // Build DynamoDB item
+  // Validate required fields before building DynamoDB item
+  if (!userId) {
+    throw new Error('userId is required');
+  }
+  
+  // Ensure all required fields have valid values
+  const safeUserId = String(userId || '');
+  const safeName = String(profile.name || '');
+  const safeEmail = String(profile.email || '');
+  const safeCreatedAt = String(profile.createdAt || timestamp);
+  const safeUpdatedAt = String(profile.updatedAt || timestamp);
+  const safePreferences = profile.preferences || {};
+  const safeSettings = profile.settings || {};
+
+  // Build DynamoDB item with validated values
   const item = {
-    pk: { S: `user#${userId}` },
+    pk: { S: `user#${safeUserId}` },
     sk: { S: 'profile' },
-    userId: { S: profile.userId },
-    name: { S: profile.name },
-    email: { S: profile.email },
-    preferences: { S: JSON.stringify(profile.preferences) },
-    settings: { S: JSON.stringify(profile.settings) },
-    createdAt: { S: profile.createdAt },
-    updatedAt: { S: profile.updatedAt }
+    userId: { S: safeUserId },
+    name: { S: safeName },
+    email: { S: safeEmail },
+    preferences: { S: JSON.stringify(safePreferences) },
+    settings: { S: JSON.stringify(safeSettings) },
+    createdAt: { S: safeCreatedAt },
+    updatedAt: { S: safeUpdatedAt }
   };
 
   // Add all additional fields to DynamoDB item
