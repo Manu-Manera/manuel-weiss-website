@@ -348,7 +348,7 @@ class WorkflowProgressIntegration {
                         </div>
                     </div>
                     <div class="completion-actions">
-                        <button class="btn btn-primary" onclick="window.location.href='/user-profile-dashboard.html'">
+                        <button class="btn btn-primary" onclick="window.location.href='/user-profile.html#applications'">
                             <i class="fas fa-chart-line"></i> Zum Dashboard
                         </button>
                         <button class="btn btn-secondary" onclick="window.location.href='/persoenlichkeitsentwicklung-uebersicht.html'">
