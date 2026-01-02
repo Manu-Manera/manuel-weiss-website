@@ -192,7 +192,7 @@ else
         --function-name $PROFILE_FUNCTION_NAME \
         --runtime nodejs20.x \
         --role $ROLE_ARN \
-        --handler index.handler \
+        --handler handler.handler \
         --zip-file fileb://../../user-profile.zip \
         --timeout 30 \
         --memory-size 256 \
