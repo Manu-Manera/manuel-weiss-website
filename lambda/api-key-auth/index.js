@@ -173,7 +173,8 @@ exports.handler = async (event) => {
         console.log('📋 Parsed:', { path, method, bodyKeys: Object.keys(body), queryParams: event.queryStringParameters });
         
         // POST /auth/api-key/register - Public Key registrieren
-        if (method === 'POST' && path.includes('/auth/api-key/register')) {
+        if (method === 'POST' && (path.includes('/auth/api-key/register') || path.includes('/register') || path.endsWith('/register'))) {
+            console.log('✅ POST /register matched!');
             const { apiKeyId, publicKey, metadata } = body;
             
             if (!apiKeyId || !publicKey) {
@@ -201,7 +202,8 @@ exports.handler = async (event) => {
         }
         
         // POST /auth/api-key/challenge - Challenge generieren
-        if (method === 'POST' && (path.includes('/auth/api-key/challenge') || path === '/challenge' || path.endsWith('/challenge'))) {
+        if (method === 'POST' && (path.includes('/auth/api-key/challenge') || path.includes('/challenge') || path.endsWith('/challenge'))) {
+            console.log('✅ POST /challenge matched!');
             const { apiKeyId } = body;
             
             if (!apiKeyId) {
@@ -235,7 +237,8 @@ exports.handler = async (event) => {
         }
         
         // POST /auth/api-key/token - Token generieren mit Signatur
-        if (method === 'POST' && (path.includes('/auth/api-key/token') || path === '/token' || path.endsWith('/token'))) {
+        if (method === 'POST' && (path.includes('/auth/api-key/token') || path.includes('/token') || path.endsWith('/token'))) {
+            console.log('✅ POST /token matched!');
             const { apiKeyId, challenge, signature } = body;
             
             if (!apiKeyId || !challenge || !signature) {
