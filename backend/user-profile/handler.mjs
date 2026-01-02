@@ -422,6 +422,11 @@ async function saveUserProfile(userId, profileData) {
   if (profileData.profileImageUrl !== undefined) profile.profileImageUrl = profileData.profileImageUrl;
   if (profileData.personal !== undefined) profile.personal = profileData.personal;
   if (profileData.type !== undefined) profile.type = profileData.type;
+  
+  // Include resume if present (important for resume storage)
+  if (profileData.resume !== undefined) {
+    profile.resume = profileData.resume;
+  }
 
   // Build DynamoDB item
   const item = {
