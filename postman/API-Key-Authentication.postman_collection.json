@@ -187,11 +187,15 @@
 					}
 				},
 				"url": {
-					"raw": "{{signingServerUrl}}",
+					"raw": "{{signingServerBaseUrl}}/sign",
+					"protocol": "http",
 					"host": [
-						"{{signingServerUrl}}"
+						"localhost"
 					],
-					"path": []
+					"port": "3001",
+					"path": [
+						"sign"
+					]
 				},
 				"description": "Generiert automatisch die Signature für die Challenge.\n\n**Wichtig:** Signing-Server muss laufen!\n\n**Starte Server:** `node scripts/sign-challenge-server.js`\n\n**Oder:** `./scripts/start-signing-server.sh`\n\n**Workflow:**\n1. Request 2: Get Challenge\n2. **Dieser Request:** Generate Signature (automatisch)\n3. Request 3: Get Token"
 			},
