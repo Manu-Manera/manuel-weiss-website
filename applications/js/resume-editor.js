@@ -400,15 +400,86 @@ function collectProjects() {
 }
 
 function collectSections() {
-    // Collect experience and education
     const sections = [];
-    // Implementation...
+    
+    // Collect Experience
+    const experienceEntries = [];
+    document.querySelectorAll('.experience-item').forEach(item => {
+        const entry = {
+            position: item.querySelector('[data-field="position"]')?.value || '',
+            company: item.querySelector('[data-field="company"]')?.value || '',
+            location: item.querySelector('[data-field="location"]')?.value || '',
+            employmentType: item.querySelector('[data-field="employmentType"]')?.value || '',
+            startDate: item.querySelector('[data-field="startDate"]')?.value || '',
+            endDate: item.querySelector('[data-field="endDate"]')?.value || '',
+            currentJob: item.querySelector('[data-field="currentJob"]')?.checked || false,
+            description: item.querySelector('[data-field="description"]')?.value || '',
+            achievements: Array.from(item.querySelectorAll('.achievement-item input'))
+                .map(input => input.value.trim())
+                .filter(a => a),
+            technologies: Array.from(item.querySelectorAll('.tech-tag input'))
+                .map(input => input.value.trim())
+                .filter(t => t)
+        };
+        
+        if (entry.position && entry.company) {
+            experienceEntries.push(entry);
+        }
+    });
+    
+    if (experienceEntries.length > 0) {
+        sections.push({
+            type: 'experience',
+            entries: experienceEntries
+        });
+    }
+    
+    // Collect Education
+    const educationEntries = [];
+    document.querySelectorAll('.education-item').forEach(item => {
+        const entry = {
+            degree: item.querySelector('[data-field="degree"]')?.value || '',
+            fieldOfStudy: item.querySelector('[data-field="fieldOfStudy"]')?.value || '',
+            institution: item.querySelector('[data-field="institution"]')?.value || '',
+            location: item.querySelector('[data-field="location"]')?.value || '',
+            startDate: item.querySelector('[data-field="startDate"]')?.value || '',
+            endDate: item.querySelector('[data-field="endDate"]')?.value || '',
+            grade: item.querySelector('[data-field="grade"]')?.value || '',
+            honors: item.querySelector('[data-field="honors"]')?.value || '',
+            description: item.querySelector('[data-field="description"]')?.value || ''
+        };
+        
+        if (entry.degree && entry.institution) {
+            educationEntries.push(entry);
+        }
+    });
+    
+    if (educationEntries.length > 0) {
+        sections.push({
+            type: 'education',
+            entries: educationEntries
+        });
+    }
+    
     return sections;
 }
 
 function collectLanguages() {
-    // Implementation...
-    return [];
+    const languages = [];
+    
+    document.querySelectorAll('.language-item').forEach(item => {
+        const language = {
+            language: item.querySelector('[data-field="language"]')?.value || '',
+            proficiency: item.querySelector('[data-field="proficiency"]')?.value || '',
+            certificate: item.querySelector('[data-field="certificate"]')?.value || ''
+        };
+        
+        if (language.language && language.proficiency) {
+            languages.push(language);
+        }
+    });
+    
+    return languages;
 }
 
 function populateForm(data) {
@@ -656,16 +727,221 @@ function removeMetric(button) {
     button.closest('.metric-item').remove();
 }
 
-function addExperience() {
-    // Implementation...
+// Add Experience Entry
+function addExperience(experienceData = {}) {
+    const container = document.getElementById('experienceContainer');
+    if (!container) return;
+    
+    const experienceId = 'experience-' + Date.now();
+    
+    const experienceHtml = `
+        <div class="experience-item" data-experience-id="${experienceId}" style="background: #f9fafb; padding: 1.5rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid #e5e7eb;">
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                <h4 style="margin: 0; color: #1f2937;">Berufserfahrung</h4>
+                <button type="button" class="btn-remove" onclick="removeExperience('${experienceId}')">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+            <div class="form-grid" style="grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                <div class="form-group">
+                    <label>Position *</label>
+                    <input type="text" data-field="position" value="${experienceData.position || ''}" placeholder="z.B. Senior Software Engineer" required>
+                </div>
+                <div class="form-group">
+                    <label>Unternehmen *</label>
+                    <input type="text" data-field="company" value="${experienceData.company || ''}" placeholder="z.B. Tech Corp GmbH" required>
+                </div>
+                <div class="form-group">
+                    <label>Standort</label>
+                    <input type="text" data-field="location" value="${experienceData.location || ''}" placeholder="z.B. München, Deutschland">
+                </div>
+                <div class="form-group">
+                    <label>Beschäftigungsart</label>
+                    <select data-field="employmentType" value="${experienceData.employmentType || ''}">
+                        <option value="">Bitte wählen</option>
+                        <option value="vollzeit" ${experienceData.employmentType === 'vollzeit' ? 'selected' : ''}>Vollzeit</option>
+                        <option value="teilzeit" ${experienceData.employmentType === 'teilzeit' ? 'selected' : ''}>Teilzeit</option>
+                        <option value="werkstudent" ${experienceData.employmentType === 'werkstudent' ? 'selected' : ''}>Werkstudent</option>
+                        <option value="praktikum" ${experienceData.employmentType === 'praktikum' ? 'selected' : ''}>Praktikum</option>
+                        <option value="freelance" ${experienceData.employmentType === 'freelance' ? 'selected' : ''}>Freelance</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Von *</label>
+                    <input type="month" data-field="startDate" value="${experienceData.startDate || ''}" required>
+                </div>
+                <div class="form-group">
+                    <label>Bis</label>
+                    <input type="month" data-field="endDate" value="${experienceData.endDate || ''}" ${experienceData.currentJob ? 'disabled' : ''}>
+                    <div style="margin-top: 0.5rem;">
+                        <label style="display: flex; align-items: center; gap: 0.5rem; font-weight: normal; cursor: pointer;">
+                            <input type="checkbox" data-field="currentJob" ${experienceData.currentJob ? 'checked' : ''} onchange="toggleEndDate('${experienceId}', this.checked)">
+                            Aktuell
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group" style="margin-bottom: 1rem;">
+                <label>Beschreibung</label>
+                <textarea data-field="description" rows="3" placeholder="Beschreiben Sie Ihre Aufgaben und Erfolge...">${experienceData.description || ''}</textarea>
+            </div>
+            <div class="form-group" style="margin-bottom: 1rem;">
+                <label>Achievements (Erfolge)</label>
+                <div id="achievements-exp-${experienceId}">
+                    ${experienceData.achievements ? experienceData.achievements.map(achievement => `
+                        <div class="achievement-item">
+                            <input type="text" value="${achievement}" placeholder="z.B. Team-Lead für 5 Entwickler">
+                            <button type="button" onclick="removeAchievement(this)" style="background: #ef4444; color: white; border: none; padding: 0.5rem; border-radius: 4px; cursor: pointer;">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    `).join('') : ''}
+                    <button type="button" onclick="addAchievement('exp-${experienceId}')" class="btn-add" style="margin-top: 0.5rem;">
+                        <i class="fas fa-plus"></i> Achievement
+                    </button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Technologien</label>
+                <div class="tech-tags" id="tech-exp-${experienceId}">
+                    ${experienceData.technologies ? experienceData.technologies.map(tech => `
+                        <span class="tech-tag">
+                            <input type="text" value="${tech}">
+                            <button type="button" onclick="removeTechTag(this)" style="background: none; border: none; color: white; cursor: pointer;">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </span>
+                    `).join('') : ''}
+                    <button type="button" onclick="addTechTag('exp-${experienceId}')" style="background: rgba(16, 185, 129, 0.2); border: 1px dashed #10b981; color: #10b981; padding: 0.25rem 0.75rem; border-radius: 4px; cursor: pointer;">
+                        <i class="fas fa-plus"></i> Technologie
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    container.insertAdjacentHTML('beforeend', experienceHtml);
 }
 
-function addEducation() {
-    // Implementation...
+function removeExperience(experienceId) {
+    document.querySelector(`[data-experience-id="${experienceId}"]`).remove();
 }
 
-function addLanguage() {
-    // Implementation...
+function toggleEndDate(experienceId, isCurrent) {
+    const experienceItem = document.querySelector(`[data-experience-id="${experienceId}"]`);
+    const endDateInput = experienceItem.querySelector('[data-field="endDate"]');
+    if (isCurrent) {
+        endDateInput.disabled = true;
+        endDateInput.value = '';
+    } else {
+        endDateInput.disabled = false;
+    }
+}
+
+// Add Education Entry
+function addEducation(educationData = {}) {
+    const container = document.getElementById('educationContainer');
+    if (!container) return;
+    
+    const educationId = 'education-' + Date.now();
+    
+    const educationHtml = `
+        <div class="education-item" data-education-id="${educationId}" style="background: #f9fafb; padding: 1.5rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid #e5e7eb;">
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                <h4 style="margin: 0; color: #1f2937;">Ausbildung</h4>
+                <button type="button" class="btn-remove" onclick="removeEducation('${educationId}')">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+            <div class="form-grid" style="grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                <div class="form-group">
+                    <label>Abschluss *</label>
+                    <input type="text" data-field="degree" value="${educationData.degree || ''}" placeholder="z.B. Bachelor of Science" required>
+                </div>
+                <div class="form-group">
+                    <label>Fachrichtung</label>
+                    <input type="text" data-field="fieldOfStudy" value="${educationData.fieldOfStudy || ''}" placeholder="z.B. Informatik">
+                </div>
+                <div class="form-group">
+                    <label>Institution *</label>
+                    <input type="text" data-field="institution" value="${educationData.institution || ''}" placeholder="z.B. Universität München" required>
+                </div>
+                <div class="form-group">
+                    <label>Standort</label>
+                    <input type="text" data-field="location" value="${educationData.location || ''}" placeholder="z.B. München, Deutschland">
+                </div>
+                <div class="form-group">
+                    <label>Von</label>
+                    <input type="month" data-field="startDate" value="${educationData.startDate || ''}">
+                </div>
+                <div class="form-group">
+                    <label>Bis</label>
+                    <input type="month" data-field="endDate" value="${educationData.endDate || ''}">
+                </div>
+                <div class="form-group">
+                    <label>Note</label>
+                    <input type="text" data-field="grade" value="${educationData.grade || ''}" placeholder="z.B. 1.5 oder Sehr gut">
+                </div>
+                <div class="form-group">
+                    <label>Besondere Leistungen</label>
+                    <input type="text" data-field="honors" value="${educationData.honors || ''}" placeholder="z.B. Magna Cum Laude">
+                </div>
+            </div>
+            <div class="form-group" style="margin-bottom: 1rem;">
+                <label>Beschreibung / Thesis</label>
+                <textarea data-field="description" rows="2" placeholder="Kurze Beschreibung oder Thesis-Thema...">${educationData.description || ''}</textarea>
+            </div>
+        </div>
+    `;
+    
+    container.insertAdjacentHTML('beforeend', educationHtml);
+}
+
+function removeEducation(educationId) {
+    document.querySelector(`[data-education-id="${educationId}"]`).remove();
+}
+
+// Add Language Entry
+function addLanguage(languageData = {}) {
+    const container = document.getElementById('languagesContainer');
+    if (!container) return;
+    
+    const languageId = 'language-' + Date.now();
+    
+    const languageHtml = `
+        <div class="language-item" data-language-id="${languageId}" style="background: #f9fafb; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; gap: 1rem;">
+            <div style="flex: 1; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label>Sprache *</label>
+                    <input type="text" data-field="language" value="${languageData.language || ''}" placeholder="z.B. Englisch" required>
+                </div>
+                <div class="form-group">
+                    <label>Niveau *</label>
+                    <select data-field="proficiency" required>
+                        <option value="">Bitte wählen</option>
+                        <option value="muttersprache" ${languageData.proficiency === 'muttersprache' ? 'selected' : ''}>Muttersprache</option>
+                        <option value="verhandlungssicher" ${languageData.proficiency === 'verhandlungssicher' ? 'selected' : ''}>Verhandlungssicher (C2)</option>
+                        <option value="fließend" ${languageData.proficiency === 'fließend' ? 'selected' : ''}>Fließend (C1)</option>
+                        <option value="gut" ${languageData.proficiency === 'gut' ? 'selected' : ''}>Gut (B2)</option>
+                        <option value="grundkenntnisse" ${languageData.proficiency === 'grundkenntnisse' ? 'selected' : ''}>Grundkenntnisse (A2-B1)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Zertifikat</label>
+                    <input type="text" data-field="certificate" value="${languageData.certificate || ''}" placeholder="z.B. TOEFL, IELTS">
+                </div>
+            </div>
+            <button type="button" class="btn-remove" onclick="removeLanguage('${languageId}')">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+    `;
+    
+    container.insertAdjacentHTML('beforeend', languageHtml);
+}
+
+function removeLanguage(languageId) {
+    document.querySelector(`[data-language-id="${languageId}"]`).remove();
 }
 
 function updateProgress(percent, text) {
