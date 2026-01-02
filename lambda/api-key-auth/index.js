@@ -197,7 +197,7 @@ exports.handler = async (event) => {
         }
         
         // POST /auth/api-key/challenge - Challenge generieren
-        if (method === 'POST' && path.includes('/auth/api-key/challenge')) {
+        if (method === 'POST' && (path.includes('/auth/api-key/challenge') || path === '/challenge' || path.endsWith('/challenge'))) {
             const { apiKeyId } = body;
             
             if (!apiKeyId) {
@@ -231,7 +231,7 @@ exports.handler = async (event) => {
         }
         
         // POST /auth/api-key/token - Token generieren mit Signatur
-        if (method === 'POST' && path.includes('/auth/api-key/token')) {
+        if (method === 'POST' && (path.includes('/auth/api-key/token') || path === '/token' || path.endsWith('/token'))) {
             const { apiKeyId, challenge, signature } = body;
             
             if (!apiKeyId || !challenge || !signature) {
@@ -324,7 +324,7 @@ exports.handler = async (event) => {
         }
         
         // GET /auth/api-key/status - API Key Status prüfen
-        if (method === 'GET' && path.includes('/auth/api-key/status')) {
+        if (method === 'GET' && (path.includes('/auth/api-key/status') || path === '/status' || path.endsWith('/status'))) {
             // Parse query string parameters from different event formats
             const queryParams = event.queryStringParameters || 
                                (event.multiValueQueryStringParameters && 
