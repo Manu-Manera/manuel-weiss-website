@@ -177,13 +177,23 @@ exports.handler = async (event) => {
         let body = {};
         if (event.body) {
             try {
-                body = typeof event.body === 'string' ? JSON.parse(event.body) : event.body;
+                if (typeof event.body === 'string') {
+                    // Versuche JSON zu parsen
+                    body = JSON.parse(event.body);
+                } else {
+                    body = event.body;
+                }
+                console.log('✅ Body parsed successfully');
             } catch (parseError) {
                 console.error('❌ Body parse error:', parseError);
+                console.error('❌ Body (first 200 chars):', event.body?.substring(0, 200));
                 return {
                     statusCode: 400,
                     headers,
-                    body: JSON.stringify({ error: 'Invalid JSON in request body' })
+                    body: JSON.stringify({ 
+                        error: 'Invalid JSON in request body',
+                        details: parseError.message
+                    })
                 };
             }
         }
