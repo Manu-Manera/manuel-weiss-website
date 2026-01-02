@@ -15,9 +15,9 @@ const FROM_EMAIL = process.env.FROM_EMAIL || 'mail@manuel-weiss.ch';
 const TO_EMAIL = process.env.TO_EMAIL || 'info@manuel-weiss.ch';
 
 const ALLOWED_ORIGINS = [
-    'https://mawps.netlify.app',
-    'https://www.manuel-weiss.ch',
     'https://manuel-weiss.ch',
+    'https://www.manuel-weiss.ch',
+    'https://mawps.netlify.app',
     'http://localhost:3000',
     'http://localhost:8888'
 ];
