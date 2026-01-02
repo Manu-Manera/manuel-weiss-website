@@ -635,58 +635,79 @@ async function getAllResumes() {
     const client = new DynamoDBClient({ region: process.env.AWS_REGION || 'eu-central-1' });
     const docClient = DynamoDBDocumentClient.from(client);
     
-    // Scanne alle Profile
+    // Scanne alle Profile - lade auch resume-Daten direkt
     const result = await docClient.send(new ScanCommand({
-      TableName: process.env.TABLE || 'mawps-user-profiles',
-      ProjectionExpression: 'userId'
+      TableName: process.env.TABLE || 'mawps-user-profiles'
     }));
     
     const resumes = [];
     
-    // Für jedes Profil prüfe ob Resume vorhanden
+    // Für jedes Item prüfe ob Resume vorhanden
     for (const item of result.Items || []) {
       const userId = item.userId;
       if (!userId || userId === 'owner') continue;
       
       try {
-        const profile = await getUserProfile(userId);
-        if (profile?.resume) {
-          const resume = profile.resume;
-          const name = resume.personalInfo?.firstName && resume.personalInfo?.lastName
-            ? `${resume.personalInfo.firstName} ${resume.personalInfo.lastName}`
-            : profile.name || profile.firstName || profile.email?.split('@')[0] || 'Unbekannt';
-          
-          // Zähle Skills
-          const technicalSkillsCount = (resume.skills?.technicalSkills || []).reduce((sum, cat) => sum + (cat.skills?.length || 0), 0);
-          const softSkillsCount = (resume.skills?.softSkills || []).length;
-          
-          resumes.push({
-            userId: userId,
-            name: name,
-            title: resume.personalInfo?.title || '',
-            summary: resume.personalInfo?.summary ? resume.personalInfo.summary.substring(0, 150) + (resume.personalInfo.summary.length > 150 ? '...' : '') : '',
-            email: resume.personalInfo?.email || profile.email || '',
-            hasProjects: (resume.projects || []).length > 0,
-            projectsCount: (resume.projects || []).length,
-            hasSkills: technicalSkillsCount > 0 || softSkillsCount > 0,
-            skillsCount: technicalSkillsCount + softSkillsCount,
-            technicalSkillsCount: technicalSkillsCount,
-            softSkillsCount: softSkillsCount,
-            hasExperience: (resume.sections || []).some(s => s.type === 'experience' && s.entries?.length > 0),
-            experienceCount: (resume.sections || []).find(s => s.type === 'experience')?.entries?.length || 0,
-            hasEducation: (resume.sections || []).some(s => s.type === 'education' && s.entries?.length > 0),
-            educationCount: (resume.sections || []).find(s => s.type === 'education')?.entries?.length || 0,
-            languagesCount: (resume.languages || []).length,
-            certificationsCount: (resume.certifications || []).length,
-            ocrProcessed: resume.ocrProcessed || false,
-            isComplete: !!(resume.personalInfo?.title && resume.personalInfo?.summary && (technicalSkillsCount > 0 || softSkillsCount > 0)),
-            updatedAt: resume.updatedAt || '',
-            createdAt: resume.createdAt || ''
-          });
+        // Prüfe ob Resume direkt im Item vorhanden ist
+        let resume = null;
+        let profile = null;
+        
+        // Versuche Resume direkt aus Item zu extrahieren
+        if (item.resume) {
+          resume = typeof item.resume === 'string' ? JSON.parse(item.resume) : item.resume;
+        } else if (item.profileData) {
+          // Versuche aus profileData
+          const profileData = typeof item.profileData === 'string' ? JSON.parse(item.profileData) : item.profileData;
+          resume = profileData?.resume;
+          profile = profileData;
+        } else {
+          // Versuche getUserProfile (mit Schema-Handling)
+          try {
+            profile = await getUserProfile(userId);
+            resume = profile?.resume;
+          } catch (profileError) {
+            // Überspringe wenn Schema-Problem
+            console.warn(`Error loading profile for userId ${userId}:`, profileError.message);
+            continue;
+          }
         }
+        
+        if (!resume) continue;
+        
+        const name = resume.personalInfo?.firstName && resume.personalInfo?.lastName
+          ? `${resume.personalInfo.firstName} ${resume.personalInfo.lastName}`
+          : profile?.name || profile?.firstName || item.name || item.firstName || item.email?.split('@')[0] || 'Unbekannt';
+        
+        // Zähle Skills
+        const technicalSkillsCount = (resume.skills?.technicalSkills || []).reduce((sum, cat) => sum + (cat.skills?.length || 0), 0);
+        const softSkillsCount = (resume.skills?.softSkills || []).length;
+        
+        resumes.push({
+          userId: userId,
+          name: name,
+          title: resume.personalInfo?.title || '',
+          summary: resume.personalInfo?.summary ? resume.personalInfo.summary.substring(0, 150) + (resume.personalInfo.summary.length > 150 ? '...' : '') : '',
+          email: resume.personalInfo?.email || profile?.email || item.email || '',
+          hasProjects: (resume.projects || []).length > 0,
+          projectsCount: (resume.projects || []).length,
+          hasSkills: technicalSkillsCount > 0 || softSkillsCount > 0,
+          skillsCount: technicalSkillsCount + softSkillsCount,
+          technicalSkillsCount: technicalSkillsCount,
+          softSkillsCount: softSkillsCount,
+          hasExperience: (resume.sections || []).some(s => s.type === 'experience' && s.entries?.length > 0),
+          experienceCount: (resume.sections || []).find(s => s.type === 'experience')?.entries?.length || 0,
+          hasEducation: (resume.sections || []).some(s => s.type === 'education' && s.entries?.length > 0),
+          educationCount: (resume.sections || []).find(s => s.type === 'education')?.entries?.length || 0,
+          languagesCount: (resume.languages || []).length,
+          certificationsCount: (resume.certifications || []).length,
+          ocrProcessed: resume.ocrProcessed || false,
+          isComplete: !!(resume.personalInfo?.title && resume.personalInfo?.summary && (technicalSkillsCount > 0 || softSkillsCount > 0)),
+          updatedAt: resume.updatedAt || '',
+          createdAt: resume.createdAt || ''
+        });
       } catch (error) {
         // Überspringe Profile mit Fehlern
-        console.warn(`Error loading resume for userId ${userId}:`, error);
+        console.warn(`Error processing resume for userId ${userId}:`, error.message);
         continue;
       }
     }
