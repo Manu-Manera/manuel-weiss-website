@@ -311,7 +311,18 @@ exports.handler = async (event) => {
         
         // GET /auth/api-key/status - API Key Status prüfen
         if (method === 'GET' && path.includes('/auth/api-key/status')) {
-            const apiKeyId = event.queryStringParameters?.apiKeyId;
+            // Parse query string parameters from different event formats
+            const queryParams = event.queryStringParameters || 
+                               (event.multiValueQueryStringParameters && 
+                                Object.keys(event.multiValueQueryStringParameters).reduce((acc, key) => {
+                                    acc[key] = event.multiValueQueryStringParameters[key][0];
+                                    return acc;
+                                }, {})) || {};
+            
+            const apiKeyId = queryParams.apiKeyId || queryParams['apiKeyId'];
+            
+            console.log('📋 Query Params:', JSON.stringify(queryParams));
+            console.log('🔑 API Key ID:', apiKeyId);
             
             if (!apiKeyId) {
                 return {
