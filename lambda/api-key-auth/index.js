@@ -205,8 +205,10 @@ exports.handler = async (event) => {
                 };
             }
             
-            const keyData = await registerPublicKey(apiKeyId, publicKey, metadata);
-            
+            try {
+                const keyData = await registerPublicKey(apiKeyId, publicKey, metadata);
+                console.log('✅ Public key registered:', keyData.apiKeyId);
+                
                 return {
                     statusCode: 200,
                     headers,
