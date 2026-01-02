@@ -708,6 +708,15 @@ async function processResumeOCR(userId, s3Key) {
     const textractClient = new TextractClient({ region: process.env.AWS_REGION || 'eu-central-1' });
     const bucketName = process.env.RESUME_BUCKET || 'mawps-resumes';
     
+    // Prüfe ob Textract verfügbar ist
+    if (!process.env.RESUME_BUCKET) {
+      return {
+        success: false,
+        message: 'OCR not configured. Please set RESUME_BUCKET environment variable.',
+        error: 'Textract requires S3 bucket configuration'
+      };
+    }
+    
     // Starte Textract Job
     const startCommand = new StartDocumentTextDetectionCommand({
       DocumentLocation: {
@@ -721,13 +730,21 @@ async function processResumeOCR(userId, s3Key) {
     const startResult = await textractClient.send(startCommand);
     const jobId = startResult.JobId;
     
+    if (!jobId) {
+      return {
+        success: false,
+        error: 'Failed to start OCR job',
+        message: 'Could not start Textract job. Please check S3 permissions.'
+      };
+    }
+    
     // Warte auf Completion (Polling)
     let jobComplete = false;
     let attempts = 0;
-    const maxAttempts = 30;
+    const maxAttempts = 30; // Max 5 Minuten (10s * 30)
     
     while (!jobComplete && attempts < maxAttempts) {
-      await new Promise(resolve => setTimeout(resolve, 10000));
+      await new Promise(resolve => setTimeout(resolve, 10000)); // 10 Sekunden warten
       
       const getCommand = new GetDocumentTextDetectionCommand({ JobId: jobId });
       const getResult = await textractClient.send(getCommand);
@@ -735,11 +752,13 @@ async function processResumeOCR(userId, s3Key) {
       if (getResult.JobStatus === 'SUCCEEDED') {
         jobComplete = true;
         
+        // Extrahiere Text aus Blocks
         const textBlocks = (getResult.Blocks || [])
           .filter(block => block.BlockType === 'LINE')
           .map(block => block.Text)
           .join('\n');
         
+        // Parse strukturierte Daten
         const parsedData = parseOCRText(textBlocks);
         
         return {
@@ -750,20 +769,35 @@ async function processResumeOCR(userId, s3Key) {
           blocks: getResult.Blocks || []
         };
       } else if (getResult.JobStatus === 'FAILED') {
-        throw new Error(`OCR processing failed: ${getResult.StatusMessage || 'Unknown error'}`);
+        return {
+          success: false,
+          error: `OCR processing failed: ${getResult.StatusMessage || 'Unknown error'}`,
+          message: 'Textract job failed. Please check the document format.'
+        };
       }
       
       attempts++;
     }
     
     if (!jobComplete) {
-      throw new Error('OCR processing timeout');
+      // Return partial result with jobId for async polling
+      return {
+        success: false,
+        message: 'OCR processing in progress',
+        jobId: jobId,
+        status: 'IN_PROGRESS'
+      };
     }
     
     return { success: false, message: 'OCR processing incomplete' };
   } catch (error) {
     console.error('Error processing OCR:', error);
-    throw error;
+    // Return error instead of throwing for better error handling
+    return {
+      success: false,
+      error: error.message || 'OCR processing failed',
+      message: 'Failed to process OCR. Please check S3 bucket and Textract permissions.'
+    };
   }
 }
 
