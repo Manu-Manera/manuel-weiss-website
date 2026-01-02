@@ -163,6 +163,70 @@ aws apigateway update-deployment \
     --deployment-id $(aws apigateway get-deployments --rest-api-id "$API_ID" --region "$REGION" --query "items[0].id" --output text) \
     --region "$REGION" > /dev/null
 
+# Create /resume resource if it doesn't exist
+RESUME_RESOURCE_ID=$(aws apigateway get-resources --rest-api-id "$API_ID" --region "$REGION" --query "items[?path=='/resume'].id" --output text)
+
+if [ -z "$RESUME_RESOURCE_ID" ]; then
+    echo "📝 Erstelle /resume Resource..."
+    RESUME_RESOURCE_ID=$(aws apigateway create-resource \
+        --rest-api-id "$API_ID" \
+        --parent-id "$ROOT_RESOURCE_ID" \
+        --path-part "resume" \
+        --region "$REGION" \
+        --query "id" \
+        --output text)
+    echo "✅ /resume Resource erstellt: $RESUME_RESOURCE_ID"
+else
+    echo "✅ /resume Resource existiert bereits: $RESUME_RESOURCE_ID"
+fi
+
+# Create methods for /resume
+create_method "$RESUME_RESOURCE_ID" "OPTIONS"
+create_method "$RESUME_RESOURCE_ID" "GET"
+create_method "$RESUME_RESOURCE_ID" "POST"
+create_method "$RESUME_RESOURCE_ID" "PUT"
+create_method "$RESUME_RESOURCE_ID" "DELETE"
+
+# Create /resume/upload-url resource
+RESUME_UPLOAD_RESOURCE_ID=$(aws apigateway get-resources --rest-api-id "$API_ID" --region "$REGION" --query "items[?path=='/resume/upload-url'].id" --output text)
+
+if [ -z "$RESUME_UPLOAD_RESOURCE_ID" ]; then
+    echo "📝 Erstelle /resume/upload-url Resource..."
+    RESUME_UPLOAD_RESOURCE_ID=$(aws apigateway create-resource \
+        --rest-api-id "$API_ID" \
+        --parent-id "$RESUME_RESOURCE_ID" \
+        --path-part "upload-url" \
+        --region "$REGION" \
+        --query "id" \
+        --output text)
+    echo "✅ /resume/upload-url Resource erstellt: $RESUME_UPLOAD_RESOURCE_ID"
+else
+    echo "✅ /resume/upload-url Resource existiert bereits: $RESUME_UPLOAD_RESOURCE_ID"
+fi
+
+create_method "$RESUME_UPLOAD_RESOURCE_ID" "OPTIONS"
+create_method "$RESUME_UPLOAD_RESOURCE_ID" "POST"
+
+# Create /resume/ocr resource
+RESUME_OCR_RESOURCE_ID=$(aws apigateway get-resources --rest-api-id "$API_ID" --region "$REGION" --query "items[?path=='/resume/ocr'].id" --output text)
+
+if [ -z "$RESUME_OCR_RESOURCE_ID" ]; then
+    echo "📝 Erstelle /resume/ocr Resource..."
+    RESUME_OCR_RESOURCE_ID=$(aws apigateway create-resource \
+        --rest-api-id "$API_ID" \
+        --parent-id "$RESUME_RESOURCE_ID" \
+        --path-part "ocr" \
+        --region "$REGION" \
+        --query "id" \
+        --output text)
+    echo "✅ /resume/ocr Resource erstellt: $RESUME_OCR_RESOURCE_ID"
+else
+    echo "✅ /resume/ocr Resource existiert bereits: $RESUME_OCR_RESOURCE_ID"
+fi
+
+create_method "$RESUME_OCR_RESOURCE_ID" "OPTIONS"
+create_method "$RESUME_OCR_RESOURCE_ID" "POST"
+
 echo ""
 echo "✅ API Gateway Routes erfolgreich konfiguriert!"
 echo ""
@@ -171,4 +235,12 @@ echo "   OPTIONS /profile (CORS Preflight)"
 echo "   GET     /profile"
 echo "   POST    /profile"
 echo "   PUT     /profile"
+echo "   GET     /profiles (Liste)"
+echo "   GET     /profiles/{uuid} (Einzelnes Profil)"
+echo "   GET     /resume (Lebenslauf laden)"
+echo "   POST    /resume (Lebenslauf speichern)"
+echo "   PUT     /resume (Lebenslauf aktualisieren)"
+echo "   DELETE  /resume (Lebenslauf löschen)"
+echo "   POST    /resume/upload-url (Upload URL)"
+echo "   POST    /resume/ocr (OCR-Verarbeitung)"
 

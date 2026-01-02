@@ -108,7 +108,19 @@ async function uploadAndProcessPDF(file) {
             })
         });
         
-        const { uploadUrl, s3Key } = await uploadUrlResponse.json();
+        if (!uploadUrlResponse.ok) {
+            throw new Error('Fehler beim Erstellen der Upload-URL');
+        }
+        
+        const uploadData = await uploadUrlResponse.json();
+        
+        // Prüfe ob Upload-URL verfügbar ist
+        if (!uploadData.uploadUrl) {
+            showNotification('S3-Bucket nicht konfiguriert. Bitte kontaktieren Sie den Administrator.', 'error');
+            return;
+        }
+        
+        const { uploadUrl, s3Key } = uploadData;
         
         // 2. Upload to S3
         document.getElementById('uploadProgress').style.display = 'block';
@@ -129,6 +141,8 @@ async function uploadAndProcessPDF(file) {
         updateProgress(50, 'OCR-Verarbeitung läuft...');
         
         // 3. Start OCR processing
+        updateProgress(50, 'OCR-Verarbeitung läuft...');
+        
         const ocrResponse = await fetch('https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod/resume/ocr', {
             method: 'POST',
             headers: {
@@ -138,7 +152,23 @@ async function uploadAndProcessPDF(file) {
             body: JSON.stringify({ s3Key })
         });
         
+        if (!ocrResponse.ok) {
+            const errorData = await ocrResponse.json();
+            throw new Error(errorData.error || errorData.message || 'OCR processing failed');
+        }
+        
         const ocrResult = await ocrResponse.json();
+        
+        // Prüfe ob OCR erfolgreich war
+        if (!ocrResult.success) {
+            if (ocrResult.status === 'IN_PROGRESS') {
+                showNotification('OCR-Verarbeitung läuft noch. Bitte später erneut versuchen.', 'info');
+                updateProgress(75, 'OCR läuft im Hintergrund...');
+                return;
+            } else {
+                throw new Error(ocrResult.message || 'OCR processing failed');
+            }
+        }
         
         updateProgress(100, 'Fertig!');
         
