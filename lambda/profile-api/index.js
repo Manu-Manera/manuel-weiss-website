@@ -71,9 +71,9 @@ exports.handler = async (event) => {
         }
         
         // Route based on HTTP method and path
-        if (method === 'GET' && path.includes('/profile/')) {
+        if (method === 'GET' && (path.includes('/profile/') || path === '/profile')) {
             // Get user profile
-            const userId = path.split('/').pop() || user.userId;
+            const userId = path.includes('/profile/') ? path.split('/').pop() : user.userId;
             
             // Ensure users can only access their own profile
             if (userId !== user.userId) {
@@ -91,10 +91,19 @@ exports.handler = async (event) => {
             
             const result = await dynamoDB.get(params).promise();
             
+            if (!result.Item) {
+                return {
+                    statusCode: 404,
+                    headers,
+                    body: JSON.stringify({ message: 'Profile not found' })
+                };
+            }
+            
+            // Return all profile fields
             return {
-                statusCode: result.Item ? 200 : 404,
+                statusCode: 200,
                 headers,
-                body: JSON.stringify(result.Item || { message: 'Profile not found' })
+                body: JSON.stringify(result.Item)
             };
             
         } else if (method === 'PUT' && path.includes('/profile')) {
@@ -105,12 +114,18 @@ exports.handler = async (event) => {
             body.userId = user.userId;
             body.updatedAt = new Date().toISOString();
             
-            // Clean up undefined values
+            // Don't delete empty strings - they might be intentional
+            // Only remove undefined values
             Object.keys(body).forEach(key => {
-                if (body[key] === undefined || body[key] === '') {
+                if (body[key] === undefined) {
                     delete body[key];
                 }
             });
+            
+            // Ensure createdAt exists
+            if (!body.createdAt) {
+                body.createdAt = new Date().toISOString();
+            }
             
             const params = {
                 TableName: TABLE_NAME,
@@ -124,7 +139,8 @@ exports.handler = async (event) => {
                 headers,
                 body: JSON.stringify({ 
                     success: true, 
-                    message: 'Profile updated successfully' 
+                    message: 'Profile updated successfully',
+                    profile: body
                 })
             };
             

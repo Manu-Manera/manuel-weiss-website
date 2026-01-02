@@ -662,8 +662,8 @@ class UserProfile {
             dataSharing: document.getElementById('dataSharing')?.checked || false
         };
 
-        // Include profile image URL if available
-        if (this.profileData.profileImageUrl) {
+        // Include profile image URL if available (always include if it exists in profileData)
+        if (this.profileData.profileImageUrl !== undefined) {
             formData.profileImageUrl = this.profileData.profileImageUrl;
         }
 
@@ -686,6 +686,11 @@ class UserProfile {
             type: 'user-profile', // Einheitlicher Typ
             updatedAt: new Date().toISOString()
         };
+
+        // Preserve profileImageUrl if it exists
+        if (this.profileData.profileImageUrl !== undefined) {
+            profileToSave.profileImageUrl = this.profileData.profileImageUrl;
+        }
 
         this.profileData = { ...this.profileData, ...profileToSave };
         

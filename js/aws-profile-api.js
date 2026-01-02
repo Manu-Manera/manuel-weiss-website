@@ -118,8 +118,9 @@ class AWSProfileAPI {
                         headers['Authorization'] = `Bearer ${idToken}`;
                     }
                     
+                    // Use PUT for updates (POST is also supported for backward compatibility)
                     const response = await fetch(`${window.AWS_CONFIG.apiBaseUrl}/profile`, {
-                        method: 'POST',
+                        method: 'PUT',
                         headers: headers,
                         body: JSON.stringify(item)
                     });
