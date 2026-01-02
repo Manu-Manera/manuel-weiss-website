@@ -147,8 +147,13 @@ exports.handler = async (event) => {
                 body: ''
             };
         }
-        const path = event.path || event.rawPath || (event.requestContext && (event.requestContext.path || event.requestContext.resourcePath)) || '';
+        // Normalize path: Remove stage prefix (/prod/, /dev/, etc.)
+        let rawPath = event.path || event.rawPath || (event.requestContext && (event.requestContext.path || event.requestContext.resourcePath)) || '';
+        // Remove stage prefix if present (e.g., /prod/auth/api-key/status -> /auth/api-key/status)
+        const path = rawPath.replace(/^\/[^\/]+\//, '/').replace(/^\/prod\//, '/').replace(/^\/dev\//, '/') || rawPath;
         const method = event.httpMethod || (event.requestContext && (event.requestContext.http?.method || event.requestContext.httpMethod)) || '';
+        
+        console.log('🔍 Path normalization:', { rawPath, normalizedPath: path });
         
         // Parse body safely
         let body = {};
