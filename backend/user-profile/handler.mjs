@@ -104,16 +104,45 @@ export const handler = async (event) => {
     }
 
     // === LEBENSLAUF (RESUME) ENDPUNKTE ===
-    const isResumeRoute = route.includes('/resume') || route.includes('/lebenslauf');
+    // WICHTIG: Spezifischere Routes MÜSSEN ZUERST kommen, da sie sonst von allgemeineren Routes überschrieben werden!
     
     // GET /resumes - Liste aller Lebensläufe (Übersicht)
-    if (httpMethod === 'GET' && (route === '/resumes' || route.includes('/resumes') && !pathParameters.id && !pathParameters.uuid)) {
+    if (httpMethod === 'GET' && (route === '/resumes' || (route.includes('/resumes') && !pathParameters.id && !pathParameters.uuid))) {
       const resumes = await getAllResumes();
       return json(200, resumes, hdr);
     }
     
+    // POST /resume/upload-url - Generiere Presigned URL für PDF-Upload (MUSS VOR /resume kommen!)
+    if (httpMethod === 'POST' && route.includes('/resume/upload-url')) {
+      const user = authUser(event);
+      const body = JSON.parse(event.body || '{}');
+      const uploadUrl = await generateResumeUploadUrl(user.userId, body.fileName, body.contentType);
+      return json(200, uploadUrl, hdr);
+    }
+    
+    // POST /resume/ocr - OCR-Verarbeitung für hochgeladenes PDF (MUSS VOR /resume kommen!)
+    if (httpMethod === 'POST' && route.includes('/resume/ocr')) {
+      const user = authUser(event);
+      const body = JSON.parse(event.body || '{}');
+      const ocrResult = await processResumeOCR(user.userId, body.s3Key);
+      return json(200, ocrResult, hdr);
+    }
+    
+    // PUT /resume/personal-info/{field} - Update einzelnes Feld (MUSS VOR /resume kommen!)
+    if (httpMethod === 'PUT' && route.includes('/resume/personal-info/')) {
+      const user = authUser(event);
+      const fieldName = pathParameters.field || route.split('/personal-info/')[1]?.split('/')[0];
+      const body = JSON.parse(event.body || '{}');
+      const result = await updateResumeField(user.userId, fieldName, body.value);
+      return json(200, result, hdr);
+    }
+    
+    // Allgemeine Resume-Route-Checks (NACH den spezifischen Routes!)
+    const isResumeRoute = route.includes('/resume') || route.includes('/lebenslauf');
+    const isExactResumeRoute = route === '/resume' || route.endsWith('/resume');
+    
     // GET /resume - Lade Lebenslauf des aktuellen Users
-    if (httpMethod === 'GET' && isResumeRoute && route === '/resume' && !pathParameters.uuid && !pathParameters.id) {
+    if (httpMethod === 'GET' && isExactResumeRoute && !pathParameters.uuid && !pathParameters.id) {
       const user = authUser(event);
       const resume = await getResume(user.userId);
       if (!resume) {
@@ -132,8 +161,8 @@ export const handler = async (event) => {
       return json(200, resume, hdr);
     }
     
-    // POST /resume - Erstelle/Update Lebenslauf
-    if (httpMethod === 'POST' && isResumeRoute) {
+    // POST /resume - Erstelle/Update Lebenslauf (nur für exakte Route)
+    if (httpMethod === 'POST' && isExactResumeRoute) {
       const user = authUser(event);
       let body;
       try {
@@ -151,8 +180,8 @@ export const handler = async (event) => {
       }
     }
     
-    // PUT /resume - Update Lebenslauf
-    if (httpMethod === 'PUT' && isResumeRoute) {
+    // PUT /resume - Update Lebenslauf (nur für exakte Route oder /resume/skills, /resume/projects)
+    if (httpMethod === 'PUT' && isExactResumeRoute) {
       const user = authUser(event);
       let body;
       try {
@@ -171,35 +200,10 @@ export const handler = async (event) => {
     }
     
     // DELETE /resume - Lösche Lebenslauf
-    if (httpMethod === 'DELETE' && isResumeRoute) {
+    if (httpMethod === 'DELETE' && isExactResumeRoute) {
       const user = authUser(event);
       await deleteResume(user.userId);
       return json(200, { message: 'Resume deleted successfully' }, hdr);
-    }
-    
-    // POST /resume/upload-url - Generiere Presigned URL für PDF-Upload
-    if (httpMethod === 'POST' && route.includes('/resume/upload-url')) {
-      const user = authUser(event);
-      const body = JSON.parse(event.body || '{}');
-      const uploadUrl = await generateResumeUploadUrl(user.userId, body.fileName, body.contentType);
-      return json(200, uploadUrl, hdr);
-    }
-    
-    // POST /resume/ocr - OCR-Verarbeitung für hochgeladenes PDF
-    if (httpMethod === 'POST' && route.includes('/resume/ocr')) {
-      const user = authUser(event);
-      const body = JSON.parse(event.body || '{}');
-      const ocrResult = await processResumeOCR(user.userId, body.s3Key);
-      return json(200, ocrResult, hdr);
-    }
-    
-    // PUT /resume/personal-info/{field} - Update einzelnes Feld
-    if (httpMethod === 'PUT' && route.includes('/resume/personal-info/')) {
-      const user = authUser(event);
-      const fieldName = pathParameters.field || route.split('/personal-info/')[1]?.split('/')[0];
-      const body = JSON.parse(event.body || '{}');
-      const result = await updateResumeField(user.userId, fieldName, body.value);
-      return json(200, result, hdr);
     }
     
     // === PROJEKTE ENDPUNKTE ===
