@@ -724,8 +724,11 @@ function removeProject(projectId) {
     document.querySelector(`[data-project-id="${projectId}"]`).remove();
 }
 
-function addTechTag(projectId) {
-    const container = document.getElementById(`tech-${projectId}`);
+function addTechTag(itemId) {
+    // itemId kann 'project-xxx' oder 'exp-xxx' sein
+    const container = document.getElementById(`tech-${itemId}`);
+    if (!container) return;
+    
     const tagHtml = `
         <span class="tech-tag">
             <input type="text" placeholder="z.B. React, Node.js">
@@ -741,8 +744,11 @@ function removeTechTag(button) {
     button.closest('.tech-tag').remove();
 }
 
-function addAchievement(projectId) {
-    const container = document.getElementById(`achievements-${projectId}`);
+function addAchievement(itemId) {
+    // itemId kann 'project-xxx' oder 'exp-xxx' sein
+    const container = document.getElementById(`achievements-${itemId}`);
+    if (!container) return;
+    
     const achievementHtml = `
         <div class="achievement-item">
             <input type="text" placeholder="z.B. User-Base um 200% gesteigert">
