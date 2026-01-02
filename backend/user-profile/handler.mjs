@@ -135,17 +135,39 @@ export const handler = async (event) => {
     // POST /resume - Erstelle/Update Lebenslauf
     if (httpMethod === 'POST' && isResumeRoute) {
       const user = authUser(event);
-      const body = JSON.parse(event.body || '{}');
-      const resume = await saveResume(user.userId, body);
-      return json(200, resume, hdr);
+      let body;
+      try {
+        body = JSON.parse(event.body || '{}');
+      } catch (parseError) {
+        console.error('Error parsing request body:', parseError);
+        return json(400, { error: 'Invalid JSON in request body', message: parseError.message }, hdr);
+      }
+      try {
+        const resume = await saveResume(user.userId, body);
+        return json(200, resume, hdr);
+      } catch (saveError) {
+        console.error('Error saving resume:', saveError);
+        return json(500, { error: 'Failed to save resume', message: saveError.message }, hdr);
+      }
     }
     
     // PUT /resume - Update Lebenslauf
     if (httpMethod === 'PUT' && isResumeRoute) {
       const user = authUser(event);
-      const body = JSON.parse(event.body || '{}');
-      const resume = await saveResume(user.userId, body);
-      return json(200, resume, hdr);
+      let body;
+      try {
+        body = JSON.parse(event.body || '{}');
+      } catch (parseError) {
+        console.error('Error parsing request body:', parseError);
+        return json(400, { error: 'Invalid JSON in request body', message: parseError.message }, hdr);
+      }
+      try {
+        const resume = await saveResume(user.userId, body);
+        return json(200, resume, hdr);
+      } catch (saveError) {
+        console.error('Error saving resume:', saveError);
+        return json(500, { error: 'Failed to save resume', message: saveError.message }, hdr);
+      }
     }
     
     // DELETE /resume - Lösche Lebenslauf
