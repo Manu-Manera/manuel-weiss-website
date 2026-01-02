@@ -1135,8 +1135,31 @@ function parseOCRText(text) {
 function authUser(event) {
   const token = (event.headers?.authorization || event.headers?.Authorization || '').replace(/^Bearer\s+/, '');
   if (!token) throw new Error('unauthorized');
-  const payload = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString('utf8'));
-  return { userId: payload.sub, email: payload.email };
+  
+  // Validate JWT format (should have 3 parts separated by dots)
+  const parts = token.split('.');
+  if (parts.length !== 3) {
+    console.error('Invalid token format: expected 3 parts, got', parts.length);
+    throw new Error('Invalid token format');
+  }
+  
+  const payloadPart = parts[1];
+  if (!payloadPart) {
+    console.error('Token payload is undefined');
+    throw new Error('Invalid token: missing payload');
+  }
+  
+  try {
+    const payload = JSON.parse(Buffer.from(payloadPart, 'base64').toString('utf8'));
+    if (!payload.sub) {
+      console.error('Token payload missing sub field:', payload);
+      throw new Error('Invalid token: missing user id');
+    }
+    return { userId: payload.sub, email: payload.email || '' };
+  } catch (parseError) {
+    console.error('Error parsing token payload:', parseError);
+    throw new Error('Invalid token: could not parse payload');
+  }
 }
 
 function json(code, body, headers) {
