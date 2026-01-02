@@ -35,10 +35,18 @@ export const handler = async (event) => {
     const route = event.resource || event.path || event.requestContext?.path || event.rawPath || '';
     const httpMethod = event.httpMethod || event.requestContext?.http?.method || '';
     const pathParameters = event.pathParameters || {};
-    // Extrahiere UUID aus Route falls vorhanden (z.B. /profiles/{uuid})
-    const uuidFromRoute = route.match(/\/profiles\/([^\/]+)/)?.[1] || pathParameters.uuid || pathParameters.proxy;
-    
-    console.log('🔍 Route Debug:', { route, httpMethod, pathParameters, uuidFromRoute });
+    // Extrahiere UUID aus verschiedenen Quellen
+    let uuidFromRoute = pathParameters.uuid || pathParameters.proxy;
+    // Falls nicht in pathParameters, versuche aus path zu extrahieren
+    if (!uuidFromRoute && route) {
+      const match = route.match(/\/profiles\/([^\/{]+)/);
+      if (match) uuidFromRoute = match[1];
+    }
+    // Falls path wie /profiles/{uuid} ist, nutze den tatsächlichen path
+    if (!uuidFromRoute && event.path) {
+      const pathMatch = event.path.match(/\/profiles\/([^\/]+)/);
+      if (pathMatch) uuidFromRoute = pathMatch[1];
+    }
     const isProfileRoute = route.includes('/profile') && !route.includes('/progress') && !route.includes('/upload');
     
     // GET /profiles - Liste aller Profile (nur Übersicht)
