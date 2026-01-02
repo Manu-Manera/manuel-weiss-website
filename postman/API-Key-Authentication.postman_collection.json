@@ -42,7 +42,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"apiKeyId\": \"{{apiKeyId}}\",\n  \"publicKey\": \"{{publicKey}}\",\n  \"metadata\": {\n    \"name\": \"Postman API Key\",\n    \"description\": \"API Key for Postman testing\"\n  }\n}",
+					"raw": "{\n  \"apiKeyId\": \"{{apiKeyId}}\",\n  \"publicKey\": \"{{publicKey}}\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"

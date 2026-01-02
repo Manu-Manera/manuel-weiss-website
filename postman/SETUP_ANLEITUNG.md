@@ -231,6 +231,7 @@ Wenn du einen **401 Unauthorized** Fehler bekommst:
 - **Token-Generierung Details:** `TOKEN_GENERIERUNG.md`
 - **API Dokumentation:** `API_ENDPOINTS_POSTMAN.md`
 - **Collection README:** `README.md`
+- **API Key Authentication:** `API_KEY_AUTH_POSTMAN_ANLEITUNG.md` (Private/Public Key Pair)
 
 ---
 
