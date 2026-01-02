@@ -106,10 +106,19 @@ export const handler = async (event) => {
     // === LEBENSLAUF (RESUME) ENDPUNKTE ===
     const isResumeRoute = route.includes('/resume') || route.includes('/lebenslauf');
     
+    // GET /resumes - Liste aller Lebensläufe (Übersicht)
+    if (httpMethod === 'GET' && (route === '/resumes' || route.includes('/resumes') && !pathParameters.id && !pathParameters.uuid)) {
+      const resumes = await getAllResumes();
+      return json(200, resumes, hdr);
+    }
+    
     // GET /resume - Lade Lebenslauf des aktuellen Users
-    if (httpMethod === 'GET' && isResumeRoute && !pathParameters.uuid) {
+    if (httpMethod === 'GET' && isResumeRoute && route === '/resume' && !pathParameters.uuid && !pathParameters.id) {
       const user = authUser(event);
       const resume = await getResume(user.userId);
+      if (!resume) {
+        return json(404, { message: 'Resume not found' }, hdr);
+      }
       return json(200, resume, hdr);
     }
     
