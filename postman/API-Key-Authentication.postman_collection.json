@@ -413,10 +413,10 @@
 			"type": "string"
 		},
 		{
-			"key": "signingServerUrl",
-			"value": "http://localhost:3001/sign",
+			"key": "signingServerBaseUrl",
+			"value": "http://localhost:3001",
 			"type": "string",
-			"description": "URL des lokalen Signing-Servers für automatische Signature-Generierung"
+			"description": "Base URL des lokalen Signing-Servers (ohne /sign)"
 		}
 	]
 }
