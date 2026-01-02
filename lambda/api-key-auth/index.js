@@ -231,18 +231,6 @@ exports.handler = async (event) => {
                     })
                 };
             }
-        } catch (registerError) {
-                console.error('❌ Register error:', registerError);
-                console.error('❌ Register error stack:', registerError.stack);
-                return {
-                    statusCode: 500,
-                    headers,
-                    body: JSON.stringify({
-                        error: 'Failed to register public key',
-                        details: registerError.message
-                    })
-                };
-            }
         }
         
         // POST /auth/api-key/challenge - Challenge generieren
