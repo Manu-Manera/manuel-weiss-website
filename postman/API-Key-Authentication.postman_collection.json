@@ -10,6 +10,40 @@
 			"name": "1. Register Public Key",
 			"event": [
 				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Debug: Zeige welcher Public Key gesendet wird",
+							"const publicKey = pm.environment.get('publicKey') || pm.collectionVariables.get('publicKey');",
+							"if (publicKey) {",
+							"    const firstLine = publicKey.replace(/\\\\n/g, '\\n').split('\\n')[1] || publicKey.substring(0, 100);",
+							"    console.log('📋 Public Key der gesendet wird:');",
+							"    console.log('  Erste Zeile:', firstLine.substring(0, 50) + '...');",
+							"    console.log('  Länge:', publicKey.length);",
+							"    ",
+							"    // Prüfe ob Public Key korrekt ist (sollte mit 'rm5z3eAoBi5iy/5N/sKZ' beginnen für apiKeyId 9eadacab...)",
+							"    const apiKeyId = pm.environment.get('apiKeyId') || pm.collectionVariables.get('apiKeyId');",
+							"    if (apiKeyId === '9eadacab-bc87-4dff-8d01-e4862c654b45') {",
+							"        if (!firstLine.includes('rm5z3eAoBi5iy/5N/sKZ')) {",
+							"            console.error('');",
+							"            console.error('⚠️  WARNUNG: Falscher Public Key!');",
+							"            console.error('   Erwartet: rm5z3eAoBi5iy/5N/sKZ...');",
+							"            console.error('   Tatsächlich:', firstLine.substring(0, 50) + '...');",
+							"            console.error('');",
+							"            console.error('💡 Lösung:');",
+							"            console.error('   1. Führe aus: node scripts/update-postman-environment.js');",
+							"            console.error('   2. Importiere Environment in Postman erneut');",
+							"            console.error('   3. Aktiviere Environment (Dropdown oben rechts)');",
+							"        }",
+							"    }",
+							"} else {",
+							"    console.error('⚠️  Public Key nicht gefunden in Environment/Collection Variables!');",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
 					"listen": "test",
 					"script": {
 						"exec": [
@@ -21,11 +55,11 @@
 							"    var jsonData = pm.response.json();",
 							"    pm.expect(jsonData).to.have.property('success', true);",
 							"    ",
-					"    // Speichere apiKeyId für weitere Requests",
-					"    if (jsonData.apiKeyId) {",
-					"        pm.environment.set('apiKeyId', jsonData.apiKeyId);",
-					"        pm.collectionVariables.set('apiKeyId', jsonData.apiKeyId);",
-					"    }",
+							"    // Speichere apiKeyId für weitere Requests",
+							"    if (jsonData.apiKeyId) {",
+							"        pm.environment.set('apiKeyId', jsonData.apiKeyId);",
+							"        pm.collectionVariables.set('apiKeyId', jsonData.apiKeyId);",
+							"    }",
 							"});"
 						],
 						"type": "text/javascript"
