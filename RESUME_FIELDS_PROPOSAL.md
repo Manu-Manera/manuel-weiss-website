@@ -1,8 +1,17 @@
 # Lebenslauf-Felder Vorschlag - Modern & API-First
+## Basierend auf HR-Trends 2024/2025
 
 ## 📋 Übersicht
 
 Dieses Dokument beschreibt alle empfohlenen Datenfelder für den Lebenslauf-Editor, strukturiert nach Sektionen mit API-Endpunkten.
+
+**Recherche-Basis:** Aktuelle HR-Trends 2024/2025 zeigen, dass HR-Mitarbeiter besonders Wert legen auf:
+- **Skills-First Ansatz** - Fähigkeiten vor Abschlüssen
+- **Konkrete Ergebnisse** - Quantifizierbare Erfolge und Metriken
+- **Projekte** - Praktische Erfahrungen mit Beispielen
+- **Digitale Präsenz** - GitHub, Portfolio, LinkedIn
+- **ATS-Optimierung** - Keywords, standardisiertes Layout
+- **Kulturelle Passung** - Werte und Arbeitsphilosophie
 
 ---
 
@@ -17,17 +26,21 @@ Dieses Dokument beschreibt alle empfohlenen Datenfelder für den Lebenslauf-Edit
 - `linkedin` - LinkedIn Profil
 - `website` - Website/Portfolio
 
-### Empfohlene Ergänzungen 🆕
-- `title` - Berufsbezeichnung (z.B. "Senior Software Engineer")
-- `summary` - Kurzprofil (2-3 Sätze, sehr wichtig für ATS!)
-- `photo` - Profilbild (URL)
-- `dateOfBirth` - Geburtsdatum (optional, für manche Länder)
-- `nationality` - Nationalität (optional)
-- `visaStatus` - Arbeitserlaubnis/Visum (optional, für internationale Jobs)
-- `github` - GitHub Profil
+### Empfohlene Ergänzungen 🆕 (HR-Priorität: ⭐⭐⭐⭐⭐)
+- `title` - Berufsbezeichnung (z.B. "Senior Software Engineer") **SEHR WICHTIG**
+- `summary` - Kurzprofil (2-3 Sätze, 3-5 zentrale Fähigkeiten) **KRITISCH für ATS!**
+- `photo` - Profilbild (URL) - Optional, aber modern
+- `github` - GitHub Profil **WICHTIG für Tech-Jobs**
 - `xing` - Xing Profil (für DACH-Region)
 - `location` - Standort (Stadt, Land) - getrennt von Adresse
 - `availability` - Verfügbarkeit (z.B. "Sofort", "In 2 Monaten")
+- `workModel` - Arbeitsmodell (Remote, Hybrid, Vor Ort) **TREND 2025**
+- `portfolio` - Portfolio-URL (zusätzlich zu Website)
+
+### Optional (weniger Priorität)
+- `dateOfBirth` - Geburtsdatum (nur wenn erforderlich)
+- `nationality` - Nationalität (nur für internationale Jobs)
+- `visaStatus` - Arbeitserlaubnis/Visum (nur für internationale Jobs)
 
 ### API-Endpunkte
 ```
@@ -46,7 +59,7 @@ POST   /resume/personal-info/photo    (Upload Profilbild)
 - Zeitraum
 - Beschreibung
 
-### Empfohlene Ergänzungen 🆕
+### Empfohlene Ergänzungen 🆕 (HR-Priorität: ⭐⭐⭐⭐⭐)
 - `jobTitle` - Position/Jobtitel *
 - `company` - Unternehmen *
 - `location` - Standort (Stadt, Land)
@@ -55,10 +68,13 @@ POST   /resume/personal-info/photo    (Upload Profilbild)
 - `current` - Boolean (aktuell tätig)
 - `employmentType` - Art der Beschäftigung (Vollzeit, Teilzeit, Freelance, Praktikum)
 - `description` - Array von Beschreibungen/Aufgaben
-- `achievements` - Array von Erfolgen/Metriken (z.B. "Umsatz um 30% gesteigert")
-- `technologies` - Array von verwendeten Technologien/Tools
+- `achievements` - Array von Erfolgen/Metriken **KRITISCH!** (z.B. "Umsatz um 30% gesteigert", "Team von 5 auf 15 erweitert")
+- `technologies` - Array von verwendeten Technologien/Tools **WICHTIG für Skills-Matching**
+- `skills` - Array von angewandten Skills (Hard & Soft Skills) **Skills-First Ansatz**
+- `metrics` - Quantifizierbare Ergebnisse (z.B. "Budget: €500k", "Kunden: 200+", "Performance: +40%")
 - `teamSize` - Teamgröße (optional)
 - `industry` - Branche (optional)
+- `remote` - Boolean (Remote/Hybrid/Vor Ort) **TREND 2025**
 
 ### API-Endpunkte
 ```
@@ -108,16 +124,21 @@ DELETE /resume/education/{id}
 ### Aktuelle Struktur ✅
 - Skills (kommagetrennt)
 
-### Empfohlene Struktur 🆕
-**Kategorisierung ist wichtig für ATS!**
+### Empfohlene Struktur 🆕 (HR-Priorität: ⭐⭐⭐⭐⭐)
+**Skills-First Ansatz - HR legt 2025 besonderen Wert darauf!**
 
-- `technicalSkills` - Technische Fähigkeiten
-  - `category` - Kategorie (z.B. "Programmiersprachen", "Frameworks", "Tools")
+- `technicalSkills` - Technische Fähigkeiten (Hard Skills) **KRITISCH**
+  - `category` - Kategorie (z.B. "Programmiersprachen", "Frameworks", "Tools", "Cloud", "Databases")
   - `skills` - Array von Skills
-  - `proficiency` - Niveau (Beginner, Intermediate, Advanced, Expert) - optional
-- `softSkills` - Soft Skills (z.B. "Kommunikation", "Teamarbeit")
+  - `proficiency` - Niveau (Beginner, Intermediate, Advanced, Expert)
+  - `yearsOfExperience` - Jahre Erfahrung (optional)
+  - `lastUsed` - Zuletzt verwendet (YYYY-MM, optional)
+- `softSkills` - Soft Skills **WICHTIG für Cultural Fit**
+  - `skill` - Skill-Name
+  - `examples` - Array von konkreten Beispielen/Projekten, die das Skill belegen
 - `languages` - Sprachen (siehe separater Abschnitt)
 - `certifications` - Zertifikate (siehe separater Abschnitt)
+- `keywords` - Automatisch generierte Keywords für ATS-Optimierung
 
 ### API-Endpunkte
 ```
@@ -187,17 +208,23 @@ DELETE /resume/certifications/{id}
 ### Aktuelle Struktur ❌
 - Nicht vorhanden
 
-### Empfohlene Struktur 🆕
+### Empfohlene Struktur 🆕 (HR-Priorität: ⭐⭐⭐⭐⭐)
+**HR legt 2025 besonderen Wert auf praktische Projekterfahrungen!**
+
 - `name` - Projektname *
 - `description` - Beschreibung *
 - `role` - Rolle im Projekt (z.B. "Lead Developer", "Product Manager")
 - `startDate` - Startdatum (YYYY-MM)
 - `endDate` - Enddatum (YYYY-MM) oder "laufend"
-- `technologies` - Array von Technologien
+- `technologies` - Array von Technologien **WICHTIG für Skills-Matching**
+- `skills` - Array von angewandten Skills (Hard & Soft)
 - `url` - Projekt-URL (optional)
-- `githubUrl` - GitHub-Repository (optional)
-- `achievements` - Array von Erfolgen/Metriken
+- `githubUrl` - GitHub-Repository **SEHR WICHTIG für Tech-Jobs**
+- `achievements` - Array von Erfolgen/Metriken **KRITISCH!** (z.B. "User-Base um 200% gesteigert")
+- `metrics` - Quantifizierbare Ergebnisse
 - `teamSize` - Teamgröße (optional)
+- `client` - Kunde/Unternehmen (optional, für externe Projekte)
+- `status` - Status (Abgeschlossen, Laufend, Pausiert)
 
 ### API-Endpunkte
 ```
@@ -298,25 +325,37 @@ DELETE /resume/volunteer/{id}
 
 ---
 
-## 📊 Priorisierung
+## 📊 Priorisierung (Basierend auf HR-Trends 2024/2025)
 
-### Phase 1: Essentiell (Sofort implementieren)
-1. ✅ Persönliche Informationen (erweitert)
-2. ✅ Berufserfahrung (erweitert)
-3. ✅ Ausbildung (erweitert)
-4. ✅ Fähigkeiten (kategorisiert)
-5. ✅ Sprachen (erweitert)
+### Phase 1: KRITISCH - Sofort implementieren (HR-Priorität: ⭐⭐⭐⭐⭐)
+1. ✅ **Kurzprofil (Summary)** - 3-5 zentrale Fähigkeiten, Jobtitel **KRITISCH für ATS!**
+2. ✅ **Persönliche Informationen (erweitert)** - title, summary, github, portfolio
+3. ✅ **Fähigkeiten (Skills)** - Kategorisiert, Hard & Soft Skills mit Beispielen **Skills-First Ansatz!**
+4. ✅ **Berufserfahrung (erweitert)** - achievements, metrics, technologies, skills **Ergebnisse im Fokus!**
+5. ✅ **Projekte** - Mit achievements, metrics, githubUrl **Praktische Erfahrungen!**
 
-### Phase 2: Wichtig (Nächster Schritt)
-6. 🆕 Zertifikate & Weiterbildungen
-7. 🆕 Projekte
-8. 🆕 Kurzprofil (Summary)
+### Phase 2: WICHTIG - Nächster Schritt (HR-Priorität: ⭐⭐⭐⭐)
+6. ✅ **Ausbildung (erweitert)** - fieldOfStudy, grade, honors
+7. 🆕 **Zertifikate & Weiterbildungen** - Zeigt kontinuierliche Entwicklung
+8. ✅ **Sprachen (erweitert)** - proficiency, certificate
+9. 🆕 **Arbeitsmodell** - Remote/Hybrid/Vor Ort **TREND 2025**
 
-### Phase 3: Optional (Später)
-9. 🆕 Publikationen
-10. 🆕 Referenzen
-11. 🆕 Hobbys & Interessen
-12. 🆕 Ehrenamtliche Tätigkeiten
+### Phase 3: NÜTZLICH - Später (HR-Priorität: ⭐⭐⭐)
+10. 🆕 **Kulturelle Passung** - Werte, Arbeitsphilosophie (optional)
+11. 🆕 **Ehrenamtliche Tätigkeiten** - Zeigt Engagement
+12. 🆕 **Hobbys & Interessen** - Nur wenn relevant für Position
+
+### Phase 4: Optional - Spezialfälle (HR-Priorität: ⭐⭐)
+13. 🆕 **Publikationen** - Für akademische/technische Profile
+14. 🆕 **Referenzen** - Meist "auf Anfrage"
+15. 🆕 **Awards & Auszeichnungen** - Optional
+
+### 🎯 HR-Fokus 2025: Was wirklich zählt
+- **Skills-First** - Fähigkeiten vor Abschlüssen
+- **Konkrete Ergebnisse** - Quantifizierbare Erfolge (Metriken!)
+- **Projekte** - Praktische Erfahrungen mit Beispielen
+- **Digitale Präsenz** - GitHub, Portfolio, LinkedIn
+- **ATS-Optimierung** - Keywords, standardisiertes Layout
 
 ---
 
@@ -396,24 +435,81 @@ PUT /resume/skills/technical/programming
 
 ---
 
-## ✅ Zusammenfassung
+## ✅ Zusammenfassung - HR-Fokus 2025
 
-**Empfohlene Felder für modernen, praktischen Lebenslauf:**
+### 🔥 TOP-Priorität (Was HR-Mitarbeiter 2025 am meisten wert legen):
 
-1. **Persönliche Info** (erweitert): title, summary, photo, github, xing, location, availability
-2. **Berufserfahrung** (erweitert): achievements, technologies, employmentType, teamSize
-3. **Ausbildung** (erweitert): fieldOfStudy, grade, thesis, honors
-4. **Fähigkeiten** (kategorisiert): technicalSkills (nach Kategorien), softSkills
-5. **Sprachen** (erweitert): proficiency, certificate, separate skills
-6. **Zertifikate** (neu): name, issuer, dates, credentialId
-7. **Projekte** (neu): name, description, role, technologies, achievements
-8. **Kurzprofil** (neu): summary (sehr wichtig für ATS!)
+1. **Kurzprofil (Summary)** ⭐⭐⭐⭐⭐
+   - 2-3 Sätze mit Jobtitel und 3-5 zentralen Fähigkeiten
+   - **KRITISCH für ATS-Screening!**
 
-**Optional:**
+2. **Skills (Fähigkeiten)** ⭐⭐⭐⭐⭐
+   - Hard Skills: Kategorisiert (Programmiersprachen, Tools, etc.)
+   - Soft Skills: Mit konkreten Beispielen belegt
+   - **Skills-First Ansatz - HR-Trend 2025!**
+
+3. **Achievements & Metriken** ⭐⭐⭐⭐⭐
+   - Quantifizierbare Erfolge in Berufserfahrung
+   - Konkrete Ergebnisse in Projekten
+   - **"Was wurde erreicht?" statt nur "Was wurde gemacht?"**
+
+4. **Projekte** ⭐⭐⭐⭐⭐
+   - Praktische Erfahrungen mit GitHub-Links
+   - Technologien und Skills
+   - Achievements und Metriken
+   - **Zeigt praktische Anwendung von Skills!**
+
+5. **Digitale Präsenz** ⭐⭐⭐⭐
+   - GitHub (für Tech-Jobs essentiell!)
+   - Portfolio/Website
+   - LinkedIn
+   - **Zeigt Engagement und Professionalität**
+
+6. **Berufserfahrung (erweitert)** ⭐⭐⭐⭐⭐
+   - Achievements mit Metriken
+   - Technologies & Skills
+   - Remote/Hybrid Optionen
+   - **Ergebnisse im Fokus!**
+
+### 📋 Empfohlene Felder für modernen, praktischen Lebenslauf:
+
+**Phase 1 (KRITISCH):**
+- ✅ Kurzprofil (Summary) - **NEU, höchste Priorität!**
+- ✅ Persönliche Info: title, summary, github, portfolio, workModel
+- ✅ Skills: technicalSkills (kategorisiert), softSkills (mit Beispielen)
+- ✅ Berufserfahrung: achievements, metrics, technologies, skills
+- ✅ Projekte: achievements, metrics, githubUrl, technologies
+
+**Phase 2 (WICHTIG):**
+- ✅ Ausbildung: fieldOfStudy, grade, honors
+- ✅ Zertifikate: name, issuer, dates, credentialId
+- ✅ Sprachen: proficiency, certificate
+- ✅ Arbeitsmodell: Remote/Hybrid/Vor Ort
+
+**Phase 3 (Optional):**
+- Kulturelle Passung (Werte, Arbeitsphilosophie)
+- Ehrenamtliche Tätigkeiten
+- Hobbys & Interessen
 - Publikationen
 - Referenzen
-- Hobbys & Interessen
-- Ehrenamtliche Tätigkeiten
 
-Alle Felder sollten über eigene API-Endpunkte verfügen für maximale Flexibilität!
+### 🎯 HR-Insights 2025:
+
+**Was HR-Mitarbeiter suchen:**
+- ✅ Skills-First statt nur Abschlüsse
+- ✅ Konkrete Ergebnisse statt nur Aufgaben
+- ✅ Praktische Projekte mit Beispielen
+- ✅ Digitale Präsenz (GitHub, Portfolio)
+- ✅ ATS-optimiert (Keywords, standardisiertes Layout)
+- ✅ Kulturelle Passung (Werte, Arbeitsphilosophie)
+
+**Was weniger wichtig ist:**
+- ❌ Nur formale Abschlüsse ohne Skills
+- ❌ Aufgabenlisten ohne Ergebnisse
+- ❌ Fehlende digitale Präsenz
+- ❌ Keine quantifizierbaren Erfolge
+
+### 🚀 API-First Prinzip:
+
+Alle Felder sollten über eigene API-Endpunkte verfügen für maximale Flexibilität und Auto-Save-Funktionalität!
 
