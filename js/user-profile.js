@@ -9,18 +9,14 @@ class UserProfile {
     }
 
     async init() {
-            this.setupEventListeners();
+        this.setupEventListeners();
         await this.loadProfileDataFromAWS();
         this.updateProgressDisplay();
         this.updateStats();
         this.checkAuthStatus();
         
-        // Handle hash navigation
-        this.handleHashNavigation();
-        window.addEventListener('hashchange', () => this.handleHashNavigation());
-        
         // Check if we need to migrate local data to AWS
-        this.migrateLocalDataIfNeeded();
+        await this.migrateLocalDataIfNeeded();
         
         // Aktiviere Auto-Save wenn User angemeldet ist
         this.setupAutoSave();
@@ -29,9 +25,76 @@ class UserProfile {
         document.addEventListener('userLoggedIn', () => {
             this.setupAutoSave();
         });
+        
+        // Handle hash navigation - am Ende nach allen asynchronen Operationen
+        // Verwende mehrschichtige Verzögerung für maximale Zuverlässigkeit
+        const performHashNavigation = () => {
+            // Prüfe sofort, ob Hash vorhanden ist
+            const hash = window.location.hash.slice(1);
+            if (hash && ['personal', 'settings', 'progress', 'achievements'].includes(hash)) {
+                // Hash vorhanden - führe Navigation mit Polling aus
+                this.handleHashNavigation();
+            } else {
+                // Kein Hash - Standard-Tab aktivieren
+                this.handleHashNavigation();
+            }
+        };
+
+        // Mehrschichtige Verzögerung für maximale Zuverlässigkeit
+        requestAnimationFrame(() => {
+            setTimeout(() => {
+                performHashNavigation();
+            }, 100); // Erhöht von 50ms auf 100ms für bessere Zuverlässigkeit
+        });
+        
+        // Event-Listener für Hash-Änderungen
+        window.addEventListener('hashchange', () => this.handleHashNavigation());
+        
+        // Zusätzliche Hash-Navigation nach kurzer Verzögerung
+        // Dies stellt sicher, dass auch bei sehr langsamen Verbindungen die Navigation funktioniert
+        setTimeout(() => {
+            const hash = window.location.hash.slice(1);
+            if (hash && ['personal', 'settings', 'progress', 'achievements'].includes(hash)) {
+                // Prüfe ob Tab bereits aktiv ist
+                const activeTab = document.querySelector('.tab-btn.active');
+                const expectedTab = document.querySelector(`[data-tab="${hash}"]`);
+                if (activeTab !== expectedTab) {
+                    console.log('🔄 Zusätzliche Hash-Navigation nach Verzögerung...');
+                    this.handleHashNavigation();
+                }
+            }
+        }, 500); // Nach 500ms nochmal prüfen
     }
     
-    handleHashNavigation() {
+    handleHashNavigation(maxAttempts = 10, currentAttempt = 0) {
+        // Prüfe, ob Tab-Elemente bereits geladen sind
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        const tabPanels = document.querySelectorAll('.tab-panel');
+        
+        // Prüfe auf spezifische Elemente für alle möglichen Tabs
+        const requiredTabs = ['personal', 'settings', 'progress', 'achievements'];
+        const allTabsExist = requiredTabs.every(tabName => {
+            const button = document.querySelector(`[data-tab="${tabName}"]`);
+            const panel = document.getElementById(tabName);
+            return button !== null && panel !== null;
+        });
+        
+        if (!allTabsExist) {
+            if (currentAttempt < maxAttempts) {
+                console.log(`⏳ Tab-Elemente noch nicht geladen (Versuch ${currentAttempt + 1}/${maxAttempts}), verzögere Hash-Navigation...`);
+                setTimeout(() => this.handleHashNavigation(maxAttempts, currentAttempt + 1), 100);
+                return;
+            } else {
+                console.error('❌ Tab-Elemente nach', maxAttempts, 'Versuchen nicht gefunden. Verwende Standard-Tab.');
+                // Fallback: Standard-Tab aktivieren
+                const hash = window.location.hash.slice(1);
+                if (!hash || !['personal', 'settings', 'progress', 'achievements'].includes(hash)) {
+                    this.switchTab('personal');
+                }
+                return;
+            }
+        }
+        
         const hash = window.location.hash.slice(1); // Remove the #
         if (hash && ['personal', 'settings', 'progress', 'achievements'].includes(hash)) {
             console.log('📍 Navigating to tab:', hash);
@@ -208,23 +271,42 @@ class UserProfile {
     }
 
     switchTab(tabName) {
-        // Update tab buttons
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.classList.remove('active');
-        });
-        document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+        try {
+            // Prüfe, ob Tab-Button existiert
+            const tabButton = document.querySelector(`[data-tab="${tabName}"]`);
+            if (!tabButton) {
+                console.warn(`⚠️ Tab-Button für "${tabName}" nicht gefunden`);
+                return;
+            }
 
-        // Update tab panels
-        document.querySelectorAll('.tab-panel').forEach(panel => {
-            panel.classList.remove('active');
-        });
-        document.getElementById(tabName).classList.add('active');
+            // Prüfe, ob Tab-Panel existiert
+            const tabPanel = document.getElementById(tabName);
+            if (!tabPanel) {
+                console.warn(`⚠️ Tab-Panel für "${tabName}" nicht gefunden`);
+                return;
+            }
 
-        this.currentTab = tabName;
+            // Update tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            tabButton.classList.add('active');
 
-        // Update progress display if switching to progress tab
-        if (tabName === 'progress') {
-            this.updateProgressDisplay();
+            // Update tab panels
+            document.querySelectorAll('.tab-panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+            tabPanel.classList.add('active');
+
+            this.currentTab = tabName;
+            console.log(`✅ Tab gewechselt zu: ${tabName}`);
+
+            // Update progress display if switching to progress tab
+            if (tabName === 'progress') {
+                this.updateProgressDisplay();
+            }
+        } catch (error) {
+            console.error(`❌ Fehler beim Wechseln zum Tab "${tabName}":`, error);
         }
     }
 
