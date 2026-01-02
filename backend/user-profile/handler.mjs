@@ -31,11 +31,14 @@ export const handler = async (event) => {
       };
     }
 
-    const route = event.resource || event.path || event.requestContext?.path || '';
+    // Route kann aus verschiedenen Quellen kommen (API Gateway REST/HTTP)
+    const route = event.resource || event.path || event.requestContext?.path || event.rawPath || '';
     const httpMethod = event.httpMethod || event.requestContext?.http?.method || '';
     const pathParameters = event.pathParameters || {};
     // Extrahiere UUID aus Route falls vorhanden (z.B. /profiles/{uuid})
     const uuidFromRoute = route.match(/\/profiles\/([^\/]+)/)?.[1] || pathParameters.uuid || pathParameters.proxy;
+    
+    console.log('🔍 Route Debug:', { route, httpMethod, pathParameters, uuidFromRoute });
     const isProfileRoute = route.includes('/profile') && !route.includes('/progress') && !route.includes('/upload');
     
     // GET /profiles - Liste aller Profile (nur Übersicht)
