@@ -1152,7 +1152,7 @@ class UserProfile {
                         <a href="applications/resume-editor.html" class="btn-icon" title="Bearbeiten">
                             <i class="fas fa-edit"></i>
                         </a>
-                        <button class="btn-icon" onclick="deleteResume()" title="Löschen">
+                        <button class="btn-icon" onclick="window.userProfile.deleteResume()" title="Löschen">
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>
@@ -1172,6 +1172,67 @@ class UserProfile {
             return userData.idToken || '';
         }
         return '';
+    }
+
+    /**
+     * Lösche Lebenslauf
+     */
+    async deleteResume() {
+        if (!confirm('Möchten Sie Ihren Lebenslauf wirklich löschen?')) {
+            return;
+        }
+
+        try {
+            const token = await this.getAuthToken();
+            if (!token) {
+                this.showNotification('Bitte melden Sie sich an', 'error');
+                return;
+            }
+
+            const response = await fetch('https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod/resume', {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (response.ok) {
+                this.loadResumes();
+                this.showNotification('Lebenslauf gelöscht', 'success');
+            } else {
+                throw new Error('Failed to delete resume');
+            }
+        } catch (error) {
+            console.error('Error deleting resume:', error);
+            this.showNotification('Fehler beim Löschen', 'error');
+        }
+    }
+
+    /**
+     * Erstelle neues Anschreiben
+     */
+    createNewCoverLetter() {
+        // TODO: Implementiere Anschreiben-Editor
+        this.showNotification('Anschreiben-Editor wird noch implementiert', 'info');
+    }
+
+    /**
+     * Lösche Anschreiben
+     */
+    deleteCoverLetter(id) {
+        if (confirm('Möchten Sie dieses Anschreiben wirklich löschen?')) {
+            // TODO: API-Call zum Löschen
+            console.log('Delete cover letter:', id);
+            this.loadCoverLetters();
+        }
+    }
+
+    /**
+     * Bearbeite Anschreiben
+     */
+    editCoverLetter(id) {
+        // TODO: Implementiere Anschreiben-Editor
+        this.showNotification('Anschreiben-Editor wird noch implementiert', 'info');
     }
 
     async loadApplicationsData() {
