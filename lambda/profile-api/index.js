@@ -99,11 +99,42 @@ exports.handler = async (event) => {
                 };
             }
             
-            // Return all profile fields
+            // Return all profile fields explicitly
+            // Ensure all fields are included, even if empty
+            const profile = {
+                userId: result.Item.userId,
+                email: result.Item.email || '',
+                name: result.Item.name || '',
+                firstName: result.Item.firstName || '',
+                lastName: result.Item.lastName || '',
+                phone: result.Item.phone || '',
+                birthDate: result.Item.birthDate || '',
+                location: result.Item.location || '',
+                profession: result.Item.profession || '',
+                company: result.Item.company || '',
+                experience: result.Item.experience || '',
+                industry: result.Item.industry || '',
+                goals: result.Item.goals || '',
+                interests: result.Item.interests || '',
+                profileImageUrl: result.Item.profileImageUrl || '',
+                emailNotifications: result.Item.emailNotifications !== undefined ? result.Item.emailNotifications : false,
+                weeklySummary: result.Item.weeklySummary !== undefined ? result.Item.weeklySummary : false,
+                reminders: result.Item.reminders !== undefined ? result.Item.reminders : false,
+                theme: result.Item.theme || 'light',
+                language: result.Item.language || 'de',
+                dataSharing: result.Item.dataSharing !== undefined ? result.Item.dataSharing : false,
+                preferences: result.Item.preferences || {},
+                settings: result.Item.settings || {},
+                personal: result.Item.personal || {},
+                type: result.Item.type || 'user-profile',
+                createdAt: result.Item.createdAt,
+                updatedAt: result.Item.updatedAt
+            };
+            
             return {
                 statusCode: 200,
                 headers,
-                body: JSON.stringify(result.Item)
+                body: JSON.stringify(profile)
             };
             
         } else if (method === 'PUT' && path.includes('/profile')) {
