@@ -107,10 +107,50 @@ function generateToken(apiKeyId, metadata = {}) {
  */
 async function registerPublicKey(apiKeyId, publicKeyPem, metadata = {}) {
     console.log('🔑 registerPublicKey called with:', { apiKeyId, publicKeyLength: publicKeyPem?.length });
+    console.log('🔑 Public key (first 100 chars):', publicKeyPem?.substring(0, 100));
     
     // Normalisiere Public Key (entferne \n Escape-Sequenzen falls vorhanden)
-    const normalizedKey = publicKeyPem.replace(/\\n/g, '\n');
+    let normalizedKey = publicKeyPem.replace(/\\n/g, '\n');
+    
+    // Prüfe ob Public Key im PEM-Format ist (mit BEGIN/END)
+    const hasPemHeaders = normalizedKey.includes('-----BEGIN') && normalizedKey.includes('-----END');
+    
+    if (!hasPemHeaders) {
+        // Versuche Public Key zu konvertieren (falls nur Base64-String)
+        console.log('⚠️ Public Key hat keine PEM-Header, versuche Konvertierung...');
+        
+        // Entferne Whitespace
+        const base64Key = normalizedKey.trim().replace(/\s/g, '');
+        
+        // Prüfe ob es Base64 ist
+        if (base64Key.match(/^[A-Za-z0-9+/=]+$/)) {
+            try {
+                // Konvertiere Base64 zu Buffer und dann zu PEM
+                const keyBuffer = Buffer.from(base64Key, 'base64');
+                const keyObject = crypto.createPublicKey({
+                    key: keyBuffer,
+                    format: 'der',
+                    type: 'spki'
+                });
+                
+                // Exportiere als PEM
+                normalizedKey = keyObject.export({
+                    format: 'pem',
+                    type: 'spki'
+                });
+                
+                console.log('✅ Public Key erfolgreich konvertiert (Base64 → PEM)');
+            } catch (convertError) {
+                console.error('❌ Konvertierung fehlgeschlagen:', convertError.message);
+                // Versuche es als PEM ohne Header
+                normalizedKey = `-----BEGIN PUBLIC KEY-----\n${base64Key.match(/.{1,64}/g).join('\n')}\n-----END PUBLIC KEY-----`;
+                console.log('⚠️ Versuche manuelle PEM-Formatierung...');
+            }
+        }
+    }
+    
     console.log('🔑 Normalized key length:', normalizedKey.length);
+    console.log('🔑 Normalized key (first 100 chars):', normalizedKey.substring(0, 100));
     
     // Validiere Public Key Format
     try {
@@ -118,7 +158,7 @@ async function registerPublicKey(apiKeyId, publicKeyPem, metadata = {}) {
         console.log('✅ Public key format valid');
     } catch (error) {
         console.error('❌ Invalid public key format:', error.message);
-        console.error('❌ Public key (first 100 chars):', normalizedKey.substring(0, 100));
+        console.error('❌ Public key (first 200 chars):', normalizedKey.substring(0, 200));
         throw new Error('Invalid public key format: ' + error.message);
     }
     
