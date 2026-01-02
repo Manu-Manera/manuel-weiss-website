@@ -20,23 +20,40 @@ console.log('');
 let apiKeyId = process.argv[2];
 
 if (!apiKeyId) {
-    // Finde neuestes Key-Pair
-    if (!fs.existsSync(KEYS_DIR)) {
-        console.error('❌ Keys-Verzeichnis nicht gefunden!');
-        console.error('💡 Generiere zuerst ein Key-Pair: node scripts/complete-api-key-setup.js');
-        process.exit(1);
+    // Prüfe ob apiKeyId im Environment-File ist
+    if (fs.existsSync(ENV_FILE)) {
+        try {
+            const envData = JSON.parse(fs.readFileSync(ENV_FILE, 'utf8'));
+            const apiKeyIdVar = envData.values.find(v => v.key === 'apiKeyId');
+            if (apiKeyIdVar && apiKeyIdVar.value && apiKeyIdVar.value !== '') {
+                apiKeyId = apiKeyIdVar.value;
+                console.log('📋 Verwende apiKeyId aus Environment-File:', apiKeyId);
+            }
+        } catch (e) {
+            // Ignore
+        }
     }
+    
+    // Falls immer noch nicht gefunden, finde neuestes Key-Pair
+    if (!apiKeyId) {
+        if (!fs.existsSync(KEYS_DIR)) {
+            console.error('❌ Keys-Verzeichnis nicht gefunden!');
+            console.error('💡 Generiere zuerst ein Key-Pair: node scripts/complete-api-key-setup.js');
+            process.exit(1);
+        }
 
-    const keyFiles = fs.readdirSync(KEYS_DIR).filter(f => f.endsWith('-private-key.pem'));
-    if (keyFiles.length === 0) {
-        console.error('❌ Keine Private Keys gefunden!');
-        console.error('💡 Generiere zuerst ein Key-Pair: node scripts/complete-api-key-setup.js');
-        process.exit(1);
+        const keyFiles = fs.readdirSync(KEYS_DIR).filter(f => f.endsWith('-private-key.pem'));
+        if (keyFiles.length === 0) {
+            console.error('❌ Keine Private Keys gefunden!');
+            console.error('💡 Generiere zuerst ein Key-Pair: node scripts/complete-api-key-setup.js');
+            process.exit(1);
+        }
+
+        // Neuestes Key-Pair
+        const latestKeyFile = keyFiles.sort().reverse()[0];
+        apiKeyId = latestKeyFile.replace('-private-key.pem', '');
+        console.log('📋 Verwende neuestes Key-Pair:', apiKeyId);
     }
-
-    // Neuestes Key-Pair
-    const latestKeyFile = keyFiles.sort().reverse()[0];
-    apiKeyId = latestKeyFile.replace('-private-key.pem', '');
 }
 
 const privateKeyPath = path.join(KEYS_DIR, `${apiKeyId}-private-key.pem`);
