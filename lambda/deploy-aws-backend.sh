@@ -10,7 +10,7 @@ echo ""
 
 # Configuration
 REGION="eu-central-1"
-PROFILE_FUNCTION_NAME="mawps-profile-api"
+PROFILE_FUNCTION_NAME="mawps-user-profile"
 DOCUMENTS_FUNCTION_NAME="mawps-documents-api"
 API_NAME="mawps-api"
 STAGE_NAME="prod"
@@ -175,7 +175,7 @@ cd profile-api
 npm install
 
 # Create deployment package
-zip -r ../profile-api.zip .
+zip -r ../../user-profile.zip .
 
 cd ..
 
@@ -184,7 +184,7 @@ if aws lambda get-function --function-name $PROFILE_FUNCTION_NAME --region $REGI
     echo "Updating existing profile function..."
     aws lambda update-function-code \
         --function-name $PROFILE_FUNCTION_NAME \
-        --zip-file fileb://profile-api.zip \
+        --zip-file fileb://../../user-profile.zip \
         --region $REGION > /dev/null
 else
     echo "Creating new profile function..."
@@ -193,7 +193,7 @@ else
         --runtime nodejs20.x \
         --role $ROLE_ARN \
         --handler index.handler \
-        --zip-file fileb://profile-api.zip \
+        --zip-file fileb://../../user-profile.zip \
         --timeout 30 \
         --memory-size 256 \
         --environment "Variables={USER_POOL_ID=$USER_POOL_ID,USER_POOL_CLIENT_ID=$USER_POOL_CLIENT_ID,PROFILE_TABLE=$PROFILE_TABLE_NAME,REGION=$REGION}" \
@@ -250,7 +250,7 @@ aws lambda update-function-configuration \
 echo -e "${GREEN}✓ Documents API Lambda deployed${NC}"
 
 # Clean up zip files
-rm -f profile-api.zip documents-api.zip
+rm -f ../../user-profile.zip documents-api.zip
 
 echo ""
 

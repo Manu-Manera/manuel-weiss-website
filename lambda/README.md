@@ -4,9 +4,6 @@
 
 ```
 lambda/
-├── profile-api/          # User Profile & Progress API
-│   ├── index.js         # Lambda handler
-│   └── package.json     # Dependencies
 ├── documents-api/        # Documents Management API
 │   ├── index.js         # Lambda handler
 │   └── package.json     # Dependencies
@@ -46,11 +43,11 @@ Das Script führt automatisch aus:
 ### Manuelle Installation (falls Script fehlschlägt)
 
 ```bash
-# Profile API
-cd profile-api
+# Profile API (wird über backend/user-profile verwaltet)
+cd ../backend/user-profile
 npm install
-zip -r ../profile-api.zip .
-aws lambda create-function --function-name mawps-profile-api ...
+zip -r ../../user-profile.zip .
+aws lambda create-function --function-name mawps-user-profile ...
 
 # Documents API  
 cd ../documents-api
@@ -96,7 +93,7 @@ Diese werden automatisch vom Deployment-Script gesetzt.
 ### CloudWatch Logs
 ```bash
 # Profile API Logs
-aws logs tail /aws/lambda/mawps-profile-api --follow
+aws logs tail /aws/lambda/mawps-user-profile --follow
 
 # Documents API Logs
 aws logs tail /aws/lambda/mawps-documents-api --follow
