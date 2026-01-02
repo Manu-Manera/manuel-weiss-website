@@ -564,52 +564,28 @@ async function getUserProfileByUuid(uuid) {
  */
 async function getResume(userId) {
   try {
-    const { DynamoDBDocumentClient, GetCommand } = await import('@aws-sdk/lib-dynamodb');
-    const client = new DynamoDBClient({ region: process.env.AWS_REGION || 'eu-central-1' });
-    const docClient = DynamoDBDocumentClient.from(client);
+    const profile = await getUserProfile(userId);
     
-    const result = await docClient.send(new GetCommand({
-      TableName: process.env.TABLE || 'mawps-user-profiles',
-      Key: { 
-        userId: userId,
-        resumeId: 'main'
-      }
-    }));
-    
-    if (!result.Item) {
+    if (!profile || !profile.resume) {
       return null;
     }
     
-    // Parse JSON-Felder falls vorhanden
-    const resume = {
-      userId: result.Item.userId,
-      resumeId: result.Item.resumeId || 'main',
-      personalInfo: typeof result.Item.personalInfo === 'string' 
-        ? JSON.parse(result.Item.personalInfo) 
-        : result.Item.personalInfo || {},
-      sections: typeof result.Item.sections === 'string'
-        ? JSON.parse(result.Item.sections)
-        : result.Item.sections || [],
-      skills: typeof result.Item.skills === 'string'
-        ? JSON.parse(result.Item.skills)
-        : result.Item.skills || [],
-      languages: typeof result.Item.languages === 'string'
-        ? JSON.parse(result.Item.languages)
-        : result.Item.languages || [],
-      certifications: typeof result.Item.certifications === 'string'
-        ? JSON.parse(result.Item.certifications)
-        : result.Item.certifications || [],
-      pdfUrl: result.Item.pdfUrl || '',
-      pdfS3Key: result.Item.pdfS3Key || '',
-      ocrProcessed: result.Item.ocrProcessed || false,
-      ocrData: typeof result.Item.ocrData === 'string'
-        ? JSON.parse(result.Item.ocrData)
-        : result.Item.ocrData || null,
-      createdAt: result.Item.createdAt || '',
-      updatedAt: result.Item.updatedAt || ''
+    // Resume-Daten aus Profil extrahieren
+    const resume = profile.resume;
+    return {
+      userId: userId,
+      personalInfo: resume.personalInfo || {},
+      sections: resume.sections || [],
+      skills: resume.skills || [],
+      languages: resume.languages || [],
+      certifications: resume.certifications || [],
+      pdfUrl: resume.pdfUrl || '',
+      pdfS3Key: resume.pdfS3Key || '',
+      ocrProcessed: resume.ocrProcessed || false,
+      ocrData: resume.ocrData || null,
+      createdAt: resume.createdAt || '',
+      updatedAt: resume.updatedAt || ''
     };
-    
-    return resume;
   } catch (error) {
     console.error('Error getting resume:', error);
     throw error;
@@ -621,14 +597,11 @@ async function getResume(userId) {
  */
 async function saveResume(userId, resumeData) {
   try {
-    const { DynamoDBDocumentClient, PutCommand } = await import('@aws-sdk/lib-dynamodb');
-    const client = new DynamoDBClient({ region: process.env.AWS_REGION || 'eu-central-1' });
-    const docClient = DynamoDBDocumentClient.from(client);
+    // Lade aktuelles Profil
+    const profile = await getUserProfile(userId);
     
     const now = new Date().toISOString();
     const resume = {
-      userId: userId,
-      resumeId: 'main',
       personalInfo: resumeData.personalInfo || {},
       sections: resumeData.sections || [],
       skills: resumeData.skills || [],
@@ -638,16 +611,20 @@ async function saveResume(userId, resumeData) {
       pdfS3Key: resumeData.pdfS3Key || '',
       ocrProcessed: resumeData.ocrProcessed || false,
       ocrData: resumeData.ocrData || null,
-      createdAt: resumeData.createdAt || now,
+      createdAt: resume.resume?.createdAt || now,
       updatedAt: now
     };
     
-    await docClient.send(new PutCommand({
-      TableName: process.env.TABLE || 'mawps-user-profiles',
-      Item: resume
-    }));
+    // Speichere Resume im Profil
+    await saveUserProfile(userId, {
+      ...profile,
+      resume: resume
+    });
     
-    return resume;
+    return {
+      userId: userId,
+      ...resume
+    };
   } catch (error) {
     console.error('Error saving resume:', error);
     throw error;
@@ -659,17 +636,14 @@ async function saveResume(userId, resumeData) {
  */
 async function deleteResume(userId) {
   try {
-    const { DynamoDBDocumentClient, DeleteCommand } = await import('@aws-sdk/lib-dynamodb');
-    const client = new DynamoDBClient({ region: process.env.AWS_REGION || 'eu-central-1' });
-    const docClient = DynamoDBDocumentClient.from(client);
+    // Lade aktuelles Profil
+    const profile = await getUserProfile(userId);
     
-    await docClient.send(new DeleteCommand({
-      TableName: process.env.TABLE || 'mawps-user-profiles',
-      Key: {
-        userId: userId,
-        resumeId: 'main'
-      }
-    }));
+    // Entferne Resume-Daten
+    delete profile.resume;
+    
+    // Speichere Profil ohne Resume
+    await saveUserProfile(userId, profile);
     
     return true;
   } catch (error) {
@@ -688,7 +662,10 @@ async function generateResumeUploadUrl(userId, fileName, contentType = 'applicat
     
     const s3Client = new S3Client({ region: process.env.AWS_REGION || 'eu-central-1' });
     const bucketName = process.env.RESUME_BUCKET || 'mawps-resumes';
-    const s3Key = `resumes/${userId}/${Date.now()}-${fileName}`;
+    
+    // Sanitize fileName
+    const sanitizedFileName = fileName.replace(/[^a-zA-Z0-9._-]/g, '_');
+    const s3Key = `resumes/${userId}/${Date.now()}-${sanitizedFileName}`;
     
     const command = new PutObjectCommand({
       Bucket: bucketName,
@@ -710,7 +687,15 @@ async function generateResumeUploadUrl(userId, fileName, contentType = 'applicat
     };
   } catch (error) {
     console.error('Error generating upload URL:', error);
-    throw error;
+    // Fallback: Wenn S3-Bucket nicht existiert, gebe trotzdem eine URL zurück
+    // (Frontend kann dann einen alternativen Upload-Weg nutzen)
+    return {
+      uploadUrl: null,
+      s3Key: `resumes/${userId}/${Date.now()}-${fileName}`,
+      bucket: process.env.RESUME_BUCKET || 'mawps-resumes',
+      expiresIn: 3600,
+      error: 'S3 bucket not configured. Please set RESUME_BUCKET environment variable.'
+    };
   }
 }
 
