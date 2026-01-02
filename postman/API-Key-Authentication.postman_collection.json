@@ -187,7 +187,7 @@
 					}
 				},
 				"url": {
-					"raw": "{{signingServerBaseUrl}}/sign",
+					"raw": "http://localhost:3001/sign",
 					"protocol": "http",
 					"host": [
 						"localhost"
