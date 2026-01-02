@@ -1,4 +1,4 @@
-import { DynamoDBClient, PutItemCommand, GetItemCommand, UpdateItemCommand } from "@aws-sdk/client-dynamodb";
+import { DynamoDBClient, PutItemCommand, GetItemCommand, UpdateItemCommand, DeleteItemCommand } from "@aws-sdk/client-dynamodb";
 
 let ddb = null;
 function getDynamoDB() {
@@ -101,6 +101,65 @@ export const handler = async (event) => {
       const user = authUser(event);
       const progress = await getUserProgress(user.userId);
       return json(200, progress, hdr);
+    }
+
+    // === LEBENSLAUF (RESUME) ENDPUNKTE ===
+    const isResumeRoute = route.includes('/resume') || route.includes('/lebenslauf');
+    
+    // GET /resume - Lade Lebenslauf des aktuellen Users
+    if (httpMethod === 'GET' && isResumeRoute && !pathParameters.uuid) {
+      const user = authUser(event);
+      const resume = await getResume(user.userId);
+      return json(200, resume, hdr);
+    }
+    
+    // GET /resume/{uuid} - Lade Lebenslauf nach UUID
+    if (httpMethod === 'GET' && isResumeRoute && (pathParameters.uuid || uuidFromRoute)) {
+      const uuid = pathParameters.uuid || uuidFromRoute;
+      const resume = await getResume(uuid);
+      if (!resume) {
+        return json(404, { message: 'Resume not found', uuid }, hdr);
+      }
+      return json(200, resume, hdr);
+    }
+    
+    // POST /resume - Erstelle/Update Lebenslauf
+    if (httpMethod === 'POST' && isResumeRoute) {
+      const user = authUser(event);
+      const body = JSON.parse(event.body || '{}');
+      const resume = await saveResume(user.userId, body);
+      return json(200, resume, hdr);
+    }
+    
+    // PUT /resume - Update Lebenslauf
+    if (httpMethod === 'PUT' && isResumeRoute) {
+      const user = authUser(event);
+      const body = JSON.parse(event.body || '{}');
+      const resume = await saveResume(user.userId, body);
+      return json(200, resume, hdr);
+    }
+    
+    // DELETE /resume - Lösche Lebenslauf
+    if (httpMethod === 'DELETE' && isResumeRoute) {
+      const user = authUser(event);
+      await deleteResume(user.userId);
+      return json(200, { message: 'Resume deleted successfully' }, hdr);
+    }
+    
+    // POST /resume/upload-url - Generiere Presigned URL für PDF-Upload
+    if (httpMethod === 'POST' && route.includes('/resume/upload-url')) {
+      const user = authUser(event);
+      const body = JSON.parse(event.body || '{}');
+      const uploadUrl = await generateResumeUploadUrl(user.userId, body.fileName, body.contentType);
+      return json(200, uploadUrl, hdr);
+    }
+    
+    // POST /resume/ocr - OCR-Verarbeitung für hochgeladenes PDF
+    if (httpMethod === 'POST' && route.includes('/resume/ocr')) {
+      const user = authUser(event);
+      const body = JSON.parse(event.body || '{}');
+      const ocrResult = await processResumeOCR(user.userId, body.s3Key);
+      return json(200, ocrResult, hdr);
     }
 
     return json(404, { message: 'not found', route, method: httpMethod }, hdr);
@@ -494,6 +553,297 @@ async function getUserProfileByUuid(uuid) {
     console.error('Error getting profile by UUID:', error);
     throw error;
   }
+}
+
+/**
+ * Lebenslauf-Funktionen
+ */
+
+/**
+ * Holt Lebenslauf aus DynamoDB
+ */
+async function getResume(userId) {
+  try {
+    const { DynamoDBDocumentClient, GetCommand } = await import('@aws-sdk/lib-dynamodb');
+    const client = new DynamoDBClient({ region: process.env.AWS_REGION || 'eu-central-1' });
+    const docClient = DynamoDBDocumentClient.from(client);
+    
+    const result = await docClient.send(new GetCommand({
+      TableName: process.env.TABLE || 'mawps-user-profiles',
+      Key: { 
+        userId: userId,
+        resumeId: 'main'
+      }
+    }));
+    
+    if (!result.Item) {
+      return null;
+    }
+    
+    // Parse JSON-Felder falls vorhanden
+    const resume = {
+      userId: result.Item.userId,
+      resumeId: result.Item.resumeId || 'main',
+      personalInfo: typeof result.Item.personalInfo === 'string' 
+        ? JSON.parse(result.Item.personalInfo) 
+        : result.Item.personalInfo || {},
+      sections: typeof result.Item.sections === 'string'
+        ? JSON.parse(result.Item.sections)
+        : result.Item.sections || [],
+      skills: typeof result.Item.skills === 'string'
+        ? JSON.parse(result.Item.skills)
+        : result.Item.skills || [],
+      languages: typeof result.Item.languages === 'string'
+        ? JSON.parse(result.Item.languages)
+        : result.Item.languages || [],
+      certifications: typeof result.Item.certifications === 'string'
+        ? JSON.parse(result.Item.certifications)
+        : result.Item.certifications || [],
+      pdfUrl: result.Item.pdfUrl || '',
+      pdfS3Key: result.Item.pdfS3Key || '',
+      ocrProcessed: result.Item.ocrProcessed || false,
+      ocrData: typeof result.Item.ocrData === 'string'
+        ? JSON.parse(result.Item.ocrData)
+        : result.Item.ocrData || null,
+      createdAt: result.Item.createdAt || '',
+      updatedAt: result.Item.updatedAt || ''
+    };
+    
+    return resume;
+  } catch (error) {
+    console.error('Error getting resume:', error);
+    throw error;
+  }
+}
+
+/**
+ * Speichert Lebenslauf in DynamoDB
+ */
+async function saveResume(userId, resumeData) {
+  try {
+    const { DynamoDBDocumentClient, PutCommand } = await import('@aws-sdk/lib-dynamodb');
+    const client = new DynamoDBClient({ region: process.env.AWS_REGION || 'eu-central-1' });
+    const docClient = DynamoDBDocumentClient.from(client);
+    
+    const now = new Date().toISOString();
+    const resume = {
+      userId: userId,
+      resumeId: 'main',
+      personalInfo: resumeData.personalInfo || {},
+      sections: resumeData.sections || [],
+      skills: resumeData.skills || [],
+      languages: resumeData.languages || [],
+      certifications: resumeData.certifications || [],
+      pdfUrl: resumeData.pdfUrl || '',
+      pdfS3Key: resumeData.pdfS3Key || '',
+      ocrProcessed: resumeData.ocrProcessed || false,
+      ocrData: resumeData.ocrData || null,
+      createdAt: resumeData.createdAt || now,
+      updatedAt: now
+    };
+    
+    await docClient.send(new PutCommand({
+      TableName: process.env.TABLE || 'mawps-user-profiles',
+      Item: resume
+    }));
+    
+    return resume;
+  } catch (error) {
+    console.error('Error saving resume:', error);
+    throw error;
+  }
+}
+
+/**
+ * Löscht Lebenslauf
+ */
+async function deleteResume(userId) {
+  try {
+    const { DynamoDBDocumentClient, DeleteCommand } = await import('@aws-sdk/lib-dynamodb');
+    const client = new DynamoDBClient({ region: process.env.AWS_REGION || 'eu-central-1' });
+    const docClient = DynamoDBDocumentClient.from(client);
+    
+    await docClient.send(new DeleteCommand({
+      TableName: process.env.TABLE || 'mawps-user-profiles',
+      Key: {
+        userId: userId,
+        resumeId: 'main'
+      }
+    }));
+    
+    return true;
+  } catch (error) {
+    console.error('Error deleting resume:', error);
+    throw error;
+  }
+}
+
+/**
+ * Generiert Presigned URL für PDF-Upload
+ */
+async function generateResumeUploadUrl(userId, fileName, contentType = 'application/pdf') {
+  try {
+    const { S3Client, PutObjectCommand } = await import('@aws-sdk/client-s3');
+    const { getSignedUrl } = await import('@aws-sdk/s3-request-presigner');
+    
+    const s3Client = new S3Client({ region: process.env.AWS_REGION || 'eu-central-1' });
+    const bucketName = process.env.RESUME_BUCKET || 'mawps-resumes';
+    const s3Key = `resumes/${userId}/${Date.now()}-${fileName}`;
+    
+    const command = new PutObjectCommand({
+      Bucket: bucketName,
+      Key: s3Key,
+      ContentType: contentType,
+      Metadata: {
+        userId: userId,
+        uploadedAt: new Date().toISOString()
+      }
+    });
+    
+    const uploadUrl = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
+    
+    return {
+      uploadUrl,
+      s3Key,
+      bucket: bucketName,
+      expiresIn: 3600
+    };
+  } catch (error) {
+    console.error('Error generating upload URL:', error);
+    throw error;
+  }
+}
+
+/**
+ * Verarbeitet PDF mit OCR (AWS Textract)
+ */
+async function processResumeOCR(userId, s3Key) {
+  try {
+    const { TextractClient, StartDocumentTextDetectionCommand, GetDocumentTextDetectionCommand } = await import('@aws-sdk/client-textract');
+    const textractClient = new TextractClient({ region: process.env.AWS_REGION || 'eu-central-1' });
+    const bucketName = process.env.RESUME_BUCKET || 'mawps-resumes';
+    
+    // Starte Textract Job
+    const startCommand = new StartDocumentTextDetectionCommand({
+      DocumentLocation: {
+        S3Object: {
+          Bucket: bucketName,
+          Name: s3Key
+        }
+      }
+    });
+    
+    const startResult = await textractClient.send(startCommand);
+    const jobId = startResult.JobId;
+    
+    // Warte auf Completion (Polling)
+    let jobComplete = false;
+    let attempts = 0;
+    const maxAttempts = 30;
+    
+    while (!jobComplete && attempts < maxAttempts) {
+      await new Promise(resolve => setTimeout(resolve, 10000));
+      
+      const getCommand = new GetDocumentTextDetectionCommand({ JobId: jobId });
+      const getResult = await textractClient.send(getCommand);
+      
+      if (getResult.JobStatus === 'SUCCEEDED') {
+        jobComplete = true;
+        
+        const textBlocks = (getResult.Blocks || [])
+          .filter(block => block.BlockType === 'LINE')
+          .map(block => block.Text)
+          .join('\n');
+        
+        const parsedData = parseOCRText(textBlocks);
+        
+        return {
+          success: true,
+          jobId,
+          rawText: textBlocks,
+          parsedData,
+          blocks: getResult.Blocks || []
+        };
+      } else if (getResult.JobStatus === 'FAILED') {
+        throw new Error(`OCR processing failed: ${getResult.StatusMessage || 'Unknown error'}`);
+      }
+      
+      attempts++;
+    }
+    
+    if (!jobComplete) {
+      throw new Error('OCR processing timeout');
+    }
+    
+    return { success: false, message: 'OCR processing incomplete' };
+  } catch (error) {
+    console.error('Error processing OCR:', error);
+    throw error;
+  }
+}
+
+/**
+ * Parst OCR-Text in strukturierte Daten
+ */
+function parseOCRText(text) {
+  const lines = text.split('\n').filter(line => line.trim());
+  
+  const parsed = {
+    name: '',
+    email: '',
+    phone: '',
+    address: '',
+    sections: []
+  };
+  
+  // E-Mail finden
+  const emailRegex = /[\w\.-]+@[\w\.-]+\.\w+/;
+  const emailMatch = text.match(emailRegex);
+  if (emailMatch) {
+    parsed.email = emailMatch[0];
+  }
+  
+  // Telefon finden
+  const phoneRegex = /(\+?\d{1,3}[\s-]?)?\(?\d{1,4}\)?[\s-]?\d{1,4}[\s-]?\d{1,9}/;
+  const phoneMatch = text.match(phoneRegex);
+  if (phoneMatch) {
+    parsed.phone = phoneMatch[0].trim();
+  }
+  
+  // Name ist meist erste Zeile
+  if (lines.length > 0 && !emailRegex.test(lines[0]) && !phoneRegex.test(lines[0])) {
+    parsed.name = lines[0].trim();
+  }
+  
+  // Sektionen erkennen
+  const sectionKeywords = {
+    'Berufserfahrung': ['Berufserfahrung', 'Erfahrung', 'Arbeitserfahrung', 'Experience'],
+    'Ausbildung': ['Ausbildung', 'Bildung', 'Education', 'Studium'],
+    'Skills': ['Fähigkeiten', 'Kompetenzen', 'Skills', 'Kenntnisse'],
+    'Sprachen': ['Sprachen', 'Languages', 'Fremdsprachen']
+  };
+  
+  let currentSection = null;
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    
+    for (const [sectionName, keywords] of Object.entries(sectionKeywords)) {
+      if (keywords.some(keyword => line.toLowerCase().includes(keyword.toLowerCase()))) {
+        currentSection = {
+          title: sectionName,
+          content: []
+        };
+        parsed.sections.push(currentSection);
+        break;
+      }
+    }
+    
+    if (currentSection && !sectionKeywords[currentSection.title]?.some(k => line.toLowerCase().includes(k.toLowerCase()))) {
+      currentSection.content.push(line.trim());
+    }
+  }
+  
+  return parsed;
 }
 
 function authUser(event) {
