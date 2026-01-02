@@ -142,6 +142,62 @@
 			"response": []
 		},
 		{
+			"name": "2.5. Generate Signature (automatisch)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Signature received\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('signature');",
+							"    ",
+							"    // Speichere Signature automatisch",
+							"    if (jsonData.signature) {",
+							"        pm.environment.set('signature', jsonData.signature);",
+							"        pm.collectionVariables.set('signature', jsonData.signature);",
+							"        console.log('✅ Signature gespeichert!');",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"challenge\": \"{{challenge}}\",\n  \"apiKeyId\": \"{{apiKeyId}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{signingServerUrl}}",
+					"host": [
+						"{{signingServerUrl}}"
+					],
+					"path": []
+				},
+				"description": "Generiert automatisch die Signature für die Challenge.\n\n**Wichtig:** Signing-Server muss laufen!\n\n**Starte Server:** `node scripts/sign-challenge-server.js`\n\n**Oder:** `./scripts/start-signing-server.sh`\n\n**Workflow:**\n1. Request 2: Get Challenge\n2. **Dieser Request:** Generate Signature (automatisch)\n3. Request 3: Get Token"
+			},
+			"response": []
+		},
+		{
 			"name": "3. Get Token (mit Signatur)",
 			"event": [
 				{
