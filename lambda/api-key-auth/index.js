@@ -122,6 +122,18 @@ async function getPublicKey(apiKeyId) {
     
     console.log('🔑 Public Key geladen, Länge:', publicKey.length);
     console.log('🔑 Public Key (first 100):', publicKey.substring(0, 100));
+    console.log('🔑 Public Key (last 50):', '...' + publicKey.substring(publicKey.length - 50));
+    
+    // Prüfe ob Public Key korrekt formatiert ist
+    try {
+        const testKey = crypto.createPublicKey(publicKey);
+        console.log('🔑 Public Key Format: VALID', {
+            type: testKey.asymmetricKeyType,
+            size: testKey.asymmetricKeySize
+        });
+    } catch (error) {
+        console.error('❌ Public Key Format: INVALID', error.message);
+    }
     
     return publicKey;
 }
