@@ -486,15 +486,63 @@ function populateForm(data) {
     if (data.personalInfo) {
         document.getElementById('firstName').value = data.personalInfo.firstName || '';
         document.getElementById('lastName').value = data.personalInfo.lastName || '';
+        document.getElementById('title').value = data.personalInfo.title || '';
+        document.getElementById('summary').value = data.personalInfo.summary || '';
         document.getElementById('email').value = data.personalInfo.email || '';
         document.getElementById('phone').value = data.personalInfo.phone || '';
+        document.getElementById('location').value = data.personalInfo.location || '';
         document.getElementById('address').value = data.personalInfo.address || '';
         document.getElementById('linkedin').value = data.personalInfo.linkedin || '';
+        document.getElementById('github').value = data.personalInfo.github || '';
         document.getElementById('website').value = data.personalInfo.website || '';
+        document.getElementById('availability').value = data.personalInfo.availability || '';
+        document.getElementById('workModel').value = data.personalInfo.workModel || '';
     }
     
+    // Populate Experience
+    if (data.sections) {
+        const experienceSection = data.sections.find(s => s.type === 'experience');
+        if (experienceSection && experienceSection.entries) {
+            experienceSection.entries.forEach(entry => {
+                addExperience(entry);
+            });
+        }
+        
+        const educationSection = data.sections.find(s => s.type === 'education');
+        if (educationSection && educationSection.entries) {
+            educationSection.entries.forEach(entry => {
+                addEducation(entry);
+            });
+        }
+    }
+    
+    // Populate Languages
+    if (data.languages && Array.isArray(data.languages)) {
+        data.languages.forEach(lang => {
+            addLanguage(lang);
+        });
+    }
+    
+    // Populate Skills
     if (data.skills) {
-        document.getElementById('skills').value = data.skills.join(', ');
+        if (data.skills.technicalSkills && Array.isArray(data.skills.technicalSkills)) {
+            data.skills.technicalSkills.forEach(category => {
+                addTechnicalSkillCategory(category.category || '', category.skills || []);
+            });
+        }
+        
+        if (data.skills.softSkills && Array.isArray(data.skills.softSkills)) {
+            data.skills.softSkills.forEach(skill => {
+                addSoftSkill(skill.skill || '', skill.examples || []);
+            });
+        }
+    }
+    
+    // Populate Projects
+    if (data.projects && Array.isArray(data.projects)) {
+        data.projects.forEach(project => {
+            addProject(project);
+        });
     }
 }
 
