@@ -784,7 +784,7 @@ async function saveResume(userId, resumeData) {
       pdfS3Key: resumeData.pdfS3Key || '',
       ocrProcessed: resumeData.ocrProcessed || false,
       ocrData: resumeData.ocrData || null,
-      createdAt: resume?.resume?.createdAt || resumeData.createdAt || now,
+      createdAt: profile?.resume?.createdAt || resumeData.createdAt || now,
       updatedAt: now
     };
     
