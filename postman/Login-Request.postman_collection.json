@@ -1,0 +1,109 @@
+{
+	"info": {
+		"_postman_id": "cognito-login-request",
+		"name": "AWS Cognito Login (Token Generator)",
+		"description": "Generiert JWT Token direkt in Postman über AWS Cognito",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Login - Token generieren",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response has AuthenticationResult\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('AuthenticationResult');",
+							"});",
+							"",
+							"// Token automatisch in Environment Variable speichern",
+							"if (pm.response.code === 200) {",
+							"    var jsonData = pm.response.json();",
+							"    if (jsonData.AuthenticationResult && jsonData.AuthenticationResult.IdToken) {",
+							"        pm.environment.set('idToken', jsonData.AuthenticationResult.IdToken);",
+							"        pm.environment.set('accessToken', jsonData.AuthenticationResult.AccessToken);",
+							"        pm.environment.set('refreshToken', jsonData.AuthenticationResult.RefreshToken);",
+							"        ",
+							"        console.log('✅ Token erfolgreich generiert und in Environment Variable gespeichert!');",
+							"        console.log('Token ist gültig für:', jsonData.AuthenticationResult.ExpiresIn, 'Sekunden');",
+							"    }",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-amzn-json-1.1",
+						"type": "text"
+					},
+					{
+						"key": "X-Amz-Target",
+						"value": "AWSCognitoIdentityProviderService.InitiateAuth",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"ClientId\": \"{{cognitoClientId}}\",\n  \"AuthFlow\": \"USER_PASSWORD_AUTH\",\n  \"AuthParameters\": {\n    \"USERNAME\": \"{{userEmail}}\",\n    \"PASSWORD\": \"{{userPassword}}\"\n  }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://cognito-idp.{{awsRegion}}.amazonaws.com/",
+					"protocol": "https",
+					"host": [
+						"cognito-idp",
+						"{{awsRegion}}",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						""
+					]
+				},
+				"description": "⚠️ **WICHTIG:** Diese Methode funktioniert nur, wenn AWS Cognito App Client so konfiguriert ist, dass `USER_PASSWORD_AUTH` ohne Client Secret erlaubt ist.\n\n**Alternative (Empfohlen):** Token aus Browser holen (siehe `TOKEN_GENERIERUNG.md`)\n\n**Verwendung:**\n1. Setze Environment Variables: `userEmail`, `userPassword`, `cognitoClientId`, `awsRegion`\n2. Führe Request aus\n3. Token wird automatisch in `idToken` Environment Variable gespeichert"
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "cognitoClientId",
+			"value": "7kc5tt6a23fgh53d60vkefm812",
+			"type": "string"
+		},
+		{
+			"key": "awsRegion",
+			"value": "eu-central-1",
+			"type": "string"
+		},
+		{
+			"key": "userEmail",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "userPassword",
+			"value": "",
+			"type": "secret"
+		}
+	]
+}
+
