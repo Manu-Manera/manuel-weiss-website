@@ -398,21 +398,41 @@ async function getAllProfiles() {
     }));
     
     // Formatiere Profile für Übersicht
-    const profiles = (result.Items || []).map(item => ({
-      userId: item.userId,
-      name: item.name || `${item.firstName || ''} ${item.lastName || ''}`.trim() || '',
-      email: item.email || '',
-      firstName: item.firstName || '',
-      lastName: item.lastName || '',
-      profession: item.profession || '',
-      company: item.company || '',
-      profileImageUrl: item.profileImageUrl || '',
-      createdAt: item.createdAt || '',
-      updatedAt: item.updatedAt || ''
-    }));
+    const profiles = (result.Items || [])
+      .filter(item => {
+        // Filtere leere/System-Profile (z.B. "owner" ohne Daten)
+        if (!item.userId || item.userId === 'owner') return false;
+        // Optional: Nur Profile mit mindestens E-Mail anzeigen
+        // if (!item.email) return false;
+        return true;
+      })
+      .map(item => {
+        const name = item.name || `${item.firstName || ''} ${item.lastName || ''}`.trim() || item.email?.split('@')[0] || 'Unbekannt';
+        return {
+          userId: item.userId,
+          name: name,
+          email: item.email || '',
+          firstName: item.firstName || '',
+          lastName: item.lastName || '',
+          profession: item.profession || '',
+          company: item.company || '',
+          profileImageUrl: item.profileImageUrl || '',
+          createdAt: item.createdAt || '',
+          updatedAt: item.updatedAt || '',
+          // Zusätzliche Info: Ist Profil vollständig ausgefüllt?
+          isComplete: !!(item.firstName && item.lastName && item.email && item.profession)
+        };
+      })
+      .sort((a, b) => {
+        // Sortiere nach updatedAt (neueste zuerst)
+        const dateA = new Date(a.updatedAt || a.createdAt || 0);
+        const dateB = new Date(b.updatedAt || b.createdAt || 0);
+        return dateB - dateA;
+      });
     
     return {
       count: profiles.length,
+      total: result.Count || result.Items?.length || 0,
       profiles
     };
   } catch (error) {
