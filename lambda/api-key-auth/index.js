@@ -106,28 +106,46 @@ function generateToken(apiKeyId, metadata = {}) {
  * Registriert einen neuen Public Key
  */
 async function registerPublicKey(apiKeyId, publicKeyPem, metadata = {}) {
+    console.log('🔑 registerPublicKey called with:', { apiKeyId, publicKeyLength: publicKeyPem?.length });
+    
+    // Normalisiere Public Key (entferne \n Escape-Sequenzen falls vorhanden)
+    const normalizedKey = publicKeyPem.replace(/\\n/g, '\n');
+    console.log('🔑 Normalized key length:', normalizedKey.length);
+    
     // Validiere Public Key Format
     try {
-        crypto.createPublicKey(publicKeyPem);
+        crypto.createPublicKey(normalizedKey);
+        console.log('✅ Public key format valid');
     } catch (error) {
-        throw new Error('Invalid public key format');
+        console.error('❌ Invalid public key format:', error.message);
+        console.error('❌ Public key (first 100 chars):', normalizedKey.substring(0, 100));
+        throw new Error('Invalid public key format: ' + error.message);
     }
     
     const item = {
         pk: `apikey#${apiKeyId}`,
         sk: 'publickey',
         apiKeyId: apiKeyId,
-        publicKey: publicKeyPem,
+        publicKey: normalizedKey, // Verwende normalisierten Key
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         active: true,
         ...metadata
     };
     
-    await dynamoDB.put({
-        TableName: TABLE_NAME,
-        Item: item
-    }).promise();
+    console.log('💾 Saving to DynamoDB:', { table: TABLE_NAME, pk: item.pk, sk: item.sk });
+    
+    try {
+        await dynamoDB.put({
+            TableName: TABLE_NAME,
+            Item: item
+        }).promise();
+        console.log('✅ Public key saved to DynamoDB');
+    } catch (dbError) {
+        console.error('❌ DynamoDB error:', dbError);
+        console.error('❌ DynamoDB error stack:', dbError.stack);
+        throw new Error('Failed to save public key: ' + dbError.message);
+    }
     
     return item;
 }
@@ -200,6 +218,18 @@ exports.handler = async (event) => {
                     })
                 };
             } catch (registerError) {
+                console.error('❌ Register error:', registerError);
+                console.error('❌ Register error stack:', registerError.stack);
+                return {
+                    statusCode: 500,
+                    headers,
+                    body: JSON.stringify({
+                        error: 'Failed to register public key',
+                        details: registerError.message
+                    })
+                };
+            }
+        } catch (registerError) {
                 console.error('❌ Register error:', registerError);
                 console.error('❌ Register error stack:', registerError.stack);
                 return {
