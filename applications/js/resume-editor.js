@@ -136,16 +136,34 @@ document.getElementById('resumeForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     
     try {
+        const token = await getAuthToken();
+        if (!token) {
+            showNotification('Bitte melden Sie sich an, um zu speichern.', 'error');
+            // Redirect to login
+            if (window.realUserAuth && typeof window.realUserAuth.showLoginModal === 'function') {
+                window.realUserAuth.showLoginModal();
+            }
+            return;
+        }
+        
         const formData = collectFormData();
         
         const response = await fetch('https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod/resume', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${await getAuthToken()}`
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify(formData)
         });
+        
+        if (response.status === 401) {
+            showNotification('Sitzung abgelaufen. Bitte erneut anmelden.', 'error');
+            if (window.realUserAuth && typeof window.realUserAuth.showLoginModal === 'function') {
+                window.realUserAuth.showLoginModal();
+            }
+            return;
+        }
         
         if (response.ok) {
             const result = await response.json();
@@ -183,12 +201,21 @@ document.getElementById('pdfFileInput').addEventListener('change', async (e) => 
 // Upload and process PDF
 async function uploadAndProcessPDF(file) {
     try {
+        const token = await getAuthToken();
+        if (!token) {
+            showNotification('Bitte melden Sie sich an, um PDFs hochzuladen.', 'error');
+            if (window.realUserAuth && typeof window.realUserAuth.showLoginModal === 'function') {
+                window.realUserAuth.showLoginModal();
+            }
+            return;
+        }
+        
         // 1. Get upload URL
         const uploadUrlResponse = await fetch('https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod/resume/upload-url', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${await getAuthToken()}`
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify({
                 fileName: file.name,
@@ -196,8 +223,17 @@ async function uploadAndProcessPDF(file) {
             })
         });
         
+        if (uploadUrlResponse.status === 401) {
+            showNotification('Sitzung abgelaufen. Bitte erneut anmelden.', 'error');
+            if (window.realUserAuth && typeof window.realUserAuth.showLoginModal === 'function') {
+                window.realUserAuth.showLoginModal();
+            }
+            return;
+        }
+        
         if (!uploadUrlResponse.ok) {
-            throw new Error('Fehler beim Erstellen der Upload-URL');
+            const errorData = await uploadUrlResponse.json().catch(() => ({}));
+            throw new Error(errorData.message || 'Fehler beim Erstellen der Upload-URL');
         }
         
         const uploadData = await uploadUrlResponse.json();
@@ -235,10 +271,16 @@ async function uploadAndProcessPDF(file) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${await getAuthToken()}`
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify({ s3Key })
         });
+        
+        if (ocrResponse.status === 401) {
+            showNotification('Sitzung abgelaufen. Bitte erneut anmelden.', 'error');
+            document.getElementById('uploadProgress').style.display = 'none';
+            return;
+        }
         
         if (!ocrResponse.ok) {
             const errorData = await ocrResponse.json().catch(() => ({ message: 'Unknown error' }));

@@ -260,7 +260,17 @@ export const handler = async (event) => {
     console.error('Handler error:', e);
     const origin = event.headers?.origin || event.headers?.Origin || '*';
     const hdr = headers(origin);
-    return json(500, { message: String(e) }, hdr);
+    
+    // Handle authentication errors with 401
+    const errorMessage = String(e.message || e);
+    if (errorMessage.includes('unauthorized') || 
+        errorMessage.includes('Invalid token') || 
+        errorMessage.includes('missing payload') ||
+        errorMessage.includes('missing user id')) {
+      return json(401, { error: 'Unauthorized', message: errorMessage }, hdr);
+    }
+    
+    return json(500, { error: 'Internal Server Error', message: errorMessage }, hdr);
   }
 };
 
