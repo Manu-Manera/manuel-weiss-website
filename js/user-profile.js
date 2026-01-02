@@ -1084,10 +1084,10 @@ class UserProfile {
                         <p>${letter.company || ''} - ${letter.date || ''}</p>
                     </div>
                     <div class="application-actions">
-                        <button class="btn-icon" onclick="editCoverLetter('${letter.id}')">
+                        <button class="btn-icon" onclick="window.userProfile.editCoverLetter('${letter.id}')">
                             <i class="fas fa-edit"></i>
                         </button>
-                        <button class="btn-icon" onclick="deleteCoverLetter('${letter.id}')">
+                        <button class="btn-icon" onclick="window.userProfile.deleteCoverLetter('${letter.id}')">
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>
