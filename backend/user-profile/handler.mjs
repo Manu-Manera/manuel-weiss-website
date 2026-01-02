@@ -627,6 +627,89 @@ async function getUserProfileByUuid(uuid) {
  */
 
 /**
+ * Holt alle Lebensläufe aus DynamoDB (nur Übersicht)
+ */
+async function getAllResumes() {
+  try {
+    const { DynamoDBDocumentClient, ScanCommand } = await import('@aws-sdk/lib-dynamodb');
+    const client = new DynamoDBClient({ region: process.env.AWS_REGION || 'eu-central-1' });
+    const docClient = DynamoDBDocumentClient.from(client);
+    
+    // Scanne alle Profile
+    const result = await docClient.send(new ScanCommand({
+      TableName: process.env.TABLE || 'mawps-user-profiles',
+      ProjectionExpression: 'userId'
+    }));
+    
+    const resumes = [];
+    
+    // Für jedes Profil prüfe ob Resume vorhanden
+    for (const item of result.Items || []) {
+      const userId = item.userId;
+      if (!userId || userId === 'owner') continue;
+      
+      try {
+        const profile = await getUserProfile(userId);
+        if (profile?.resume) {
+          const resume = profile.resume;
+          const name = resume.personalInfo?.firstName && resume.personalInfo?.lastName
+            ? `${resume.personalInfo.firstName} ${resume.personalInfo.lastName}`
+            : profile.name || profile.firstName || profile.email?.split('@')[0] || 'Unbekannt';
+          
+          // Zähle Skills
+          const technicalSkillsCount = (resume.skills?.technicalSkills || []).reduce((sum, cat) => sum + (cat.skills?.length || 0), 0);
+          const softSkillsCount = (resume.skills?.softSkills || []).length;
+          
+          resumes.push({
+            userId: userId,
+            name: name,
+            title: resume.personalInfo?.title || '',
+            summary: resume.personalInfo?.summary ? resume.personalInfo.summary.substring(0, 150) + (resume.personalInfo.summary.length > 150 ? '...' : '') : '',
+            email: resume.personalInfo?.email || profile.email || '',
+            hasProjects: (resume.projects || []).length > 0,
+            projectsCount: (resume.projects || []).length,
+            hasSkills: technicalSkillsCount > 0 || softSkillsCount > 0,
+            skillsCount: technicalSkillsCount + softSkillsCount,
+            technicalSkillsCount: technicalSkillsCount,
+            softSkillsCount: softSkillsCount,
+            hasExperience: (resume.sections || []).some(s => s.type === 'experience' && s.entries?.length > 0),
+            experienceCount: (resume.sections || []).find(s => s.type === 'experience')?.entries?.length || 0,
+            hasEducation: (resume.sections || []).some(s => s.type === 'education' && s.entries?.length > 0),
+            educationCount: (resume.sections || []).find(s => s.type === 'education')?.entries?.length || 0,
+            languagesCount: (resume.languages || []).length,
+            certificationsCount: (resume.certifications || []).length,
+            ocrProcessed: resume.ocrProcessed || false,
+            isComplete: !!(resume.personalInfo?.title && resume.personalInfo?.summary && (technicalSkillsCount > 0 || softSkillsCount > 0)),
+            updatedAt: resume.updatedAt || '',
+            createdAt: resume.createdAt || ''
+          });
+        }
+      } catch (error) {
+        // Überspringe Profile mit Fehlern
+        console.warn(`Error loading resume for userId ${userId}:`, error);
+        continue;
+      }
+    }
+    
+    // Sortiere nach updatedAt (neueste zuerst)
+    resumes.sort((a, b) => {
+      const dateA = new Date(a.updatedAt || a.createdAt || 0);
+      const dateB = new Date(b.updatedAt || b.createdAt || 0);
+      return dateB - dateA;
+    });
+    
+    return {
+      count: resumes.length,
+      total: result.Count || result.Items?.length || 0,
+      resumes: resumes
+    };
+  } catch (error) {
+    console.error('Error getting all resumes:', error);
+    throw error;
+  }
+}
+
+/**
  * Holt Lebenslauf aus DynamoDB
  */
 async function getResume(userId) {
