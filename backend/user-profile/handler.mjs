@@ -370,6 +370,104 @@ async function updateUserProgress(userId, progressData) {
   return progress;
 }
 
+/**
+ * Holt alle Profile aus DynamoDB (nur Übersicht)
+ */
+async function getAllProfiles() {
+  try {
+    const { DynamoDBClient } = await import('@aws-sdk/client-dynamodb');
+    const { DynamoDBDocumentClient, ScanCommand } = await import('@aws-sdk/lib-dynamodb');
+    const client = new DynamoDBClient({ region: process.env.AWS_REGION || 'eu-central-1' });
+    const docClient = DynamoDBDocumentClient.from(client);
+    
+    const result = await docClient.send(new ScanCommand({
+      TableName: process.env.TABLE || 'mawps-user-profiles',
+      // Nur bestimmte Attribute zurückgeben (Übersicht)
+      ProjectionExpression: 'userId, #name, email, firstName, lastName, profession, company, profileImageUrl, createdAt, updatedAt',
+      ExpressionAttributeNames: {
+        '#name': 'name'
+      }
+    }));
+    
+    // Formatiere Profile für Übersicht
+    const profiles = (result.Items || []).map(item => ({
+      userId: item.userId,
+      name: item.name || `${item.firstName || ''} ${item.lastName || ''}`.trim() || '',
+      email: item.email || '',
+      firstName: item.firstName || '',
+      lastName: item.lastName || '',
+      profession: item.profession || '',
+      company: item.company || '',
+      profileImageUrl: item.profileImageUrl || '',
+      createdAt: item.createdAt || '',
+      updatedAt: item.updatedAt || ''
+    }));
+    
+    return {
+      count: profiles.length,
+      profiles
+    };
+  } catch (error) {
+    console.error('Error getting all profiles:', error);
+    throw error;
+  }
+}
+
+/**
+ * Holt ein Profil nach UUID (userId)
+ */
+async function getUserProfileByUuid(uuid) {
+  try {
+    const { DynamoDBClient } = await import('@aws-sdk/client-dynamodb');
+    const { DynamoDBDocumentClient, GetCommand } = await import('@aws-sdk/lib-dynamodb');
+    const client = new DynamoDBClient({ region: process.env.AWS_REGION || 'eu-central-1' });
+    const docClient = DynamoDBDocumentClient.from(client);
+    
+    const result = await docClient.send(new GetCommand({
+      TableName: process.env.TABLE || 'mawps-user-profiles',
+      Key: { userId: uuid }
+    }));
+    
+    if (!result.Item) {
+      return null;
+    }
+    
+    // Gebe vollständiges Profil zurück
+    return {
+      userId: result.Item.userId,
+      email: result.Item.email || '',
+      name: result.Item.name || '',
+      firstName: result.Item.firstName || '',
+      lastName: result.Item.lastName || '',
+      phone: result.Item.phone || '',
+      birthDate: result.Item.birthDate || '',
+      location: result.Item.location || '',
+      profession: result.Item.profession || '',
+      company: result.Item.company || '',
+      experience: result.Item.experience || '',
+      industry: result.Item.industry || '',
+      goals: result.Item.goals || '',
+      interests: result.Item.interests || '',
+      profileImageUrl: result.Item.profileImageUrl || '',
+      emailNotifications: result.Item.emailNotifications !== undefined ? result.Item.emailNotifications : false,
+      weeklySummary: result.Item.weeklySummary !== undefined ? result.Item.weeklySummary : false,
+      reminders: result.Item.reminders !== undefined ? result.Item.reminders : false,
+      theme: result.Item.theme || 'light',
+      language: result.Item.language || 'de',
+      dataSharing: result.Item.dataSharing !== undefined ? result.Item.dataSharing : false,
+      preferences: result.Item.preferences || {},
+      settings: result.Item.settings || {},
+      personal: result.Item.personal || {},
+      type: result.Item.type || 'user-profile',
+      createdAt: result.Item.createdAt || '',
+      updatedAt: result.Item.updatedAt || ''
+    };
+  } catch (error) {
+    console.error('Error getting profile by UUID:', error);
+    throw error;
+  }
+}
+
 function authUser(event) {
   const token = (event.headers?.authorization || event.headers?.Authorization || '').replace(/^Bearer\s+/, '');
   if (!token) throw new Error('unauthorized');
