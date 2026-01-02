@@ -84,6 +84,13 @@
 							"        pm.environment.set('challenge', jsonData.challenge);",
 							"        pm.collectionVariables.set('challenge', jsonData.challenge);",
 							"        console.log('✅ Challenge gespeichert:', jsonData.challenge);",
+							"        console.log('');",
+							"        console.log('📋 Nächster Schritt: Challenge signieren');",
+							"        console.log('Führe aus im Terminal:');",
+							"        const apiKeyId = pm.environment.get('apiKeyId') || pm.collectionVariables.get('apiKeyId');",
+							"        console.log('node scripts/sign-challenge.js \"' + jsonData.challenge + '\" \"keys/' + apiKeyId + '-private-key.pem\"');",
+							"        console.log('');",
+							"        console.log('Dann setze die Signature in Postman Environment Variable: signature');",
 							"    }",
 							"});"
 						],
