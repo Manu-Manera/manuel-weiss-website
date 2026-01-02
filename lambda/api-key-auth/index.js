@@ -189,16 +189,28 @@ exports.handler = async (event) => {
             
             const keyData = await registerPublicKey(apiKeyId, publicKey, metadata);
             
-            return {
-                statusCode: 200,
-                headers,
-                body: JSON.stringify({
-                    success: true,
-                    message: 'Public key registered successfully',
-                    apiKeyId: keyData.apiKeyId,
-                    createdAt: keyData.createdAt
-                })
-            };
+                return {
+                    statusCode: 200,
+                    headers,
+                    body: JSON.stringify({
+                        success: true,
+                        message: 'Public key registered successfully',
+                        apiKeyId: keyData.apiKeyId,
+                        createdAt: keyData.createdAt
+                    })
+                };
+            } catch (registerError) {
+                console.error('❌ Register error:', registerError);
+                console.error('❌ Register error stack:', registerError.stack);
+                return {
+                    statusCode: 500,
+                    headers,
+                    body: JSON.stringify({
+                        error: 'Failed to register public key',
+                        details: registerError.message
+                    })
+                };
+            }
         }
         
         // POST /auth/api-key/challenge - Challenge generieren
