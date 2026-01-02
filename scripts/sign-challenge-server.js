@@ -27,6 +27,10 @@ const url = require('url');
 const PORT = process.argv[2] || 3001;
 const KEYS_DIR = path.join(__dirname, '..', 'keys');
 
+console.log('🔐 Challenge Signing Server');
+console.log('📁 Keys-Verzeichnis:', KEYS_DIR);
+console.log('');
+
 // CORS Headers
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
@@ -74,15 +78,24 @@ const server = http.createServer((req, res) => {
             // Load private key
             const privateKeyPath = path.join(KEYS_DIR, `${apiKeyId}-private-key.pem`);
             
+            console.log('📋 Signing Request:', {
+                apiKeyId: apiKeyId,
+                challengeLength: challenge.length,
+                privateKeyPath: privateKeyPath
+            });
+            
             if (!fs.existsSync(privateKeyPath)) {
+                console.error('❌ Private Key nicht gefunden:', privateKeyPath);
                 res.writeHead(404, corsHeaders);
                 res.end(JSON.stringify({ 
-                    error: `Private key not found: ${privateKeyPath}` 
+                    error: `Private key not found: ${privateKeyPath}`,
+                    hint: 'Prüfe ob apiKeyId korrekt ist und Private Key existiert'
                 }));
                 return;
             }
 
             const privateKey = fs.readFileSync(privateKeyPath, 'utf8');
+            console.log('✅ Private Key geladen');
 
             // Sign challenge
             const sign = crypto.createSign('RSA-SHA256');
@@ -90,6 +103,9 @@ const server = http.createServer((req, res) => {
             sign.end();
 
             const signature = sign.sign(privateKey, 'base64');
+            
+            console.log('✅ Signature generiert, Länge:', signature.length);
+            console.log('📤 Sende Response...');
 
             res.writeHead(200, corsHeaders);
             res.end(JSON.stringify({
