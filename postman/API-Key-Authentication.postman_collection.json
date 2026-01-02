@@ -21,10 +21,11 @@
 							"    var jsonData = pm.response.json();",
 							"    pm.expect(jsonData).to.have.property('success', true);",
 							"    ",
-							"    // Speichere apiKeyId für weitere Requests",
-							"    if (jsonData.apiKeyId) {",
-							"        pm.environment.set('apiKeyId', jsonData.apiKeyId);",
-							"    }",
+					"    // Speichere apiKeyId für weitere Requests",
+					"    if (jsonData.apiKeyId) {",
+					"        pm.environment.set('apiKeyId', jsonData.apiKeyId);",
+					"        pm.collectionVariables.set('apiKeyId', jsonData.apiKeyId);",
+					"    }",
 							"});"
 						],
 						"type": "text/javascript"
