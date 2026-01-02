@@ -407,6 +407,12 @@
 			"key": "apiKeyToken",
 			"value": "",
 			"type": "string"
+		},
+		{
+			"key": "signingServerUrl",
+			"value": "http://localhost:3001/sign",
+			"type": "string",
+			"description": "URL des lokalen Signing-Servers für automatische Signature-Generierung"
 		}
 	]
 }
