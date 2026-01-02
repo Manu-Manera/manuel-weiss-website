@@ -109,14 +109,109 @@ exports.handler = async (event) => {
                 };
             }
             
+            // DynamoDB Key-Struktur: userId ist der HASH Key
             const params = {
                 TableName: TABLE_NAME,
-                Key: { userId }
+                Key: { 
+                    userId: userId 
+                }
             };
             
-            const result = await dynamoDB.get(params).promise();
+            console.log('🔍 Loading profile with params:', JSON.stringify(params, null, 2));
+            console.log('👤 User info:', { userId, authType: user.authType, apiKeyId: user.apiKeyId });
+            
+            let result;
+            try {
+                result = await dynamoDB.get(params).promise();
+                console.log('📥 DynamoDB result:', result.Item ? 'Item found' : 'Item not found');
+            } catch (dbError) {
+                console.error('❌ DynamoDB error:', dbError);
+                console.error('❌ Error details:', {
+                    message: dbError.message,
+                    code: dbError.code,
+                    statusCode: dbError.statusCode
+                });
+                
+                // Wenn es ein Schema-Fehler ist, gebe ein leeres Profil zurück
+                if (dbError.code === 'ValidationException' || dbError.message.includes('does not match the schema')) {
+                    console.log('⚠️ Schema error - returning default profile for API key');
+                    return {
+                        statusCode: 200,
+                        headers,
+                        body: JSON.stringify({
+                            userId: userId,
+                            email: user.email || '',
+                            name: '',
+                            firstName: '',
+                            lastName: '',
+                            phone: '',
+                            birthDate: '',
+                            location: '',
+                            profession: '',
+                            company: '',
+                            experience: '',
+                            industry: '',
+                            goals: '',
+                            interests: '',
+                            profileImageUrl: '',
+                            emailNotifications: false,
+                            weeklySummary: false,
+                            reminders: false,
+                            theme: 'light',
+                            language: 'de',
+                            dataSharing: false,
+                            preferences: {},
+                            settings: {},
+                            personal: {},
+                            type: 'user-profile',
+                            authType: 'api-key',
+                            apiKeyId: user.apiKeyId
+                        })
+                    };
+                }
+                
+                throw dbError;
+            }
             
             if (!result.Item) {
+                // Für API Key Auth: Gebe ein leeres Profil zurück statt 404
+                if (user.authType === 'api-key') {
+                    console.log('⚠️ No profile found for API key - returning default profile');
+                    return {
+                        statusCode: 200,
+                        headers,
+                        body: JSON.stringify({
+                            userId: userId,
+                            email: user.email || '',
+                            name: '',
+                            firstName: '',
+                            lastName: '',
+                            phone: '',
+                            birthDate: '',
+                            location: '',
+                            profession: '',
+                            company: '',
+                            experience: '',
+                            industry: '',
+                            goals: '',
+                            interests: '',
+                            profileImageUrl: '',
+                            emailNotifications: false,
+                            weeklySummary: false,
+                            reminders: false,
+                            theme: 'light',
+                            language: 'de',
+                            dataSharing: false,
+                            preferences: {},
+                            settings: {},
+                            personal: {},
+                            type: 'user-profile',
+                            authType: 'api-key',
+                            apiKeyId: user.apiKeyId
+                        })
+                    };
+                }
+                
                 return {
                     statusCode: 404,
                     headers,
