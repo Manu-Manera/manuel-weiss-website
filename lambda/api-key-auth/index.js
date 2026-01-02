@@ -148,9 +148,9 @@ exports.handler = async (event) => {
     }
     
     try {
-        const path = event.path || event.rawPath || '';
-        const method = event.httpMethod || event.requestContext?.http?.method;
-        const body = event.body ? JSON.parse(event.body) : {};
+        const path = event.path || event.rawPath || event.requestContext?.path || '';
+        const method = event.httpMethod || event.requestContext?.http?.method || event.requestContext?.httpMethod;
+        const body = event.body ? (typeof event.body === 'string' ? JSON.parse(event.body) : event.body) : {};
         
         // POST /auth/api-key/register - Public Key registrieren
         if (method === 'POST' && path.includes('/auth/api-key/register')) {
