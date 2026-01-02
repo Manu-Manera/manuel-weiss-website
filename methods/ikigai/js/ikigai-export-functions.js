@@ -100,7 +100,7 @@ class IkigaiExportFunctions {
             const stepData = localStorage.getItem(`ikigaiStep${i}`);
             if (stepData) {
                 try {
-                    this.exportData.workflow[`step${i}`] = JSON.parse(stepData);
+                this.exportData.workflow[`step${i}`] = JSON.parse(stepData);
                 } catch (error) {
                     console.warn(`⚠️ Fehler beim Parsen von Step ${i}:`, error);
                 }
@@ -111,7 +111,7 @@ class IkigaiExportFunctions {
         const analysisData = localStorage.getItem('ikigaiFinalAnalysis');
         if (analysisData) {
             try {
-                this.exportData.analysis = JSON.parse(analysisData);
+            this.exportData.analysis = JSON.parse(analysisData);
             } catch (error) {
                 console.warn('⚠️ Fehler beim Laden der Analyse-Daten:', error);
             }
@@ -124,7 +124,7 @@ class IkigaiExportFunctions {
             const items = localStorage.getItem(`ikigai-${area}-items`);
             if (items) {
                 try {
-                    this.exportData.diagram[area] = JSON.parse(items);
+                this.exportData.diagram[area] = JSON.parse(items);
                 } catch (error) {
                     console.warn(`⚠️ Fehler beim Laden von ${area}-Daten:`, error);
                 }
@@ -321,13 +321,13 @@ class IkigaiExportFunctions {
             const stepKey = `step${i}`;
             const stepData = this.exportData.workflow[stepKey] || {};
             
-            content += `
-                <div class="step-content">
+                content += `
+                    <div class="step-content">
                     <h3>Schritt ${i}: ${stepTitles[stepKey]}</h3>
                     ${this.formatStepData(stepData, stepKey)}
-                </div>
-            `;
-        }
+                    </div>
+                `;
+            }
         
         content += '</div>';
         return content;

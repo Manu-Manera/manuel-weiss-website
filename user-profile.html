@@ -68,6 +68,10 @@
                         <i class="fas fa-user"></i>
                         Persönliche Daten
                     </button>
+                    <button class="tab-btn" data-tab="applications">
+                        <i class="fas fa-briefcase"></i>
+                        Bewerbungsmanager
+                    </button>
                     <button class="tab-btn" data-tab="settings">
                         <i class="fas fa-cog"></i>
                         Einstellungen
@@ -154,6 +158,91 @@
                         <div class="form-group">
                             <label for="interests">Interessen</label>
                             <textarea id="interests" placeholder="Deine Hobbys und Interessen..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Applications Tab (Bewerbungsmanager) -->
+                <div class="tab-panel" id="applications">
+                    <div class="applications-dashboard">
+                        <!-- Dashboard Header -->
+                        <div class="dashboard-header">
+                            <div class="dashboard-actions">
+                                <button class="btn-primary" id="startNewApplication">
+                                    <i class="fas fa-plus"></i>
+                                    Neue Bewerbung erstellen
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Statistics Overview -->
+                        <div class="applications-stats">
+                            <div class="stat-card">
+                                <div class="stat-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                    <i class="fas fa-briefcase"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h3 id="totalApplications">0</h3>
+                                    <p>Gesamt Bewerbungen</p>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h3 id="activeApplications">0</h3>
+                                    <p>Aktive Bewerbungen</p>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h3 id="successRate">0%</h3>
+                                    <p>Erfolgsrate</p>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                                    <i class="fas fa-calendar-check"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h3 id="interviewsScheduled">0</h3>
+                                    <p>Interviews geplant</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Applications List -->
+                        <div class="applications-section">
+                            <div class="section-header">
+                                <h3><i class="fas fa-list"></i> Meine Bewerbungen</h3>
+                                <div class="filter-controls">
+                                    <select id="statusFilter" class="filter-select">
+                                        <option value="all">Alle Status</option>
+                                        <option value="preparation">Vorbereitung</option>
+                                        <option value="sent">Versendet</option>
+                                        <option value="confirmed">Bestätigt</option>
+                                        <option value="interview">Interview</option>
+                                        <option value="offer">Angebot</option>
+                                        <option value="rejected">Abgelehnt</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div id="applicationsList" class="applications-list">
+                                <!-- Wird dynamisch gefüllt -->
+                                <div class="empty-state">
+                                    <i class="fas fa-briefcase"></i>
+                                    <h4>Noch keine Bewerbungen</h4>
+                                    <p>Erstelle deine erste Bewerbung mit dem Smart Workflow</p>
+                                    <button class="btn-primary" onclick="document.getElementById('startNewApplication').click()">
+                                        <i class="fas fa-plus"></i>
+                                        Neue Bewerbung erstellen
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -525,7 +525,7 @@ function initContactForm() {
                 // Show success notification
                 showNotification('Nachricht erfolgreich gesendet!', 'success');
                 
-            } catch (error) {
+    } catch (error) {
                 // Error
                 submitBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Fehler!';
                 submitBtn.style.background = 'var(--danger)';

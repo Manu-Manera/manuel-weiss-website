@@ -34,12 +34,15 @@ class UserProfile {
             this.setupAutoSave();
         });
         
+        // Initialisiere Applications Tab
+        this.initApplicationsTab();
+        
         // Handle hash navigation - am Ende nach allen asynchronen Operationen
         // Verwende mehrschichtige Verzögerung für maximale Zuverlässigkeit
         const performHashNavigation = () => {
             // Prüfe sofort, ob Hash vorhanden ist
             const hash = window.location.hash.slice(1);
-            if (hash && ['personal', 'settings', 'progress', 'achievements'].includes(hash)) {
+            if (hash && ['personal', 'applications', 'settings', 'progress', 'achievements'].includes(hash)) {
                 // Hash vorhanden - führe Navigation mit Polling aus
                 this.handleHashNavigation();
             } else {
@@ -62,7 +65,7 @@ class UserProfile {
         // Dies stellt sicher, dass auch bei sehr langsamen Verbindungen die Navigation funktioniert
         setTimeout(() => {
             const hash = window.location.hash.slice(1);
-            if (hash && ['personal', 'settings', 'progress', 'achievements'].includes(hash)) {
+            if (hash && ['personal', 'applications', 'settings', 'progress', 'achievements'].includes(hash)) {
                 // Prüfe ob Tab bereits aktiv ist
                 const activeTab = document.querySelector('.tab-btn.active');
                 const expectedTab = document.querySelector(`[data-tab="${hash}"]`);
@@ -80,7 +83,7 @@ class UserProfile {
         const tabPanels = document.querySelectorAll('.tab-panel');
         
         // Prüfe auf spezifische Elemente für alle möglichen Tabs
-        const requiredTabs = ['personal', 'settings', 'progress', 'achievements'];
+        const requiredTabs = ['personal', 'applications', 'settings', 'progress', 'achievements'];
         const allTabsExist = requiredTabs.every(tabName => {
             const button = document.querySelector(`[data-tab="${tabName}"]`);
             const panel = document.getElementById(tabName);
@@ -862,18 +865,36 @@ class UserProfile {
         input.accept = 'image/*';
         input.onchange = async (e) => {
             const file = e.target.files[0];
-        if (file) {
+            if (file) {
                 try {
+                    // Validierung der Datei
+                    const maxSize = 5 * 1024 * 1024; // 5MB
+                    if (file.size > maxSize) {
+                        throw new Error('Die Datei ist zu groß. Maximale Größe: 5MB');
+                    }
+                    
+                    if (!file.type.startsWith('image/')) {
+                        throw new Error('Bitte wählen Sie eine Bilddatei aus');
+                    }
+                    
                     this.showLoading('Profilbild wird hochgeladen...');
                     
                     // Upload to AWS S3
                     if (window.realUserAuth?.isLoggedIn() && this.awsProfileAPI) {
+                        console.log('📤 Starte Profilbild-Upload...', {
+                            fileName: file.name,
+                            fileSize: file.size,
+                            fileType: file.type
+                        });
+                        
                         const imageUrl = await this.awsProfileAPI.uploadProfileImage(file);
+                        
+                        console.log('✅ Profilbild erfolgreich hochgeladen:', imageUrl);
                         
                         // Update profile image
                         const img = document.getElementById('profileImage');
                         if (img) {
-                            img.src = imageUrl;
+                            img.src = imageUrl + '?v=' + Date.now(); // Cache-Busting
                         }
                         
                         // Save image URL to profile data
@@ -886,21 +907,36 @@ class UserProfile {
                         this.showNotification('Profilbild erfolgreich hochgeladen!', 'success');
                     } else {
                         // Fallback to local storage
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                    const img = document.getElementById('profileImage');
-                    if (img) {
-                        img.src = e.target.result;
-                    }
+                        console.warn('⚠️ User nicht angemeldet oder AWS API nicht verfügbar, verwende lokalen Fallback');
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            const img = document.getElementById('profileImage');
+                            if (img) {
+                                img.src = e.target.result;
+                            }
                             this.hideLoading();
-                            this.showNotification('Profilbild lokal gespeichert!', 'success');
-            };
-            reader.readAsDataURL(file);
+                            this.showNotification('Profilbild lokal gespeichert! (Bitte melden Sie sich an für Cloud-Speicherung)', 'warning');
+                        };
+                        reader.readAsDataURL(file);
                     }
                 } catch (error) {
                     console.error('❌ Failed to upload avatar:', error);
                     this.hideLoading();
-                    this.showNotification('Fehler beim Hochladen des Profilbilds. Bitte versuchen Sie es erneut.', 'error');
+                    
+                    // Detaillierte Fehlermeldung
+                    let errorMessage = 'Fehler beim Hochladen des Profilbilds';
+                    if (error.message) {
+                        errorMessage += ': ' + error.message;
+                    } else if (error.response) {
+                        try {
+                            const errorData = await error.response.json();
+                            errorMessage += ': ' + (errorData.error || errorData.message || 'Unbekannter Fehler');
+                        } catch (e) {
+                            errorMessage += ': HTTP ' + error.response.status;
+                        }
+                    }
+                    
+                    this.showNotification(errorMessage, 'error');
                 }
             }
         };
@@ -986,6 +1022,257 @@ class UserProfile {
                 document.body.removeChild(notification);
             }, 300);
         }, 3000);
+    }
+
+    /**
+     * Applications Tab - Bewerbungsmanager
+     */
+    initApplicationsTab() {
+        // Event Listener für "Neue Bewerbung erstellen" Button
+        const startNewApplicationBtn = document.getElementById('startNewApplication');
+        if (startNewApplicationBtn) {
+            startNewApplicationBtn.addEventListener('click', () => {
+                this.startNewApplication();
+            });
+        }
+
+        // Event Listener für Status-Filter
+        const statusFilter = document.getElementById('statusFilter');
+        if (statusFilter) {
+            statusFilter.addEventListener('change', () => {
+                this.filterApplications(statusFilter.value);
+            });
+        }
+
+        // Lade Bewerbungsdaten wenn Tab aktiv ist
+        if (this.currentTab === 'applications') {
+            this.loadApplicationsData();
+        }
+    }
+
+    async loadApplicationsData() {
+        try {
+            console.log('📥 Loading applications data...');
+            
+            // Lade Bewerbungsdaten (kann aus verschiedenen Quellen kommen)
+            let applications = [];
+            
+            // Versuche von Applications Core zu laden
+            if (window.applicationsCore && window.applicationsCore.getApplicationData) {
+                applications = await window.applicationsCore.getApplicationData();
+            } else if (this.awsProfileAPI) {
+                // Fallback: Lade aus Profil
+                const profile = await this.awsProfileAPI.loadProfile();
+                applications = profile?.applications || [];
+            }
+            
+            console.log('✅ Applications loaded:', applications);
+            
+            // Update Statistics
+            this.updateApplicationsStats(applications);
+            
+            // Render Applications List
+            this.renderApplicationsList(applications);
+            
+        } catch (error) {
+            console.error('❌ Failed to load applications data:', error);
+            this.showNotification('Fehler beim Laden der Bewerbungsdaten', 'error');
+        }
+    }
+
+    updateApplicationsStats(applications) {
+        const total = applications.length;
+        const active = applications.filter(app => 
+            ['preparation', 'sent', 'confirmed', 'interview'].includes(app.status)
+        ).length;
+        const interviews = applications.filter(app => app.status === 'interview').length;
+        const successful = applications.filter(app => 
+            ['offer', 'confirmed'].includes(app.status)
+        ).length;
+        const successRate = total > 0 ? Math.round((successful / total) * 100) : 0;
+
+        const totalEl = document.getElementById('totalApplications');
+        const activeEl = document.getElementById('activeApplications');
+        const successRateEl = document.getElementById('successRate');
+        const interviewsEl = document.getElementById('interviewsScheduled');
+
+        if (totalEl) totalEl.textContent = total;
+        if (activeEl) activeEl.textContent = active;
+        if (successRateEl) successRateEl.textContent = successRate + '%';
+        if (interviewsEl) interviewsEl.textContent = interviews;
+    }
+
+    renderApplicationsList(applications) {
+        const listContainer = document.getElementById('applicationsList');
+        if (!listContainer) return;
+
+        if (applications.length === 0) {
+            listContainer.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-briefcase"></i>
+                    <h4>Noch keine Bewerbungen</h4>
+                    <p>Erstelle deine erste Bewerbung mit dem Smart Workflow</p>
+                    <button class="btn-primary" onclick="window.userProfile.startNewApplication()">
+                        <i class="fas fa-plus"></i>
+                        Neue Bewerbung erstellen
+                    </button>
+                </div>
+            `;
+            return;
+        }
+
+        const applicationsHTML = applications.map(app => {
+            const statusClass = app.status || 'preparation';
+            const statusLabels = {
+                preparation: 'Vorbereitung',
+                sent: 'Versendet',
+                confirmed: 'Bestätigt',
+                interview: 'Interview',
+                offer: 'Angebot',
+                rejected: 'Abgelehnt'
+            };
+            
+            const date = app.appliedDate || app.createdAt || 'Nicht angegeben';
+            const formattedDate = date !== 'Nicht angegeben' ? new Date(date).toLocaleDateString('de-DE') : date;
+
+            return `
+                <div class="application-item" data-status="${statusClass}">
+                    <div class="application-info">
+                        <h4>${app.position || app.jobTitle || 'Unbekannte Position'}</h4>
+                        <p><strong>${app.company || 'Unbekanntes Unternehmen'}</strong></p>
+                        <div class="application-meta">
+                            <span class="application-status ${statusClass}">${statusLabels[statusClass] || statusClass}</span>
+                            <span style="color: var(--text-secondary); font-size: 0.875rem;">
+                                <i class="fas fa-calendar"></i> ${formattedDate}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="application-actions">
+                        <button class="btn-icon" onclick="window.userProfile.viewApplication('${app.id || app.appId}')" title="Ansehen">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn-icon" onclick="window.userProfile.editApplication('${app.id || app.appId}')" title="Bearbeiten">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn-icon" onclick="window.userProfile.deleteApplication('${app.id || app.appId}')" title="Löschen">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        listContainer.innerHTML = applicationsHTML;
+    }
+
+    filterApplications(status) {
+        const items = document.querySelectorAll('.application-item');
+        items.forEach(item => {
+            if (status === 'all' || item.dataset.status === status) {
+                item.style.display = 'flex';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    }
+
+    /**
+     * Starte neue Bewerbung mit Workflow
+     */
+    async startNewApplication() {
+        try {
+            console.log('🚀 Starting new application workflow...');
+            
+            // Lade Profildaten für Vorausfüllung
+            const profileData = this.profileData;
+            
+            // Vorausfüllen der Workflow-Daten mit Profildaten
+            this.prefillWorkflowFromProfile(profileData);
+            
+            // Starte Workflow-Modal
+            if (typeof window.showSmartWorkflowModal === 'function') {
+                window.showSmartWorkflowModal();
+            } else if (typeof window.startSmartWorkflow === 'function') {
+                window.startSmartWorkflow();
+            } else {
+                throw new Error('Workflow-Funktion nicht gefunden');
+            }
+            
+        } catch (error) {
+            console.error('❌ Failed to start application workflow:', error);
+            this.showNotification('Fehler beim Starten des Workflows: ' + (error.message || 'Unbekannter Fehler'), 'error');
+        }
+    }
+
+    /**
+     * Fülle Workflow-Daten mit Profildaten vor
+     */
+    prefillWorkflowFromProfile(profileData) {
+        // Initialisiere Workflow-Daten falls nicht vorhanden
+        if (!window.workflowData) {
+            window.initializeWorkflowData();
+        }
+
+        // Mapping: Profil → Workflow
+        const workflowData = {
+            // Persönliche Daten
+            firstName: profileData.firstName || profileData.personal?.firstName || '',
+            lastName: profileData.lastName || profileData.personal?.lastName || '',
+            email: profileData.email || profileData.personal?.email || '',
+            phone: profileData.phone || profileData.personal?.phone || '',
+            location: profileData.location || profileData.personal?.location || '',
+            birthDate: profileData.birthDate || profileData.personal?.birthDate || '',
+            
+            // Berufliche Informationen
+            currentPosition: profileData.profession || '',
+            currentCompany: profileData.company || '',
+            experienceYears: profileData.experience || '',
+            industry: profileData.industry || '',
+            
+            // Karriereziele
+            motivation: profileData.goals || '',
+            interests: profileData.interests || ''
+        };
+
+        // Merge mit bestehenden Workflow-Daten
+        window.workflowData = {
+            ...window.workflowData,
+            ...workflowData
+        };
+
+        // Speichere für späteren Zugriff
+        window.saveWorkflowData();
+
+        console.log('✅ Workflow-Daten mit Profildaten vorausgefüllt:', workflowData);
+    }
+
+    viewApplication(appId) {
+        console.log('👁️ View application:', appId);
+        // TODO: Implementiere Detail-Ansicht
+        this.showNotification('Detail-Ansicht wird noch implementiert', 'info');
+    }
+
+    editApplication(appId) {
+        console.log('✏️ Edit application:', appId);
+        // TODO: Implementiere Bearbeitung
+        this.showNotification('Bearbeitung wird noch implementiert', 'info');
+    }
+
+    async deleteApplication(appId) {
+        if (!confirm('Möchten Sie diese Bewerbung wirklich löschen?')) {
+            return;
+        }
+
+        try {
+            console.log('🗑️ Delete application:', appId);
+            // TODO: Implementiere Löschung
+            this.showNotification('Löschung wird noch implementiert', 'info');
+            // Nach Löschung: Daten neu laden
+            await this.loadApplicationsData();
+        } catch (error) {
+            console.error('❌ Failed to delete application:', error);
+            this.showNotification('Fehler beim Löschen der Bewerbung', 'error');
+        }
     }
 }
 
