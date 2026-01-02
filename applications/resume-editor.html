@@ -145,10 +145,41 @@
                 <!-- Skills -->
                 <section class="resume-section">
                     <h2><i class="fas fa-tools"></i> Fähigkeiten & Kompetenzen</h2>
-                    <div class="form-group">
-                        <label>Skills (kommagetrennt)</label>
-                        <input type="text" id="skills" name="skills" placeholder="z.B. JavaScript, React, Node.js">
+                    <p class="section-description">Kategorisiere deine Skills für besseres ATS-Matching und Skills-First Recruiting</p>
+                    
+                    <!-- Technical Skills -->
+                    <div class="skills-category">
+                        <h3><i class="fas fa-code"></i> Technische Fähigkeiten (Hard Skills)</h3>
+                        <div id="technicalSkillsContainer">
+                            <!-- Wird dynamisch gefüllt -->
+                        </div>
+                        <button type="button" class="btn-add" onclick="addTechnicalSkillCategory()">
+                            <i class="fas fa-plus"></i> Kategorie hinzufügen
+                        </button>
                     </div>
+                    
+                    <!-- Soft Skills -->
+                    <div class="skills-category">
+                        <h3><i class="fas fa-users"></i> Soft Skills</h3>
+                        <div id="softSkillsContainer">
+                            <!-- Wird dynamisch gefüllt -->
+                        </div>
+                        <button type="button" class="btn-add" onclick="addSoftSkill()">
+                            <i class="fas fa-plus"></i> Soft Skill hinzufügen
+                        </button>
+                    </div>
+                </section>
+                
+                <!-- Projekte -->
+                <section class="resume-section">
+                    <h2><i class="fas fa-project-diagram"></i> Projekte</h2>
+                    <p class="section-description">Zeige praktische Erfahrungen mit konkreten Beispielen und GitHub-Links</p>
+                    <div id="projectsContainer">
+                        <!-- Wird dynamisch gefüllt -->
+                    </div>
+                    <button type="button" class="btn-add" onclick="addProject()">
+                        <i class="fas fa-plus"></i> Projekt hinzufügen
+                    </button>
                 </section>
 
                 <!-- Sprachen -->
