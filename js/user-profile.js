@@ -1055,7 +1055,123 @@ class UserProfile {
         // Lade Bewerbungsdaten wenn Tab aktiv ist
         if (this.currentTab === 'applications') {
             this.loadApplicationsData();
+            this.loadCoverLetters();
+            this.loadResumes();
         }
+    }
+
+    /**
+     * Lade Anschreiben
+     */
+    async loadCoverLetters() {
+        try {
+            // TODO: API-Call für Anschreiben
+            const coverLetters = []; // Placeholder
+            
+            const coverLettersList = document.getElementById('coverLettersList');
+            if (!coverLettersList) return;
+
+            if (coverLetters.length === 0) {
+                // Empty state bleibt sichtbar
+                return;
+            }
+
+            // Render cover letters
+            coverLettersList.innerHTML = coverLetters.map(letter => `
+                <div class="application-item">
+                    <div class="application-info">
+                        <h4>${letter.title || 'Anschreiben'}</h4>
+                        <p>${letter.company || ''} - ${letter.date || ''}</p>
+                    </div>
+                    <div class="application-actions">
+                        <button class="btn-icon" onclick="editCoverLetter('${letter.id}')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn-icon" onclick="deleteCoverLetter('${letter.id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        } catch (error) {
+            console.error('Error loading cover letters:', error);
+        }
+    }
+
+    /**
+     * Lade Lebensläufe
+     */
+    async loadResumes() {
+        try {
+            // API-Call für Lebensläufe
+            const token = await this.getAuthToken();
+            if (!token) return;
+
+            const response = await fetch('https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod/resume', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            const resumesList = document.getElementById('resumesList');
+            if (!resumesList) return;
+
+            if (response.status === 404) {
+                // Kein Lebenslauf vorhanden - Empty state bleibt sichtbar
+                return;
+            }
+
+            if (!response.ok) {
+                throw new Error('Failed to load resumes');
+            }
+
+            const resume = await response.json();
+            
+            if (!resume || !resume.personalInfo) {
+                // Empty state bleibt sichtbar
+                return;
+            }
+
+            // Render resume
+            const name = resume.personalInfo.firstName && resume.personalInfo.lastName
+                ? `${resume.personalInfo.firstName} ${resume.personalInfo.lastName}`
+                : 'Lebenslauf';
+            
+            const updatedAt = resume.updatedAt 
+                ? new Date(resume.updatedAt).toLocaleDateString('de-DE')
+                : '';
+
+            resumesList.innerHTML = `
+                <div class="application-item">
+                    <div class="application-info">
+                        <h4>${name}</h4>
+                        <p>Zuletzt aktualisiert: ${updatedAt}</p>
+                        ${resume.ocrProcessed ? '<span class="badge badge-success"><i class="fas fa-check"></i> OCR verarbeitet</span>' : ''}
+                    </div>
+                    <div class="application-actions">
+                        <a href="applications/resume-editor.html" class="btn-icon" title="Bearbeiten">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <button class="btn-icon" onclick="deleteResume()" title="Löschen">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        } catch (error) {
+            console.error('Error loading resumes:', error);
+        }
+    }
+
+    /**
+     * Get Auth Token
+     */
+    async getAuthToken() {
+        if (window.realUserAuth && window.realUserAuth.isLoggedIn()) {
+            const userData = window.realUserAuth.getUserData();
+            return userData.idToken || '';
+        }
+        return '';
     }
 
     async loadApplicationsData() {
