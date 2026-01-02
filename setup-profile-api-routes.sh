@@ -163,6 +163,27 @@ aws apigateway update-deployment \
     --deployment-id $(aws apigateway get-deployments --rest-api-id "$API_ID" --region "$REGION" --query "items[0].id" --output text) \
     --region "$REGION" > /dev/null
 
+# Create /resumes resource (Plural - Liste aller Lebensläufe)
+RESUMES_RESOURCE_ID=$(aws apigateway get-resources --rest-api-id "$API_ID" --region "$REGION" --query "items[?path=='/resumes'].id" --output text)
+
+if [ -z "$RESUMES_RESOURCE_ID" ]; then
+    echo "📝 Erstelle /resumes Resource..."
+    RESUMES_RESOURCE_ID=$(aws apigateway create-resource \
+        --rest-api-id "$API_ID" \
+        --parent-id "$ROOT_RESOURCE_ID" \
+        --path-part "resumes" \
+        --region "$REGION" \
+        --query "id" \
+        --output text)
+    echo "✅ /resumes Resource erstellt: $RESUMES_RESOURCE_ID"
+else
+    echo "✅ /resumes Resource existiert bereits: $RESUMES_RESOURCE_ID"
+fi
+
+# Create methods for /resumes
+create_method "$RESUMES_RESOURCE_ID" "OPTIONS"
+create_method "$RESUMES_RESOURCE_ID" "GET"
+
 # Create /resume resource if it doesn't exist
 RESUME_RESOURCE_ID=$(aws apigateway get-resources --rest-api-id "$API_ID" --region "$REGION" --query "items[?path=='/resume'].id" --output text)
 
@@ -331,6 +352,7 @@ echo "   POST    /profile"
 echo "   PUT     /profile"
 echo "   GET     /profiles (Liste)"
 echo "   GET     /profiles/{uuid} (Einzelnes Profil)"
+echo "   GET     /resumes (Liste aller Lebensläufe - Übersicht)"
 echo "   GET     /resume (Lebenslauf laden)"
 echo "   POST    /resume (Lebenslauf speichern)"
 echo "   PUT     /resume (Lebenslauf aktualisieren)"
