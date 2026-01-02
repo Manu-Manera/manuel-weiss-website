@@ -23,7 +23,9 @@
 
 ### 5. Token setzen
 
-#### Option A: Token aus Browser holen (Empfohlen)
+**📖 Detaillierte Anleitung:** Siehe `TOKEN_GENERIERUNG.md`
+
+#### Option A: Token aus Browser holen (Empfohlen - Einfachste Methode)
 1. Öffne deine Website im Browser
 2. Logge dich ein
 3. Öffne Browser-Konsole (F12)

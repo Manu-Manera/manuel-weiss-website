@@ -5,6 +5,28 @@
 		"description": "Vollständige API Collection für User Profile Management",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Automatisches Token-Handling",
+					"// Prüfe ob idToken in Environment Variable gesetzt ist",
+					"const idToken = pm.environment.get('idToken');",
+					"",
+					"if (!idToken || idToken === '') {",
+					"    console.log('⚠️ idToken nicht gesetzt. Bitte Token aus Browser holen:');",
+					"    console.log('1. Öffne Browser-Konsole (F12)');",
+					"    console.log('2. Führe aus: JSON.parse(localStorage.getItem(\\'aws_auth_session\\'))?.idToken');",
+					"    console.log('3. Kopiere Token und setze in Postman Environment Variable: idToken');",
+					"} else {",
+					"    console.log('✅ idToken gefunden in Environment Variable');",
+					"}"
+				]
+			}
+		}
+	],
 	"item": [
 		{
 			"name": "User Profile",
