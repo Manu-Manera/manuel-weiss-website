@@ -1,0 +1,423 @@
+{
+	"info": {
+		"_postman_id": "manuel-weiss-api-collection",
+		"name": "Manuel Weiss - User Profile API",
+		"description": "Vollständige API Collection für User Profile Management",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "User Profile",
+			"item": [
+				{
+					"name": "GET Profile - Profil laden",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has profile data\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('userId');",
+									"    pm.expect(jsonData).to.have.property('email');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{idToken}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/profile",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"profile"
+							]
+						},
+						"description": "Lädt das komplette User-Profil mit allen Feldern"
+					},
+					"response": []
+				},
+				{
+					"name": "PUT Profile - Vollständiges Update",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Profile updated successfully\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('success', true);",
+									"    pm.expect(jsonData).to.have.property('profile');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{idToken}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstName\": \"Manuel\",\n  \"lastName\": \"Weiss\",\n  \"email\": \"info@manuel-weiss.ch\",\n  \"phone\": \"+41 79 123 45 67\",\n  \"birthDate\": \"1990-01-01\",\n  \"location\": \"Zürich, Schweiz\",\n  \"profession\": \"Software Engineer\",\n  \"company\": \"Manuel Weiss\",\n  \"experience\": \"10 Jahre\",\n  \"industry\": \"IT\",\n  \"goals\": \"Unternehmenswachstum\",\n  \"interests\": \"Technologie, Innovation\",\n  \"emailNotifications\": true,\n  \"weeklySummary\": true,\n  \"reminders\": false,\n  \"theme\": \"light\",\n  \"language\": \"de\",\n  \"dataSharing\": false\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/profile",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"profile"
+							]
+						},
+						"description": "Aktualisiert das komplette User-Profil mit allen Feldern"
+					},
+					"response": []
+				},
+				{
+					"name": "PUT Profile - Nur Name ändern",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{idToken}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstName\": \"Manuel\",\n  \"lastName\": \"Weiss\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/profile",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"profile"
+							]
+						},
+						"description": "Beispiel: Nur Name ändern (teilweise Update)"
+					},
+					"response": []
+				},
+				{
+					"name": "PUT Profile - Nur Telefon ändern",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{idToken}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"phone\": \"+41 79 999 99 99\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/profile",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"profile"
+							]
+						},
+						"description": "Beispiel: Nur Telefonnummer ändern"
+					},
+					"response": []
+				}
+			],
+			"description": "User Profile Management Endpoints"
+		},
+		{
+			"name": "Profile Image",
+			"item": [
+				{
+					"name": "POST Upload URL - Presigned URL generieren",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has uploadUrl and imageUrl\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('uploadUrl');",
+									"    pm.expect(jsonData).to.have.property('imageUrl');",
+									"    ",
+									"    // Speichere imageUrl für späteren Gebrauch",
+									"    pm.environment.set('profileImageUrl', jsonData.imageUrl);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{idToken}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"fileName\": \"avatar.jpg\",\n  \"fileType\": \"image/jpeg\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/profile/upload-url",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"profile",
+								"upload-url"
+							]
+						},
+						"description": "Generiert eine Presigned URL für den Upload eines Profilbilds zu S3"
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE Profile Image - Profilbild entfernen",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Image removed successfully\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('success', true);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{idToken}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/profile/image",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"profile",
+								"image"
+							]
+						},
+						"description": "Entfernt das Profilbild aus dem Profil"
+					},
+					"response": []
+				}
+			],
+			"description": "Profilbild Management"
+		},
+		{
+			"name": "Website Images",
+			"item": [
+				{
+					"name": "GET Website Images - Öffentliche Bilder laden",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200 or 404\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 404]);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/website-images/owner",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"website-images",
+								"owner"
+							]
+						},
+						"description": "Lädt Website-Bilder (öffentlich, keine Auth erforderlich)"
+					},
+					"response": []
+				},
+				{
+					"name": "POST Website Images - Bilder speichern",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"profileImageDefault\": \"https://example.com/default.jpg\",\n  \"profileImageHover\": \"https://example.com/hover.jpg\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/website-images",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"website-images"
+							]
+						},
+						"description": "Speichert Website-Bilder (keine Auth erforderlich)"
+					},
+					"response": []
+				}
+			],
+			"description": "Website Images Management (öffentlich)"
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod",
+			"type": "string"
+		},
+		{
+			"key": "idToken",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
+
