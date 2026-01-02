@@ -337,10 +337,12 @@ exports.handler = async (event) => {
                                     return acc;
                                 }, {})) || {};
             
-            const apiKeyId = queryParams.apiKeyId || queryParams['apiKeyId'];
+            const apiKeyId = queryParams?.apiKeyId || queryParams?.['apiKeyId'];
             
             console.log('📋 Query Params:', JSON.stringify(queryParams));
             console.log('🔑 API Key ID:', apiKeyId);
+            console.log('🔍 Full event.queryStringParameters:', JSON.stringify(event.queryStringParameters));
+            console.log('🔍 Full event.multiValueQueryStringParameters:', JSON.stringify(event.multiValueQueryStringParameters));
             
             if (!apiKeyId) {
                 return {
