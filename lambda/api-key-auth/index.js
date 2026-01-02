@@ -461,6 +461,7 @@ exports.handler = async (event) => {
             }
             
             // Lade Challenge aus DynamoDB
+            console.log('🔍 Lade Challenge aus DynamoDB für:', apiKeyId);
             const challengeData = await dynamoDB.get({
                 TableName: TABLE_NAME,
                 Key: {
@@ -469,7 +470,16 @@ exports.handler = async (event) => {
                 }
             }).promise();
             
+            console.log('📋 Challenge Data aus DynamoDB:', {
+                found: !!challengeData.Item,
+                challenge: challengeData.Item?.challenge?.substring(0, 50) + '...',
+                expiresAt: challengeData.Item?.expiresAt,
+                now: Date.now(),
+                expired: challengeData.Item ? Date.now() > challengeData.Item.expiresAt : null
+            });
+            
             if (!challengeData.Item) {
+                console.error('❌ Challenge nicht gefunden in DynamoDB');
                 return {
                     statusCode: 404,
                     headers,
@@ -479,6 +489,11 @@ exports.handler = async (event) => {
             
             // Prüfe Ablaufzeit
             if (Date.now() > challengeData.Item.expiresAt) {
+                console.error('❌ Challenge abgelaufen:', {
+                    expiresAt: challengeData.Item.expiresAt,
+                    now: Date.now(),
+                    diff: Date.now() - challengeData.Item.expiresAt
+                });
                 return {
                     statusCode: 401,
                     headers,
@@ -488,6 +503,13 @@ exports.handler = async (event) => {
             
             // Prüfe ob Challenge übereinstimmt
             if (challengeData.Item.challenge !== challenge) {
+                console.error('❌ Challenge stimmt nicht überein:', {
+                    stored: challengeData.Item.challenge?.substring(0, 50) + '...',
+                    received: challenge?.substring(0, 50) + '...',
+                    match: challengeData.Item.challenge === challenge,
+                    storedLength: challengeData.Item.challenge?.length,
+                    receivedLength: challenge?.length
+                });
                 return {
                     statusCode: 401,
                     headers,
@@ -495,9 +517,12 @@ exports.handler = async (event) => {
                 };
             }
             
+            console.log('✅ Challenge validiert');
+            
             // Lade Public Key
             const publicKey = await getPublicKey(apiKeyId);
             if (!publicKey) {
+                console.error('❌ Public Key nicht gefunden für:', apiKeyId);
                 return {
                     statusCode: 404,
                     headers,
@@ -505,14 +530,40 @@ exports.handler = async (event) => {
                 };
             }
             
+            console.log('✅ Public Key geladen, Länge:', publicKey.length);
+            console.log('🔐 Validiere Signature...');
+            
             // Validiere Signatur
             const isValid = verifySignature(publicKey, challenge, signature);
+            
+            console.log('🔍 Signature Validation Result:', {
+                isValid: isValid,
+                challengeLength: challenge.length,
+                signatureLength: signature.length,
+                publicKeyLength: publicKey.length
+            });
+            
             if (!isValid) {
-                return {
-                    statusCode: 401,
-                    headers,
-                    body: JSON.stringify({ error: 'Invalid signature' })
-                };
+                console.error('❌ Signature-Validierung fehlgeschlagen');
+                console.error('  Challenge (first 50):', challenge.substring(0, 50));
+                console.error('  Signature (first 50):', signature.substring(0, 50));
+                console.error('  Public Key (first 100):', publicKey.substring(0, 100));
+                
+                // Versuche erneut mit normalisiertem Public Key
+                const normalizedPublicKey = publicKey.replace(/\\n/g, '\n');
+                const isValidRetry = verifySignature(normalizedPublicKey, challenge, signature);
+                console.log('🔍 Retry mit normalisiertem Public Key:', isValidRetry);
+                
+                if (!isValidRetry) {
+                    return {
+                        statusCode: 401,
+                        headers,
+                        body: JSON.stringify({ 
+                            error: 'Invalid signature',
+                            hint: 'Prüfe ob Challenge, Signature und Private Key korrekt sind. Challenge ist 60 Sekunden gültig.'
+                        })
+                    };
+                }
             }
             
             // Lösche Challenge (einmalige Verwendung)
