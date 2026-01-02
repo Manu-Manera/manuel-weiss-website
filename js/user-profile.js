@@ -11,6 +11,12 @@ class UserProfile {
     async init() {
         this.setupEventListeners();
         await this.loadProfileDataFromAWS();
+        
+        // Initialisiere progressData, falls noch nicht gesetzt
+        if (!this.progressData || Object.keys(this.progressData).length === 0) {
+            this.progressData = this.loadProgressData();
+        }
+        
         this.updateProgressDisplay();
         this.updateStats();
         this.checkAuthStatus();
@@ -504,14 +510,22 @@ class UserProfile {
     }
 
     updateProgressDisplay() {
+        // Prüfe ob progressData verfügbar ist
+        if (!this.progressData) {
+            console.warn('⚠️ progressData nicht verfügbar, initialisiere mit Standardwerten');
+            this.progressData = this.loadProgressData();
+        }
+        
         // Update overall progress
-        const overallProgress = Math.round((this.progressData.completedMethods / this.progressData.totalMethods) * 100);
+        const completedMethods = this.progressData.completedMethods || 0;
+        const totalMethods = this.progressData.totalMethods || 29;
+        const overallProgress = totalMethods > 0 ? Math.round((completedMethods / totalMethods) * 100) : 0;
         
         const overallProgressEl = document.getElementById('overallProgress');
         const overallProgressNumberEl = document.getElementById('overallProgressNumber');
         
         if (overallProgressEl) overallProgressEl.textContent = overallProgress + '%';
-        if (overallProgressNumberEl) overallProgressNumberEl.textContent = this.progressData.completedMethods;
+        if (overallProgressNumberEl) overallProgressNumberEl.textContent = completedMethods;
 
         // Update progress ring
         this.updateProgressRing(overallProgress);
@@ -533,6 +547,12 @@ class UserProfile {
     }
 
     updateCategoryProgress() {
+        // Prüfe ob progressData und categories existieren
+        if (!this.progressData || !this.progressData.categories) {
+            console.warn('⚠️ progressData.categories nicht verfügbar, überspringe updateCategoryProgress');
+            return;
+        }
+        
         const categories = this.progressData.categories;
         
         Object.keys(categories).forEach(categoryKey => {
