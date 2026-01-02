@@ -1435,7 +1435,7 @@ function handleContinue() {
     
     // Redirect to next step
     setTimeout(() => {
-        window.location.href = 'tracking-dashboard.html';
+        window.location.href = '../user-profile.html#applications';
     }, 1500);
 }
 
