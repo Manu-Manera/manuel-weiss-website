@@ -58,12 +58,39 @@ async function generateChallenge(apiKeyId) {
  */
 function verifySignature(publicKeyPem, challenge, signature) {
     try {
+        console.log('🔐 verifySignature called:');
+        console.log('  publicKeyPem length:', publicKeyPem?.length);
+        console.log('  challenge length:', challenge?.length);
+        console.log('  signature length:', signature?.length);
+        console.log('  publicKeyPem (first 100):', publicKeyPem?.substring(0, 100));
+        
+        // Normalisiere Public Key (falls nötig)
+        let normalizedPublicKey = publicKeyPem;
+        if (publicKeyPem.includes('\\n')) {
+            normalizedPublicKey = publicKeyPem.replace(/\\n/g, '\n');
+            console.log('  Public Key normalisiert (\\n → \\n)');
+        }
+        
+        // Erstelle Public Key Object
+        const publicKeyObject = crypto.createPublicKey(normalizedPublicKey);
+        console.log('  Public Key Object erstellt:', {
+            type: publicKeyObject.asymmetricKeyType,
+            size: publicKeyObject.asymmetricKeySize
+        });
+        
+        // Validiere Signature
         const verify = crypto.createVerify('RSA-SHA256');
         verify.update(challenge);
         verify.end();
-        return verify.verify(publicKeyPem, signature, 'base64');
+        
+        const isValid = verify.verify(publicKeyObject, signature, 'base64');
+        console.log('  Signature valid:', isValid);
+        
+        return isValid;
     } catch (error) {
-        console.error('Signature verification error:', error);
+        console.error('❌ Signature verification error:', error);
+        console.error('  Error message:', error.message);
+        console.error('  Error stack:', error.stack);
         return false;
     }
 }
