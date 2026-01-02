@@ -239,26 +239,6 @@ class UserProfile {
             });
         });
 
-        // Form inputs
-        // Auto-save on form changes with debounce
-        let saveTimeout;
-        document.querySelectorAll('input, select, textarea').forEach(input => {
-            input.addEventListener('change', () => {
-                // Clear existing timeout
-                clearTimeout(saveTimeout);
-                
-                // Set new timeout for auto-save
-                saveTimeout = setTimeout(async () => {
-                    try {
-                        await this.saveProfileData();
-                        this.showNotification('Änderungen automatisch gespeichert', 'success');
-                    } catch (error) {
-                        console.error('Auto-save failed:', error);
-                    }
-                }, 1000); // Save after 1 second of inactivity
-            });
-        });
-
         // Avatar upload
         const avatarUpload = document.querySelector('.avatar-upload');
         if (avatarUpload) {
@@ -274,6 +254,9 @@ class UserProfile {
                 this.saveProfile();
             });
         }
+
+        // Note: Auto-save wird in setupAutoSave() eingerichtet
+        // Das wird separat aufgerufen, nachdem die Felder geladen wurden
     }
 
     switchTab(tabName) {
@@ -397,6 +380,14 @@ class UserProfile {
             if (currentUser || userData) {
                 this.updateUserInfoFromAuth(currentUser || userData);
             }
+            
+            // Stelle sicher, dass Auto-Save nach dem Laden der Daten aktiviert ist
+            // (falls es beim ersten Mal fehlgeschlagen ist, weil Felder noch nicht geladen waren)
+            setTimeout(() => {
+                if (window.realUserAuth?.isLoggedIn() && this.awsProfileAPI) {
+                    this.setupAutoSave();
+                }
+            }, 500);
         } catch (error) {
             console.error('❌ Failed to load profile from AWS:', error);
             // Fallback to local storage
@@ -611,11 +602,20 @@ class UserProfile {
     setupAutoSave() {
         // Prüfe ob User angemeldet ist
         if (!window.realUserAuth?.isLoggedIn() || !this.awsProfileAPI) {
+            console.warn('⚠️ Auto-Save nicht aktiviert: User nicht angemeldet oder AWS API nicht verfügbar');
             return;
         }
         
-        // Alle Input-Felder im Profil finden
-        const profileInputs = document.querySelectorAll('#userProfileForm input, #userProfileForm textarea, #userProfileForm select');
+        // Alle Input-Felder im Profil finden - suche in allen Tab-Panels
+        // Da es kein Form-Element gibt, suchen wir direkt nach den Inputs in den Tab-Panels
+        const profileInputs = document.querySelectorAll('.tab-panel input, .tab-panel textarea, .tab-panel select');
+        
+        if (profileInputs.length === 0) {
+            console.warn('⚠️ Keine Profil-Input-Felder gefunden für Auto-Save');
+            // Retry nach kurzer Verzögerung, falls Felder noch nicht geladen sind
+            setTimeout(() => this.setupAutoSave(), 500);
+            return;
+        }
         
         // Debounce-Funktion für Auto-Save
         let autoSaveTimeout;
@@ -623,24 +623,35 @@ class UserProfile {
             clearTimeout(autoSaveTimeout);
             autoSaveTimeout = setTimeout(async () => {
                 try {
+                    console.log('💾 Auto-Save: Speichere Profildaten...');
                     await this.saveProfileData();
                     console.log('✅ Profil automatisch gespeichert');
+                    // Zeige nur stille Benachrichtigung (nicht zu aufdringlich)
+                    // this.showNotification('Änderungen automatisch gespeichert', 'success');
                 } catch (error) {
-                    console.warn('⚠️ Auto-Save fehlgeschlagen:', error);
+                    console.error('❌ Auto-Save fehlgeschlagen:', error);
+                    // Zeige Fehler-Benachrichtigung
+                    this.showNotification('Fehler beim automatischen Speichern: ' + (error.message || 'Unbekannter Fehler'), 'error');
                 }
             }, 2000); // 2 Sekunden nach letzter Änderung
         };
         
-        // Event-Listener für alle Inputs
+        // Füge Event-Listener hinzu (verwende once: false für mehrfache Events)
+        // Speichere Referenz zu autoSave für spätere Entfernung falls nötig
+        this._autoSaveHandler = autoSave;
+        
         profileInputs.forEach(input => {
-            input.addEventListener('input', autoSave);
-            input.addEventListener('change', autoSave);
+            // Füge Event-Listener hinzu
+            input.addEventListener('input', autoSave, { passive: true });
+            input.addEventListener('change', autoSave, { passive: true });
+            input.addEventListener('blur', autoSave, { passive: true }); // Auch beim Verlassen des Feldes speichern
         });
         
         console.log('✅ Auto-Save aktiviert für', profileInputs.length, 'Felder');
     }
 
     async saveProfileData() {
+        // Sammle alle Formular-Daten
         const formData = {
             firstName: document.getElementById('firstName')?.value || '',
             lastName: document.getElementById('lastName')?.value || '',
@@ -661,6 +672,8 @@ class UserProfile {
             language: document.getElementById('language')?.value || 'de',
             dataSharing: document.getElementById('dataSharing')?.checked || false
         };
+
+        console.log('📋 Gesammelte Formular-Daten:', formData);
 
         // Include profile image URL if available (always include if it exists in profileData)
         if (this.profileData.profileImageUrl !== undefined) {
@@ -692,20 +705,38 @@ class UserProfile {
             profileToSave.profileImageUrl = this.profileData.profileImageUrl;
         }
 
+        // Merge mit bestehenden Profildaten
         this.profileData = { ...this.profileData, ...profileToSave };
         
+        console.log('💾 Zu speichernde Profildaten:', this.profileData);
+        
+        // Prüfe ob User angemeldet ist
+        if (!window.realUserAuth?.isLoggedIn()) {
+            const error = new Error('Benutzer nicht angemeldet');
+            console.error('❌', error.message);
+            throw error;
+        }
+        
+        if (!this.awsProfileAPI) {
+            const error = new Error('AWS Profile API nicht verfügbar');
+            console.error('❌', error.message);
+            throw error;
+        }
+        
         // Save to AWS (PRIMARY STORAGE - keine lokale Speicherung)
-        if (window.realUserAuth?.isLoggedIn() && this.awsProfileAPI) {
-            try {
-                console.log('💾 Saving profile to AWS...');
-                await this.awsProfileAPI.saveProfile(this.profileData);
-                console.log('✅ Profile saved to AWS successfully');
-            } catch (error) {
-                console.error('❌ Failed to save profile to AWS:', error);
-                throw error; // Re-throw to show error notification
-            }
-        } else {
-            throw new Error('Benutzer nicht angemeldet oder AWS API nicht verfügbar');
+        try {
+            console.log('💾 Speichere Profil in AWS...');
+            const result = await this.awsProfileAPI.saveProfile(this.profileData);
+            console.log('✅ Profil erfolgreich in AWS gespeichert:', result);
+            return result;
+        } catch (error) {
+            console.error('❌ Fehler beim Speichern des Profils in AWS:', error);
+            console.error('Fehler-Details:', {
+                message: error.message,
+                stack: error.stack,
+                response: error.response
+            });
+            throw error; // Re-throw to show error notification
         }
     }
 
