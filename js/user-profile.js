@@ -99,7 +99,7 @@ class UserProfile {
                 console.error('❌ Tab-Elemente nach', maxAttempts, 'Versuchen nicht gefunden. Verwende Standard-Tab.');
                 // Fallback: Standard-Tab aktivieren
                 const hash = window.location.hash.slice(1);
-                if (!hash || !['personal', 'settings', 'progress', 'achievements'].includes(hash)) {
+                if (!hash || !['personal', 'applications', 'settings', 'progress', 'achievements'].includes(hash)) {
                     this.switchTab('personal');
                 }
                 return;
@@ -107,7 +107,7 @@ class UserProfile {
         }
         
         const hash = window.location.hash.slice(1); // Remove the #
-        if (hash && ['personal', 'settings', 'progress', 'achievements'].includes(hash)) {
+        if (hash && ['personal', 'applications', 'settings', 'progress', 'achievements'].includes(hash)) {
             console.log('📍 Navigating to tab:', hash);
             this.switchTab(hash);
         } else if (!hash) {
