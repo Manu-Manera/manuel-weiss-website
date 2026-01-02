@@ -270,6 +270,7 @@ class AWSProfileAPI {
             // Use presigned URL approach if API is available
             if (window.AWS_CONFIG?.apiBaseUrl) {
                 // Get presigned URL from API
+                console.log('📡 Requesting presigned URL from API...');
                 const presignResponse = await fetch(`${window.AWS_CONFIG.apiBaseUrl}/profile/upload-url`, {
                     method: 'POST',
                     headers: {
@@ -283,10 +284,25 @@ class AWSProfileAPI {
                 });
 
                 if (!presignResponse.ok) {
-                    throw new Error('Failed to get upload URL');
+                    let errorMessage = `Failed to get upload URL: ${presignResponse.status} ${presignResponse.statusText}`;
+                    try {
+                        const errorData = await presignResponse.json();
+                        errorMessage = errorData.error || errorData.message || errorMessage;
+                    } catch (e) {
+                        // Ignore JSON parse error
+                    }
+                    console.error('❌ Presigned URL request failed:', errorMessage);
+                    throw new Error(errorMessage);
                 }
 
-                const { uploadUrl, imageUrl } = await presignResponse.json();
+                const presignData = await presignResponse.json();
+                const { uploadUrl, imageUrl } = presignData;
+                
+                if (!uploadUrl || !imageUrl) {
+                    throw new Error('Invalid response from presigned URL API');
+                }
+
+                console.log('📤 Uploading file to S3...', { uploadUrl: uploadUrl.substring(0, 50) + '...' });
 
                 // Upload directly to S3 using presigned URL
                 const uploadResponse = await fetch(uploadUrl, {
@@ -298,10 +314,12 @@ class AWSProfileAPI {
                 });
 
                 if (!uploadResponse.ok) {
-                    throw new Error('Failed to upload image');
+                    const errorText = await uploadResponse.text();
+                    console.error('❌ S3 upload failed:', uploadResponse.status, errorText);
+                    throw new Error(`Failed to upload image to S3: ${uploadResponse.status} ${uploadResponse.statusText}`);
                 }
 
-                console.log('✅ Profile image uploaded successfully');
+                console.log('✅ Profile image uploaded successfully to S3');
                 return imageUrl;
             } else {
                 // Direct S3 upload (requires proper IAM permissions)
