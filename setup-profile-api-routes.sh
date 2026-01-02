@@ -8,23 +8,19 @@ API_ID="of2iwj7h2c"
 STAGE="prod"
 
 # Prüfe welche Lambda für Profile zuständig ist
-# Nutze admin-user-management da sie auch Profile-Funktionen hat
-LAMBDA_FUNCTION_NAME="mawps-admin-user-management"
+LAMBDA_FUNCTION_NAME="mawps-user-profile"
 LAMBDA_ARN=$(aws lambda get-function --function-name "$LAMBDA_FUNCTION_NAME" --region "$REGION" --query "Configuration.FunctionArn" --output text 2>/dev/null)
 
 if [ -z "$LAMBDA_ARN" ]; then
     echo "❌ Lambda Function $LAMBDA_FUNCTION_NAME nicht gefunden"
-    echo "   Versuche complete-api Lambda..."
-    # Falls complete-api Lambda existiert
-    LAMBDA_FUNCTION_NAME="mawps-complete-api"
+    echo "   Versuche admin-user-management Lambda..."
+    LAMBDA_FUNCTION_NAME="mawps-admin-user-management"
     LAMBDA_ARN=$(aws lambda get-function --function-name "$LAMBDA_FUNCTION_NAME" --region "$REGION" --query "Configuration.FunctionArn" --output text 2>/dev/null)
 fi
 
 if [ -z "$LAMBDA_ARN" ]; then
     echo "❌ Keine passende Lambda Function gefunden"
-    echo "   Verwende admin-user-management als Fallback"
-    LAMBDA_FUNCTION_NAME="mawps-admin-user-management"
-    LAMBDA_ARN=$(aws lambda get-function --function-name "$LAMBDA_FUNCTION_NAME" --region "$REGION" --query "Configuration.FunctionArn" --output text)
+    exit 1
 fi
 
 echo "🚀 Setup API Gateway Routes für User Profile"
@@ -112,6 +108,48 @@ create_method "$PROFILE_RESOURCE_ID" "POST"
 
 # Create PUT /profile
 create_method "$PROFILE_RESOURCE_ID" "PUT"
+
+# Create /profiles resource if it doesn't exist
+PROFILES_RESOURCE_ID=$(aws apigateway get-resources --rest-api-id "$API_ID" --region "$REGION" --query "items[?path=='/profiles'].id" --output text)
+
+if [ -z "$PROFILES_RESOURCE_ID" ]; then
+    echo "📝 Erstelle /profiles Resource..."
+    PROFILES_RESOURCE_ID=$(aws apigateway create-resource \
+        --rest-api-id "$API_ID" \
+        --parent-id "$ROOT_RESOURCE_ID" \
+        --path-part "profiles" \
+        --region "$REGION" \
+        --query "id" \
+        --output text)
+    echo "✅ /profiles Resource erstellt: $PROFILES_RESOURCE_ID"
+else
+    echo "✅ /profiles Resource existiert bereits: $PROFILES_RESOURCE_ID"
+fi
+
+# Create methods for /profiles
+create_method "$PROFILES_RESOURCE_ID" "OPTIONS"
+create_method "$PROFILES_RESOURCE_ID" "GET"
+
+# Create /profiles/{uuid} resource
+PROFILES_UUID_RESOURCE_ID=$(aws apigateway get-resources --rest-api-id "$API_ID" --region "$REGION" --query "items[?path=='/profiles/{uuid}'].id" --output text)
+
+if [ -z "$PROFILES_UUID_RESOURCE_ID" ]; then
+    echo "📝 Erstelle /profiles/{uuid} Resource..."
+    PROFILES_UUID_RESOURCE_ID=$(aws apigateway create-resource \
+        --rest-api-id "$API_ID" \
+        --parent-id "$PROFILES_RESOURCE_ID" \
+        --path-part "{uuid}" \
+        --region "$REGION" \
+        --query "id" \
+        --output text)
+    echo "✅ /profiles/{uuid} Resource erstellt: $PROFILES_UUID_RESOURCE_ID"
+else
+    echo "✅ /profiles/{uuid} Resource existiert bereits: $PROFILES_UUID_RESOURCE_ID"
+fi
+
+# Create methods for /profiles/{uuid}
+create_method "$PROFILES_UUID_RESOURCE_ID" "OPTIONS"
+create_method "$PROFILES_UUID_RESOURCE_ID" "GET"
 
 # Deploy to stage
 echo ""
