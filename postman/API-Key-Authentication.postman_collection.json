@@ -77,7 +77,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"apiKeyId\": \"{{apiKeyId}}\",\n  \"publicKey\": \"{{$randomUUID}}\"\n}",
+					"raw": "{\n  \"apiKeyId\": \"{{apiKeyId}}\",\n  \"publicKey\": \"{{publicKey}}\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
