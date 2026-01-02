@@ -192,20 +192,22 @@ async function saveUserProfile(userId, profileData) {
   };
 
   // Add all additional fields to DynamoDB item
-  if (profile.firstName !== undefined && profile.firstName !== '') item.firstName = { S: String(profile.firstName) };
-  if (profile.lastName !== undefined && profile.lastName !== '') item.lastName = { S: String(profile.lastName) };
-  if (profile.phone !== undefined && profile.phone !== '') item.phone = { S: String(profile.phone) };
-  if (profile.birthDate !== undefined && profile.birthDate !== '') item.birthDate = { S: String(profile.birthDate) };
-  if (profile.location !== undefined && profile.location !== '') item.location = { S: String(profile.location) };
-  if (profile.profession !== undefined && profile.profession !== '') item.profession = { S: String(profile.profession) };
-  if (profile.company !== undefined && profile.company !== '') item.company = { S: String(profile.company) };
-  if (profile.experience !== undefined && profile.experience !== '') item.experience = { S: String(profile.experience) };
-  if (profile.industry !== undefined && profile.industry !== '') item.industry = { S: String(profile.industry) };
-  if (profile.goals !== undefined && profile.goals !== '') item.goals = { S: String(profile.goals) };
-  if (profile.interests !== undefined && profile.interests !== '') item.interests = { S: String(profile.interests) };
-  if (profile.profileImageUrl !== undefined && profile.profileImageUrl !== '') item.profileImageUrl = { S: String(profile.profileImageUrl) };
-  if (profile.personal !== undefined) item.personal = { S: JSON.stringify(profile.personal) };
-  if (profile.type !== undefined) item.type = { S: String(profile.type) };
+  // IMPORTANT: Save all fields, even if empty (to preserve user data)
+  // Only skip undefined values, but keep empty strings
+  if (profile.firstName !== undefined) item.firstName = { S: String(profile.firstName || '') };
+  if (profile.lastName !== undefined) item.lastName = { S: String(profile.lastName || '') };
+  if (profile.phone !== undefined) item.phone = { S: String(profile.phone || '') };
+  if (profile.birthDate !== undefined) item.birthDate = { S: String(profile.birthDate || '') };
+  if (profile.location !== undefined) item.location = { S: String(profile.location || '') };
+  if (profile.profession !== undefined) item.profession = { S: String(profile.profession || '') };
+  if (profile.company !== undefined) item.company = { S: String(profile.company || '') };
+  if (profile.experience !== undefined) item.experience = { S: String(profile.experience || '') };
+  if (profile.industry !== undefined) item.industry = { S: String(profile.industry || '') };
+  if (profile.goals !== undefined) item.goals = { S: String(profile.goals || '') };
+  if (profile.interests !== undefined) item.interests = { S: String(profile.interests || '') };
+  if (profile.profileImageUrl !== undefined) item.profileImageUrl = { S: String(profile.profileImageUrl || '') };
+  if (profile.personal !== undefined) item.personal = { S: JSON.stringify(profile.personal || {}) };
+  if (profile.type !== undefined) item.type = { S: String(profile.type || '') };
 
   // Also store complete profileData as JSON for easy retrieval
   item.profileData = { S: JSON.stringify(profile) };

@@ -358,14 +358,15 @@ class UserProfile {
                 console.warn('⚠️ Could not load from AWS, using defaults:', error);
             }
             
-            // Merge: AWS data + Auth data (auth takes priority for name/email)
+            // Merge: AWS data + Auth data (AWS data has priority, auth only as fallback)
+            // IMPORTANT: Saved profile data should not be overwritten by auth data
             this.profileData = {
                 ...this.loadProfileData(), // Start with defaults
-                ...awsData, // Override with AWS data
-                // Always use auth data for name/email if available
-                firstName: userData?.firstName || currentUser?.firstName || awsData?.firstName || '',
-                lastName: userData?.lastName || currentUser?.lastName || awsData?.lastName || '',
-                email: userData?.email || currentUser?.email || awsData?.email || ''
+                ...awsData, // Override with AWS data (saved profile data has priority)
+                // Use auth data ONLY if AWS data doesn't have these fields
+                firstName: awsData?.firstName || userData?.firstName || currentUser?.firstName || '',
+                lastName: awsData?.lastName || userData?.lastName || currentUser?.lastName || '',
+                email: awsData?.email || userData?.email || currentUser?.email || ''
             };
             
             console.log('📋 Final profile data:', this.profileData);
@@ -414,34 +415,41 @@ class UserProfile {
     
     populateFormFields(data) {
         // Populate form fields with loaded data
-        if (data.firstName !== undefined) document.getElementById('firstName').value = data.firstName;
-        if (data.lastName !== undefined) document.getElementById('lastName').value = data.lastName;
-        if (data.email !== undefined) document.getElementById('email').value = data.email;
-        if (data.phone !== undefined) document.getElementById('phone').value = data.phone;
-        if (data.birthDate !== undefined) document.getElementById('birthDate').value = data.birthDate;
-        if (data.location !== undefined) document.getElementById('location').value = data.location;
-        if (data.profession !== undefined) document.getElementById('profession').value = data.profession;
-        if (data.company !== undefined) document.getElementById('company').value = data.company;
-        if (data.experience !== undefined) document.getElementById('experience').value = data.experience;
-        if (data.industry !== undefined) document.getElementById('industry').value = data.industry;
-        if (data.goals !== undefined) document.getElementById('goals').value = data.goals;
-        if (data.interests !== undefined) document.getElementById('interests').value = data.interests;
+        // IMPORTANT: Set all fields, even if empty (to preserve user data)
+        const setField = (id, value) => {
+            const field = document.getElementById(id);
+            if (field) {
+                if (field.type === 'checkbox') {
+                    field.checked = value === true || value === 'true';
+                } else {
+                    field.value = value !== undefined && value !== null ? String(value) : '';
+                }
+            }
+        };
         
-        // Settings
-        if (data.emailNotifications !== undefined) {
-            document.getElementById('emailNotifications').checked = data.emailNotifications;
-        }
-        if (data.weeklySummary !== undefined) {
-            document.getElementById('weeklySummary').checked = data.weeklySummary;
-        }
-        if (data.reminders !== undefined) {
-            document.getElementById('reminders').checked = data.reminders;
-        }
-        if (data.theme !== undefined) document.getElementById('theme').value = data.theme;
-        if (data.language !== undefined) document.getElementById('language').value = data.language;
-        if (data.dataSharing !== undefined) {
-            document.getElementById('dataSharing').checked = data.dataSharing;
-        }
+        // Text fields (set even if empty)
+        setField('firstName', data.firstName);
+        setField('lastName', data.lastName);
+        setField('email', data.email);
+        setField('phone', data.phone);
+        setField('birthDate', data.birthDate);
+        setField('location', data.location);
+        setField('profession', data.profession);
+        setField('company', data.company);
+        setField('experience', data.experience);
+        setField('industry', data.industry);
+        setField('goals', data.goals);
+        setField('interests', data.interests);
+        
+        // Settings (checkboxes and selects)
+        setField('emailNotifications', data.emailNotifications);
+        setField('weeklySummary', data.weeklySummary);
+        setField('reminders', data.reminders);
+        setField('theme', data.theme);
+        setField('language', data.language);
+        setField('dataSharing', data.dataSharing);
+        
+        console.log('✅ Form fields populated with data:', data);
     }
     
     async migrateLocalDataIfNeeded() {

@@ -99,9 +99,9 @@ class AWSProfileAPI {
                 updatedAt: new Date().toISOString()
             };
 
-            // Remove undefined values
+            // Remove only undefined values (keep empty strings to preserve user data)
             Object.keys(item).forEach(key => {
-                if (item[key] === undefined || item[key] === '') {
+                if (item[key] === undefined) {
                     delete item[key];
                 }
             });

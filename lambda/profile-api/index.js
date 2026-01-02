@@ -114,11 +114,26 @@ exports.handler = async (event) => {
             body.userId = user.userId;
             body.updatedAt = new Date().toISOString();
             
-            // Don't delete empty strings - they might be intentional
-            // Only remove undefined values
+            // IMPORTANT: Don't delete empty strings - they preserve user data
+            // Only remove undefined values (keep empty strings)
             Object.keys(body).forEach(key => {
                 if (body[key] === undefined) {
                     delete body[key];
+                }
+            });
+            
+            // Ensure all profile fields are explicitly saved (even if empty)
+            const profileFields = [
+                'firstName', 'lastName', 'phone', 'birthDate', 'location',
+                'profession', 'company', 'experience', 'industry', 'goals',
+                'interests', 'profileImageUrl', 'emailNotifications', 'weeklySummary',
+                'reminders', 'theme', 'language', 'dataSharing'
+            ];
+            
+            // Add missing fields as empty strings if they exist in body but are undefined
+            profileFields.forEach(field => {
+                if (body[field] === undefined && field in body) {
+                    body[field] = '';
                 }
             });
             
@@ -127,9 +142,45 @@ exports.handler = async (event) => {
                 body.createdAt = new Date().toISOString();
             }
             
+            // Build complete DynamoDB item with all fields explicitly
+            // This ensures all fields are saved, even if empty
+            const item = {
+                userId: body.userId,
+                updatedAt: body.updatedAt,
+                createdAt: body.createdAt,
+                // Core fields
+                name: body.name || '',
+                email: body.email || '',
+                // Profile fields (explicitly include all, even if empty)
+                firstName: body.firstName !== undefined ? body.firstName : '',
+                lastName: body.lastName !== undefined ? body.lastName : '',
+                phone: body.phone !== undefined ? body.phone : '',
+                birthDate: body.birthDate !== undefined ? body.birthDate : '',
+                location: body.location !== undefined ? body.location : '',
+                profession: body.profession !== undefined ? body.profession : '',
+                company: body.company !== undefined ? body.company : '',
+                experience: body.experience !== undefined ? body.experience : '',
+                industry: body.industry !== undefined ? body.industry : '',
+                goals: body.goals !== undefined ? body.goals : '',
+                interests: body.interests !== undefined ? body.interests : '',
+                profileImageUrl: body.profileImageUrl !== undefined ? body.profileImageUrl : '',
+                // Settings
+                emailNotifications: body.emailNotifications !== undefined ? body.emailNotifications : false,
+                weeklySummary: body.weeklySummary !== undefined ? body.weeklySummary : false,
+                reminders: body.reminders !== undefined ? body.reminders : false,
+                theme: body.theme !== undefined ? body.theme : 'light',
+                language: body.language !== undefined ? body.language : 'de',
+                dataSharing: body.dataSharing !== undefined ? body.dataSharing : false,
+                // Structured data
+                preferences: body.preferences || {},
+                settings: body.settings || {},
+                personal: body.personal || {},
+                type: body.type || 'user-profile'
+            };
+            
             const params = {
                 TableName: TABLE_NAME,
-                Item: body
+                Item: item
             };
             
             await dynamoDB.put(params).promise();
@@ -140,7 +191,7 @@ exports.handler = async (event) => {
                 body: JSON.stringify({ 
                     success: true, 
                     message: 'Profile updated successfully',
-                    profile: body
+                    profile: item
                 })
             };
             
