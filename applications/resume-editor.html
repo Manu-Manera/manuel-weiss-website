@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lebenslauf-Editor - Bewerbungsmanager</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="css/applications-main.css">
+    <link rel="stylesheet" href="css/resume-editor.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="../images/manuel-weiss-portrait.jpg" alt="Manuel Weiss" class="nav-logo">
+                <span class="nav-title">Manuel Weiss</span>
+            </div>
+            <div class="nav-menu">
+                <a href="../index.html" class="nav-link">Start</a>
+                <a href="index.html" class="nav-link active">Bewerbungsmanager</a>
+                <a href="../user-profile.html" class="nav-link">Profil</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="resume-editor-container">
+        <div class="resume-editor-header">
+            <h1><i class="fas fa-file-alt"></i> Lebenslauf-Editor</h1>
+            <p>Erstellen Sie Ihren Lebenslauf manuell oder laden Sie eine PDF-Datei hoch für automatische Erkennung</p>
+        </div>
+
+        <!-- Tabs: Manuelle Eingabe / PDF-Upload -->
+        <div class="resume-tabs">
+            <button class="resume-tab active" data-tab="manual">
+                <i class="fas fa-edit"></i> Manuelle Eingabe
+            </button>
+            <button class="resume-tab" data-tab="upload">
+                <i class="fas fa-file-upload"></i> PDF-Upload mit OCR
+            </button>
+        </div>
+
+        <!-- Manual Input Tab -->
+        <div id="manualTab" class="resume-tab-content active">
+            <form id="resumeForm" class="resume-form">
+                <!-- Persönliche Informationen -->
+                <section class="resume-section">
+                    <h2><i class="fas fa-user"></i> Persönliche Informationen</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Vorname *</label>
+                            <input type="text" id="firstName" name="firstName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Nachname *</label>
+                            <input type="text" id="lastName" name="lastName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>E-Mail *</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Telefon</label>
+                            <input type="tel" id="phone" name="phone">
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Adresse</label>
+                            <input type="text" id="address" name="address">
+                        </div>
+                        <div class="form-group">
+                            <label>LinkedIn</label>
+                            <input type="url" id="linkedin" name="linkedin" placeholder="linkedin.com/in/...">
+                        </div>
+                        <div class="form-group">
+                            <label>Website</label>
+                            <input type="url" id="website" name="website">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Berufserfahrung -->
+                <section class="resume-section">
+                    <h2><i class="fas fa-briefcase"></i> Berufserfahrung</h2>
+                    <div id="experienceContainer">
+                        <!-- Wird dynamisch gefüllt -->
+                    </div>
+                    <button type="button" class="btn-add" onclick="addExperience()">
+                        <i class="fas fa-plus"></i> Position hinzufügen
+                    </button>
+                </section>
+
+                <!-- Ausbildung -->
+                <section class="resume-section">
+                    <h2><i class="fas fa-graduation-cap"></i> Ausbildung</h2>
+                    <div id="educationContainer">
+                        <!-- Wird dynamisch gefüllt -->
+                    </div>
+                    <button type="button" class="btn-add" onclick="addEducation()">
+                        <i class="fas fa-plus"></i> Ausbildung hinzufügen
+                    </button>
+                </section>
+
+                <!-- Skills -->
+                <section class="resume-section">
+                    <h2><i class="fas fa-tools"></i> Fähigkeiten & Kompetenzen</h2>
+                    <div class="form-group">
+                        <label>Skills (kommagetrennt)</label>
+                        <input type="text" id="skills" name="skills" placeholder="z.B. JavaScript, React, Node.js">
+                    </div>
+                </section>
+
+                <!-- Sprachen -->
+                <section class="resume-section">
+                    <h2><i class="fas fa-language"></i> Sprachen</h2>
+                    <div id="languagesContainer">
+                        <!-- Wird dynamisch gefüllt -->
+                    </div>
+                    <button type="button" class="btn-add" onclick="addLanguage()">
+                        <i class="fas fa-plus"></i> Sprache hinzufügen
+                    </button>
+                </section>
+
+                <!-- Actions -->
+                <div class="resume-actions">
+                    <button type="button" class="btn-secondary" onclick="loadResume()">
+                        <i class="fas fa-download"></i> Laden
+                    </button>
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-save"></i> Speichern
+                    </button>
+                    <button type="button" class="btn-secondary" onclick="exportResume('pdf')">
+                        <i class="fas fa-file-pdf"></i> Als PDF exportieren
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- PDF Upload Tab -->
+        <div id="uploadTab" class="resume-tab-content">
+            <div class="upload-section">
+                <h2><i class="fas fa-file-pdf"></i> PDF-Upload mit OCR-Erkennung</h2>
+                <p>Laden Sie Ihren Lebenslauf als PDF hoch. Die Texte werden automatisch erkannt und in strukturierte Daten umgewandelt.</p>
+                
+                <div class="upload-area" id="uploadArea">
+                    <input type="file" id="pdfFileInput" accept=".pdf" style="display: none;">
+                    <div class="upload-dropzone" onclick="document.getElementById('pdfFileInput').click()">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p>Klicken Sie hier oder ziehen Sie eine PDF-Datei hierher</p>
+                        <span class="upload-hint">Max. 10MB, nur PDF-Dateien</span>
+                    </div>
+                    <div id="uploadProgress" class="upload-progress" style="display: none;">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <span id="progressText">Upload läuft...</span>
+                    </div>
+                </div>
+
+                <!-- OCR Results -->
+                <div id="ocrResults" class="ocr-results" style="display: none;">
+                    <h3><i class="fas fa-check-circle"></i> OCR-Erkennung abgeschlossen</h3>
+                    <div class="ocr-preview">
+                        <div class="ocr-raw">
+                            <h4>Erkannter Text:</h4>
+                            <pre id="ocrRawText"></pre>
+                        </div>
+                        <div class="ocr-parsed">
+                            <h4>Strukturierte Daten:</h4>
+                            <div id="ocrParsedData"></div>
+                        </div>
+                    </div>
+                    <div class="ocr-actions">
+                        <button type="button" class="btn-secondary" onclick="discardOCR()">
+                            <i class="fas fa-times"></i> Verwerfen
+                        </button>
+                        <button type="button" class="btn-primary" onclick="applyOCRData()">
+                            <i class="fas fa-check"></i> Daten übernehmen
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="../js/aws-profile-api.js"></script>
+    <script src="js/resume-editor.js"></script>
+</body>
+</html>
+
