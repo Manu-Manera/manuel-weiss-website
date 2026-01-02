@@ -49,38 +49,10 @@ if ! aws sts get-caller-identity &> /dev/null; then
     exit 0
 fi
 
-cd lambda/profile-api
-
-# Dependencies installieren
-echo "   📥 Installiere Dependencies..."
-npm install --production --silent 2>&1 | grep -E "(added|removed|up to date)" || true
-
-# Package erstellen
-echo "   📦 Erstelle Deployment Package..."
-rm -f ../profile-api-update.zip
-zip -r ../profile-api-update.zip . -x "*.git*" "node_modules/.cache/*" "*.zip" > /dev/null 2>&1
-
-# Lambda Function updaten
-echo "   ☁️ Update Lambda Function..."
-LAMBDA_NAME="manuel-weiss-profile-media-PresignFunction-JE5AxO7R2uYd"
-
-if aws lambda get-function --function-name "$LAMBDA_NAME" --region eu-central-1 &> /dev/null; then
-    aws lambda update-function-code \
-        --function-name "$LAMBDA_NAME" \
-        --zip-file fileb://../profile-api-update.zip \
-        --region eu-central-1 \
-        --output json > /dev/null
-    
-    echo -e "${GREEN}   ✅ Lambda Function deployed!${NC}"
-else
-    echo -e "${YELLOW}   ⚠️ Lambda Function nicht gefunden: $LAMBDA_NAME${NC}"
-    echo "   ℹ️ Verwende deploy-aws-backend.sh für vollständiges Deployment"
-fi
-
-# Cleanup
-rm -f ../profile-api-update.zip
-
-cd ../..
+# Profile API wird jetzt über backend/user-profile/handler.mjs verwaltet
+# Deployment erfolgt über deploy-user-profile-lambda.sh
+echo "   ℹ️ Profile API wird über backend/user-profile verwaltet"
+echo "   ℹ️ Verwende deploy-user-profile-lambda.sh für Deployment"
 
 echo ""
 echo -e "${GREEN}🎉 DEPLOYMENT ABGESCHLOSSEN!${NC}"
