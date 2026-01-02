@@ -33,10 +33,29 @@ export const handler = async (event) => {
 
     const route = event.resource || event.path || event.requestContext?.path || '';
     const httpMethod = event.httpMethod || event.requestContext?.http?.method || '';
+    const pathParameters = event.pathParameters || {};
+    // Extrahiere UUID aus Route falls vorhanden (z.B. /profiles/{uuid})
+    const uuidFromRoute = route.match(/\/profiles\/([^\/]+)/)?.[1] || pathParameters.uuid || pathParameters.proxy;
     const isProfileRoute = route.includes('/profile') && !route.includes('/progress') && !route.includes('/upload');
     
-    // GET /profile - Load user profile
-    if (httpMethod === 'GET' && isProfileRoute) {
+    // GET /profiles - Liste aller Profile (nur Übersicht)
+    if (httpMethod === 'GET' && (route === '/profiles' || (route.includes('/profiles') && !uuidFromRoute))) {
+      const profiles = await getAllProfiles();
+      return json(200, profiles, hdr);
+    }
+    
+    // GET /profiles/{uuid} - Vollständiges Profil nach UUID
+    if (httpMethod === 'GET' && route.includes('/profiles/') && uuidFromRoute) {
+      const uuid = uuidFromRoute;
+      const profile = await getUserProfileByUuid(uuid);
+      if (!profile) {
+        return json(404, { message: 'Profile not found', uuid }, hdr);
+      }
+      return json(200, profile, hdr);
+    }
+    
+    // GET /profile - Load user profile (aktueller User)
+    if (httpMethod === 'GET' && isProfileRoute && route === '/profile') {
       const user = authUser(event);
       const profile = await getUserProfile(user.userId);
       return json(200, profile, hdr);
