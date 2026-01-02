@@ -1,0 +1,305 @@
+{
+	"info": {
+		"_postman_id": "api-key-auth-collection",
+		"name": "API Key Authentication (Private/Public Key)",
+		"description": "Authentifizierung über Private/Public Key Pair mit Token-Generierung (4000 Sekunden Gültigkeit)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Register Public Key",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Public key registered\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('success', true);",
+							"    ",
+							"    // Speichere apiKeyId für weitere Requests",
+							"    if (jsonData.apiKeyId) {",
+							"        pm.environment.set('apiKeyId', jsonData.apiKeyId);",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"apiKeyId\": \"{{apiKeyId}}\",\n  \"publicKey\": \"{{publicKey}}\",\n  \"metadata\": {\n    \"name\": \"Postman API Key\",\n    \"description\": \"API Key for Postman testing\"\n  }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/auth/api-key/register",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"auth",
+						"api-key",
+						"register"
+					]
+				},
+				"description": "Registriert einen Public Key für die API Key Authentifizierung.\n\n**Schritt 1:** Generiere ein RSA Key Pair (siehe Anleitung)\n**Schritt 2:** Setze `publicKey` in Environment Variable\n**Schritt 3:** Setze `apiKeyId` (eindeutige ID, z.B. UUID)\n**Schritt 4:** Führe Request aus"
+			},
+			"response": []
+		},
+		{
+			"name": "2. Get Challenge",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Challenge received\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('challenge');",
+							"    ",
+							"    // Speichere Challenge für Signatur",
+							"    if (jsonData.challenge) {",
+							"        pm.environment.set('challenge', jsonData.challenge);",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"apiKeyId\": \"{{apiKeyId}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/auth/api-key/challenge",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"auth",
+						"api-key",
+						"challenge"
+					]
+				},
+				"description": "Generiert eine Challenge, die mit dem Private Key signiert werden muss.\n\n**Response:** Challenge String (Base64)\n**Gültigkeit:** 60 Sekunden"
+			},
+			"response": []
+		},
+		{
+			"name": "3. Get Token (mit Signatur)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Token received\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData).to.have.property('success', true);",
+							"    pm.expect(jsonData).to.have.property('token');",
+							"    ",
+							"    // Speichere Token automatisch",
+							"    if (jsonData.token) {",
+							"        pm.environment.set('apiKeyToken', jsonData.token);",
+							"        console.log('✅ Token gespeichert! Gültig für', jsonData.expiresIn, 'Sekunden');",
+							"    }",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"apiKeyId\": \"{{apiKeyId}}\",\n  \"challenge\": \"{{challenge}}\",\n  \"signature\": \"{{signature}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/auth/api-key/token",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"auth",
+						"api-key",
+						"token"
+					]
+				},
+				"description": "Generiert einen JWT Token (4000 Sekunden Gültigkeit) nach erfolgreicher Signatur-Validierung.\n\n**Schritt 1:** Hole Challenge (Request 2)\n**Schritt 2:** Signiere Challenge mit Private Key (siehe Anleitung)\n**Schritt 3:** Setze `signature` in Environment Variable\n**Schritt 4:** Führe Request aus\n\n**Token wird automatisch in `apiKeyToken` Environment Variable gespeichert**"
+			},
+			"response": []
+		},
+		{
+			"name": "4. Check API Key Status",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200 or 404\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 404]);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/auth/api-key/status?apiKeyId={{apiKeyId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"auth",
+						"api-key",
+						"status"
+					],
+					"query": [
+						{
+							"key": "apiKeyId",
+							"value": "{{apiKeyId}}"
+						}
+					]
+				},
+				"description": "Prüft ob ein API Key registriert ist"
+			},
+			"response": []
+		},
+		{
+			"name": "5. Test: GET Profile mit API Key Token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{apiKeyToken}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/profile",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"profile"
+					]
+				},
+				"description": "Test: Verwendet den generierten API Key Token für einen normalen API Request"
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod",
+			"type": "string"
+		},
+		{
+			"key": "apiKeyId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "publicKey",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "privateKey",
+			"value": "",
+			"type": "secret"
+		},
+		{
+			"key": "challenge",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "signature",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "apiKeyToken",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
+

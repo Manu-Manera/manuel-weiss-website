@@ -1,0 +1,11 @@
+{
+  "name": "api-key-auth",
+  "version": "1.0.0",
+  "description": "API Key Authentication with Private/Public Key Pair",
+  "main": "index.js",
+  "dependencies": {
+    "aws-sdk": "^2.1490.0",
+    "jsonwebtoken": "^9.0.2"
+  }
+}
+

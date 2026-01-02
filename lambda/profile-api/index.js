@@ -35,12 +35,37 @@ const verifyToken = (event) => {
     }
     
     const token = authHeader.substring(7);
+    
+    // Prüfe ob es ein API Key Token ist (vom api-key-auth Handler)
+    try {
+        const jwt = require('jsonwebtoken');
+        const TOKEN_SECRET = process.env.JWT_SECRET || process.env.TOKEN_SECRET || 'your-secret-key-change-in-production';
+        
+        // Versuche Token zu verifizieren
+        const decoded = jwt.verify(token, TOKEN_SECRET);
+        
+        // Wenn es ein API Key Token ist
+        if (decoded.type === 'api-key') {
+            return {
+                userId: decoded.apiKeyId, // Verwende apiKeyId als userId
+                email: decoded.email || `${decoded.apiKeyId}@api-key`,
+                apiKeyId: decoded.apiKeyId,
+                authType: 'api-key'
+            };
+        }
+    } catch (error) {
+        // Falls JWT-Verifizierung fehlschlägt, versuche Cognito Token
+        console.log('JWT verification failed, trying Cognito token:', error.message);
+    }
+    
+    // Fallback: Cognito Token (wie bisher)
     // In production, you should verify the JWT token with AWS Cognito
     // For now, we'll decode it to get the user ID
     const payload = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
     return {
         userId: payload.sub,
-        email: payload.email
+        email: payload.email,
+        authType: 'cognito'
     };
 };
 
