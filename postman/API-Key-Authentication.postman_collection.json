@@ -128,6 +128,49 @@
 			"name": "3. Get Token (mit Signatur)",
 			"event": [
 				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Prüfe ob alle benötigten Variablen gesetzt sind",
+							"const apiKeyId = pm.environment.get('apiKeyId') || pm.collectionVariables.get('apiKeyId');",
+							"const challenge = pm.environment.get('challenge') || pm.collectionVariables.get('challenge');",
+							"const signature = pm.environment.get('signature') || pm.collectionVariables.get('signature');",
+							"",
+							"console.log('🔍 Prüfe Variablen:');",
+							"console.log('  apiKeyId:', apiKeyId ? '✅ gesetzt' : '❌ fehlt');",
+							"console.log('  challenge:', challenge ? '✅ gesetzt' : '❌ fehlt');",
+							"console.log('  signature:', signature ? '✅ gesetzt' : '❌ fehlt');",
+							"",
+							"if (!signature || signature === '' || signature === 'Enter value') {",
+							"    console.log('');",
+							"    console.log('⚠️  SIGNATURE FEHLT!');",
+							"    console.log('');",
+							"    console.log('📋 So generierst du die Signature:');",
+							"    console.log('1. Öffne Terminal im Projekt-Verzeichnis');",
+							"    console.log('2. Führe aus:');",
+							"    console.log('   node scripts/sign-challenge.js \"' + challenge + '\" \"keys/' + apiKeyId + '-private-key.pem\"');",
+							"    console.log('3. Kopiere die Signature aus der Ausgabe');",
+							"    console.log('4. Setze in Postman Environment Variable: signature');",
+							"    console.log('5. Führe diesen Request erneut aus');",
+							"    console.log('');",
+							"    ",
+							"    // Zeige auch in Postman UI",
+							"    pm.request.body.raw = JSON.stringify({",
+							"        error: 'Signature fehlt!',",
+							"        hint: 'Führe aus: node scripts/sign-challenge.js \"' + challenge + '\" \"keys/' + apiKeyId + '-private-key.pem\"'",
+							"    }, null, 2);",
+							"}",
+							"",
+							"if (!challenge || challenge === '' || challenge === 'Enter value') {",
+							"    console.log('');",
+							"    console.log('⚠️  CHALLENGE FEHLT!');",
+							"    console.log('Führe zuerst Request 2 (Get Challenge) aus!');",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
 					"listen": "test",
 					"script": {
 						"exec": [
@@ -143,6 +186,7 @@
 							"    // Speichere Token automatisch",
 							"    if (jsonData.token) {",
 							"        pm.environment.set('apiKeyToken', jsonData.token);",
+							"        pm.collectionVariables.set('apiKeyToken', jsonData.token);",
 							"        console.log('✅ Token gespeichert! Gültig für', jsonData.expiresIn, 'Sekunden');",
 							"    }",
 							"});"
