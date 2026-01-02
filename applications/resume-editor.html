@@ -58,6 +58,16 @@
                             <label>Nachname *</label>
                             <input type="text" id="lastName" name="lastName" required>
                         </div>
+                        <div class="form-group full-width">
+                            <label>Berufsbezeichnung (Title) *</label>
+                            <input type="text" id="title" name="title" placeholder="z.B. Senior Software Engineer" required>
+                            <small class="form-hint">Wird prominent am Anfang des Lebenslaufs angezeigt</small>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Kurzprofil (Summary) *</label>
+                            <textarea id="summary" name="summary" rows="4" placeholder="2-3 Sätze mit Jobtitel und 3-5 zentralen Fähigkeiten. Wichtig für ATS-Screening!" required></textarea>
+                            <small class="form-hint">Sehr wichtig für ATS! Nenne 3-5 zentrale Fähigkeiten.</small>
+                        </div>
                         <div class="form-group">
                             <label>E-Mail *</label>
                             <input type="email" id="email" name="email" required>
@@ -66,7 +76,11 @@
                             <label>Telefon</label>
                             <input type="tel" id="phone" name="phone">
                         </div>
-                        <div class="form-group full-width">
+                        <div class="form-group">
+                            <label>Standort (Stadt, Land)</label>
+                            <input type="text" id="location" name="location" placeholder="z.B. München, Deutschland">
+                        </div>
+                        <div class="form-group">
                             <label>Adresse</label>
                             <input type="text" id="address" name="address">
                         </div>
@@ -75,8 +89,33 @@
                             <input type="url" id="linkedin" name="linkedin" placeholder="linkedin.com/in/...">
                         </div>
                         <div class="form-group">
-                            <label>Website</label>
-                            <input type="url" id="website" name="website">
+                            <label>GitHub</label>
+                            <input type="url" id="github" name="github" placeholder="github.com/username">
+                        </div>
+                        <div class="form-group">
+                            <label>Portfolio/Website</label>
+                            <input type="url" id="website" name="website" placeholder="www.example.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Verfügbarkeit</label>
+                            <select id="availability" name="availability">
+                                <option value="">Bitte wählen</option>
+                                <option value="sofort">Sofort</option>
+                                <option value="1-monat">In 1 Monat</option>
+                                <option value="2-monate">In 2 Monaten</option>
+                                <option value="3-monate">In 3 Monaten</option>
+                                <option value="auf-anfrage">Auf Anfrage</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Arbeitsmodell</label>
+                            <select id="workModel" name="workModel">
+                                <option value="">Bitte wählen</option>
+                                <option value="remote">Remote</option>
+                                <option value="hybrid">Hybrid</option>
+                                <option value="vor-ort">Vor Ort</option>
+                                <option value="flexibel">Flexibel</option>
+                            </select>
                         </div>
                     </div>
                 </section>

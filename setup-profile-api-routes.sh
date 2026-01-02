@@ -258,6 +258,69 @@ fi
 create_method "$RESUME_FIELD_RESOURCE_ID" "OPTIONS"
 create_method "$RESUME_FIELD_RESOURCE_ID" "PUT"
 
+# Create /resume/projects resource
+RESUME_PROJECTS_RESOURCE_ID=$(aws apigateway get-resources --rest-api-id "$API_ID" --region "$REGION" --query "items[?path=='/resume/projects'].id" --output text)
+
+if [ -z "$RESUME_PROJECTS_RESOURCE_ID" ]; then
+    echo "📝 Erstelle /resume/projects Resource..."
+    RESUME_PROJECTS_RESOURCE_ID=$(aws apigateway create-resource \
+        --rest-api-id "$API_ID" \
+        --parent-id "$RESUME_RESOURCE_ID" \
+        --path-part "projects" \
+        --region "$REGION" \
+        --query "id" \
+        --output text)
+    echo "✅ /resume/projects Resource erstellt: $RESUME_PROJECTS_RESOURCE_ID"
+else
+    echo "✅ /resume/projects Resource existiert bereits: $RESUME_PROJECTS_RESOURCE_ID"
+fi
+
+create_method "$RESUME_PROJECTS_RESOURCE_ID" "OPTIONS"
+create_method "$RESUME_PROJECTS_RESOURCE_ID" "GET"
+create_method "$RESUME_PROJECTS_RESOURCE_ID" "POST"
+
+# Create /resume/projects/{id} resource
+RESUME_PROJECT_ID_RESOURCE_ID=$(aws apigateway get-resources --rest-api-id "$API_ID" --region "$REGION" --query "items[?path=='/resume/projects/{id}'].id" --output text)
+
+if [ -z "$RESUME_PROJECT_ID_RESOURCE_ID" ]; then
+    echo "📝 Erstelle /resume/projects/{id} Resource..."
+    RESUME_PROJECT_ID_RESOURCE_ID=$(aws apigateway create-resource \
+        --rest-api-id "$API_ID" \
+        --parent-id "$RESUME_PROJECTS_RESOURCE_ID" \
+        --path-part "{id}" \
+        --region "$REGION" \
+        --query "id" \
+        --output text)
+    echo "✅ /resume/projects/{id} Resource erstellt: $RESUME_PROJECT_ID_RESOURCE_ID"
+else
+    echo "✅ /resume/projects/{id} Resource existiert bereits: $RESUME_PROJECT_ID_RESOURCE_ID"
+fi
+
+create_method "$RESUME_PROJECT_ID_RESOURCE_ID" "OPTIONS"
+create_method "$RESUME_PROJECT_ID_RESOURCE_ID" "PUT"
+create_method "$RESUME_PROJECT_ID_RESOURCE_ID" "DELETE"
+
+# Create /resume/skills resource
+RESUME_SKILLS_RESOURCE_ID=$(aws apigateway get-resources --rest-api-id "$API_ID" --region "$REGION" --query "items[?path=='/resume/skills'].id" --output text)
+
+if [ -z "$RESUME_SKILLS_RESOURCE_ID" ]; then
+    echo "📝 Erstelle /resume/skills Resource..."
+    RESUME_SKILLS_RESOURCE_ID=$(aws apigateway create-resource \
+        --rest-api-id "$API_ID" \
+        --parent-id "$RESUME_RESOURCE_ID" \
+        --path-part "skills" \
+        --region "$REGION" \
+        --query "id" \
+        --output text)
+    echo "✅ /resume/skills Resource erstellt: $RESUME_SKILLS_RESOURCE_ID"
+else
+    echo "✅ /resume/skills Resource existiert bereits: $RESUME_SKILLS_RESOURCE_ID"
+fi
+
+create_method "$RESUME_SKILLS_RESOURCE_ID" "OPTIONS"
+create_method "$RESUME_SKILLS_RESOURCE_ID" "GET"
+create_method "$RESUME_SKILLS_RESOURCE_ID" "PUT"
+
 echo ""
 echo "✅ API Gateway Routes erfolgreich konfiguriert!"
 echo ""
@@ -275,4 +338,10 @@ echo "   DELETE  /resume (Lebenslauf löschen)"
 echo "   POST    /resume/upload-url (Upload URL)"
 echo "   POST    /resume/ocr (OCR-Verarbeitung)"
 echo "   PUT     /resume/personal-info/{field} (Einzelnes Feld aktualisieren)"
+echo "   GET     /resume/projects (Projekte laden)"
+echo "   POST    /resume/projects (Projekt hinzufügen)"
+echo "   PUT     /resume/projects/{id} (Projekt aktualisieren)"
+echo "   DELETE  /resume/projects/{id} (Projekt löschen)"
+echo "   GET     /resume/skills (Skills laden)"
+echo "   PUT     /resume/skills (Skills aktualisieren)"
 

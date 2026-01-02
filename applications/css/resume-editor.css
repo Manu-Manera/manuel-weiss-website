@@ -79,8 +79,120 @@
 .resume-section h2 {
     font-size: 1.5rem;
     color: #1f2937;
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.5rem;
     display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.section-description {
+    color: #6b7280;
+    font-size: 0.875rem;
+    margin-bottom: 1.5rem;
+    font-style: italic;
+}
+
+.form-hint {
+    display: block;
+    color: #6b7280;
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+}
+
+.skills-category {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: #f9fafb;
+    border-radius: 8px;
+}
+
+.skills-category h3 {
+    font-size: 1.125rem;
+    color: #374151;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.skill-category-item,
+.soft-skill-item {
+    background: white;
+    padding: 1rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    border: 1px solid #e5e7eb;
+}
+
+.skill-category-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.skill-category-name {
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.skill-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.skill-tag {
+    background: #3b82f6;
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.skill-tag input {
+    background: transparent;
+    border: none;
+    color: white;
+    flex: 1;
+    min-width: 100px;
+}
+
+.skill-tag input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.achievement-item,
+.metric-item {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    align-items: start;
+}
+
+.achievement-item input,
+.metric-item input {
+    flex: 1;
+}
+
+.tech-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.tech-tag {
+    background: #10b981;
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    display: inline-flex;
     align-items: center;
     gap: 0.5rem;
 }
