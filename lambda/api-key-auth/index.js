@@ -532,6 +532,14 @@ exports.handler = async (event) => {
             
             console.log('✅ Public Key geladen, Länge:', publicKey.length);
             console.log('🔐 Validiere Signature...');
+            console.log('📋 Input für Verifizierung:');
+            console.log('  apiKeyId:', apiKeyId);
+            console.log('  challenge (first 50):', challenge.substring(0, 50) + '...');
+            console.log('  challenge length:', challenge.length);
+            console.log('  signature (first 50):', signature.substring(0, 50) + '...');
+            console.log('  signature length:', signature.length);
+            console.log('  publicKey (first 100):', publicKey.substring(0, 100) + '...');
+            console.log('  publicKey length:', publicKey.length);
             
             // Validiere Signatur
             const isValid = verifySignature(publicKey, challenge, signature);
