@@ -148,13 +148,17 @@ document.getElementById('resumeForm').addEventListener('submit', async (e) => {
         });
         
         if (response.ok) {
+            const result = await response.json();
             showNotification('Lebenslauf gespeichert', 'success');
+            console.log('✅ Resume saved:', result);
         } else {
-            throw new Error('Fehler beim Speichern');
+            const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));
+            console.error('❌ Save error:', errorData);
+            throw new Error(errorData.message || errorData.error || 'Fehler beim Speichern');
         }
     } catch (error) {
         console.error('Error saving resume:', error);
-        showNotification('Fehler beim Speichern', 'error');
+        showNotification(`Fehler beim Speichern: ${error.message}`, 'error');
     }
 });
 
@@ -237,11 +241,13 @@ async function uploadAndProcessPDF(file) {
         });
         
         if (!ocrResponse.ok) {
-            const errorData = await ocrResponse.json();
+            const errorData = await ocrResponse.json().catch(() => ({ message: 'Unknown error' }));
+            console.error('❌ OCR error:', errorData);
             throw new Error(errorData.error || errorData.message || 'OCR processing failed');
         }
         
         const ocrResult = await ocrResponse.json();
+        console.log('📄 OCR result:', ocrResult);
         
         // Prüfe ob OCR erfolgreich war
         if (!ocrResult.success) {
@@ -250,7 +256,9 @@ async function uploadAndProcessPDF(file) {
                 updateProgress(75, 'OCR läuft im Hintergrund...');
                 return;
             } else {
-                throw new Error(ocrResult.message || 'OCR processing failed');
+                const errorMsg = ocrResult.error || ocrResult.message || 'OCR processing failed';
+                console.error('❌ OCR failed:', errorMsg);
+                throw new Error(errorMsg);
             }
         }
         
@@ -826,9 +834,9 @@ function addExperience(experienceData = {}) {
                 </div>
                 <div class="form-group">
                     <label>Bis</label>
-                    <input type="month" data-field="endDate" value="${experienceData.endDate || ''}" ${experienceData.currentJob ? 'disabled' : ''}>
-                    <div style="margin-top: 0.5rem;">
-                        <label style="display: flex; align-items: center; gap: 0.5rem; font-weight: normal; cursor: pointer;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <input type="month" data-field="endDate" value="${experienceData.endDate || ''}" ${experienceData.currentJob ? 'disabled' : ''} style="flex: 1;">
+                        <label style="display: flex; align-items: center; gap: 0.5rem; font-weight: normal; cursor: pointer; white-space: nowrap; margin: 0;">
                             <input type="checkbox" data-field="currentJob" ${experienceData.currentJob ? 'checked' : ''} onchange="toggleEndDate('${experienceId}', this.checked)">
                             Aktuell
                         </label>
