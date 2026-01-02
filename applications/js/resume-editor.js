@@ -22,32 +22,116 @@ document.querySelectorAll('.resume-tab').forEach(tab => {
     });
 });
 
-// Load existing resume
+// Load existing resume and profile data
 async function loadResume() {
     try {
-        const response = await fetch('https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod/resume', {
+        const token = await getAuthToken();
+        if (!token) {
+            // Lade Profildaten auch ohne Login (für Vorausfüllung)
+            await loadProfileData();
+            return;
+        }
+
+        // Lade Lebenslauf
+        const resumeResponse = await fetch('https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod/resume', {
             headers: {
-                'Authorization': `Bearer ${await getAuthToken()}`
+                'Authorization': `Bearer ${token}`
             }
         });
         
-        if (response.ok) {
-            const data = await response.json();
+        if (resumeResponse.ok) {
+            const data = await resumeResponse.json();
             resumeData = data;
             populateForm(data);
             showNotification('Lebenslauf geladen', 'success');
-        } else if (response.status === 404) {
-            showNotification('Kein Lebenslauf gefunden', 'info');
+        } else if (resumeResponse.status === 404) {
+            // Kein Lebenslauf vorhanden - lade Profildaten für Vorausfüllung
+            await loadProfileData();
         } else {
             throw new Error('Fehler beim Laden');
         }
     } catch (error) {
         console.error('Error loading resume:', error);
-        showNotification('Fehler beim Laden des Lebenslaufs', 'error');
+        // Versuche trotzdem Profildaten zu laden
+        await loadProfileData();
     }
 }
 
-// Save resume
+// Load profile data for pre-filling
+async function loadProfileData() {
+    try {
+        const token = await getAuthToken();
+        if (!token) return;
+
+        const response = await fetch('https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod/profile', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (response.ok) {
+            const profile = await response.json();
+            
+            // Fülle Formular mit Profildaten vor
+            if (profile.firstName) document.getElementById('firstName').value = profile.firstName;
+            if (profile.lastName) document.getElementById('lastName').value = profile.lastName;
+            if (profile.email) document.getElementById('email').value = profile.email;
+            if (profile.phone) document.getElementById('phone').value = profile.phone;
+            if (profile.location) document.getElementById('address').value = profile.location;
+            
+            // LinkedIn und Website aus preferences oder settings
+            if (profile.preferences?.linkedin) document.getElementById('linkedin').value = profile.preferences.linkedin;
+            if (profile.preferences?.website) document.getElementById('website').value = profile.preferences.website;
+            
+            console.log('✅ Profildaten für Vorausfüllung geladen');
+        }
+    } catch (error) {
+        console.error('Error loading profile data:', error);
+    }
+}
+
+// Auto-save on field change with debounce
+let saveTimeout = null;
+const formFields = ['firstName', 'lastName', 'email', 'phone', 'address', 'linkedin', 'website'];
+
+formFields.forEach(fieldId => {
+    const field = document.getElementById(fieldId);
+    if (field) {
+        field.addEventListener('input', () => {
+            clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(() => {
+                saveField(fieldId, field.value);
+            }, 2000); // 2 Sekunden nach letzter Änderung
+        });
+    }
+});
+
+// Save single field
+async function saveField(fieldName, value) {
+    try {
+        const token = await getAuthToken();
+        if (!token) return;
+
+        const response = await fetch(`https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod/resume/personal-info/${fieldName}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ value })
+        });
+
+        if (response.ok) {
+            console.log(`✅ Feld ${fieldName} gespeichert`);
+        } else {
+            console.error(`❌ Fehler beim Speichern von ${fieldName}`);
+        }
+    } catch (error) {
+        console.error(`Error saving field ${fieldName}:`, error);
+    }
+}
+
+// Save resume (full save)
 document.getElementById('resumeForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     
