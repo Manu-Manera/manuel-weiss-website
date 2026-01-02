@@ -247,20 +247,58 @@ exports.handler = async (event) => {
                 if (typeof event.body === 'string') {
                     try {
                         // Ersetze unescaped Newlines in JSON-Strings
-                        const cleanedBody = event.body.replace(/([^\\])\n/g, '$1\\n').replace(/^\n/g, '\\n');
+                        // Finde JSON-String-Werte und escape Newlines darin
+                        let cleanedBody = event.body;
+                        
+                        // Ersetze Newlines in String-Werten (zwischen Anführungszeichen)
+                        cleanedBody = cleanedBody.replace(/("(?:[^"\\]|\\.)*")\s*\n\s*(")/g, '$1\\n$2');
+                        cleanedBody = cleanedBody.replace(/([^\\])\n([^"])/g, function(match, before, after) {
+                            // Prüfe ob wir in einem String sind (ungerade Anzahl von " vor dem \n)
+                            const beforeStr = event.body.substring(0, event.body.indexOf(match));
+                            const quoteCount = (beforeStr.match(/"/g) || []).length;
+                            if (quoteCount % 2 === 1) {
+                                // Wir sind in einem String
+                                return before + '\\n' + after;
+                            }
+                            return match;
+                        });
+                        
+                        // Einfacherer Ansatz: Ersetze alle Newlines die nicht escaped sind
+                        cleanedBody = cleanedBody.replace(/([^\\])\n/g, '$1\\n').replace(/^\n/g, '\\n');
+                        
                         body = JSON.parse(cleanedBody);
                         console.log('✅ Body nach Bereinigung geparst');
                     } catch (cleanError) {
                         console.error('❌ Body-Bereinigung fehlgeschlagen:', cleanError);
-                        return {
-                            statusCode: 400,
-                            headers,
-                            body: JSON.stringify({ 
-                                error: 'Invalid JSON in request body',
-                                details: parseError.message,
-                                hint: 'Stelle sicher, dass Newlines im Public Key als \\n escaped sind'
-                            })
-                        };
+                        console.error('❌ Versuche alternativen Ansatz...');
+                        
+                        // Alternativer Ansatz: Versuche Body als Text zu parsen und manuell JSON zu erstellen
+                        try {
+                            // Extrahiere apiKeyId und publicKey manuell
+                            const apiKeyIdMatch = event.body.match(/"apiKeyId"\s*:\s*"([^"]+)"/);
+                            const publicKeyMatch = event.body.match(/"publicKey"\s*:\s*"([^"]*(?:\\.[^"]*)*)"/s) || 
+                                                   event.body.match(/"publicKey"\s*:\s*"([\s\S]*?)"/);
+                            
+                            if (apiKeyIdMatch && publicKeyMatch) {
+                                body = {
+                                    apiKeyId: apiKeyIdMatch[1],
+                                    publicKey: publicKeyMatch[1].replace(/\\n/g, '\n')
+                                };
+                                console.log('✅ Body manuell geparst (Alternative)');
+                            } else {
+                                throw cleanError;
+                            }
+                        } catch (altError) {
+                            return {
+                                statusCode: 400,
+                                headers,
+                                body: JSON.stringify({ 
+                                    error: 'Invalid JSON in request body',
+                                    details: parseError.message,
+                                    hint: 'Postman sollte Newlines automatisch escaped haben. Falls nicht, verwende format-key-for-postman.js Script.'
+                                })
+                            };
+                        }
                     }
                 } else {
                     return {
