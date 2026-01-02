@@ -13,9 +13,9 @@ const TOKEN_SECRET = process.env.JWT_SECRET || process.env.TOKEN_SECRET || 'your
 const TOKEN_EXPIRY = 4000; // 4000 Sekunden (ca. 66 Minuten)
 
 const ALLOWED_ORIGINS = [
-    'https://mawps.netlify.app',
-    'https://www.manuel-weiss.ch',
     'https://manuel-weiss.ch',
+    'https://www.manuel-weiss.ch',
+    'https://mawps.netlify.app',
     'http://localhost:3000',
     'http://localhost:8000'
 ];

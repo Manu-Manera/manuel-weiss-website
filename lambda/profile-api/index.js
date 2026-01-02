@@ -10,9 +10,9 @@ const s3 = new AWS.S3();
 const TABLE_NAME = process.env.PROFILE_TABLE || 'mawps-user-profiles';
 const BUCKET_NAME = process.env.PROFILE_IMAGES_BUCKET || 'mawps-profile-images';
 const ALLOWED_ORIGINS = [
-    'https://mawps.netlify.app',
-    'https://www.manuel-weiss.ch',
     'https://manuel-weiss.ch',
+    'https://www.manuel-weiss.ch',
+    'https://mawps.netlify.app',
     'http://localhost:3000'
 ];
 
