@@ -21,9 +21,28 @@
 2. Wähle **Manuel Weiss API - Production** aus
 3. Stelle sicher, dass es aktiviert ist (Dropdown oben rechts)
 
-### 5. Token setzen
+### 5. Variablen setzen
 
-**📖 Detaillierte Anleitung:** Siehe `TOKEN_GENERIERUNG.md`
+**📖 Vollständige Anleitung:** Siehe `SETUP_ANLEITUNG.md`
+
+#### Environment Variables:
+
+1. **Klicke auf Environments** (oben rechts)
+2. **Wähle "Manuel Weiss API - Production"**
+3. **Setze folgende Variablen:**
+
+| Variable | Wert | Beschreibung |
+|----------|------|--------------|
+| `baseUrl` | `https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod` | ✅ Bereits gesetzt |
+| `idToken` | *(muss gesetzt werden)* | JWT Token für Authentifizierung |
+| `userEmail` | *(optional)* | Deine E-Mail (nur für Login-Request) |
+| `userPassword` | *(optional)* | Dein Passwort (nur für Login-Request) |
+
+4. **Klicke auf Save**
+
+### 6. Token setzen
+
+**📖 Detaillierte Anleitung:** Siehe `TOKEN_GENERIERUNG.md` und `SETUP_ANLEITUNG.md`
 
 #### Option A: Token aus Browser holen (Empfohlen - Einfachste Methode)
 1. Öffne deine Website im Browser
