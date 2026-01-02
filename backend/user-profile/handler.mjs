@@ -161,6 +161,15 @@ export const handler = async (event) => {
       const ocrResult = await processResumeOCR(user.userId, body.s3Key);
       return json(200, ocrResult, hdr);
     }
+    
+    // PUT /resume/personal-info/{field} - Update einzelnes Feld
+    if (httpMethod === 'PUT' && route.includes('/resume/personal-info/')) {
+      const user = authUser(event);
+      const fieldName = pathParameters.field || route.split('/personal-info/')[1]?.split('/')[0];
+      const body = JSON.parse(event.body || '{}');
+      const result = await updateResumeField(user.userId, fieldName, body.value);
+      return json(200, result, hdr);
+    }
 
     return json(404, { message: 'not found', route, method: httpMethod }, hdr);
   } catch (e) {

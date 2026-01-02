@@ -227,6 +227,37 @@ fi
 create_method "$RESUME_OCR_RESOURCE_ID" "OPTIONS"
 create_method "$RESUME_OCR_RESOURCE_ID" "POST"
 
+# Create /resume/personal-info/{field} resource
+RESUME_PERSONAL_INFO_RESOURCE_ID=$(aws apigateway get-resources --rest-api-id "$API_ID" --region "$REGION" --query "items[?path=='/resume/personal-info/{field}'].id" --output text)
+
+if [ -z "$RESUME_PERSONAL_INFO_RESOURCE_ID" ]; then
+    echo "📝 Erstelle /resume/personal-info/{field} Resource..."
+    RESUME_PERSONAL_INFO_RESOURCE_ID=$(aws apigateway create-resource \
+        --rest-api-id "$API_ID" \
+        --parent-id "$RESUME_RESOURCE_ID" \
+        --path-part "personal-info" \
+        --region "$REGION" \
+        --query "id" \
+        --output text)
+    echo "✅ /resume/personal-info Resource erstellt: $RESUME_PERSONAL_INFO_RESOURCE_ID"
+    
+    # Create {field} sub-resource
+    RESUME_FIELD_RESOURCE_ID=$(aws apigateway create-resource \
+        --rest-api-id "$API_ID" \
+        --parent-id "$RESUME_PERSONAL_INFO_RESOURCE_ID" \
+        --path-part "{field}" \
+        --region "$REGION" \
+        --query "id" \
+        --output text)
+    echo "✅ /resume/personal-info/{field} Resource erstellt: $RESUME_FIELD_RESOURCE_ID"
+else
+    echo "✅ /resume/personal-info/{field} Resource existiert bereits: $RESUME_PERSONAL_INFO_RESOURCE_ID"
+    RESUME_FIELD_RESOURCE_ID=$(aws apigateway get-resources --rest-api-id "$API_ID" --region "$REGION" --query "items[?path=='/resume/personal-info/{field}'].id" --output text)
+fi
+
+create_method "$RESUME_FIELD_RESOURCE_ID" "OPTIONS"
+create_method "$RESUME_FIELD_RESOURCE_ID" "PUT"
+
 echo ""
 echo "✅ API Gateway Routes erfolgreich konfiguriert!"
 echo ""
@@ -243,4 +274,5 @@ echo "   PUT     /resume (Lebenslauf aktualisieren)"
 echo "   DELETE  /resume (Lebenslauf löschen)"
 echo "   POST    /resume/upload-url (Upload URL)"
 echo "   POST    /resume/ocr (OCR-Verarbeitung)"
+echo "   PUT     /resume/personal-info/{field} (Einzelnes Feld aktualisieren)"
 
