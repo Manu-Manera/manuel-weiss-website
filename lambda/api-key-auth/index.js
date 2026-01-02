@@ -135,11 +135,11 @@ async function registerPublicKey(apiKeyId, publicKeyPem, metadata = {}) {
 exports.handler = async (event) => {
     console.log('🔑 API Key Auth Handler - Event:', JSON.stringify(event, null, 2));
     
-    const origin = event.headers?.origin || event.headers?.Origin;
+    const origin = event.headers?.origin || event.headers?.Origin || (event.multiValueHeaders && event.multiValueHeaders.origin && event.multiValueHeaders.origin[0]);
     const headers = getCORSHeaders(origin);
     
     // Handle CORS preflight
-    if (event.httpMethod === 'OPTIONS') {
+    if (event.httpMethod === 'OPTIONS' || (event.requestContext && event.requestContext.http && event.requestContext.http.method === 'OPTIONS')) {
         return {
             statusCode: 200,
             headers,
@@ -148,9 +148,11 @@ exports.handler = async (event) => {
     }
     
     try {
-        const path = event.path || event.rawPath || event.requestContext?.path || '';
-        const method = event.httpMethod || event.requestContext?.http?.method || event.requestContext?.httpMethod;
+        const path = event.path || event.rawPath || (event.requestContext && (event.requestContext.path || event.requestContext.resourcePath)) || '';
+        const method = event.httpMethod || (event.requestContext && (event.requestContext.http?.method || event.requestContext.httpMethod)) || '';
         const body = event.body ? (typeof event.body === 'string' ? JSON.parse(event.body) : event.body) : {};
+        
+        console.log('📋 Parsed:', { path, method, bodyKeys: Object.keys(body) });
         
         // POST /auth/api-key/register - Public Key registrieren
         if (method === 'POST' && path.includes('/auth/api-key/register')) {
