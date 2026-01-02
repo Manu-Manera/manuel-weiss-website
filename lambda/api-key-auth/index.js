@@ -111,7 +111,19 @@ async function getPublicKey(apiKeyId) {
         return null;
     }
     
-    return result.Item.publicKey;
+    let publicKey = result.Item.publicKey;
+    
+    // Normalisiere Public Key (falls nötig)
+    // DynamoDB kann Newlines als \n speichern
+    if (typeof publicKey === 'string' && publicKey.includes('\\n')) {
+        publicKey = publicKey.replace(/\\n/g, '\n');
+        console.log('🔑 Public Key normalisiert (\\n → \\n)');
+    }
+    
+    console.log('🔑 Public Key geladen, Länge:', publicKey.length);
+    console.log('🔑 Public Key (first 100):', publicKey.substring(0, 100));
+    
+    return publicKey;
 }
 
 /**
