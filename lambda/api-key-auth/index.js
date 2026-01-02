@@ -133,21 +133,20 @@ async function registerPublicKey(apiKeyId, publicKeyPem, metadata = {}) {
 }
 
 exports.handler = async (event) => {
-    console.log('🔑 API Key Auth Handler - Event:', JSON.stringify(event, null, 2));
-    
-    const origin = event.headers?.origin || event.headers?.Origin || (event.multiValueHeaders && event.multiValueHeaders.origin && event.multiValueHeaders.origin[0]);
-    const headers = getCORSHeaders(origin);
-    
-    // Handle CORS preflight
-    if (event.httpMethod === 'OPTIONS' || (event.requestContext && event.requestContext.http && event.requestContext.http.method === 'OPTIONS')) {
-        return {
-            statusCode: 200,
-            headers,
-            body: ''
-        };
-    }
-    
     try {
+        console.log('🔑 API Key Auth Handler - Event:', JSON.stringify(event, null, 2));
+        
+        const origin = event.headers?.origin || event.headers?.Origin || (event.multiValueHeaders && event.multiValueHeaders.origin && event.multiValueHeaders.origin[0]);
+        const headers = getCORSHeaders(origin);
+        
+        // Handle CORS preflight
+        if (event.httpMethod === 'OPTIONS' || (event.requestContext && event.requestContext.http && event.requestContext.http.method === 'OPTIONS')) {
+            return {
+                statusCode: 200,
+                headers,
+                body: ''
+            };
+        }
         const path = event.path || event.rawPath || (event.requestContext && (event.requestContext.path || event.requestContext.resourcePath)) || '';
         const method = event.httpMethod || (event.requestContext && (event.requestContext.http?.method || event.requestContext.httpMethod)) || '';
         
