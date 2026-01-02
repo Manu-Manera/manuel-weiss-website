@@ -485,14 +485,40 @@ async function saveUserProfile(userId, profileData) {
 
   // Also store complete profileData as JSON for easy retrieval
   // Ensure all fields including resume are included
+  // Clean profile object to remove any undefined values that could cause issues
+  const cleanProfile = {};
+  for (const [key, value] of Object.entries(profile)) {
+    if (value !== undefined) {
+      // Deep clean nested objects
+      if (typeof value === 'object' && value !== null && !Array.isArray(value) && !(value instanceof Date)) {
+        const cleaned = {};
+        for (const [nestedKey, nestedValue] of Object.entries(value)) {
+          if (nestedValue !== undefined) {
+            cleaned[nestedKey] = nestedValue;
+          }
+        }
+        cleanProfile[key] = cleaned;
+      } else {
+        cleanProfile[key] = value;
+      }
+    }
+  }
+  
   try {
-    item.profileData = { S: JSON.stringify(profile) };
+    item.profileData = { S: JSON.stringify(cleanProfile) };
   } catch (jsonError) {
     console.error('Error serializing profileData:', jsonError);
+    console.error('Profile data:', JSON.stringify(cleanProfile, null, 2));
     // Fallback: serialize without resume if it causes issues
-    const profileWithoutResume = { ...profile };
+    const profileWithoutResume = { ...cleanProfile };
     delete profileWithoutResume.resume;
-    item.profileData = { S: JSON.stringify(profileWithoutResume) };
+    try {
+      item.profileData = { S: JSON.stringify(profileWithoutResume) };
+    } catch (fallbackError) {
+      console.error('Error in fallback serialization:', fallbackError);
+      // Last resort: minimal profile
+      item.profileData = { S: JSON.stringify({ userId: safeUserId, name: safeName, email: safeEmail }) };
+    }
     // Still try to save resume separately
     if (profile.resume !== undefined) {
       try {
