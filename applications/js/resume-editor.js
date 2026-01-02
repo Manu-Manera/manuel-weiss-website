@@ -1059,11 +1059,34 @@ function discardOCR() {
 }
 
 async function getAuthToken() {
-    // Get token from auth system
-    if (window.realUserAuth && window.realUserAuth.isLoggedIn()) {
-        const userData = window.realUserAuth.getUserData();
-        return userData.idToken || '';
+    // Get token from localStorage session (where Cognito stores it)
+    try {
+        const storedSession = localStorage.getItem('aws_auth_session');
+        if (storedSession) {
+            const session = JSON.parse(storedSession);
+            if (session.idToken) {
+                // Check if session is still valid
+                const expiresAt = session.expiresAt ? new Date(session.expiresAt) : null;
+                if (expiresAt && expiresAt > new Date()) {
+                    return session.idToken;
+                } else {
+                    console.warn('⚠️ Session abgelaufen');
+                }
+            }
+        }
+    } catch (e) {
+        console.error('Error reading session:', e);
     }
+    
+    // Fallback: Check realUserAuth
+    if (window.realUserAuth && window.realUserAuth.isLoggedIn()) {
+        const storedSession = localStorage.getItem('aws_auth_session');
+        if (storedSession) {
+            const session = JSON.parse(storedSession);
+            return session.idToken || '';
+        }
+    }
+    
     return '';
 }
 
