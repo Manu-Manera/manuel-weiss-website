@@ -150,9 +150,23 @@ exports.handler = async (event) => {
     try {
         const path = event.path || event.rawPath || (event.requestContext && (event.requestContext.path || event.requestContext.resourcePath)) || '';
         const method = event.httpMethod || (event.requestContext && (event.requestContext.http?.method || event.requestContext.httpMethod)) || '';
-        const body = event.body ? (typeof event.body === 'string' ? JSON.parse(event.body) : event.body) : {};
         
-        console.log('📋 Parsed:', { path, method, bodyKeys: Object.keys(body) });
+        // Parse body safely
+        let body = {};
+        if (event.body) {
+            try {
+                body = typeof event.body === 'string' ? JSON.parse(event.body) : event.body;
+            } catch (parseError) {
+                console.error('❌ Body parse error:', parseError);
+                return {
+                    statusCode: 400,
+                    headers,
+                    body: JSON.stringify({ error: 'Invalid JSON in request body' })
+                };
+            }
+        }
+        
+        console.log('📋 Parsed:', { path, method, bodyKeys: Object.keys(body), queryParams: event.queryStringParameters });
         
         // POST /auth/api-key/register - Public Key registrieren
         if (method === 'POST' && path.includes('/auth/api-key/register')) {
@@ -364,12 +378,15 @@ exports.handler = async (event) => {
         
     } catch (error) {
         console.error('❌ API Key Auth Error:', error);
+        console.error('❌ Error Stack:', error.stack);
+        console.error('❌ Event:', JSON.stringify(event, null, 2));
         
         return {
             statusCode: 500,
             headers,
             body: JSON.stringify({ 
-                error: error.message || 'Internal server error' 
+                error: error.message || 'Internal server error',
+                details: process.env.NODE_ENV === 'development' ? error.stack : undefined
             })
         };
     }
