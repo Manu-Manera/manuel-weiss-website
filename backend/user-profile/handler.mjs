@@ -458,9 +458,36 @@ async function saveUserProfile(userId, profileData) {
   if (profile.profileImageUrl !== undefined) item.profileImageUrl = { S: String(profile.profileImageUrl || '') };
   if (profile.personal !== undefined) item.personal = { S: JSON.stringify(profile.personal || {}) };
   if (profile.type !== undefined) item.type = { S: String(profile.type || '') };
+  
+  // Store resume as separate JSON field if present (for better querying)
+  if (profile.resume !== undefined) {
+    try {
+      item.resume = { S: JSON.stringify(profile.resume) };
+    } catch (resumeError) {
+      console.error('Error serializing resume:', resumeError);
+      // Don't fail the entire save if resume serialization fails
+    }
+  }
 
   // Also store complete profileData as JSON for easy retrieval
-  item.profileData = { S: JSON.stringify(profile) };
+  // Ensure all fields including resume are included
+  try {
+    item.profileData = { S: JSON.stringify(profile) };
+  } catch (jsonError) {
+    console.error('Error serializing profileData:', jsonError);
+    // Fallback: serialize without resume if it causes issues
+    const profileWithoutResume = { ...profile };
+    delete profileWithoutResume.resume;
+    item.profileData = { S: JSON.stringify(profileWithoutResume) };
+    // Still try to save resume separately
+    if (profile.resume !== undefined) {
+      try {
+        item.resume = { S: JSON.stringify(profile.resume) };
+      } catch (resumeError) {
+        console.error('Error serializing resume in fallback:', resumeError);
+      }
+    }
+  }
 
   await getDynamoDB().send(new PutItemCommand({
     TableName: process.env.TABLE,
