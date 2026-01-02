@@ -79,9 +79,11 @@
 							"    var jsonData = pm.response.json();",
 							"    pm.expect(jsonData).to.have.property('challenge');",
 							"    ",
-							"    // Speichere Challenge für Signatur",
+							"    // Speichere Challenge für Signatur (in Environment UND Collection)",
 							"    if (jsonData.challenge) {",
 							"        pm.environment.set('challenge', jsonData.challenge);",
+							"        pm.collectionVariables.set('challenge', jsonData.challenge);",
+							"        console.log('✅ Challenge gespeichert:', jsonData.challenge);",
 							"    }",
 							"});"
 						],

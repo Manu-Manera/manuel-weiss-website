@@ -396,14 +396,39 @@ exports.handler = async (event) => {
         // POST /auth/api-key/token - Token generieren mit Signatur
         if (method === 'POST' && (path.includes('/auth/api-key/token') || path.includes('/token') || path.endsWith('/token'))) {
             console.log('✅ POST /token matched!');
+            console.log('📋 Body:', JSON.stringify(body, null, 2));
+            console.log('📋 Body keys:', Object.keys(body));
+            
             const { apiKeyId, challenge, signature } = body;
             
+            console.log('🔍 Extracted values:', { 
+                apiKeyId: apiKeyId ? 'present' : 'missing',
+                challenge: challenge ? 'present' : 'missing',
+                signature: signature ? 'present' : 'missing',
+                apiKeyIdValue: apiKeyId,
+                challengeLength: challenge?.length,
+                signatureLength: signature?.length
+            });
+            
             if (!apiKeyId || !challenge || !signature) {
+                console.error('❌ Missing fields:', {
+                    apiKeyId: !apiKeyId,
+                    challenge: !challenge,
+                    signature: !signature,
+                    bodyKeys: Object.keys(body),
+                    bodyString: JSON.stringify(body)
+                });
                 return {
                     statusCode: 400,
                     headers,
                     body: JSON.stringify({ 
-                        error: 'Missing required fields: apiKeyId, challenge, signature' 
+                        error: 'Missing required fields: apiKeyId, challenge, signature',
+                        received: {
+                            apiKeyId: !!apiKeyId,
+                            challenge: !!challenge,
+                            signature: !!signature,
+                            bodyKeys: Object.keys(body)
+                        }
                     })
                 };
             }
