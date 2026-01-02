@@ -170,6 +170,55 @@ export const handler = async (event) => {
       const result = await updateResumeField(user.userId, fieldName, body.value);
       return json(200, result, hdr);
     }
+    
+    // === PROJEKTE ENDPUNKTE ===
+    // GET /resume/projects
+    if (httpMethod === 'GET' && route.includes('/resume/projects')) {
+      const user = authUser(event);
+      const resume = await getResume(user.userId);
+      return json(200, { projects: resume?.projects || [] }, hdr);
+    }
+    
+    // POST /resume/projects
+    if (httpMethod === 'POST' && route.includes('/resume/projects')) {
+      const user = authUser(event);
+      const body = JSON.parse(event.body || '{}');
+      const result = await addProject(user.userId, body);
+      return json(200, result, hdr);
+    }
+    
+    // PUT /resume/projects/{id}
+    if (httpMethod === 'PUT' && route.includes('/resume/projects/')) {
+      const user = authUser(event);
+      const projectId = pathParameters.id || route.split('/projects/')[1]?.split('/')[0];
+      const body = JSON.parse(event.body || '{}');
+      const result = await updateProject(user.userId, projectId, body);
+      return json(200, result, hdr);
+    }
+    
+    // DELETE /resume/projects/{id}
+    if (httpMethod === 'DELETE' && route.includes('/resume/projects/')) {
+      const user = authUser(event);
+      const projectId = pathParameters.id || route.split('/projects/')[1]?.split('/')[0];
+      await deleteProject(user.userId, projectId);
+      return json(200, { message: 'Project deleted successfully' }, hdr);
+    }
+    
+    // === SKILLS ENDPUNKTE ===
+    // GET /resume/skills
+    if (httpMethod === 'GET' && route.includes('/resume/skills')) {
+      const user = authUser(event);
+      const resume = await getResume(user.userId);
+      return json(200, { skills: resume?.skills || { technicalSkills: [], softSkills: [] } }, hdr);
+    }
+    
+    // PUT /resume/skills
+    if (httpMethod === 'PUT' && route.includes('/resume/skills')) {
+      const user = authUser(event);
+      const body = JSON.parse(event.body || '{}');
+      const result = await updateSkills(user.userId, body);
+      return json(200, result, hdr);
+    }
 
     return json(404, { message: 'not found', route, method: httpMethod }, hdr);
   } catch (e) {
@@ -613,14 +662,15 @@ async function saveResume(userId, resumeData) {
     const resume = {
       personalInfo: resumeData.personalInfo || {},
       sections: resumeData.sections || [],
-      skills: resumeData.skills || [],
+      skills: resumeData.skills || { technicalSkills: [], softSkills: [] },
       languages: resumeData.languages || [],
       certifications: resumeData.certifications || [],
+      projects: resumeData.projects || [],
       pdfUrl: resumeData.pdfUrl || '',
       pdfS3Key: resumeData.pdfS3Key || '',
       ocrProcessed: resumeData.ocrProcessed || false,
       ocrData: resumeData.ocrData || null,
-      createdAt: resume.resume?.createdAt || now,
+      createdAt: resume?.resume?.createdAt || resumeData.createdAt || now,
       updatedAt: now
     };
     

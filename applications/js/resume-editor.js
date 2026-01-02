@@ -311,16 +311,92 @@ function collectFormData() {
         personalInfo: {
             firstName: document.getElementById('firstName').value,
             lastName: document.getElementById('lastName').value,
+            title: document.getElementById('title').value,
+            summary: document.getElementById('summary').value,
             email: document.getElementById('email').value,
             phone: document.getElementById('phone').value,
+            location: document.getElementById('location').value,
             address: document.getElementById('address').value,
             linkedin: document.getElementById('linkedin').value,
-            website: document.getElementById('website').value
+            github: document.getElementById('github').value,
+            website: document.getElementById('website').value,
+            availability: document.getElementById('availability').value,
+            workModel: document.getElementById('workModel').value
         },
         sections: collectSections(),
-        skills: document.getElementById('skills').value.split(',').map(s => s.trim()).filter(s => s),
-        languages: collectLanguages()
+        skills: collectSkills(),
+        languages: collectLanguages(),
+        projects: collectProjects()
     };
+}
+
+function collectSkills() {
+    const technicalSkills = [];
+    const softSkills = [];
+    
+    // Collect technical skills by category
+    document.querySelectorAll('.skill-category-item').forEach(item => {
+        const category = item.querySelector('.skill-category-name input')?.value || '';
+        const skills = Array.from(item.querySelectorAll('.skill-tag input'))
+            .map(input => input.value.trim())
+            .filter(s => s);
+        
+        if (category && skills.length > 0) {
+            technicalSkills.push({
+                category: category,
+                skills: skills
+            });
+        }
+    });
+    
+    // Collect soft skills
+    document.querySelectorAll('.soft-skill-item').forEach(item => {
+        const skillName = item.querySelector('input[type="text"]')?.value || '';
+        const examples = item.querySelector('textarea')?.value.split('\n').filter(e => e.trim()) || [];
+        
+        if (skillName) {
+            softSkills.push({
+                skill: skillName,
+                examples: examples
+            });
+        }
+    });
+    
+    return {
+        technicalSkills: technicalSkills,
+        softSkills: softSkills
+    };
+}
+
+function collectProjects() {
+    const projects = [];
+    
+    document.querySelectorAll('.project-item').forEach(item => {
+        const project = {
+            name: item.querySelector('[data-field="name"]')?.value || '',
+            description: item.querySelector('[data-field="description"]')?.value || '',
+            role: item.querySelector('[data-field="role"]')?.value || '',
+            startDate: item.querySelector('[data-field="startDate"]')?.value || '',
+            endDate: item.querySelector('[data-field="endDate"]')?.value || '',
+            technologies: Array.from(item.querySelectorAll('.tech-tag input'))
+                .map(input => input.value.trim())
+                .filter(t => t),
+            githubUrl: item.querySelector('[data-field="githubUrl"]')?.value || '',
+            url: item.querySelector('[data-field="url"]')?.value || '',
+            achievements: Array.from(item.querySelectorAll('.achievement-item input'))
+                .map(input => input.value.trim())
+                .filter(a => a),
+            metrics: Array.from(item.querySelectorAll('.metric-item input'))
+                .map(input => input.value.trim())
+                .filter(m => m)
+        };
+        
+        if (project.name) {
+            projects.push(project);
+        }
+    });
+    
+    return projects;
 }
 
 function collectSections() {
@@ -349,6 +425,235 @@ function populateForm(data) {
     if (data.skills) {
         document.getElementById('skills').value = data.skills.join(', ');
     }
+}
+
+// Add Technical Skill Category
+function addTechnicalSkillCategory(categoryName = '', skills = []) {
+    const container = document.getElementById('technicalSkillsContainer');
+    const categoryId = 'tech-category-' + Date.now();
+    
+    const categoryHtml = `
+        <div class="skill-category-item" data-category-id="${categoryId}">
+            <div class="skill-category-header">
+                <input type="text" class="skill-category-name" placeholder="z.B. Programmiersprachen" value="${categoryName}" style="font-weight: 600; border: none; background: transparent; padding: 0;">
+                <button type="button" class="btn-remove" onclick="removeTechnicalSkillCategory('${categoryId}')">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+            <div class="skill-tags" id="skills-${categoryId}">
+                ${skills.length > 0 ? skills.map(skill => `
+                    <span class="skill-tag">
+                        <input type="text" value="${skill}" placeholder="Skill">
+                        <button type="button" onclick="removeSkillTag(this)" style="background: none; border: none; color: white; cursor: pointer;">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </span>
+                `).join('') : ''}
+                <button type="button" onclick="addSkillTag('${categoryId}')" style="background: rgba(59, 130, 246, 0.2); border: 1px dashed #3b82f6; color: #3b82f6; padding: 0.25rem 0.75rem; border-radius: 4px; cursor: pointer;">
+                    <i class="fas fa-plus"></i> Skill
+                </button>
+            </div>
+        </div>
+    `;
+    
+    container.insertAdjacentHTML('beforeend', categoryHtml);
+}
+
+function addSkillTag(categoryId) {
+    const container = document.getElementById(`skills-${categoryId}`);
+    const tagHtml = `
+        <span class="skill-tag">
+            <input type="text" placeholder="Skill">
+            <button type="button" onclick="removeSkillTag(this)" style="background: none; border: none; color: white; cursor: pointer;">
+                <i class="fas fa-times"></i>
+            </button>
+        </span>
+    `;
+    container.insertAdjacentHTML('beforeend', tagHtml);
+}
+
+function removeSkillTag(button) {
+    button.closest('.skill-tag').remove();
+}
+
+function removeTechnicalSkillCategory(categoryId) {
+    document.querySelector(`[data-category-id="${categoryId}"]`).remove();
+}
+
+// Add Soft Skill
+function addSoftSkill(skillName = '', examples = []) {
+    const container = document.getElementById('softSkillsContainer');
+    const skillId = 'soft-skill-' + Date.now();
+    
+    const skillHtml = `
+        <div class="soft-skill-item" data-skill-id="${skillId}">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <input type="text" placeholder="z.B. Kommunikation, Teamarbeit" value="${skillName}" style="flex: 1; margin-right: 0.5rem;">
+                <button type="button" class="btn-remove" onclick="removeSoftSkill('${skillId}')">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+            <textarea placeholder="Konkrete Beispiele/Projekte, die dieses Skill belegen (eine pro Zeile)" rows="2" style="width: 100%; font-size: 0.875rem;">${examples.join('\n')}</textarea>
+        </div>
+    `;
+    
+    container.insertAdjacentHTML('beforeend', skillHtml);
+}
+
+function removeSoftSkill(skillId) {
+    document.querySelector(`[data-skill-id="${skillId}"]`).remove();
+}
+
+// Add Project
+function addProject(projectData = {}) {
+    const container = document.getElementById('projectsContainer');
+    const projectId = 'project-' + Date.now();
+    
+    const projectHtml = `
+        <div class="project-item" data-project-id="${projectId}" style="background: #f9fafb; padding: 1.5rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid #e5e7eb;">
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                <h4 style="margin: 0; color: #1f2937;">Projekt</h4>
+                <button type="button" class="btn-remove" onclick="removeProject('${projectId}')">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+            <div class="form-grid" style="grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                <div class="form-group full-width">
+                    <label>Projektname *</label>
+                    <input type="text" data-field="name" value="${projectData.name || ''}" required>
+                </div>
+                <div class="form-group">
+                    <label>Rolle</label>
+                    <input type="text" data-field="role" value="${projectData.role || ''}" placeholder="z.B. Lead Developer">
+                </div>
+                <div class="form-group">
+                    <label>Startdatum</label>
+                    <input type="month" data-field="startDate" value="${projectData.startDate || ''}">
+                </div>
+                <div class="form-group">
+                    <label>Enddatum</label>
+                    <input type="month" data-field="endDate" value="${projectData.endDate || ''}">
+                </div>
+                <div class="form-group">
+                    <label>GitHub Repository</label>
+                    <input type="url" data-field="githubUrl" value="${projectData.githubUrl || ''}" placeholder="github.com/username/repo">
+                </div>
+                <div class="form-group">
+                    <label>Projekt-URL</label>
+                    <input type="url" data-field="url" value="${projectData.url || ''}" placeholder="www.example.com">
+                </div>
+            </div>
+            <div class="form-group" style="margin-bottom: 1rem;">
+                <label>Beschreibung *</label>
+                <textarea data-field="description" rows="3" required>${projectData.description || ''}</textarea>
+            </div>
+            <div class="form-group" style="margin-bottom: 1rem;">
+                <label>Technologien</label>
+                <div class="tech-tags" id="tech-${projectId}">
+                    ${projectData.technologies ? projectData.technologies.map(tech => `
+                        <span class="tech-tag">
+                            <input type="text" value="${tech}">
+                            <button type="button" onclick="removeTechTag(this)" style="background: none; border: none; color: white; cursor: pointer;">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </span>
+                    `).join('') : ''}
+                    <button type="button" onclick="addTechTag('${projectId}')" style="background: rgba(16, 185, 129, 0.2); border: 1px dashed #10b981; color: #10b981; padding: 0.25rem 0.75rem; border-radius: 4px; cursor: pointer;">
+                        <i class="fas fa-plus"></i> Technologie
+                    </button>
+                </div>
+            </div>
+            <div class="form-group" style="margin-bottom: 1rem;">
+                <label>Achievements (Erfolge)</label>
+                <div id="achievements-${projectId}">
+                    ${projectData.achievements ? projectData.achievements.map(achievement => `
+                        <div class="achievement-item">
+                            <input type="text" value="${achievement}" placeholder="z.B. User-Base um 200% gesteigert">
+                            <button type="button" onclick="removeAchievement(this)" style="background: #ef4444; color: white; border: none; padding: 0.5rem; border-radius: 4px; cursor: pointer;">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    `).join('') : ''}
+                    <button type="button" onclick="addAchievement('${projectId}')" class="btn-add" style="margin-top: 0.5rem;">
+                        <i class="fas fa-plus"></i> Achievement
+                    </button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Metriken (Quantifizierbare Ergebnisse)</label>
+                <div id="metrics-${projectId}">
+                    ${projectData.metrics ? projectData.metrics.map(metric => `
+                        <div class="metric-item">
+                            <input type="text" value="${metric}" placeholder="z.B. Budget: €500k, Kunden: 200+">
+                            <button type="button" onclick="removeMetric(this)" style="background: #ef4444; color: white; border: none; padding: 0.5rem; border-radius: 4px; cursor: pointer;">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    `).join('') : ''}
+                    <button type="button" onclick="addMetric('${projectId}')" class="btn-add" style="margin-top: 0.5rem;">
+                        <i class="fas fa-plus"></i> Metrik
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    container.insertAdjacentHTML('beforeend', projectHtml);
+}
+
+function removeProject(projectId) {
+    document.querySelector(`[data-project-id="${projectId}"]`).remove();
+}
+
+function addTechTag(projectId) {
+    const container = document.getElementById(`tech-${projectId}`);
+    const tagHtml = `
+        <span class="tech-tag">
+            <input type="text" placeholder="z.B. React, Node.js">
+            <button type="button" onclick="removeTechTag(this)" style="background: none; border: none; color: white; cursor: pointer;">
+                <i class="fas fa-times"></i>
+            </button>
+        </span>
+    `;
+    container.insertAdjacentHTML('beforeend', tagHtml);
+}
+
+function removeTechTag(button) {
+    button.closest('.tech-tag').remove();
+}
+
+function addAchievement(projectId) {
+    const container = document.getElementById(`achievements-${projectId}`);
+    const achievementHtml = `
+        <div class="achievement-item">
+            <input type="text" placeholder="z.B. User-Base um 200% gesteigert">
+            <button type="button" onclick="removeAchievement(this)" style="background: #ef4444; color: white; border: none; padding: 0.5rem; border-radius: 4px; cursor: pointer;">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    `;
+    container.insertAdjacentHTML('beforeend', achievementHtml);
+}
+
+function removeAchievement(button) {
+    button.closest('.achievement-item').remove();
+}
+
+function addMetric(projectId) {
+    const container = document.getElementById(`metrics-${projectId}`);
+    const metricHtml = `
+        <div class="metric-item">
+            <input type="text" placeholder="z.B. Budget: €500k, Kunden: 200+">
+            <button type="button" onclick="removeMetric(this)" style="background: #ef4444; color: white; border: none; padding: 0.5rem; border-radius: 4px; cursor: pointer;">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    `;
+    container.insertAdjacentHTML('beforeend', metricHtml);
+}
+
+function removeMetric(button) {
+    button.closest('.metric-item').remove();
 }
 
 function addExperience() {
