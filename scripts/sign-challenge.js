@@ -10,17 +10,73 @@ const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
 
-const challenge = process.argv[2];
+// Challenge kann aus verschiedenen Quellen kommen:
+// 1. Als Parameter: node scripts/sign-challenge.js "challenge"
+// 2. Aus Datei: node scripts/sign-challenge.js --file challenge.txt
+// 3. Aus Environment Variable: CHALLENGE="..." node scripts/sign-challenge.js
+// 4. Aus Clipboard (macOS): node scripts/sign-challenge.js --clipboard
+
+let challenge = process.argv[2];
 const privateKeyPath = process.argv[3] || process.env.PRIVATE_KEY_PATH;
+
+// Prüfe ob Challenge aus Datei gelesen werden soll
+if (challenge === '--file' || challenge === '-f') {
+    const challengeFile = process.argv[3];
+    if (!challengeFile || !fs.existsSync(challengeFile)) {
+        console.error('❌ Fehler: Challenge-Datei nicht gefunden:', challengeFile);
+        process.exit(1);
+    }
+    challenge = fs.readFileSync(challengeFile, 'utf8').trim();
+    console.log('📁 Challenge aus Datei gelesen:', challengeFile);
+} else if (challenge === '--clipboard' || challenge === '-c') {
+    // Versuche Challenge aus Clipboard zu lesen (macOS)
+    try {
+        const { execSync } = require('child_process');
+        if (process.platform === 'darwin') {
+            challenge = execSync('pbpaste', { encoding: 'utf8' }).trim();
+            console.log('📋 Challenge aus Zwischenablage gelesen (macOS)');
+        } else if (process.platform === 'linux') {
+            challenge = execSync('xclip -selection clipboard -o', { encoding: 'utf8' }).trim();
+            console.log('📋 Challenge aus Zwischenablage gelesen (Linux)');
+        } else if (process.platform === 'win32') {
+            challenge = execSync('powershell -command Get-Clipboard', { encoding: 'utf8' }).trim();
+            console.log('📋 Challenge aus Zwischenablage gelesen (Windows)');
+        } else {
+            throw new Error('Clipboard nicht unterstützt auf diesem System');
+        }
+    } catch (error) {
+        console.error('❌ Fehler beim Lesen aus Zwischenablage:', error.message);
+        console.log('💡 Alternative: Kopiere Challenge in eine Datei und verwende --file');
+        process.exit(1);
+    }
+} else if (process.env.CHALLENGE) {
+    challenge = process.env.CHALLENGE;
+    console.log('📋 Challenge aus Environment Variable gelesen');
+}
 
 if (!challenge) {
     console.error('❌ Fehler: Challenge fehlt');
     console.log('');
-    console.log('Usage: node scripts/sign-challenge.js <challenge> [private-key-path]');
+    console.log('Usage:');
+    console.log('  node scripts/sign-challenge.js <challenge> [private-key-path]');
+    console.log('  node scripts/sign-challenge.js --file <challenge-file> [private-key-path]');
+    console.log('  node scripts/sign-challenge.js --clipboard [private-key-path]');
+    console.log('  CHALLENGE="..." node scripts/sign-challenge.js [private-key-path]');
     console.log('');
-    console.log('Beispiel:');
+    console.log('Beispiele:');
+    console.log('  # Challenge als Parameter:');
     console.log('  node scripts/sign-challenge.js "abc123..."');
-    console.log('  node scripts/sign-challenge.js "abc123..." ./keys/my-key-private-key.pem');
+    console.log('');
+    console.log('  # Challenge aus Datei (empfohlen):');
+    console.log('  echo "abc123..." > challenge.txt');
+    console.log('  node scripts/sign-challenge.js --file challenge.txt');
+    console.log('');
+    console.log('  # Challenge aus Zwischenablage:');
+    console.log('  # (Kopiere Challenge in Zwischenablage, dann:)');
+    console.log('  node scripts/sign-challenge.js --clipboard');
+    console.log('');
+    console.log('  # Challenge aus Environment Variable:');
+    console.log('  CHALLENGE="abc123..." node scripts/sign-challenge.js');
     process.exit(1);
 }
 
