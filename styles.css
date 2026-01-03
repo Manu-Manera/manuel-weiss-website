@@ -1424,10 +1424,93 @@ a:hover {
     background: rgba(255,255,255,0.5);
 }
 
+/* Scroll Container mit Pfeilen */
+.services-scroll-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+/* Scroll Pfeile */
+.scroll-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 48px;
+    height: 48px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    opacity: 0.8;
+}
+
+.scroll-arrow:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-50%) scale(1.1);
+    opacity: 1;
+}
+
+.scroll-arrow-left {
+    left: -24px;
+}
+
+.scroll-arrow-right {
+    right: -24px;
+}
+
+.scroll-arrow:disabled,
+.scroll-arrow.hidden {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+/* 3 Kacheln nebeneinander auf Desktop */
 .services-grid .service-card {
-    flex: 0 0 320px;
-    min-width: 320px;
+    flex: 0 0 calc((100% - 2 * var(--spacing-xl)) / 3);
+    min-width: 300px;
+    max-width: 380px;
     scroll-snap-align: start;
+}
+
+/* Tablet: 2-3 Kacheln sichtbar */
+@media (max-width: 1200px) {
+    .services-grid .service-card {
+        flex: 0 0 calc((100% - var(--spacing-xl)) / 2);
+        min-width: 280px;
+    }
+    
+    .scroll-arrow-left {
+        left: 0;
+    }
+    
+    .scroll-arrow-right {
+        right: 0;
+    }
+}
+
+/* Mobile: 1-2 Kacheln sichtbar */
+@media (max-width: 768px) {
+    .services-grid .service-card {
+        flex: 0 0 85vw;
+        min-width: 260px;
+        max-width: 320px;
+    }
+    
+    .scroll-arrow {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
 }
 
 .service-card {
@@ -4001,5 +4084,112 @@ img {
 @supports not (clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%)) {
     .service-card.modern-highlight::before {
         display: none;
+    }
+}
+
+/* =============================================== */
+/* SCHNEEFLOCKEN ANIMATION                         */
+/* =============================================== */
+
+.snowflakes-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.snowflake {
+    position: absolute;
+    top: -10px;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1rem;
+    user-select: none;
+    pointer-events: none;
+    animation: snowflakeFall linear infinite, snowflakeSway ease-in-out infinite;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+}
+
+.snowflake::before {
+    content: "❄";
+}
+
+/* Verschiedene Schneeflocken-Größen */
+.snowflake.small {
+    font-size: 0.6rem;
+    opacity: 0.5;
+}
+
+.snowflake.medium {
+    font-size: 1rem;
+    opacity: 0.7;
+}
+
+.snowflake.large {
+    font-size: 1.4rem;
+    opacity: 0.9;
+}
+
+/* Animation: Fallbewegung */
+@keyframes snowflakeFall {
+    0% {
+        top: -10%;
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        top: 100%;
+        opacity: 0;
+    }
+}
+
+/* Animation: Seitliches Schwanken */
+@keyframes snowflakeSway {
+    0%, 100% {
+        transform: translateX(0) rotate(0deg);
+    }
+    25% {
+        transform: translateX(15px) rotate(90deg);
+    }
+    50% {
+        transform: translateX(-10px) rotate(180deg);
+    }
+    75% {
+        transform: translateX(20px) rotate(270deg);
+    }
+}
+
+/* Services Section spezifischer Schneeflocken-Hintergrund */
+.services {
+    position: relative;
+}
+
+.services::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Reduziere Schneeflocken auf Mobile für Performance */
+@media (max-width: 768px) {
+    .snowflake {
+        font-size: 0.8rem;
+    }
+    
+    .snowflake.large {
+        font-size: 1rem;
     }
 }
