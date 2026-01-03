@@ -26,22 +26,16 @@ class SimpleTranslation {
         // Prüfe ob URL mit /en/ beginnt
         const path = window.location.pathname;
         if (path.startsWith('/en/') || path.includes('/en/')) {
+            // Englische Seite besucht
             this.currentLanguage = 'en';
             localStorage.setItem('selectedLanguage', 'en');
             document.documentElement.lang = 'en';
         } else {
-            // Standard: Deutsch, außer explizit auf Englisch
-            const storedLang = localStorage.getItem('selectedLanguage');
-            if (storedLang === 'en' && !path.startsWith('/en/')) {
-                // Wenn gespeichert ist EN, aber URL ist nicht /en/, dann zu /en/ weiterleiten
-                const newPath = '/en' + path;
-                if (newPath !== path) {
-                    window.location.href = newPath;
-                    return;
-                }
-            }
-            this.currentLanguage = storedLang || 'de';
-            document.documentElement.lang = this.currentLanguage;
+            // Deutsche Seite besucht - IMMER Deutsch anzeigen
+            // Die URL bestimmt die Sprache, nicht localStorage
+            this.currentLanguage = 'de';
+            localStorage.setItem('selectedLanguage', 'de');
+            document.documentElement.lang = 'de';
         }
     }
     

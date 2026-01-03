@@ -121,110 +121,209 @@ exports.handler = async (event) => {
 };
 
 /**
- * E-Mail parsen (erweiterte Implementierung mit quoted-printable Support)
+ * E-Mail parsen (vollständige MIME-Implementierung mit multipart-Support)
  */
 function parseEmail(rawEmail) {
-    const lines = rawEmail.split('\n');
-    let subject = '';
-    let from = '';
-    let to = '';
-    let date = '';
-    let contentType = '';
-    let contentTransferEncoding = '';
-    let body = '';
-    let inHeaders = true;
-    let headerEnd = false;
-    let currentHeader = '';
+    // Parse Haupt-Header (vor dem Body)
+    const headerEndIndex = rawEmail.indexOf('\n\n');
+    const headersText = headerEndIndex >= 0 ? rawEmail.substring(0, headerEndIndex) : rawEmail;
+    const bodyText = headerEndIndex >= 0 ? rawEmail.substring(headerEndIndex + 2) : '';
     
-    for (let i = 0; i < lines.length; i++) {
-        let line = lines[i];
-        
-        // Header-Bereich
-        if (inHeaders && !headerEnd) {
-            // Fortsetzung von mehrzeiligen Headern (beginnt mit Leerzeichen oder Tab)
-            if ((line.startsWith(' ') || line.startsWith('\t')) && currentHeader) {
-                line = line.trim();
-                if (currentHeader === 'subject') {
-                    subject += ' ' + line;
-                } else if (currentHeader === 'from') {
-                    from += ' ' + line;
-                } else if (currentHeader === 'to') {
-                    to += ' ' + line;
-                } else if (currentHeader === 'date') {
-                    date += ' ' + line;
-                } else if (currentHeader === 'content-type') {
-                    contentType += ' ' + line;
-                } else if (currentHeader === 'content-transfer-encoding') {
-                    contentTransferEncoding += ' ' + line;
-                }
-                continue;
-            }
-            
-            if (line.trim() === '') {
-                headerEnd = true;
-                inHeaders = false;
-                currentHeader = '';
-                continue;
-            }
-            
-            const lowerLine = line.toLowerCase();
-            if (lowerLine.startsWith('subject:')) {
-                subject = line.substring(8).trim();
-                currentHeader = 'subject';
-            } else if (lowerLine.startsWith('from:')) {
-                from = line.substring(5).trim();
-                currentHeader = 'from';
-            } else if (lowerLine.startsWith('to:')) {
-                to = line.substring(3).trim();
-                currentHeader = 'to';
-            } else if (lowerLine.startsWith('date:')) {
-                date = line.substring(5).trim();
-                currentHeader = 'date';
-            } else if (lowerLine.startsWith('content-type:')) {
-                contentType = line.substring(14).trim();
-                currentHeader = 'content-type';
-            } else if (lowerLine.startsWith('content-transfer-encoding:')) {
-                contentTransferEncoding = line.substring(27).trim();
-                currentHeader = 'content-transfer-encoding';
-            } else {
-                currentHeader = '';
-            }
-        } else {
-            // Body-Bereich
-            body += line + '\n';
-        }
-    }
+    // Parse Header
+    const headers = parseHeaders(headersText);
     
-    // Body dekodieren basierend auf Content-Transfer-Encoding
-    const encoding = (contentTransferEncoding || '').toLowerCase();
-    if (encoding.includes('quoted-printable')) {
-        body = decodeQuotedPrintable(body);
-    } else if (encoding.includes('base64')) {
-        try {
-            body = Buffer.from(body.replace(/\s/g, ''), 'base64').toString('utf-8');
-        } catch (e) {
-            console.log('⚠️ Base64 Dekodierung fehlgeschlagen:', e.message);
-        }
-    }
-    
-    // Subject dekodieren
-    subject = decodeHeader(subject);
-    
-    // From dekodieren
-    from = decodeHeader(from);
-    // Extract email from "Name <email@domain.com>"
+    // Subject, From, To, Date dekodieren
+    const subject = decodeHeader(headers.subject || '');
+    let from = decodeHeader(headers.from || '');
     const emailMatch = from.match(/<([^>]+)>/);
     if (emailMatch) {
         from = emailMatch[1];
     }
+    const to = decodeHeader(headers.to || '');
+    const date = headers.date || new Date().toISOString();
+    
+    // Content-Type prüfen
+    const contentType = (headers['content-type'] || '').toLowerCase();
+    
+    let body = '';
+    let htmlBody = '';
+    
+    // Prüfe ob multipart
+    if (contentType.includes('multipart/')) {
+        // Extrahiere Boundary (case-insensitive, unterstützt verschiedene Formate)
+        const contentTypeHeader = headers['content-type'] || '';
+        const boundaryMatch = contentTypeHeader.match(/boundary\s*=\s*["']?([^"'\s;]+)/i);
+        if (boundaryMatch) {
+            let boundary = boundaryMatch[1];
+            // Entferne führende/trailing Anführungszeichen falls vorhanden
+            boundary = boundary.replace(/^["']|["']$/g, '');
+            const parts = parseMultipart(bodyText, boundary);
+            
+            // Durchsuche alle Parts nach Text und HTML
+            for (const part of parts) {
+                const partContentType = (part.headers['content-type'] || '').toLowerCase();
+                const partEncoding = (part.headers['content-transfer-encoding'] || '').toLowerCase();
+                let partBody = part.body;
+                
+                // Dekodiere Part-Body
+                if (partEncoding.includes('quoted-printable')) {
+                    partBody = decodeQuotedPrintable(partBody);
+                } else if (partEncoding.includes('base64')) {
+                    try {
+                        partBody = Buffer.from(partBody.replace(/\s/g, ''), 'base64').toString('utf-8');
+                    } catch (e) {
+                        console.log('⚠️ Base64 Dekodierung fehlgeschlagen:', e.message);
+                    }
+                }
+                
+                // HTML bevorzugt, sonst Text
+                if (partContentType.includes('text/html') && !htmlBody) {
+                    htmlBody = partBody.trim();
+                } else if (partContentType.includes('text/plain') && !body) {
+                    body = partBody.trim();
+                }
+            }
+        } else {
+            console.log('⚠️ Multipart ohne Boundary gefunden');
+            body = bodyText.trim();
+        }
+    } else {
+        // Einfache E-Mail ohne multipart
+        const encoding = (headers['content-transfer-encoding'] || '').toLowerCase();
+        let decodedBody = bodyText;
+        
+        if (encoding.includes('quoted-printable')) {
+            decodedBody = decodeQuotedPrintable(decodedBody);
+        } else if (encoding.includes('base64')) {
+            try {
+                decodedBody = Buffer.from(decodedBody.replace(/\s/g, ''), 'base64').toString('utf-8');
+            } catch (e) {
+                console.log('⚠️ Base64 Dekodierung fehlgeschlagen:', e.message);
+            }
+        }
+        
+        const ct = (headers['content-type'] || '').toLowerCase();
+        if (ct.includes('text/html')) {
+            htmlBody = decodedBody.trim();
+        } else {
+            body = decodedBody.trim();
+        }
+    }
+    
+    // Verwende HTML wenn verfügbar, sonst Text
+    const finalBody = htmlBody || body;
     
     return {
         subject: subject,
         from: from || 'unknown',
         to: to || 'unknown',
-        date: date || new Date().toISOString(),
-        body: body.trim()
+        date: date,
+        body: finalBody,
+        htmlBody: htmlBody || null
     };
+}
+
+/**
+ * Header aus Text extrahieren
+ */
+function parseHeaders(headersText) {
+    const headers = {};
+    const lines = headersText.split(/\r?\n/);
+    let currentHeader = null;
+    let currentValue = '';
+    
+    for (let i = 0; i < lines.length; i++) {
+        let line = lines[i];
+        
+        // Fortsetzung eines Headers (beginnt mit Leerzeichen oder Tab)
+        if ((line.startsWith(' ') || line.startsWith('\t')) && currentHeader) {
+            currentValue += ' ' + line.trim();
+            continue;
+        }
+        
+        // Neuer Header
+        const colonIndex = line.indexOf(':');
+        if (colonIndex > 0) {
+            // Speichere vorherigen Header
+            if (currentHeader) {
+                headers[currentHeader.toLowerCase()] = currentValue.trim();
+            }
+            
+            // Neuer Header
+            currentHeader = line.substring(0, colonIndex).trim();
+            currentValue = line.substring(colonIndex + 1).trim();
+        }
+    }
+    
+    // Letzten Header speichern
+    if (currentHeader) {
+        headers[currentHeader.toLowerCase()] = currentValue.trim();
+    }
+    
+    return headers;
+}
+
+/**
+ * Multipart-Body in Parts aufteilen
+ */
+function parseMultipart(bodyText, boundary) {
+    const parts = [];
+    // Boundary kann mit oder ohne -- beginnen
+    const boundaryMarker = boundary.startsWith('--') ? boundary : '--' + boundary;
+    
+    // Normalisiere Zeilenendings zu \n für konsistente Verarbeitung
+    const normalizedBody = bodyText.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+    
+    // Teile nach Boundary-Marker auf
+    const sections = normalizedBody.split(boundaryMarker);
+    
+    for (let i = 1; i < sections.length; i++) {
+        let section = sections[i];
+        
+        // Ignoriere End-Marker (-- am Ende)
+        section = section.trim();
+        if (section === '--' || section === '') {
+            continue;
+        }
+        
+        // Entferne führende Zeilenumbrüche
+        section = section.replace(/^\n+/, '');
+        
+        // Trenne Header und Body (suche nach doppeltem Zeilenumbruch)
+        const headerEndIndex = section.indexOf('\n\n');
+        if (headerEndIndex < 0) {
+            // Fallback: Suche nach einfachem Zeilenumbruch nach Header
+            const firstLineBreak = section.indexOf('\n');
+            if (firstLineBreak < 0) {
+                continue;
+            }
+            // Versuche Header zu erkennen (enthält Doppelpunkt)
+            const potentialHeader = section.substring(0, firstLineBreak);
+            if (potentialHeader.includes(':')) {
+                const partHeadersText = section.substring(0, firstLineBreak);
+                const partBody = section.substring(firstLineBreak + 1);
+                const partHeaders = parseHeaders(partHeadersText);
+                parts.push({
+                    headers: partHeaders,
+                    body: partBody.trim()
+                });
+            }
+            continue;
+        }
+        
+        const partHeadersText = section.substring(0, headerEndIndex);
+        const partBody = section.substring(headerEndIndex + 2);
+        
+        // Parse Part-Header
+        const partHeaders = parseHeaders(partHeadersText);
+        
+        parts.push({
+            headers: partHeaders,
+            body: partBody.trim()
+        });
+    }
+    
+    return parts;
 }
 
 /**
@@ -291,8 +390,11 @@ function decodeHeader(header) {
 function decodeQuotedPrintable(text) {
     if (!text) return '';
     
-    // Entferne Soft-Line-Breaks (= am Ende einer Zeile)
+    // Entferne Soft-Line-Breaks (= am Ende einer Zeile, gefolgt von CRLF oder LF)
     text = text.replace(/=\r?\n/g, '');
+    
+    // Ersetze auch einzelnes = am Zeilenende (falls CRLF bereits entfernt wurde)
+    text = text.replace(/=\r/g, '');
     
     // Sammle alle Bytes aus =XX Hex-Codes
     const bytes = [];
@@ -302,18 +404,25 @@ function decodeQuotedPrintable(text) {
         if (text[i] === '=' && i + 2 < text.length) {
             const hex = text.substring(i + 1, i + 3);
             if (/[0-9A-Fa-f]{2}/.test(hex)) {
+                // Hex-Code zu Byte konvertieren
                 bytes.push(parseInt(hex, 16));
                 i += 3;
                 continue;
+            } else if (text[i + 1] === '\r' || text[i + 1] === '\n') {
+                // Soft-Line-Break (sollte bereits entfernt sein, aber sicherheitshalber)
+                i += 2;
+                continue;
             }
         }
+        
         // Normales Zeichen - konvertiere zu UTF-8 Byte
         const charCode = text.charCodeAt(i);
         if (charCode < 128) {
-            // ASCII-Zeichen
+            // ASCII-Zeichen (0-127)
             bytes.push(charCode);
         } else {
             // Multi-Byte UTF-8 Zeichen - konvertiere zu Bytes
+            // Verwende Buffer.from für korrekte UTF-8-Kodierung
             const utf8Bytes = Buffer.from(text[i], 'utf8');
             for (let j = 0; j < utf8Bytes.length; j++) {
                 bytes.push(utf8Bytes[j]);
@@ -326,10 +435,13 @@ function decodeQuotedPrintable(text) {
     try {
         return Buffer.from(bytes).toString('utf-8');
     } catch (e) {
+        console.log('⚠️ UTF-8 Dekodierung fehlgeschlagen, verwende Fallback:', e.message);
         // Fallback: Einfache Ersetzung wenn UTF-8 Dekodierung fehlschlägt
         return text.replace(/=([0-9A-Fa-f]{2})/g, (match, hex) => {
             try {
-                return String.fromCharCode(parseInt(hex, 16));
+                const byte = parseInt(hex, 16);
+                // Versuche als einzelnes Byte zu dekodieren
+                return String.fromCharCode(byte);
             } catch (e2) {
                 return match;
             }
@@ -341,19 +453,33 @@ function decodeQuotedPrintable(text) {
  * HTML-Version der weitergeleiteten E-Mail erstellen
  */
 function buildForwardedEmailHtml(emailParts, rawEmail, originalFrom, originalTo) {
+    // Verwende HTML-Body wenn verfügbar, sonst Text als HTML
+    let emailContent = '';
+    if (emailParts.htmlBody) {
+        // HTML-Inhalt direkt einbetten (bereits dekodiert)
+        emailContent = emailParts.htmlBody;
+    } else if (emailParts.body) {
+        // Text-Inhalt als HTML formatieren
+        emailContent = '<div style="white-space: pre-wrap; word-wrap: break-word; font-family: Arial, sans-serif;">' + 
+                      escapeHtml(emailParts.body) + '</div>';
+    } else {
+        emailContent = '<p style="color: #999; font-style: italic;">(Keine Nachricht)</p>';
+    }
+    
     return `
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
     <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-        .forwarded-header { background: #f0f0f0; padding: 15px; border-left: 4px solid #007bff; margin-bottom: 20px; }
-        .forwarded-header h3 { margin: 0 0 10px 0; color: #007bff; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: 0 auto; padding: 20px; background: #f5f5f5; }
+        .forwarded-header { background: #f0f7ff; padding: 15px; border-left: 4px solid #007bff; margin-bottom: 20px; border-radius: 4px; }
+        .forwarded-header h3 { margin: 0 0 10px 0; color: #007bff; font-size: 16px; }
         .forwarded-info { font-size: 0.9em; color: #666; }
         .forwarded-info strong { color: #333; }
-        .original-email { background: #f9f9f9; padding: 15px; border: 1px solid #ddd; margin-top: 20px; }
-        .original-email pre { white-space: pre-wrap; word-wrap: break-word; }
+        .email-content { background: #ffffff; padding: 20px; border: 1px solid #e0e0e0; border-radius: 4px; margin-top: 20px; }
+        .email-content :first-child { margin-top: 0; }
+        .email-content :last-child { margin-bottom: 0; }
     </style>
 </head>
 <body>
@@ -367,9 +493,8 @@ function buildForwardedEmailHtml(emailParts, rawEmail, originalFrom, originalTo)
         </div>
     </div>
     
-    <div class="original-email">
-        <h4>E-Mail-Inhalt:</h4>
-        <div style="white-space: pre-wrap; word-wrap: break-word;">${escapeHtml(emailParts.body)}</div>
+    <div class="email-content">
+        ${emailContent}
     </div>
 </body>
 </html>
@@ -380,8 +505,23 @@ function buildForwardedEmailHtml(emailParts, rawEmail, originalFrom, originalTo)
  * Text-Version der weitergeleiteten E-Mail erstellen
  */
 function buildForwardedEmailText(emailParts, rawEmail, originalFrom, originalTo) {
-    // Dekodiere den Body für die Text-Version
-    let decodedBody = emailParts.body;
+    // Für Text-Version: HTML-Tags entfernen falls HTML-Body vorhanden
+    let textBody = emailParts.body;
+    if (emailParts.htmlBody && !textBody) {
+        // Einfache HTML-Tag-Entfernung für Text-Version
+        textBody = emailParts.htmlBody
+            .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+            .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+            .replace(/<[^>]+>/g, '')
+            .replace(/&nbsp;/g, ' ')
+            .replace(/&amp;/g, '&')
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>')
+            .replace(/&quot;/g, '"')
+            .replace(/&#039;/g, "'")
+            .replace(/\n\s*\n\s*\n/g, '\n\n')
+            .trim();
+    }
     
     return `
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -394,10 +534,10 @@ Datum: ${emailParts.date}
 Betreff: ${emailParts.subject || '(Kein Betreff)'}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-E-MAIL-INHALT:
+NACHRICHT:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-${decodedBody}
+${textBody || '(Keine Nachricht)'}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     `.trim();
