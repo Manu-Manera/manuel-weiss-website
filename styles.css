@@ -1389,14 +1389,45 @@ a:hover {
 }
 
 .services-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    display: flex;
     gap: var(--spacing-xl);
-    max-width: 1200px;
-    margin: 0 auto;
+    max-width: 100%;
+    margin: 0;
     position: relative;
     z-index: 1;
-    align-items: stretch; /* Alle Karten haben die gleiche Höhe */
+    align-items: stretch;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    padding: var(--spacing-md) var(--spacing-sm);
+    scroll-snap-type: x mandatory;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.3) transparent;
+}
+
+.services-grid::-webkit-scrollbar {
+    height: 8px;
+}
+
+.services-grid::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px;
+}
+
+.services-grid::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.3);
+    border-radius: 4px;
+}
+
+.services-grid::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,0.5);
+}
+
+.services-grid .service-card {
+    flex: 0 0 320px;
+    min-width: 320px;
+    scroll-snap-align: start;
 }
 
 .service-card {
