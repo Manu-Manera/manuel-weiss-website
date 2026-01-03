@@ -1390,6 +1390,7 @@ a:hover {
 
 .services-grid {
     display: flex;
+    flex-wrap: nowrap !important; /* Safari-Fix: Verhindert Umbruch */
     gap: var(--spacing-xl);
     max-width: 100%;
     margin: 0;
@@ -2889,17 +2890,18 @@ a:hover {
     pointer-events: none;
 }
 
+/* Modern-highlight Kacheln: Gleicher Hover-Effekt wie alte Kacheln */
 .service-card.modern-highlight:hover {
-    transform: scale(1.05) translateY(-8px);
-    box-shadow: 0 30px 60px rgba(102, 126, 234, 0.4);
+    transform: translateY(-4px) !important; /* Gleicher Effekt wie alte Kacheln */
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1) !important;
+    border-color: var(--primary) !important;
+    background: var(--white) !important; /* Weißer Hintergrund wie alte Kacheln */
 }
 
 .service-card.modern-highlight:hover h3 {
-    color: white;
-    text-shadow: 0 0 20px rgba(255, 255, 255, 0.8), 
-                 0 0 30px rgba(255, 255, 255, 0.6), 
-                 0 0 40px rgba(255, 255, 255, 0.4);
-    animation: titleGlowPulse 1.5s ease-in-out infinite alternate;
+    color: var(--primary) !important; /* Dunkellila wie alte Kacheln */
+    text-shadow: none !important; /* Kein Glow-Effekt */
+    animation: none !important; /* Keine Animation */
 }
 
 @keyframes titleGlowPulse {
@@ -3000,11 +3002,28 @@ a:hover {
     font-weight: 500;
 }
 
+.service-card.modern-highlight:hover p {
+    /* Wenn die Karte weiss wird, Text in dunklem Lila für Lesbarkeit */
+    color: var(--primary-dark) !important;
+}
+
 .service-card.modern-highlight:hover .service-features li {
-    /* Beim Hover: weiß und leicht glühend */
-    color: #ffffff;
-    text-shadow: 0 0 12px rgba(255, 255, 255, 0.9),
-                 0 0 20px rgba(255, 255, 255, 0.7);
+    /* Beim Hover: dunkellila wie alte Kacheln */
+    color: var(--primary-dark) !important;
+    text-shadow: none !important; /* Kein Glow-Effekt */
+}
+
+.service-card.modern-highlight:hover .service-icon {
+    transform: scale(1.05) !important; /* Gleicher Effekt wie alte Kacheln */
+    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3) !important;
+}
+
+.service-card.modern-highlight:hover .btn-primary,
+.service-card.modern-highlight:hover .modern-btn {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, #3730a3 100%) !important;
+    box-shadow: 0 4px 16px rgba(99, 102, 241, 0.4) !important;
+    color: var(--white) !important;
+    border-color: var(--primary-dark) !important;
 }
 
 /* ============================================
@@ -3722,7 +3741,8 @@ a:hover {
     .services-grid {
         display: -webkit-flex;
         display: flex;
-        flex-wrap: nowrap;
+        flex-wrap: nowrap !important; /* Safari-Fix: Verhindert Umbruch */
+        -webkit-flex-wrap: nowrap !important;
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
     }
