@@ -2424,7 +2424,15 @@ a:hover {
     }
     
     .services-grid {
-        grid-template-columns: 1fr;
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        gap: var(--spacing-md);
+    }
+    
+    .services-grid .service-card {
+        flex: 0 0 280px;
+        min-width: 280px;
     }
     
     .activities-grid {
@@ -2463,8 +2471,16 @@ a:hover {
     
     /* Service Cards Mobile Optimization */
     .services-grid {
-        grid-template-columns: 1fr;
-        gap: var(--spacing-lg);
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        gap: var(--spacing-md);
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .services-grid .service-card {
+        flex: 0 0 260px;
+        min-width: 260px;
     }
     
     .service-card {
@@ -3264,11 +3280,19 @@ a:hover {
         padding: var(--spacing-lg);
     }
     
-    /* Services Section Mobile */
+    /* Services Section Mobile - Horizontal Scroll */
     .services-grid {
-        grid-template-columns: 1fr;
-        gap: var(--spacing-lg);
-        padding: var(--spacing-xl) var(--spacing-lg);
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        gap: var(--spacing-md);
+        padding: var(--spacing-md);
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .services-grid .service-card {
+        flex: 0 0 280px;
+        min-width: 280px;
     }
     
     .service-card {
@@ -3428,7 +3452,15 @@ a:hover {
     }
     
     .services-grid {
-        grid-template-columns: repeat(2, 1fr);
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        gap: var(--spacing-lg);
+    }
+    
+    .services-grid .service-card {
+        flex: 0 0 300px;
+        min-width: 300px;
     }
     
     .highlights-grid {
@@ -3557,10 +3589,11 @@ a:hover {
         margin: 0.75rem;
     }
     
-    /* Firefox: Grid Auto-fit Fix */
+    /* Firefox: Grid Auto-fit Fix - Horizontal Scroll */
     .services-grid {
-        display: -moz-grid;
-        -moz-grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
     }
 }
 
@@ -3602,10 +3635,13 @@ a:hover {
         -webkit-flex-wrap: wrap;
     }
     
-    /* Safari: Grid Support */
+    /* Safari: Flex Scroll Support */
     .services-grid {
-        display: -webkit-grid;
-        -webkit-grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        display: -webkit-flex;
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
     }
 }
 
@@ -3791,13 +3827,14 @@ a:hover {
 @supports not (grid-template-columns: repeat(auto-fit, minmax(280px, 1fr))) {
     .services-grid {
         display: flex;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
+        overflow-x: auto;
     }
     
     .service-card {
-        flex: 1 1 280px;
-        min-width: 280px;
-        max-width: 100%;
+        flex: 0 0 320px;
+        min-width: 320px;
+        max-width: 320px;
     }
 }
 
