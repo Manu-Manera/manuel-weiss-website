@@ -4105,12 +4105,13 @@ img {
 .snowflake {
     position: absolute;
     top: -10px;
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.5rem;
     user-select: none;
     pointer-events: none;
     animation: snowflakeFall linear infinite, snowflakeSway ease-in-out infinite;
-    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.4);
+    filter: drop-shadow(0 0 3px white);
 }
 
 .snowflake::before {
@@ -4119,18 +4120,18 @@ img {
 
 /* Verschiedene Schneeflocken-Größen */
 .snowflake.small {
-    font-size: 0.6rem;
-    opacity: 0.5;
+    font-size: 0.8rem;
+    opacity: 0.6;
 }
 
 .snowflake.medium {
-    font-size: 1rem;
-    opacity: 0.7;
+    font-size: 1.3rem;
+    opacity: 0.8;
 }
 
 .snowflake.large {
-    font-size: 1.4rem;
-    opacity: 0.9;
+    font-size: 2rem;
+    opacity: 1;
 }
 
 /* Animation: Fallbewegung */
