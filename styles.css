@@ -1390,7 +1390,7 @@ a:hover {
 
 .services-grid {
     display: flex;
-    flex-wrap: nowrap !important; /* Safari-Fix: Verhindert Umbruch */
+    flex-wrap: nowrap; /* Horizontal scrollen - wird in Mobile-Media-Queries überschrieben */
     gap: var(--spacing-xl);
     max-width: 100%;
     margin: 0;
@@ -1405,6 +1405,16 @@ a:hover {
     scroll-snap-type: x mandatory;
     scrollbar-width: thin;
     scrollbar-color: rgba(255,255,255,0.3) transparent;
+}
+
+/* Safari-spezifischer Fix für Desktop - nur wenn nicht Mobile */
+@supports (-webkit-touch-callout: none) {
+    @media (min-width: 769px) {
+        .services-grid {
+            flex-wrap: nowrap !important;
+            -webkit-flex-wrap: nowrap !important;
+        }
+    }
 }
 
 .services-grid::-webkit-scrollbar {
@@ -1501,6 +1511,13 @@ a:hover {
 
 /* Mobile: 1-2 Kacheln sichtbar */
 @media (max-width: 768px) {
+    .services-grid {
+        flex-wrap: nowrap; /* Horizontal scrollen auf Mobile */
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding: var(--spacing-md);
+    }
+    
     .services-grid .service-card {
         flex: 0 0 85vw;
         min-width: 260px;
@@ -3737,14 +3754,16 @@ a:hover {
         -webkit-flex-wrap: wrap;
     }
     
-    /* Safari: Flex Scroll Support */
-    .services-grid {
-        display: -webkit-flex;
-        display: flex;
-        flex-wrap: nowrap !important; /* Safari-Fix: Verhindert Umbruch */
-        -webkit-flex-wrap: nowrap !important;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
+    /* Safari: Flex Scroll Support - nur Desktop */
+    @media (min-width: 769px) {
+        .services-grid {
+            display: -webkit-flex;
+            display: flex;
+            flex-wrap: nowrap !important; /* Safari-Fix: Verhindert Umbruch */
+            -webkit-flex-wrap: nowrap !important;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
     }
 }
 
