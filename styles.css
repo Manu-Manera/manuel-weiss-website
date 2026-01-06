@@ -1418,36 +1418,39 @@ a:hover {
             display: flex !important;
             flex-wrap: nowrap !important;
             -webkit-flex-wrap: nowrap !important;
+            -webkit-justify-content: flex-start !important;
+            justify-content: flex-start !important;
         }
         
         .services-grid .service-card {
-            flex: 0 0 calc((100% - 2 * var(--spacing-xl)) / 3) !important;
-            -webkit-flex: 0 0 calc((100% - 2 * var(--spacing-xl)) / 3) !important;
-            flex-basis: calc((100% - 2 * var(--spacing-xl)) / 3) !important;
-            -webkit-flex-basis: calc((100% - 2 * var(--spacing-xl)) / 3) !important;
+            flex: none !important;
+            -webkit-flex: none !important;
             flex-grow: 0 !important;
             -webkit-flex-grow: 0 !important;
             flex-shrink: 0 !important;
             -webkit-flex-shrink: 0 !important;
+            flex-basis: auto !important;
+            -webkit-flex-basis: auto !important;
             width: calc((100% - 2 * var(--spacing-xl)) / 3) !important;
             min-width: 280px !important;
-            max-width: none !important;
+            max-width: 400px !important;
             box-sizing: border-box !important;
         }
     }
     
     @media (max-width: 1200px) and (min-width: 769px) {
         .services-grid .service-card {
-            flex: 0 0 calc((100% - var(--spacing-xl)) / 2) !important;
-            -webkit-flex: 0 0 calc((100% - var(--spacing-xl)) / 2) !important;
-            flex-basis: calc((100% - var(--spacing-xl)) / 2) !important;
-            -webkit-flex-basis: calc((100% - var(--spacing-xl)) / 2) !important;
+            flex: none !important;
+            -webkit-flex: none !important;
             flex-grow: 0 !important;
             -webkit-flex-grow: 0 !important;
             flex-shrink: 0 !important;
             -webkit-flex-shrink: 0 !important;
+            flex-basis: auto !important;
+            -webkit-flex-basis: auto !important;
             width: calc((100% - var(--spacing-xl)) / 2) !important;
-            max-width: none !important;
+            min-width: 280px !important;
+            max-width: 380px !important;
             box-sizing: border-box !important;
         }
     }
@@ -1523,39 +1526,38 @@ a:hover {
 
 /* Desktop: Genau 3 Kacheln nebeneinander sichtbar */
 .services-grid .service-card {
-    /* Berechne Breite so, dass genau 3 Kacheln + 2 Gaps nebeneinander passen */
-    flex: 0 0 calc((100% - 2 * var(--spacing-xl)) / 3) !important;
-    -webkit-flex: 0 0 calc((100% - 2 * var(--spacing-xl)) / 3) !important; /* Safari */
-    flex-basis: calc((100% - 2 * var(--spacing-xl)) / 3) !important; /* Explizit setzen */
-    -webkit-flex-basis: calc((100% - 2 * var(--spacing-xl)) / 3) !important; /* Safari */
+    /* Safari-kompatible Lösung: width statt calc() in flex */
+    flex: none !important;
+    -webkit-flex: none !important; /* Safari */
     flex-grow: 0 !important;
     -webkit-flex-grow: 0 !important; /* Safari */
     flex-shrink: 0 !important;
     -webkit-flex-shrink: 0 !important; /* Safari */
-    /* Min-Width für Responsive-Verhalten */
-    min-width: 280px;
-    scroll-snap-align: start;
-    /* Verhindere, dass Karten größer werden als berechnet */
+    flex-basis: auto !important;
+    -webkit-flex-basis: auto !important; /* Safari */
+    /* Breite wird über width gesetzt für Safari-Kompatibilität */
     width: calc((100% - 2 * var(--spacing-xl)) / 3) !important;
-    max-width: none !important;
+    min-width: 280px !important;
+    max-width: 400px !important;
+    scroll-snap-align: start;
     box-sizing: border-box !important; /* Padding in Breite einrechnen */
 }
 
 /* Tablet: 2-3 Kacheln sichtbar (je nach Breite) */
 @media (max-width: 1200px) {
     .services-grid .service-card {
-        /* Auf Tablet: 2 Kacheln + 1 Gap */
-        flex: 0 0 calc((100% - var(--spacing-xl)) / 2) !important;
-        -webkit-flex: 0 0 calc((100% - var(--spacing-xl)) / 2) !important; /* Safari */
-        flex-basis: calc((100% - var(--spacing-xl)) / 2) !important;
-        -webkit-flex-basis: calc((100% - var(--spacing-xl)) / 2) !important; /* Safari */
+        /* Auf Tablet: 2 Kacheln + 1 Gap - Safari-kompatible Lösung */
+        flex: none !important;
+        -webkit-flex: none !important; /* Safari */
         flex-grow: 0 !important;
         -webkit-flex-grow: 0 !important; /* Safari */
         flex-shrink: 0 !important;
         -webkit-flex-shrink: 0 !important; /* Safari */
+        flex-basis: auto !important;
+        -webkit-flex-basis: auto !important; /* Safari */
         width: calc((100% - var(--spacing-xl)) / 2) !important;
-        min-width: 280px;
-        max-width: none !important;
+        min-width: 280px !important;
+        max-width: 380px !important;
         box-sizing: border-box !important;
     }
     
