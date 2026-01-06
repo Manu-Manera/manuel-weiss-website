@@ -186,6 +186,10 @@
                     <i class="fas fa-briefcase"></i>
                     <span data-de="Business Kontext" data-en="Business Context">Business Kontext</span>
                 </h3>
+            <div class="services-scroll-container">
+                <button class="scroll-arrow scroll-arrow-left" aria-label="Nach links scrollen">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
             <div class="services-grid">
                 <div class="service-card modern-highlight" onclick="window.location.href='../fachliche-entwicklung.html'">
                     <div class="service-icon">
@@ -256,6 +260,10 @@
                         <i class="fas fa-arrow-right"></i>
                         </div>
                     </div>
+                </div>
+                <button class="scroll-arrow scroll-arrow-right" aria-label="Nach rechts scrollen">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
                     </div>
                 </div>
                 
@@ -265,6 +273,10 @@
                     <i class="fas fa-user"></i>
                     <span data-de="Privater Kontext" data-en="Private Context">Privater Kontext</span>
                 </h3>
+                <div class="services-scroll-container">
+                    <button class="scroll-arrow scroll-arrow-left" aria-label="Nach links scrollen">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
                 <div class="services-grid">
                 <div class="service-card modern-highlight" onclick="window.location.href='persoenlichkeitsentwicklung-uebersicht.html'">
                     <div class="service-icon">
@@ -313,12 +325,12 @@
                         <li data-de="Fortschritts-Tracking" data-en="Progress Tracking">Progress Tracking</li>
                     </ul>
                     <a href="../personal-training.html" class="btn btn-primary"><span data-de="Trainingsplan erstellen" data-en="Create Training Plan">Create Training Plan</span></a>
-                </div>
+                    </div>
                 
                 <div class="service-card modern-highlight">
                     <div class="service-icon">
                         <i class="fas fa-utensils"></i>
-                    </div>
+                </div>
                     <h3 data-de="Ernährungsplan" data-en="Nutrition Plan">Nutrition Plan</h3>
                     <p data-de="Personalisierte Ernährungspläne basierend auf Ihren Zielen. Kalorienberechnung, Makros und Rezeptvorschläge." data-en="Personalized nutrition plans based on your goals. Calorie calculation, macros and recipe suggestions.">Personalized nutrition plans based on your goals. Calorie calculation, macros and recipe suggestions.</p>
                     <ul class="service-features">
@@ -348,6 +360,10 @@
                         <span data-de="Chat starten" data-en="Start Chat">Start Chat</span>
                     </a>
                 </div>
+                    </div>
+                    <button class="scroll-arrow scroll-arrow-right" aria-label="Nach rechts scrollen">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
                 </div>
             </div>
         </div>
@@ -1970,6 +1986,68 @@
                         userDropdown.style.display = 'none';
                     }
                 }, 10);
+            }
+        });
+        
+        // Scroll-Pfeile Funktionalität
+        document.querySelectorAll('.services-scroll-container').forEach(container => {
+            const grid = container.querySelector('.services-grid');
+            const leftArrow = container.querySelector('.scroll-arrow-left');
+            const rightArrow = container.querySelector('.scroll-arrow-right');
+            
+            if (!grid || !leftArrow || !rightArrow) return;
+            
+            // Dynamische Scroll-Menge basierend auf Kachel-Breite
+            function getScrollAmount() {
+                const firstCard = grid.querySelector('.service-card');
+                if (firstCard) {
+                    const cardWidth = firstCard.offsetWidth;
+                    const gap = parseInt(getComputedStyle(grid).gap) || 32; // Fallback zu 32px (2rem)
+                    return cardWidth + gap;
+                }
+                return 340; // Fallback
+            }
+            
+            // Linker Pfeil - nach links scrollen
+            leftArrow.addEventListener('click', () => {
+                grid.scrollBy({ left: -getScrollAmount(), behavior: 'smooth' });
+            });
+            
+            // Rechter Pfeil - nach rechts scrollen
+            rightArrow.addEventListener('click', () => {
+                grid.scrollBy({ left: getScrollAmount(), behavior: 'smooth' });
+            });
+            
+            // Pfeil-Sichtbarkeit aktualisieren
+            function updateArrows() {
+                const canScroll = grid.scrollWidth > grid.clientWidth;
+                const isAtStart = grid.scrollLeft <= 10;
+                const isAtEnd = grid.scrollLeft >= grid.scrollWidth - grid.clientWidth - 10;
+                
+                // Pfeile verstecken, wenn nicht scrollbar
+                if (!canScroll) {
+                    leftArrow.style.display = 'none';
+                    rightArrow.style.display = 'none';
+                } else {
+                    leftArrow.style.display = 'flex';
+                    rightArrow.style.display = 'flex';
+                    leftArrow.style.opacity = isAtStart ? '0.3' : '0.8';
+                    rightArrow.style.opacity = isAtEnd ? '0.3' : '0.8';
+                    leftArrow.disabled = isAtStart;
+                    rightArrow.disabled = isAtEnd;
+                }
+            }
+            
+            grid.addEventListener('scroll', updateArrows);
+            window.addEventListener('resize', updateArrows);
+            
+            // Initial nach kurzer Verzögerung (wenn Layout geladen ist)
+            setTimeout(updateArrows, 100);
+            // Auch nach vollständigem Laden
+            if (document.readyState === 'complete') {
+                setTimeout(updateArrows, 300);
+            } else {
+                window.addEventListener('load', () => setTimeout(updateArrows, 300));
             }
         });
     </script>
