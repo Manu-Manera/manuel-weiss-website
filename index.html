@@ -190,7 +190,7 @@
                 <button class="scroll-arrow scroll-arrow-left" aria-label="Nach links scrollen">
                     <i class="fas fa-chevron-left"></i>
                 </button>
-                <div class="services-grid">
+            <div class="services-grid">
                 <div class="service-card" onclick="window.location.href='ai-digitalisierung.html'">
                     <div class="service-icon">
                         <i class="fas fa-robot"></i>
@@ -239,14 +239,14 @@
                     <div class="service-cta">
                         <span class="cta-text" data-de="Mehr erfahren" data-en="Learn more">Mehr erfahren</span>
                         <i class="fas fa-arrow-right"></i>
+                        </div>
                     </div>
-                </div>
                 </div>
                 <button class="scroll-arrow scroll-arrow-right" aria-label="Nach rechts scrollen">
                     <i class="fas fa-chevron-right"></i>
                 </button>
-            </div>
-            </div>
+                    </div>
+                </div>
                 
             <!-- Privater Kontext -->
             <div class="services-category">
@@ -258,7 +258,7 @@
                     <button class="scroll-arrow scroll-arrow-left" aria-label="Nach links scrollen">
                         <i class="fas fa-chevron-left"></i>
                     </button>
-                    <div class="services-grid">
+                <div class="services-grid">
                     
                     <!-- Fachliche Entwicklung (verschoben von Business) -->
                     <div class="service-card modern-highlight" onclick="window.location.href='fachliche-entwicklung.html'">
@@ -280,10 +280,10 @@
                         </a>
                     </div>
                     
-                    <div class="service-card modern-highlight" onclick="window.location.href='persoenlichkeitsentwicklung-uebersicht.html'">
-                        <div class="service-icon">
-                            <i class="fas fa-brain"></i>
-                        </div>
+                <div class="service-card modern-highlight" onclick="window.location.href='persoenlichkeitsentwicklung-uebersicht.html'">
+                    <div class="service-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
                     <div class="service-badge" data-de="🚀 NEU" data-en="🚀 NEW">🚀 NEU</div>
                     <h3 data-de="Persönlichkeitsentwicklung" data-en="Personality Development">Persönlichkeitsentwicklung</h3>
                     <p data-de="Umfassende Persönlichkeitsentwicklung mit 33+ wissenschaftlich fundierten Methoden und modernem Dashboard." data-en="Comprehensive personality development with 33+ scientifically founded methods and a modern dashboard.">Umfassende Persönlichkeitsentwicklung mit 33+ wissenschaftlich fundierten Methoden und modernem Dashboard.</p>
@@ -327,12 +327,12 @@
                         <li data-de="Fortschritts-Tracking" data-en="Progress Tracking">Fortschritts-Tracking</li>
                     </ul>
                     <a href="personal-training.html" class="btn btn-primary"><span data-de="Trainingsplan erstellen" data-en="Create Training Plan">Trainingsplan erstellen</span></a>
-                </div>
+                    </div>
                 
                 <div class="service-card modern-highlight">
                     <div class="service-icon">
                         <i class="fas fa-utensils"></i>
-                    </div>
+                </div>
                     <h3 data-de="Ernährungsplan" data-en="Nutrition Plan">Ernährungsplan</h3>
                     <p data-de="Personalisierte Ernährungspläne basierend auf Ihren Zielen. Kalorienberechnung, Makros und Rezeptvorschläge." data-en="Personalized nutrition plans based on your goals. Calorie calculation, macros and recipe suggestions.">Personalisierte Ernährungspläne basierend auf Ihren Zielen. Kalorienberechnung, Makros und Rezeptvorschläge.</p>
                     <ul class="service-features">
@@ -2032,28 +2032,58 @@
             
             if (!grid || !leftArrow || !rightArrow) return;
             
-            const scrollAmount = 340; // Breite einer Kachel + Gap
+            // Dynamische Scroll-Menge basierend auf Kachel-Breite
+            function getScrollAmount() {
+                const firstCard = grid.querySelector('.service-card');
+                if (firstCard) {
+                    const cardWidth = firstCard.offsetWidth;
+                    const gap = parseInt(getComputedStyle(grid).gap) || 32; // Fallback zu 32px (2rem)
+                    return cardWidth + gap;
+                }
+                return 340; // Fallback
+            }
             
             // Linker Pfeil - nach links scrollen
             leftArrow.addEventListener('click', () => {
-                grid.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+                grid.scrollBy({ left: -getScrollAmount(), behavior: 'smooth' });
             });
             
             // Rechter Pfeil - nach rechts scrollen
             rightArrow.addEventListener('click', () => {
-                grid.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+                grid.scrollBy({ left: getScrollAmount(), behavior: 'smooth' });
             });
             
             // Pfeil-Sichtbarkeit aktualisieren
             function updateArrows() {
-                leftArrow.style.opacity = grid.scrollLeft <= 10 ? '0.3' : '0.8';
-                rightArrow.style.opacity = 
-                    grid.scrollLeft >= grid.scrollWidth - grid.clientWidth - 10 ? '0.3' : '0.8';
+                const canScroll = grid.scrollWidth > grid.clientWidth;
+                const isAtStart = grid.scrollLeft <= 10;
+                const isAtEnd = grid.scrollLeft >= grid.scrollWidth - grid.clientWidth - 10;
+                
+                // Pfeile verstecken, wenn nicht scrollbar
+                if (!canScroll) {
+                    leftArrow.style.display = 'none';
+                    rightArrow.style.display = 'none';
+                } else {
+                    leftArrow.style.display = 'flex';
+                    rightArrow.style.display = 'flex';
+                    leftArrow.style.opacity = isAtStart ? '0.3' : '0.8';
+                    rightArrow.style.opacity = isAtEnd ? '0.3' : '0.8';
+                    leftArrow.disabled = isAtStart;
+                    rightArrow.disabled = isAtEnd;
+                }
             }
             
             grid.addEventListener('scroll', updateArrows);
             window.addEventListener('resize', updateArrows);
+            
+            // Initial nach kurzer Verzögerung (wenn Layout geladen ist)
             setTimeout(updateArrows, 100);
+            // Auch nach vollständigem Laden
+            if (document.readyState === 'complete') {
+                setTimeout(updateArrows, 300);
+            } else {
+                window.addEventListener('load', () => setTimeout(updateArrows, 300));
+            }
         });
     </script>
 

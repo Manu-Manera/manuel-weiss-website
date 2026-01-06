@@ -1485,19 +1485,31 @@ a:hover {
     cursor: not-allowed;
 }
 
-/* 3 Kacheln nebeneinander auf Desktop */
+/* Desktop: Genau 3 Kacheln nebeneinander sichtbar */
 .services-grid .service-card {
+    /* Berechne Breite so, dass genau 3 Kacheln + 2 Gaps nebeneinander passen */
     flex: 0 0 calc((100% - 2 * var(--spacing-xl)) / 3);
-    min-width: 300px;
-    max-width: 380px;
+    /* Min/Max-Width für Responsive-Verhalten */
+    min-width: 280px;
+    max-width: 400px;
     scroll-snap-align: start;
 }
 
-/* Tablet: 2-3 Kacheln sichtbar */
+/* Große Desktop-Bildschirme: Kacheln können etwas größer sein */
+@media (min-width: 1400px) {
+    .services-grid .service-card {
+        flex: 0 0 calc((100% - 2 * var(--spacing-xl)) / 3);
+        max-width: 420px;
+    }
+}
+
+/* Tablet: 2-3 Kacheln sichtbar (je nach Breite) */
 @media (max-width: 1200px) {
     .services-grid .service-card {
+        /* Auf Tablet: 2 Kacheln + 1 Gap */
         flex: 0 0 calc((100% - var(--spacing-xl)) / 2);
         min-width: 280px;
+        max-width: 380px;
     }
     
     .scroll-arrow-left {
@@ -1506,6 +1518,15 @@ a:hover {
     
     .scroll-arrow-right {
         right: 0;
+    }
+}
+
+/* Kleine Tablets: Sicherstellen, dass 2 Kacheln passen */
+@media (max-width: 900px) and (min-width: 769px) {
+    .services-grid .service-card {
+        flex: 0 0 calc((100% - var(--spacing-xl)) / 2);
+        min-width: 260px;
+        max-width: 350px;
     }
 }
 
@@ -1519,7 +1540,8 @@ a:hover {
     }
     
     .services-grid .service-card {
-        flex: 0 0 85vw;
+        /* Auf Mobile: 1-2 Kacheln je nach Bildschirmbreite */
+        flex: 0 0 calc(100vw - 2 * var(--spacing-md) - 2 * var(--spacing-sm));
         min-width: 260px;
         max-width: 320px;
     }
@@ -1528,6 +1550,15 @@ a:hover {
         width: 40px;
         height: 40px;
         font-size: 1rem;
+    }
+}
+
+/* Sehr kleine Mobile-Geräte: 1 Kachel */
+@media (max-width: 480px) {
+    .services-grid .service-card {
+        flex: 0 0 calc(100vw - 2 * var(--spacing-md));
+        min-width: 240px;
+        max-width: 100%;
     }
 }
 
