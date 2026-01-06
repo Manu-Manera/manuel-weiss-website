@@ -191,17 +191,17 @@ function parseEmail(rawEmail) {
         // Einfache E-Mail ohne multipart
         const encoding = (headers['content-transfer-encoding'] || '').toLowerCase();
         let decodedBody = bodyText;
-        
-        if (encoding.includes('quoted-printable')) {
+    
+    if (encoding.includes('quoted-printable')) {
             decodedBody = decodeQuotedPrintable(decodedBody);
-        } else if (encoding.includes('base64')) {
-            try {
+    } else if (encoding.includes('base64')) {
+        try {
                 decodedBody = Buffer.from(decodedBody.replace(/\s/g, ''), 'base64').toString('utf-8');
-            } catch (e) {
-                console.log('⚠️ Base64 Dekodierung fehlgeschlagen:', e.message);
-            }
+        } catch (e) {
+            console.log('⚠️ Base64 Dekodierung fehlgeschlagen:', e.message);
         }
-        
+    }
+    
         const ct = (headers['content-type'] || '').toLowerCase();
         if (ct.includes('text/html')) {
             htmlBody = decodedBody.trim();
