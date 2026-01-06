@@ -1524,23 +1524,25 @@ a:hover {
     cursor: not-allowed;
 }
 
-/* Desktop: Genau 3 Kacheln nebeneinander sichtbar */
-.services-grid .service-card {
-    /* Safari-kompatible Lösung: width statt calc() in flex */
-    flex: none !important;
-    -webkit-flex: none !important; /* Safari */
-    flex-grow: 0 !important;
-    -webkit-flex-grow: 0 !important; /* Safari */
-    flex-shrink: 0 !important;
-    -webkit-flex-shrink: 0 !important; /* Safari */
-    flex-basis: auto !important;
-    -webkit-flex-basis: auto !important; /* Safari */
-    /* Breite wird über width gesetzt für Safari-Kompatibilität */
-    width: calc((100% - 2 * var(--spacing-xl)) / 3) !important;
-    min-width: 280px !important;
-    max-width: 400px !important;
-    scroll-snap-align: start;
-    box-sizing: border-box !important; /* Padding in Breite einrechnen */
+/* Desktop: Genau 3 Kacheln nebeneinander sichtbar - NUR für Desktop */
+@media (min-width: 769px) {
+    .services-grid .service-card {
+        /* Safari-kompatible Lösung: width statt calc() in flex */
+        flex: none !important;
+        -webkit-flex: none !important; /* Safari */
+        flex-grow: 0 !important;
+        -webkit-flex-grow: 0 !important; /* Safari */
+        flex-shrink: 0 !important;
+        -webkit-flex-shrink: 0 !important; /* Safari */
+        flex-basis: auto !important;
+        -webkit-flex-basis: auto !important; /* Safari */
+        /* Breite wird über width gesetzt für Safari-Kompatibilität */
+        width: calc((100% - 2 * var(--spacing-xl)) / 3) !important;
+        min-width: 280px !important;
+        max-width: 400px !important;
+        scroll-snap-align: start;
+        box-sizing: border-box !important; /* Padding in Breite einrechnen */
+    }
 }
 
 /* Tablet: 2-3 Kacheln sichtbar (je nach Breite) */
@@ -1573,31 +1575,45 @@ a:hover {
 /* Kleine Tablets: Sicherstellen, dass 2 Kacheln passen */
 @media (max-width: 900px) and (min-width: 769px) {
     .services-grid .service-card {
-        flex: 0 0 calc((100% - var(--spacing-xl)) / 2);
-        flex-basis: calc((100% - var(--spacing-xl)) / 2);
-        flex-grow: 0;
-        flex-shrink: 0;
-        width: calc((100% - var(--spacing-xl)) / 2);
-        min-width: 260px;
-        max-width: none;
-        box-sizing: border-box;
+        flex: none !important;
+        -webkit-flex: none !important; /* Safari */
+        flex-grow: 0 !important;
+        -webkit-flex-grow: 0 !important; /* Safari */
+        flex-shrink: 0 !important;
+        -webkit-flex-shrink: 0 !important; /* Safari */
+        flex-basis: auto !important;
+        -webkit-flex-basis: auto !important; /* Safari */
+        width: calc((100% - var(--spacing-xl)) / 2) !important;
+        min-width: 260px !important;
+        max-width: 350px !important;
+        box-sizing: border-box !important;
     }
 }
 
 /* Mobile: 1-2 Kacheln sichtbar */
 @media (max-width: 768px) {
     .services-grid {
-        flex-wrap: nowrap; /* Horizontal scrollen auf Mobile */
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        padding: var(--spacing-md);
+        display: flex !important;
+        display: -webkit-flex !important; /* Safari */
+        flex-wrap: nowrap !important; /* Horizontal scrollen auf Mobile */
+        -webkit-flex-wrap: nowrap !important; /* Safari */
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        padding: var(--spacing-md) !important;
     }
     
     .services-grid .service-card {
         /* Auf Mobile: 1-2 Kacheln je nach Bildschirmbreite */
-        flex: 0 0 calc(100vw - 2 * var(--spacing-md) - 2 * var(--spacing-sm));
-        min-width: 260px;
-        max-width: 320px;
+        flex: none !important;
+        -webkit-flex: none !important; /* Safari */
+        flex-grow: 0 !important;
+        -webkit-flex-grow: 0 !important; /* Safari */
+        flex-shrink: 0 !important;
+        -webkit-flex-shrink: 0 !important; /* Safari */
+        width: calc(100vw - 2 * var(--spacing-md) - 2 * var(--spacing-sm)) !important;
+        min-width: 260px !important;
+        max-width: 320px !important;
+        box-sizing: border-box !important;
     }
     
     .scroll-arrow {
@@ -1610,9 +1626,16 @@ a:hover {
 /* Sehr kleine Mobile-Geräte: 1 Kachel */
 @media (max-width: 480px) {
     .services-grid .service-card {
-        flex: 0 0 calc(100vw - 2 * var(--spacing-md));
-        min-width: 240px;
-        max-width: 100%;
+        flex: none !important;
+        -webkit-flex: none !important; /* Safari */
+        flex-grow: 0 !important;
+        -webkit-flex-grow: 0 !important; /* Safari */
+        flex-shrink: 0 !important;
+        -webkit-flex-shrink: 0 !important; /* Safari */
+        width: calc(100vw - 2 * var(--spacing-md)) !important;
+        min-width: 240px !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
     }
 }
 
@@ -2610,15 +2633,25 @@ a:hover {
     }
     
     .services-grid {
-        display: flex;
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        gap: var(--spacing-md);
+        display: flex !important;
+        display: -webkit-flex !important; /* Safari */
+        flex-wrap: nowrap !important;
+        -webkit-flex-wrap: nowrap !important; /* Safari */
+        overflow-x: auto !important;
+        gap: var(--spacing-md) !important;
     }
     
     .services-grid .service-card {
-        flex: 0 0 280px;
-        min-width: 280px;
+        flex: none !important;
+        -webkit-flex: none !important; /* Safari */
+        flex-grow: 0 !important;
+        -webkit-flex-grow: 0 !important; /* Safari */
+        flex-shrink: 0 !important;
+        -webkit-flex-shrink: 0 !important; /* Safari */
+        width: calc(100vw - 2 * var(--spacing-md) - 2 * var(--spacing-sm)) !important;
+        min-width: 260px !important;
+        max-width: 320px !important;
+        box-sizing: border-box !important;
     }
     
     .activities-grid {
@@ -2657,16 +2690,26 @@ a:hover {
     
     /* Service Cards Mobile Optimization */
     .services-grid {
-        display: flex;
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        gap: var(--spacing-md);
-        -webkit-overflow-scrolling: touch;
+        display: flex !important;
+        display: -webkit-flex !important; /* Safari */
+        flex-wrap: nowrap !important;
+        -webkit-flex-wrap: nowrap !important; /* Safari */
+        overflow-x: auto !important;
+        gap: var(--spacing-md) !important;
+        -webkit-overflow-scrolling: touch !important;
     }
     
     .services-grid .service-card {
-        flex: 0 0 260px;
-        min-width: 260px;
+        flex: none !important;
+        -webkit-flex: none !important; /* Safari */
+        flex-grow: 0 !important;
+        -webkit-flex-grow: 0 !important; /* Safari */
+        flex-shrink: 0 !important;
+        -webkit-flex-shrink: 0 !important; /* Safari */
+        width: calc(100vw - 2 * var(--spacing-md)) !important;
+        min-width: 240px !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
     }
     
     .service-card {
