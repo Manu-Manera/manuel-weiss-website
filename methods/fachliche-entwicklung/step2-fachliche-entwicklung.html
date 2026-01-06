@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 Fachliche Entwicklung Step 2: Skill-Gap-Analyse</title>
+    
+    <meta name="description" content="Identifiziere die Lücken zwischen deinen aktuellen und gewünschten Fähigkeiten. KI-gestützte Analyse hilft dir, Prioritäten zu setzen.">
+    
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="css/fachliche-entwicklung-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="../../manuel-weiss-photo.svg">
+</head>
+<body data-page-id="step2-fachliche-entwicklung">
+
+    <header class="step-header">
+        <div class="step-header-content">
+            <div class="step-info">
+                <h1>🎯 Fachliche Entwicklung Step 2: Skill-Gap-Analyse</h1>
+                <p class="step-description">Identifiziere die Lücken zwischen deinen aktuellen und gewünschten Fähigkeiten.</p>
+            </div>
+            <div class="step-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 28.6%"></div>
+                </div>
+                <span class="progress-text">2 von 7</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="step-main">
+        <div class="step-container">
+            <div class="questions-column">
+                <div class="step-intro">
+                    <h2>Deine Skill-Gap-Analyse</h2>
+                    <p>Basierend auf deiner Selbstanalyse identifizieren wir jetzt die Lücken zwischen deinen aktuellen Skills und deinen Zielen. Die KI hilft dir dabei, Prioritäten zu setzen.</p>
+                </div>
+
+                <form class="reflection-form" id="gapAnalysisForm">
+                    <div class="form-group">
+                        <label for="requiredSkills">Welche Skills benötigst du für dein Ziel? (Basierend auf Schritt 1)</label>
+                        <p class="question-hint">Denke an die Skills, die du für deine Zukunfts-Vision brauchst.</p>
+                        <textarea id="requiredSkills" name="requiredSkills" rows="6" placeholder="Liste die benötigten Skills auf..."></textarea>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li><strong>Technische Skills:</strong> Welche Programmiersprachen, Frameworks, Tools?</li>
+                                <li><strong>Soft Skills:</strong> Führung, Kommunikation, Strategie?</li>
+                                <li><strong>Branchenkenntnisse:</strong> Spezifisches Fachwissen?</li>
+                                <li><strong>Zertifikate:</strong> Welche Qualifikationen sind wichtig?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="missingSkills">Welche Skills fehlen dir aktuell? Was kannst du noch nicht?</label>
+                        <p class="question-hint">Sei ehrlich - welche Lücken siehst du?</p>
+                        <textarea id="missingSkills" name="missingSkills" rows="6" placeholder="Beschreibe fehlende Skills..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="criticalSkills">Welche Skills sind kritisch für deine Karriere? (Top 5)</label>
+                        <p class="question-hint">Welche Skills sind am wichtigsten für dein Ziel?</p>
+                        <textarea id="criticalSkills" name="criticalSkills" rows="6" placeholder="Liste die 5 wichtigsten Skills auf..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="trends">Welche Trends beeinflussen dein Berufsfeld? Welche Skills werden in Zukunft wichtig?</label>
+                        <p class="question-hint">Denke an KI, Cloud, neue Technologien, etc.</p>
+                        <textarea id="trends" name="trends" rows="6" placeholder="Beschreibe Trends und zukünftige Skills..."></textarea>
+                    </div>
+
+                    <!-- KI-Analyse Button -->
+                    <div class="form-group" style="background: linear-gradient(135deg, #3B82F6, #8B5CF6); padding: 1.5rem; border-radius: 12px; color: white;">
+                        <h3 style="color: white; margin-bottom: 1rem;"><i class="fas fa-brain"></i> KI-gestützte Gap-Analyse</h3>
+                        <button type="button" class="btn" style="background: white; color: #3B82F6;" onclick="runGapAnalysis()">
+                            <i class="fas fa-magic"></i>
+                            Gap-Analyse durchführen
+                        </button>
+                        <div id="gapAnalysisResults" style="margin-top: 1rem; display: none;">
+                            <h4 style="color: white; margin-top: 1rem;">Analyse-Ergebnisse:</h4>
+                            <div id="gapResultsContent" style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px; margin-top: 0.5rem;"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-navigation">
+                        <a href="step1-fachliche-entwicklung.html" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i>
+                            Zurück
+                        </a>
+                        <button type="button" class="btn btn-primary" onclick="saveAndContinue()">
+                            Weiter zu Lernpfad-Generator
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="sidebar">
+                <div class="tools-box">
+                    <h4><i class="fas fa-tools"></i> Gap-Analyse Tools</h4>
+                    <div class="tool-categories">
+                        <div class="tool-category">
+                            <h5>Priorisierungs-Matrix</h5>
+                            <ul>
+                                <li><strong>Wichtig & Dringend:</strong> Sofort angehen</li>
+                                <li><strong>Wichtig & Nicht dringend:</strong> Planen</li>
+                                <li><strong>Nicht wichtig & Dringend:</strong> Delegieren</li>
+                                <li><strong>Nicht wichtig & Nicht dringend:</strong> Später</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/fachliche-entwicklung-workflow.js"></script>
+    <script src="js/skill-gap-analyzer.js"></script>
+    <script>
+        let gapAnalyzer = new SkillGapAnalyzer();
+        
+        function runGapAnalysis() {
+            const requiredSkills = document.getElementById('requiredSkills').value;
+            const currentSkills = localStorage.getItem('fachlicheEntwicklungStep1');
+            const careerGoals = currentSkills ? JSON.parse(currentSkills).futureVision : '';
+            
+            if (!requiredSkills) {
+                alert('Bitte fülle zuerst "Benötigte Skills" aus.');
+                return;
+            }
+            
+            const gaps = gapAnalyzer.analyzeGaps(
+                currentSkills ? JSON.parse(currentSkills).technicalSkills : '',
+                requiredSkills,
+                careerGoals
+            );
+            
+            const recommendations = gapAnalyzer.getRecommendations(gaps);
+            
+            // Zeige Ergebnisse
+            const resultsDiv = document.getElementById('gapAnalysisResults');
+            const contentDiv = document.getElementById('gapResultsContent');
+            
+            let html = '<ul style="list-style: none; padding: 0;">';
+            recommendations.forEach((rec, index) => {
+                html += `
+                    <li style="margin-bottom: 1rem; padding: 0.75rem; background: rgba(255,255,255,0.2); border-radius: 8px;">
+                        <strong>${index + 1}. ${rec.skill}</strong><br>
+                        <small>Kategorie: ${rec.category} | Priorität: ${rec.priority}/10 | Zeit: ${rec.time}</small>
+                    </li>
+                `;
+            });
+            html += '</ul>';
+            
+            contentDiv.innerHTML = html;
+            resultsDiv.style.display = 'block';
+        }
+        
+        function saveAndContinue() {
+            const formData = {
+                requiredSkills: document.getElementById('requiredSkills').value,
+                missingSkills: document.getElementById('missingSkills').value,
+                criticalSkills: document.getElementById('criticalSkills').value,
+                trends: document.getElementById('trends').value,
+                step: 2,
+                timestamp: new Date().toISOString()
+            };
+            
+            localStorage.setItem('fachlicheEntwicklungStep2', JSON.stringify(formData));
+            window.location.href = 'step3-fachliche-entwicklung.html';
+        }
+        
+        window.addEventListener('load', function() {
+            const savedData = localStorage.getItem('fachlicheEntwicklungStep2');
+            if (savedData) {
+                try {
+                    const data = JSON.parse(savedData);
+                    if (data.requiredSkills) document.getElementById('requiredSkills').value = data.requiredSkills;
+                    if (data.missingSkills) document.getElementById('missingSkills').value = data.missingSkills;
+                    if (data.criticalSkills) document.getElementById('criticalSkills').value = data.criticalSkills;
+                    if (data.trends) document.getElementById('trends').value = data.trends;
+                } catch (e) {
+                    console.error('Error loading saved data:', e);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+

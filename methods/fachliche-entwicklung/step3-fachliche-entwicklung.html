@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 Fachliche Entwicklung Step 3: Lernpfad-Generator</title>
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="css/fachliche-entwicklung-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="icon" type="image/svg+xml" href="../../manuel-weiss-photo.svg">
+</head>
+<body data-page-id="step3-fachliche-entwicklung">
+    <header class="step-header">
+        <div class="step-header-content">
+            <div class="step-info">
+                <h1>📚 Fachliche Entwicklung Step 3: Lernpfad-Generator</h1>
+                <p class="step-description">Erstelle einen individuellen Lernpfad basierend auf deinen Skill-Gaps.</p>
+            </div>
+            <div class="step-progress">
+                <div class="progress-bar"><div class="progress-fill" style="width: 42.9%"></div></div>
+                <span class="progress-text">3 von 7</span>
+            </div>
+        </div>
+    </header>
+    <main class="step-main">
+        <div class="step-container">
+            <div class="questions-column">
+                <div class="step-intro">
+                    <h2>Dein Lernpfad</h2>
+                    <p>Basierend auf deiner Skill-Gap-Analyse erstellen wir jetzt einen individuellen Lernpfad für dich.</p>
+                </div>
+                <form class="reflection-form" id="learningPathForm">
+                    <div class="form-group">
+                        <label for="learningGoals">Welche Lernziele möchtest du erreichen?</label>
+                        <textarea id="learningGoals" name="learningGoals" rows="6"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="learningMethods">Welche Lernmethoden bevorzugst du?</label>
+                        <textarea id="learningMethods" name="learningMethods" rows="6" placeholder="Online-Kurse, Bücher, Workshops, etc."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="timeInvestment">Wie viel Zeit kannst du pro Woche investieren?</label>
+                        <textarea id="timeInvestment" name="timeInvestment" rows="4"></textarea>
+                    </div>
+                    <div class="form-group" style="background: linear-gradient(135deg, #3B82F6, #8B5CF6); padding: 1.5rem; border-radius: 12px; color: white;">
+                        <h3 style="color: white;"><i class="fas fa-magic"></i> KI-Lernpfad generieren</h3>
+                        <button type="button" class="btn" style="background: white; color: #3B82F6;" onclick="generateLearningPath()">Lernpfad generieren</button>
+                        <div id="learningPathResults" style="display: none; margin-top: 1rem;"></div>
+                    </div>
+                    <div class="form-navigation">
+                        <a href="step2-fachliche-entwicklung.html" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Zurück</a>
+                        <button type="button" class="btn btn-primary" onclick="saveAndContinue()">Weiter <i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+    <script src="js/fachliche-entwicklung-workflow.js"></script>
+    <script src="js/learning-path-generator.js"></script>
+    <script>
+        function generateLearningPath() {
+            const step2Data = localStorage.getItem('fachlicheEntwicklungStep2');
+            if (!step2Data) { alert('Bitte fülle zuerst Schritt 2 aus.'); return; }
+            const gaps = JSON.parse(step2Data);
+            const generator = new LearningPathGenerator();
+            const path = generator.generatePath([{skill: gaps.requiredSkills, category: 'Allgemein'}], {});
+            document.getElementById('learningPathResults').innerHTML = '<p style="color: white;">Lernpfad generiert! ' + path.phases.length + ' Phasen erstellt.</p>';
+            document.getElementById('learningPathResults').style.display = 'block';
+        }
+        function saveAndContinue() {
+            const formData = {
+                learningGoals: document.getElementById('learningGoals').value,
+                learningMethods: document.getElementById('learningMethods').value,
+                timeInvestment: document.getElementById('timeInvestment').value,
+                step: 3,
+                timestamp: new Date().toISOString()
+            };
+            localStorage.setItem('fachlicheEntwicklungStep3', JSON.stringify(formData));
+            window.location.href = 'step4-fachliche-entwicklung.html';
+        }
+        window.addEventListener('load', function() {
+            const saved = localStorage.getItem('fachlicheEntwicklungStep3');
+            if (saved) {
+                const data = JSON.parse(saved);
+                if (data.learningGoals) document.getElementById('learningGoals').value = data.learningGoals;
+                if (data.learningMethods) document.getElementById('learningMethods').value = data.learningMethods;
+                if (data.timeInvestment) document.getElementById('timeInvestment').value = data.timeInvestment;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 Fachliche Entwicklung Step 7: Aktionsplan</title>
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="css/fachliche-entwicklung-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="icon" type="image/svg+xml" href="../../manuel-weiss-photo.svg">
+</head>
+<body data-page-id="step7-fachliche-entwicklung">
+    <header class="step-header">
+        <div class="step-header-content">
+            <div class="step-info">
+                <h1>✅ Fachliche Entwicklung Step 7: Aktionsplan</h1>
+                <p class="step-description">Definiere konkrete, umsetzbare nächste Schritte.</p>
+            </div>
+            <div class="step-progress">
+                <div class="progress-bar"><div class="progress-fill" style="width: 100%"></div></div>
+                <span class="progress-text">7 von 7</span>
+            </div>
+        </div>
+    </header>
+    <main class="step-main">
+        <div class="step-container">
+            <div class="questions-column">
+                <div class="step-intro">
+                    <h2>Dein Aktionsplan</h2>
+                    <p>Was sind deine ersten konkreten Schritte? Definiere SMART-Ziele.</p>
+                </div>
+                <form class="reflection-form" id="step7Form">
+                    <div class="form-group">
+                        <label for="firstSteps">Was sind deine ersten 3 Schritte? (SMART-Ziele)</label>
+                        <textarea id="firstSteps" name="firstSteps" rows="6"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="resources">Welche Ressourcen brauchst du?</label>
+                        <textarea id="resources" name="resources" rows="6"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="support">Wer kann dich unterstützen?</label>
+                        <textarea id="support" name="support" rows="4"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="obstacles">Welche Hindernisse siehst du?</label>
+                        <textarea id="obstacles" name="obstacles" rows="4"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="motivation">Wie hältst du dich motiviert?</label>
+                        <textarea id="motivation" name="motivation" rows="4"></textarea>
+                    </div>
+                    <div class="form-navigation">
+                        <a href="step6-fachliche-entwicklung.html" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Zurück</a>
+                        <button type="button" class="btn btn-primary" onclick="saveAndContinue()">
+                            <i class="fas fa-check"></i> Workflow abschließen
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+    <script src="js/fachliche-entwicklung-workflow.js"></script>
+    <script>
+        function saveAndContinue() {
+            const formData = {
+                firstSteps: document.getElementById('firstSteps').value,
+                resources: document.getElementById('resources').value,
+                support: document.getElementById('support').value,
+                obstacles: document.getElementById('obstacles').value,
+                motivation: document.getElementById('motivation').value,
+                step: 7,
+                timestamp: new Date().toISOString()
+            };
+            localStorage.setItem('fachlicheEntwicklungStep7', JSON.stringify(formData));
+            
+            // Zeige Completion-Modal
+            alert('🎉 Workflow abgeschlossen! Dein Entwicklungsplan wurde gespeichert.');
+            window.location.href = 'index-fachliche-entwicklung.html';
+        }
+        window.addEventListener('load', function() {
+            const saved = localStorage.getItem('fachlicheEntwicklungStep7');
+            if (saved) {
+                const data = JSON.parse(saved);
+                if (data.firstSteps) document.getElementById('firstSteps').value = data.firstSteps;
+                if (data.resources) document.getElementById('resources').value = data.resources;
+                if (data.support) document.getElementById('support').value = data.support;
+                if (data.obstacles) document.getElementById('obstacles').value = data.obstacles;
+                if (data.motivation) document.getElementById('motivation').value = data.motivation;
+            }
+        });
+    </script>
+</body>
+</html>
+

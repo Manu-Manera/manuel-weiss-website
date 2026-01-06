@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 Fachliche Entwicklung Step 4: Fortschritts-Tracking</title>
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="css/fachliche-entwicklung-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="icon" type="image/svg+xml" href="../../manuel-weiss-photo.svg">
+</head>
+<body data-page-id="step4-fachliche-entwicklung">
+    <header class="step-header">
+        <div class="step-header-content">
+            <div class="step-info">
+                <h1>📈 Fachliche Entwicklung Step 4: Fortschritts-Tracking</h1>
+                <p class="step-description">Richte ein System zur Verfolgung deines Lernfortschritts ein.</p>
+            </div>
+            <div class="step-progress">
+                <div class="progress-bar"><div class="progress-fill" style="width: 57.2%"></div></div>
+                <span class="progress-text">4 von 7</span>
+            </div>
+        </div>
+    </header>
+    <main class="step-main">
+        <div class="step-container">
+            <div class="questions-column">
+                <div class="step-intro">
+                    <h2>Dein Fortschritts-Tracking</h2>
+                    <p>Wie misst du deinen Fortschritt? Welche Metriken sind dir wichtig?</p>
+                </div>
+                <form class="reflection-form" id="step4Form">
+                    <div class="form-group">
+                        <label for="metrics">Welche Metriken sind dir wichtig? Wie misst du deinen Fortschritt?</label>
+                        <textarea id="metrics" name="metrics" rows="6" placeholder="Skill-Level, Lernstunden, Projekte, etc."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="milestones">Welche Meilensteine hast du? (Kurz-, mittel-, langfristig)</label>
+                        <textarea id="milestones" name="milestones" rows="6"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="reflection">Wie oft möchtest du reflektieren? (Wöchentlich, monatlich, etc.)</label>
+                        <textarea id="reflection" name="reflection" rows="4"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="rewards">Wie belohnst du dich für Erfolge?</label>
+                        <textarea id="rewards" name="rewards" rows="4"></textarea>
+                    </div>
+                    <div class="form-navigation">
+                        <a href="step3-fachliche-entwicklung.html" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Zurück</a>
+                        <button type="button" class="btn btn-primary" onclick="saveAndContinue()">Weiter <i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+    <script src="js/fachliche-entwicklung-workflow.js"></script>
+    <script src="js/progress-tracker.js"></script>
+    <script>
+        function saveAndContinue() {
+            const formData = {
+                metrics: document.getElementById('metrics').value,
+                milestones: document.getElementById('milestones').value,
+                reflection: document.getElementById('reflection').value,
+                rewards: document.getElementById('rewards').value,
+                step: 4,
+                timestamp: new Date().toISOString()
+            };
+            localStorage.setItem('fachlicheEntwicklungStep4', JSON.stringify(formData));
+            window.location.href = 'step5-fachliche-entwicklung.html';
+        }
+        window.addEventListener('load', function() {
+            const saved = localStorage.getItem('fachlicheEntwicklungStep4');
+            if (saved) {
+                const data = JSON.parse(saved);
+                if (data.metrics) document.getElementById('metrics').value = data.metrics;
+                if (data.milestones) document.getElementById('milestones').value = data.milestones;
+                if (data.reflection) document.getElementById('reflection').value = data.reflection;
+                if (data.rewards) document.getElementById('rewards').value = data.rewards;
+            }
+        });
+    </script>
+</body>
+</html>
+
