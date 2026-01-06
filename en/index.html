@@ -1989,6 +1989,48 @@
             }
         });
         
+        // Safari-Fix: Kachel-Breiten dynamisch setzen
+        function setSafariCardWidths() {
+            const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+            if (!isSafari) return;
+            
+            document.querySelectorAll('.services-grid').forEach(grid => {
+                const cards = grid.querySelectorAll('.service-card');
+                if (cards.length === 0) return;
+                
+                const gridWidth = grid.offsetWidth;
+                const gap = parseInt(getComputedStyle(grid).gap) || 32;
+                const isDesktop = window.innerWidth >= 769;
+                const isTablet = window.innerWidth <= 1200 && window.innerWidth >= 769;
+                
+                let cardWidth;
+                if (isDesktop && !isTablet) {
+                    // Desktop: 3 Kacheln
+                    cardWidth = (gridWidth - 2 * gap) / 3;
+                } else if (isTablet) {
+                    // Tablet: 2 Kacheln
+                    cardWidth = (gridWidth - gap) / 2;
+                } else {
+                    // Mobile: wird von CSS gehandhabt
+                    return;
+                }
+                
+                cards.forEach(card => {
+                    card.style.width = `${Math.max(280, Math.min(cardWidth, 400))}px`;
+                    card.style.flex = 'none';
+                    card.style.webkitFlex = 'none';
+                });
+            });
+        }
+        
+        // Safari-Fix beim Laden und bei Resize
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', setSafariCardWidths);
+        } else {
+            setSafariCardWidths();
+        }
+        window.addEventListener('resize', setSafariCardWidths);
+        
         // Scroll-Pfeile Funktionalität
         document.querySelectorAll('.services-scroll-container').forEach(container => {
             const grid = container.querySelector('.services-grid');
