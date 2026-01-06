@@ -1414,6 +1414,29 @@ a:hover {
             flex-wrap: nowrap !important;
             -webkit-flex-wrap: nowrap !important;
         }
+        
+        .services-grid .service-card {
+            flex: 0 0 calc((100% - 2 * var(--spacing-xl)) / 3) !important;
+            -webkit-flex: 0 0 calc((100% - 2 * var(--spacing-xl)) / 3) !important;
+            flex-basis: calc((100% - 2 * var(--spacing-xl)) / 3) !important;
+            -webkit-flex-basis: calc((100% - 2 * var(--spacing-xl)) / 3) !important;
+            flex-grow: 0 !important;
+            -webkit-flex-grow: 0 !important;
+            flex-shrink: 0 !important;
+            -webkit-flex-shrink: 0 !important;
+            width: calc((100% - 2 * var(--spacing-xl)) / 3) !important;
+            max-width: none !important;
+        }
+    }
+    
+    @media (max-width: 1200px) and (min-width: 769px) {
+        .services-grid .service-card {
+            flex: 0 0 calc((100% - var(--spacing-xl)) / 2) !important;
+            -webkit-flex: 0 0 calc((100% - var(--spacing-xl)) / 2) !important;
+            flex-basis: calc((100% - var(--spacing-xl)) / 2) !important;
+            -webkit-flex-basis: calc((100% - var(--spacing-xl)) / 2) !important;
+            width: calc((100% - var(--spacing-xl)) / 2) !important;
+        }
     }
 }
 
