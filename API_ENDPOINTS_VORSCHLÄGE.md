@@ -236,3 +236,4 @@
 Diese vier Features würden die API und Oberfläche deutlich verbessern und sind relativ schnell umsetzbar.
 
 
+
