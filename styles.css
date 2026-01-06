@@ -1410,10 +1410,12 @@ a:hover {
     scrollbar-color: rgba(255,255,255,0.3) transparent;
 }
 
-/* Safari-spezifischer Fix für Desktop - nur wenn nicht Mobile */
-@supports (-webkit-touch-callout: none) {
+/* Safari-spezifischer Fix - zusätzliche Regeln für bessere Kompatibilität */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
     @media (min-width: 769px) {
         .services-grid {
+            display: -webkit-flex !important;
+            display: flex !important;
             flex-wrap: nowrap !important;
             -webkit-flex-wrap: nowrap !important;
         }
@@ -1428,7 +1430,9 @@ a:hover {
             flex-shrink: 0 !important;
             -webkit-flex-shrink: 0 !important;
             width: calc((100% - 2 * var(--spacing-xl)) / 3) !important;
+            min-width: 280px !important;
             max-width: none !important;
+            box-sizing: border-box !important;
         }
     }
     
@@ -1438,7 +1442,13 @@ a:hover {
             -webkit-flex: 0 0 calc((100% - var(--spacing-xl)) / 2) !important;
             flex-basis: calc((100% - var(--spacing-xl)) / 2) !important;
             -webkit-flex-basis: calc((100% - var(--spacing-xl)) / 2) !important;
+            flex-grow: 0 !important;
+            -webkit-flex-grow: 0 !important;
+            flex-shrink: 0 !important;
+            -webkit-flex-shrink: 0 !important;
             width: calc((100% - var(--spacing-xl)) / 2) !important;
+            max-width: none !important;
+            box-sizing: border-box !important;
         }
     }
 }
