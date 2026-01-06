@@ -1489,12 +1489,16 @@ a:hover {
 .services-grid .service-card {
     /* Berechne Breite so, dass genau 3 Kacheln + 2 Gaps nebeneinander passen */
     flex: 0 0 calc((100% - 2 * var(--spacing-xl)) / 3);
-    /* Min-Width für Responsive-Verhalten, aber keine max-width, damit Flex-Berechnung greift */
+    flex-basis: calc((100% - 2 * var(--spacing-xl)) / 3); /* Explizit setzen */
+    flex-grow: 0;
+    flex-shrink: 0;
+    /* Min-Width für Responsive-Verhalten */
     min-width: 280px;
     scroll-snap-align: start;
     /* Verhindere, dass Karten größer werden als berechnet */
     width: calc((100% - 2 * var(--spacing-xl)) / 3);
     max-width: none;
+    box-sizing: border-box; /* Padding in Breite einrechnen */
 }
 
 /* Tablet: 2-3 Kacheln sichtbar (je nach Breite) */
