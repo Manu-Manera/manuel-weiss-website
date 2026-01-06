@@ -1482,9 +1482,9 @@ a:hover {
 /* Scroll Container mit Pfeilen */
 .services-scroll-container {
     position: relative;
-    display: flex;
-    align-items: center;
+    display: block; /* Block statt Flex, damit services-grid nicht als Flex-Child behandelt wird */
     width: 100%;
+    overflow: visible; /* Pfeile sollen sichtbar sein */
 }
 
 /* Scroll Pfeile */

@@ -1989,47 +1989,81 @@
             }
         });
         
-        // Safari-Fix: Kachel-Breiten dynamisch setzen
-        function setSafariCardWidths() {
-            const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-            if (!isSafari) return;
+        // ROBUSTER SAFARI-FIX: Kacheln horizontal erzwingen
+        function forceHorizontalLayout() {
+            const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent) || 
+                            /Macintosh.*Safari/i.test(navigator.userAgent) ||
+                            (navigator.vendor && navigator.vendor.indexOf('Apple') > -1);
             
             document.querySelectorAll('.services-grid').forEach(grid => {
+                // Flexbox-Eigenschaften direkt setzen
+                grid.style.display = 'flex';
+                grid.style.webkitDisplay = 'flex';
+                grid.style.flexDirection = 'row';
+                grid.style.webkitFlexDirection = 'row';
+                grid.style.flexWrap = 'nowrap';
+                grid.style.webkitFlexWrap = 'nowrap';
+                grid.style.overflowX = 'auto';
+                grid.style.overflowY = 'hidden';
+                grid.style.width = '100%';
+                
                 const cards = grid.querySelectorAll('.service-card');
                 if (cards.length === 0) return;
                 
-                const gridWidth = grid.offsetWidth;
+                const gridWidth = grid.offsetWidth || grid.clientWidth;
                 const gap = parseInt(getComputedStyle(grid).gap) || 32;
                 const isDesktop = window.innerWidth >= 769;
                 const isTablet = window.innerWidth <= 1200 && window.innerWidth >= 769;
+                const isMobile = window.innerWidth < 769;
                 
-                let cardWidth;
-                if (isDesktop && !isTablet) {
-                    // Desktop: 3 Kacheln
-                    cardWidth = (gridWidth - 2 * gap) / 3;
-                } else if (isTablet) {
-                    // Tablet: 2 Kacheln
-                    cardWidth = (gridWidth - gap) / 2;
-                } else {
-                    // Mobile: wird von CSS gehandhabt
-                    return;
-                }
-                
-                cards.forEach(card => {
-                    card.style.width = `${Math.max(280, Math.min(cardWidth, 400))}px`;
+                cards.forEach((card, index) => {
+                    // Flexbox-Eigenschaften direkt setzen
                     card.style.flex = 'none';
                     card.style.webkitFlex = 'none';
+                    card.style.flexGrow = '0';
+                    card.style.webkitFlexGrow = '0';
+                    card.style.flexShrink = '0';
+                    card.style.webkitFlexShrink = '0';
+                    card.style.flexBasis = 'auto';
+                    card.style.webkitFlexBasis = 'auto';
+                    card.style.boxSizing = 'border-box';
+                    
+                    // Breite basierend auf Bildschirmgröße
+                    let cardWidth;
+                    if (isMobile) {
+                        cardWidth = Math.min(window.innerWidth - 2 * 16 - 2 * 8, 320);
+                        card.style.minWidth = '260px';
+                        card.style.maxWidth = '320px';
+                    } else if (isTablet) {
+                        cardWidth = (gridWidth - gap) / 2;
+                        card.style.minWidth = '280px';
+                        card.style.maxWidth = '380px';
+                    } else {
+                        cardWidth = (gridWidth - 2 * gap) / 3;
+                        card.style.minWidth = '280px';
+                        card.style.maxWidth = '400px';
+                    }
+                    
+                    card.style.width = `${Math.max(280, Math.min(cardWidth, isMobile ? 320 : (isTablet ? 380 : 400)))}px`;
                 });
             });
         }
         
-        // Safari-Fix beim Laden und bei Resize
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', setSafariCardWidths);
-        } else {
-            setSafariCardWidths();
+        // Sofort ausführen und bei verschiedenen Events
+        function applySafariFix() {
+            forceHorizontalLayout();
+            // Zusätzliche Verzögerung für Safari
+            setTimeout(forceHorizontalLayout, 100);
+            setTimeout(forceHorizontalLayout, 500);
         }
-        window.addEventListener('resize', setSafariCardWidths);
+        
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', applySafariFix);
+        } else {
+            applySafariFix();
+        }
+        window.addEventListener('resize', applySafariFix);
+        window.addEventListener('load', applySafariFix);
         
         // Scroll-Pfeile Funktionalität
         document.querySelectorAll('.services-scroll-container').forEach(container => {
