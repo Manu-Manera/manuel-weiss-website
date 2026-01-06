@@ -60,12 +60,25 @@
     <script>
         function generateLearningPath() {
             const step2Data = localStorage.getItem('fachlicheEntwicklungStep2');
-            if (!step2Data) { alert('Bitte fülle zuerst Schritt 2 aus.'); return; }
-            const gaps = JSON.parse(step2Data);
-            const generator = new LearningPathGenerator();
-            const path = generator.generatePath([{skill: gaps.requiredSkills, category: 'Allgemein'}], {});
-            document.getElementById('learningPathResults').innerHTML = '<p style="color: white;">Lernpfad generiert! ' + path.phases.length + ' Phasen erstellt.</p>';
-            document.getElementById('learningPathResults').style.display = 'block';
+            if (!step2Data) { 
+                alert('Bitte fülle zuerst Schritt 2 aus.'); 
+                return; 
+            }
+            try {
+                const gaps = JSON.parse(step2Data);
+                const generator = new LearningPathGenerator();
+                const gapArray = gaps.requiredSkills ? [{skill: gaps.requiredSkills, category: 'Allgemein', priority: 5}] : [];
+                const path = generator.generatePath(gapArray, {
+                    learningFormats: gaps.learningMethods ? ['online-kurse', 'buecher'] : []
+                });
+                const resultsDiv = document.getElementById('learningPathResults');
+                resultsDiv.innerHTML = '<p style="color: white; margin-top: 1rem;"><strong>Lernpfad generiert!</strong><br>' + 
+                    path.phases.length + ' Phasen erstellt.<br>Geschätzte Dauer: ' + path.totalDuration + ' Wochen</p>';
+                resultsDiv.style.display = 'block';
+            } catch (e) {
+                console.error('Error generating learning path:', e);
+                alert('Fehler beim Generieren des Lernpfads. Bitte versuche es erneut.');
+            }
         }
         function saveAndContinue() {
             const formData = {
