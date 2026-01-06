@@ -463,7 +463,7 @@ function closeModal() {
 // Initialize workflow when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
     // Only initialize if we're on a step page
-    if (window.location.pathname.includes('step')) {
+    if (window.location.pathname.includes('step') || window.location.pathname.includes('fachliche-entwicklung')) {
         window.fachlicheEntwicklungWorkflow = new FachlicheEntwicklungWorkflow();
     }
 });
