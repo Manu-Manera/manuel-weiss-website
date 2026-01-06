@@ -1389,17 +1389,22 @@ a:hover {
 }
 
 .services-grid {
-    display: flex;
-    display: -webkit-flex; /* Safari */
-    flex-wrap: nowrap; /* Horizontal scrollen - wird in Mobile-Media-Queries überschrieben */
-    -webkit-flex-wrap: nowrap; /* Safari */
+    display: flex !important;
+    display: -webkit-flex !important; /* Safari */
+    flex-direction: row !important; /* Explizit horizontal */
+    -webkit-flex-direction: row !important; /* Safari */
+    flex-wrap: nowrap !important; /* Horizontal scrollen - wird in Mobile-Media-Queries überschrieben */
+    -webkit-flex-wrap: nowrap !important; /* Safari */
     gap: var(--spacing-xl);
     max-width: 100%;
+    width: 100%; /* Explizit 100% Breite */
     margin: 0;
     position: relative;
     z-index: 1;
     align-items: stretch;
     -webkit-align-items: stretch; /* Safari */
+    justify-content: flex-start; /* Kacheln links ausrichten */
+    -webkit-justify-content: flex-start; /* Safari */
     overflow-x: auto;
     overflow-y: hidden;
     scroll-behavior: smooth;
@@ -1526,6 +1531,16 @@ a:hover {
 
 /* Desktop: Genau 3 Kacheln nebeneinander sichtbar - NUR für Desktop */
 @media (min-width: 769px) {
+    .services-grid {
+        /* Sicherstellen, dass Grid horizontal ist */
+        display: flex !important;
+        display: -webkit-flex !important; /* Safari */
+        flex-direction: row !important;
+        -webkit-flex-direction: row !important; /* Safari */
+        flex-wrap: nowrap !important;
+        -webkit-flex-wrap: nowrap !important; /* Safari */
+    }
+    
     .services-grid .service-card {
         /* Safari-kompatible Lösung: width statt calc() in flex */
         flex: none !important;
