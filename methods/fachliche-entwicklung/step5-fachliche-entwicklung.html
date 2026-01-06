@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 Fachliche Entwicklung Step 5: Zertifizierungen</title>
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="css/fachliche-entwicklung-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="icon" type="image/svg+xml" href="../../manuel-weiss-photo.svg">
+</head>
+<body data-page-id="step5-fachliche-entwicklung">
+    <header class="step-header">
+        <div class="step-header-content">
+            <div class="step-info">
+                <h1>🏆 Fachliche Entwicklung Step 5: Zertifizierungen & Qualifikationen</h1>
+                <p class="step-description">Entwickle eine Strategie für relevante Zertifizierungen.</p>
+            </div>
+            <div class="step-progress">
+                <div class="progress-bar"><div class="progress-fill" style="width: 71.5%"></div></div>
+                <span class="progress-text">5 von 7</span>
+            </div>
+        </div>
+    </header>
+    <main class="step-main">
+        <div class="step-container">
+            <div class="questions-column">
+                <div class="step-intro">
+                    <h2>Deine Zertifizierungs-Strategie</h2>
+                    <p>Welche Zertifikate sind wichtig für deine Karriere?</p>
+                </div>
+                <form class="reflection-form" id="step5Form">
+                    <div class="form-group">
+                        <label for="plannedCertifications">Welche Zertifikate planst du? Liste sie auf:</label>
+                        <textarea id="plannedCertifications" name="plannedCertifications" rows="6"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="certificationPriorities">Wie priorisierst du die Zertifizierungen?</label>
+                        <textarea id="certificationPriorities" name="certificationPriorities" rows="6"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="certificationTimeline">Zeitplan für Zertifizierungen:</label>
+                        <textarea id="certificationTimeline" name="certificationTimeline" rows="4"></textarea>
+                    </div>
+                    <div class="form-navigation">
+                        <a href="step4-fachliche-entwicklung.html" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Zurück</a>
+                        <button type="button" class="btn btn-primary" onclick="saveAndContinue()">Weiter <i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+    <script src="js/fachliche-entwicklung-workflow.js"></script>
+    <script>
+        function saveAndContinue() {
+            const formData = {
+                plannedCertifications: document.getElementById('plannedCertifications').value,
+                certificationPriorities: document.getElementById('certificationPriorities').value,
+                certificationTimeline: document.getElementById('certificationTimeline').value,
+                step: 5,
+                timestamp: new Date().toISOString()
+            };
+            localStorage.setItem('fachlicheEntwicklungStep5', JSON.stringify(formData));
+            window.location.href = 'step6-fachliche-entwicklung.html';
+        }
+        window.addEventListener('load', function() {
+            const saved = localStorage.getItem('fachlicheEntwicklungStep5');
+            if (saved) {
+                const data = JSON.parse(saved);
+                if (data.plannedCertifications) document.getElementById('plannedCertifications').value = data.plannedCertifications;
+                if (data.certificationPriorities) document.getElementById('certificationPriorities').value = data.certificationPriorities;
+                if (data.certificationTimeline) document.getElementById('certificationTimeline').value = data.certificationTimeline;
+            }
+        });
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 Fachliche Entwicklung Step 1: Selbstanalyse & Standortbestimmung</title>
+    
+    <!-- Meta Tags -->
+    <meta name="description" content="Beginne deinen Fachliche-Entwicklung-Workflow mit einer umfassenden Selbstanalyse. Identifiziere deine aktuellen Fähigkeiten, Erfahrungen und Position in deiner Karriere.">
+    <meta name="keywords" content="fachliche entwicklung, selbstanalyse, kompetenzen, skills, karriere, weiterbildung">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="css/fachliche-entwicklung-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../../manuel-weiss-photo.svg">
+</head>
+<body data-page-id="step1-fachliche-entwicklung">
+
+    <!-- Header -->
+    <header class="step-header">
+        <div class="step-header-content">
+            <div class="step-info">
+                <h1>🚀 Fachliche Entwicklung Step 1: Selbstanalyse & Standortbestimmung</h1>
+                <p class="step-description">Identifiziere deine aktuellen Fähigkeiten, Erfahrungen und Position in deiner Karriere.</p>
+            </div>
+            <div class="step-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 14.3%"></div>
+                </div>
+                <span class="progress-text">1 von 7</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="step-main">
+        <div class="step-container">
+            <!-- Left Column: Questions -->
+            <div class="questions-column">
+                <div class="step-intro">
+                    <h2>Deine Selbstanalyse</h2>
+                    <p>Nimm dir Zeit für diese Fragen. Es geht darum, ein klares Bild deiner aktuellen fachlichen Situation zu bekommen. Sei ehrlich mit dir selbst und schreibe alles auf, was dir einfällt.</p>
+                </div>
+
+                <form class="reflection-form" id="reflectionForm" data-auto-save="true">
+                    <!-- Frage 1: Technische Kompetenzen -->
+                    <div class="form-group">
+                        <label for="technicalSkills">Welche technischen Kompetenzen besitzt du bereits?</label>
+                        <p class="question-hint">Denke an Programmiersprachen, Frameworks, Tools, Software, die du beherrschst.</p>
+                        <textarea id="technicalSkills" name="technicalSkills" rows="6" placeholder="Liste deine technischen Skills auf..."></textarea>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li><strong>Programmiersprachen:</strong> Python, JavaScript, Java, C++, Go, Rust, etc.</li>
+                                <li><strong>Frameworks & Bibliotheken:</strong> React, Vue, Angular, Django, Flask, Spring, etc.</li>
+                                <li><strong>Datenbanken:</strong> SQL, NoSQL, PostgreSQL, MongoDB, Redis, etc.</li>
+                                <li><strong>Cloud & DevOps:</strong> AWS, Azure, GCP, Docker, Kubernetes, CI/CD, etc.</li>
+                                <li><strong>Tools & Software:</strong> Git, VS Code, Jira, Confluence, Figma, etc.</li>
+                                <li><strong>Methoden & Prozesse:</strong> Agile, Scrum, Kanban, Design Thinking, etc.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Frage 2: Soft Skills -->
+                    <div class="form-group">
+                        <label for="softSkills">Welche Soft Skills und sozialen Kompetenzen hast du?</label>
+                        <p class="question-hint">Denke an Kommunikation, Führung, Teamarbeit, Problemlösung, etc.</p>
+                        <textarea id="softSkills" name="softSkills" rows="6" placeholder="Beschreibe deine Soft Skills..."></textarea>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li><strong>Kommunikation:</strong> Präsentation, Verhandeln, Konfliktlösung, etc.</li>
+                                <li><strong>Führung:</strong> Teamführung, Mentoring, Entscheidungsfindung, etc.</li>
+                                <li><strong>Kollaboration:</strong> Teamarbeit, Cross-Funktionalität, Netzwerken, etc.</li>
+                                <li><strong>Problemlösung:</strong> Analytisches Denken, Kreativität, Strategie, etc.</li>
+                                <li><strong>Selbstmanagement:</strong> Zeitmanagement, Stressbewältigung, Selbstreflexion, etc.</li>
+                                <li><strong>Adaptabilität:</strong> Veränderungsbereitschaft, Lernfähigkeit, Flexibilität, etc.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Frage 3: Berufserfahrung -->
+                    <div class="form-group">
+                        <label for="experience">Welche Berufserfahrung hast du? Beschreibe deine bisherigen Positionen und Projekte.</label>
+                        <p class="question-hint">Denke an Jahre der Erfahrung, Branchen, Projekte, Verantwortlichkeiten.</p>
+                        <textarea id="experience" name="experience" rows="6" placeholder="Beschreibe deine Berufserfahrung..."></textarea>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li><strong>Jahre der Erfahrung:</strong> Wie lange arbeitest du bereits in diesem Bereich?</li>
+                                <li><strong>Branchen:</strong> IT, Finance, Healthcare, E-Commerce, etc.</li>
+                                <li><strong>Projekte:</strong> Welche großen Projekte hast du erfolgreich umgesetzt?</li>
+                                <li><strong>Verantwortlichkeiten:</strong> Welche Verantwortung hattest du? Budget, Team, Strategie?</li>
+                                <li><strong>Erfolge:</strong> Was waren deine größten Erfolge? Metriken, Auszeichnungen?</li>
+                                <li><strong>Herausforderungen:</strong> Welche schwierigen Situationen hast du gemeistert?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Frage 4: Tools & Technologien -->
+                    <div class="form-group">
+                        <label for="tools">Welche Tools und Technologien beherrscht du besonders gut?</label>
+                        <p class="question-hint">Denke an spezifische Tools, die du täglich verwendest oder in denen du Experte bist.</p>
+                        <textarea id="tools" name="tools" rows="6" placeholder="Liste deine Tools und Technologien auf..."></textarea>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li><strong>Entwicklungstools:</strong> IDE, Debugger, Profiler, Testing-Frameworks, etc.</li>
+                                <li><strong>Projektmanagement:</strong> Jira, Trello, Asana, Monday.com, etc.</li>
+                                <li><strong>Design-Tools:</strong> Figma, Sketch, Adobe XD, Photoshop, etc.</li>
+                                <li><strong>Analytics & Monitoring:</strong> Google Analytics, DataDog, New Relic, etc.</li>
+                                <li><strong>Kollaboration:</strong> Slack, Teams, Zoom, Miro, Notion, etc.</li>
+                                <li><strong>Spezialisierte Tools:</strong> Branchen-spezifische Software, etc.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Frage 5: Projekte & Erfolge -->
+                    <div class="form-group">
+                        <label for="projects">Welche Projekte hast du erfolgreich umgesetzt? Was waren deine größten Erfolge?</label>
+                        <p class="question-hint">Beschreibe konkrete Projekte mit Ergebnissen und Impact.</p>
+                        <textarea id="projects" name="projects" rows="6" placeholder="Beschreibe deine Projekte und Erfolge..."></textarea>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li><strong>Projekt-Beschreibung:</strong> Was war das Ziel? Was war deine Rolle?</li>
+                                <li><strong>Ergebnisse:</strong> Was wurde erreicht? Metriken, KPIs, ROI?</li>
+                                <li><strong>Herausforderungen:</strong> Welche Probleme musstest du lösen?</li>
+                                <li><strong>Lernprozess:</strong> Was hast du dabei gelernt?</li>
+                                <li><strong>Impact:</strong> Welchen Einfluss hatte das Projekt auf das Unternehmen/Team?</li>
+                                <li><strong>Anerkennung:</strong> Gab es Auszeichnungen, Beförderungen, Feedback?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Frage 6: Aktuelle Position -->
+                    <div class="form-group">
+                        <label for="currentPosition">Wo siehst du dich aktuell in deiner Karriere? Was ist deine aktuelle Rolle?</label>
+                        <p class="question-hint">Beschreibe deine aktuelle Position, Verantwortlichkeiten und wie du dich selbst einschätzt.</p>
+                        <textarea id="currentPosition" name="currentPosition" rows="6" placeholder="Beschreibe deine aktuelle Position..."></textarea>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li><strong>Rolle & Titel:</strong> Was ist dein offizieller Jobtitel? Was machst du wirklich?</li>
+                                <li><strong>Verantwortlichkeiten:</strong> Wofür bist du verantwortlich? Budget, Team, Projekte?</li>
+                                <li><strong>Level:</strong> Junior, Mid-Level, Senior, Lead, Principal, etc.</li>
+                                <li><strong>Bereich:</strong> Frontend, Backend, Full-Stack, DevOps, Data, etc.</li>
+                                <li><strong>Selbsteinschätzung:</strong> Wie schätzt du dein eigenes Level ein?</li>
+                                <li><strong>Zufriedenheit:</strong> Bist du zufrieden mit deiner aktuellen Position?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Frage 7: Zukunfts-Vision -->
+                    <div class="form-group">
+                        <label for="futureVision">Wo möchtest du in 5 Jahren sein? Welche Rolle möchtest du dann haben?</label>
+                        <p class="question-hint">Denke groß! Was ist deine Vision für deine Karriere?</p>
+                        <textarea id="futureVision" name="futureVision" rows="6" placeholder="Beschreibe deine Zukunfts-Vision..."></textarea>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li><strong>Rolle:</strong> Welche Position möchtest du in 5 Jahren haben?</li>
+                                <li><strong>Verantwortung:</strong> Was möchtest du verantworten? Team, Budget, Strategie?</li>
+                                <li><strong>Skills:</strong> Welche Fähigkeiten möchtest du dann haben?</li>
+                                <li><strong>Impact:</strong> Welchen Einfluss möchtest du haben?</li>
+                                <li><strong>Branche:</strong> Möchtest du in derselben Branche bleiben oder wechseln?</li>
+                                <li><strong>Lifestyle:</strong> Wie möchtest du arbeiten? Remote, Office, Freelance?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Navigation Buttons -->
+                    <div class="form-navigation">
+                        <a href="index-fachliche-entwicklung.html" class="btn btn-secondary">
+                            <i class="fas fa-home"></i>
+                            Zurück zur Übersicht
+                        </a>
+                        <button type="button" class="btn btn-primary" onclick="saveAndContinue()">
+                            Weiter zu Skill-Gap-Analyse
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Right Column: Tools & Resources -->
+            <div class="sidebar">
+                <div class="tools-box">
+                    <h4><i class="fas fa-tools"></i> Hilfreiche Tools & Methoden</h4>
+                    
+                    <div class="tool-categories">
+                        <div class="tool-category">
+                            <h5>Skill-Assessment-Tools</h5>
+                            <ul>
+                                <li><strong>Skill-Matrix:</strong> Visuelle Darstellung deiner Skills</li>
+                                <li><strong>Kompetenzrad:</strong> 360°-Bewertung deiner Fähigkeiten</li>
+                                <li><strong>Selbstbewertungsbogen:</strong> Strukturierte Selbsteinschätzung</li>
+                                <li><strong>Peer-Feedback:</strong> Rückmeldung von Kollegen</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="tool-category">
+                            <h5>Lernplattformen</h5>
+                            <ul>
+                                <li><strong>Coursera:</strong> Universitäts-Kurse online</li>
+                                <li><strong>Udemy:</strong> Praktische Kurse zu vielen Themen</li>
+                                <li><strong>Pluralsight:</strong> Tech-Fokus, Skill-Assessments</li>
+                                <li><strong>LinkedIn Learning:</strong> Berufliche Weiterbildung</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="tool-category">
+                            <h5>Portfolio-Builder</h5>
+                            <ul>
+                                <li><strong>GitHub:</strong> Code-Portfolio und Projekte</li>
+                                <li><strong>Behance/Dribbble:</strong> Design-Portfolio</li>
+                                <li><strong>Medium:</strong> Artikel und Blog-Posts</li>
+                                <li><strong>LinkedIn:</strong> Professionelles Profil</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="resources-box">
+                    <h4><i class="fas fa-book"></i> Empfohlene Ressourcen</h4>
+                    
+                    <div class="resource-links">
+                        <div class="resource-section">
+                            <h5>Bücher</h5>
+                            <ul>
+                                <li><strong>"The Pragmatic Programmer"</strong> von Andrew Hunt & David Thomas</li>
+                                <li><strong>"Clean Code"</strong> von Robert C. Martin</li>
+                                <li><strong>"The 7 Habits of Highly Effective People"</strong> von Stephen Covey</li>
+                                <li><strong>"Atomic Habits"</strong> von James Clear</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="resource-section">
+                            <h5>Online-Kurse</h5>
+                            <ul>
+                                <li><strong>freeCodeCamp:</strong> Kostenlose Programmier-Kurse</li>
+                                <li><strong>Codecademy:</strong> Interaktive Coding-Lektionen</li>
+                                <li><strong>Khan Academy:</strong> Kostenlose Bildung für alle</li>
+                                <li><strong>edX:</strong> Universitäts-Kurse online</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="resource-section">
+                            <h5>Podcasts & Videos</h5>
+                            <ul>
+                                <li><strong>"Syntax.fm":</strong> Web-Entwicklung</li>
+                                <li><strong>"The Changelog":</strong> Open Source & Software</li>
+                                <li><strong>"TED Talks":</strong> Karriere & Lernen</li>
+                                <li><strong>"YouTube Tech Channels":</strong> Diverse Tech-Tutorials</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="resource-section">
+                            <h5>Verwandte Workflows</h5>
+                            <ul>
+                                <li><a href="../ikigai/index-ikigai.html">Ikigai</a> - Lebenszweck finden</li>
+                                <li><a href="../swot/index-swot.html">SWOT-Analyse</a> - Stärken und Schwächen</li>
+                                <li><a href="../../persoenlichkeitsentwicklung.html">Persönlichkeitsentwicklung</a> - Übersicht</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="js/fachliche-entwicklung-workflow.js"></script>
+    
+    <script>
+        function saveAndContinue() {
+            // Save form data to localStorage
+            const formData = {
+                technicalSkills: document.getElementById('technicalSkills').value,
+                softSkills: document.getElementById('softSkills').value,
+                experience: document.getElementById('experience').value,
+                tools: document.getElementById('tools').value,
+                projects: document.getElementById('projects').value,
+                currentPosition: document.getElementById('currentPosition').value,
+                futureVision: document.getElementById('futureVision').value,
+                step: 1,
+                timestamp: new Date().toISOString()
+            };
+            
+            localStorage.setItem('fachlicheEntwicklungStep1', JSON.stringify(formData));
+            
+            // Redirect to step 2
+            window.location.href = 'step2-fachliche-entwicklung.html';
+        }
+        
+        // Load saved data if available
+        window.addEventListener('load', function() {
+            const savedData = localStorage.getItem('fachlicheEntwicklungStep1');
+            if (savedData) {
+                try {
+                    const data = JSON.parse(savedData);
+                    if (data.technicalSkills) document.getElementById('technicalSkills').value = data.technicalSkills;
+                    if (data.softSkills) document.getElementById('softSkills').value = data.softSkills;
+                    if (data.experience) document.getElementById('experience').value = data.experience;
+                    if (data.tools) document.getElementById('tools').value = data.tools;
+                    if (data.projects) document.getElementById('projects').value = data.projects;
+                    if (data.currentPosition) document.getElementById('currentPosition').value = data.currentPosition;
+                    if (data.futureVision) document.getElementById('futureVision').value = data.futureVision;
+                } catch (e) {
+                    console.error('Error loading saved data:', e);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+

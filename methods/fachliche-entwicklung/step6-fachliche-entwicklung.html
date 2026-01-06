@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 Fachliche Entwicklung Step 6: Synthese & Strategie</title>
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="css/fachliche-entwicklung-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="icon" type="image/svg+xml" href="../../manuel-weiss-photo.svg">
+</head>
+<body data-page-id="step6-fachliche-entwicklung">
+    <header class="step-header">
+        <div class="step-header-content">
+            <div class="step-info">
+                <h1>🎯 Fachliche Entwicklung Step 6: Synthese & Strategie</h1>
+                <p class="step-description">Führe alle Erkenntnisse zusammen und entwickle eine Gesamtstrategie.</p>
+            </div>
+            <div class="step-progress">
+                <div class="progress-bar"><div class="progress-fill" style="width: 85.8%"></div></div>
+                <span class="progress-text">6 von 7</span>
+            </div>
+        </div>
+    </header>
+    <main class="step-main">
+        <div class="step-container">
+            <div class="questions-column">
+                <div class="step-intro">
+                    <h2>Deine Strategie</h2>
+                    <p>Wie passen alle Teile zusammen? Was ist deine Prioritäten-Reihenfolge?</p>
+                </div>
+                <form class="reflection-form" id="step6Form">
+                    <div class="form-group">
+                        <label for="priorities">Prioritäten-Reihenfolge:</label>
+                        <textarea id="priorities" name="priorities" rows="6"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="dependencies">Welche Abhängigkeiten gibt es?</label>
+                        <textarea id="dependencies" name="dependencies" rows="6"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="challenges">Was sind die größten Herausforderungen?</label>
+                        <textarea id="challenges" name="challenges" rows="6"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="roadmap">Strategie-Roadmap (Timeline):</label>
+                        <textarea id="roadmap" name="roadmap" rows="6"></textarea>
+                    </div>
+                    <div class="form-navigation">
+                        <a href="step5-fachliche-entwicklung.html" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Zurück</a>
+                        <button type="button" class="btn btn-primary" onclick="saveAndContinue()">Weiter <i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+    <script src="js/fachliche-entwicklung-workflow.js"></script>
+    <script>
+        function saveAndContinue() {
+            const formData = {
+                priorities: document.getElementById('priorities').value,
+                dependencies: document.getElementById('dependencies').value,
+                challenges: document.getElementById('challenges').value,
+                roadmap: document.getElementById('roadmap').value,
+                step: 6,
+                timestamp: new Date().toISOString()
+            };
+            localStorage.setItem('fachlicheEntwicklungStep6', JSON.stringify(formData));
+            window.location.href = 'step7-fachliche-entwicklung.html';
+        }
+        window.addEventListener('load', function() {
+            const saved = localStorage.getItem('fachlicheEntwicklungStep6');
+            if (saved) {
+                const data = JSON.parse(saved);
+                if (data.priorities) document.getElementById('priorities').value = data.priorities;
+                if (data.dependencies) document.getElementById('dependencies').value = data.dependencies;
+                if (data.challenges) document.getElementById('challenges').value = data.challenges;
+                if (data.roadmap) document.getElementById('roadmap').value = data.roadmap;
+            }
+        });
+    </script>
+</body>
+</html>
+
