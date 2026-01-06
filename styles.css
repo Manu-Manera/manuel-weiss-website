@@ -1489,18 +1489,12 @@ a:hover {
 .services-grid .service-card {
     /* Berechne Breite so, dass genau 3 Kacheln + 2 Gaps nebeneinander passen */
     flex: 0 0 calc((100% - 2 * var(--spacing-xl)) / 3);
-    /* Min/Max-Width für Responsive-Verhalten */
+    /* Min-Width für Responsive-Verhalten, aber keine max-width, damit Flex-Berechnung greift */
     min-width: 280px;
-    max-width: 400px;
     scroll-snap-align: start;
-}
-
-/* Große Desktop-Bildschirme: Kacheln können etwas größer sein */
-@media (min-width: 1400px) {
-    .services-grid .service-card {
-        flex: 0 0 calc((100% - 2 * var(--spacing-xl)) / 3);
-        max-width: 420px;
-    }
+    /* Verhindere, dass Karten größer werden als berechnet */
+    width: calc((100% - 2 * var(--spacing-xl)) / 3);
+    max-width: none;
 }
 
 /* Tablet: 2-3 Kacheln sichtbar (je nach Breite) */
@@ -1508,8 +1502,9 @@ a:hover {
     .services-grid .service-card {
         /* Auf Tablet: 2 Kacheln + 1 Gap */
         flex: 0 0 calc((100% - var(--spacing-xl)) / 2);
+        width: calc((100% - var(--spacing-xl)) / 2);
         min-width: 280px;
-        max-width: 380px;
+        max-width: none;
     }
     
     .scroll-arrow-left {
@@ -1525,8 +1520,9 @@ a:hover {
 @media (max-width: 900px) and (min-width: 769px) {
     .services-grid .service-card {
         flex: 0 0 calc((100% - var(--spacing-xl)) / 2);
+        width: calc((100% - var(--spacing-xl)) / 2);
         min-width: 260px;
-        max-width: 350px;
+        max-width: none;
     }
 }
 
