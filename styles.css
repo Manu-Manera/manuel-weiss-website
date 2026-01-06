@@ -1390,13 +1390,16 @@ a:hover {
 
 .services-grid {
     display: flex;
+    display: -webkit-flex; /* Safari */
     flex-wrap: nowrap; /* Horizontal scrollen - wird in Mobile-Media-Queries überschrieben */
+    -webkit-flex-wrap: nowrap; /* Safari */
     gap: var(--spacing-xl);
     max-width: 100%;
     margin: 0;
     position: relative;
     z-index: 1;
     align-items: stretch;
+    -webkit-align-items: stretch; /* Safari */
     overflow-x: auto;
     overflow-y: hidden;
     scroll-behavior: smooth;
@@ -1512,9 +1515,13 @@ a:hover {
 .services-grid .service-card {
     /* Berechne Breite so, dass genau 3 Kacheln + 2 Gaps nebeneinander passen */
     flex: 0 0 calc((100% - 2 * var(--spacing-xl)) / 3) !important;
+    -webkit-flex: 0 0 calc((100% - 2 * var(--spacing-xl)) / 3) !important; /* Safari */
     flex-basis: calc((100% - 2 * var(--spacing-xl)) / 3) !important; /* Explizit setzen */
+    -webkit-flex-basis: calc((100% - 2 * var(--spacing-xl)) / 3) !important; /* Safari */
     flex-grow: 0 !important;
+    -webkit-flex-grow: 0 !important; /* Safari */
     flex-shrink: 0 !important;
+    -webkit-flex-shrink: 0 !important; /* Safari */
     /* Min-Width für Responsive-Verhalten */
     min-width: 280px;
     scroll-snap-align: start;
@@ -1529,9 +1536,13 @@ a:hover {
     .services-grid .service-card {
         /* Auf Tablet: 2 Kacheln + 1 Gap */
         flex: 0 0 calc((100% - var(--spacing-xl)) / 2) !important;
+        -webkit-flex: 0 0 calc((100% - var(--spacing-xl)) / 2) !important; /* Safari */
         flex-basis: calc((100% - var(--spacing-xl)) / 2) !important;
+        -webkit-flex-basis: calc((100% - var(--spacing-xl)) / 2) !important; /* Safari */
         flex-grow: 0 !important;
+        -webkit-flex-grow: 0 !important; /* Safari */
         flex-shrink: 0 !important;
+        -webkit-flex-shrink: 0 !important; /* Safari */
         width: calc((100% - var(--spacing-xl)) / 2) !important;
         min-width: 280px;
         max-width: none !important;
@@ -3818,7 +3829,7 @@ a:hover {
     
     /* Safari: Flex Scroll Support - nur Desktop */
     @media (min-width: 769px) {
-        .services-grid {
+    .services-grid {
             display: -webkit-flex;
             display: flex;
             flex-wrap: nowrap !important; /* Safari-Fix: Verhindert Umbruch */
