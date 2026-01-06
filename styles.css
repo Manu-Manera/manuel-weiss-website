@@ -1511,31 +1511,31 @@ a:hover {
 /* Desktop: Genau 3 Kacheln nebeneinander sichtbar */
 .services-grid .service-card {
     /* Berechne Breite so, dass genau 3 Kacheln + 2 Gaps nebeneinander passen */
-    flex: 0 0 calc((100% - 2 * var(--spacing-xl)) / 3);
-    flex-basis: calc((100% - 2 * var(--spacing-xl)) / 3); /* Explizit setzen */
-    flex-grow: 0;
-    flex-shrink: 0;
+    flex: 0 0 calc((100% - 2 * var(--spacing-xl)) / 3) !important;
+    flex-basis: calc((100% - 2 * var(--spacing-xl)) / 3) !important; /* Explizit setzen */
+    flex-grow: 0 !important;
+    flex-shrink: 0 !important;
     /* Min-Width für Responsive-Verhalten */
     min-width: 280px;
     scroll-snap-align: start;
     /* Verhindere, dass Karten größer werden als berechnet */
-    width: calc((100% - 2 * var(--spacing-xl)) / 3);
-    max-width: none;
-    box-sizing: border-box; /* Padding in Breite einrechnen */
+    width: calc((100% - 2 * var(--spacing-xl)) / 3) !important;
+    max-width: none !important;
+    box-sizing: border-box !important; /* Padding in Breite einrechnen */
 }
 
 /* Tablet: 2-3 Kacheln sichtbar (je nach Breite) */
 @media (max-width: 1200px) {
     .services-grid .service-card {
         /* Auf Tablet: 2 Kacheln + 1 Gap */
-        flex: 0 0 calc((100% - var(--spacing-xl)) / 2);
-        flex-basis: calc((100% - var(--spacing-xl)) / 2);
-        flex-grow: 0;
-        flex-shrink: 0;
-        width: calc((100% - var(--spacing-xl)) / 2);
+        flex: 0 0 calc((100% - var(--spacing-xl)) / 2) !important;
+        flex-basis: calc((100% - var(--spacing-xl)) / 2) !important;
+        flex-grow: 0 !important;
+        flex-shrink: 0 !important;
+        width: calc((100% - var(--spacing-xl)) / 2) !important;
         min-width: 280px;
-        max-width: none;
-        box-sizing: border-box;
+        max-width: none !important;
+        box-sizing: border-box !important;
     }
     
     .scroll-arrow-left {
