@@ -1529,9 +1529,13 @@ a:hover {
     .services-grid .service-card {
         /* Auf Tablet: 2 Kacheln + 1 Gap */
         flex: 0 0 calc((100% - var(--spacing-xl)) / 2);
+        flex-basis: calc((100% - var(--spacing-xl)) / 2);
+        flex-grow: 0;
+        flex-shrink: 0;
         width: calc((100% - var(--spacing-xl)) / 2);
         min-width: 280px;
         max-width: none;
+        box-sizing: border-box;
     }
     
     .scroll-arrow-left {
@@ -1547,9 +1551,13 @@ a:hover {
 @media (max-width: 900px) and (min-width: 769px) {
     .services-grid .service-card {
         flex: 0 0 calc((100% - var(--spacing-xl)) / 2);
+        flex-basis: calc((100% - var(--spacing-xl)) / 2);
+        flex-grow: 0;
+        flex-shrink: 0;
         width: calc((100% - var(--spacing-xl)) / 2);
         min-width: 260px;
         max-width: none;
+        box-sizing: border-box;
     }
 }
 
