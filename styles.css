@@ -5158,12 +5158,16 @@ img {
 .highscore-entry .name {
     flex: 1;
     font-weight: 500;
-    color: white;
+    color: #ffffff !important;
 }
 
 .highscore-entry .score {
     font-weight: 700;
     color: #FFD700;
+}
+
+.highscore-entry .rank {
+    color: #ffffff !important;
 }
 
 .no-highscores {
