@@ -26,6 +26,7 @@ class FachlicheEntwicklungWorkflow {
         this.getCurrentStepFromURL();
         this.loadSavedData();
         this.setupEventListeners();
+        this.ensureAutoSaveStatusElement();
         this.updateProgress();
         this.initializeSkillGapAnalyzer();
         this.initializeLearningPathGenerator();
@@ -85,8 +86,46 @@ class FachlicheEntwicklungWorkflow {
     autoSave() {
         const currentStepData = this.collectCurrentStepData();
         if (currentStepData) {
-            localStorage.setItem(`fachlicheEntwicklungStep${this.currentStep}`, JSON.stringify(currentStepData));
-            this.workflowData[this.getStepKey(this.currentStep)] = currentStepData;
+            try {
+                localStorage.setItem(`fachlicheEntwicklungStep${this.currentStep}`, JSON.stringify(currentStepData));
+                this.workflowData[this.getStepKey(this.currentStep)] = currentStepData;
+                this.updateAutoSaveStatus('Gespeichert');
+            } catch (e) {
+                console.error('Autosave error', e);
+                this.updateAutoSaveStatus('Fehler beim Speichern', true);
+            }
+        }
+    }
+
+    ensureAutoSaveStatusElement() {
+        const header = document.querySelector('.step-header-content');
+        if (!header) return;
+        if (header.querySelector('.auto-save-status')) return;
+
+        const status = document.createElement('div');
+        status.className = 'auto-save-status';
+        status.innerHTML = '<span class=\"dot\"></span><span class=\"auto-save-status-text\">Bereit</span>';
+        header.appendChild(status);
+    }
+
+    updateAutoSaveStatus(message, isError = false) {
+        const status = document.querySelector('.auto-save-status');
+        if (!status) return;
+
+        const textSpan = status.querySelector('.auto-save-status-text');
+        const dot = status.querySelector('.dot');
+        if (!textSpan || !dot) return;
+
+        const now = new Date();
+        const time = now.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+        textSpan.textContent = isError ? message : `${message} · ${time}`;
+
+        if (isError) {
+            status.classList.add('saving');
+            dot.style.background = '#F97316';
+        } else {
+            status.classList.remove('saving');
+            dot.style.background = 'var(--accent-green)';
         }
     }
 
@@ -357,7 +396,8 @@ class FachlicheEntwicklungWorkflow {
         if (progressFill && progressText) {
             const percentage = (this.currentStep / this.totalSteps) * 100;
             progressFill.style.width = `${percentage}%`;
-            progressText.textContent = `${this.currentStep} von ${this.totalSteps}`;
+            const rounded = Math.round(percentage);
+            progressText.textContent = `${this.currentStep} von ${this.totalSteps} (${rounded}%)`;
         }
     }
 

@@ -17,6 +17,10 @@
 
     <section class="hero-enhanced">
         <div class="hero-content-enhanced">
+            <button class="dark-mode-toggle" type="button" onclick="toggleFachlicheDarkMode()">
+                <span class="icon">🌙</span>
+                <span>Dark&nbsp;Mode</span>
+            </button>
             <h1 class="hero-title-enhanced">🚀 Fachliche Entwicklung</h1>
             <p class="hero-subtitle-enhanced">Strukturierte Weiterbildungspfade für Ihre Karriere</p>
             <p class="hero-description-enhanced">KI-gestützte Lernempfehlungen und Skill-Tracking für deine berufliche Weiterentwicklung</p>
@@ -96,6 +100,52 @@
                 this.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
             });
         });
+
+        // Dark Mode Toggle
+        function applyFachlicheDarkModeFromStorage() {
+            try {
+                const enabled = localStorage.getItem('fachlicheDarkMode') === 'true';
+                if (enabled) {
+                    document.body.classList.add('fe-dark');
+                } else {
+                    document.body.classList.remove('fe-dark');
+                }
+            } catch (e) {
+                console.error('DarkMode storage error', e);
+            }
+        }
+
+        function toggleFachlicheDarkMode() {
+            const isDark = document.body.classList.toggle('fe-dark');
+            try {
+                localStorage.setItem('fachlicheDarkMode', isDark ? 'true' : 'false');
+            } catch (e) {
+                console.error('DarkMode storage error', e);
+            }
+        }
+
+        applyFachlicheDarkModeFromStorage();
+
+        // Achievement Badges auf Index anzeigen
+        (function markCompletedSteps() {
+            const cards = document.querySelectorAll('.steps-grid .step-card-enhanced');
+            cards.forEach((card, index) => {
+                const stepNumber = index + 1;
+                const key = `fachlicheEntwicklungStep${stepNumber}`;
+                try {
+                    const saved = localStorage.getItem(key);
+                    if (saved) {
+                        card.classList.add('completed');
+                        const badge = document.createElement('div');
+                        badge.className = 'step-card-badge';
+                        badge.textContent = '✓ Fertig';
+                        card.appendChild(badge);
+                    }
+                } catch (e) {
+                    console.error('Error reading step completion', e);
+                }
+            });
+        })();
     </script>
 </body>
 </html>

@@ -173,6 +173,22 @@
                         </div>
                     </div>
 
+                    <!-- Zusatz: Gesamt-Skill-Selbstbewertung (1-10) -->
+                    <div class="form-group">
+                        <label for="overallSkillLevel">Wie schätzt du dein aktuelles fachliches Gesamt-Skill-Level ein? (1 = Anfänger, 10 = Experte)</label>
+                        <p class="question-hint">Nutze den Slider für eine schnelle Selbsteinschätzung. Details kannst du oben in den Antworten ausführen.</p>
+                        <input type="range" id="overallSkillLevel" name="overallSkillLevel" min="1" max="10" value="5" oninput="document.getElementById('overallSkillLevelValue').textContent = this.value;">
+                        <div class="detailed-hints">
+                            <h5>Aktueller Wert: <span id="overallSkillLevelValue">5</span>/10</h5>
+                            <ul>
+                                <li><strong>1-3:</strong> Einstieg / Grundlagen</li>
+                                <li><strong>4-6:</strong> Solide Basis, aber mit Lücken</li>
+                                <li><strong>7-8:</strong> Fortgeschritten mit breiter Erfahrung</li>
+                                <li><strong>9-10:</strong> Expert:in / Go-To-Person im Fachgebiet</li>
+                            </ul>
+                        </div>
+                    </div>
+
                     <!-- Navigation Buttons -->
                     <div class="form-navigation">
                         <a href="index-fachliche-entwicklung.html" class="btn btn-secondary">
