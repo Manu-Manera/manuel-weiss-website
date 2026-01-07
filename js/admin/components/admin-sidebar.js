@@ -73,6 +73,12 @@ class AdminSidebar extends HTMLElement {
                                 <span>Hero & Über mich</span>
                             </a>
                         </li>
+                        <li class="nav-item" data-section="hero-video" data-tooltip="Hero-Video">
+                            <a href="#hero-video">
+                                <i class="fas fa-video"></i>
+                                <span>Hero-Video</span>
+                            </a>
+                        </li>
                         <li class="nav-item" data-section="nutrition" data-tooltip="Ernährungsplan">
                             <a href="#nutrition">
                                 <i class="fas fa-apple-alt"></i>
