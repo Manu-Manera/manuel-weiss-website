@@ -156,15 +156,15 @@ class HeroVideoSection {
         if (uploadBtn) uploadBtn.disabled = true;
         if (successMessage) successMessage.style.display = 'none';
 
+        // Strategie: Versuche zuerst direkten S3-Upload (schneller, kein 6MB Limit)
+        // Falls das fehlschlägt, verwende Server-Side Upload als Fallback
+        
+        let publicUrl; // Deklariere außerhalb des try-Blocks für besseren Scope
+        
         try {
-            // Strategie: Versuche zuerst direkten S3-Upload (schneller, kein 6MB Limit)
-            // Falls das fehlschlägt, verwende Server-Side Upload als Fallback
-            
             if (progressStatus) progressStatus.textContent = 'Vorbereitung...';
             if (progressFill) progressFill.style.width = '10%';
             if (progressPercentage) progressPercentage.textContent = '10%';
-
-            let publicUrl;
             const fileSizeMB = file.size / 1024 / 1024;
             const useDirectUpload = fileSizeMB < 50; // Für Videos < 50MB: Direkter Upload
 
