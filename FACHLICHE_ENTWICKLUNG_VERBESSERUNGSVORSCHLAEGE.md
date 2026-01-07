@@ -275,25 +275,25 @@
 ## 🚀 PRIORISIERTE UMSETZUNG
 
 ### Phase 1: Quick Wins (1-2 Wochen)
-1. ✅ Skill-Level-Slider statt Textareas
-2. ✅ Auto-Save-Indikator
-3. ✅ Progress-Ring mit Prozent
-4. ✅ Achievement-Badges
-5. ✅ Dark Mode Toggle
+1. ✅ Einfacher Skill-Level-Slider (Gesamt-Selbsteinschätzung in Schritt 1)
+2. ✅ Auto-Save-Indikator im Header (inkl. Zeitstempel)
+3. ✅ Fortschrittsanzeige mit Prozent im Header
+4. ✅ Achievement-Badges / Completed-Markierung auf der Index-Seite
+5. ✅ Dark Mode Toggle für Fachliche-Entwicklung-Seiten
 
 ### Phase 2: Core Features (2-4 Wochen)
-1. ✅ Radar-Chart für Skills
-2. ✅ Adaptive Lernpfad-Generierung
-3. ✅ SMART-Goals Integration
-4. ✅ Erweiterte Fortschritts-Tracking
-5. ✅ Onboarding-Tour
+1. [ ] Radar-Chart für Skills
+2. [ ] Adaptive Lernpfad-Generierung
+3. [ ] SMART-Goals Integration
+4. [ ] Erweiterte Fortschritts-Tracking
+5. [ ] Onboarding-Tour
 
 ### Phase 3: Advanced Features (4-8 Wochen)
-1. ✅ Community-Features
-2. ✅ KI-Insights erweitert
-3. ✅ Peer-Feedback-System
-4. ✅ Portfolio-Upload
-5. ✅ Mobile-Optimierung
+1. [ ] Community-Features
+2. [ ] KI-Insights erweitert
+3. [ ] Peer-Feedback-System
+4. [ ] Portfolio-Upload
+5. [ ] Mobile-Optimierung
 
 ---
 
