@@ -4791,15 +4791,31 @@ img {
 }
 
 /* Animation: Fallbewegung - GPU-optimiert mit translate3d */
+/* Animation: Fallbewegung MIT seitlichem Schwanken kombiniert */
+/* WICHTIG: Nur EINE Animation, da zwei transform-Animationen sich überschreiben würden */
 @keyframes snowflakeFall {
     0% {
         transform: translate3d(0, -100px, 0) translateZ(0);
         opacity: 0;
     }
     2% {
+        transform: translate3d(0, 0px, 0) translateZ(0);
+        opacity: 1;
+    }
+    25% {
+        transform: translate3d(15px, 500px, 0) translateZ(0);
+        opacity: 1;
+    }
+    50% {
+        transform: translate3d(-10px, 1000px, 0) translateZ(0);
+        opacity: 1;
+    }
+    75% {
+        transform: translate3d(20px, 1500px, 0) translateZ(0);
         opacity: 1;
     }
     98% {
+        transform: translate3d(0, 1900px, 0) translateZ(0);
         opacity: 1;
     }
     100% {
@@ -4865,12 +4881,12 @@ img {
     }
     
     .snowflake {
-        animation: snowflakeFall linear infinite, snowflakeSwayMobile ease-in-out infinite !important;
+        animation: snowflakeFall linear infinite !important;
     }
     
     /* Klickbare Schneeflocken auf Mobile - Animationen beibehalten */
     .snowflake.clickable {
-        animation: snowflakeFall linear infinite, snowflakeSwayMobile ease-in-out infinite !important;
+        animation: snowflakeFall linear infinite !important;
     }
 }
 
@@ -4897,7 +4913,7 @@ img {
     /* WICHTIG: position: absolute beibehalten für Animation! */
     position: absolute !important; /* NICHT relative - würde Animation blockieren */
     /* WICHTIG: Animationen müssen erhalten bleiben! */
-    animation: snowflakeFall linear infinite, snowflakeSway ease-in-out infinite !important;
+    animation: snowflakeFall linear infinite !important;
     animation-fill-mode: both !important; /* Wichtig für Animation */
     transition: opacity 0.3s ease;
     /* KEIN transform transition - würde Animationen stören */
@@ -4907,7 +4923,7 @@ img {
     /* Nur Filter ändern, nicht transform - transform wird von Animation gesteuert */
     filter: drop-shadow(0 0 10px white) !important;
     /* Animation während Hover beibehalten */
-    animation: snowflakeFall linear infinite, snowflakeSway ease-in-out infinite !important;
+    animation: snowflakeFall linear infinite !important;
 }
 
 .snowflake.caught {
