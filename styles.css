@@ -4837,13 +4837,7 @@ img {
    SCHNEEFLOCKEN-SPIEL STYLES
    ========================================== */
 
-/* Klickbare Schneeflocken */
-.snowflake.clickable {
-    pointer-events: auto;
-    cursor: pointer;
-    z-index: 100;
-    position: absolute;
-}
+/* Klickbare Schneeflocken - Duplikat entfernt, wird oben bei .snowflake definiert */
 
 .snowflake.clickable:hover {
     filter: drop-shadow(0 0 10px white) !important;
