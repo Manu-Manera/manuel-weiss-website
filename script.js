@@ -156,81 +156,63 @@ function initMobileMenu() {
     const mobileMenuToggle = document.getElementById('mobileMenuToggle');
     const mobileMenu = document.getElementById('mobileMenu');
     
+    // Toggle-Funktion
+    function toggleMenu(e) {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        console.log('🍔 Hamburger geklickt');
+        
+        const isActive = mobileMenuFullscreen.classList.contains('active');
+        
+        if (!isActive) {
+            // Öffne Menü
+            mobileHamburger.classList.add('active');
+            mobileMenuFullscreen.classList.add('active');
+            if (mobileMenuOverlay) mobileMenuOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            console.log('📂 Menü geöffnet');
+        } else {
+            // Schließe Menü
+            mobileHamburger.classList.remove('active');
+            mobileMenuFullscreen.classList.remove('active');
+            if (mobileMenuOverlay) mobileMenuOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+            console.log('❌ Menü geschlossen');
+        }
+    }
+    
     // Neue Mobile Menu Logik
     if (mobileHamburger && mobileMenuFullscreen) {
         console.log('✅ Mobile Menu initialisiert');
         
-        // Toggle Menu
-        mobileHamburger.addEventListener('click', function(e) {
+        // BEIDE Events für Safari Kompatibilität
+        mobileHamburger.addEventListener('click', toggleMenu);
+        mobileHamburger.addEventListener('touchend', function(e) {
             e.preventDefault();
-            e.stopPropagation();
-            console.log('🍔 Hamburger geklickt');
-            
-            const isActive = mobileMenuFullscreen.classList.contains('active');
-            
-            if (!isActive) {
-                // Öffne Menü
-                mobileHamburger.classList.add('active');
-                mobileMenuFullscreen.classList.add('active');
-                if (mobileMenuOverlay) mobileMenuOverlay.classList.add('active');
-                
-                // Speichere Scroll-Position
-                const scrollY = window.scrollY;
-                document.body.style.overflow = 'hidden';
-                document.body.style.position = 'fixed';
-                document.body.style.top = `-${scrollY}px`;
-                document.body.style.width = '100%';
-                console.log('📂 Menü geöffnet');
-            } else {
-                // Schließe Menü
-                mobileHamburger.classList.remove('active');
-                mobileMenuFullscreen.classList.remove('active');
-                if (mobileMenuOverlay) mobileMenuOverlay.classList.remove('active');
-                
-                // Stelle Scroll-Position wieder her
-                const scrollY = document.body.style.top;
-                document.body.style.overflow = '';
-                document.body.style.position = '';
-                document.body.style.top = '';
-                document.body.style.width = '';
-                if (scrollY) {
-                    window.scrollTo(0, parseInt(scrollY || '0') * -1);
-                }
-                console.log('❌ Menü geschlossen');
-            }
-        });
+            toggleMenu(e);
+        }, { passive: false });
+        
+        // Close Menu Funktion
+        function closeMenu() {
+            mobileHamburger.classList.remove('active');
+            mobileMenuFullscreen.classList.remove('active');
+            if (mobileMenuOverlay) mobileMenuOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
         
         // Close Menu on Link Click
         const mobileMenuLinks = mobileMenuFullscreen.querySelectorAll('.mobile-menu-link');
         mobileMenuLinks.forEach(link => {
-            link.addEventListener('click', function() {
-                const scrollY = document.body.style.top;
-                mobileHamburger.classList.remove('active');
-                mobileMenuFullscreen.classList.remove('active');
-                document.body.style.overflow = '';
-                document.body.style.position = '';
-                document.body.style.top = '';
-                document.body.style.width = '';
-                if (scrollY) {
-                    window.scrollTo(0, parseInt(scrollY || '0') * -1);
-                }
-            });
+            link.addEventListener('click', closeMenu);
+            link.addEventListener('touchend', closeMenu);
         });
         
         // Close Menu on Overlay Click
         if (mobileMenuOverlay) {
-            mobileMenuOverlay.addEventListener('click', function() {
-                const scrollY = document.body.style.top;
-                mobileHamburger.classList.remove('active');
-                mobileMenuFullscreen.classList.remove('active');
-                document.body.style.overflow = '';
-                document.body.style.position = '';
-                document.body.style.top = '';
-                document.body.style.width = '';
-                if (scrollY) {
-                    window.scrollTo(0, parseInt(scrollY || '0') * -1);
-                }
-            });
+            mobileMenuOverlay.addEventListener('click', closeMenu);
+            mobileMenuOverlay.addEventListener('touchend', closeMenu);
         }
         
         return; // Beende Funktion, da neue Logik verwendet wird
