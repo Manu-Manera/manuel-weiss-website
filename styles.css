@@ -2298,18 +2298,18 @@ a:hover {
     transform: translate(-50%, -50%);
     font-size: 4rem;
     z-index: 2;
-    opacity: 0;
+    opacity: 1; /* Immer sichtbar wie beim Highscore */
     transition: opacity 0.3s ease;
     pointer-events: none;
 }
 
 .activity-card:hover .activity-icon {
-    opacity: 1;
+    opacity: 1; /* Bleibt sichtbar */
 }
 
 .activity-card:hover .activity-img {
-    opacity: 0.3;
-    transform: scale(1.1);
+    opacity: 0.5; /* Etwas transparenter beim Hover, aber nicht komplett unsichtbar */
+    transform: scale(1.05);
 }
 
 /* Spezifische Animationen für Icons */
@@ -3808,6 +3808,12 @@ a:hover {
         display: none !important;
     }
     
+    /* Sicherstellen dass Navigation auf Mobile komplett versteckt ist */
+    .navbar .desktop-nav,
+    .navbar .nav-container {
+        display: none !important;
+    }
+    
     .mobile-only {
         display: block !important;
     }
@@ -4882,12 +4888,13 @@ img {
 .snowflake.clickable {
     pointer-events: auto !important;
     cursor: pointer;
-    z-index: 10 !important; /* Höherer z-index für Klickbarkeit */
+    z-index: 100 !important; /* Sehr hoher z-index für Klickbarkeit - über allem */
     /* WICHTIG: Animationen müssen erhalten bleiben! */
     animation: snowflakeFall linear infinite, snowflakeSway ease-in-out infinite !important;
     animation-fill-mode: both !important; /* Wichtig für Animation */
     transition: opacity 0.3s ease;
     /* KEIN transform transition - würde Animationen stören */
+    position: relative; /* Wichtig für z-index */
 }
 
 .snowflake.clickable:hover {
