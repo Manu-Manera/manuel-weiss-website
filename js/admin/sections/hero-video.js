@@ -176,23 +176,56 @@ class HeroVideoSection {
             }
 
             const { uploadUrl, publicUrl } = await uploadUrlResponse.json();
+            
+            if (!uploadUrl || !publicUrl) {
+                throw new Error('Ungültige Upload-URL erhalten');
+            }
 
-            // Schritt 2: Upload zu S3
+            // Schritt 2: Upload zu S3 mit XMLHttpRequest (besser für große Dateien und Progress-Tracking)
             if (progressStatus) progressStatus.textContent = 'Lade Video hoch...';
             if (progressFill) progressFill.style.width = '30%';
             if (progressPercentage) progressPercentage.textContent = '30%';
 
-            const uploadResponse = await fetch(uploadUrl, {
-                method: 'PUT',
-                body: file,
-                headers: {
-                    'Content-Type': file.type || 'video/mp4'
-                }
+            await new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+                
+                // Progress-Tracking
+                xhr.upload.addEventListener('progress', (e) => {
+                    if (e.lengthComputable) {
+                        // 30% bis 80% für den Upload (30% war bereits Vorbereitung)
+                        const uploadPercent = 30 + (e.loaded / e.total) * 50;
+                        if (progressFill) progressFill.style.width = `${uploadPercent}%`;
+                        if (progressPercentage) progressPercentage.textContent = `${Math.round(uploadPercent)}%`;
+                    }
+                });
+                
+                // Erfolg
+                xhr.addEventListener('load', () => {
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        console.log('✅ Video erfolgreich zu S3 hochgeladen');
+                        resolve();
+                    } else {
+                        console.error('❌ S3 Upload fehlgeschlagen:', xhr.status, xhr.statusText);
+                        reject(new Error(`S3 Upload fehlgeschlagen: ${xhr.status} ${xhr.statusText}`));
+                    }
+                });
+                
+                // Fehler
+                xhr.addEventListener('error', () => {
+                    console.error('❌ Netzwerkfehler beim S3 Upload');
+                    reject(new Error('Netzwerkfehler beim Hochladen des Videos'));
+                });
+                
+                xhr.addEventListener('abort', () => {
+                    console.error('❌ Upload abgebrochen');
+                    reject(new Error('Upload wurde abgebrochen'));
+                });
+                
+                // Upload starten
+                xhr.open('PUT', uploadUrl);
+                xhr.setRequestHeader('Content-Type', file.type || 'video/mp4');
+                xhr.send(file);
             });
-
-            if (!uploadResponse.ok) {
-                throw new Error('Fehler beim Hochladen des Videos');
-            }
 
             // Schritt 3: URL speichern
             if (progressStatus) progressStatus.textContent = 'Speichere Einstellung...';
@@ -223,10 +256,36 @@ class HeroVideoSection {
                 this.loadCurrentVideo();
             }, 1000);
         } catch (error) {
-            console.error('Upload error:', error);
-            alert('Fehler beim Hochladen: ' + error.message);
+            console.error('❌ Upload error:', error);
+            
+            // Detaillierte Fehlermeldung
+            let errorMessage = 'Fehler beim Hochladen: ';
+            if (error.message) {
+                errorMessage += error.message;
+            } else if (error.toString) {
+                errorMessage += error.toString();
+            } else {
+                errorMessage += 'Unbekannter Fehler';
+            }
+            
+            // Zeige Fehler in der UI
+            if (progressStatus) {
+                progressStatus.textContent = 'Fehler!';
+                progressStatus.style.color = '#ef4444';
+            }
+            
+            alert(errorMessage);
+            
             if (uploadProgress) uploadProgress.style.display = 'none';
             if (uploadBtn) uploadBtn.disabled = false;
+            
+            // Reset Progress
+            if (progressFill) progressFill.style.width = '0%';
+            if (progressPercentage) progressPercentage.textContent = '0%';
+            if (progressStatus) {
+                progressStatus.textContent = 'Vorbereitung...';
+                progressStatus.style.color = '';
+            }
         }
     }
 }
