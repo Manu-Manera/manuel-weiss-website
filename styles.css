@@ -720,6 +720,8 @@ a:hover {
     overflow: hidden;
     /* Immer den gleichen Hintergrund wie Services - auch wenn Video vorhanden ist */
     background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 50%, #7c3aed 100%);
+    /* Stacking Context isolieren, damit z-index richtig funktioniert */
+    isolation: isolate;
 }
 
 /* Schneeflocken-Hintergrund für Hero - immer sichtbar */
@@ -785,6 +787,8 @@ a:hover {
     box-sizing: border-box;
     width: 100%;
     min-height: 100vh; /* Mindesthöhe für vollständige Sichtbarkeit */
+    /* Stacking Context isolieren für Mobile */
+    isolation: isolate;
 }
 
 /* Hero Content explizit über Video positionieren */
@@ -3776,9 +3780,11 @@ a:hover {
         /* Video-Wrapper für Mobile optimiert */
         position: absolute;
         inset: 0;
-        z-index: 8; /* Unter Content (z-index 100+) */
+        z-index: 1 !important; /* Deutlich unter Content (z-index 100+) - !important für Mobile */
         /* Sicherstellen dass Video nicht über Content liegt */
         pointer-events: none;
+        /* Video sollte definitiv im Hintergrund sein */
+        transform: translateZ(0);
     }
     
     .hero-video {
@@ -3804,13 +3810,17 @@ a:hover {
         text-align: center;
         min-height: auto;
         position: relative;
-        z-index: 100; /* Deutlich über Video (z-index 8) */
+        z-index: 100 !important; /* Deutlich über Video (z-index 8) - !important für Mobile */
+        /* Stacking Context isolieren */
+        isolation: isolate;
+        /* Sicherstellen dass Container über Video liegt */
+        transform: translateZ(0); /* GPU-Beschleunigung für besseren z-index */
     }
     
     .hero-content {
         order: 2;
         position: relative;
-        z-index: 101; /* Explizit über Container und Video */
+        z-index: 101 !important; /* Explizit über Container und Video - !important für Mobile */
         /* Bessere Lesbarkeit auf Mobile */
         text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
         /* Nur Text anzeigen, keine Buttons */
@@ -3818,11 +3828,14 @@ a:hover {
         flex-direction: column;
         align-items: center;
         justify-content: center;
+        /* GPU-Beschleunigung für besseren z-index */
+        transform: translateZ(0);
     }
     
     .hero-title {
         position: relative;
-        z-index: 102; /* Explizit ganz oben */
+        z-index: 102 !important; /* Explizit ganz oben - !important für Mobile */
+        transform: translateZ(0); /* GPU-Beschleunigung */
     }
     
     .hero-visual {
