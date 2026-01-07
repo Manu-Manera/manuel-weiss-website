@@ -157,8 +157,8 @@ exports.handler = async (event, context) => {
             Bucket: BUCKET_NAME,
             Key: key,
             Body: fileBuffer,
-            ContentType: fileContentType || 'video/mp4',
-            ACL: 'public-read' // Videos öffentlich lesbar machen
+            ContentType: fileContentType || 'video/mp4'
+            // ACL nicht verwendet - Bucket Policy regelt öffentlichen Zugriff
             // ServerSideEncryption entfernt - könnte Probleme verursachen
         };
 
