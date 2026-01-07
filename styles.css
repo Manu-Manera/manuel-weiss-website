@@ -3843,60 +3843,58 @@ a:hover {
     
     .hero-title {
         position: relative;
-        z-index: 102 !important; /* Explizit ganz oben - !important für Mobile */
-        /* KEIN transform: translateZ(0) auf Text - verursacht verschwommenen Text in Safari */
-        font-size: 4.5rem !important; /* NOCH größer - ca. 72px für maximale Klarheit */
-        line-height: 1.1 !important; /* Kompaktere Zeilenhöhe für bessere Lesbarkeit */
-        margin-bottom: 0; /* Kein Margin, da keine Buttons */
-        /* EXTREM starker Text-Shadow für maximale Lesbarkeit - klar weiß */
-        color: #ffffff !important; /* Explizit hex weiß - keine Transparenz */
+        z-index: 102 !important;
+        /* OPTIMIERTE Schriftgröße für scharfen Text in Safari */
+        font-size: 3.5rem !important; /* 56px - optimale Größe für scharfen Text */
+        line-height: 1.2 !important;
+        margin-bottom: 0;
+        /* RADIKALER ANSATZ: -webkit-text-stroke für scharfen Text-Outline */
+        color: #ffffff !important;
+        -webkit-text-stroke: 2px #ffffff !important; /* Weißer Outline für Schärfe */
         text-shadow: 
-            0 0 20px rgba(255, 255, 255, 1),
-            0 0 40px rgba(255, 255, 255, 1),
-            0 0 60px rgba(255, 255, 255, 0.95),
-            0 8px 32px rgba(0, 0, 0, 1),
-            0 4px 16px rgba(0, 0, 0, 0.95),
-            0 2px 8px rgba(0, 0, 0, 0.9);
+            0 0 30px rgba(255, 255, 255, 1),
+            0 4px 20px rgba(0, 0, 0, 1),
+            0 2px 10px rgba(0, 0, 0, 0.9);
         text-align: center;
-        /* Safari-spezifische Text-Rendering-Optimierungen für SCHARFEN Text */
-        -webkit-font-smoothing: antialiased !important; /* Safari Mobile: antialiased für scharfen Text */
+        /* Safari Mobile: RADIKALER ANSATZ für scharfen Text */
+        -webkit-font-smoothing: antialiased !important;
         -moz-osx-font-smoothing: grayscale;
-        text-rendering: geometricPrecision !important; /* Geometric Precision für scharfen Text */
-        font-weight: 900 !important; /* EXTREM fett für maximale Präsenz */
-        letter-spacing: 0 !important; /* Kein negativer Letter-Spacing für bessere Lesbarkeit */
-        /* Safari: Verhindere verschwommenen Text */
-        -webkit-transform: none !important; /* Kein Transform auf Text */
-        transform: none !important; /* Kein Transform auf Text */
-        opacity: 1 !important; /* Volle Opazität - keine Transparenz */
-        /* Verhindere alle Filter-Effekte die Text verschwimmen lassen */
+        text-rendering: auto !important; /* AUTO für native Browser-Optimierung */
+        font-weight: 900 !important;
+        letter-spacing: 0.02em !important; /* Leicht positiver Wert für bessere Lesbarkeit */
+        /* KEINE Transforms, KEINE Filter */
+        -webkit-transform: none !important;
+        transform: none !important;
+        opacity: 1 !important;
         filter: none !important;
         backdrop-filter: none !important;
         -webkit-backdrop-filter: none !important;
+        /* Verhindere Subpixel-Rendering-Probleme */
+        -webkit-text-size-adjust: 100% !important;
     }
     
     .hero-title .mobile-only {
         display: block;
-        /* EXTREM starker Glüheffekt für mobile-only Text - klar weiß */
+        /* RADIKALER ANSATZ: -webkit-text-stroke für scharfen Text */
+        color: #ffffff !important;
+        -webkit-text-stroke: 2px #ffffff !important; /* Weißer Outline für Schärfe */
         text-shadow: 
-            0 0 20px rgba(255, 255, 255, 1),
-            0 0 40px rgba(255, 255, 255, 1),
-            0 0 60px rgba(255, 255, 255, 0.95),
-            0 8px 32px rgba(0, 0, 0, 1),
-            0 4px 16px rgba(0, 0, 0, 0.95),
-            0 2px 8px rgba(0, 0, 0, 0.9) !important;
-        color: #ffffff !important; /* Explizit hex weiß - keine Transparenz */
+            0 0 30px rgba(255, 255, 255, 1),
+            0 4px 20px rgba(0, 0, 0, 1),
+            0 2px 10px rgba(0, 0, 0, 0.9) !important;
         font-weight: 900 !important;
         /* Safari: Kein Transform auf Text */
         -webkit-transform: none !important;
         transform: none !important;
-        opacity: 1 !important; /* Volle Opazität */
+        opacity: 1 !important;
         /* Text-Rendering für scharfen Text */
         -webkit-font-smoothing: antialiased !important;
-        text-rendering: geometricPrecision !important;
+        text-rendering: auto !important; /* AUTO für native Browser-Optimierung */
         /* Verhindere alle Filter-Effekte */
         filter: none !important;
         backdrop-filter: none !important;
         -webkit-backdrop-filter: none !important;
+        -webkit-text-size-adjust: 100% !important;
     }
     
     .hero-visual {
@@ -3908,43 +3906,43 @@ a:hover {
     
     .hero-title-line-1,
     .hero-title-line-2 {
-        /* EXTREM starker weißer Glüheffekt für beide Zeilen - klar weiß und scharf */
+        /* RADIKALER ANSATZ: -webkit-text-stroke für scharfen Text */
+        color: #ffffff !important;
+        -webkit-text-stroke: 2px #ffffff !important; /* Weißer Outline für Schärfe */
         text-shadow: 
-            0 0 20px rgba(255, 255, 255, 1),
-            0 0 40px rgba(255, 255, 255, 1),
-            0 0 60px rgba(255, 255, 255, 0.95),
-            0 8px 32px rgba(0, 0, 0, 1),
-            0 4px 16px rgba(0, 0, 0, 0.95),
-            0 2px 8px rgba(0, 0, 0, 0.9) !important;
-        color: #ffffff !important; /* Explizit hex weiß - keine Transparenz */
-        font-weight: 900 !important; /* EXTREM fett für maximale Präsenz */
+            0 0 30px rgba(255, 255, 255, 1),
+            0 4px 20px rgba(0, 0, 0, 1),
+            0 2px 10px rgba(0, 0, 0, 0.9) !important;
+        font-weight: 900 !important;
         /* Safari: Kein Transform auf Text */
         -webkit-transform: none !important;
         transform: none !important;
-        opacity: 1 !important; /* Volle Opazität - keine Transparenz */
+        opacity: 1 !important;
         /* Text-Rendering für scharfen Text */
         -webkit-font-smoothing: antialiased !important;
-        text-rendering: geometricPrecision !important;
+        text-rendering: auto !important; /* AUTO für native Browser-Optimierung */
         /* Verhindere alle Filter-Effekte */
         filter: none !important;
         backdrop-filter: none !important;
         -webkit-backdrop-filter: none !important;
+        -webkit-text-size-adjust: 100% !important;
     }
     
     /* Besondere Behandlung für "Willkommen" - erste Zeile */
     .hero-title-line-1.mobile-only {
         font-size: 1.1em !important; /* Größer für bessere Lesbarkeit */
         margin-bottom: 0.15em; /* Kleiner Abstand zur zweiten Zeile */
-        color: #ffffff !important; /* Explizit hex weiß */
+        color: #ffffff !important;
+        -webkit-text-stroke: 2.5px #ffffff !important; /* Stärkerer Outline für "Willkommen" */
         text-shadow: 
-            0 0 25px rgba(255, 255, 255, 1),
-            0 0 50px rgba(255, 255, 255, 1),
-            0 0 75px rgba(255, 255, 255, 0.95),
-            0 10px 40px rgba(0, 0, 0, 1),
-            0 5px 20px rgba(0, 0, 0, 0.95),
-            0 2px 10px rgba(0, 0, 0, 0.9) !important;
+            0 0 35px rgba(255, 255, 255, 1),
+            0 5px 25px rgba(0, 0, 0, 1),
+            0 2px 12px rgba(0, 0, 0, 0.9) !important;
         font-weight: 900 !important;
         opacity: 1 !important;
+        -webkit-font-smoothing: antialiased !important;
+        text-rendering: auto !important;
+        -webkit-text-size-adjust: 100% !important;
     }
     
     .hero-title-line-1.mobile-only {
@@ -4132,53 +4130,51 @@ a:hover {
     }
     
     .hero-title {
-        font-size: 3.5rem !important; /* Größer auf sehr kleinen Screens - ca. 56px */
+        font-size: 3rem !important; /* 48px - optimale Größe für scharfen Text */
         margin-bottom: var(--spacing-sm);
-        line-height: 1.1 !important;
+        line-height: 1.2 !important;
         font-weight: 900 !important;
-        /* EXTREM starker Text-Shadow auf sehr kleinen Screens - klar weiß */
+        /* RADIKALER ANSATZ: -webkit-text-stroke für scharfen Text */
+        color: #ffffff !important;
+        -webkit-text-stroke: 2px #ffffff !important; /* Weißer Outline für Schärfe */
         text-shadow: 
-            0 0 20px rgba(255, 255, 255, 1),
-            0 0 40px rgba(255, 255, 255, 1),
-            0 0 60px rgba(255, 255, 255, 0.95),
-            0 8px 32px rgba(0, 0, 0, 1),
-            0 4px 16px rgba(0, 0, 0, 0.95),
-            0 2px 8px rgba(0, 0, 0, 0.9);
-        color: #ffffff !important; /* Explizit hex weiß */
+            0 0 30px rgba(255, 255, 255, 1),
+            0 4px 20px rgba(0, 0, 0, 1),
+            0 2px 10px rgba(0, 0, 0, 0.9);
         /* Safari: Kein Transform auf Text */
         -webkit-transform: none !important;
         transform: none !important;
-        -webkit-font-smoothing: antialiased !important; /* Safari Mobile: antialiased für scharfen Text */
-        text-rendering: geometricPrecision !important; /* Geometric Precision für scharfen Text */
-        opacity: 1 !important; /* Volle Opazität */
+        -webkit-font-smoothing: antialiased !important;
+        text-rendering: auto !important; /* AUTO für native Browser-Optimierung */
+        opacity: 1 !important;
         /* Verhindere alle Filter-Effekte */
         filter: none !important;
         backdrop-filter: none !important;
         -webkit-backdrop-filter: none !important;
+        -webkit-text-size-adjust: 100% !important;
     }
     
     .hero-title-line-1,
     .hero-title-line-2 {
+        color: #ffffff !important;
+        -webkit-text-stroke: 2px #ffffff !important; /* Weißer Outline für Schärfe */
         text-shadow: 
-            0 0 20px rgba(255, 255, 255, 1),
-            0 0 40px rgba(255, 255, 255, 1),
-            0 0 60px rgba(255, 255, 255, 0.95),
-            0 8px 32px rgba(0, 0, 0, 1),
-            0 4px 16px rgba(0, 0, 0, 0.95),
-            0 2px 8px rgba(0, 0, 0, 0.9) !important;
+            0 0 30px rgba(255, 255, 255, 1),
+            0 4px 20px rgba(0, 0, 0, 1),
+            0 2px 10px rgba(0, 0, 0, 0.9) !important;
         font-weight: 900 !important;
-        color: #ffffff !important; /* Explizit hex weiß */
         /* Safari: Kein Transform auf Text */
         -webkit-transform: none !important;
         transform: none !important;
-        opacity: 1 !important; /* Volle Opazität */
+        opacity: 1 !important;
         /* Text-Rendering für scharfen Text */
         -webkit-font-smoothing: antialiased !important;
-        text-rendering: geometricPrecision !important;
+        text-rendering: auto !important; /* AUTO für native Browser-Optimierung */
         /* Verhindere alle Filter-Effekte */
         filter: none !important;
         backdrop-filter: none !important;
         -webkit-backdrop-filter: none !important;
+        -webkit-text-size-adjust: 100% !important;
     }
     
     /* Besondere Behandlung für "Willkommen" auf sehr kleinen Screens */
