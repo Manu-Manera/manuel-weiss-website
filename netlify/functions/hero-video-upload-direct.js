@@ -8,15 +8,16 @@ const { DynamoDBClient, PutItemCommand } = require('@aws-sdk/client-dynamodb');
 const { marshall } = require('@aws-sdk/util-dynamodb');
 
 // S3 Client initialisieren
-// Verwende alternative Variablennamen, da AWS_ACCESS_KEY_ID/AWS_SECRET_ACCESS_KEY reserviert sind
+// Verwende alternative Variablennamen, da AWS_* Variablen reserviert sind
+const awsRegion = process.env.NETLIFY_AWS_REGION || process.env.AWS_REGION || 'eu-central-1';
 const s3 = new AWS.S3({
-    region: process.env.AWS_REGION || 'eu-central-1',
+    region: awsRegion,
     accessKeyId: process.env.NETLIFY_AWS_ACCESS_KEY_ID || process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.NETLIFY_AWS_SECRET_ACCESS_KEY || process.env.AWS_SECRET_ACCESS_KEY
 });
 
 const dynamoDB = new DynamoDBClient({ 
-    region: process.env.AWS_REGION || 'eu-central-1' 
+    region: awsRegion
 });
 
 const BUCKET_NAME = process.env.AWS_S3_HERO_VIDEO_BUCKET || 'manuel-weiss-hero-videos';
@@ -223,7 +224,7 @@ exports.handler = async (event, context) => {
         }
 
         // Generate public URL
-        const publicUrl = `https://${BUCKET_NAME}.s3.${process.env.AWS_REGION || 'eu-central-1'}.amazonaws.com/${key}`;
+            const publicUrl = `https://${BUCKET_NAME}.s3.${awsRegion}.amazonaws.com/${key}`;
 
         // Save URL to DynamoDB
         try {
