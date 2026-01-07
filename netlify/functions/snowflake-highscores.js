@@ -18,6 +18,19 @@ exports.handler = async (event) => {
     }
 
     try {
+        // Check for AWS credentials
+        if (!process.env.NETLIFY_AWS_ACCESS_KEY_ID || !process.env.NETLIFY_AWS_SECRET_ACCESS_KEY) {
+            console.error('Missing AWS credentials');
+            return {
+                statusCode: 500,
+                headers,
+                body: JSON.stringify({ 
+                    error: 'Server configuration error',
+                    message: 'AWS credentials not configured'
+                }),
+            };
+        }
+
         // Initialize DynamoDB Client
         const dynamoClient = new DynamoDBClient({
             region: process.env.NETLIFY_AWS_REGION || 'eu-central-1',
@@ -55,29 +68,55 @@ exports.handler = async (event) => {
 
         // POST: Save new highscore
         if (event.httpMethod === 'POST') {
-            const { name, score } = JSON.parse(event.body);
+            let body;
+            try {
+                body = JSON.parse(event.body);
+            } catch (e) {
+                return {
+                    statusCode: 400,
+                    headers,
+                    body: JSON.stringify({ error: 'Invalid JSON', message: e.message }),
+                };
+            }
+
+            const { name, score } = body;
 
             if (!name || typeof score !== 'number' || score < 0) {
                 return {
                     statusCode: 400,
                     headers,
-                    body: JSON.stringify({ error: 'Invalid input' }),
+                    body: JSON.stringify({ 
+                        error: 'Invalid input',
+                        message: 'Name and valid score (>= 0) required'
+                    }),
                 };
             }
 
             const date = new Date().toISOString();
             const id = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
-            await docClient.send(new PutCommand({
-                TableName: tableName,
-                Item: {
-                    id,
-                    name: name.substring(0, 20), // Limit name length
-                    score: Number(score),
-                    date: new Date().toLocaleDateString('de-DE'),
-                    timestamp: Date.now(),
-                },
-            }));
+            try {
+                await docClient.send(new PutCommand({
+                    TableName: tableName,
+                    Item: {
+                        id,
+                        name: name.substring(0, 20), // Limit name length
+                        score: Number(score),
+                        date: new Date().toLocaleDateString('de-DE'),
+                        timestamp: Date.now(),
+                    },
+                }));
+            } catch (dbError) {
+                console.error('DynamoDB PutItem error:', dbError);
+                return {
+                    statusCode: 500,
+                    headers,
+                    body: JSON.stringify({ 
+                        error: 'Database error',
+                        message: dbError.message || 'Failed to save highscore'
+                    }),
+                };
+            }
 
             // Get updated top 10
             const result = await docClient.send(new ScanCommand({

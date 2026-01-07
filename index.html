@@ -2108,18 +2108,25 @@
                     submitBtn.disabled = true;
                     submitBtn.textContent = 'Speichere...';
                     
-                    await this.saveHighscore(name, this.score);
-                    
-                    modal.style.display = 'none';
-                    playerNameInput.value = '';
-                    this.score = 0;
-                    this.gameStarted = false;
-                    document.getElementById('snowflakeScore').textContent = '0';
-                    document.getElementById('snowflakeGameUI').style.display = 'none';
-                    document.getElementById('saveHighscoreBtn').style.display = 'none';
-                    
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = 'Speichern';
+                    try {
+                        const success = await this.saveHighscore(name, this.score);
+                        if (success) {
+                            alert('🎉 Highscore gespeichert!');
+                            modal.style.display = 'none';
+                            playerNameInput.value = '';
+                            this.score = 0;
+                            this.gameStarted = false;
+                            document.getElementById('snowflakeScore').textContent = '0';
+                            document.getElementById('snowflakeGameUI').style.display = 'none';
+                            document.getElementById('saveHighscoreBtn').style.display = 'none';
+                        }
+                    } catch (error) {
+                        // Fehler wurde bereits in saveHighscore angezeigt
+                        console.error('Save failed:', error);
+                    } finally {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Speichern';
+                    }
                 };
                 
                 cancelBtn.onclick = () => {
