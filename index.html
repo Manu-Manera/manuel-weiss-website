@@ -2148,18 +2148,25 @@
                         body: JSON.stringify({ name, score }),
                     });
 
+                    const data = await response.json();
+
                     if (!response.ok) {
-                        throw new Error('Failed to save highscore');
+                        const errorMsg = data.error || data.message || 'Unbekannter Fehler';
+                        console.error('Highscore save error:', errorMsg, data);
+                        throw new Error(errorMsg);
                     }
 
-                    const data = await response.json();
                     if (data.success && data.highscores) {
-                        this.updateHighscoreDisplay(data.highscores);
-                        alert('🎉 Highscore gespeichert!');
+                        await this.updateHighscoreDisplay(data.highscores);
+                        return true;
+                    } else {
+                        throw new Error('Ungültige Antwort vom Server');
                     }
                 } catch (error) {
                     console.error('Error saving highscore:', error);
-                    alert('Fehler beim Speichern. Bitte versuche es später erneut.');
+                    const errorMessage = error.message || 'Fehler beim Speichern';
+                    alert(`❌ ${errorMessage}\n\nBitte versuche es später erneut.`);
+                    throw error; // Re-throw für UI-Handling
                 }
             },
             
