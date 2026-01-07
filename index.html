@@ -2043,8 +2043,8 @@
                 snowflake.style.left = Math.random() * 100 + '%';
                 const fallDuration = Math.random() * 10 + 10; // 10-20 Sekunden
                 const animationDelay = Math.random() * 5;
-                // WICHTIG: Animation als kompletten String setzen, nicht einzelne Properties!
-                snowflake.style.animation = `snowflakeFall ${fallDuration}s linear ${animationDelay}s infinite`;
+                // WICHTIG: Animation mit !important setzen um CSS zu überschreiben
+                snowflake.style.setProperty('animation', `snowflakeFall ${fallDuration}s linear ${animationDelay}s infinite`, 'important');
                 
                 // Click Event (Desktop)
                 snowflake.addEventListener('click', (e) => this.catchSnowflake(e, snowflake, size.points));
