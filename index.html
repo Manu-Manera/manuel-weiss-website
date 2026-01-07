@@ -2152,20 +2152,26 @@
                     if (data.videoUrl && data.videoUrl.trim() !== '' && videoElement && sourceElement) {
                         console.log('Video-URL gefunden:', data.videoUrl);
                         
+                        // Mobile: Video sofort verstecken, erst anzeigen wenn geladen
+                        const isMobile = window.innerWidth <= 768;
+                        if (isMobile && videoWrapper) {
+                            videoWrapper.style.display = 'none'; // Verstecke sofort auf Mobile
+                        }
+                        
                         // Video vorhanden: Setze die Video-URL von AWS S3
                         sourceElement.src = data.videoUrl;
                         
-                        // Mobile Optimierung: Preload auf "metadata" für schnellere Ladezeit
-                        if (window.innerWidth <= 768) {
-                            videoElement.preload = 'metadata';
+                        // Mobile Optimierung: Preload auf "none" für schnellste Ladezeit
+                        if (isMobile) {
+                            videoElement.preload = 'none'; // Kein Preload auf Mobile
+                            videoElement.load(); // Lade nur Metadaten
                         } else {
                             videoElement.preload = 'auto';
+                            videoElement.load(); // Lade das Video neu
                         }
                         
-                        videoElement.load(); // Lade das Video neu
-                        
-                        // Zeige Video-Wrapper
-                        if (videoWrapper) {
+                        // Desktop: Zeige Video-Wrapper sofort
+                        if (!isMobile && videoWrapper) {
                             videoWrapper.style.display = 'block';
                         }
                         
@@ -2173,11 +2179,31 @@
                         const onLoadedData = () => {
                             clearTimeout(videoLoadTimeout);
                             console.log('✅ Video erfolgreich geladen');
+                            // Nur auf Desktop oder wenn Mobile-Video vollständig geladen ist
                             if (videoWrapper) {
-                                videoWrapper.style.display = 'block';
+                                if (isMobile) {
+                                    // Auf Mobile: Zeige Video nur wenn es vollständig geladen ist
+                                    if (videoElement.readyState >= 3) { // HAVE_FUTURE_DATA
+                                        videoWrapper.style.display = 'block';
+                                    }
+                                } else {
+                                    videoWrapper.style.display = 'block';
+                                }
                             }
                             videoElement.removeEventListener('loadeddata', onLoadedData);
                         };
+                        
+                        // Mobile: Zusätzlicher Event-Listener für canplay (Video kann abgespielt werden)
+                        if (isMobile) {
+                            const onCanPlay = () => {
+                                console.log('✅ Mobile Video kann abgespielt werden');
+                                if (videoWrapper) {
+                                    videoWrapper.style.display = 'block';
+                                }
+                                videoElement.removeEventListener('canplay', onCanPlay);
+                            };
+                            videoElement.addEventListener('canplay', onCanPlay, { once: true });
+                        }
                         
                         // Falls Video nicht geladen werden kann, verstecke es
                         const onError = () => {
