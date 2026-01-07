@@ -4739,18 +4739,17 @@ img {
 }
 
 .snowflake {
-    position: absolute !important;
-    top: -50px !important;
-    color: white !important;
-    font-size: 1.5rem !important;
+    position: absolute;
+    top: -50px;
+    color: white;
+    font-size: 1.5rem;
     user-select: none;
     pointer-events: none;
-    opacity: 1 !important;
-    display: block !important;
-    visibility: visible !important;
-    z-index: 9 !important;
-    animation: snowflakeFall linear infinite !important;
-    animation-play-state: running !important;
+    opacity: 1;
+    display: block;
+    visibility: visible;
+    z-index: 9;
+    /* WICHTIG: Keine animation hier setzen - wird von JavaScript gesetzt */
 }
 
 .snowflake::before {
@@ -4770,9 +4769,9 @@ img {
 }
 
 .snowflake.clickable {
-    pointer-events: auto !important;
+    pointer-events: auto;
     cursor: pointer;
-    z-index: 100 !important;
+    z-index: 100;
 }
 
 /* EINFACHE Animation: Fallen mit seitlichem Schwanken */
@@ -4816,11 +4815,10 @@ img {
 
 /* Klickbare Schneeflocken */
 .snowflake.clickable {
-    pointer-events: auto !important;
+    pointer-events: auto;
     cursor: pointer;
-    z-index: 100 !important;
-    position: absolute !important;
-    animation: snowflakeFall linear infinite !important;
+    z-index: 100;
+    position: absolute;
 }
 
 .snowflake.clickable:hover {
