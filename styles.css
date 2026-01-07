@@ -626,9 +626,6 @@ a:hover {
 .hero-container {
     position: relative;
     z-index: 50; /* Content über Video und Overlay, aber unter Navigation (1000) */
-}
-
-.hero-container {
     max-width: var(--container-max-width);
     margin: 0 auto;
     padding: 0 var(--spacing-xl);
@@ -640,6 +637,17 @@ a:hover {
     box-sizing: border-box;
     width: 100%;
     min-height: 100vh; /* Mindesthöhe für vollständige Sichtbarkeit */
+}
+
+/* Hero Content explizit über Video positionieren */
+.hero-content {
+    position: relative;
+    z-index: 51; /* Explizit über Video (5), Overlay (6), Schneeflocken (7) */
+}
+
+.hero-visual {
+    position: relative;
+    z-index: 51; /* Explizit über Video */
 }
 
 .hero-title {
