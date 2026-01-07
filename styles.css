@@ -4624,10 +4624,10 @@ img {
     overflow: hidden;
 }
 
-/* Mobile: Schneeflocken komplett deaktivieren für Performance */
+/* Mobile: Schneeflocken aktiviert für Spiel */
 @media (max-width: 768px) {
     .snowflakes-container {
-        display: none !important;
+        display: block !important;
     }
 }
 

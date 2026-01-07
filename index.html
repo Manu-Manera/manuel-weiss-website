@@ -2028,11 +2028,22 @@
                 snowflake.style.animationDuration = (Math.random() * 10 + 10) + 's, ' + (Math.random() * 3 + 2) + 's';
                 snowflake.style.animationDelay = Math.random() * 10 + 's, 0s';
                 
-                // Click Event
+                // Click Event (Desktop)
                 snowflake.addEventListener('click', (e) => this.catchSnowflake(e, snowflake, size.points));
+                
+                // Touch Events (Mobile) - verbessert für bessere Reaktion
+                let touchStartTime = 0;
                 snowflake.addEventListener('touchstart', (e) => {
+                    touchStartTime = Date.now();
                     e.preventDefault();
-                    this.catchSnowflake(e, snowflake, size.points);
+                }, { passive: false });
+                
+                snowflake.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    // Nur auslösen wenn Touch kurz war (kein Scroll)
+                    if (Date.now() - touchStartTime < 300) {
+                        this.catchSnowflake(e, snowflake, size.points);
+                    }
                 }, { passive: false });
                 
                 container.appendChild(snowflake);
@@ -2087,9 +2098,13 @@
                     playerNameInput.focus();
                 };
                 
-                submitBtn.onclick = () => {
+                submitBtn.onclick = async () => {
                     const name = playerNameInput.value.trim() || 'Anonym';
-                    this.saveHighscore(name, this.score);
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Speichere...';
+                    
+                    await this.saveHighscore(name, this.score);
+                    
                     modal.style.display = 'none';
                     playerNameInput.value = '';
                     this.score = 0;
@@ -2097,7 +2112,9 @@
                     document.getElementById('snowflakeScore').textContent = '0';
                     document.getElementById('snowflakeGameUI').style.display = 'none';
                     document.getElementById('saveHighscoreBtn').style.display = 'none';
-                    alert('🎉 Highscore gespeichert!');
+                    
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Speichern';
                 };
                 
                 cancelBtn.onclick = () => {
@@ -2109,24 +2126,54 @@
                 });
             },
             
-            saveHighscore(name, score) {
-                let highscores = JSON.parse(localStorage.getItem('snowflakeHighscores') || '[]');
-                highscores.push({ name, score, date: new Date().toLocaleDateString('de-DE') });
-                highscores.sort((a, b) => b.score - a.score);
-                highscores = highscores.slice(0, 10); // Top 10
-                localStorage.setItem('snowflakeHighscores', JSON.stringify(highscores));
-                this.updateHighscoreDisplay();
+            async saveHighscore(name, score) {
+                try {
+                    const response = await fetch('/.netlify/functions/snowflake-highscores', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ name, score }),
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to save highscore');
+                    }
+
+                    const data = await response.json();
+                    if (data.success && data.highscores) {
+                        this.updateHighscoreDisplay(data.highscores);
+                        alert('🎉 Highscore gespeichert!');
+                    }
+                } catch (error) {
+                    console.error('Error saving highscore:', error);
+                    alert('Fehler beim Speichern. Bitte versuche es später erneut.');
+                }
             },
             
-            getHighscores() {
-                return JSON.parse(localStorage.getItem('snowflakeHighscores') || '[]');
+            async loadHighscores() {
+                try {
+                    const response = await fetch('/.netlify/functions/snowflake-highscores');
+                    if (!response.ok) {
+                        throw new Error('Failed to load highscores');
+                    }
+                    const data = await response.json();
+                    return data.highscores || [];
+                } catch (error) {
+                    console.error('Error loading highscores:', error);
+                    return [];
+                }
             },
             
-            updateHighscoreDisplay() {
+            async updateHighscoreDisplay(highscores = null) {
                 const container = document.getElementById('highscoresList');
                 if (!container) return;
                 
-                const highscores = this.getHighscores();
+                // Load from server if not provided
+                if (!highscores) {
+                    highscores = await this.loadHighscores();
+                }
+                
                 if (highscores.length === 0) {
                     container.innerHTML = '<p class="no-highscores">Noch keine Highscores. Fange Schneeflocken!</p>';
                     return;
@@ -2146,8 +2193,8 @@
         SnowflakeGame.init();
         
         // Update highscore display on load
-        document.addEventListener('DOMContentLoaded', () => {
-            SnowflakeGame.updateHighscoreDisplay();
+        document.addEventListener('DOMContentLoaded', async () => {
+            await SnowflakeGame.updateHighscoreDisplay();
         });
         
         // ROBUSTER SAFARI-FIX: Kacheln horizontal erzwingen
