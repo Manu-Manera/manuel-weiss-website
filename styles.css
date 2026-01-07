@@ -3840,46 +3840,49 @@ a:hover {
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        /* GPU-Beschleunigung für besseren z-index */
+        /* GPU-Beschleunigung nur auf Container, nicht auf Text */
         transform: translateZ(0);
     }
     
     .hero-title {
         position: relative;
         z-index: 102 !important; /* Explizit ganz oben - !important für Mobile */
-        transform: translateZ(0); /* GPU-Beschleunigung */
+        /* KEIN transform: translateZ(0) auf Text - verursacht verschwommenen Text in Safari */
         font-size: 4rem !important; /* NOCH größer - ca. 64px für maximale Klarheit */
         line-height: 1.1 !important; /* Kompaktere Zeilenhöhe für bessere Lesbarkeit */
         margin-bottom: 0; /* Kein Margin, da keine Buttons */
-        /* EXTREM starker weißer Glüheffekt für maximale Lesbarkeit */
+        /* Optimierter Text-Shadow: Weniger Schichten, aber stärker für Safari */
         color: white !important;
         text-shadow: 
-            0 0 30px rgba(255, 255, 255, 1),
-            0 0 60px rgba(255, 255, 255, 0.95),
-            0 0 90px rgba(255, 255, 255, 0.8),
-            0 0 120px rgba(255, 255, 255, 0.6),
-            0 8px 32px rgba(0, 0, 0, 0.95),
-            0 4px 16px rgba(0, 0, 0, 0.9),
-            0 2px 4px rgba(0, 0, 0, 0.85);
+            0 0 40px rgba(255, 255, 255, 1),
+            0 0 80px rgba(255, 255, 255, 0.9),
+            0 6px 24px rgba(0, 0, 0, 0.95),
+            0 3px 12px rgba(0, 0, 0, 0.9);
         text-align: center;
-        -webkit-font-smoothing: antialiased;
+        /* Safari-spezifische Text-Rendering-Optimierungen */
+        -webkit-font-smoothing: subpixel-antialiased; /* Safari: subpixel für schärferen Text */
         -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility; /* Bessere Textqualität */
         font-weight: 900 !important; /* EXTREM fett für maximale Präsenz */
         letter-spacing: -0.01em; /* Leicht kompakter für bessere Lesbarkeit */
+        /* Safari: Verhindere verschwommenen Text durch Subpixel-Rendering */
+        -webkit-transform: none; /* Kein Transform auf Text */
+        transform: none; /* Kein Transform auf Text */
     }
     
     .hero-title .mobile-only {
         display: block;
-        /* Sehr starker Glüheffekt für mobile-only Text - überschreibt nicht den Haupt-Shadow */
+        /* Optimierter Glüheffekt für mobile-only Text - weniger Schichten für Safari */
         text-shadow: 
-            0 0 25px rgba(255, 255, 255, 1),
-            0 0 50px rgba(255, 255, 255, 0.9),
-            0 0 75px rgba(255, 255, 255, 0.7),
-            0 8px 32px rgba(0, 0, 0, 0.95),
-            0 4px 16px rgba(0, 0, 0, 0.9),
-            0 2px 4px rgba(0, 0, 0, 0.8) !important;
+            0 0 40px rgba(255, 255, 255, 1),
+            0 0 80px rgba(255, 255, 255, 0.9),
+            0 6px 24px rgba(0, 0, 0, 0.95),
+            0 3px 12px rgba(0, 0, 0, 0.9) !important;
         color: white !important;
-        font-weight: 800 !important;
+        font-weight: 900 !important;
+        /* Safari: Kein Transform auf Text */
+        -webkit-transform: none !important;
+        transform: none !important;
     }
     
     .hero-visual {
@@ -3891,17 +3894,17 @@ a:hover {
     
     .hero-title-line-1,
     .hero-title-line-2 {
-        /* EXTREM starker weißer Glüheffekt für beide Zeilen - maximale Lesbarkeit */
+        /* Optimierter weißer Glüheffekt für beide Zeilen - weniger Schichten für Safari */
         text-shadow: 
-            0 0 30px rgba(255, 255, 255, 1),
-            0 0 60px rgba(255, 255, 255, 0.95),
-            0 0 90px rgba(255, 255, 255, 0.8),
-            0 0 120px rgba(255, 255, 255, 0.6),
-            0 8px 32px rgba(0, 0, 0, 0.95),
-            0 4px 16px rgba(0, 0, 0, 0.9),
-            0 2px 4px rgba(0, 0, 0, 0.85) !important;
+            0 0 40px rgba(255, 255, 255, 1),
+            0 0 80px rgba(255, 255, 255, 0.9),
+            0 6px 24px rgba(0, 0, 0, 0.95),
+            0 3px 12px rgba(0, 0, 0, 0.9) !important;
         color: white !important;
         font-weight: 900 !important; /* EXTREM fett für maximale Präsenz */
+        /* Safari: Kein Transform auf Text */
+        -webkit-transform: none !important;
+        transform: none !important;
     }
     
     .hero-title-line-1.mobile-only {
