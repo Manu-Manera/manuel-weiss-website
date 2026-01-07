@@ -2098,34 +2098,29 @@
                         sourceElement.src = data.videoUrl;
                         videoElement.load(); // Lade das Video neu
                         
-                        // Entferne no-video Klasse und zeige Video-Wrapper
-                        if (heroSection) heroSection.classList.remove('no-video');
+                        // Zeige Video-Wrapper (Hintergrund bleibt immer gleich)
                         if (videoWrapper) videoWrapper.style.display = 'block';
                         
                         // Prüfe ob Video erfolgreich geladen wurde
                         videoElement.addEventListener('loadeddata', () => {
-                            if (heroSection) heroSection.classList.remove('no-video');
                             if (videoWrapper) videoWrapper.style.display = 'block';
                         });
                         
-                        // Falls Video nicht geladen werden kann, zeige Fallback-Hintergrund
+                        // Falls Video nicht geladen werden kann, verstecke es (Hintergrund bleibt sichtbar)
                         videoElement.addEventListener('error', () => {
-                            console.warn('Video konnte nicht geladen werden, verwende Fallback-Hintergrund');
-                            if (heroSection) heroSection.classList.add('no-video');
+                            console.warn('Video konnte nicht geladen werden, verstecke Video-Wrapper');
                             if (videoWrapper) videoWrapper.style.display = 'none';
                         });
                         
                         console.log('Hero-Video geladen von:', data.videoUrl);
                     } else {
-                        // Kein Video: Zeige Fallback-Hintergrund (gleicher wie Services)
-                        console.log('Keine Video-URL gesetzt, verwende Fallback-Hintergrund');
-                        if (heroSection) heroSection.classList.add('no-video');
+                        // Kein Video: Verstecke Video-Wrapper (Hintergrund bleibt sichtbar)
+                        console.log('Keine Video-URL gesetzt, verstecke Video-Wrapper');
                         if (videoWrapper) videoWrapper.style.display = 'none';
                     }
                 } catch (error) {
-                    console.warn('Fehler beim Laden der Hero-Video-URL, verwende Fallback-Hintergrund:', error);
-                    // Bei Fehler: Zeige Fallback-Hintergrund
-                    if (heroSection) heroSection.classList.add('no-video');
+                    console.warn('Fehler beim Laden der Hero-Video-URL, verstecke Video-Wrapper:', error);
+                    // Bei Fehler: Verstecke Video-Wrapper (Hintergrund bleibt sichtbar)
                     const videoWrapper = document.querySelector('.hero-video-wrapper');
                     if (videoWrapper) videoWrapper.style.display = 'none';
                 }
