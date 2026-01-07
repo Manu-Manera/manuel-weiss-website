@@ -3608,18 +3608,23 @@ a:hover {
     }
     
     .hero-container {
-        min-height: auto;
+        min-height: 100vh;
         position: relative;
         grid-template-columns: 1fr;
         gap: var(--spacing-xl);
         padding: var(--spacing-lg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
     
     .hero-title {
-        font-size: var(--text-3xl);
-        line-height: 1.2;
-        margin-bottom: var(--spacing-md);
+        font-size: var(--text-4xl);
+        line-height: 1.3;
+        margin-bottom: var(--spacing-lg);
         text-align: center;
+        text-shadow: 0 4px 16px rgba(0, 0, 0, 0.7), 0 2px 4px rgba(0, 0, 0, 0.5);
+        color: white;
     }
     
     .hero-title-line-1 {
@@ -3631,6 +3636,10 @@ a:hover {
         font-size: 0.7em;
         display: block;
         margin-top: 0.2em;
+    }
+    
+    .hero-visual {
+        display: none; /* Verstecke Visual auf Mobile */
     }
     
     .hero-about-image {
