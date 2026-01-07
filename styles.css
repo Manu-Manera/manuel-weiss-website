@@ -4096,28 +4096,30 @@ a:hover {
         margin-bottom: var(--spacing-sm);
         line-height: 1.1 !important;
         font-weight: 900 !important;
-        /* EXTREM starker Text-Shadow auf sehr kleinen Screens */
+        /* Optimierter Text-Shadow auf sehr kleinen Screens - weniger Schichten für Safari */
         text-shadow: 
-            0 0 30px rgba(255, 255, 255, 1),
-            0 0 60px rgba(255, 255, 255, 0.95),
-            0 0 90px rgba(255, 255, 255, 0.8),
-            0 0 120px rgba(255, 255, 255, 0.6),
-            0 8px 32px rgba(0, 0, 0, 0.95),
-            0 4px 16px rgba(0, 0, 0, 0.9),
-            0 2px 4px rgba(0, 0, 0, 0.85);
+            0 0 40px rgba(255, 255, 255, 1),
+            0 0 80px rgba(255, 255, 255, 0.9),
+            0 6px 24px rgba(0, 0, 0, 0.95),
+            0 3px 12px rgba(0, 0, 0, 0.9);
+        /* Safari: Kein Transform auf Text */
+        -webkit-transform: none !important;
+        transform: none !important;
+        -webkit-font-smoothing: subpixel-antialiased !important;
+        text-rendering: optimizeLegibility !important;
     }
     
     .hero-title-line-1,
     .hero-title-line-2 {
         text-shadow: 
-            0 0 30px rgba(255, 255, 255, 1),
-            0 0 60px rgba(255, 255, 255, 0.95),
-            0 0 90px rgba(255, 255, 255, 0.8),
-            0 0 120px rgba(255, 255, 255, 0.6),
-            0 8px 32px rgba(0, 0, 0, 0.95),
-            0 4px 16px rgba(0, 0, 0, 0.9),
-            0 2px 4px rgba(0, 0, 0, 0.85) !important;
+            0 0 40px rgba(255, 255, 255, 1),
+            0 0 80px rgba(255, 255, 255, 0.9),
+            0 6px 24px rgba(0, 0, 0, 0.95),
+            0 3px 12px rgba(0, 0, 0, 0.9) !important;
         font-weight: 900 !important;
+        /* Safari: Kein Transform auf Text */
+        -webkit-transform: none !important;
+        transform: none !important;
     }
     
     .hero-subtitle {
