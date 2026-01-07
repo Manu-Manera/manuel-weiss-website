@@ -1509,6 +1509,7 @@ a:hover {
     position: relative;
     overflow: hidden;
     color: white;
+    z-index: 10; /* Über Hero-Video (z-index 8) */
 }
 
 /* Winterlicher Schnee für Services Section - ohne Y-Formen, nur Schneeflocken */
@@ -3615,6 +3616,7 @@ a:hover {
     
     .hero-container {
         min-height: 100vh;
+        max-height: 100vh; /* Begrenze Höhe auf Mobile */
         position: relative;
         grid-template-columns: 1fr;
         gap: var(--spacing-xl);
@@ -3622,6 +3624,7 @@ a:hover {
         display: flex;
         align-items: center;
         justify-content: center;
+        overflow: hidden; /* Verhindere Overflow */
     }
     
     .hero-title {
@@ -3749,7 +3752,10 @@ a:hover {
     /* Hero Section Mobile */
     .hero {
         min-height: 100vh;
+        max-height: 100vh; /* Begrenze Höhe auf Mobile */
         padding: calc(var(--header-height) + var(--spacing-lg)) 0 var(--spacing-xl) 0;
+        position: relative;
+        overflow: hidden;
     }
     
     .hero-video-wrapper {
