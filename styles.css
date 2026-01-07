@@ -4748,6 +4748,7 @@ img {
     user-select: none;
     pointer-events: none;
     animation: snowflakeFall linear infinite, snowflakeSway ease-in-out infinite;
+    animation-fill-mode: both; /* Wichtig für Animation */
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.4);
     filter: drop-shadow(0 0 3px white);
     /* GPU-Beschleunigung für flüssige Animation */
@@ -4756,7 +4757,7 @@ img {
     -webkit-transform: translateZ(0);
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
-    z-index: 1; /* Basis z-index */
+    z-index: 9; /* Über Video (z-index 8) */
 }
 
 .snowflake::before {
