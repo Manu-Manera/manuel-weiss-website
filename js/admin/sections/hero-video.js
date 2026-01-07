@@ -359,6 +359,23 @@ class HeroVideoSection {
                         throw new Error('Keine Video-URL vom Server erhalten');
                     }
 
+                    // WICHTIG: Speichere URL auch manuell in Settings, falls DynamoDB-Speicherung fehlgeschlagen ist
+                    console.log('💾 Speichere Video-URL in Settings...');
+                    try {
+                        const settingsResponse = await fetch('/.netlify/functions/hero-video-settings', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ videoUrl: publicUrl })
+                        });
+                        if (!settingsResponse.ok) {
+                            console.warn('⚠️ Fehler beim Speichern in Settings, aber Upload war erfolgreich');
+                        } else {
+                            console.log('✅ Video-URL in Settings gespeichert');
+                        }
+                    } catch (settingsError) {
+                        console.warn('⚠️ Fehler beim Speichern in Settings:', settingsError);
+                    }
+
                     console.log('✅ Video erfolgreich hochgeladen (Server-Side):', publicUrl);
 
                     // Erfolg!
