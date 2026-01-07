@@ -2133,6 +2133,13 @@
                         sourceElement.src = data.videoUrl;
                         videoElement.load(); // Lade das Video neu
                         
+                        // Mobile Optimierung: Preload auf "metadata" für bessere Performance
+                        if (window.innerWidth <= 768) {
+                            videoElement.preload = 'metadata';
+                        } else {
+                            videoElement.preload = 'auto';
+                        }
+                        
                         // Zeige Video-Wrapper (Hintergrund bleibt immer gleich)
                         if (videoWrapper) videoWrapper.style.display = 'block';
                         
