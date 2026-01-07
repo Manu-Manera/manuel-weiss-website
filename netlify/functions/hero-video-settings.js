@@ -8,8 +8,16 @@ const { marshall, unmarshall } = require('@aws-sdk/util-dynamodb');
 
 // Verwende alternative Variablennamen, da AWS_REGION reserviert ist
 const awsRegion = process.env.NETLIFY_AWS_REGION || process.env.AWS_REGION || 'eu-central-1';
+const accessKeyId = process.env.NETLIFY_AWS_ACCESS_KEY_ID || process.env.AWS_ACCESS_KEY_ID;
+const secretAccessKey = process.env.NETLIFY_AWS_SECRET_ACCESS_KEY || process.env.AWS_SECRET_ACCESS_KEY;
+
+// DynamoDB Client mit expliziten Credentials initialisieren
 const dynamoDB = new DynamoDBClient({ 
-    region: awsRegion
+    region: awsRegion,
+    credentials: accessKeyId && secretAccessKey ? {
+        accessKeyId: accessKeyId,
+        secretAccessKey: secretAccessKey
+    } : undefined // Falls keine Credentials, verwendet SDK die IAM-Rolle
 });
 
 const TABLE_NAME = process.env.DYNAMODB_SETTINGS_TABLE || 'manuel-weiss-settings';
