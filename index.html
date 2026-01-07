@@ -2235,15 +2235,26 @@
         };
         
         // Init game - WICHTIG: Sofort ausführen und auch nach DOMContentLoaded
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => {
+        // ZUSÄTZLICH: Auch nach window.load für maximale Sicherheit
+        function initSnowflakeGame() {
+            console.log('🚀 initSnowflakeGame() aufgerufen, readyState:', document.readyState);
+            try {
                 SnowflakeGame.init();
                 SnowflakeGame.updateHighscoreDisplay();
-            });
+            } catch (error) {
+                console.error('❌ Fehler beim Initialisieren von SnowflakeGame:', error);
+            }
+        }
+        
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initSnowflakeGame);
+            window.addEventListener('load', initSnowflakeGame);
+        } else if (document.readyState === 'interactive') {
+            initSnowflakeGame();
+            window.addEventListener('load', initSnowflakeGame);
         } else {
-            // DOM ist bereits geladen
-            SnowflakeGame.init();
-            SnowflakeGame.updateHighscoreDisplay();
+            // DOM ist bereits vollständig geladen
+            initSnowflakeGame();
         }
         
         // ROBUSTER SAFARI-FIX: Kacheln horizontal erzwingen
