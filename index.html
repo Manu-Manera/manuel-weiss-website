@@ -2041,10 +2041,25 @@
                 
                 // Zufällige Position und Animation
                 snowflake.style.left = Math.random() * 100 + '%';
-                const fallDuration = Math.random() * 10 + 10; // 10-20 Sekunden
-                const animationDelay = Math.random() * 5;
+                
+                // Verschiedene Geschwindigkeiten je nach Größe
+                let baseDuration;
+                if (size.class === 'large') {
+                    baseDuration = Math.random() * 5 + 12; // Große: 12-17 Sekunden (langsamer)
+                } else if (size.class === 'medium') {
+                    baseDuration = Math.random() * 5 + 10; // Mittlere: 10-15 Sekunden
+                } else {
+                    baseDuration = Math.random() * 5 + 8; // Kleine: 8-13 Sekunden (schneller)
+                }
+                
+                const animationDelay = Math.random() * 8; // Mehr Verzögerung für natürlicheres Erscheinen
+                
+                // Zufällig eine der 5 Animations-Varianten wählen
+                const animationVariant = Math.floor(Math.random() * 5) + 1;
+                const animationName = `snowflakeFall${animationVariant}`;
+                
                 // WICHTIG: Animation mit !important setzen um CSS zu überschreiben
-                snowflake.style.setProperty('animation', `snowflakeFall ${fallDuration}s linear ${animationDelay}s infinite`, 'important');
+                snowflake.style.setProperty('animation', `${animationName} ${baseDuration}s ease-in-out ${animationDelay}s infinite`, 'important');
                 
                 // Click Event (Desktop)
                 snowflake.addEventListener('click', (e) => this.catchSnowflake(e, snowflake, size.points));
