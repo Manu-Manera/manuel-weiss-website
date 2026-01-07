@@ -4862,6 +4862,34 @@ img {
     z-index: 0;
 }
 
+/* Mobile: Optimierte Schneeflocken-Animation */
+@media (max-width: 768px) {
+    .snowflake {
+        /* Mobile: GPU-Beschleunigung für flüssige Animation */
+        will-change: transform;
+        transform: translateZ(0);
+        -webkit-transform: translateZ(0);
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+        /* Reduzierte Animation-Komplexität auf Mobile */
+        animation-timing-function: linear, ease-in-out;
+    }
+    
+    /* Mobile: Vereinfachte Sway-Animation für bessere Performance */
+    @keyframes snowflakeSwayMobile {
+        0%, 100% {
+            transform: translate3d(0, 0, 0) rotate(0deg);
+        }
+        50% {
+            transform: translate3d(10px, 0, 0) rotate(180deg);
+        }
+    }
+    
+    .snowflake {
+        animation: snowflakeFall linear infinite, snowflakeSwayMobile ease-in-out infinite;
+    }
+}
+
 /* Reduziere Schneeflocken auf Mobile für Performance */
 @media (max-width: 768px) {
     .snowflake {
