@@ -2029,16 +2029,10 @@
                 
                 // Zufällige Position und Animation
                 snowflake.style.left = Math.random() * 100 + '%';
-                snowflake.style.top = '-100px'; // Starte außerhalb des Viewports
-                // Animation-Duration - NUR eine Animation (snowflakeFall kombiniert Fall+Sway)
+                snowflake.style.top = '-50px';
                 const fallDuration = Math.random() * 10 + 10; // 10-20 Sekunden
-                snowflake.style.animationDuration = `${fallDuration}s`; // NUR eine Duration!
-                snowflake.style.animationDelay = Math.random() * 10 + 's';
-                // WICHTIG: Stelle sicher dass Animationen aktiviert sind
-                snowflake.style.animationPlayState = 'running';
-                snowflake.style.animationFillMode = 'both';
-                // Initiale Sichtbarkeit sicherstellen
-                snowflake.style.opacity = '1';
+                snowflake.style.animationDuration = `${fallDuration}s`;
+                snowflake.style.animationDelay = Math.random() * 5 + 's';
                 
                 // Click Event (Desktop)
                 snowflake.addEventListener('click', (e) => this.catchSnowflake(e, snowflake, size.points));
