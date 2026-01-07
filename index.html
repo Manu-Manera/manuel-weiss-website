@@ -2154,10 +2154,15 @@
                         
                         // Video vorhanden: Setze die Video-URL von AWS S3
                         sourceElement.src = data.videoUrl;
-                        videoElement.load(); // Lade das Video neu
                         
-                        // Preload auf "auto" für besseres Laden (auch auf Mobile)
-                        videoElement.preload = 'auto';
+                        // Mobile Optimierung: Preload auf "metadata" für schnellere Ladezeit
+                        if (window.innerWidth <= 768) {
+                            videoElement.preload = 'metadata';
+                        } else {
+                            videoElement.preload = 'auto';
+                        }
+                        
+                        videoElement.load(); // Lade das Video neu
                         
                         // Zeige Video-Wrapper
                         if (videoWrapper) {
