@@ -58,7 +58,9 @@ exports.handler = async (event, context) => {
                 Bucket: BUCKET_NAME,
                 Key: key,
                 ContentType: contentType,
-                Expires: UPLOAD_EXPIRY
+                Expires: UPLOAD_EXPIRY,
+                // Wichtig: ServerSideEncryption für bessere Kompatibilität
+                ServerSideEncryption: 'AES256'
             };
 
             const uploadUrl = s3.getSignedUrl('putObject', params);
@@ -66,6 +68,7 @@ exports.handler = async (event, context) => {
             
             console.log('Generated pre-signed URL for:', key);
             console.log('Public URL will be:', publicUrl);
+            console.log('Upload URL expires in:', UPLOAD_EXPIRY, 'seconds');
 
             return {
                 statusCode: 200,
