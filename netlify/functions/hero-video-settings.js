@@ -33,17 +33,22 @@ exports.handler = async (event, context) => {
 
     try {
         // Prüfe AWS Credentials (nur für POST/PUT notwendig, GET kann auch ohne funktionieren)
-        if ((event.httpMethod === 'POST' || event.httpMethod === 'PUT') && 
-            (!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY)) {
-            console.error('AWS Credentials missing!');
-            return {
-                statusCode: 500,
-                headers,
-                body: JSON.stringify({ 
-                    error: 'Server configuration error',
-                    message: 'AWS credentials not configured. Please set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY in Netlify environment variables.'
-                })
-            };
+        // Unterstütze alternative Variablennamen, da AWS_ACCESS_KEY_ID/AWS_SECRET_ACCESS_KEY reserviert sind
+        if (event.httpMethod === 'POST' || event.httpMethod === 'PUT') {
+            const accessKeyId = process.env.NETLIFY_AWS_ACCESS_KEY_ID || process.env.AWS_ACCESS_KEY_ID;
+            const secretAccessKey = process.env.NETLIFY_AWS_SECRET_ACCESS_KEY || process.env.AWS_SECRET_ACCESS_KEY;
+            
+            if (!accessKeyId || !secretAccessKey) {
+                console.error('AWS Credentials missing!');
+                return {
+                    statusCode: 500,
+                    headers,
+                    body: JSON.stringify({ 
+                        error: 'Server configuration error',
+                        message: 'AWS credentials not configured. Please set NETLIFY_AWS_ACCESS_KEY_ID and NETLIFY_AWS_SECRET_ACCESS_KEY in Netlify environment variables.'
+                    })
+                };
+            }
         }
 
         // GET: Lade aktuelle Video-URL

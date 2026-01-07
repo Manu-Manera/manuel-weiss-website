@@ -6,9 +6,11 @@
 const AWS = require('aws-sdk');
 
 // S3 Client initialisieren
+// Verwende alternative Variablennamen, da AWS_ACCESS_KEY_ID/AWS_SECRET_ACCESS_KEY reserviert sind
 const s3 = new AWS.S3({
     region: process.env.AWS_REGION || 'eu-central-1',
-    // Credentials werden aus Environment Variables geladen
+    accessKeyId: process.env.NETLIFY_AWS_ACCESS_KEY_ID || process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.NETLIFY_AWS_SECRET_ACCESS_KEY || process.env.AWS_SECRET_ACCESS_KEY
 });
 
 const BUCKET_NAME = process.env.AWS_S3_HERO_VIDEO_BUCKET || 'manuel-weiss-hero-videos';
@@ -33,15 +35,18 @@ exports.handler = async (event, context) => {
     }
 
     try {
-        // Prüfe AWS Credentials
-        if (!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY) {
+        // Prüfe AWS Credentials (unterstütze alternative Variablennamen)
+        const accessKeyId = process.env.NETLIFY_AWS_ACCESS_KEY_ID || process.env.AWS_ACCESS_KEY_ID;
+        const secretAccessKey = process.env.NETLIFY_AWS_SECRET_ACCESS_KEY || process.env.AWS_SECRET_ACCESS_KEY;
+        
+        if (!accessKeyId || !secretAccessKey) {
             console.error('AWS Credentials missing!');
             return {
                 statusCode: 500,
                 headers,
                 body: JSON.stringify({ 
                     error: 'Server configuration error',
-                    message: 'AWS credentials not configured. Please set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY in Netlify environment variables.'
+                    message: 'AWS credentials not configured. Please set NETLIFY_AWS_ACCESS_KEY_ID and NETLIFY_AWS_SECRET_ACCESS_KEY in Netlify environment variables.'
                 })
             };
         }
