@@ -4742,7 +4742,7 @@ img {
 
 .snowflake {
     position: absolute;
-    top: -10px;
+    top: -100px; /* Starte außerhalb des Viewports */
     color: rgba(255, 255, 255, 0.9);
     font-size: 1.5rem;
     user-select: none;
