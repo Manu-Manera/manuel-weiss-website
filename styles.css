@@ -4759,12 +4759,12 @@ img {
     pointer-events: none;
     animation: snowflakeFall linear infinite, snowflakeSway ease-in-out infinite;
     animation-fill-mode: both; /* Wichtig für Animation */
+    animation-play-state: running; /* Explizit aktiviert */
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.4);
     filter: drop-shadow(0 0 3px white);
     /* GPU-Beschleunigung für flüssige Animation */
     will-change: transform;
-    transform: translateZ(0);
-    -webkit-transform: translateZ(0);
+    /* KEIN initial transform - würde Animation überschreiben */
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
     z-index: 9; /* Über Video (z-index 8) */
@@ -4893,12 +4893,13 @@ img {
     pointer-events: auto !important;
     cursor: pointer;
     z-index: 100 !important; /* Sehr hoher z-index für Klickbarkeit - über allem */
+    /* WICHTIG: position: absolute beibehalten für Animation! */
+    position: absolute !important; /* NICHT relative - würde Animation blockieren */
     /* WICHTIG: Animationen müssen erhalten bleiben! */
     animation: snowflakeFall linear infinite, snowflakeSway ease-in-out infinite !important;
     animation-fill-mode: both !important; /* Wichtig für Animation */
     transition: opacity 0.3s ease;
     /* KEIN transform transition - würde Animationen stören */
-    position: relative; /* Wichtig für z-index */
 }
 
 .snowflake.clickable:hover {
