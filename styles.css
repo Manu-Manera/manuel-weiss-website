@@ -4724,7 +4724,7 @@ img {
     width: 100%;
     height: 100%;
     pointer-events: none; /* Container blockiert keine Klicks */
-    z-index: 0;
+    z-index: 9; /* Über Video (z-index 8), aber unter Content (z-index 50+) */
     overflow: hidden;
 }
 
@@ -4884,6 +4884,7 @@ img {
     z-index: 10 !important; /* Höherer z-index für Klickbarkeit */
     /* WICHTIG: Animationen müssen erhalten bleiben! */
     animation: snowflakeFall linear infinite, snowflakeSway ease-in-out infinite !important;
+    animation-fill-mode: both !important; /* Wichtig für Animation */
     transition: opacity 0.3s ease;
     /* KEIN transform transition - würde Animationen stören */
 }
