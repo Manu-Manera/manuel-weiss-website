@@ -4745,7 +4745,12 @@ img {
     }
     
     .snowflake {
-        animation: snowflakeFall linear infinite, snowflakeSwayMobile ease-in-out infinite;
+        animation: snowflakeFall linear infinite, snowflakeSwayMobile ease-in-out infinite !important;
+    }
+    
+    /* Klickbare Schneeflocken auf Mobile - Animationen beibehalten */
+    .snowflake.clickable {
+        animation: snowflakeFall linear infinite, snowflakeSwayMobile ease-in-out infinite !important;
     }
 }
 
@@ -4768,18 +4773,24 @@ img {
 .snowflake.clickable {
     pointer-events: auto !important;
     cursor: pointer;
+    /* WICHTIG: Animationen müssen erhalten bleiben! */
+    animation: snowflakeFall linear infinite, snowflakeSway ease-in-out infinite !important;
     transition: transform 0.2s ease, opacity 0.3s ease;
 }
 
 .snowflake.clickable:hover {
-    transform: scale(1.3);
+    transform: scale(1.3) !important;
     filter: drop-shadow(0 0 10px white);
+    /* Animation während Hover beibehalten */
+    animation: snowflakeFall linear infinite, snowflakeSway ease-in-out infinite !important;
 }
 
 .snowflake.caught {
     transform: scale(2) !important;
     opacity: 0 !important;
     transition: all 0.3s ease;
+    /* Animation stoppen wenn gefangen */
+    animation: none !important;
 }
 
 /* Score Display */
