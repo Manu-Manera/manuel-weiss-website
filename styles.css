@@ -4724,7 +4724,7 @@ img {
 }
 
 /* =============================================== */
-/* SCHNEEFLOCKEN ANIMATION                         */
+/* SCHNEEFLOCKEN - EINFACHER, SAUBERER ANSATZ     */
 /* =============================================== */
 
 .snowflakes-container {
@@ -4733,162 +4733,66 @@ img {
     left: 0;
     width: 100%;
     height: 100%;
-    pointer-events: none; /* Container blockiert keine Klicks */
-    z-index: 9; /* Über Video (z-index 8), aber unter Content (z-index 50+) */
+    pointer-events: none;
+    z-index: 9;
     overflow: hidden;
-}
-
-/* Klickbare Schneeflocken müssen pointer-events haben */
-.snowflakes-container .snowflake.clickable {
-    pointer-events: auto !important;
-}
-
-/* Mobile: Schneeflocken aktiviert für Spiel */
-@media (max-width: 768px) {
-    .snowflakes-container {
-        display: block !important;
-    }
 }
 
 .snowflake {
     position: absolute;
-    top: -100px; /* Starte außerhalb des Viewports */
-    color: rgba(255, 255, 255, 0.9) !important;
+    top: -50px;
+    color: white;
     font-size: 1.5rem;
     user-select: none;
     pointer-events: none;
+    opacity: 1;
+    display: block;
+    z-index: 9;
     animation: snowflakeFall linear infinite;
-    animation-fill-mode: forwards; /* Nur forwards, nicht both - verhindert opacity: 0 am Start */
-    animation-play-state: running !important; /* Explizit aktiviert */
-    opacity: 1 !important; /* IMMER sichtbar */
-    visibility: visible !important; /* Sicherstellen dass sichtbar */
-    display: block !important; /* Sicherstellen dass angezeigt */
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.4);
-    filter: drop-shadow(0 0 3px white);
-    /* GPU-Beschleunigung für flüssige Animation */
-    will-change: transform;
-    /* KEIN initial transform - würde Animation überschreiben */
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
-    z-index: 9; /* Über Video (z-index 8) */
 }
 
 .snowflake::before {
     content: "❄";
 }
 
-/* Verschiedene Schneeflocken-Größen */
 .snowflake.small {
     font-size: 0.8rem;
-    opacity: 0.6;
 }
 
 .snowflake.medium {
     font-size: 1.3rem;
-    opacity: 0.8;
 }
 
 .snowflake.large {
     font-size: 2rem;
-    opacity: 1;
 }
 
-/* Animation: Fallbewegung MIT seitlichem Schwanken kombiniert */
-/* WICHTIG: Nur EINE Animation, da zwei transform-Animationen sich überschreiben würden */
+.snowflake.clickable {
+    pointer-events: auto !important;
+    cursor: pointer;
+    z-index: 100 !important;
+}
+
+/* EINFACHE Animation: Fallen mit seitlichem Schwanken */
 @keyframes snowflakeFall {
     0% {
-        transform: translate3d(0, -100px, 0) translateZ(0);
-        opacity: 1 !important; /* SOFORT sichtbar! */
+        transform: translate(0, -50px);
     }
     25% {
-        transform: translate3d(15px, 500px, 0) translateZ(0);
-        opacity: 1;
+        transform: translate(15px, 500px);
     }
     50% {
-        transform: translate3d(-10px, 1000px, 0) translateZ(0);
-        opacity: 1;
+        transform: translate(-10px, 1000px);
     }
     75% {
-        transform: translate3d(20px, 1500px, 0) translateZ(0);
-        opacity: 1;
-    }
-    99% {
-        transform: translate3d(0, 1950px, 0) translateZ(0);
-        opacity: 1;
+        transform: translate(20px, 1500px);
     }
     100% {
-        transform: translate3d(0, 2000px, 0) translateZ(0);
-        opacity: 0;
+        transform: translate(0, 2000px);
     }
 }
 
-/* Animation: Seitliches Schwanken - NUR horizontale Bewegung, KEIN transform (wird von snowflakeFall überschrieben) */
-/* PROBLEM: Zwei Animationen mit transform überschreiben sich! Lösung: Nur eine Animation mit kombiniertem transform */
-@keyframes snowflakeSway {
-    0%, 100% {
-        /* Kein transform hier - wird von snowflakeFall gesteuert */
-    }
-    25% {
-        /* Kein transform hier - wird von snowflakeFall gesteuert */
-    }
-    50% {
-        /* Kein transform hier - wird von snowflakeFall gesteuert */
-    }
-    75% {
-        /* Kein transform hier - wird von snowflakeFall gesteuert */
-    }
-}
-
-/* Services Section spezifischer Schneeflocken-Hintergrund */
-.services {
-    position: relative;
-}
-
-.services::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    pointer-events: none;
-    z-index: 0;
-}
-
-/* Mobile: Optimierte Schneeflocken-Animation */
-@media (max-width: 768px) {
-    .snowflake {
-        /* Mobile: GPU-Beschleunigung für flüssige Animation */
-        will-change: transform;
-        transform: translateZ(0);
-        -webkit-transform: translateZ(0);
-        backface-visibility: hidden;
-        -webkit-backface-visibility: hidden;
-        /* Reduzierte Animation-Komplexität auf Mobile */
-        animation-timing-function: linear, ease-in-out;
-    }
-    
-    /* Mobile: Vereinfachte Sway-Animation für bessere Performance */
-    @keyframes snowflakeSwayMobile {
-        0%, 100% {
-            transform: translate3d(0, 0, 0) rotate(0deg);
-        }
-        50% {
-            transform: translate3d(10px, 0, 0) rotate(180deg);
-        }
-    }
-    
-    .snowflake {
-        animation: snowflakeFall linear infinite !important;
-    }
-    
-    /* Klickbare Schneeflocken auf Mobile - Animationen beibehalten */
-    .snowflake.clickable {
-        animation: snowflakeFall linear infinite !important;
-    }
-}
-
-/* Reduziere Schneeflocken auf Mobile für Performance */
+/* Mobile: Schneeflocken-Größen anpassen */
 @media (max-width: 768px) {
     .snowflake {
         font-size: 0.8rem;
@@ -4907,21 +4811,13 @@ img {
 .snowflake.clickable {
     pointer-events: auto !important;
     cursor: pointer;
-    z-index: 100 !important; /* Sehr hoher z-index für Klickbarkeit - über allem */
-    /* WICHTIG: position: absolute beibehalten für Animation! */
-    position: absolute !important; /* NICHT relative - würde Animation blockieren */
-    /* WICHTIG: Animationen müssen erhalten bleiben! */
+    z-index: 100 !important;
+    position: absolute !important;
     animation: snowflakeFall linear infinite !important;
-    animation-fill-mode: both !important; /* Wichtig für Animation */
-    transition: opacity 0.3s ease;
-    /* KEIN transform transition - würde Animationen stören */
 }
 
 .snowflake.clickable:hover {
-    /* Nur Filter ändern, nicht transform - transform wird von Animation gesteuert */
     filter: drop-shadow(0 0 10px white) !important;
-    /* Animation während Hover beibehalten */
-    animation: snowflakeFall linear infinite !important;
 }
 
 .snowflake.caught {
