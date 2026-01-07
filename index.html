@@ -2029,11 +2029,11 @@
                 const snowflake = document.createElement('div');
                 snowflake.className = 'snowflake clickable';
                 
-                // Zufällige Größe mit Punktwert
+                // Zufällige Größe mit Punktwert - KLEINE Flocken = MEHR Punkte (schwerer zu treffen!)
                 const sizes = [
-                    { class: 'small', points: 10 },
-                    { class: 'medium', points: 25 },
-                    { class: 'large', points: 50 }
+                    { class: 'small', points: 50 },   // Klein = schwer zu treffen = 50 Punkte
+                    { class: 'medium', points: 25 },  // Mittel = 25 Punkte
+                    { class: 'large', points: 10 }    // Groß = leicht zu treffen = 10 Punkte
                 ];
                 const size = sizes[Math.floor(Math.random() * sizes.length)];
                 snowflake.classList.add(size.class);
