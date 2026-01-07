@@ -159,7 +159,7 @@ class HeroVideoSection {
         // Strategie: Versuche zuerst direkten S3-Upload (schneller, kein 6MB Limit)
         // Falls das fehlschlägt, verwende Server-Side Upload als Fallback
         
-        let publicUrl; // Deklariere außerhalb des try-Blocks für besseren Scope
+        let publicUrl = null; // Deklariere und initialisiere außerhalb des try-Blocks
         
         try {
             if (progressStatus) progressStatus.textContent = 'Vorbereitung...';
@@ -232,11 +232,16 @@ class HeroVideoSection {
                     });
 
                     publicUrl = preSignedPublicUrl;
+                    console.log('✅ publicUrl gesetzt (direkter Upload):', publicUrl);
 
                     // Schritt 3: Speichere URL in Settings
                     if (progressStatus) progressStatus.textContent = 'Speichere Einstellung...';
                     if (progressFill) progressFill.style.width = '80%';
                     if (progressPercentage) progressPercentage.textContent = '80%';
+
+                    if (!publicUrl) {
+                        throw new Error('publicUrl wurde nicht gesetzt');
+                    }
 
                     const settingsResponse = await fetch('/.netlify/functions/hero-video-settings', {
                         method: 'POST',
