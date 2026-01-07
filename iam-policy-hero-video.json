@@ -1,0 +1,32 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "S3HeroVideoBucketAccess",
+      "Effect": "Allow",
+      "Action": [
+        "s3:PutObject",
+        "s3:GetObject",
+        "s3:ListBucket",
+        "s3:HeadBucket",
+        "s3:DeleteObject"
+      ],
+      "Resource": [
+        "arn:aws:s3:::manuel-weiss-hero-videos",
+        "arn:aws:s3:::manuel-weiss-hero-videos/*"
+      ]
+    },
+    {
+      "Sid": "DynamoDBSettingsTableAccess",
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:PutItem",
+        "dynamodb:GetItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:Query"
+      ],
+      "Resource": "arn:aws:dynamodb:eu-central-1:038333965110:table/manuel-weiss-settings"
+    }
+  ]
+}
+
