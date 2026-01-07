@@ -3551,10 +3551,20 @@ a:hover {
     
     .nav-container {
         padding: var(--spacing-md) var(--spacing-lg);
+        /* Sicherstellen, dass Navigation über Video liegt */
+        position: relative;
+        z-index: 1001;
     }
     
     .nav-brand {
         font-size: var(--text-lg);
+    }
+    
+    /* Navigation auf Mobile: Sicherstellen, dass sie über Video liegt */
+    .navbar {
+        z-index: 1000;
+        position: fixed;
+        top: var(--spacing-md);
     }
     
     .nav-logo {
