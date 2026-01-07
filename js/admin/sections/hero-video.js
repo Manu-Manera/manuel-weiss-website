@@ -22,13 +22,35 @@ class HeroVideoSection {
 
     async init() {
         // Warten bis DOM der Section gerendert ist
-        setTimeout(() => {
-            try {
-                this.initializeHandlers();
-            } catch (e) {
-                console.error('Error initializing HeroVideoSection handlers:', e);
-            }
-        }, 0);
+        // Mehrere Versuche mit steigenden Delays, da dynamisch geladenes HTML Zeit braucht
+        const tryInit = (attempt = 0) => {
+            const maxAttempts = 5;
+            const delay = attempt * 100; // 0ms, 100ms, 200ms, 300ms, 400ms
+            
+            setTimeout(() => {
+                try {
+                    const fileInput = document.getElementById('videoFileInput');
+                    const uploadBtn = document.getElementById('uploadVideoBtn');
+                    
+                    if (fileInput && uploadBtn) {
+                        console.log('✅ HeroVideoSection: DOM-Elemente gefunden, initialisiere Handler');
+                        this.initializeHandlers();
+                    } else if (attempt < maxAttempts) {
+                        console.log(`⏳ HeroVideoSection: Warte auf DOM-Elemente (Versuch ${attempt + 1}/${maxAttempts})`);
+                        tryInit(attempt + 1);
+                    } else {
+                        console.error('❌ HeroVideoSection: DOM-Elemente nach mehreren Versuchen nicht gefunden');
+                    }
+                } catch (e) {
+                    console.error('Error initializing HeroVideoSection handlers:', e);
+                    if (attempt < maxAttempts) {
+                        tryInit(attempt + 1);
+                    }
+                }
+            }, delay);
+        };
+        
+        tryInit();
     }
 
     initializeHandlers() {
@@ -42,25 +64,39 @@ class HeroVideoSection {
             return;
         }
 
+        console.log('🔗 HeroVideoSection: Binde Event-Listener');
+
+        // Entferne alte Event-Listener (falls vorhanden) und binde neue
+        const newFileInput = fileInput.cloneNode(true);
+        fileInput.parentNode.replaceChild(newFileInput, fileInput);
+        
+        const newUploadBtn = uploadBtn.cloneNode(true);
+        uploadBtn.parentNode.replaceChild(newUploadBtn, uploadBtn);
+
         // Datei-Auswahl: Vorschau + Button aktivieren
-        fileInput.addEventListener('change', (e) => {
+        newFileInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (!file) return;
+            console.log('📁 HeroVideoSection: Datei ausgewählt:', file.name);
             if (preview && previewContainer) {
                 preview.src = URL.createObjectURL(file);
                 previewContainer.style.display = 'block';
             }
-            uploadBtn.disabled = false;
+            newUploadBtn.disabled = false;
         });
 
         // Upload-Handler binden
-        uploadBtn.addEventListener('click', (e) => {
+        newUploadBtn.addEventListener('click', (e) => {
             e.preventDefault();
+            e.stopPropagation();
+            console.log('🚀 HeroVideoSection: Upload-Button geklickt');
             this.uploadVideo();
         });
 
         // Aktuelles Video laden
         this.loadCurrentVideo();
+        
+        console.log('✅ HeroVideoSection: Event-Listener erfolgreich gebunden');
     }
 
     async loadCurrentVideo() {

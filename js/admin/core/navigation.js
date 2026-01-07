@@ -306,6 +306,30 @@ class AdminNavigation {
                         console.warn('⚠️ window.RentalsSection not found');
                     }
                 }
+                
+                // Hero-Video Section spezifische Initialisierung
+                if (sectionId === 'hero-video') {
+                    if (window.HeroVideoSection) {
+                        console.log('🎬 Initializing HeroVideoSection...');
+                        // Erstelle neue Instanz oder verwende vorhandene
+                        if (!window.heroVideoSection) {
+                            window.heroVideoSection = new window.HeroVideoSection();
+                        }
+                        // Prüfe ob init bereits aufgerufen wurde
+                        if (window.heroVideoSection && typeof window.heroVideoSection.init === 'function') {
+                            try {
+                                // init() bindet Event-Listener und lädt aktuelles Video
+                                window.heroVideoSection.init();
+                            } catch (err) {
+                                console.error('❌ Error initializing HeroVideoSection:', err);
+                            }
+                        } else {
+                            console.warn('⚠️ HeroVideoSection.init is not a function');
+                        }
+                    } else {
+                        console.warn('⚠️ window.HeroVideoSection not found');
+                    }
+                }
             } catch (error) {
                 console.error(`Error in initializeSection for ${sectionId}:`, error);
             }
