@@ -3634,13 +3634,25 @@ a:hover {
         line-height: 1.3;
         margin-bottom: var(--spacing-lg);
         text-align: center;
-        text-shadow: 0 4px 16px rgba(0, 0, 0, 0.7), 0 2px 4px rgba(0, 0, 0, 0.5);
+        text-shadow: 0 4px 16px rgba(0, 0, 0, 0.8), 0 2px 4px rgba(0, 0, 0, 0.6);
         color: white;
+        position: relative;
+        z-index: 102; /* Explizit ganz oben */
+        /* Sicherstellen dass Text nicht verschwommen ist */
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
     }
     
     .hero-title-line-1 {
         font-size: 1em;
         display: block;
+        position: relative;
+        z-index: 103; /* Noch höher für mobile-only Text */
+    }
+    
+    .hero-title .mobile-only {
+        position: relative;
+        z-index: 103; /* Explizit ganz oben */
     }
     
     .hero-title-line-2 {
@@ -3764,7 +3776,9 @@ a:hover {
         /* Video-Wrapper für Mobile optimiert */
         position: absolute;
         inset: 0;
-        z-index: 8;
+        z-index: 8; /* Unter Content (z-index 100+) */
+        /* Sicherstellen dass Video nicht über Content liegt */
+        pointer-events: none;
     }
     
     .hero-video {
@@ -3778,8 +3792,9 @@ a:hover {
     }
     
     .hero-video-overlay {
-        /* Leichtes Lila-Overlay für Video im Hintergrund - reduziert für bessere Sichtbarkeit */
-        background: linear-gradient(135deg, rgba(30, 58, 138, 0.5) 0%, rgba(55, 48, 163, 0.5) 50%, rgba(124, 58, 237, 0.5) 100%);
+        /* Sehr leichtes Lila-Overlay für Video im Hintergrund - minimal für maximale Sichtbarkeit */
+        background: linear-gradient(135deg, rgba(30, 58, 138, 0.3) 0%, rgba(55, 48, 163, 0.3) 50%, rgba(124, 58, 237, 0.3) 100%);
+        z-index: 1; /* Sicherstellen dass es unter Content liegt */
     }
     
     .hero-container {
@@ -3789,15 +3804,20 @@ a:hover {
         text-align: center;
         min-height: auto;
         position: relative;
-        z-index: 51;
+        z-index: 100; /* Deutlich über Video (z-index 8) */
     }
     
     .hero-content {
         order: 2;
         position: relative;
-        z-index: 51;
+        z-index: 101; /* Explizit über Container und Video */
         /* Bessere Lesbarkeit auf Mobile */
         text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    }
+    
+    .hero-title {
+        position: relative;
+        z-index: 102; /* Explizit ganz oben */
     }
     
     .hero-visual {
