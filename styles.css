@@ -1572,7 +1572,7 @@ a:hover {
     align-items: center;
     gap: var(--spacing-md);
     position: relative;
-    z-index: 1;
+    z-index: 12; /* Über Container */
 }
 
 .services-category-title i {
