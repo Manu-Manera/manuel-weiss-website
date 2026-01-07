@@ -282,9 +282,9 @@
 5. ✅ Dark Mode Toggle für Fachliche-Entwicklung-Seiten
 
 ### Phase 2: Core Features (2-4 Wochen)
-1. [ ] Radar-Chart für Skills
+1. ✅ Radar-Chart für Skills (Basis-Radar in Schritt 1 mit 5 Skill-Kategorien)
 2. [ ] Adaptive Lernpfad-Generierung
-3. [ ] SMART-Goals Integration
+3. ✅ SMART-Goals Integration (Strukturierte Zieleingabe in Schritt 7)
 4. [ ] Erweiterte Fortschritts-Tracking
 5. [ ] Onboarding-Tour
 

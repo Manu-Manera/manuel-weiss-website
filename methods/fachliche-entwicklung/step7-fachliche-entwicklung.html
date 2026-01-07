@@ -31,8 +31,65 @@
                 </div>
                 <form class="reflection-form" id="step7Form">
                     <div class="form-group">
-                        <label for="firstSteps">Was sind deine ersten 3 Schritte? (SMART-Ziele)</label>
-                        <textarea id="firstSteps" name="firstSteps" rows="6"></textarea>
+                        <label>Definiere bis zu 3 SMART-Ziele (Spezifisch, Messbar, Erreichbar, Relevant, Terminiert)</label>
+                        <p class="question-hint">Konkrete Ziele helfen dir, deinen Plan wirklich umzusetzen. Beginne mit kleinen, erreichbaren Schritten.</p>
+                        <div class="detailed-hints">
+                            <h5>SMART-Beispiele:</h5>
+                            <ul>
+                                <li><strong>Spezifisch:</strong> \"Ich schließe einen React-Kurs ab\" statt \"Ich lerne mehr Frontend\"</li>
+                                <li><strong>Messbar:</strong> \"3 Pull-Requests pro Woche\"</li>
+                                <li><strong>Erreichbar:</strong> Realistisch in deinem Zeitrahmen</li>
+                                <li><strong>Relevant:</strong> Passt zu deiner 5-Jahres-Vision</li>
+                                <li><strong>Terminiert:</strong> Mit klarem Datum/Zeitrahmen</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- SMART Goal 1 -->
+                    <div class="form-group">
+                        <label for="goal1_title">Ziel 1 – Kurzbeschreibung</label>
+                        <input type="text" id="goal1_title" name="goal1_title" placeholder="z.B. React-Grundlagenkurs abschließen">
+                    </div>
+                    <div class="form-group">
+                        <label for="goal1_metric">Messkriterium (Wie misst du Erfolg?)</label>
+                        <input type="text" id="goal1_metric" name="goal1_metric" placeholder="z.B. Kurs mit 100% abschließen, 2 Demo-Projekte bauen">
+                    </div>
+                    <div class="form-group">
+                        <label for="goal1_deadline">Deadline / Zeitraum</label>
+                        <input type="text" id="goal1_deadline" name="goal1_deadline" placeholder="z.B. bis 31.03.2026">
+                    </div>
+
+                    <!-- SMART Goal 2 -->
+                    <div class="form-group">
+                        <label for="goal2_title">Ziel 2 – Kurzbeschreibung (optional)</label>
+                        <input type="text" id="goal2_title" name="goal2_title" placeholder="z.B. AWS-Zertifizierung vorbereiten">
+                    </div>
+                    <div class="form-group">
+                        <label for="goal2_metric">Messkriterium</label>
+                        <input type="text" id="goal2_metric" name="goal2_metric" placeholder="z.B. 40 Übungsfragen/Woche, 2 Probe-Examen bestehen">
+                    </div>
+                    <div class="form-group">
+                        <label for="goal2_deadline">Deadline / Zeitraum</label>
+                        <input type="text" id="goal2_deadline" name="goal2_deadline" placeholder="z.B. Prüfung im Q3 2026">
+                    </div>
+
+                    <!-- SMART Goal 3 -->
+                    <div class="form-group">
+                        <label for="goal3_title">Ziel 3 – Kurzbeschreibung (optional)</label>
+                        <input type="text" id="goal3_title" name="goal3_title" placeholder="z.B. 1x pro Monat Tech-Talk halten">
+                    </div>
+                    <div class="form-group">
+                        <label for="goal3_metric">Messkriterium</label>
+                        <input type="text" id="goal3_metric" name="goal3_metric" placeholder="z.B. 12 Talks im Jahr, Feedback-Score ≥ 4/5">
+                    </div>
+                    <div class="form-group">
+                        <label for="goal3_deadline">Deadline / Zeitraum</label>
+                        <input type="text" id="goal3_deadline" name="goal3_deadline" placeholder="z.B. über die nächsten 12 Monate">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="firstSteps">Was sind deine ersten 3 Schritte, um loszulegen?</label>
+                        <textarea id="firstSteps" name="firstSteps" rows="4" placeholder="z.B. Kurs auswählen, Lernslots im Kalender blocken, Accountability-Partner suchen"></textarea>
                     </div>
                     <div class="form-group">
                         <label for="resources">Welche Ressourcen brauchst du?</label>
@@ -64,6 +121,15 @@
     <script>
         function saveAndContinue() {
             const formData = {
+                goal1_title: document.getElementById('goal1_title').value,
+                goal1_metric: document.getElementById('goal1_metric').value,
+                goal1_deadline: document.getElementById('goal1_deadline').value,
+                goal2_title: document.getElementById('goal2_title').value,
+                goal2_metric: document.getElementById('goal2_metric').value,
+                goal2_deadline: document.getElementById('goal2_deadline').value,
+                goal3_title: document.getElementById('goal3_title').value,
+                goal3_metric: document.getElementById('goal3_metric').value,
+                goal3_deadline: document.getElementById('goal3_deadline').value,
                 firstSteps: document.getElementById('firstSteps').value,
                 resources: document.getElementById('resources').value,
                 support: document.getElementById('support').value,
@@ -82,6 +148,15 @@
             const saved = localStorage.getItem('fachlicheEntwicklungStep7');
             if (saved) {
                 const data = JSON.parse(saved);
+                if (data.goal1_title) document.getElementById('goal1_title').value = data.goal1_title;
+                if (data.goal1_metric) document.getElementById('goal1_metric').value = data.goal1_metric;
+                if (data.goal1_deadline) document.getElementById('goal1_deadline').value = data.goal1_deadline;
+                if (data.goal2_title) document.getElementById('goal2_title').value = data.goal2_title;
+                if (data.goal2_metric) document.getElementById('goal2_metric').value = data.goal2_metric;
+                if (data.goal2_deadline) document.getElementById('goal2_deadline').value = data.goal2_deadline;
+                if (data.goal3_title) document.getElementById('goal3_title').value = data.goal3_title;
+                if (data.goal3_metric) document.getElementById('goal3_metric').value = data.goal3_metric;
+                if (data.goal3_deadline) document.getElementById('goal3_deadline').value = data.goal3_deadline;
                 if (data.firstSteps) document.getElementById('firstSteps').value = data.firstSteps;
                 if (data.resources) document.getElementById('resources').value = data.resources;
                 if (data.support) document.getElementById('support').value = data.support;

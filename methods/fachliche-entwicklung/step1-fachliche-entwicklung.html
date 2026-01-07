@@ -189,6 +189,46 @@
                         </div>
                     </div>
 
+                    <!-- Skill-Kategorien (für Radar-Chart) -->
+                    <div class="form-group">
+                        <label>Wie stark bist du aktuell in diesen Bereichen? (1 = niedrig, 10 = sehr stark)</label>
+                        <p class="question-hint">Nutze die Slider für eine schnelle Einschätzung deiner Kernbereiche. Diese Werte werden in einer Skill-Matrix visualisiert.</p>
+                        <div class="detailed-hints">
+                            <h5>Technische Kernbereiche</h5>
+                            <ul>
+                                <li>
+                                    <strong>Frontend / UI:</strong><br>
+                                    <input type="range" id="skillFrontend" name="skillFrontend" min="1" max="10" value="5" oninput="updateSkillRadar()">
+                                </li>
+                                <li>
+                                    <strong>Backend / APIs:</strong><br>
+                                    <input type="range" id="skillBackend" name="skillBackend" min="1" max="10" value="5" oninput="updateSkillRadar()">
+                                </li>
+                                <li>
+                                    <strong>Cloud / DevOps:</strong><br>
+                                    <input type="range" id="skillCloud" name="skillCloud" min="1" max="10" value="5" oninput="updateSkillRadar()">
+                                </li>
+                                <li>
+                                    <strong>Data / Analytics:</strong><br>
+                                    <input type="range" id="skillData" name="skillData" min="1" max="10" value="5" oninput="updateSkillRadar()">
+                                </li>
+                                <li>
+                                    <strong>Soft Skills / Leadership:</strong><br>
+                                    <input type="range" id="skillSoft" name="skillSoft" min="1" max="10" value="5" oninput="updateSkillRadar()">
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Visuelle Skill-Matrix -->
+                    <div class="form-group">
+                        <label>Deine Skill-Matrix (Radar-Chart)</label>
+                        <p class="question-hint">Dieses Diagramm zeigt deine aktuelle Selbsteinschätzung in den wichtigsten Bereichen.</p>
+                        <div class="skill-radar-container">
+                            <canvas id="skillRadarChart" width="300" height="300"></canvas>
+                        </div>
+                    </div>
+
                     <!-- Navigation Buttons -->
                     <div class="form-navigation">
                         <a href="index-fachliche-entwicklung.html" class="btn btn-secondary">
@@ -291,6 +331,7 @@
 
     <!-- Scripts -->
     <script src="js/fachliche-entwicklung-workflow.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <script>
         function saveAndContinue() {
@@ -326,11 +367,100 @@
                     if (data.projects) document.getElementById('projects').value = data.projects;
                     if (data.currentPosition) document.getElementById('currentPosition').value = data.currentPosition;
                     if (data.futureVision) document.getElementById('futureVision').value = data.futureVision;
+                    if (data.overallSkillLevel) {
+                        document.getElementById('overallSkillLevel').value = data.overallSkillLevel;
+                        document.getElementById('overallSkillLevelValue').textContent = data.overallSkillLevel;
+                    }
+                    if (data.skillFrontend) document.getElementById('skillFrontend').value = data.skillFrontend;
+                    if (data.skillBackend) document.getElementById('skillBackend').value = data.skillBackend;
+                    if (data.skillCloud) document.getElementById('skillCloud').value = data.skillCloud;
+                    if (data.skillData) document.getElementById('skillData').value = data.skillData;
+                    if (data.skillSoft) document.getElementById('skillSoft').value = data.skillSoft;
                 } catch (e) {
                     console.error('Error loading saved data:', e);
                 }
             }
+
+            // Initialisiere Radar-Chart, nachdem Chart.js geladen ist
+            setTimeout(function() {
+                if (typeof Chart !== 'undefined') {
+                    initSkillRadar();
+                }
+            }, 200);
         });
+
+        let skillRadar;
+
+        function getSkillRadarData() {
+            const frontend = parseInt(document.getElementById('skillFrontend')?.value || '5', 10);
+            const backend = parseInt(document.getElementById('skillBackend')?.value || '5', 10);
+            const cloud = parseInt(document.getElementById('skillCloud')?.value || '5', 10);
+            const data = parseInt(document.getElementById('skillData')?.value || '5', 10);
+            const soft = parseInt(document.getElementById('skillSoft')?.value || '5', 10);
+            return [frontend, backend, cloud, data, soft];
+        }
+
+        function initSkillRadar() {
+            const ctx = document.getElementById('skillRadarChart');
+            if (!ctx) return;
+
+            const data = getSkillRadarData();
+            const config = {
+                type: 'radar',
+                data: {
+                    labels: ['Frontend/UI', 'Backend/APIs', 'Cloud/DevOps', 'Data/Analytics', 'Soft Skills'],
+                    datasets: [{
+                        label: 'Aktuelles Skill-Level',
+                        data,
+                        backgroundColor: 'rgba(59,130,246,0.25)',
+                        borderColor: 'rgba(59,130,246,1)',
+                        borderWidth: 2,
+                        pointBackgroundColor: 'rgba(59,130,246,1)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            suggestedMin: 0,
+                            suggestedMax: 10,
+                            ticks: {
+                                stepSize: 2,
+                                backdropColor: 'transparent',
+                                color: '#6B7280'
+                            },
+                            grid: {
+                                color: 'rgba(148,163,184,0.4)'
+                            },
+                            angleLines: {
+                                color: 'rgba(148,163,184,0.4)'
+                            },
+                            pointLabels: {
+                                color: '#374151',
+                                font: {
+                                    size: 11
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            };
+
+            skillRadar = new Chart(ctx, config);
+        }
+
+        function updateSkillRadar() {
+            if (!skillRadar || typeof Chart === 'undefined') return;
+            const values = getSkillRadarData();
+            skillRadar.data.datasets[0].data = values;
+            skillRadar.update('none');
+        }
     </script>
 </body>
 </html>
