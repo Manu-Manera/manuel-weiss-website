@@ -2095,43 +2095,111 @@
                     const sourceElement = document.getElementById('heroVideoSource');
                     const videoWrapper = document.querySelector('.hero-video-wrapper');
                     
+                    const videoElement = document.getElementById('heroVideo');
+                    const sourceElement = document.getElementById('heroVideoSource');
+                    const videoWrapper = document.querySelector('.hero-video-wrapper');
+                    
+                    // Timeout für Video-Laden (10 Sekunden)
+                    let videoLoadTimeout;
+                    
+                    // Funktion zum Verstecken des Videos bei Fehler
+                    function hideVideo() {
+                        if (videoWrapper) {
+                            videoWrapper.style.display = 'none';
+                            console.log('Video-Wrapper versteckt');
+                        }
+                    }
+                    
+                    // Timeout setzen
+                    videoLoadTimeout = setTimeout(() => {
+                        console.warn('Video-Lade-Timeout erreicht (10s), verstecke Video');
+                        hideVideo();
+                    }, 10000);
+                    
                     if (data.videoUrl && data.videoUrl.trim() !== '' && videoElement && sourceElement) {
-                        // Video vorhanden: Setze die Video-URL von AWS S3
-                        sourceElement.src = data.videoUrl;
-                        videoElement.load(); // Lade das Video neu
+                        console.log('Video-URL gefunden:', data.videoUrl);
                         
-                        // Mobile Optimierung: Preload auf "metadata" für bessere Performance
-                        if (window.innerWidth <= 768) {
-                            videoElement.preload = 'metadata';
-                        } else {
-                            videoElement.preload = 'auto';
+                        // Mobile: Video sofort verstecken, erst anzeigen wenn geladen
+                        const isMobile = window.innerWidth <= 768;
+                        if (isMobile && videoWrapper) {
+                            videoWrapper.style.display = 'none'; // Verstecke sofort auf Mobile
                         }
                         
-                        // Zeige Video-Wrapper (Hintergrund bleibt immer gleich)
-                        if (videoWrapper) videoWrapper.style.display = 'block';
+                        // Video vorhanden: Setze die Video-URL von AWS S3
+                        sourceElement.src = data.videoUrl;
+                        
+                        // Mobile Optimierung: Preload auf "none" für schnellste Ladezeit
+                        if (isMobile) {
+                            videoElement.preload = 'none'; // Kein Preload auf Mobile
+                            videoElement.load(); // Lade nur Metadaten
+                        } else {
+                            videoElement.preload = 'auto';
+                            videoElement.load(); // Lade das Video neu
+                        }
+                        
+                        // Desktop: Zeige Video-Wrapper sofort
+                        if (!isMobile && videoWrapper) {
+                            videoWrapper.style.display = 'block';
+                        }
                         
                         // Prüfe ob Video erfolgreich geladen wurde
-                        videoElement.addEventListener('loadeddata', () => {
-                            if (videoWrapper) videoWrapper.style.display = 'block';
-                        });
+                        const onLoadedData = () => {
+                            clearTimeout(videoLoadTimeout);
+                            console.log('✅ Video erfolgreich geladen');
+                            // Nur auf Desktop oder wenn Mobile-Video vollständig geladen ist
+                            if (videoWrapper) {
+                                if (isMobile) {
+                                    // Auf Mobile: Zeige Video nur wenn es vollständig geladen ist
+                                    if (videoElement.readyState >= 3) { // HAVE_FUTURE_DATA
+                                        videoWrapper.style.display = 'block';
+                                    }
+                                } else {
+                                    videoWrapper.style.display = 'block';
+                                }
+                            }
+                            videoElement.removeEventListener('loadeddata', onLoadedData);
+                        };
                         
-                        // Falls Video nicht geladen werden kann, verstecke es (Hintergrund bleibt sichtbar)
-                        videoElement.addEventListener('error', () => {
-                            console.warn('Video konnte nicht geladen werden, verstecke Video-Wrapper');
-                            if (videoWrapper) videoWrapper.style.display = 'none';
-                        });
+                        // Mobile: Zusätzlicher Event-Listener für canplay (Video kann abgespielt werden)
+                        if (isMobile) {
+                            const onCanPlay = () => {
+                                console.log('✅ Mobile Video kann abgespielt werden');
+                                if (videoWrapper) {
+                                    videoWrapper.style.display = 'block';
+                                }
+                                videoElement.removeEventListener('canplay', onCanPlay);
+                            };
+                            videoElement.addEventListener('canplay', onCanPlay, { once: true });
+                        }
                         
-                        console.log('Hero-Video geladen von:', data.videoUrl);
+                        // Falls Video nicht geladen werden kann, verstecke es
+                        const onError = () => {
+                            clearTimeout(videoLoadTimeout);
+                            console.warn('❌ Video konnte nicht geladen werden, verstecke Video-Wrapper');
+                            hideVideo();
+                            videoElement.removeEventListener('error', onError);
+                        };
+                        
+                        videoElement.addEventListener('loadeddata', onLoadedData, { once: true });
+                        videoElement.addEventListener('error', onError, { once: true });
+                        
+                        // Zusätzlich: Prüfe ob Video nach 5 Sekunden noch lädt
+                        setTimeout(() => {
+                            if (videoElement.readyState < 2) { // HAVE_CURRENT_DATA
+                                console.warn('Video lädt sehr langsam, könnte ein Problem sein');
+                            }
+                        }, 5000);
                     } else {
+                        clearTimeout(videoLoadTimeout);
                         // Kein Video: Verstecke Video-Wrapper (Hintergrund bleibt sichtbar)
                         console.log('Keine Video-URL gesetzt, verstecke Video-Wrapper');
-                        if (videoWrapper) videoWrapper.style.display = 'none';
+                        hideVideo();
                     }
                 } catch (error) {
-                    console.warn('Fehler beim Laden der Hero-Video-URL, verstecke Video-Wrapper:', error);
+                    clearTimeout(videoLoadTimeout);
+                    console.warn('Fehler beim Laden der Hero-Video-URL:', error);
                     // Bei Fehler: Verstecke Video-Wrapper (Hintergrund bleibt sichtbar)
-                    const videoWrapper = document.querySelector('.hero-video-wrapper');
-                    if (videoWrapper) videoWrapper.style.display = 'none';
+                    hideVideo();
                 }
             }
             
