@@ -192,7 +192,7 @@
                     <!-- Skill-Kategorien (für Radar-Chart) -->
                     <div class="form-group">
                         <label>Wie stark bist du aktuell in diesen Kompetenzbereichen? (1 = niedrig, 10 = sehr stark)</label>
-                        <p class="question-hint">Nutze die Slider für eine schnelle, ehrliche Selbsteinschätzung. Die Begriffe sind bewusst breit, damit sie für IT, HR, Marketing, Produktion, Pflege, Bildung, etc. passen.</p>
+                        <p class="question-hint">Nutze die Slider für eine schnelle, ehrliche Selbsteinschätzung. Die Begriffe sind bewusst breit, damit sie für IT, HR, Marketing, Produktion, Pflege, Bildung, etc. passen. Wenn du möchtest, kannst du die Bereiche unten auch umbenennen und an dein Profil anpassen.</p>
                         <div class="detailed-hints">
                             <h5>Kernkompetenz-Bereiche (für alle Profile)</h5>
                             <ul>
@@ -220,6 +220,29 @@
                                     <strong>Digital- & Tech-Kompetenz:</strong><br>
                                     Beispiele: Digitale Tools sicher nutzen (Office, Kollaborations-Tools, Fachsoftware), Daten verstehen, Automatisierung nutzen, KI-Tools einsetzen, ggf. IT-Skills (Programmierung, Cloud, DevOps, Datenanalyse) vertiefen.<br>
                                     <input type="range" id="skillSoft" name="skillSoft" min="1" max="10" value="5" oninput="updateSkillRadar()">
+                                </li>
+                            </ul>
+                            <h5 style="margin-top: 1rem;">Optional: Benenne die Bereiche für dich um (falls du andere Cluster sinnvoller findest)</h5>
+                            <ul>
+                                <li>
+                                    <strong>Bereich 1 Label:</strong><br>
+                                    <input type="text" id="axis1_label" name="axis1_label" placeholder="z.B. HR-Expertise / Domain-Wissen" oninput="updateSkillRadar()">
+                                </li>
+                                <li>
+                                    <strong>Bereich 2 Label:</strong><br>
+                                    <input type="text" id="axis2_label" name="axis2_label" placeholder="z.B. Strategisches Denken / Konzeption" oninput="updateSkillRadar()">
+                                </li>
+                                <li>
+                                    <strong>Bereich 3 Label:</strong><br>
+                                    <input type="text" id="axis3_label" name="axis3_label" placeholder="z.B. Zusammenarbeit mit Kund:innen / Patient:innen / Stakeholdern" oninput="updateSkillRadar()">
+                                </li>
+                                <li>
+                                    <strong>Bereich 4 Label:</strong><br>
+                                    <input type="text" id="axis4_label" name="axis4_label" placeholder="z.B. Projekt- & Prozessmanagement" oninput="updateSkillRadar()">
+                                </li>
+                                <li>
+                                    <strong>Bereich 5 Label:</strong><br>
+                                    <input type="text" id="axis5_label" name="axis5_label" placeholder="z.B. Digitale Kompetenzen / KI & Automatisierung" oninput="updateSkillRadar()">
                                 </li>
                             </ul>
                         </div>
@@ -405,6 +428,22 @@
             return [frontend, backend, cloud, data, soft];
         }
 
+        function getSkillRadarLabels() {
+            const defaultLabels = [
+                'Fachliches Expertenwissen',
+                'Analytik & Problemlösung',
+                'Kommunikation & Zusammenarbeit',
+                'Organisation & Selbstmanagement',
+                'Digital- & Tech-Kompetenz'
+            ];
+            const ids = ['axis1_label', 'axis2_label', 'axis3_label', 'axis4_label', 'axis5_label'];
+            return ids.map((id, index) => {
+                const el = document.getElementById(id);
+                const value = el && el.value && el.value.trim();
+                return value || defaultLabels[index];
+            });
+        }
+
         function initSkillRadar() {
             const ctx = document.getElementById('skillRadarChart');
             if (!ctx) return;
@@ -413,13 +452,7 @@
             const config = {
                 type: 'radar',
                 data: {
-                    labels: [
-                        'Fachliches Expertenwissen',
-                        'Analytik & Problemlösung',
-                        'Kommunikation & Zusammenarbeit',
-                        'Organisation & Selbstmanagement',
-                        'Digital- & Tech-Kompetenz'
-                    ],
+                    labels: getSkillRadarLabels(),
                     datasets: [{
                         label: 'Aktuelles Skill-Level',
                         data,
@@ -469,7 +502,9 @@
         function updateSkillRadar() {
             if (!skillRadar || typeof Chart === 'undefined') return;
             const values = getSkillRadarData();
+            const labels = getSkillRadarLabels();
             skillRadar.data.datasets[0].data = values;
+            skillRadar.data.labels = labels;
             skillRadar.update('none');
         }
     </script>
