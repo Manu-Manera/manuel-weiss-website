@@ -4148,9 +4148,13 @@ a:hover {
         /* Safari: Kein Transform auf Text */
         -webkit-transform: none !important;
         transform: none !important;
-        -webkit-font-smoothing: subpixel-antialiased !important;
-        text-rendering: optimizeLegibility !important;
+        -webkit-font-smoothing: antialiased !important; /* Safari Mobile: antialiased für scharfen Text */
+        text-rendering: geometricPrecision !important; /* Geometric Precision für scharfen Text */
         opacity: 1 !important; /* Volle Opazität */
+        /* Verhindere alle Filter-Effekte */
+        filter: none !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
     }
     
     .hero-title-line-1,
@@ -4168,6 +4172,13 @@ a:hover {
         -webkit-transform: none !important;
         transform: none !important;
         opacity: 1 !important; /* Volle Opazität */
+        /* Text-Rendering für scharfen Text */
+        -webkit-font-smoothing: antialiased !important;
+        text-rendering: geometricPrecision !important;
+        /* Verhindere alle Filter-Effekte */
+        filter: none !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
     }
     
     /* Besondere Behandlung für "Willkommen" auf sehr kleinen Screens */
