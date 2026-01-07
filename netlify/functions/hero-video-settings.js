@@ -6,8 +6,10 @@
 const { DynamoDBClient, PutItemCommand, GetItemCommand } = require('@aws-sdk/client-dynamodb');
 const { marshall, unmarshall } = require('@aws-sdk/util-dynamodb');
 
+// Verwende alternative Variablennamen, da AWS_REGION reserviert ist
+const awsRegion = process.env.NETLIFY_AWS_REGION || process.env.AWS_REGION || 'eu-central-1';
 const dynamoDB = new DynamoDBClient({ 
-    region: process.env.AWS_REGION || 'eu-central-1' 
+    region: awsRegion
 });
 
 const TABLE_NAME = process.env.DYNAMODB_SETTINGS_TABLE || 'manuel-weiss-settings';

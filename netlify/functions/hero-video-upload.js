@@ -6,9 +6,10 @@
 const AWS = require('aws-sdk');
 
 // S3 Client initialisieren
-// Verwende alternative Variablennamen, da AWS_ACCESS_KEY_ID/AWS_SECRET_ACCESS_KEY reserviert sind
+// Verwende alternative Variablennamen, da AWS_* Variablen reserviert sind
+const awsRegion = process.env.NETLIFY_AWS_REGION || process.env.AWS_REGION || 'eu-central-1';
 const s3 = new AWS.S3({
-    region: process.env.AWS_REGION || 'eu-central-1',
+    region: awsRegion,
     accessKeyId: process.env.NETLIFY_AWS_ACCESS_KEY_ID || process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.NETLIFY_AWS_SECRET_ACCESS_KEY || process.env.AWS_SECRET_ACCESS_KEY
 });
@@ -81,7 +82,7 @@ exports.handler = async (event, context) => {
             };
 
             const uploadUrl = s3.getSignedUrl('putObject', params);
-            const publicUrl = `https://${BUCKET_NAME}.s3.${process.env.AWS_REGION || 'eu-central-1'}.amazonaws.com/${key}`;
+            const publicUrl = `https://${BUCKET_NAME}.s3.${awsRegion}.amazonaws.com/${key}`;
             
             console.log('Generated pre-signed URL for:', key);
             console.log('Public URL will be:', publicUrl);
@@ -110,7 +111,7 @@ exports.handler = async (event, context) => {
             const data = await s3.listObjectsV2(params).promise();
             const videos = (data.Contents || []).map(item => ({
                 key: item.Key,
-                url: `https://${BUCKET_NAME}.s3.${process.env.AWS_REGION || 'eu-central-1'}.amazonaws.com/${item.Key}`,
+                url: `https://${BUCKET_NAME}.s3.${awsRegion}.amazonaws.com/${item.Key}`,
                 lastModified: item.LastModified,
                 size: item.Size
             }));
