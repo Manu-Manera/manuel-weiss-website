@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "Netlify Functions für manuel-weiss.ch",
   "dependencies": {
-    "aws-sdk": "^2.1691.0"
+    "aws-sdk": "^2.1691.0",
+    "@aws-sdk/client-dynamodb": "^3.0.0",
+    "@aws-sdk/util-dynamodb": "^3.0.0"
   }
 }
 
