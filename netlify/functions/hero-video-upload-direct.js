@@ -156,17 +156,62 @@ exports.handler = async (event, context) => {
 
         let s3Result;
         try {
+            // Prüfe zuerst, ob der Bucket existiert
+            try {
+                await s3.headBucket({ Bucket: BUCKET_NAME }).promise();
+                console.log('Bucket exists:', BUCKET_NAME);
+            } catch (bucketError) {
+                console.error('Bucket check failed:', bucketError);
+                if (bucketError.code === 'NotFound' || bucketError.statusCode === 404) {
+                    return {
+                        statusCode: 500,
+                        headers,
+                        body: JSON.stringify({ 
+                            error: 'S3 bucket not found',
+                            message: `Bucket "${BUCKET_NAME}" does not exist. Please create it first.`,
+                            bucket: BUCKET_NAME
+                        })
+                    };
+                }
+                // Wenn es ein Berechtigungsproblem ist, versuchen wir trotzdem den Upload
+                console.warn('Bucket check failed, but continuing with upload:', bucketError.message);
+            }
+
+            console.log('Starting S3 upload...');
             s3Result = await s3.upload(uploadParams).promise();
             console.log('S3 upload successful:', s3Result.Location);
         } catch (s3Error) {
             console.error('S3 upload error:', s3Error);
+            console.error('Error details:', {
+                code: s3Error.code,
+                statusCode: s3Error.statusCode,
+                message: s3Error.message,
+                bucket: BUCKET_NAME,
+                key: key
+            });
+            
+            // Spezifische Fehlermeldungen
+            let errorMessage = 'S3 upload failed';
+            if (s3Error.code === 'AccessDenied' || s3Error.statusCode === 403) {
+                errorMessage = 'Access denied to S3 bucket. Please check AWS credentials and IAM permissions.';
+            } else if (s3Error.code === 'NoSuchBucket' || s3Error.statusCode === 404) {
+                errorMessage = `S3 bucket "${BUCKET_NAME}" not found. Please create it first.`;
+            } else if (s3Error.code === 'InvalidAccessKeyId') {
+                errorMessage = 'Invalid AWS Access Key. Please check AWS_ACCESS_KEY_ID in Netlify environment variables.';
+            } else if (s3Error.code === 'SignatureDoesNotMatch') {
+                errorMessage = 'AWS Secret Key mismatch. Please check AWS_SECRET_ACCESS_KEY in Netlify environment variables.';
+            } else {
+                errorMessage = s3Error.message || 'Unknown S3 error';
+            }
+            
             return {
                 statusCode: 500,
                 headers,
                 body: JSON.stringify({ 
                     error: 'S3 upload failed', 
-                    message: s3Error.message,
-                    code: s3Error.code
+                    message: errorMessage,
+                    code: s3Error.code,
+                    statusCode: s3Error.statusCode
                 })
             };
         }
