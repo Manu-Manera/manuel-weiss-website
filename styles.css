@@ -3810,8 +3810,12 @@ a:hover {
     
     /* Sicherstellen dass Navigation auf Mobile komplett versteckt ist */
     .navbar .desktop-nav,
-    .navbar .nav-container {
+    .navbar .nav-container,
+    .navbar .nav-brand,
+    .navbar .nav-menu,
+    .navbar .nav-link {
         display: none !important;
+        visibility: hidden !important;
     }
     
     .mobile-only {
