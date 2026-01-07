@@ -158,21 +158,35 @@ function initMobileMenu() {
     
     // Neue Mobile Menu Logik
     if (mobileHamburger && mobileMenuFullscreen) {
+        console.log('✅ Mobile Menu initialisiert');
+        
         // Toggle Menu
         mobileHamburger.addEventListener('click', function(e) {
+            e.preventDefault();
             e.stopPropagation();
-            mobileHamburger.classList.toggle('active');
-            mobileMenuFullscreen.classList.toggle('active');
-            const isMenuActive = mobileMenuFullscreen.classList.contains('active');
+            console.log('🍔 Hamburger geklickt');
             
-            if (isMenuActive) {
+            const isActive = mobileMenuFullscreen.classList.contains('active');
+            
+            if (!isActive) {
+                // Öffne Menü
+                mobileHamburger.classList.add('active');
+                mobileMenuFullscreen.classList.add('active');
+                if (mobileMenuOverlay) mobileMenuOverlay.classList.add('active');
+                
                 // Speichere Scroll-Position
                 const scrollY = window.scrollY;
                 document.body.style.overflow = 'hidden';
                 document.body.style.position = 'fixed';
                 document.body.style.top = `-${scrollY}px`;
                 document.body.style.width = '100%';
+                console.log('📂 Menü geöffnet');
             } else {
+                // Schließe Menü
+                mobileHamburger.classList.remove('active');
+                mobileMenuFullscreen.classList.remove('active');
+                if (mobileMenuOverlay) mobileMenuOverlay.classList.remove('active');
+                
                 // Stelle Scroll-Position wieder her
                 const scrollY = document.body.style.top;
                 document.body.style.overflow = '';
@@ -182,6 +196,7 @@ function initMobileMenu() {
                 if (scrollY) {
                     window.scrollTo(0, parseInt(scrollY || '0') * -1);
                 }
+                console.log('❌ Menü geschlossen');
             }
         });
         
