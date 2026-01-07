@@ -2086,16 +2086,33 @@
         (function() {
             async function loadHeroVideo() {
                 const heroSection = document.querySelector('.hero');
+                const videoElement = document.getElementById('heroVideo');
+                const sourceElement = document.getElementById('heroVideoSource');
+                const videoWrapper = document.querySelector('.hero-video-wrapper');
+                
+                // Timeout für Video-Laden (10 Sekunden)
+                let videoLoadTimeout;
+                
+                // Funktion zum Verstecken des Videos bei Fehler
+                function hideVideo() {
+                    if (videoWrapper) {
+                        videoWrapper.style.display = 'none';
+                        console.log('Video-Wrapper versteckt');
+                    }
+                }
+                
+                // Timeout setzen
+                videoLoadTimeout = setTimeout(() => {
+                    console.warn('Video-Lade-Timeout erreicht (10s), verstecke Video');
+                    hideVideo();
+                }, 10000);
                 
                 try {
                     const response = await fetch('/.netlify/functions/hero-video-settings');
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
                     const data = await response.json();
-                    
-                    const videoElement = document.getElementById('heroVideo');
-                    const sourceElement = document.getElementById('heroVideoSource');
-                    const videoWrapper = document.querySelector('.hero-video-wrapper');
-                    
-                    const videoElement = document.getElementById('heroVideo');
                     const sourceElement = document.getElementById('heroVideoSource');
                     const videoWrapper = document.querySelector('.hero-video-wrapper');
                     
