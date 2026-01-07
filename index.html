@@ -2215,13 +2215,17 @@
             }
         };
         
-        // Init game
-        SnowflakeGame.init();
-        
-        // Update highscore display on load
-        document.addEventListener('DOMContentLoaded', async () => {
-            await SnowflakeGame.updateHighscoreDisplay();
-        });
+        // Init game - WICHTIG: Sofort ausführen und auch nach DOMContentLoaded
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                SnowflakeGame.init();
+                SnowflakeGame.updateHighscoreDisplay();
+            });
+        } else {
+            // DOM ist bereits geladen
+            SnowflakeGame.init();
+            SnowflakeGame.updateHighscoreDisplay();
+        }
         
         // ROBUSTER SAFARI-FIX: Kacheln horizontal erzwingen
         function forceHorizontalLayout() {
