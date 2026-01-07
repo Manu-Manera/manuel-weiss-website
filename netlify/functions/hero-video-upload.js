@@ -33,6 +33,19 @@ exports.handler = async (event, context) => {
     }
 
     try {
+        // Prüfe AWS Credentials
+        if (!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY) {
+            console.error('AWS Credentials missing!');
+            return {
+                statusCode: 500,
+                headers,
+                body: JSON.stringify({ 
+                    error: 'Server configuration error',
+                    message: 'AWS credentials not configured. Please set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY in Netlify environment variables.'
+                })
+            };
+        }
+
         // POST: Generiere Pre-Signed URL für Upload
         if (event.httpMethod === 'POST') {
             const body = JSON.parse(event.body || '{}');
