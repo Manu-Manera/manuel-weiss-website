@@ -3848,21 +3848,23 @@ a:hover {
         position: relative;
         z-index: 102 !important; /* Explizit ganz oben - !important für Mobile */
         transform: translateZ(0); /* GPU-Beschleunigung */
-        font-size: var(--text-3xl); /* Etwas kleiner für kompakteres Layout */
-        line-height: 1.2; /* Kompaktere Zeilenhöhe */
+        font-size: 3.5rem !important; /* Sehr groß wie auf HR Campus - ca. 56px */
+        line-height: 1.15 !important; /* Kompaktere Zeilenhöhe für bessere Lesbarkeit */
         margin-bottom: 0; /* Kein Margin, da keine Buttons */
-        /* Weißer Glüheffekt für den Text */
-        color: white;
+        /* Sehr starker weißer Glüheffekt für maximale Lesbarkeit */
+        color: white !important;
         text-shadow: 
-            0 0 10px rgba(255, 255, 255, 0.8),
-            0 0 20px rgba(255, 255, 255, 0.6),
-            0 0 30px rgba(255, 255, 255, 0.4),
-            0 4px 16px rgba(0, 0, 0, 0.8),
-            0 2px 4px rgba(0, 0, 0, 0.6);
+            0 0 20px rgba(255, 255, 255, 1),
+            0 0 40px rgba(255, 255, 255, 0.8),
+            0 0 60px rgba(255, 255, 255, 0.6),
+            0 6px 24px rgba(0, 0, 0, 0.9),
+            0 3px 8px rgba(0, 0, 0, 0.8),
+            0 1px 2px rgba(0, 0, 0, 0.7);
         text-align: center;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
-        font-weight: 700;
+        font-weight: 800 !important; /* Sehr fett für maximale Präsenz */
+        letter-spacing: -0.02em; /* Leicht kompakter für bessere Lesbarkeit */
     }
     
     .hero-title .mobile-only {
@@ -3885,14 +3887,26 @@ a:hover {
     
     .hero-title-line-1,
     .hero-title-line-2 {
-        /* Weißer Glüheffekt für beide Zeilen */
+        /* Sehr starker weißer Glüheffekt für beide Zeilen - maximale Lesbarkeit */
         text-shadow: 
-            0 0 10px rgba(255, 255, 255, 0.9),
-            0 0 20px rgba(255, 255, 255, 0.7),
-            0 0 30px rgba(255, 255, 255, 0.5),
-            0 4px 16px rgba(0, 0, 0, 0.8),
-            0 2px 4px rgba(0, 0, 0, 0.6);
-        color: white;
+            0 0 20px rgba(255, 255, 255, 1),
+            0 0 40px rgba(255, 255, 255, 0.8),
+            0 0 60px rgba(255, 255, 255, 0.6),
+            0 6px 24px rgba(0, 0, 0, 0.9),
+            0 3px 8px rgba(0, 0, 0, 0.8),
+            0 1px 2px rgba(0, 0, 0, 0.7);
+        color: white !important;
+        font-weight: 800 !important; /* Sehr fett für maximale Präsenz */
+    }
+    
+    .hero-title-line-1.mobile-only {
+        font-size: 1em !important; /* Volle Größe für erste Zeile */
+        margin-bottom: 0.15em; /* Kleiner Abstand zur zweiten Zeile */
+    }
+    
+    .hero-title-line-2.mobile-only {
+        font-size: 0.75em !important; /* Etwas kleiner für zweite Zeile, aber immer noch sehr groß */
+        margin-top: 0;
     }
     
     .hero-subtitle {
