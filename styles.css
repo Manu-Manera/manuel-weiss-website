@@ -4760,6 +4760,8 @@ img {
     animation: snowflakeFall linear infinite;
     animation-fill-mode: both; /* Wichtig für Animation */
     animation-play-state: running; /* Explizit aktiviert */
+    opacity: 1 !important; /* Initial sichtbar - Animation steuert opacity */
+    visibility: visible !important; /* Sicherstellen dass sichtbar */
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.4);
     filter: drop-shadow(0 0 3px white);
     /* GPU-Beschleunigung für flüssige Animation */
