@@ -215,16 +215,18 @@ class HeroVideoSection {
                 
                 // Fehler
                 xhr.addEventListener('error', (e) => {
+                    const currentOrigin = window.location.origin;
                     console.error('❌ Netzwerkfehler beim S3 Upload:', e);
+                    console.error('📍 Aktuelle Origin:', currentOrigin);
                     console.error('Upload URL (erste 100 Zeichen):', uploadUrl.substring(0, 100) + '...');
                     console.error('File size:', file.size, 'bytes');
                     console.error('File type:', file.type);
                     
                     // Detaillierte Fehlermeldung mit Lösungshinweis
-                    const errorMsg = 'Netzwerkfehler beim Hochladen des Videos. ' +
-                        'Dies deutet auf ein CORS-Problem hin. ' +
-                        'Bitte prüfe die S3-Bucket CORS-Konfiguration (siehe S3_CORS_FIX.md). ' +
-                        'Die Origin muss in den AllowedOrigins enthalten sein.';
+                    const errorMsg = `Netzwerkfehler beim Hochladen des Videos. ` +
+                        `Dies deutet auf ein CORS-Problem hin. ` +
+                        `Aktuelle Origin: ${currentOrigin} ` +
+                        `Bitte stelle sicher, dass diese Origin in der S3 CORS-Konfiguration enthalten ist.`;
                     reject(new Error(errorMsg));
                 });
                 
