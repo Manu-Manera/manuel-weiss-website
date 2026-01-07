@@ -2275,12 +2275,116 @@ a:hover {
     align-items: center;
     justify-content: center;
     overflow: hidden;
+    position: relative;
 }
 
 .activity-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.activity-img {
+    position: relative;
+    z-index: 1;
+}
+
+/* Animierte Icons für Aktivitäten */
+.activity-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 4rem;
+    z-index: 2;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.activity-card:hover .activity-icon {
+    opacity: 1;
+}
+
+.activity-card:hover .activity-img {
+    opacity: 0.3;
+    transform: scale(1.1);
+}
+
+/* Spezifische Animationen für Icons */
+.activity-icon.animated-icon {
+    animation: iconFloat 3s ease-in-out infinite;
+}
+
+@keyframes iconFloat {
+    0%, 100% {
+        transform: translate(-50%, -50%) translateY(0) rotate(0deg);
+    }
+    50% {
+        transform: translate(-50%, -50%) translateY(-10px) rotate(5deg);
+    }
+}
+
+/* Spezifische Animationen für verschiedene Icons */
+.activity-card:nth-child(1) .activity-icon {
+    animation: motorhomeDrive 4s ease-in-out infinite;
+}
+
+@keyframes motorhomeDrive {
+    0%, 100% {
+        transform: translate(-50%, -50%) translateX(0) rotate(0deg);
+    }
+    25% {
+        transform: translate(-50%, -50%) translateX(-5px) rotate(-2deg);
+    }
+    75% {
+        transform: translate(-50%, -50%) translateX(5px) rotate(2deg);
+    }
+}
+
+.activity-card:nth-child(2) .activity-icon {
+    animation: cameraFlash 2s ease-in-out infinite;
+}
+
+@keyframes cameraFlash {
+    0%, 100% {
+        transform: translate(-50%, -50%) scale(1);
+        filter: brightness(1);
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.1);
+        filter: brightness(1.5);
+    }
+}
+
+.activity-card:nth-child(3) .activity-icon {
+    animation: bikeRide 3s ease-in-out infinite;
+}
+
+@keyframes bikeRide {
+    0%, 100% {
+        transform: translate(-50%, -50%) rotate(0deg) translateY(0);
+    }
+    50% {
+        transform: translate(-50%, -50%) rotate(10deg) translateY(-5px);
+    }
+}
+
+.activity-card:nth-child(4) .activity-icon {
+    animation: supWave 3s ease-in-out infinite;
+}
+
+@keyframes supWave {
+    0%, 100% {
+        transform: translate(-50%, -50%) rotate(0deg) translateY(0);
+    }
+    25% {
+        transform: translate(-50%, -50%) rotate(-5deg) translateY(-3px);
+    }
+    75% {
+        transform: translate(-50%, -50%) rotate(5deg) translateY(-3px);
+    }
 }
 
 .activity-content {
@@ -4979,6 +5083,21 @@ img {
 .highscore-card {
     background: linear-gradient(135deg, rgba(30, 58, 138, 0.9), rgba(124, 58, 237, 0.9)) !important;
     border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Weiße Schrift für Highscore-Karte */
+.highscore-card .activity-content h3,
+.highscore-card .activity-content p,
+.highscore-card .no-highscores {
+    color: #ffffff !important;
+}
+
+.highscore-card .activity-content h3 {
+    color: #ffffff !important;
+}
+
+.highscore-card .activity-content p {
+    color: rgba(255, 255, 255, 0.9) !important;
 }
 
 .highscore-bg {
