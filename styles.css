@@ -4793,17 +4793,17 @@ img {
 /* Animation: Fallbewegung - GPU-optimiert mit translate3d */
 @keyframes snowflakeFall {
     0% {
-        transform: translate3d(0, -100px, 0);
+        transform: translate3d(0, -100px, 0) translateZ(0);
         opacity: 0;
     }
-    5% {
+    2% {
         opacity: 1;
     }
-    95% {
+    98% {
         opacity: 1;
     }
     100% {
-        transform: translate3d(0, 2000px, 0); /* Fester Wert - funktioniert in allen Browsern */
+        transform: translate3d(0, 2000px, 0) translateZ(0);
         opacity: 0;
     }
 }
