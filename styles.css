@@ -1518,6 +1518,14 @@ a:hover {
     z-index: 10; /* Über Hero-Video (z-index 8) */
 }
 
+/* Mobile: Reduziertes Padding für schnelleres Erreichen */
+@media (max-width: 768px) {
+    .services {
+        padding: var(--spacing-xl) 0; /* Reduziertes Padding auf Mobile */
+        margin-top: 0; /* Kein zusätzlicher Abstand zur Hero-Section */
+    }
+}
+
 /* Winterlicher Schnee für Services Section - ohne Y-Formen, nur Schneeflocken */
 .services::after {
     content: '';
