@@ -1832,7 +1832,7 @@ a:hover {
     flex-direction: column;
     height: 100%;
     position: relative;
-    z-index: 1;
+    z-index: 200 !important; /* Über den Schneeflocken (z-index: 100) */
     min-height: 400px;
     cursor: pointer;
     overflow: hidden;
