@@ -24,6 +24,13 @@
                 <span class="nav-title">Manuel Weiss</span>
             </div>
             
+            <!-- Mobile Hamburger Button -->
+            <button class="mobile-hamburger" id="mobileHamburger" aria-label="Menü öffnen">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
+            
             <div class="nav-menu">
                 <a href="../index.html" class="nav-link">Start</a>
                 <a href="../persoenlichkeitsentwicklung-uebersicht.html" class="nav-link">Persönlichkeitsentwicklung</a>
@@ -56,6 +63,19 @@
             </div>
         </div>
     </nav>
+    
+    <!-- Mobile Menu Fullscreen -->
+    <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
+    <div class="mobile-menu-fullscreen" id="mobileMenuFullscreen">
+        <div class="mobile-menu-content">
+            <a href="../index.html" class="mobile-menu-link"><i class="fas fa-home"></i> Start</a>
+            <a href="../persoenlichkeitsentwicklung-uebersicht.html" class="mobile-menu-link"><i class="fas fa-brain"></i> Persönlichkeitsentwicklung</a>
+            <a href="index.html" class="mobile-menu-link active"><i class="fas fa-file-alt"></i> Bewerbungsmanager</a>
+            <a href="../website-services.html" class="mobile-menu-link"><i class="fas fa-cogs"></i> Services</a>
+            <div class="mobile-menu-divider"></div>
+            <button id="mobileAuthButton" class="mobile-auth-btn"><i class="fas fa-user"></i> <span>Anmelden</span></button>
+        </div>
+    </div>
 
     <!-- Progress Bar -->
     <div class="progress-container">
@@ -481,6 +501,56 @@
     </script>
 
     <!-- Auth & Core - mit Cache-Busting -->
+    
+    <!-- Mobile Menu Script -->
+    <script>
+        (function() {
+            const mobileHamburger = document.getElementById('mobileHamburger');
+            const mobileMenuFullscreen = document.getElementById('mobileMenuFullscreen');
+            const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+            const mobileAuthButton = document.getElementById('mobileAuthButton');
+            
+            if (!mobileHamburger || !mobileMenuFullscreen) return;
+            
+            let menuOpen = false;
+            
+            function openMenu() {
+                menuOpen = true;
+                mobileHamburger.classList.add('active');
+                mobileMenuFullscreen.classList.add('active');
+                if (mobileMenuOverlay) mobileMenuOverlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+            
+            function closeMenu() {
+                menuOpen = false;
+                mobileHamburger.classList.remove('active');
+                mobileMenuFullscreen.classList.remove('active');
+                if (mobileMenuOverlay) mobileMenuOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+            
+            mobileHamburger.onclick = function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                menuOpen ? closeMenu() : openMenu();
+            };
+            
+            mobileMenuFullscreen.querySelectorAll('.mobile-menu-link').forEach(link => {
+                link.onclick = closeMenu;
+            });
+            
+            if (mobileMenuOverlay) mobileMenuOverlay.onclick = closeMenu;
+            
+            if (mobileAuthButton) {
+                mobileAuthButton.onclick = function() {
+                    closeMenu();
+                    const mainAuthButton = document.getElementById('realAuthButton');
+                    if (mainAuthButton) mainAuthButton.click();
+                };
+            }
+        })();
+    </script>
 
 </body>
 </html>
