@@ -48,35 +48,34 @@ exports.handler = async (event, context) => {
             };
         }
 
-        // Parse multipart/form-data
-        const contentType = event.headers['content-type'] || event.headers['Content-Type'] || '';
-        
-        if (!contentType.includes('multipart/form-data')) {
+        // Parse JSON body (we send JSON with base64-encoded file)
+        let requestBody;
+        try {
+            requestBody = JSON.parse(event.body || '{}');
+        } catch (parseError) {
+            console.error('Error parsing request body:', parseError);
             return {
                 statusCode: 400,
                 headers,
-                body: JSON.stringify({ error: 'Content-Type must be multipart/form-data' })
+                body: JSON.stringify({ error: 'Invalid JSON in request body', details: parseError.message })
             };
         }
 
-        // Parse the body (Netlify Functions receive base64-encoded body for binary data)
-        let body;
-        if (event.isBase64Encoded) {
-            body = Buffer.from(event.body, 'base64');
-        } else {
-            body = event.body;
-        }
-
-        // For simplicity, we'll use a simpler approach: expect the file as base64 in JSON
-        // This is easier to handle in Netlify Functions
-        const requestBody = JSON.parse(event.body || '{}');
         const { fileData, fileName, contentType: fileContentType } = requestBody;
 
         if (!fileData || !fileName) {
+            console.error('Missing required fields:', { hasFileData: !!fileData, hasFileName: !!fileName });
             return {
                 statusCode: 400,
                 headers,
-                body: JSON.stringify({ error: 'fileData and fileName are required' })
+                body: JSON.stringify({ 
+                    error: 'fileData and fileName are required',
+                    received: {
+                        hasFileData: !!fileData,
+                        hasFileName: !!fileName,
+                        fileName: fileName || 'missing'
+                    }
+                })
             };
         }
 
