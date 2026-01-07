@@ -191,29 +191,34 @@
 
                     <!-- Skill-Kategorien (für Radar-Chart) -->
                     <div class="form-group">
-                        <label>Wie stark bist du aktuell in diesen Bereichen? (1 = niedrig, 10 = sehr stark)</label>
-                        <p class="question-hint">Nutze die Slider für eine schnelle Einschätzung deiner Kernbereiche. Diese Werte werden in einer Skill-Matrix visualisiert.</p>
+                        <label>Wie stark bist du aktuell in diesen Kompetenzbereichen? (1 = niedrig, 10 = sehr stark)</label>
+                        <p class="question-hint">Nutze die Slider für eine schnelle, ehrliche Selbsteinschätzung. Die Begriffe sind bewusst breit, damit sie für IT, HR, Marketing, Produktion, Pflege, Bildung, etc. passen.</p>
                         <div class="detailed-hints">
-                            <h5>Technische Kernbereiche</h5>
+                            <h5>Kernkompetenz-Bereiche (für alle Profile)</h5>
                             <ul>
                                 <li>
-                                    <strong>Frontend / UI:</strong><br>
+                                    <strong>Fachliches Expertenwissen (Dein Hauptgebiet):</strong><br>
+                                    Beispiele: Personalentwicklung, Softwareentwicklung (Frontend/Backend), Marketing, Pflege, Finanzen, Vertrieb, Produktion, Bildung, Beratung.<br>
                                     <input type="range" id="skillFrontend" name="skillFrontend" min="1" max="10" value="5" oninput="updateSkillRadar()">
                                 </li>
                                 <li>
-                                    <strong>Backend / APIs:</strong><br>
+                                    <strong>Analytik & Problemlösung:</strong><br>
+                                    Beispiele: Fälle/Anforderungen durchdringen, Konzepte entwickeln, Ursachen finden, Entscheidungen vorbereiten, Prozesse verbessern.<br>
                                     <input type="range" id="skillBackend" name="skillBackend" min="1" max="10" value="5" oninput="updateSkillRadar()">
                                 </li>
                                 <li>
-                                    <strong>Cloud / DevOps:</strong><br>
+                                    <strong>Kommunikation & Zusammenarbeit:</strong><br>
+                                    Beispiele: Gespräche führen, Workshops/Meetings moderieren, Konflikte klären, Stakeholder mitnehmen, Kundenkontakt, Teams führen oder unterstützen.<br>
                                     <input type="range" id="skillCloud" name="skillCloud" min="1" max="10" value="5" oninput="updateSkillRadar()">
                                 </li>
                                 <li>
-                                    <strong>Data / Analytics:</strong><br>
+                                    <strong>Organisation & Selbstmanagement:</strong><br>
+                                    Beispiele: Prioritäten setzen, Zeit planen, mehrere Themen parallel steuern, zuverlässig liefern, mit Stress umgehen, eigene Energie managen.<br>
                                     <input type="range" id="skillData" name="skillData" min="1" max="10" value="5" oninput="updateSkillRadar()">
                                 </li>
                                 <li>
-                                    <strong>Soft Skills / Leadership:</strong><br>
+                                    <strong>Digital- & Tech-Kompetenz:</strong><br>
+                                    Beispiele: Digitale Tools sicher nutzen (Office, Kollaborations-Tools, Fachsoftware), Daten verstehen, Automatisierung nutzen, KI-Tools einsetzen, ggf. IT-Skills (Programmierung, Cloud, DevOps, Datenanalyse) vertiefen.<br>
                                     <input type="range" id="skillSoft" name="skillSoft" min="1" max="10" value="5" oninput="updateSkillRadar()">
                                 </li>
                             </ul>
@@ -408,7 +413,13 @@
             const config = {
                 type: 'radar',
                 data: {
-                    labels: ['Frontend/UI', 'Backend/APIs', 'Cloud/DevOps', 'Data/Analytics', 'Soft Skills'],
+                    labels: [
+                        'Fachliches Expertenwissen',
+                        'Analytik & Problemlösung',
+                        'Kommunikation & Zusammenarbeit',
+                        'Organisation & Selbstmanagement',
+                        'Digital- & Tech-Kompetenz'
+                    ],
                     datasets: [{
                         label: 'Aktuelles Skill-Level',
                         data,
