@@ -40,11 +40,39 @@ exports.handler = async (event, context) => {
     }
 
     try {
+        // Prüfe AWS Credentials
+        if (!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY) {
+            console.error('AWS Credentials missing!');
+            return {
+                statusCode: 500,
+                headers,
+                body: JSON.stringify({ 
+                    error: 'Server configuration error',
+                    message: 'AWS credentials not configured. Please set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY in Netlify environment variables.'
+                })
+            };
+        }
+
         if (event.httpMethod !== 'POST') {
             return {
                 statusCode: 405,
                 headers,
                 body: JSON.stringify({ error: 'Method not allowed' })
+            };
+        }
+
+        // Prüfe Request Body Größe (Netlify Functions Limit: 6MB für Request Body)
+        const requestBodySize = event.body ? event.body.length : 0;
+        const NETLIFY_FUNCTION_LIMIT = 6 * 1024 * 1024; // 6MB
+        if (requestBodySize > NETLIFY_FUNCTION_LIMIT) {
+            console.error('Request body too large:', requestBodySize, 'bytes');
+            return {
+                statusCode: 413,
+                headers,
+                body: JSON.stringify({ 
+                    error: 'Request too large',
+                    message: `Request body (${Math.round(requestBodySize / 1024 / 1024)}MB) exceeds Netlify Function limit (6MB). Please use a smaller video file or compress it.`
+                })
             };
         }
 
