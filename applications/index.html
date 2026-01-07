@@ -24,6 +24,13 @@
                 <span class="nav-title">Manuel Weiss</span>
             </div>
             
+            <!-- Mobile Hamburger Button -->
+            <button class="mobile-hamburger" id="mobileHamburger" aria-label="Menü öffnen">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
+            
             <div class="nav-menu">
                 <a href="../index.html" class="nav-link" data-de="Start" data-en="Home">Start</a>
                 <a href="../persoenlichkeitsentwicklung-uebersicht.html" class="nav-link" data-de="Persönlichkeitsentwicklung" data-en="Personality Development">Persönlichkeitsentwicklung</a>
@@ -79,6 +86,39 @@
             </div>
         </div>
     </nav>
+    
+    <!-- Mobile Menu Fullscreen -->
+    <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
+    <div class="mobile-menu-fullscreen" id="mobileMenuFullscreen">
+        <div class="mobile-menu-content">
+            <a href="../index.html" class="mobile-menu-link" data-de="Start" data-en="Home">
+                <i class="fas fa-home"></i> Start
+            </a>
+            <a href="../persoenlichkeitsentwicklung-uebersicht.html" class="mobile-menu-link" data-de="Persönlichkeitsentwicklung" data-en="Personality Development">
+                <i class="fas fa-brain"></i> Persönlichkeitsentwicklung
+            </a>
+            <a href="index.html" class="mobile-menu-link active" data-de="Bewerbungsmanager" data-en="Application Manager">
+                <i class="fas fa-file-alt"></i> Bewerbungsmanager
+            </a>
+            <a href="../website-services.html" class="mobile-menu-link" data-de="Services" data-en="Services">
+                <i class="fas fa-cogs"></i> Services
+            </a>
+            
+            <div class="mobile-menu-divider"></div>
+            
+            <!-- Auth Button im Mobile Menu -->
+            <button id="mobileAuthButton" class="mobile-auth-btn">
+                <i class="fas fa-user"></i>
+                <span data-de="Anmelden" data-en="Login">Anmelden</span>
+            </button>
+            
+            <!-- Mobile Language Switcher -->
+            <div class="mobile-language-switcher">
+                <button class="mobile-lang-btn" data-lang="de" title="Deutsch">🇩🇪 Deutsch</button>
+                <button class="mobile-lang-btn" data-lang="en" title="English">🇬🇧 English</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Hero Section -->
     <section class="hero-section">
@@ -633,6 +673,106 @@
                 }, 10);
             }
         });
+    </script>
+    
+    <!-- Mobile Menu Script -->
+    <script>
+        // Mobile Menu Functionality
+        (function() {
+            const mobileHamburger = document.getElementById('mobileHamburger');
+            const mobileMenuFullscreen = document.getElementById('mobileMenuFullscreen');
+            const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+            const mobileAuthButton = document.getElementById('mobileAuthButton');
+            
+            if (!mobileHamburger || !mobileMenuFullscreen) {
+                console.log('Mobile menu elements not found');
+                return;
+            }
+            
+            let menuOpen = false;
+            
+            function openMenu() {
+                menuOpen = true;
+                mobileHamburger.classList.add('active');
+                mobileMenuFullscreen.classList.add('active');
+                if (mobileMenuOverlay) mobileMenuOverlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+            
+            function closeMenu() {
+                menuOpen = false;
+                mobileHamburger.classList.remove('active');
+                mobileMenuFullscreen.classList.remove('active');
+                if (mobileMenuOverlay) mobileMenuOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+            
+            // Hamburger Click Handler
+            mobileHamburger.onclick = function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (menuOpen) {
+                    closeMenu();
+                } else {
+                    openMenu();
+                }
+            };
+            
+            // Close menu on link click
+            const mobileMenuLinks = mobileMenuFullscreen.querySelectorAll('.mobile-menu-link');
+            mobileMenuLinks.forEach(link => {
+                link.onclick = function() {
+                    closeMenu();
+                };
+            });
+            
+            // Close menu on overlay click
+            if (mobileMenuOverlay) {
+                mobileMenuOverlay.onclick = closeMenu;
+            }
+            
+            // Mobile Auth Button - Sync with main auth
+            if (mobileAuthButton) {
+                mobileAuthButton.onclick = function() {
+                    closeMenu();
+                    // Trigger the main auth button
+                    const mainAuthButton = document.getElementById('realAuthButton');
+                    if (mainAuthButton) {
+                        mainAuthButton.click();
+                    }
+                };
+                
+                // Update mobile auth button state based on login status
+                function updateMobileAuthState() {
+                    if (window.realUserAuth && window.realUserAuth.getCurrentUser && window.realUserAuth.getCurrentUser()) {
+                        const user = window.realUserAuth.getCurrentUser();
+                        mobileAuthButton.innerHTML = '<i class="fas fa-user-check"></i> <span>' + (user.name || 'Angemeldet') + '</span>';
+                        mobileAuthButton.classList.add('logged-in');
+                    } else {
+                        mobileAuthButton.innerHTML = '<i class="fas fa-user"></i> <span data-de="Anmelden" data-en="Login">Anmelden</span>';
+                        mobileAuthButton.classList.remove('logged-in');
+                    }
+                }
+                
+                // Check auth state on load and periodically
+                updateMobileAuthState();
+                setInterval(updateMobileAuthState, 2000);
+            }
+            
+            // Mobile Language Buttons
+            const mobileLangBtns = mobileMenuFullscreen.querySelectorAll('.mobile-lang-btn');
+            mobileLangBtns.forEach(btn => {
+                btn.onclick = function() {
+                    const lang = this.dataset.lang;
+                    if (window.simpleTranslation && window.simpleTranslation.setLanguage) {
+                        window.simpleTranslation.setLanguage(lang);
+                    }
+                    // Update active state
+                    mobileLangBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                };
+            });
+        })();
     </script>
 </body>
 </html>
