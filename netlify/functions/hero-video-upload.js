@@ -58,9 +58,8 @@ exports.handler = async (event, context) => {
                 Bucket: BUCKET_NAME,
                 Key: key,
                 ContentType: contentType,
-                Expires: UPLOAD_EXPIRY,
-                // Wichtig: ServerSideEncryption für bessere Kompatibilität
-                ServerSideEncryption: 'AES256'
+                Expires: UPLOAD_EXPIRY
+                // ServerSideEncryption entfernt - könnte Probleme verursachen
             };
 
             const uploadUrl = s3.getSignedUrl('putObject', params);
