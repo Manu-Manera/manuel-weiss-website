@@ -4757,15 +4757,19 @@ img {
 }
 
 .snowflake.small {
-    font-size: 0.8rem;
+    font-size: 0.6rem;
+    opacity: 0.7;
 }
 
 .snowflake.medium {
-    font-size: 1.3rem;
+    font-size: 1.4rem;
+    opacity: 0.85;
 }
 
 .snowflake.large {
-    font-size: 2rem;
+    font-size: 2.5rem;
+    opacity: 1;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
 }
 
 .snowflake.clickable {
@@ -4774,62 +4778,62 @@ img {
     z-index: 100;
 }
 
-/* EINFACHE Animation: Fallen mit seitlichem Schwanken */
-@keyframes snowflakeFall {
-    0% {
-        transform: translate(0, -50px) rotate(0deg);
-        opacity: 1;
-    }
-    10% {
-        transform: translate(25px, 200px) rotate(72deg);
-        opacity: 1;
-    }
-    20% {
-        transform: translate(-15px, 400px) rotate(144deg);
-        opacity: 1;
-    }
-    30% {
-        transform: translate(30px, 600px) rotate(216deg);
-        opacity: 1;
-    }
-    40% {
-        transform: translate(-20px, 800px) rotate(288deg);
-        opacity: 1;
-    }
-    50% {
-        transform: translate(35px, 1000px) rotate(360deg);
-        opacity: 1;
-    }
-    60% {
-        transform: translate(-25px, 1200px) rotate(432deg);
-        opacity: 1;
-    }
-    70% {
-        transform: translate(20px, 1400px) rotate(504deg);
-        opacity: 1;
-    }
-    80% {
-        transform: translate(-30px, 1600px) rotate(576deg);
-        opacity: 1;
-    }
-    90% {
-        transform: translate(15px, 1800px) rotate(648deg);
-        opacity: 1;
-    }
-    100% {
-        transform: translate(0, 2000px) rotate(720deg);
-        opacity: 0;
-    }
+/* 5 verschiedene Animations-Varianten für natürliches Herunterfetzeln */
+@keyframes snowflakeFall1 {
+    0% { transform: translate(0, -50px) rotate(0deg); }
+    25% { transform: translate(35px, 500px) rotate(90deg); }
+    50% { transform: translate(-25px, 1000px) rotate(180deg); }
+    75% { transform: translate(45px, 1500px) rotate(270deg); }
+    100% { transform: translate(0, 2000px) rotate(360deg); }
+}
+
+@keyframes snowflakeFall2 {
+    0% { transform: translate(0, -50px) rotate(0deg); }
+    20% { transform: translate(-50px, 400px) rotate(120deg); }
+    40% { transform: translate(30px, 800px) rotate(200deg); }
+    60% { transform: translate(-40px, 1200px) rotate(280deg); }
+    80% { transform: translate(25px, 1600px) rotate(340deg); }
+    100% { transform: translate(-15px, 2000px) rotate(420deg); }
+}
+
+@keyframes snowflakeFall3 {
+    0% { transform: translate(0, -50px) rotate(0deg); }
+    15% { transform: translate(60px, 300px) rotate(60deg); }
+    35% { transform: translate(-35px, 700px) rotate(150deg); }
+    55% { transform: translate(50px, 1100px) rotate(240deg); }
+    75% { transform: translate(-55px, 1500px) rotate(330deg); }
+    100% { transform: translate(20px, 2000px) rotate(480deg); }
+}
+
+@keyframes snowflakeFall4 {
+    0% { transform: translate(0, -50px) rotate(0deg); }
+    30% { transform: translate(-30px, 600px) rotate(110deg); }
+    60% { transform: translate(40px, 1200px) rotate(220deg); }
+    100% { transform: translate(-20px, 2000px) rotate(380deg); }
+}
+
+@keyframes snowflakeFall5 {
+    0% { transform: translate(0, -50px) rotate(0deg); }
+    10% { transform: translate(70px, 200px) rotate(50deg); }
+    30% { transform: translate(-55px, 600px) rotate(140deg); }
+    50% { transform: translate(65px, 1000px) rotate(230deg); }
+    70% { transform: translate(-45px, 1400px) rotate(320deg); }
+    90% { transform: translate(35px, 1800px) rotate(380deg); }
+    100% { transform: translate(0, 2000px) rotate(440deg); }
 }
 
 /* Mobile: Schneeflocken-Größen anpassen */
 @media (max-width: 768px) {
-    .snowflake {
-        font-size: 0.8rem;
+    .snowflake.small {
+        font-size: 0.5rem;
+    }
+    
+    .snowflake.medium {
+        font-size: 1rem;
     }
     
     .snowflake.large {
-        font-size: 1rem;
+        font-size: 1.8rem;
     }
 }
 
