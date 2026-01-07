@@ -4723,9 +4723,14 @@ img {
     left: 0;
     width: 100%;
     height: 100%;
-    pointer-events: none;
+    pointer-events: none; /* Container blockiert keine Klicks */
     z-index: 0;
     overflow: hidden;
+}
+
+/* Klickbare Schneeflocken müssen pointer-events haben */
+.snowflakes-container .snowflake.clickable {
+    pointer-events: auto !important;
 }
 
 /* Mobile: Schneeflocken aktiviert für Spiel */
