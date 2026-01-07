@@ -786,22 +786,6 @@ a:hover {
     animation: heroTitleFade 1s ease-out;
 }
 
-.hero-title-line-1,
-.hero-title-line-2 {
-    display: block;
-}
-
-.hero-title-line-1 {
-    margin-bottom: 0.2em;
-}
-
-.hero-title-line-2 {
-    font-size: 0.85em; /* Etwas kleiner für die zweite Zeile, aber gut lesbar */
-    font-weight: 600;
-    opacity: 1; /* Volle Sichtbarkeit */
-    color: rgba(255, 255, 255, 0.95); /* Explizite weiße Farbe für bessere Lesbarkeit */
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4); /* Text-Shadow für besseren Kontrast */
-}
 
 @keyframes heroTitleFade {
     0% { opacity: 0; transform: translateY(30px); }
@@ -3621,23 +3605,6 @@ a:hover {
         -moz-osx-font-smoothing: grayscale;
     }
     
-    .hero-title-line-1 {
-        font-size: 1em;
-        display: block;
-        position: relative;
-        z-index: 103; /* Noch höher für mobile-only Text */
-    }
-    
-    .hero-title .mobile-only {
-        position: relative;
-        z-index: 103; /* Explizit ganz oben */
-    }
-    
-    .hero-title-line-2 {
-        font-size: 0.7em;
-        display: block;
-        margin-top: 0.2em;
-    }
     
     .hero-visual {
         display: none; /* Verstecke Visual auf Mobile */
@@ -3830,12 +3797,6 @@ a:hover {
         font-weight: 700 !important;
     }
     
-    .hero-title .mobile-only {
-        display: block;
-        color: #fff !important;
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8) !important;
-        font-weight: 700 !important;
-    }
     
     .hero-visual {
         order: 1;
@@ -3844,30 +3805,6 @@ a:hover {
         z-index: 51;
     }
     
-    .hero-title-line-1,
-    .hero-title-line-2 {
-        color: #fff !important;
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8) !important;
-        font-weight: 700 !important;
-    }
-    
-    .hero-title-line-1.mobile-only {
-        font-size: 1.2em !important;
-        margin-bottom: 0.2em;
-        color: #fff !important;
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8) !important;
-        font-weight: 700 !important;
-    }
-    
-    .hero-title-line-1.mobile-only {
-        font-size: 1em !important; /* Volle Größe für erste Zeile */
-        margin-bottom: 0.15em; /* Kleiner Abstand zur zweiten Zeile */
-    }
-    
-    .hero-title-line-2.mobile-only {
-        font-size: 0.75em !important; /* Etwas kleiner für zweite Zeile, aber immer noch sehr groß */
-        margin-top: 0;
-    }
     
     .hero-subtitle {
         display: none !important; /* Verstecke Subtitle auf Mobile */
@@ -4052,24 +3989,6 @@ a:hover {
         text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8) !important;
     }
     
-    .hero-title-line-1,
-    .hero-title-line-2 {
-        color: #fff !important;
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8) !important;
-        font-weight: 700 !important;
-    }
-    
-    /* Besondere Behandlung für "Willkommen" auf sehr kleinen Screens */
-    .hero-title-line-1.mobile-only {
-        font-size: 1.15em !important; /* Größer für bessere Lesbarkeit */
-        text-shadow: 
-            0 0 25px rgba(255, 255, 255, 1),
-            0 0 50px rgba(255, 255, 255, 1),
-            0 0 75px rgba(255, 255, 255, 0.95),
-            0 10px 40px rgba(0, 0, 0, 1),
-            0 5px 20px rgba(0, 0, 0, 0.95),
-            0 2px 10px rgba(0, 0, 0, 0.9) !important;
-    }
     
     .hero-subtitle {
         font-size: var(--text-sm);
@@ -4486,17 +4405,6 @@ a:hover {
     font-weight: 700;
 }
 
-/* Sicherstellen dass hero-title-line-2 auch mit Gradient gut sichtbar ist */
-.hero .gradient-text .hero-title-line-2 {
-    /* Gradient wird vererbt, aber zusätzliche Sichtbarkeit */
-    -webkit-text-fill-color: transparent;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(224, 231, 255, 0.95) 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    /* Fallback für Browser ohne Gradient-Support */
-    color: rgba(255, 255, 255, 0.95);
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-}
 
 /* Fallback für Browser ohne background-clip Support */
 @supports not (-webkit-background-clip: text) {
@@ -4507,11 +4415,6 @@ a:hover {
         text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     }
     
-    /* Sicherstellen dass hero-title-line-2 auch ohne Gradient sichtbar ist */
-    .hero .gradient-text .hero-title-line-2 {
-        color: rgba(255, 255, 255, 0.95) !important;
-        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4) !important;
-    }
 }
 
 /* Firefox: -webkit-text-fill-color Fallback */
@@ -4523,11 +4426,6 @@ a:hover {
         text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     }
     
-    /* Sicherstellen dass hero-title-line-2 auch in Firefox sichtbar ist */
-    .hero .gradient-text .hero-title-line-2 {
-        color: rgba(255, 255, 255, 0.95) !important;
-        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4) !important;
-    }
 }
 
 /* Firefox: Grid Auto-fit Alternative */
