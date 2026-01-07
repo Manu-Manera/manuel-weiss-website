@@ -4753,15 +4753,16 @@ img {
 .snowflake {
     position: absolute;
     top: -100px; /* Starte außerhalb des Viewports */
-    color: rgba(255, 255, 255, 0.9);
+    color: rgba(255, 255, 255, 0.9) !important;
     font-size: 1.5rem;
     user-select: none;
     pointer-events: none;
     animation: snowflakeFall linear infinite;
-    animation-fill-mode: both; /* Wichtig für Animation */
-    animation-play-state: running; /* Explizit aktiviert */
-    opacity: 1 !important; /* Initial sichtbar - Animation steuert opacity */
+    animation-fill-mode: forwards; /* Nur forwards, nicht both - verhindert opacity: 0 am Start */
+    animation-play-state: running !important; /* Explizit aktiviert */
+    opacity: 1 !important; /* IMMER sichtbar */
     visibility: visible !important; /* Sicherstellen dass sichtbar */
+    display: block !important; /* Sicherstellen dass angezeigt */
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.4);
     filter: drop-shadow(0 0 3px white);
     /* GPU-Beschleunigung für flüssige Animation */
@@ -4792,17 +4793,12 @@ img {
     opacity: 1;
 }
 
-/* Animation: Fallbewegung - GPU-optimiert mit translate3d */
 /* Animation: Fallbewegung MIT seitlichem Schwanken kombiniert */
 /* WICHTIG: Nur EINE Animation, da zwei transform-Animationen sich überschreiben würden */
 @keyframes snowflakeFall {
     0% {
         transform: translate3d(0, -100px, 0) translateZ(0);
-        opacity: 0;
-    }
-    1% {
-        transform: translate3d(0, -50px, 0) translateZ(0);
-        opacity: 1; /* Schnell sichtbar werden */
+        opacity: 1 !important; /* SOFORT sichtbar! */
     }
     25% {
         transform: translate3d(15px, 500px, 0) translateZ(0);
