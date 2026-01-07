@@ -2111,11 +2111,34 @@
                 const popup = document.createElement('div');
                 popup.className = 'points-popup';
                 popup.textContent = '+' + points;
-                popup.style.left = (e.clientX || e.touches[0].clientX) + 'px';
-                popup.style.top = (e.clientY || e.touches[0].clientY) + 'px';
+                
+                // Position ermitteln - bei Touch-Events changedTouches statt touches verwenden!
+                let x, y;
+                if (e.clientX !== undefined) {
+                    // Mouse Event
+                    x = e.clientX;
+                    y = e.clientY;
+                } else if (e.changedTouches && e.changedTouches.length > 0) {
+                    // Touch Event (touchend hat keine touches mehr, nur changedTouches!)
+                    x = e.changedTouches[0].clientX;
+                    y = e.changedTouches[0].clientY;
+                } else if (e.touches && e.touches.length > 0) {
+                    // Fallback für touchstart
+                    x = e.touches[0].clientX;
+                    y = e.touches[0].clientY;
+                } else {
+                    // Notfall-Fallback: Mitte des Bildschirms
+                    x = window.innerWidth / 2;
+                    y = window.innerHeight / 2;
+                }
+                
+                popup.style.left = x + 'px';
+                popup.style.top = y + 'px';
                 document.body.appendChild(popup);
                 
-                setTimeout(() => popup.remove(), 1000);
+                // Länger sichtbar auf Mobile (2s Animation)
+                const isMobile = window.innerWidth < 768;
+                setTimeout(() => popup.remove(), isMobile ? 2000 : 1500);
             },
             
             setupHighscoreModal() {
