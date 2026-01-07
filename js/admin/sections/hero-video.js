@@ -183,12 +183,16 @@ class HeroVideoSection {
                 });
 
                 if (!uploadUrlResponse.ok) {
-                    throw new Error('Fehler beim Generieren der Upload-URL');
+                    const errorData = await uploadUrlResponse.json().catch(() => ({ error: 'Unknown error' }));
+                    console.error('❌ Fehler beim Generieren der Pre-Signed URL:', errorData);
+                    throw new Error(errorData.message || errorData.error || 'Fehler beim Generieren der Upload-URL');
                 }
 
-                const { uploadUrl, publicUrl: preSignedPublicUrl } = await uploadUrlResponse.json();
+                const urlData = await uploadUrlResponse.json();
+                const { uploadUrl, publicUrl: preSignedPublicUrl } = urlData;
                 
                 if (!uploadUrl || !preSignedPublicUrl) {
+                    console.error('❌ Ungültige Upload-URL erhalten:', urlData);
                     throw new Error('Ungültige Upload-URL erhalten');
                 }
 
@@ -326,15 +330,27 @@ class HeroVideoSection {
                         })
                     });
 
+                    console.log('📥 Server-Side Upload Response Status:', uploadResponse.status, uploadResponse.statusText);
+
                     if (!uploadResponse.ok) {
-                        const errorBody = await uploadResponse.json().catch(() => ({ message: 'Unknown error' }));
-                        throw new Error(`Upload fehlgeschlagen: ${uploadResponse.status} ${uploadResponse.statusText}. Details: ${errorBody.message || JSON.stringify(errorBody)}`);
+                        let errorBody;
+                        try {
+                            const errorText = await uploadResponse.text();
+                            console.error('❌ Error Response Body:', errorText);
+                            errorBody = JSON.parse(errorText);
+                        } catch (parseError) {
+                            console.error('❌ Fehler beim Parsen der Error-Response:', parseError);
+                            errorBody = { message: `Upload fehlgeschlagen: ${uploadResponse.status} ${uploadResponse.statusText}` };
+                        }
+                        throw new Error(errorBody.message || errorBody.error || `Upload fehlgeschlagen: ${uploadResponse.status}`);
                     }
 
                     const result = await uploadResponse.json();
+                    console.log('✅ Server-Side Upload Result:', result);
                     publicUrl = result.videoUrl;
                     
                     if (!publicUrl) {
+                        console.error('❌ Keine Video-URL im Result:', result);
                         throw new Error('Keine Video-URL vom Server erhalten');
                     }
 
