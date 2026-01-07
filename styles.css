@@ -4739,16 +4739,18 @@ img {
 }
 
 .snowflake {
-    position: absolute;
-    top: -50px;
-    color: white;
-    font-size: 1.5rem;
+    position: absolute !important;
+    top: -50px !important;
+    color: white !important;
+    font-size: 1.5rem !important;
     user-select: none;
     pointer-events: none;
-    opacity: 1;
-    display: block;
-    z-index: 9;
-    animation: snowflakeFall linear infinite;
+    opacity: 1 !important;
+    display: block !important;
+    visibility: visible !important;
+    z-index: 9 !important;
+    animation: snowflakeFall linear infinite !important;
+    animation-play-state: running !important;
 }
 
 .snowflake::before {
@@ -4776,19 +4778,24 @@ img {
 /* EINFACHE Animation: Fallen mit seitlichem Schwanken */
 @keyframes snowflakeFall {
     0% {
-        transform: translate(0, -50px);
+        transform: translate(0, -50px) !important;
+        opacity: 1 !important;
     }
     25% {
-        transform: translate(15px, 500px);
+        transform: translate(15px, 500px) !important;
+        opacity: 1 !important;
     }
     50% {
-        transform: translate(-10px, 1000px);
+        transform: translate(-10px, 1000px) !important;
+        opacity: 1 !important;
     }
     75% {
-        transform: translate(20px, 1500px);
+        transform: translate(20px, 1500px) !important;
+        opacity: 1 !important;
     }
     100% {
-        transform: translate(0, 2000px);
+        transform: translate(0, 2000px) !important;
+        opacity: 0 !important;
     }
 }
 

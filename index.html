@@ -1997,20 +1997,32 @@
             gameStarted: false,
             
             init() {
+                console.log('❄️ SnowflakeGame.init() aufgerufen');
+                const container = document.getElementById('snowflakes');
+                if (!container) {
+                    console.error('❌ Container #snowflakes nicht gefunden!');
+                    return;
+                }
+                console.log('✅ Container gefunden:', container);
                 this.createSnowflakes();
                 this.setupHighscoreModal();
             },
             
             createSnowflakes() {
                 const container = document.getElementById('snowflakes');
-                if (!container) return;
+                if (!container) {
+                    console.error('❌ Container in createSnowflakes nicht gefunden!');
+                    return;
+                }
                 
                 // Mobile: Weniger Schneeflocken für bessere Performance
                 const snowflakeCount = window.innerWidth < 768 ? 20 : 50;
+                console.log(`❄️ Erstelle ${snowflakeCount} Schneeflocken...`);
                 
                 for (let i = 0; i < snowflakeCount; i++) {
                     this.createSingleSnowflake(container);
                 }
+                console.log(`✅ ${snowflakeCount} Schneeflocken erstellt`);
             },
             
             createSingleSnowflake(container) {
@@ -2033,6 +2045,19 @@
                 const fallDuration = Math.random() * 10 + 10; // 10-20 Sekunden
                 snowflake.style.animationDuration = `${fallDuration}s`;
                 snowflake.style.animationDelay = Math.random() * 5 + 's';
+                snowflake.style.opacity = '1';
+                snowflake.style.display = 'block';
+                snowflake.style.visibility = 'visible';
+                
+                // Debug: Prüfe ob Animation gesetzt ist
+                const computedStyle = window.getComputedStyle(snowflake);
+                console.log('❄️ Schneeflocke erstellt:', {
+                    left: snowflake.style.left,
+                    top: snowflake.style.top,
+                    animation: computedStyle.animation,
+                    opacity: computedStyle.opacity,
+                    display: computedStyle.display
+                });
                 
                 // Click Event (Desktop)
                 snowflake.addEventListener('click', (e) => this.catchSnowflake(e, snowflake, size.points));
