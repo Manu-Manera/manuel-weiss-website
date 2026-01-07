@@ -163,14 +163,27 @@ class HeroVideoSection {
             if (progressPercentage) progressPercentage.textContent = '10%';
 
             // Konvertiere File zu Base64
+            console.log('📦 Konvertiere File zu Base64...', file.name, file.size, 'bytes');
             const fileData = await new Promise((resolve, reject) => {
                 const reader = new FileReader();
                 reader.onload = () => {
-                    // Entferne Data-URL Prefix (data:video/mp4;base64,)
-                    const base64 = reader.result.split(',')[1];
-                    resolve(base64);
+                    try {
+                        // Entferne Data-URL Prefix (data:video/mp4;base64,)
+                        const base64 = reader.result.split(',')[1];
+                        if (!base64) {
+                            reject(new Error('Fehler beim Konvertieren zu Base64: Keine Daten erhalten'));
+                            return;
+                        }
+                        console.log('✅ Base64-Konvertierung erfolgreich, Länge:', base64.length);
+                        resolve(base64);
+                    } catch (error) {
+                        reject(new Error('Fehler beim Konvertieren zu Base64: ' + error.message));
+                    }
                 };
-                reader.onerror = reject;
+                reader.onerror = (error) => {
+                    console.error('❌ FileReader Fehler:', error);
+                    reject(new Error('Fehler beim Lesen der Datei: ' + error.message));
+                };
                 reader.readAsDataURL(file);
             });
 
@@ -179,19 +192,37 @@ class HeroVideoSection {
             if (progressFill) progressFill.style.width = '30%';
             if (progressPercentage) progressPercentage.textContent = '30%';
 
+            console.log('🚀 Sende Upload-Request an Netlify Function...');
+            const uploadPayload = {
+                fileData: fileData,
+                fileName: file.name,
+                contentType: file.type || 'video/mp4'
+            };
+            console.log('📤 Payload-Größe:', JSON.stringify(uploadPayload).length, 'Zeichen');
+            console.log('📤 File-Name:', file.name);
+            console.log('📤 Content-Type:', file.type);
+
             const uploadResponse = await fetch('/.netlify/functions/hero-video-upload-direct', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    fileData: fileData,
-                    fileName: file.name,
-                    contentType: file.type || 'video/mp4'
-                })
+                headers: { 
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(uploadPayload)
             });
 
+            console.log('📥 Response Status:', uploadResponse.status, uploadResponse.statusText);
+
             if (!uploadResponse.ok) {
-                const errorData = await uploadResponse.json().catch(() => ({}));
-                throw new Error(errorData.message || `Upload fehlgeschlagen: ${uploadResponse.status} ${uploadResponse.statusText}`);
+                let errorData;
+                try {
+                    const errorText = await uploadResponse.text();
+                    console.error('❌ Error Response:', errorText);
+                    errorData = JSON.parse(errorText);
+                } catch (parseError) {
+                    console.error('❌ Fehler beim Parsen der Error-Response:', parseError);
+                    errorData = { error: `Upload fehlgeschlagen: ${uploadResponse.status} ${uploadResponse.statusText}` };
+                }
+                throw new Error(errorData.error || errorData.message || `Upload fehlgeschlagen: ${uploadResponse.status}`);
             }
 
             const { videoUrl } = await uploadResponse.json();
