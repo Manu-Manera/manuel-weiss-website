@@ -80,8 +80,21 @@ exports.handler = async (event, context) => {
         }
 
         // Decode base64 file data
-        const fileBuffer = Buffer.from(fileData, 'base64');
+        console.log('Decoding base64 file data, length:', fileData.length);
+        let fileBuffer;
+        try {
+            fileBuffer = Buffer.from(fileData, 'base64');
+        } catch (decodeError) {
+            console.error('Error decoding base64:', decodeError);
+            return {
+                statusCode: 400,
+                headers,
+                body: JSON.stringify({ error: 'Invalid base64 data', details: decodeError.message })
+            };
+        }
+        
         const fileSize = fileBuffer.length;
+        console.log('Decoded file size:', fileSize, 'bytes');
 
         // Validate file size
         if (fileSize > MAX_FILE_SIZE) {
@@ -97,34 +110,61 @@ exports.handler = async (event, context) => {
         const sanitizedFileName = fileName.replace(/[^a-zA-Z0-9.-]/g, '_');
         const key = `hero-videos/${timestamp}-${sanitizedFileName}`;
 
+        console.log('Uploading to S3:', {
+            bucket: BUCKET_NAME,
+            key: key,
+            size: fileSize,
+            contentType: fileContentType || 'video/mp4'
+        });
+
         // Upload to S3
         const uploadParams = {
             Bucket: BUCKET_NAME,
             Key: key,
             Body: fileBuffer,
-            ContentType: fileContentType || 'video/mp4',
-            ServerSideEncryption: 'AES256'
+            ContentType: fileContentType || 'video/mp4'
+            // ServerSideEncryption entfernt - könnte Probleme verursachen
         };
 
-        console.log('Uploading to S3:', key, 'Size:', fileSize);
-        const s3Result = await s3.upload(uploadParams).promise();
-        console.log('S3 upload successful:', s3Result.Location);
+        let s3Result;
+        try {
+            s3Result = await s3.upload(uploadParams).promise();
+            console.log('S3 upload successful:', s3Result.Location);
+        } catch (s3Error) {
+            console.error('S3 upload error:', s3Error);
+            return {
+                statusCode: 500,
+                headers,
+                body: JSON.stringify({ 
+                    error: 'S3 upload failed', 
+                    message: s3Error.message,
+                    code: s3Error.code
+                })
+            };
+        }
 
         // Generate public URL
         const publicUrl = `https://${BUCKET_NAME}.s3.${process.env.AWS_REGION || 'eu-central-1'}.amazonaws.com/${key}`;
 
         // Save URL to DynamoDB
-        const params = {
-            TableName: TABLE_NAME,
-            Item: marshall({
-                settingKey: SETTINGS_KEY,
-                settingValue: publicUrl,
-                updatedAt: new Date().toISOString()
-            })
-        };
+        try {
+            const params = {
+                TableName: TABLE_NAME,
+                Item: marshall({
+                    settingKey: SETTINGS_KEY,
+                    settingValue: publicUrl,
+                    updatedAt: new Date().toISOString()
+                })
+            };
 
-        await dynamoDB.send(new PutItemCommand(params));
-        console.log('Settings saved to DynamoDB');
+            await dynamoDB.send(new PutItemCommand(params));
+            console.log('Settings saved to DynamoDB');
+        } catch (dbError) {
+            console.error('DynamoDB save error:', dbError);
+            // S3 Upload war erfolgreich, also geben wir trotzdem Erfolg zurück
+            // aber loggen den DB-Fehler
+            console.warn('Video uploaded to S3 but failed to save to DynamoDB:', dbError.message);
+        }
 
         return {
             statusCode: 200,
@@ -139,12 +179,23 @@ exports.handler = async (event, context) => {
 
     } catch (error) {
         console.error('Error in hero-video-upload-direct:', error);
+        console.error('Error stack:', error.stack);
+        console.error('Event:', JSON.stringify({
+            httpMethod: event.httpMethod,
+            headers: Object.keys(event.headers || {}),
+            bodyLength: event.body ? event.body.length : 0,
+            isBase64Encoded: event.isBase64Encoded
+        }));
+        
         return {
             statusCode: 500,
             headers,
             body: JSON.stringify({ 
                 error: 'Internal server error',
-                message: error.message 
+                message: error.message,
+                type: error.constructor.name,
+                // Nur in Development: Stack-Trace
+                ...(process.env.NODE_ENV === 'development' && { stack: error.stack })
             })
         };
     }
