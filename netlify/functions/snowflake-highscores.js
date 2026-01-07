@@ -106,14 +106,23 @@ exports.handler = async (event) => {
                         timestamp: Date.now(),
                     },
                 }));
+                console.log('Highscore saved successfully:', { id, name, score });
             } catch (dbError) {
                 console.error('DynamoDB PutItem error:', dbError);
+                console.error('Error details:', {
+                    code: dbError.code,
+                    message: dbError.message,
+                    tableName: tableName,
+                    region: process.env.NETLIFY_AWS_REGION,
+                    hasCredentials: !!(process.env.NETLIFY_AWS_ACCESS_KEY_ID && process.env.NETLIFY_AWS_SECRET_ACCESS_KEY)
+                });
                 return {
                     statusCode: 500,
                     headers,
                     body: JSON.stringify({ 
                         error: 'Database error',
-                        message: dbError.message || 'Failed to save highscore'
+                        message: dbError.message || 'Failed to save highscore',
+                        code: dbError.code || 'UnknownError'
                     }),
                 };
             }

@@ -4751,6 +4751,7 @@ img {
     -webkit-transform: translateZ(0);
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
+    z-index: 1; /* Basis z-index */
 }
 
 .snowflake::before {
@@ -4875,6 +4876,7 @@ img {
 .snowflake.clickable {
     pointer-events: auto !important;
     cursor: pointer;
+    z-index: 10 !important; /* Höherer z-index für Klickbarkeit */
     /* WICHTIG: Animationen müssen erhalten bleiben! */
     animation: snowflakeFall linear infinite, snowflakeSway ease-in-out infinite !important;
     transition: opacity 0.3s ease;
