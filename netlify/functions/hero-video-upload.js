@@ -52,16 +52,20 @@ exports.handler = async (event, context) => {
             const key = `hero-videos/${timestamp}-${sanitizedFileName}`;
 
             // Generiere Pre-Signed URL für PUT
+            // ACL entfernt, da moderne S3-Buckets oft ACL deaktiviert haben
+            // Stattdessen sollte eine Bucket-Policy für öffentlichen Zugriff sorgen
             const params = {
                 Bucket: BUCKET_NAME,
                 Key: key,
                 ContentType: contentType,
-                Expires: UPLOAD_EXPIRY,
-                ACL: 'public-read' // Video soll öffentlich zugänglich sein
+                Expires: UPLOAD_EXPIRY
             };
 
             const uploadUrl = s3.getSignedUrl('putObject', params);
             const publicUrl = `https://${BUCKET_NAME}.s3.${process.env.AWS_REGION || 'eu-central-1'}.amazonaws.com/${key}`;
+            
+            console.log('Generated pre-signed URL for:', key);
+            console.log('Public URL will be:', publicUrl);
 
             return {
                 statusCode: 200,
