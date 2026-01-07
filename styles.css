@@ -4808,19 +4808,20 @@ img {
     }
 }
 
-/* Animation: Seitliches Schwanken - GPU-optimiert mit translate3d */
+/* Animation: Seitliches Schwanken - NUR horizontale Bewegung, KEIN transform (wird von snowflakeFall überschrieben) */
+/* PROBLEM: Zwei Animationen mit transform überschreiben sich! Lösung: Nur eine Animation mit kombiniertem transform */
 @keyframes snowflakeSway {
     0%, 100% {
-        transform: translate3d(0, 0, 0) rotate(0deg);
+        /* Kein transform hier - wird von snowflakeFall gesteuert */
     }
     25% {
-        transform: translate3d(15px, 0, 0) rotate(90deg);
+        /* Kein transform hier - wird von snowflakeFall gesteuert */
     }
     50% {
-        transform: translate3d(-10px, 0, 0) rotate(180deg);
+        /* Kein transform hier - wird von snowflakeFall gesteuert */
     }
     75% {
-        transform: translate3d(20px, 0, 0) rotate(270deg);
+        /* Kein transform hier - wird von snowflakeFall gesteuert */
     }
 }
 
