@@ -4778,24 +4778,24 @@ img {
 /* EINFACHE Animation: Fallen mit seitlichem Schwanken */
 @keyframes snowflakeFall {
     0% {
-        transform: translate(0, -50px) !important;
-        opacity: 1 !important;
+        transform: translate(0, -50px);
+        opacity: 1;
     }
     25% {
-        transform: translate(15px, 500px) !important;
-        opacity: 1 !important;
+        transform: translate(15px, 500px);
+        opacity: 1;
     }
     50% {
-        transform: translate(-10px, 1000px) !important;
-        opacity: 1 !important;
+        transform: translate(-10px, 1000px);
+        opacity: 1;
     }
     75% {
-        transform: translate(20px, 1500px) !important;
-        opacity: 1 !important;
+        transform: translate(20px, 1500px);
+        opacity: 1;
     }
     100% {
-        transform: translate(0, 2000px) !important;
-        opacity: 0 !important;
+        transform: translate(0, 2000px);
+        opacity: 0;
     }
 }
 
