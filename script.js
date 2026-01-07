@@ -195,7 +195,7 @@ function initMobileMenu() {
     const mobileMenuLinks = mobileMenuFullscreen.querySelectorAll('.mobile-menu-link');
     mobileMenuLinks.forEach(link => {
         link.onclick = function() {
-        };
+            closeMenu();
         };
     });
     
