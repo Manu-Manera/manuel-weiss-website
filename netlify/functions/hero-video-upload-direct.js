@@ -242,9 +242,16 @@ exports.handler = async (event, context) => {
             console.log('Settings saved to DynamoDB');
         } catch (dbError) {
             console.error('DynamoDB save error:', dbError);
-            // S3 Upload war erfolgreich, also geben wir trotzdem Erfolg zurück
-            // aber loggen den DB-Fehler
-            console.warn('Video uploaded to S3 but failed to save to DynamoDB:', dbError.message);
+            // DynamoDB-Speicherung ist kritisch - wir müssen den Fehler zurückgeben
+            return {
+                statusCode: 500,
+                headers,
+                body: JSON.stringify({
+                    error: 'Failed to save video URL to settings',
+                    message: dbError.message,
+                    videoUrl: publicUrl // Gebe URL trotzdem zurück, falls Frontend sie direkt verwenden will
+                })
+            };
         }
 
         return {
