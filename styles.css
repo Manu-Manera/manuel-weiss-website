@@ -1592,7 +1592,7 @@ a:hover {
     width: 100%; /* Explizit 100% Breite */
     margin: 0;
     position: relative;
-    z-index: 1;
+    z-index: 12; /* Über Container (z-index 11) */
     align-items: stretch;
     -webkit-align-items: stretch; /* Safari */
     justify-content: flex-start; /* Kacheln links ausrichten */
