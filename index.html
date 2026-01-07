@@ -1999,6 +1999,8 @@
         const SnowflakeGame = {
             score: 0,
             gameStarted: false,
+            windActive: false,
+            windDirection: 0,
             
             // Schwierigkeitsberechnung basierend auf Score
             getDifficulty() {
@@ -2019,11 +2021,60 @@
                     // Größen-Gewichtung: Je höher, desto mehr kleine Flocken
                     smallChance: Math.min(0.5 + (level * 0.08), 0.8), // 50% -> 80% kleine
                     mediumChance: Math.max(0.35 - (level * 0.05), 0.15), // 35% -> 15% mittlere
-                    // Animations-Komplexität: Mehr Varianten bei höherem Level
-                    maxAnimationVariant: Math.min(5 + level * 2, 10), // 5 -> 10 Varianten
+                    // Animations-Komplexität: Mehr natürliche Varianten bei niedrigem Level, chaotischer bei hohem
+                    minAnimationVariant: level <= 2 ? 1 : 6, // Niedrige Level: sanfte Animationen (1-5)
+                    maxAnimationVariant: level <= 2 ? 5 : 10, // Hohe Level: chaotische Animationen (6-10)
+                    // Wind-Effekt ab Experte
+                    hasWind: level >= 4,
                     // Beschreibung für UI
                     name: ['Anfänger', 'Leicht', 'Mittel', 'Schwer', 'Experte', 'Meister'][level]
                 };
+            },
+            
+            // Wind-Effekt für Experten-Level
+            startWindEffect() {
+                if (this.windInterval) return;
+                
+                this.windInterval = setInterval(() => {
+                    const difficulty = this.getDifficulty();
+                    if (!difficulty.hasWind) return;
+                    
+                    // Zufällig Wind starten (ca. alle 8-15 Sekunden)
+                    if (Math.random() < 0.1) {
+                        this.triggerWind();
+                    }
+                }, 1000);
+            },
+            
+            triggerWind() {
+                if (this.windActive) return;
+                
+                this.windActive = true;
+                this.windDirection = Math.random() < 0.5 ? -1 : 1; // Links oder rechts
+                
+                const container = document.getElementById('snowflakes');
+                if (!container) return;
+                
+                // Wind-Klasse hinzufügen
+                const windClass = this.windDirection > 0 ? 'wind-right' : 'wind-left';
+                container.classList.add(windClass);
+                
+                // Wind-Anzeige
+                this.showWindEffect();
+                
+                // Wind nach 2-4 Sekunden beenden
+                setTimeout(() => {
+                    container.classList.remove('wind-left', 'wind-right');
+                    this.windActive = false;
+                }, 2000 + Math.random() * 2000);
+            },
+            
+            showWindEffect() {
+                const windIndicator = document.createElement('div');
+                windIndicator.className = 'wind-indicator ' + (this.windDirection > 0 ? 'right' : 'left');
+                windIndicator.textContent = this.windDirection > 0 ? '💨→' : '←💨';
+                document.body.appendChild(windIndicator);
+                setTimeout(() => windIndicator.remove(), 2000);
             },
             
             init() {
@@ -2036,6 +2087,7 @@
                 console.log('✅ Container gefunden:', container);
                 this.createSnowflakes();
                 this.setupHighscoreModal();
+                this.startWindEffect();
             },
             
             createSnowflakes() {
@@ -2094,8 +2146,9 @@
                 
                 const animationDelay = Math.random() * 8;
                 
-                // Mehr Animations-Varianten bei höherer Schwierigkeit (kompliziertere Bewegungen)
-                const animationVariant = Math.floor(Math.random() * difficulty.maxAnimationVariant) + 1;
+                // Animation basierend auf Level: Sanfte für niedrige Level, chaotische für hohe
+                const animationRange = difficulty.maxAnimationVariant - difficulty.minAnimationVariant + 1;
+                const animationVariant = difficulty.minAnimationVariant + Math.floor(Math.random() * animationRange);
                 const animationName = `snowflakeFall${animationVariant}`;
                 
                 // WICHTIG: Animation mit !important setzen um CSS zu überschreiben
@@ -2121,7 +2174,7 @@
                 container.appendChild(snowflake);
             },
             
-            catchSnowflake(e, snowflake, points) {
+            catchSnowflake(e, snowflake, points, isFragment = false) {
                 e.stopPropagation();
                 
                 // Start game if not started
@@ -2150,12 +2203,93 @@
                 // Visual feedback
                 this.showPointsPopup(e, points);
                 
-                // Remove and recreate snowflake (neue Schneeflocke mit aktueller Schwierigkeit)
-                snowflake.classList.add('caught');
+                // Position für Fragmente ermitteln
+                const rect = snowflake.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+                
+                // Schneeflocke zerbrechen (außer bei Fragmenten oder kleinen Flocken)
+                const sizeClass = snowflake.classList.contains('small') ? 'small' : 
+                                  snowflake.classList.contains('medium') ? 'medium' : 'large';
+                
+                if (!isFragment && sizeClass !== 'small') {
+                    // Fragmente erstellen
+                    this.createFragments(centerX, centerY, sizeClass);
+                }
+                
+                // Zerbrech-Animation
+                snowflake.classList.add('shatter');
                 setTimeout(() => {
                     snowflake.remove();
-                    this.createSingleSnowflake(document.getElementById('snowflakes'));
+                    // Nur neue Schneeflocke erstellen wenn keine Fragment
+                    if (!isFragment) {
+                        this.createSingleSnowflake(document.getElementById('snowflakes'));
+                    }
                 }, 300);
+            },
+            
+            createFragments(x, y, originalSize) {
+                const container = document.getElementById('snowflakes');
+                if (!container) return;
+                
+                // Anzahl Fragmente basierend auf Größe
+                const fragmentCount = originalSize === 'large' ? 4 : 2;
+                
+                // Fragment-Punkte (kleiner = mehr Punkte)
+                const fragmentPoints = originalSize === 'large' ? 30 : 40;
+                
+                for (let i = 0; i < fragmentCount; i++) {
+                    const fragment = document.createElement('div');
+                    fragment.className = 'snowflake clickable fragment';
+                    fragment.textContent = '❄';
+                    fragment.dataset.points = fragmentPoints;
+                    
+                    // Zufällige Richtung für Fragment
+                    const angle = (i / fragmentCount) * 360 + Math.random() * 45;
+                    const distance = 30 + Math.random() * 50;
+                    const offsetX = Math.cos(angle * Math.PI / 180) * distance;
+                    const offsetY = Math.sin(angle * Math.PI / 180) * distance;
+                    
+                    // Position setzen (relativ zum Container)
+                    const containerRect = container.getBoundingClientRect();
+                    fragment.style.position = 'fixed';
+                    fragment.style.left = (x + offsetX) + 'px';
+                    fragment.style.top = (y + offsetY) + 'px';
+                    fragment.style.fontSize = '0.6rem';
+                    fragment.style.opacity = '0.9';
+                    fragment.style.zIndex = '100';
+                    fragment.style.pointerEvents = 'auto';
+                    fragment.style.cursor = 'pointer';
+                    fragment.style.animation = 'fragmentFall 3s ease-out forwards';
+                    
+                    // Click Event für Fragment
+                    fragment.addEventListener('click', (e) => {
+                        this.catchSnowflake(e, fragment, fragmentPoints, true);
+                    });
+                    
+                    // Touch Events für Fragment
+                    let touchStartTime = 0;
+                    fragment.addEventListener('touchstart', (e) => {
+                        touchStartTime = Date.now();
+                        e.preventDefault();
+                    }, { passive: false });
+                    
+                    fragment.addEventListener('touchend', (e) => {
+                        e.preventDefault();
+                        if (Date.now() - touchStartTime < 300) {
+                            this.catchSnowflake(e, fragment, fragmentPoints, true);
+                        }
+                    }, { passive: false });
+                    
+                    document.body.appendChild(fragment);
+                    
+                    // Fragment nach 3 Sekunden entfernen falls nicht gefangen
+                    setTimeout(() => {
+                        if (fragment.parentNode) {
+                            fragment.remove();
+                        }
+                    }, 3000);
+                }
             },
             
             showLevelUp(levelName) {

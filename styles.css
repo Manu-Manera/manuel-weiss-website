@@ -4789,48 +4789,93 @@ img {
     100% { transform: translate(0, 2000px) rotate(360deg); }
 }
 
-/* 5 verschiedene Animations-Varianten für natürliches Herunterfetzeln */
+/* ===== SANFTE ANIMATIONEN FÜR NIEDRIGE LEVEL (1-5) ===== */
+/* Diese Animationen sind langsam, schweben sanft und fühlen sich natürlich an */
+
+/* Variante 1: Sanftes Schweben mit leichter Drehung */
 @keyframes snowflakeFall1 {
-    0% { transform: translate(0, -50px) rotate(0deg); }
-    25% { transform: translate(35px, 500px) rotate(90deg); }
-    50% { transform: translate(-25px, 1000px) rotate(180deg); }
-    75% { transform: translate(45px, 1500px) rotate(270deg); }
-    100% { transform: translate(0, 2000px) rotate(360deg); }
+    0% { transform: translate(0, -50px) rotate(0deg); opacity: 0.8; }
+    10% { transform: translate(15px, 180px) rotate(20deg); opacity: 1; }
+    20% { transform: translate(-10px, 380px) rotate(-15deg); }
+    30% { transform: translate(20px, 580px) rotate(35deg); }
+    40% { transform: translate(-15px, 780px) rotate(-10deg); }
+    50% { transform: translate(25px, 980px) rotate(45deg); }
+    60% { transform: translate(-20px, 1180px) rotate(-25deg); }
+    70% { transform: translate(18px, 1380px) rotate(30deg); }
+    80% { transform: translate(-12px, 1580px) rotate(-20deg); }
+    90% { transform: translate(10px, 1780px) rotate(15deg); }
+    100% { transform: translate(0, 2000px) rotate(0deg); opacity: 0.8; }
 }
 
+/* Variante 2: Pendel-Schwingen wie ein Blatt im Wind */
 @keyframes snowflakeFall2 {
-    0% { transform: translate(0, -50px) rotate(0deg); }
-    20% { transform: translate(-50px, 400px) rotate(120deg); }
-    40% { transform: translate(30px, 800px) rotate(200deg); }
-    60% { transform: translate(-40px, 1200px) rotate(280deg); }
-    80% { transform: translate(25px, 1600px) rotate(340deg); }
-    100% { transform: translate(-15px, 2000px) rotate(420deg); }
+    0% { transform: translate(0, -50px) rotate(0deg) scale(1); }
+    8% { transform: translate(30px, 160px) rotate(25deg) scale(1.02); }
+    16% { transform: translate(-25px, 340px) rotate(-20deg) scale(0.98); }
+    24% { transform: translate(35px, 520px) rotate(30deg) scale(1.01); }
+    32% { transform: translate(-30px, 700px) rotate(-25deg) scale(0.99); }
+    40% { transform: translate(28px, 880px) rotate(22deg) scale(1.02); }
+    48% { transform: translate(-22px, 1060px) rotate(-18deg) scale(0.98); }
+    56% { transform: translate(25px, 1240px) rotate(20deg) scale(1); }
+    64% { transform: translate(-28px, 1420px) rotate(-22deg) scale(1.01); }
+    72% { transform: translate(20px, 1600px) rotate(15deg) scale(0.99); }
+    80% { transform: translate(-15px, 1780px) rotate(-12deg) scale(1); }
+    90% { transform: translate(10px, 1890px) rotate(8deg) scale(1); }
+    100% { transform: translate(0, 2000px) rotate(0deg) scale(1); }
 }
 
+/* Variante 3: Träge taumelnd mit Auf und Ab */
 @keyframes snowflakeFall3 {
     0% { transform: translate(0, -50px) rotate(0deg); }
-    15% { transform: translate(60px, 300px) rotate(60deg); }
-    35% { transform: translate(-35px, 700px) rotate(150deg); }
-    55% { transform: translate(50px, 1100px) rotate(240deg); }
-    75% { transform: translate(-55px, 1500px) rotate(330deg); }
-    100% { transform: translate(20px, 2000px) rotate(480deg); }
+    5% { transform: translate(12px, 80px) rotate(15deg); }
+    12% { transform: translate(-8px, 220px) rotate(-10deg); }
+    20% { transform: translate(18px, 400px) rotate(25deg); }
+    28% { transform: translate(-15px, 560px) rotate(-20deg); }
+    36% { transform: translate(22px, 720px) rotate(35deg); }
+    44% { transform: translate(-18px, 920px) rotate(-28deg); }
+    52% { transform: translate(15px, 1100px) rotate(22deg); }
+    60% { transform: translate(-20px, 1280px) rotate(-30deg); }
+    68% { transform: translate(18px, 1460px) rotate(25deg); }
+    76% { transform: translate(-12px, 1640px) rotate(-18deg); }
+    84% { transform: translate(10px, 1800px) rotate(12deg); }
+    92% { transform: translate(-5px, 1920px) rotate(-6deg); }
+    100% { transform: translate(0, 2000px) rotate(0deg); }
 }
 
+/* Variante 4: Spirale - sanft drehend abwärts */
 @keyframes snowflakeFall4 {
-    0% { transform: translate(0, -50px) rotate(0deg); }
-    30% { transform: translate(-30px, 600px) rotate(110deg); }
-    60% { transform: translate(40px, 1200px) rotate(220deg); }
-    100% { transform: translate(-20px, 2000px) rotate(380deg); }
+    0% { transform: translate(0, -50px) rotate(0deg) scale(1); }
+    10% { transform: translate(40px, 200px) rotate(36deg) scale(1.03); }
+    20% { transform: translate(0, 400px) rotate(72deg) scale(0.97); }
+    30% { transform: translate(-40px, 600px) rotate(108deg) scale(1.02); }
+    40% { transform: translate(0, 800px) rotate(144deg) scale(0.98); }
+    50% { transform: translate(35px, 1000px) rotate(180deg) scale(1.01); }
+    60% { transform: translate(0, 1200px) rotate(216deg) scale(0.99); }
+    70% { transform: translate(-35px, 1400px) rotate(252deg) scale(1.02); }
+    80% { transform: translate(0, 1600px) rotate(288deg) scale(0.98); }
+    90% { transform: translate(25px, 1800px) rotate(324deg) scale(1); }
+    100% { transform: translate(0, 2000px) rotate(360deg) scale(1); }
 }
 
+/* Variante 5: Blatt im Herbstwind - langsam taumelnd mit mehr Bewegung */
 @keyframes snowflakeFall5 {
     0% { transform: translate(0, -50px) rotate(0deg); }
-    10% { transform: translate(70px, 200px) rotate(50deg); }
-    30% { transform: translate(-55px, 600px) rotate(140deg); }
-    50% { transform: translate(65px, 1000px) rotate(230deg); }
-    70% { transform: translate(-45px, 1400px) rotate(320deg); }
-    90% { transform: translate(35px, 1800px) rotate(380deg); }
-    100% { transform: translate(0, 2000px) rotate(440deg); }
+    6% { transform: translate(25px, 120px) rotate(18deg); }
+    12% { transform: translate(-20px, 260px) rotate(-12deg); }
+    18% { transform: translate(35px, 400px) rotate(28deg); }
+    24% { transform: translate(-30px, 540px) rotate(-22deg); }
+    30% { transform: translate(40px, 680px) rotate(35deg); }
+    36% { transform: translate(-35px, 820px) rotate(-28deg); }
+    42% { transform: translate(30px, 960px) rotate(25deg); }
+    48% { transform: translate(-25px, 1100px) rotate(-20deg); }
+    54% { transform: translate(35px, 1240px) rotate(30deg); }
+    60% { transform: translate(-30px, 1380px) rotate(-25deg); }
+    66% { transform: translate(28px, 1520px) rotate(22deg); }
+    72% { transform: translate(-22px, 1660px) rotate(-18deg); }
+    78% { transform: translate(18px, 1780px) rotate(14deg); }
+    84% { transform: translate(-12px, 1860px) rotate(-10deg); }
+    90% { transform: translate(8px, 1930px) rotate(6deg); }
+    100% { transform: translate(0, 2000px) rotate(0deg); }
 }
 
 /* ===== SCHWIERIGERE ANIMATIONS-VARIANTEN (Level 1+) ===== */
@@ -4937,6 +4982,94 @@ img {
     92% { transform: translate(70px, 1840px) rotate(864deg) scale(0.92); }
     96% { transform: translate(-60px, 1920px) rotate(-864deg) scale(1); }
     100% { transform: translate(0, 2000px) rotate(900deg) scale(0.85); }
+}
+
+/* ===== WIND-EFFEKT ===== */
+.snowflakes-container.wind-right .snowflake {
+    animation-timing-function: cubic-bezier(0.4, 0.0, 0.2, 1) !important;
+    transform: translateX(150px) !important;
+    transition: transform 0.5s ease-out;
+}
+
+.snowflakes-container.wind-left .snowflake {
+    animation-timing-function: cubic-bezier(0.4, 0.0, 0.2, 1) !important;
+    transform: translateX(-150px) !important;
+    transition: transform 0.5s ease-out;
+}
+
+/* Wind-Anzeige */
+.wind-indicator {
+    position: fixed;
+    top: 50%;
+    font-size: 3rem;
+    color: rgba(255, 255, 255, 0.8);
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+    z-index: 500;
+    animation: windShow 2s ease-out forwards;
+    pointer-events: none;
+}
+
+.wind-indicator.left {
+    left: 20px;
+}
+
+.wind-indicator.right {
+    right: 20px;
+}
+
+@keyframes windShow {
+    0% { opacity: 0; transform: translateY(-50%) scale(0.5); }
+    20% { opacity: 1; transform: translateY(-50%) scale(1.2); }
+    40% { opacity: 1; transform: translateY(-50%) scale(1); }
+    100% { opacity: 0; transform: translateY(-50%) scale(0.8); }
+}
+
+/* ===== FRAGMENT-ANIMATION ===== */
+.snowflake.fragment {
+    font-size: 0.6rem !important;
+    color: rgba(255, 255, 255, 0.9);
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+}
+
+@keyframes fragmentFall {
+    0% { 
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+    }
+    30% {
+        opacity: 1;
+        transform: scale(0.9) rotate(90deg) translateY(50px);
+    }
+    70% {
+        opacity: 0.7;
+        transform: scale(0.7) rotate(180deg) translateY(150px);
+    }
+    100% { 
+        opacity: 0;
+        transform: scale(0.4) rotate(270deg) translateY(300px);
+    }
+}
+
+/* ===== ZERBRECH-ANIMATION ===== */
+.snowflake.shatter {
+    animation: shatterEffect 0.3s ease-out forwards !important;
+}
+
+@keyframes shatterEffect {
+    0% {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.5) rotate(45deg);
+        opacity: 0.8;
+        filter: blur(2px);
+    }
+    100% {
+        transform: scale(0) rotate(90deg);
+        opacity: 0;
+        filter: blur(5px);
+    }
 }
 
 /* Mobile: Schneeflocken-Größen anpassen */
