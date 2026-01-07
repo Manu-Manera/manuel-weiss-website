@@ -3848,41 +3848,47 @@ a:hover {
         position: relative;
         z-index: 102 !important; /* Explizit ganz oben - !important für Mobile */
         /* KEIN transform: translateZ(0) auf Text - verursacht verschwommenen Text in Safari */
-        font-size: 4rem !important; /* NOCH größer - ca. 64px für maximale Klarheit */
+        font-size: 4.5rem !important; /* NOCH größer - ca. 72px für maximale Klarheit */
         line-height: 1.1 !important; /* Kompaktere Zeilenhöhe für bessere Lesbarkeit */
         margin-bottom: 0; /* Kein Margin, da keine Buttons */
-        /* Optimierter Text-Shadow: Weniger Schichten, aber stärker für Safari */
-        color: white !important;
+        /* EXTREM starker Text-Shadow für maximale Lesbarkeit - klar weiß */
+        color: #ffffff !important; /* Explizit hex weiß - keine Transparenz */
         text-shadow: 
+            0 0 20px rgba(255, 255, 255, 1),
             0 0 40px rgba(255, 255, 255, 1),
-            0 0 80px rgba(255, 255, 255, 0.9),
-            0 6px 24px rgba(0, 0, 0, 0.95),
-            0 3px 12px rgba(0, 0, 0, 0.9);
+            0 0 60px rgba(255, 255, 255, 0.95),
+            0 8px 32px rgba(0, 0, 0, 1),
+            0 4px 16px rgba(0, 0, 0, 0.95),
+            0 2px 8px rgba(0, 0, 0, 0.9);
         text-align: center;
         /* Safari-spezifische Text-Rendering-Optimierungen */
         -webkit-font-smoothing: subpixel-antialiased; /* Safari: subpixel für schärferen Text */
         -moz-osx-font-smoothing: grayscale;
         text-rendering: optimizeLegibility; /* Bessere Textqualität */
         font-weight: 900 !important; /* EXTREM fett für maximale Präsenz */
-        letter-spacing: -0.01em; /* Leicht kompakter für bessere Lesbarkeit */
+        letter-spacing: 0 !important; /* Kein negativer Letter-Spacing für bessere Lesbarkeit */
         /* Safari: Verhindere verschwommenen Text durch Subpixel-Rendering */
         -webkit-transform: none; /* Kein Transform auf Text */
         transform: none; /* Kein Transform auf Text */
+        opacity: 1 !important; /* Volle Opazität - keine Transparenz */
     }
     
     .hero-title .mobile-only {
         display: block;
-        /* Optimierter Glüheffekt für mobile-only Text - weniger Schichten für Safari */
+        /* EXTREM starker Glüheffekt für mobile-only Text - klar weiß */
         text-shadow: 
+            0 0 20px rgba(255, 255, 255, 1),
             0 0 40px rgba(255, 255, 255, 1),
-            0 0 80px rgba(255, 255, 255, 0.9),
-            0 6px 24px rgba(0, 0, 0, 0.95),
-            0 3px 12px rgba(0, 0, 0, 0.9) !important;
-        color: white !important;
+            0 0 60px rgba(255, 255, 255, 0.95),
+            0 8px 32px rgba(0, 0, 0, 1),
+            0 4px 16px rgba(0, 0, 0, 0.95),
+            0 2px 8px rgba(0, 0, 0, 0.9) !important;
+        color: #ffffff !important; /* Explizit hex weiß - keine Transparenz */
         font-weight: 900 !important;
         /* Safari: Kein Transform auf Text */
         -webkit-transform: none !important;
         transform: none !important;
+        opacity: 1 !important; /* Volle Opazität */
     }
     
     .hero-visual {
@@ -3894,17 +3900,36 @@ a:hover {
     
     .hero-title-line-1,
     .hero-title-line-2 {
-        /* Optimierter weißer Glüheffekt für beide Zeilen - weniger Schichten für Safari */
+        /* EXTREM starker weißer Glüheffekt für beide Zeilen - klar weiß und scharf */
         text-shadow: 
+            0 0 20px rgba(255, 255, 255, 1),
             0 0 40px rgba(255, 255, 255, 1),
-            0 0 80px rgba(255, 255, 255, 0.9),
-            0 6px 24px rgba(0, 0, 0, 0.95),
-            0 3px 12px rgba(0, 0, 0, 0.9) !important;
-        color: white !important;
+            0 0 60px rgba(255, 255, 255, 0.95),
+            0 8px 32px rgba(0, 0, 0, 1),
+            0 4px 16px rgba(0, 0, 0, 0.95),
+            0 2px 8px rgba(0, 0, 0, 0.9) !important;
+        color: #ffffff !important; /* Explizit hex weiß - keine Transparenz */
         font-weight: 900 !important; /* EXTREM fett für maximale Präsenz */
         /* Safari: Kein Transform auf Text */
         -webkit-transform: none !important;
         transform: none !important;
+        opacity: 1 !important; /* Volle Opazität - keine Transparenz */
+    }
+    
+    /* Besondere Behandlung für "Willkommen" - erste Zeile */
+    .hero-title-line-1.mobile-only {
+        font-size: 1.1em !important; /* Größer für bessere Lesbarkeit */
+        margin-bottom: 0.15em; /* Kleiner Abstand zur zweiten Zeile */
+        color: #ffffff !important; /* Explizit hex weiß */
+        text-shadow: 
+            0 0 25px rgba(255, 255, 255, 1),
+            0 0 50px rgba(255, 255, 255, 1),
+            0 0 75px rgba(255, 255, 255, 0.95),
+            0 10px 40px rgba(0, 0, 0, 1),
+            0 5px 20px rgba(0, 0, 0, 0.95),
+            0 2px 10px rgba(0, 0, 0, 0.9) !important;
+        font-weight: 900 !important;
+        opacity: 1 !important;
     }
     
     .hero-title-line-1.mobile-only {
@@ -4092,34 +4117,54 @@ a:hover {
     }
     
     .hero-title {
-        font-size: 3.2rem !important; /* Größer auf sehr kleinen Screens - ca. 51px */
+        font-size: 3.5rem !important; /* Größer auf sehr kleinen Screens - ca. 56px */
         margin-bottom: var(--spacing-sm);
         line-height: 1.1 !important;
         font-weight: 900 !important;
-        /* Optimierter Text-Shadow auf sehr kleinen Screens - weniger Schichten für Safari */
+        /* EXTREM starker Text-Shadow auf sehr kleinen Screens - klar weiß */
         text-shadow: 
+            0 0 20px rgba(255, 255, 255, 1),
             0 0 40px rgba(255, 255, 255, 1),
-            0 0 80px rgba(255, 255, 255, 0.9),
-            0 6px 24px rgba(0, 0, 0, 0.95),
-            0 3px 12px rgba(0, 0, 0, 0.9);
+            0 0 60px rgba(255, 255, 255, 0.95),
+            0 8px 32px rgba(0, 0, 0, 1),
+            0 4px 16px rgba(0, 0, 0, 0.95),
+            0 2px 8px rgba(0, 0, 0, 0.9);
+        color: #ffffff !important; /* Explizit hex weiß */
         /* Safari: Kein Transform auf Text */
         -webkit-transform: none !important;
         transform: none !important;
         -webkit-font-smoothing: subpixel-antialiased !important;
         text-rendering: optimizeLegibility !important;
+        opacity: 1 !important; /* Volle Opazität */
     }
     
     .hero-title-line-1,
     .hero-title-line-2 {
         text-shadow: 
+            0 0 20px rgba(255, 255, 255, 1),
             0 0 40px rgba(255, 255, 255, 1),
-            0 0 80px rgba(255, 255, 255, 0.9),
-            0 6px 24px rgba(0, 0, 0, 0.95),
-            0 3px 12px rgba(0, 0, 0, 0.9) !important;
+            0 0 60px rgba(255, 255, 255, 0.95),
+            0 8px 32px rgba(0, 0, 0, 1),
+            0 4px 16px rgba(0, 0, 0, 0.95),
+            0 2px 8px rgba(0, 0, 0, 0.9) !important;
         font-weight: 900 !important;
+        color: #ffffff !important; /* Explizit hex weiß */
         /* Safari: Kein Transform auf Text */
         -webkit-transform: none !important;
         transform: none !important;
+        opacity: 1 !important; /* Volle Opazität */
+    }
+    
+    /* Besondere Behandlung für "Willkommen" auf sehr kleinen Screens */
+    .hero-title-line-1.mobile-only {
+        font-size: 1.15em !important; /* Größer für bessere Lesbarkeit */
+        text-shadow: 
+            0 0 25px rgba(255, 255, 255, 1),
+            0 0 50px rgba(255, 255, 255, 1),
+            0 0 75px rgba(255, 255, 255, 0.95),
+            0 10px 40px rgba(0, 0, 0, 1),
+            0 5px 20px rgba(0, 0, 0, 0.95),
+            0 2px 10px rgba(0, 0, 0, 0.9) !important;
     }
     
     .hero-subtitle {
