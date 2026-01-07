@@ -157,108 +157,55 @@ class HeroVideoSection {
         if (successMessage) successMessage.style.display = 'none';
 
         try {
-            // Schritt 1: Presigned URL holen
+            // Server-Side Upload: Konvertiere File zu Base64 und sende an Netlify Function
             if (progressStatus) progressStatus.textContent = 'Vorbereitung...';
             if (progressFill) progressFill.style.width = '10%';
             if (progressPercentage) progressPercentage.textContent = '10%';
 
-            const uploadUrlResponse = await fetch('/.netlify/functions/hero-video-upload', {
+            // Konvertiere File zu Base64
+            const fileData = await new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    // Entferne Data-URL Prefix (data:video/mp4;base64,)
+                    const base64 = reader.result.split(',')[1];
+                    resolve(base64);
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+
+            // Schritt 1: Upload zu S3 über Server
+            if (progressStatus) progressStatus.textContent = 'Lade Video hoch...';
+            if (progressFill) progressFill.style.width = '30%';
+            if (progressPercentage) progressPercentage.textContent = '30%';
+
+            const uploadResponse = await fetch('/.netlify/functions/hero-video-upload-direct', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
+                    fileData: fileData,
                     fileName: file.name,
                     contentType: file.type || 'video/mp4'
                 })
             });
 
-            if (!uploadUrlResponse.ok) {
-                throw new Error('Fehler beim Generieren der Upload-URL');
+            if (!uploadResponse.ok) {
+                const errorData = await uploadResponse.json().catch(() => ({}));
+                throw new Error(errorData.message || `Upload fehlgeschlagen: ${uploadResponse.status} ${uploadResponse.statusText}`);
             }
 
-            const { uploadUrl, publicUrl } = await uploadUrlResponse.json();
+            const { videoUrl } = await uploadResponse.json();
             
-            if (!uploadUrl || !publicUrl) {
-                throw new Error('Ungültige Upload-URL erhalten');
+            if (!videoUrl) {
+                throw new Error('Keine Video-URL vom Server erhalten');
             }
 
-            // Schritt 2: Upload zu S3 mit XMLHttpRequest (besser für große Dateien und Progress-Tracking)
-            if (progressStatus) progressStatus.textContent = 'Lade Video hoch...';
-            if (progressFill) progressFill.style.width = '30%';
-            if (progressPercentage) progressPercentage.textContent = '30%';
+            console.log('✅ Video erfolgreich hochgeladen:', videoUrl);
 
-            await new Promise((resolve, reject) => {
-                const xhr = new XMLHttpRequest();
-                
-                // Progress-Tracking
-                xhr.upload.addEventListener('progress', (e) => {
-                    if (e.lengthComputable) {
-                        // 30% bis 80% für den Upload (30% war bereits Vorbereitung)
-                        const uploadPercent = 30 + (e.loaded / e.total) * 50;
-                        if (progressFill) progressFill.style.width = `${uploadPercent}%`;
-                        if (progressPercentage) progressPercentage.textContent = `${Math.round(uploadPercent)}%`;
-                    }
-                });
-                
-                // Erfolg
-                xhr.addEventListener('load', () => {
-                    if (xhr.status >= 200 && xhr.status < 300) {
-                        console.log('✅ Video erfolgreich zu S3 hochgeladen');
-                        resolve();
-                    } else {
-                        const errorMsg = `S3 Upload fehlgeschlagen: ${xhr.status} ${xhr.statusText}`;
-                        console.error('❌', errorMsg);
-                        console.error('Response:', xhr.responseText);
-                        console.error('Response Headers:', xhr.getAllResponseHeaders());
-                        reject(new Error(errorMsg));
-                    }
-                });
-                
-                // Fehler
-                xhr.addEventListener('error', (e) => {
-                    const currentOrigin = window.location.origin;
-                    console.error('❌ Netzwerkfehler beim S3 Upload:', e);
-                    console.error('📍 Aktuelle Origin:', currentOrigin);
-                    console.error('Upload URL (erste 100 Zeichen):', uploadUrl.substring(0, 100) + '...');
-                    console.error('File size:', file.size, 'bytes');
-                    console.error('File type:', file.type);
-                    
-                    // Detaillierte Fehlermeldung mit Lösungshinweis
-                    const errorMsg = `Netzwerkfehler beim Hochladen des Videos. ` +
-                        `Dies deutet auf ein CORS-Problem hin. ` +
-                        `Aktuelle Origin: ${currentOrigin} ` +
-                        `Bitte stelle sicher, dass diese Origin in der S3 CORS-Konfiguration enthalten ist.`;
-                    reject(new Error(errorMsg));
-                });
-                
-                xhr.addEventListener('abort', () => {
-                    console.error('❌ Upload abgebrochen');
-                    reject(new Error('Upload wurde abgebrochen'));
-                });
-                
-                // Upload starten
-                console.log('🚀 Starte S3 Upload zu:', uploadUrl.substring(0, 100) + '...');
-                console.log('📦 File:', file.name, 'Size:', file.size, 'Type:', file.type);
-                
-                xhr.open('PUT', uploadUrl);
-                // Nur Content-Type setzen, keine anderen Header (können CORS-Probleme verursachen)
-                xhr.setRequestHeader('Content-Type', file.type || 'video/mp4');
-                xhr.send(file);
-            });
-
-            // Schritt 3: URL speichern
-            if (progressStatus) progressStatus.textContent = 'Speichere Einstellung...';
-            if (progressFill) progressFill.style.width = '80%';
-            if (progressPercentage) progressPercentage.textContent = '80%';
-
-            const settingsResponse = await fetch('/.netlify/functions/hero-video-settings', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ videoUrl: publicUrl })
-            });
-
-            if (!settingsResponse.ok) {
-                throw new Error('Fehler beim Speichern der Einstellung');
-            }
+            // Schritt 2: Progress auf 100%
+            if (progressStatus) progressStatus.textContent = 'Fertig!';
+            if (progressFill) progressFill.style.width = '100%';
+            if (progressPercentage) progressPercentage.textContent = '100%';
 
             if (progressFill) progressFill.style.width = '100%';
             if (progressPercentage) progressPercentage.textContent = '100%';
