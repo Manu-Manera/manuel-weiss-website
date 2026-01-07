@@ -575,6 +575,30 @@ a:hover {
     overflow: hidden;
 }
 
+/* Hero-Bereich ohne Video: Gleicher Hintergrund wie Services */
+.hero.no-video {
+    background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 50%, #7c3aed 100%);
+}
+
+/* Schneeflocken-Hintergrund für Hero ohne Video */
+.hero.no-video::after {
+    content: '';
+    position: absolute;
+    top: -10%;
+    left: 0;
+    right: 0;
+    bottom: -10%;
+    background-image:
+        radial-gradient(rgba(255,255,255,0.55) 1px, transparent 45%),
+        radial-gradient(rgba(255,255,255,0.35) 1.6px, transparent 40%),
+        radial-gradient(rgba(255,255,255,0.2) 2.2px, transparent 30%);
+    background-size: 260px 360px, 360px 420px, 520px 620px;
+    opacity: 0.55;
+    animation: servicesSnowFall 28s linear infinite, snowflakeGlow 10s ease-in-out infinite;
+    z-index: 0;
+    pointer-events: none;
+}
+
 .hero-with-video {
     padding-top: calc(var(--header-height) + var(--spacing-xl));
 }
@@ -1334,7 +1358,7 @@ a:hover {
     color: white;
 }
 
-/* Winterlicher Schnee für Services Section */
+/* Winterlicher Schnee für Services Section - ohne Y-Formen, nur Schneeflocken */
 .services::after {
     content: '';
     position: absolute;
@@ -1343,11 +1367,10 @@ a:hover {
     right: 0;
     bottom: -10%;
     background-image:
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='320' viewBox='0 0 220 320'%3E%3Cg fill='none' stroke='rgba(255,255,255,0.45)' stroke-width='1.6'%3E%3Cpath d='M110 20 l0 30 M110 270 l0 30 M110 50 l18 18 M110 50 l-18 18 M110 270 l18 -18 M110 270 l-18 -18 M30 160 l30 0 M160 160 l30 0 M60 160 l12 12 M60 160 l12 -12 M160 160 l-12 12 M160 160 l-12 -12'/%3E%3C/g%3E%3Ccircle cx='40' cy='60' r='2.5' fill='rgba(255,255,255,0.55)'/%3E%3Ccircle cx='180' cy='110' r='1.6' fill='rgba(255,255,255,0.35)'/%3E%3Ccircle cx='70' cy='230' r='1.2' fill='rgba(255,255,255,0.4)'/%3E%3Ccircle cx='200' cy='250' r='2.1' fill='rgba(255,255,255,0.35)'/%3E%3Ccircle cx='120' cy='90' r='1.1' fill='rgba(255,255,255,0.3)'/%3E%3C/svg%3E"),
         radial-gradient(rgba(255,255,255,0.55) 1px, transparent 45%),
         radial-gradient(rgba(255,255,255,0.35) 1.6px, transparent 40%),
         radial-gradient(rgba(255,255,255,0.2) 2.2px, transparent 30%);
-    background-size: 220px 320px, 260px 360px, 360px 420px, 520px 620px;
+    background-size: 260px 360px, 360px 420px, 520px 620px;
     opacity: 0.55;
     animation: servicesSnowFall 28s linear infinite, snowflakeGlow 10s ease-in-out infinite;
     z-index: 0;
@@ -1363,6 +1386,15 @@ a:hover {
     }
     100% {
         transform: translate3d(2%, 15%, 0);
+    }
+}
+
+@keyframes snowflakeGlow {
+    0%, 100% {
+        opacity: 0.5;
+    }
+    50% {
+        opacity: 0.7;
     }
 }
 

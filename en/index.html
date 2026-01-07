@@ -68,8 +68,16 @@
         </div>
     </nav>
 
-    <!-- Hero Section -->
-    <section id="home" class="hero">
+    <!-- Hero Section mit Video-Hintergrund -->
+    <section id="home" class="hero hero-with-video">
+        <div class="hero-video-wrapper">
+            <!-- Video wird dynamisch von AWS S3 geladen -->
+            <video class="hero-video" autoplay muted loop playsinline id="heroVideo">
+                <!-- Fallback: Statisches Video falls keine URL gesetzt ist -->
+                <source src="../media/hero-manuel.mp4" type="video/mp4" id="heroVideoSource">
+            </video>
+            <div class="hero-video-overlay"></div>
+        </div>
         <div class="hero-container">
             <div class="hero-content">
                 <h1 class="hero-title" id="hero-title">
@@ -2071,6 +2079,66 @@
         });
     </script>
 
+    <!-- Hero Video Loader: Lädt Video-URL dynamisch von AWS S3 -->
+    <script>
+        (function() {
+            async function loadHeroVideo() {
+                const heroSection = document.querySelector('.hero');
+                
+                try {
+                    const response = await fetch('/.netlify/functions/hero-video-settings');
+                    const data = await response.json();
+                    
+                    const videoElement = document.getElementById('heroVideo');
+                    const sourceElement = document.getElementById('heroVideoSource');
+                    const videoWrapper = document.querySelector('.hero-video-wrapper');
+                    
+                    if (data.videoUrl && data.videoUrl.trim() !== '' && videoElement && sourceElement) {
+                        // Video vorhanden: Setze die Video-URL von AWS S3
+                        sourceElement.src = data.videoUrl;
+                        videoElement.load(); // Lade das Video neu
+                        
+                        // Entferne no-video Klasse und zeige Video-Wrapper
+                        if (heroSection) heroSection.classList.remove('no-video');
+                        if (videoWrapper) videoWrapper.style.display = 'block';
+                        
+                        // Prüfe ob Video erfolgreich geladen wurde
+                        videoElement.addEventListener('loadeddata', () => {
+                            if (heroSection) heroSection.classList.remove('no-video');
+                            if (videoWrapper) videoWrapper.style.display = 'block';
+                        });
+                        
+                        // Falls Video nicht geladen werden kann, zeige Fallback-Hintergrund
+                        videoElement.addEventListener('error', () => {
+                            console.warn('Video konnte nicht geladen werden, verwende Fallback-Hintergrund');
+                            if (heroSection) heroSection.classList.add('no-video');
+                            if (videoWrapper) videoWrapper.style.display = 'none';
+                        });
+                        
+                        console.log('Hero-Video geladen von:', data.videoUrl);
+                    } else {
+                        // Kein Video: Zeige Fallback-Hintergrund (gleicher wie Services)
+                        console.log('Keine Video-URL gesetzt, verwende Fallback-Hintergrund');
+                        if (heroSection) heroSection.classList.add('no-video');
+                        if (videoWrapper) videoWrapper.style.display = 'none';
+                    }
+                } catch (error) {
+                    console.warn('Fehler beim Laden der Hero-Video-URL, verwende Fallback-Hintergrund:', error);
+                    // Bei Fehler: Zeige Fallback-Hintergrund
+                    if (heroSection) heroSection.classList.add('no-video');
+                    const videoWrapper = document.querySelector('.hero-video-wrapper');
+                    if (videoWrapper) videoWrapper.style.display = 'none';
+                }
+            }
+            
+            // Lade Video sofort wenn DOM bereit ist
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', loadHeroVideo);
+            } else {
+                loadHeroVideo();
+            }
+        })();
+    </script>
+
 </body>
-</html>
 </html>
