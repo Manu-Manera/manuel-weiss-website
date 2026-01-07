@@ -152,259 +152,57 @@ function initMobileMenu() {
     const mobileMenuFullscreen = document.getElementById('mobileMenuFullscreen');
     const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
     
-    // Fallback für alte IDs (falls vorhanden)
-    const mobileMenuToggle = document.getElementById('mobileMenuToggle');
-    const mobileMenu = document.getElementById('mobileMenu');
-    
-    // Toggle-Funktion
-    function toggleMenu(e) {
-        if (e) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
-        console.log('🍔 Hamburger geklickt');
-        
-        const isActive = mobileMenuFullscreen.classList.contains('active');
-        
-        if (!isActive) {
-            // Öffne Menü
-            mobileHamburger.classList.add('active');
-            mobileMenuFullscreen.classList.add('active');
-            if (mobileMenuOverlay) mobileMenuOverlay.classList.add('active');
-            document.body.style.overflow = 'hidden';
-            console.log('📂 Menü geöffnet');
-        } else {
-            // Schließe Menü
-            mobileHamburger.classList.remove('active');
-            mobileMenuFullscreen.classList.remove('active');
-            if (mobileMenuOverlay) mobileMenuOverlay.classList.remove('active');
-            document.body.style.overflow = '';
-            console.log('❌ Menü geschlossen');
-        }
+    if (!mobileHamburger || !mobileMenuFullscreen) {
+        console.log('❌ Mobile Menu Elemente nicht gefunden');
+        return;
     }
     
-    // Neue Mobile Menu Logik
-    if (mobileHamburger && mobileMenuFullscreen) {
-        console.log('✅ Mobile Menu initialisiert');
-        
-        // BEIDE Events für Safari Kompatibilität
-        mobileHamburger.addEventListener('click', toggleMenu);
-        mobileHamburger.addEventListener('touchend', function(e) {
-            e.preventDefault();
-            toggleMenu(e);
-        }, { passive: false });
-        
-        // Close Menu Funktion
-        function closeMenu() {
-            mobileHamburger.classList.remove('active');
-            mobileMenuFullscreen.classList.remove('active');
-            if (mobileMenuOverlay) mobileMenuOverlay.classList.remove('active');
-            document.body.style.overflow = '';
-        }
-        
-        // Close Menu on Link Click
-        const mobileMenuLinks = mobileMenuFullscreen.querySelectorAll('.mobile-menu-link');
-        mobileMenuLinks.forEach(link => {
-            link.addEventListener('click', closeMenu);
-            link.addEventListener('touchend', closeMenu);
-        });
-        
-        // Close Menu on Overlay Click
-        if (mobileMenuOverlay) {
-            mobileMenuOverlay.addEventListener('click', closeMenu);
-            mobileMenuOverlay.addEventListener('touchend', closeMenu);
-        }
-        
-        return; // Beende Funktion, da neue Logik verwendet wird
+    console.log('✅ Mobile Menu initialisiert');
+    
+    let menuOpen = false;
+    
+    function openMenu() {
+        menuOpen = true;
+        mobileHamburger.classList.add('active');
+        mobileMenuFullscreen.classList.add('active');
+        if (mobileMenuOverlay) mobileMenuOverlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        console.log('📂 Menü geöffnet');
     }
     
-    // Fallback: Alte Logik für Kompatibilität
-    if (!mobileMenuToggle || !mobileMenu) return;
-    
-    // Toggle Menu
-    mobileMenuToggle.addEventListener('click', function(e) {
-        e.stopPropagation();
-        mobileMenuToggle.classList.toggle('active');
-        mobileMenu.classList.toggle('active');
-        if (mobileMenuOverlay) mobileMenuOverlay.classList.toggle('active');
-        const isMenuActive = mobileMenu.classList.contains('active');
-        if (isMenuActive) {
-            // Speichere Scroll-Position
-            const scrollY = window.scrollY;
-            document.body.style.overflow = 'hidden';
-            document.body.style.position = 'fixed';
-            document.body.style.top = `-${scrollY}px`;
-            document.body.style.width = '100%';
-        } else {
-            // Stelle Scroll-Position wieder her
-            const scrollY = document.body.style.top;
-            document.body.style.overflow = '';
-            document.body.style.position = '';
-            document.body.style.top = '';
-            document.body.style.width = '';
-            if (scrollY) {
-                window.scrollTo(0, parseInt(scrollY || '0') * -1);
-            }
-        }
-    });
-    
-    // KRITISCH: Stelle sicher dass Menu initial geschlossen ist und Scrollen funktioniert
-    if (!mobileMenu.classList.contains('active')) {
+    function closeMenu() {
+        menuOpen = false;
+        mobileHamburger.classList.remove('active');
+        mobileMenuFullscreen.classList.remove('active');
+        if (mobileMenuOverlay) mobileMenuOverlay.classList.remove('active');
         document.body.style.overflow = '';
-        document.body.style.position = '';
-        document.body.style.top = '';
-        document.body.style.width = '';
-        document.documentElement.style.overflow = '';
-        document.documentElement.style.position = '';
+        console.log('❌ Menü geschlossen');
     }
+    
+    // Einfacher Click-Handler (funktioniert auf allen Geräten)
+    mobileHamburger.onclick = function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('🍔 Hamburger geklickt, menuOpen:', menuOpen);
+        if (menuOpen) {
+            closeMenu();
+        } else {
+            openMenu();
+        }
+    };
+    
+    // Close Menu on Link Click
+    const mobileMenuLinks = mobileMenuFullscreen.querySelectorAll('.mobile-menu-link');
+    mobileMenuLinks.forEach(link => {
+        link.onclick = function() {
+        };
+        };
+    });
     
     // Close Menu on Overlay Click
     if (mobileMenuOverlay) {
-        mobileMenuOverlay.addEventListener('click', function() {
-            const scrollY = document.body.style.top;
-            mobileMenuToggle.classList.remove('active');
-            mobileMenu.classList.remove('active');
-            mobileMenuOverlay.classList.remove('active');
-            document.body.style.overflow = '';
-            document.body.style.position = '';
-            document.body.style.top = '';
-            document.body.style.width = '';
-            // Stelle Scroll-Position wieder her
-            if (scrollY) {
-                window.scrollTo(0, parseInt(scrollY || '0') * -1);
-            }
-        });
+        mobileMenuOverlay.onclick = closeMenu;
     }
-    
-    // Close Menu on Link Click
-    const mobileLinks = mobileMenu.querySelectorAll('.nav-link');
-    mobileLinks.forEach(link => {
-        link.addEventListener('click', function() {
-            const scrollY = document.body.style.top;
-            mobileMenuToggle.classList.remove('active');
-            mobileMenu.classList.remove('active');
-            if (mobileMenuOverlay) mobileMenuOverlay.classList.remove('active');
-            document.body.style.overflow = '';
-            document.body.style.position = '';
-            document.body.style.top = '';
-            document.body.style.width = '';
-            // Stelle Scroll-Position wieder her
-            if (scrollY) {
-                window.scrollTo(0, parseInt(scrollY || '0') * -1);
-            }
-        });
-    });
-    
-    // Copy Auth Section to Mobile Menu - VERBESSERT
-    if (mobileAuthSection) {
-        const updateMobileAuth = () => {
-            // Versuche zuerst die Desktop Auth Section zu finden
-            const desktopAuthSection = document.querySelector('.nav-menu .auth-section') || 
-                                      document.querySelector('.auth-section');
-            
-            if (desktopAuthSection) {
-                const authClone = desktopAuthSection.cloneNode(true);
-                mobileAuthSection.innerHTML = '';
-                mobileAuthSection.appendChild(authClone);
-                
-                // Event-Listener für geklonte Buttons neu setzen
-                const clonedAuthButton = mobileAuthSection.querySelector('#realAuthButton');
-                if (clonedAuthButton) {
-                    clonedAuthButton.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        // Öffne Auth Modal oder führe Login aus
-                        if (window.realUserAuth && typeof window.realUserAuth.showLoginModal === 'function') {
-                            window.realUserAuth.showLoginModal();
-                        } else if (window.openAuthModal && typeof window.openAuthModal === 'function') {
-                            window.openAuthModal();
-                        } else {
-                            // Fallback: Suche nach dem originalen Button und trigger ihn
-                            const originalButton = document.querySelector('#realAuthButton');
-                            if (originalButton) {
-                                originalButton.click();
-                            }
-                        }
-                        // Schließe Mobile Menu nach Klick
-                        const scrollY = document.body.style.top;
-                        mobileMenuToggle.classList.remove('active');
-                        mobileMenu.classList.remove('active');
-                        if (mobileMenuOverlay) mobileMenuOverlay.classList.remove('active');
-                        document.body.style.overflow = '';
-                        document.body.style.position = '';
-                        document.body.style.top = '';
-                        document.body.style.width = '';
-                        // Stelle Scroll-Position wieder her
-                        if (scrollY) {
-                            window.scrollTo(0, parseInt(scrollY || '0') * -1);
-                        }
-                    });
-                }
-            } else {
-                // Fallback: Erstelle eigenen Anmelden-Button
-                mobileAuthSection.innerHTML = `
-                    <button id="mobileAuthButton" class="nav-login-btn" style="width: 100%; justify-content: center;">
-                        <i class="fas fa-user"></i>
-                        <span data-de="Anmelden" data-en="Login">Anmelden</span>
-                    </button>
-                `;
-                const mobileAuthButton = mobileAuthSection.querySelector('#mobileAuthButton');
-                if (mobileAuthButton) {
-                    mobileAuthButton.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        if (window.realUserAuth && typeof window.realUserAuth.showLoginModal === 'function') {
-                            window.realUserAuth.showLoginModal();
-                        } else if (window.openAuthModal && typeof window.openAuthModal === 'function') {
-                            window.openAuthModal();
-                        }
-                        // Schließe Mobile Menu
-                        const scrollY = document.body.style.top;
-                        mobileMenuToggle.classList.remove('active');
-                        mobileMenu.classList.remove('active');
-                        if (mobileMenuOverlay) mobileMenuOverlay.classList.remove('active');
-                        document.body.style.overflow = '';
-                        document.body.style.position = '';
-                        document.body.style.top = '';
-                        document.body.style.width = '';
-                        // Stelle Scroll-Position wieder her
-                        if (scrollY) {
-                            window.scrollTo(0, parseInt(scrollY || '0') * -1);
-                        }
-                    });
-                }
-            }
-        };
-        
-        // Initial update
-        updateMobileAuth();
-        
-        // Update when auth state changes (alle 2 Sekunden, nicht zu häufig)
-        setInterval(updateMobileAuth, 2000);
-        
-        // Update auch bei Auth-Events
-        document.addEventListener('authStateChanged', updateMobileAuth);
-        document.addEventListener('userLoggedIn', updateMobileAuth);
-        document.addEventListener('userLoggedOut', updateMobileAuth);
-    }
-    
-    // Close Menu on Escape Key
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && mobileMenu.classList.contains('active')) {
-            const scrollY = document.body.style.top;
-            mobileMenuToggle.classList.remove('active');
-            mobileMenu.classList.remove('active');
-            if (mobileMenuOverlay) mobileMenuOverlay.classList.remove('active');
-            document.body.style.overflow = '';
-            document.body.style.position = '';
-            document.body.style.top = '';
-            document.body.style.width = '';
-            // Stelle Scroll-Position wieder her
-            if (scrollY) {
-                window.scrollTo(0, parseInt(scrollY || '0') * -1);
-            }
-        }
-    });
 }
 
 // Hide loading screen
