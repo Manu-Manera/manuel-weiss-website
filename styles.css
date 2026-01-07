@@ -3745,12 +3745,12 @@ a:hover {
         height: 100%;
         object-fit: cover;
         object-position: center;
-        filter: brightness(0.35) !important; /* STARK abdunkeln */
+        filter: brightness(0.75) !important; /* Heller */
     }
     
     .hero-video-overlay {
-        /* DUNKLES Overlay für maximalen Text-Kontrast */
-        background: rgba(0, 0, 0, 0.5) !important; /* Schwarzes Overlay statt Lila */
+        /* Leichtes Overlay */
+        background: rgba(0, 0, 0, 0.2) !important;
         z-index: 2; /* Über dem Video */
     }
     
@@ -3966,13 +3966,13 @@ a:hover {
     }
     
     .hero-video {
-        /* Video STARK abdunkeln für klaren Text */
-        filter: brightness(0.3) !important;
+        /* Video heller */
+        filter: brightness(0.75) !important;
     }
     
     .hero-video-overlay {
-        /* DUNKLES Overlay für maximalen Text-Kontrast */
-        background: rgba(0, 0, 0, 0.6) !important;
+        /* Leichtes Overlay */
+        background: rgba(0, 0, 0, 0.2) !important;
     }
     
     .hero-container {
