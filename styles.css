@@ -3853,17 +3853,28 @@ a:hover {
     
     /* Services Section Mobile - Horizontal Scroll */
     .services-grid {
-        display: flex;
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        gap: var(--spacing-md);
-        padding: var(--spacing-md);
-        -webkit-overflow-scrolling: touch;
+        display: flex !important;
+        display: -webkit-flex !important; /* Safari */
+        flex-wrap: nowrap !important;
+        -webkit-flex-wrap: nowrap !important; /* Safari */
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        gap: var(--spacing-md) !important;
+        padding: var(--spacing-md) !important;
+        scroll-behavior: smooth;
     }
     
     .services-grid .service-card {
-        flex: 0 0 280px;
-        min-width: 280px;
+        flex: none !important;
+        -webkit-flex: none !important; /* Safari */
+        flex-grow: 0 !important;
+        -webkit-flex-grow: 0 !important; /* Safari */
+        flex-shrink: 0 !important;
+        -webkit-flex-shrink: 0 !important; /* Safari */
+        width: calc(100vw - 2 * var(--spacing-md) - 2 * var(--spacing-sm)) !important;
+        min-width: 280px !important;
+        max-width: 320px !important;
+        box-sizing: border-box !important;
     }
     
     .service-card {
