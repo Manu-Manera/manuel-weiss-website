@@ -157,90 +157,108 @@ class HeroVideoSection {
         if (successMessage) successMessage.style.display = 'none';
 
         try {
-            // Server-Side Upload: Konvertiere File zu Base64 und sende an Netlify Function
+            // Strategie: Versuche zuerst direkten S3-Upload (schneller, kein 6MB Limit)
+            // Falls das fehlschlägt, verwende Server-Side Upload als Fallback
+            
             if (progressStatus) progressStatus.textContent = 'Vorbereitung...';
             if (progressFill) progressFill.style.width = '10%';
             if (progressPercentage) progressPercentage.textContent = '10%';
 
-            // Konvertiere File zu Base64
-            console.log('📦 Konvertiere File zu Base64...', file.name, file.size, 'bytes');
-            const fileData = await new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => {
-                    try {
-                        // Entferne Data-URL Prefix (data:video/mp4;base64,)
-                        const base64 = reader.result.split(',')[1];
-                        if (!base64) {
-                            reject(new Error('Fehler beim Konvertieren zu Base64: Keine Daten erhalten'));
-                            return;
-                        }
-                        console.log('✅ Base64-Konvertierung erfolgreich, Länge:', base64.length);
-                        resolve(base64);
-                    } catch (error) {
-                        reject(new Error('Fehler beim Konvertieren zu Base64: ' + error.message));
-                    }
-                };
-                reader.onerror = (error) => {
-                    console.error('❌ FileReader Fehler:', error);
-                    reject(new Error('Fehler beim Lesen der Datei: ' + error.message));
-                };
-                reader.readAsDataURL(file);
-            });
+            let publicUrl;
+            const fileSizeMB = file.size / 1024 / 1024;
+            const useDirectUpload = fileSizeMB < 50; // Für Videos < 50MB: Direkter Upload
 
-            // Schritt 1: Upload zu S3 über Server
-            if (progressStatus) progressStatus.textContent = 'Lade Video hoch...';
-            if (progressFill) progressFill.style.width = '30%';
-            if (progressPercentage) progressPercentage.textContent = '30%';
+            if (useDirectUpload) {
+                // Methode 1: Direkter S3-Upload mit Pre-Signed URL
+                console.log('🚀 Versuche direkten S3-Upload (Pre-Signed URL)...');
+                
+                // Schritt 1: Hole Pre-Signed URL
+                const uploadUrlResponse = await fetch('/.netlify/functions/hero-video-upload', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        fileName: file.name,
+                        contentType: file.type || 'video/mp4'
+                    })
+                });
 
-            console.log('🚀 Sende Upload-Request an Netlify Function...');
-            const uploadPayload = {
-                fileData: fileData,
-                fileName: file.name,
-                contentType: file.type || 'video/mp4'
-            };
-            console.log('📤 Payload-Größe:', JSON.stringify(uploadPayload).length, 'Zeichen');
-            console.log('📤 File-Name:', file.name);
-            console.log('📤 Content-Type:', file.type);
-
-            const uploadResponse = await fetch('/.netlify/functions/hero-video-upload-direct', {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(uploadPayload)
-            });
-
-            console.log('📥 Response Status:', uploadResponse.status, uploadResponse.statusText);
-
-            if (!uploadResponse.ok) {
-                let errorData;
-                try {
-                    const errorText = await uploadResponse.text();
-                    console.error('❌ Error Response:', errorText);
-                    errorData = JSON.parse(errorText);
-                } catch (parseError) {
-                    console.error('❌ Fehler beim Parsen der Error-Response:', parseError);
-                    errorData = { error: `Upload fehlgeschlagen: ${uploadResponse.status} ${uploadResponse.statusText}` };
+                if (!uploadUrlResponse.ok) {
+                    throw new Error('Fehler beim Generieren der Upload-URL');
                 }
-                throw new Error(errorData.error || errorData.message || `Upload fehlgeschlagen: ${uploadResponse.status}`);
+
+                const { uploadUrl, publicUrl: preSignedPublicUrl } = await uploadUrlResponse.json();
+                
+                if (!uploadUrl || !preSignedPublicUrl) {
+                    throw new Error('Ungültige Upload-URL erhalten');
+                }
+
+                // Schritt 2: Upload zu S3
+                if (progressStatus) progressStatus.textContent = 'Lade Video hoch...';
+                if (progressFill) progressFill.style.width = '30%';
+                if (progressPercentage) progressPercentage.textContent = '30%';
+
+                try {
+                    await new Promise((resolve, reject) => {
+                        const xhr = new XMLHttpRequest();
+                        
+                        xhr.upload.addEventListener('progress', (e) => {
+                            if (e.lengthComputable) {
+                                const uploadPercent = 30 + (e.loaded / e.total) * 50;
+                                if (progressFill) progressFill.style.width = `${uploadPercent}%`;
+                                if (progressPercentage) progressPercentage.textContent = `${Math.round(uploadPercent)}%`;
+                            }
+                        });
+                        
+                        xhr.addEventListener('load', () => {
+                            if (xhr.status >= 200 && xhr.status < 300) {
+                                console.log('✅ Video erfolgreich zu S3 hochgeladen (direkt)');
+                                resolve();
+                            } else {
+                                reject(new Error(`S3 Upload fehlgeschlagen: ${xhr.status} ${xhr.statusText}`));
+                            }
+                        });
+                        
+                        xhr.addEventListener('error', () => {
+                            reject(new Error('Netzwerkfehler beim S3 Upload'));
+                        });
+                        
+                        xhr.open('PUT', uploadUrl);
+                        xhr.setRequestHeader('Content-Type', file.type || 'video/mp4');
+                        xhr.send(file);
+                    });
+
+                    publicUrl = preSignedPublicUrl;
+
+                    // Schritt 3: Speichere URL in Settings
+                    if (progressStatus) progressStatus.textContent = 'Speichere Einstellung...';
+                    if (progressFill) progressFill.style.width = '80%';
+                    if (progressPercentage) progressPercentage.textContent = '80%';
+
+                    const settingsResponse = await fetch('/.netlify/functions/hero-video-settings', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ videoUrl: publicUrl })
+                    });
+
+                    if (!settingsResponse.ok) {
+                        throw new Error('Fehler beim Speichern der Einstellung');
+                    }
+
+                } catch (directUploadError) {
+                    console.warn('⚠️ Direkter S3-Upload fehlgeschlagen, versuche Server-Side Upload:', directUploadError);
+                    // Fallback zu Server-Side Upload
+                    throw new Error('FALLBACK_TO_SERVER');
+                }
+            } else {
+                // Methode 2: Server-Side Upload für große Videos
+                console.log('📦 Video zu groß für direkten Upload, verwende Server-Side Upload...');
+                throw new Error('FALLBACK_TO_SERVER');
             }
 
-            const { videoUrl } = await uploadResponse.json();
-            
-            if (!videoUrl) {
-                throw new Error('Keine Video-URL vom Server erhalten');
-            }
-
-            console.log('✅ Video erfolgreich hochgeladen:', videoUrl);
-
-            // Schritt 2: Progress auf 100%
+            // Erfolg!
             if (progressStatus) progressStatus.textContent = 'Fertig!';
             if (progressFill) progressFill.style.width = '100%';
             if (progressPercentage) progressPercentage.textContent = '100%';
-
-            if (progressFill) progressFill.style.width = '100%';
-            if (progressPercentage) progressPercentage.textContent = '100%';
-            if (progressStatus) progressStatus.textContent = 'Fertig!';
 
             setTimeout(() => {
                 if (uploadProgress) uploadProgress.style.display = 'none';
@@ -253,6 +271,96 @@ class HeroVideoSection {
             }, 1000);
         } catch (error) {
             console.error('❌ Upload error:', error);
+            
+            // Fallback zu Server-Side Upload, falls direkter Upload fehlgeschlagen ist
+            if (error.message === 'FALLBACK_TO_SERVER') {
+                console.log('🔄 Wechsle zu Server-Side Upload...');
+                try {
+                    // Server-Side Upload: Konvertiere File zu Base64
+                    if (progressStatus) progressStatus.textContent = 'Vorbereitung (Base64-Kodierung)...';
+                    if (progressFill) progressFill.style.width = '10%';
+                    if (progressPercentage) progressPercentage.textContent = '10%';
+
+                    console.log('📦 Konvertiere File zu Base64...', file.name, file.size, 'bytes');
+                    const fileData = await new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onload = () => {
+                            try {
+                                const base64 = reader.result.split(',')[1];
+                                if (!base64) {
+                                    reject(new Error('Fehler beim Konvertieren zu Base64: Keine Daten erhalten'));
+                                    return;
+                                }
+                                console.log('✅ Base64-Konvertierung erfolgreich, Länge:', base64.length);
+                                resolve(base64);
+                            } catch (error) {
+                                reject(new Error('Fehler beim Konvertieren zu Base64: ' + error.message));
+                            }
+                        };
+                        reader.onerror = (error) => {
+                            console.error('❌ FileReader Fehler:', error);
+                            reject(new Error('Fehler beim Lesen der Datei: ' + error.message));
+                        };
+                        reader.readAsDataURL(file);
+                    });
+
+                    // Prüfe Größe (Netlify Function Limit: 6MB)
+                    const base64SizeInBytes = (fileData.length * 3) / 4;
+                    const NETLIFY_FUNCTION_PAYLOAD_LIMIT = 6 * 1024 * 1024; // 6MB
+                    if (base64SizeInBytes > NETLIFY_FUNCTION_PAYLOAD_LIMIT) {
+                        throw new Error(`Die Datei ist nach Base64-Kodierung zu groß für die Netlify Function (${(base64SizeInBytes / 1024 / 1024).toFixed(2)}MB). Max. Payload ist 6MB. Bitte komprimiere das Video oder wähle ein kleineres.`);
+                    }
+
+                    // Upload zu S3 über Server
+                    if (progressStatus) progressStatus.textContent = 'Lade Video über Server hoch...';
+                    if (progressFill) progressFill.style.width = '30%';
+                    if (progressPercentage) progressPercentage.textContent = '30%';
+
+                    const uploadResponse = await fetch('/.netlify/functions/hero-video-upload-direct', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            fileData: fileData,
+                            fileName: file.name,
+                            contentType: file.type || 'video/mp4'
+                        })
+                    });
+
+                    if (!uploadResponse.ok) {
+                        const errorBody = await uploadResponse.json().catch(() => ({ message: 'Unknown error' }));
+                        throw new Error(`Upload fehlgeschlagen: ${uploadResponse.status} ${uploadResponse.statusText}. Details: ${errorBody.message || JSON.stringify(errorBody)}`);
+                    }
+
+                    const result = await uploadResponse.json();
+                    publicUrl = result.videoUrl;
+                    
+                    if (!publicUrl) {
+                        throw new Error('Keine Video-URL vom Server erhalten');
+                    }
+
+                    console.log('✅ Video erfolgreich hochgeladen (Server-Side):', publicUrl);
+
+                    // Erfolg!
+                    if (progressStatus) progressStatus.textContent = 'Fertig!';
+                    if (progressFill) progressFill.style.width = '100%';
+                    if (progressPercentage) progressPercentage.textContent = '100%';
+
+                    setTimeout(() => {
+                        if (uploadProgress) uploadProgress.style.display = 'none';
+                        if (successMessage) successMessage.style.display = 'block';
+                        if (uploadBtn) uploadBtn.disabled = false;
+                        if (fileInput) fileInput.value = '';
+                        const previewContainer = document.getElementById('videoPreviewContainer');
+                        if (previewContainer) previewContainer.style.display = 'none';
+                        this.loadCurrentVideo();
+                    }, 1000);
+                    
+                    return; // Erfolgreich, beende Funktion
+                } catch (fallbackError) {
+                    console.error('❌ Server-Side Upload auch fehlgeschlagen:', fallbackError);
+                    error = fallbackError; // Verwende Fallback-Fehler für Anzeige
+                }
+            }
             
             // Detaillierte Fehlermeldung
             let errorMessage = 'Fehler beim Hochladen: ';
