@@ -148,12 +148,80 @@ function initializeWebsite() {
 
 // Mobile Menu Toggle
 function initMobileMenu() {
+    const mobileHamburger = document.getElementById('mobileHamburger');
+    const mobileMenuFullscreen = document.getElementById('mobileMenuFullscreen');
+    const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+    
+    // Fallback für alte IDs (falls vorhanden)
     const mobileMenuToggle = document.getElementById('mobileMenuToggle');
     const mobileMenu = document.getElementById('mobileMenu');
-    const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
-    const mobileAuthSection = document.getElementById('mobileAuthSection');
-    const authSection = document.querySelector('.auth-section');
     
+    // Neue Mobile Menu Logik
+    if (mobileHamburger && mobileMenuFullscreen) {
+        // Toggle Menu
+        mobileHamburger.addEventListener('click', function(e) {
+            e.stopPropagation();
+            mobileHamburger.classList.toggle('active');
+            mobileMenuFullscreen.classList.toggle('active');
+            const isMenuActive = mobileMenuFullscreen.classList.contains('active');
+            
+            if (isMenuActive) {
+                // Speichere Scroll-Position
+                const scrollY = window.scrollY;
+                document.body.style.overflow = 'hidden';
+                document.body.style.position = 'fixed';
+                document.body.style.top = `-${scrollY}px`;
+                document.body.style.width = '100%';
+            } else {
+                // Stelle Scroll-Position wieder her
+                const scrollY = document.body.style.top;
+                document.body.style.overflow = '';
+                document.body.style.position = '';
+                document.body.style.top = '';
+                document.body.style.width = '';
+                if (scrollY) {
+                    window.scrollTo(0, parseInt(scrollY || '0') * -1);
+                }
+            }
+        });
+        
+        // Close Menu on Link Click
+        const mobileMenuLinks = mobileMenuFullscreen.querySelectorAll('.mobile-menu-link');
+        mobileMenuLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                const scrollY = document.body.style.top;
+                mobileHamburger.classList.remove('active');
+                mobileMenuFullscreen.classList.remove('active');
+                document.body.style.overflow = '';
+                document.body.style.position = '';
+                document.body.style.top = '';
+                document.body.style.width = '';
+                if (scrollY) {
+                    window.scrollTo(0, parseInt(scrollY || '0') * -1);
+                }
+            });
+        });
+        
+        // Close Menu on Overlay Click
+        if (mobileMenuOverlay) {
+            mobileMenuOverlay.addEventListener('click', function() {
+                const scrollY = document.body.style.top;
+                mobileHamburger.classList.remove('active');
+                mobileMenuFullscreen.classList.remove('active');
+                document.body.style.overflow = '';
+                document.body.style.position = '';
+                document.body.style.top = '';
+                document.body.style.width = '';
+                if (scrollY) {
+                    window.scrollTo(0, parseInt(scrollY || '0') * -1);
+                }
+            });
+        }
+        
+        return; // Beende Funktion, da neue Logik verwendet wird
+    }
+    
+    // Fallback: Alte Logik für Kompatibilität
     if (!mobileMenuToggle || !mobileMenu) return;
     
     // Toggle Menu
@@ -161,7 +229,7 @@ function initMobileMenu() {
         e.stopPropagation();
         mobileMenuToggle.classList.toggle('active');
         mobileMenu.classList.toggle('active');
-        mobileMenuOverlay.classList.toggle('active');
+        if (mobileMenuOverlay) mobileMenuOverlay.classList.toggle('active');
         const isMenuActive = mobileMenu.classList.contains('active');
         if (isMenuActive) {
             // Speichere Scroll-Position
