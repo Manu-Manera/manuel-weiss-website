@@ -4879,12 +4879,13 @@ img {
     cursor: pointer;
     /* WICHTIG: Animationen müssen erhalten bleiben! */
     animation: snowflakeFall linear infinite, snowflakeSway ease-in-out infinite !important;
-    transition: transform 0.2s ease, opacity 0.3s ease;
+    transition: opacity 0.3s ease;
+    /* KEIN transform transition - würde Animationen stören */
 }
 
 .snowflake.clickable:hover {
-    transform: scale(1.3) !important;
-    filter: drop-shadow(0 0 10px white);
+    /* Nur Filter ändern, nicht transform - transform wird von Animation gesteuert */
+    filter: drop-shadow(0 0 10px white) !important;
     /* Animation während Hover beibehalten */
     animation: snowflakeFall linear infinite, snowflakeSway ease-in-out infinite !important;
 }
