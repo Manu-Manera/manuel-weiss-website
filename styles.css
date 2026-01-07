@@ -3820,10 +3820,8 @@ a:hover {
         max-height: 70vh; /* Begrenze Container-Höhe */
         position: relative;
         z-index: 100 !important; /* Deutlich über Video (z-index 8) - !important für Mobile */
-        /* Stacking Context isolieren */
-        isolation: isolate;
-        /* Sicherstellen dass Container über Video liegt */
-        transform: translateZ(0); /* GPU-Beschleunigung für besseren z-index */
+        /* KEIN isolation: isolate - verursacht verschwommenen Text in Safari */
+        /* KEIN transform: translateZ(0) - verursacht verschwommenen Text */
         display: flex;
         align-items: center;
         justify-content: center;
@@ -3840,8 +3838,7 @@ a:hover {
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        /* GPU-Beschleunigung nur auf Container, nicht auf Text */
-        transform: translateZ(0);
+        /* KEIN transform: translateZ(0) - verursacht verschwommenen Text */
     }
     
     .hero-title {
@@ -3861,16 +3858,20 @@ a:hover {
             0 4px 16px rgba(0, 0, 0, 0.95),
             0 2px 8px rgba(0, 0, 0, 0.9);
         text-align: center;
-        /* Safari-spezifische Text-Rendering-Optimierungen */
-        -webkit-font-smoothing: subpixel-antialiased; /* Safari: subpixel für schärferen Text */
+        /* Safari-spezifische Text-Rendering-Optimierungen für SCHARFEN Text */
+        -webkit-font-smoothing: antialiased !important; /* Safari Mobile: antialiased für scharfen Text */
         -moz-osx-font-smoothing: grayscale;
-        text-rendering: optimizeLegibility; /* Bessere Textqualität */
+        text-rendering: geometricPrecision !important; /* Geometric Precision für scharfen Text */
         font-weight: 900 !important; /* EXTREM fett für maximale Präsenz */
         letter-spacing: 0 !important; /* Kein negativer Letter-Spacing für bessere Lesbarkeit */
-        /* Safari: Verhindere verschwommenen Text durch Subpixel-Rendering */
-        -webkit-transform: none; /* Kein Transform auf Text */
-        transform: none; /* Kein Transform auf Text */
+        /* Safari: Verhindere verschwommenen Text */
+        -webkit-transform: none !important; /* Kein Transform auf Text */
+        transform: none !important; /* Kein Transform auf Text */
         opacity: 1 !important; /* Volle Opazität - keine Transparenz */
+        /* Verhindere alle Filter-Effekte die Text verschwimmen lassen */
+        filter: none !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
     }
     
     .hero-title .mobile-only {
@@ -3889,6 +3890,13 @@ a:hover {
         -webkit-transform: none !important;
         transform: none !important;
         opacity: 1 !important; /* Volle Opazität */
+        /* Text-Rendering für scharfen Text */
+        -webkit-font-smoothing: antialiased !important;
+        text-rendering: geometricPrecision !important;
+        /* Verhindere alle Filter-Effekte */
+        filter: none !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
     }
     
     .hero-visual {
@@ -3914,6 +3922,13 @@ a:hover {
         -webkit-transform: none !important;
         transform: none !important;
         opacity: 1 !important; /* Volle Opazität - keine Transparenz */
+        /* Text-Rendering für scharfen Text */
+        -webkit-font-smoothing: antialiased !important;
+        text-rendering: geometricPrecision !important;
+        /* Verhindere alle Filter-Effekte */
+        filter: none !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
     }
     
     /* Besondere Behandlung für "Willkommen" - erste Zeile */
