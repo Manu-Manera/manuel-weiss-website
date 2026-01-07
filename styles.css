@@ -4833,6 +4833,112 @@ img {
     100% { transform: translate(0, 2000px) rotate(440deg); }
 }
 
+/* ===== SCHWIERIGERE ANIMATIONS-VARIANTEN (Level 1+) ===== */
+
+/* Variante 6: Schnelle Zickzack-Bewegung */
+@keyframes snowflakeFall6 {
+    0% { transform: translate(0, -50px) rotate(0deg); }
+    8% { transform: translate(80px, 160px) rotate(72deg); }
+    16% { transform: translate(-70px, 320px) rotate(144deg); }
+    24% { transform: translate(90px, 480px) rotate(216deg); }
+    32% { transform: translate(-80px, 640px) rotate(288deg); }
+    40% { transform: translate(75px, 800px) rotate(360deg); }
+    48% { transform: translate(-85px, 960px) rotate(432deg); }
+    56% { transform: translate(70px, 1120px) rotate(504deg); }
+    64% { transform: translate(-75px, 1280px) rotate(576deg); }
+    72% { transform: translate(80px, 1440px) rotate(648deg); }
+    80% { transform: translate(-70px, 1600px) rotate(720deg); }
+    88% { transform: translate(60px, 1760px) rotate(792deg); }
+    100% { transform: translate(0, 2000px) rotate(900deg); }
+}
+
+/* Variante 7: Spirale mit Beschleunigung */
+@keyframes snowflakeFall7 {
+    0% { transform: translate(0, -50px) rotate(0deg) scale(1); }
+    12% { transform: translate(100px, 240px) rotate(90deg) scale(0.95); }
+    25% { transform: translate(0, 500px) rotate(180deg) scale(0.9); }
+    37% { transform: translate(-100px, 740px) rotate(270deg) scale(0.85); }
+    50% { transform: translate(0, 1000px) rotate(360deg) scale(0.9); }
+    62% { transform: translate(80px, 1240px) rotate(450deg) scale(0.85); }
+    75% { transform: translate(0, 1500px) rotate(540deg) scale(0.9); }
+    87% { transform: translate(-60px, 1740px) rotate(630deg) scale(0.85); }
+    100% { transform: translate(0, 2000px) rotate(720deg) scale(0.8); }
+}
+
+/* Variante 8: Chaotische Bewegung */
+@keyframes snowflakeFall8 {
+    0% { transform: translate(0, -50px) rotate(0deg); }
+    7% { transform: translate(-90px, 140px) rotate(-60deg); }
+    14% { transform: translate(110px, 280px) rotate(80deg); }
+    21% { transform: translate(-70px, 420px) rotate(-40deg); }
+    28% { transform: translate(120px, 560px) rotate(100deg); }
+    35% { transform: translate(-100px, 700px) rotate(-80deg); }
+    42% { transform: translate(80px, 840px) rotate(60deg); }
+    49% { transform: translate(-110px, 980px) rotate(-100deg); }
+    56% { transform: translate(95px, 1120px) rotate(70deg); }
+    63% { transform: translate(-85px, 1260px) rotate(-50deg); }
+    70% { transform: translate(100px, 1400px) rotate(90deg); }
+    77% { transform: translate(-75px, 1540px) rotate(-70deg); }
+    84% { transform: translate(70px, 1680px) rotate(50deg); }
+    91% { transform: translate(-60px, 1820px) rotate(-30deg); }
+    100% { transform: translate(0, 2000px) rotate(0deg); }
+}
+
+/* Variante 9: Pendelbewegung mit Rotation */
+@keyframes snowflakeFall9 {
+    0% { transform: translate(0, -50px) rotate(0deg); }
+    5% { transform: translate(120px, 100px) rotate(45deg); }
+    10% { transform: translate(-120px, 200px) rotate(-45deg); }
+    15% { transform: translate(110px, 300px) rotate(90deg); }
+    20% { transform: translate(-110px, 400px) rotate(-90deg); }
+    25% { transform: translate(100px, 500px) rotate(135deg); }
+    30% { transform: translate(-100px, 600px) rotate(-135deg); }
+    35% { transform: translate(90px, 700px) rotate(180deg); }
+    40% { transform: translate(-90px, 800px) rotate(-180deg); }
+    45% { transform: translate(80px, 900px) rotate(225deg); }
+    50% { transform: translate(-80px, 1000px) rotate(-225deg); }
+    55% { transform: translate(70px, 1100px) rotate(270deg); }
+    60% { transform: translate(-70px, 1200px) rotate(-270deg); }
+    65% { transform: translate(60px, 1300px) rotate(315deg); }
+    70% { transform: translate(-60px, 1400px) rotate(-315deg); }
+    75% { transform: translate(50px, 1500px) rotate(360deg); }
+    80% { transform: translate(-50px, 1600px) rotate(-360deg); }
+    85% { transform: translate(40px, 1700px) rotate(405deg); }
+    90% { transform: translate(-40px, 1800px) rotate(-405deg); }
+    95% { transform: translate(30px, 1900px) rotate(450deg); }
+    100% { transform: translate(0, 2000px) rotate(0deg); }
+}
+
+/* Variante 10: Extrem (für Meister-Level) */
+@keyframes snowflakeFall10 {
+    0% { transform: translate(0, -50px) rotate(0deg) scale(1); }
+    4% { transform: translate(130px, 80px) rotate(72deg) scale(0.9); }
+    8% { transform: translate(-110px, 160px) rotate(-72deg) scale(1.1); }
+    12% { transform: translate(140px, 240px) rotate(144deg) scale(0.85); }
+    16% { transform: translate(-120px, 320px) rotate(-144deg) scale(1.05); }
+    20% { transform: translate(125px, 400px) rotate(216deg) scale(0.9); }
+    24% { transform: translate(-115px, 480px) rotate(-216deg) scale(1); }
+    28% { transform: translate(135px, 560px) rotate(288deg) scale(0.88); }
+    32% { transform: translate(-105px, 640px) rotate(-288deg) scale(1.08); }
+    36% { transform: translate(120px, 720px) rotate(360deg) scale(0.92); }
+    40% { transform: translate(-130px, 800px) rotate(-360deg) scale(1.02); }
+    44% { transform: translate(110px, 880px) rotate(432deg) scale(0.86); }
+    48% { transform: translate(-125px, 960px) rotate(-432deg) scale(1.06); }
+    52% { transform: translate(115px, 1040px) rotate(504deg) scale(0.9); }
+    56% { transform: translate(-120px, 1120px) rotate(-504deg) scale(1); }
+    60% { transform: translate(130px, 1200px) rotate(576deg) scale(0.88); }
+    64% { transform: translate(-110px, 1280px) rotate(-576deg) scale(1.04); }
+    68% { transform: translate(105px, 1360px) rotate(648deg) scale(0.92); }
+    72% { transform: translate(-115px, 1440px) rotate(-648deg) scale(1); }
+    76% { transform: translate(100px, 1520px) rotate(720deg) scale(0.9); }
+    80% { transform: translate(-100px, 1600px) rotate(-720deg) scale(1.02); }
+    84% { transform: translate(90px, 1680px) rotate(792deg) scale(0.88); }
+    88% { transform: translate(-80px, 1760px) rotate(-792deg) scale(1); }
+    92% { transform: translate(70px, 1840px) rotate(864deg) scale(0.92); }
+    96% { transform: translate(-60px, 1920px) rotate(-864deg) scale(1); }
+    100% { transform: translate(0, 2000px) rotate(900deg) scale(0.85); }
+}
+
 /* Mobile: Schneeflocken-Größen anpassen */
 @media (max-width: 768px) {
     .snowflake.small {
@@ -4897,6 +5003,81 @@ img {
     font-weight: 700;
     min-width: 60px;
     text-align: right;
+}
+
+/* Level Display */
+.level-display {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding-left: 12px;
+    border-left: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.level-label {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.85rem;
+}
+
+.level-value {
+    color: #FFD700;
+    font-size: 1rem;
+    font-weight: 700;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    transition: all 0.3s ease;
+}
+
+/* Level Up Popup */
+.level-up-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.95), rgba(59, 130, 246, 0.95));
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 30px 50px;
+    border-radius: 20px;
+    border: 2px solid rgba(255, 215, 0, 0.5);
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 900;
+    color: white;
+    z-index: 100000;
+    box-shadow: 
+        0 0 40px rgba(255, 215, 0, 0.4),
+        0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: levelUpAppear 2.5s ease-out forwards;
+}
+
+.level-up-popup span {
+    display: block;
+    font-size: 1.5rem;
+    color: #FFD700;
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+    margin-top: 10px;
+}
+
+@keyframes levelUpAppear {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.5);
+    }
+    15% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.1);
+    }
+    25% {
+        transform: translate(-50%, -50%) scale(1);
+    }
+    80% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.8) translateY(-30px);
+    }
 }
 
 /* Save Highscore Button */
@@ -5203,6 +5384,27 @@ img {
     
     .score-value {
         font-size: 1rem;
+    }
+    
+    .level-display {
+        padding-left: 8px;
+    }
+    
+    .level-label {
+        font-size: 0.75rem;
+    }
+    
+    .level-value {
+        font-size: 0.85rem;
+    }
+    
+    .level-up-popup {
+        padding: 20px 30px;
+        font-size: 1.5rem;
+    }
+    
+    .level-up-popup span {
+        font-size: 1.2rem;
     }
     
     .save-highscore-btn {
