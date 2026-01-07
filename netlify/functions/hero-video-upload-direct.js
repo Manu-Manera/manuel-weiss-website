@@ -10,14 +10,22 @@ const { marshall } = require('@aws-sdk/util-dynamodb');
 // S3 Client initialisieren
 // Verwende alternative Variablennamen, da AWS_* Variablen reserviert sind
 const awsRegion = process.env.NETLIFY_AWS_REGION || process.env.AWS_REGION || 'eu-central-1';
+const accessKeyId = process.env.NETLIFY_AWS_ACCESS_KEY_ID || process.env.AWS_ACCESS_KEY_ID;
+const secretAccessKey = process.env.NETLIFY_AWS_SECRET_ACCESS_KEY || process.env.AWS_SECRET_ACCESS_KEY;
+
 const s3 = new AWS.S3({
     region: awsRegion,
-    accessKeyId: process.env.NETLIFY_AWS_ACCESS_KEY_ID || process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.NETLIFY_AWS_SECRET_ACCESS_KEY || process.env.AWS_SECRET_ACCESS_KEY
+    accessKeyId: accessKeyId,
+    secretAccessKey: secretAccessKey
 });
 
+// DynamoDB Client mit expliziten Credentials initialisieren
 const dynamoDB = new DynamoDBClient({ 
-    region: awsRegion
+    region: awsRegion,
+    credentials: accessKeyId && secretAccessKey ? {
+        accessKeyId: accessKeyId,
+        secretAccessKey: secretAccessKey
+    } : undefined // Falls keine Credentials, verwendet SDK die IAM-Rolle
 });
 
 const BUCKET_NAME = process.env.AWS_S3_HERO_VIDEO_BUCKET || 'manuel-weiss-hero-videos';
