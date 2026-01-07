@@ -4798,9 +4798,9 @@ img {
         transform: translate3d(0, -100px, 0) translateZ(0);
         opacity: 0;
     }
-    2% {
-        transform: translate3d(0, 0px, 0) translateZ(0);
-        opacity: 1;
+    1% {
+        transform: translate3d(0, -50px, 0) translateZ(0);
+        opacity: 1; /* Schnell sichtbar werden */
     }
     25% {
         transform: translate3d(15px, 500px, 0) translateZ(0);
@@ -4814,8 +4814,8 @@ img {
         transform: translate3d(20px, 1500px, 0) translateZ(0);
         opacity: 1;
     }
-    98% {
-        transform: translate3d(0, 1900px, 0) translateZ(0);
+    99% {
+        transform: translate3d(0, 1950px, 0) translateZ(0);
         opacity: 1;
     }
     100% {
