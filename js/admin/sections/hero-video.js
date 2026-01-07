@@ -186,46 +186,75 @@ class HeroVideoSection {
             if (progressFill) progressFill.style.width = '30%';
             if (progressPercentage) progressPercentage.textContent = '30%';
 
-            await new Promise((resolve, reject) => {
-                const xhr = new XMLHttpRequest();
+            // Versuche direkten Upload zu S3
+            try {
+                await new Promise((resolve, reject) => {
+                    const xhr = new XMLHttpRequest();
+                    
+                    // Progress-Tracking
+                    xhr.upload.addEventListener('progress', (e) => {
+                        if (e.lengthComputable) {
+                            // 30% bis 80% für den Upload (30% war bereits Vorbereitung)
+                            const uploadPercent = 30 + (e.loaded / e.total) * 50;
+                            if (progressFill) progressFill.style.width = `${uploadPercent}%`;
+                            if (progressPercentage) progressPercentage.textContent = `${Math.round(uploadPercent)}%`;
+                        }
+                    });
+                    
+                    // Erfolg
+                    xhr.addEventListener('load', () => {
+                        if (xhr.status >= 200 && xhr.status < 300) {
+                            console.log('✅ Video erfolgreich zu S3 hochgeladen');
+                            resolve();
+                        } else {
+                            const errorMsg = `S3 Upload fehlgeschlagen: ${xhr.status} ${xhr.statusText}`;
+                            console.error('❌', errorMsg);
+                            console.error('Response:', xhr.responseText);
+                            reject(new Error(errorMsg));
+                        }
+                    });
+                    
+                    // Fehler
+                    xhr.addEventListener('error', (e) => {
+                        console.error('❌ Netzwerkfehler beim S3 Upload:', e);
+                        console.error('Upload URL:', uploadUrl.substring(0, 100) + '...');
+                        reject(new Error('Netzwerkfehler beim Hochladen des Videos. Bitte prüfe die CORS-Konfiguration des S3-Buckets.'));
+                    });
+                    
+                    xhr.addEventListener('abort', () => {
+                        console.error('❌ Upload abgebrochen');
+                        reject(new Error('Upload wurde abgebrochen'));
+                    });
+                    
+                    // Upload starten
+                    console.log('🚀 Starte S3 Upload zu:', uploadUrl.substring(0, 100) + '...');
+                    xhr.open('PUT', uploadUrl);
+                    // Nur Content-Type setzen, keine anderen Header (können CORS-Probleme verursachen)
+                    xhr.setRequestHeader('Content-Type', file.type || 'video/mp4');
+                    xhr.send(file);
+                });
+            } catch (directUploadError) {
+                // Fallback: Upload über Netlify Function
+                console.warn('⚠️ Direkter S3-Upload fehlgeschlagen, versuche Fallback über Netlify Function:', directUploadError);
+                if (progressStatus) progressStatus.textContent = 'Upload über Server...';
                 
-                // Progress-Tracking
-                xhr.upload.addEventListener('progress', (e) => {
-                    if (e.lengthComputable) {
-                        // 30% bis 80% für den Upload (30% war bereits Vorbereitung)
-                        const uploadPercent = 30 + (e.loaded / e.total) * 50;
-                        if (progressFill) progressFill.style.width = `${uploadPercent}%`;
-                        if (progressPercentage) progressPercentage.textContent = `${Math.round(uploadPercent)}%`;
-                    }
+                // Konvertiere File zu Base64 oder FormData für Server-Upload
+                const formData = new FormData();
+                formData.append('video', file);
+                formData.append('publicUrl', publicUrl);
+                
+                const serverUploadResponse = await fetch('/.netlify/functions/hero-video-upload-server', {
+                    method: 'POST',
+                    body: formData
                 });
                 
-                // Erfolg
-                xhr.addEventListener('load', () => {
-                    if (xhr.status >= 200 && xhr.status < 300) {
-                        console.log('✅ Video erfolgreich zu S3 hochgeladen');
-                        resolve();
-                    } else {
-                        console.error('❌ S3 Upload fehlgeschlagen:', xhr.status, xhr.statusText);
-                        reject(new Error(`S3 Upload fehlgeschlagen: ${xhr.status} ${xhr.statusText}`));
-                    }
-                });
+                if (!serverUploadResponse.ok) {
+                    const errorData = await serverUploadResponse.json().catch(() => ({}));
+                    throw new Error(`Server-Upload fehlgeschlagen: ${errorData.message || serverUploadResponse.statusText}`);
+                }
                 
-                // Fehler
-                xhr.addEventListener('error', () => {
-                    console.error('❌ Netzwerkfehler beim S3 Upload');
-                    reject(new Error('Netzwerkfehler beim Hochladen des Videos'));
-                });
-                
-                xhr.addEventListener('abort', () => {
-                    console.error('❌ Upload abgebrochen');
-                    reject(new Error('Upload wurde abgebrochen'));
-                });
-                
-                // Upload starten
-                xhr.open('PUT', uploadUrl);
-                xhr.setRequestHeader('Content-Type', file.type || 'video/mp4');
-                xhr.send(file);
-            });
+                console.log('✅ Video erfolgreich über Server hochgeladen');
+            }
 
             // Schritt 3: URL speichern
             if (progressStatus) progressStatus.textContent = 'Speichere Einstellung...';
