@@ -5027,26 +5027,65 @@ img {
 /* ===== FRAGMENT-ANIMATION ===== */
 .snowflake.fragment {
     font-size: 0.6rem !important;
-    color: rgba(255, 255, 255, 0.9);
-    text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+    color: rgba(255, 255, 255, 0.95);
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.9);
+    transform-origin: center center;
 }
 
-@keyframes fragmentFall {
+/* Zweiphasige Animation: Erst Explosion in alle Richtungen, dann Fallen nach unten */
+@keyframes fragmentExplodeAndFall {
+    /* Phase 1: Explosion (0-15%) - Schnell in alle Richtungen */
     0% { 
         opacity: 1;
-        transform: scale(1) rotate(0deg);
+        transform: translate(0, 0) rotate(0deg) scale(1);
     }
-    30% {
+    15% {
         opacity: 1;
-        transform: scale(0.9) rotate(90deg) translateY(50px);
+        transform: translate(var(--explode-x), var(--explode-y)) rotate(90deg) scale(0.9);
+    }
+    /* Phase 2: Übergang zum Fallen (15-25%) */
+    25% {
+        opacity: 0.95;
+        transform: translate(
+            calc(var(--explode-x) + var(--drift-x) * 0.1), 
+            calc(var(--explode-y) + 30px)
+        ) rotate(120deg) scale(0.85);
+    }
+    /* Phase 3: Natürliches Fallen nach unten (25-100%) */
+    40% {
+        opacity: 0.9;
+        transform: translate(
+            calc(var(--drift-x) * 0.4), 
+            calc(var(--explode-y) + var(--fall-distance) * 0.2)
+        ) rotate(180deg) scale(0.8);
+    }
+    55% {
+        opacity: 0.8;
+        transform: translate(
+            calc(var(--drift-x) * 0.6), 
+            calc(var(--explode-y) + var(--fall-distance) * 0.4)
+        ) rotate(220deg) scale(0.75);
     }
     70% {
-        opacity: 0.7;
-        transform: scale(0.7) rotate(180deg) translateY(150px);
+        opacity: 0.6;
+        transform: translate(
+            calc(var(--drift-x) * 0.8), 
+            calc(var(--explode-y) + var(--fall-distance) * 0.6)
+        ) rotate(280deg) scale(0.7);
+    }
+    85% {
+        opacity: 0.4;
+        transform: translate(
+            var(--drift-x), 
+            calc(var(--explode-y) + var(--fall-distance) * 0.85)
+        ) rotate(var(--rotation)) scale(0.6);
     }
     100% { 
         opacity: 0;
-        transform: scale(0.4) rotate(270deg) translateY(300px);
+        transform: translate(
+            var(--drift-x), 
+            calc(var(--explode-y) + var(--fall-distance))
+        ) rotate(var(--rotation)) scale(0.5);
     }
 }
 
