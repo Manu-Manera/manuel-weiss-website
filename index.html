@@ -2055,18 +2055,81 @@
                 const container = document.getElementById('snowflakes');
                 if (!container) return;
                 
-                // Wind-Klasse hinzufügen
+                // Wind-Klasse hinzufügen für diagonale Bewegung
                 const windClass = this.windDirection > 0 ? 'wind-right' : 'wind-left';
                 container.classList.add(windClass);
                 
                 // Wind-Anzeige
                 this.showWindEffect();
                 
-                // Wind nach 2-4 Sekunden beenden
+                // Bei Wind: Extra Schneeflocken spawnen (Böe bringt mehr Schnee!)
+                const extraFlakes = 8 + Math.floor(Math.random() * 8); // 8-15 extra Flocken
+                for (let i = 0; i < extraFlakes; i++) {
+                    setTimeout(() => {
+                        this.createWindSnowflake(container, this.windDirection);
+                    }, i * 100); // Gestaffelt über 1 Sekunde
+                }
+                
+                // Wind nach 3-5 Sekunden beenden
+                const windDuration = 3000 + Math.random() * 2000;
                 setTimeout(() => {
                     container.classList.remove('wind-left', 'wind-right');
                     this.windActive = false;
-                }, 2000 + Math.random() * 2000);
+                }, windDuration);
+            },
+            
+            // Spezielle Schneeflocke die mit dem Wind kommt
+            createWindSnowflake(container, direction) {
+                const snowflake = document.createElement('div');
+                snowflake.className = 'snowflake clickable wind-flake';
+                snowflake.textContent = '❄';
+                
+                // Kleinere Flocken im Wind (mehr Punkte)
+                const sizes = [
+                    { class: 'small', points: 50 },
+                    { class: 'medium', points: 25 }
+                ];
+                const size = sizes[Math.floor(Math.random() * sizes.length)];
+                snowflake.classList.add(size.class);
+                snowflake.dataset.points = size.points;
+                
+                // Startposition: Von der Seite, wo der Wind herkommt
+                if (direction > 0) {
+                    // Wind von links -> Flocken starten links
+                    snowflake.style.left = '-5%';
+                } else {
+                    // Wind von rechts -> Flocken starten rechts
+                    snowflake.style.left = '105%';
+                }
+                snowflake.style.top = (Math.random() * 30) + '%'; // Obere 30% des Bildschirms
+                
+                // Diagonale Wind-Animation
+                const windAnimationName = direction > 0 ? 'windBlowRight' : 'windBlowLeft';
+                const duration = 2 + Math.random() * 2; // 2-4 Sekunden (schnell!)
+                snowflake.style.setProperty('animation', `${windAnimationName} ${duration}s ease-out forwards`, 'important');
+                
+                // Click Events
+                snowflake.addEventListener('click', (e) => this.catchSnowflake(e, snowflake, size.points));
+                
+                let touchStartTime = 0;
+                snowflake.addEventListener('touchstart', (e) => {
+                    touchStartTime = Date.now();
+                    e.preventDefault();
+                }, { passive: false });
+                
+                snowflake.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    if (Date.now() - touchStartTime < 300) {
+                        this.catchSnowflake(e, snowflake, size.points);
+                    }
+                }, { passive: false });
+                
+                container.appendChild(snowflake);
+                
+                // Nach Animation entfernen
+                setTimeout(() => {
+                    if (snowflake.parentNode) snowflake.remove();
+                }, duration * 1000 + 500);
             },
             
             showWindEffect() {
@@ -2074,7 +2137,7 @@
                 windIndicator.className = 'wind-indicator ' + (this.windDirection > 0 ? 'right' : 'left');
                 windIndicator.textContent = this.windDirection > 0 ? '💨→' : '←💨';
                 document.body.appendChild(windIndicator);
-                setTimeout(() => windIndicator.remove(), 2000);
+                setTimeout(() => windIndicator.remove(), 3000);
             },
             
             init() {
