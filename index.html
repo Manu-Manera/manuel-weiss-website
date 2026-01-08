@@ -2054,9 +2054,6 @@
                 const windClass = this.windDirection > 0 ? 'wind-right' : 'wind-left';
                 container.classList.add(windClass);
                 
-                // Wind-Anzeige
-                this.showWindEffect();
-                
                 // Bei Wind: Extra Schneeflocken spawnen (Böe bringt mehr Schnee!)
                 const extraFlakes = 8 + Math.floor(Math.random() * 8); // 8-15 extra Flocken
                 for (let i = 0; i < extraFlakes; i++) {
@@ -2127,14 +2124,6 @@
                 }, duration * 1000 + 500);
             },
             
-            showWindEffect() {
-                const windIndicator = document.createElement('div');
-                windIndicator.className = 'wind-indicator ' + (this.windDirection > 0 ? 'right' : 'left');
-                windIndicator.textContent = this.windDirection > 0 ? '💨→' : '←💨';
-                document.body.appendChild(windIndicator);
-                setTimeout(() => windIndicator.remove(), 3000);
-            },
-            
             init() {
                 console.log('❄️ SnowflakeGame.init() aufgerufen');
                 const container = document.getElementById('snowflakes');
@@ -2193,18 +2182,18 @@
                 const startOffset = -50 - Math.random() * 150; // -50 bis -200px oberhalb
                 snowflake.style.top = startOffset + 'px';
                 
-                // Geschwindigkeit basierend auf Größe - SCHNELLER!
+                // Geschwindigkeit basierend auf Größe - AM ANFANG SEHR LANGSAM!
                 let baseDuration;
                 if (size.class === 'large') {
-                    baseDuration = Math.random() * 5 + 12; // Große: 12-17 Sekunden
+                    baseDuration = Math.random() * 10 + 30; // Große: 30-40 Sekunden (super langsam!)
                 } else if (size.class === 'medium') {
-                    baseDuration = Math.random() * 4 + 9;  // Mittlere: 9-13 Sekunden
+                    baseDuration = Math.random() * 8 + 22;  // Mittlere: 22-30 Sekunden
                 } else {
-                    baseDuration = Math.random() * 3 + 6;  // Kleine: 6-9 Sekunden
+                    baseDuration = Math.random() * 6 + 16;  // Kleine: 16-22 Sekunden
                 }
                 
-                // Schneller bei höherer Schwierigkeit (aber min. 4 Sekunden)
-                const adjustedDuration = Math.max(baseDuration / difficulty.speedMultiplier, 4);
+                // Schneller bei höherer Schwierigkeit (aber min. 6 Sekunden)
+                const adjustedDuration = Math.max(baseDuration / difficulty.speedMultiplier, 6);
                 
                 // Zufälliger Delay - gut verteilt über die Animationsdauer, damit nicht alle gleichzeitig starten
                 const animationDelay = Math.random() * adjustedDuration;
@@ -2257,11 +2246,6 @@
                 // Neues Level prüfen
                 const newDifficulty = this.getDifficulty();
                 document.getElementById('difficultyLevel').textContent = newDifficulty.name;
-                
-                // Level-Up Effekt
-                if (newDifficulty.level > oldDifficulty.level) {
-                    this.showLevelUp(newDifficulty.name);
-                }
                 
                 // Visual feedback
                 this.showPointsPopup(e, points);
@@ -2364,15 +2348,6 @@
                         }
                     }, 4000);
                 }
-            },
-            
-            showLevelUp(levelName) {
-                const levelUp = document.createElement('div');
-                levelUp.className = 'level-up-popup';
-                levelUp.innerHTML = `⬆️ LEVEL UP!<br><span>${levelName}</span>`;
-                document.body.appendChild(levelUp);
-                
-                setTimeout(() => levelUp.remove(), 2500);
             },
             
             showPointsPopup(e, points) {
