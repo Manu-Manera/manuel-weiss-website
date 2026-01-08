@@ -2002,15 +2002,6 @@
             windActive: false,
             windDirection: 0,
             
-            // POWER-UPS
-            slowMotionActive: false,
-            magnetActive: false,
-            
-            // SCHNEEGESTÖBER
-            blizzardActive: false,
-            lastBlizzardTime: 0,
-            blizzardInterval: 45000, // Alle 45 Sekunden möglich
-            
             // Schwierigkeitsberechnung - SCHWER!
             getDifficulty() {
                 const score = this.score;
@@ -2035,161 +2026,20 @@
                 };
             },
             
-            // Wind-Effekt für Experten-Level + Schneegestöber
+            // Wind-Effekt für höhere Level
             startWindEffect() {
                 if (this.windInterval) return;
                 
                 this.windInterval = setInterval(() => {
                     const difficulty = this.getDifficulty();
                     
-                    // Wind ab Experte
+                    // Wind ab Level 3
                     if (difficulty.hasWind && Math.random() < 0.1) {
                         this.triggerWind();
-                    }
-                    
-                    // Schneegestöber-Check (alle 45+ Sekunden möglich)
-                    const now = Date.now();
-                    if (this.gameStarted && !this.blizzardActive && 
-                        now - this.lastBlizzardTime > this.blizzardInterval && 
-                        Math.random() < 0.05) {
-                        this.triggerBlizzard();
                     }
                 }, 1000);
             },
             
-            // SCHNEEGESTÖBER-EVENT!
-            triggerBlizzard() {
-                if (this.blizzardActive) return;
-                
-                this.blizzardActive = true;
-                this.lastBlizzardTime = Date.now();
-                
-                // Ankündigung
-                this.showEventPopup('❄️ SCHNEEGESTÖBER! ❄️', 'blizzard');
-                
-                const container = document.getElementById('snowflakes');
-                if (!container) return;
-                
-                // Viele Extra-Flocken spawnen über 10 Sekunden
-                let flakesSpawned = 0;
-                const blizzardInterval = setInterval(() => {
-                    if (flakesSpawned >= 30) {
-                        clearInterval(blizzardInterval);
-                        this.blizzardActive = false;
-                        return;
-                    }
-                    
-                    // 3 Flocken pro Tick
-                    for (let i = 0; i < 3; i++) {
-                        this.createSingleSnowflake(container, true); // true = schneller
-                    }
-                    flakesSpawned += 3;
-                }, 300);
-            },
-            
-            // Power-Up Flocken erstellen
-            createPowerUpFlake(container) {
-                const powerUp = document.createElement('div');
-                
-                // Zufälliger Power-Up Typ
-                const types = [
-                    { class: 'slowmo', emoji: '⏱️', effect: 'slowmo', name: 'Zeitlupe!' },
-                    { class: 'jackpot', emoji: '💎', effect: 'jackpot', name: 'JACKPOT!' },
-                    { class: 'magnet', emoji: '🧲', effect: 'magnet', name: 'Magnet!' }
-                ];
-                const type = types[Math.floor(Math.random() * types.length)];
-                
-                powerUp.className = `snowflake clickable powerup ${type.class}`;
-                powerUp.textContent = type.emoji;
-                powerUp.dataset.effect = type.effect;
-                powerUp.dataset.effectName = type.name;
-                
-                powerUp.style.left = Math.random() * 80 + 10 + '%';
-                const startOffset = -100 - Math.random() * 100;
-                powerUp.style.top = startOffset + 'px';
-                powerUp.style.fontSize = '2.5rem';
-                powerUp.style.setProperty('animation', 'snowflakeFall3 12s ease-in-out forwards', 'important');
-                
-                // Click Event
-                powerUp.addEventListener('click', (e) => this.collectPowerUp(e, powerUp, type));
-                
-                // Touch Events
-                let touchStartTime = 0;
-                powerUp.addEventListener('touchstart', (e) => {
-                    touchStartTime = Date.now();
-                    e.preventDefault();
-                }, { passive: false });
-                
-                powerUp.addEventListener('touchend', (e) => {
-                    e.preventDefault();
-                    if (Date.now() - touchStartTime < 300) {
-                        this.collectPowerUp(e, powerUp, type);
-                    }
-                }, { passive: false });
-                
-                container.appendChild(powerUp);
-                
-                // Nach 15 Sekunden entfernen
-                setTimeout(() => {
-                    if (powerUp.parentNode) powerUp.remove();
-                }, 15000);
-            },
-            
-            collectPowerUp(e, powerUp, type) {
-                e.stopPropagation();
-                
-                this.showEventPopup(type.emoji + ' ' + type.name, 'powerup');
-                
-                switch(type.effect) {
-                    case 'slowmo':
-                        this.activateSlowMotion();
-                        break;
-                    case 'jackpot':
-                        const bonus = 100 + Math.floor(Math.random() * 400);
-                        this.score += bonus;
-                        document.getElementById('snowflakeScore').textContent = this.score;
-                        this.showPointsPopup(e, bonus);
-                        break;
-                    case 'magnet':
-                        this.activateMagnet();
-                        break;
-                }
-                
-                powerUp.classList.add('collected');
-                setTimeout(() => powerUp.remove(), 300);
-            },
-            
-            activateSlowMotion() {
-                if (this.slowMotionActive) return;
-                this.slowMotionActive = true;
-                
-                document.getElementById('snowflakes').classList.add('slowmo-active');
-                
-                setTimeout(() => {
-                    this.slowMotionActive = false;
-                    document.getElementById('snowflakes').classList.remove('slowmo-active');
-                }, 5000);
-            },
-            
-            activateMagnet() {
-                if (this.magnetActive) return;
-                this.magnetActive = true;
-                
-                document.getElementById('snowflakes').classList.add('magnet-active');
-                
-                setTimeout(() => {
-                    this.magnetActive = false;
-                    document.getElementById('snowflakes').classList.remove('magnet-active');
-                }, 5000);
-            },
-            
-            showEventPopup(text, type) {
-                const popup = document.createElement('div');
-                popup.className = `event-popup ${type}`;
-                popup.textContent = text;
-                document.body.appendChild(popup);
-                setTimeout(() => popup.remove(), 2500);
-            },
             
             triggerWind() {
                 if (this.windActive) return;
@@ -2315,13 +2165,7 @@
                 console.log(`✅ ${snowflakeCount} Schneeflocken erstellt`);
             },
             
-            createSingleSnowflake(container, isBlizzard = false) {
-                // Chance auf Power-Up (ca. 2%)
-                if (this.gameStarted && Math.random() < 0.02) {
-                    this.createPowerUpFlake(container);
-                    return;
-                }
-                
+            createSingleSnowflake(container) {
                 const snowflake = document.createElement('div');
                 snowflake.className = 'snowflake clickable';
                 
@@ -2357,11 +2201,6 @@
                     baseDuration = Math.random() * 4 + 9;  // Mittlere: 9-13 Sekunden
                 } else {
                     baseDuration = Math.random() * 3 + 6;  // Kleine: 6-9 Sekunden
-                }
-                
-                // Blizzard = schneller!
-                if (isBlizzard) {
-                    baseDuration = baseDuration * 0.6;
                 }
                 
                 // Schneller bei höherer Schwierigkeit (aber min. 4 Sekunden)
