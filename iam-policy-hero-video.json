@@ -33,7 +33,8 @@
       "Action": [
         "dynamodb:PutItem",
         "dynamodb:GetItem",
-        "dynamodb:Scan"
+        "dynamodb:Scan",
+        "dynamodb:DeleteItem"
       ],
       "Resource": "arn:aws:dynamodb:eu-central-1:038333965110:table/snowflake-highscores"
     }
