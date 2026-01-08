@@ -1,10 +1,10 @@
 const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
-const { DynamoDBDocumentClient, GetCommand, PutCommand, ScanCommand } = require('@aws-sdk/lib-dynamodb');
+const { DynamoDBDocumentClient, GetCommand, PutCommand, ScanCommand, DeleteCommand } = require('@aws-sdk/lib-dynamodb');
 
 const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type',
-    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
 };
 
 exports.handler = async (event) => {
@@ -147,6 +147,37 @@ exports.handler = async (event) => {
                 body: JSON.stringify({ 
                     success: true,
                     highscores 
+                }),
+            };
+        }
+
+        // DELETE: Alle Highscores löschen (Admin-Funktion)
+        if (event.httpMethod === 'DELETE') {
+            // Zuerst alle Items abrufen
+            const scanResult = await docClient.send(new ScanCommand({
+                TableName: tableName,
+            }));
+
+            const items = scanResult.Items || [];
+            console.log(`Deleting ${items.length} highscores...`);
+
+            // Alle Items löschen
+            for (const item of items) {
+                await docClient.send(new DeleteCommand({
+                    TableName: tableName,
+                    Key: { id: item.id },
+                }));
+            }
+
+            console.log('All highscores deleted successfully');
+
+            return {
+                statusCode: 200,
+                headers,
+                body: JSON.stringify({ 
+                    success: true,
+                    message: `${items.length} Highscores gelöscht`,
+                    highscores: []
                 }),
             };
         }
