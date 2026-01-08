@@ -2002,12 +2002,6 @@
             windActive: false,
             windDirection: 0,
             
-            // COMBO-SYSTEM
-            combo: 0,
-            lastCatchTime: 0,
-            comboTimeout: 2000, // 2 Sekunden für Combo
-            maxCombo: 10,
-            
             // POWER-UPS
             slowMotionActive: false,
             magnetActive: false,
@@ -2017,61 +2011,28 @@
             lastBlizzardTime: 0,
             blizzardInterval: 45000, // Alle 45 Sekunden möglich
             
-            // Schwierigkeitsberechnung basierend auf Score - SCHWIERIGER!
+            // Schwierigkeitsberechnung - SCHWER!
             getDifficulty() {
                 const score = this.score;
                 
-                // Level-Stufen: SCHWIERIGER - höhere Schwellen!
+                // Level-Stufen
                 let level = 0;
-                if (score >= 3000) level = 5;      // Meister (war 1500)
-                else if (score >= 2000) level = 4; // Experte (war 1000)
-                else if (score >= 1200) level = 3; // Schwer (war 600)
-                else if (score >= 600) level = 2;  // Mittel (war 300)
-                else if (score >= 200) level = 1;  // Leicht (war 100)
+                if (score >= 2500) level = 5;      // Meister
+                else if (score >= 1500) level = 4; // Experte
+                else if (score >= 800) level = 3;  // Schwer
+                else if (score >= 400) level = 2;  // Mittel
+                else if (score >= 150) level = 1;  // Leicht
                 
                 return {
                     level: level,
-                    speedMultiplier: 1 + (level * 0.15), // Etwas schneller pro Level
-                    smallChance: Math.min(0.20 + (level * 0.12), 0.7), // 20% -> 70% kleine
-                    mediumChance: Math.max(0.35 - (level * 0.04), 0.15),
+                    speedMultiplier: 1.2 + (level * 0.18), // Schneller! Startet bei 1.2
+                    smallChance: Math.min(0.30 + (level * 0.12), 0.75), // 30% -> 75% kleine (mehr kleine!)
+                    mediumChance: Math.max(0.35 - (level * 0.05), 0.15),
                     minAnimationVariant: level <= 2 ? 1 : 6,
                     maxAnimationVariant: level <= 2 ? 5 : 10,
-                    hasWind: level >= 4,
+                    hasWind: level >= 3, // Wind schon ab Schwer!
                     name: ['Anfänger', 'Leicht', 'Mittel', 'Schwer', 'Experte', 'Meister'][level]
                 };
-            },
-            
-            // Combo berechnen und anzeigen
-            updateCombo() {
-                const now = Date.now();
-                if (now - this.lastCatchTime < this.comboTimeout) {
-                    this.combo = Math.min(this.combo + 1, this.maxCombo);
-                } else {
-                    this.combo = 1;
-                }
-                this.lastCatchTime = now;
-                
-                // Combo-Anzeige aktualisieren
-                if (this.combo >= 2) {
-                    this.showComboPopup();
-                }
-                
-                return this.combo;
-            },
-            
-            showComboPopup() {
-                // Alte Combo-Anzeige entfernen
-                const oldCombo = document.querySelector('.combo-display');
-                if (oldCombo) oldCombo.remove();
-                
-                const comboDisplay = document.createElement('div');
-                comboDisplay.className = 'combo-display';
-                comboDisplay.innerHTML = `🔥 COMBO x${this.combo}!`;
-                if (this.combo >= 5) comboDisplay.classList.add('hot');
-                if (this.combo >= 8) comboDisplay.classList.add('fire');
-                document.body.appendChild(comboDisplay);
-                
-                setTimeout(() => comboDisplay.remove(), 1500);
             },
             
             // Wind-Effekt für Experten-Level + Schneegestöber
@@ -2388,14 +2349,14 @@
                 const startOffset = -50 - Math.random() * 150; // -50 bis -200px oberhalb
                 snowflake.style.top = startOffset + 'px';
                 
-                // Geschwindigkeit basierend auf Größe UND Schwierigkeit
+                // Geschwindigkeit basierend auf Größe - SCHNELLER!
                 let baseDuration;
                 if (size.class === 'large') {
-                    baseDuration = Math.random() * 8 + 18; // Große: 18-26 Sekunden
+                    baseDuration = Math.random() * 5 + 12; // Große: 12-17 Sekunden
                 } else if (size.class === 'medium') {
-                    baseDuration = Math.random() * 6 + 14; // Mittlere: 14-20 Sekunden
+                    baseDuration = Math.random() * 4 + 9;  // Mittlere: 9-13 Sekunden
                 } else {
-                    baseDuration = Math.random() * 5 + 10; // Kleine: 10-15 Sekunden
+                    baseDuration = Math.random() * 3 + 6;  // Kleine: 6-9 Sekunden
                 }
                 
                 // Blizzard = schneller!
@@ -2450,12 +2411,8 @@
                 // Altes Level speichern für Level-Up-Effekt
                 const oldDifficulty = this.getDifficulty();
                 
-                // COMBO-SYSTEM: Multiplikator berechnen
-                const comboMultiplier = this.updateCombo();
-                const finalPoints = points * comboMultiplier;
-                
-                // Add points with combo multiplier
-                this.score += finalPoints;
+                // Add points
+                this.score += points;
                 document.getElementById('snowflakeScore').textContent = this.score;
                 
                 // Neues Level prüfen
@@ -2467,8 +2424,8 @@
                     this.showLevelUp(newDifficulty.name);
                 }
                 
-                // Visual feedback (zeige finale Punkte mit Combo)
-                this.showPointsPopup(e, finalPoints, comboMultiplier);
+                // Visual feedback
+                this.showPointsPopup(e, points);
                 
                 // Position für Fragmente ermitteln
                 const rect = snowflake.getBoundingClientRect();
@@ -2579,17 +2536,10 @@
                 setTimeout(() => levelUp.remove(), 2500);
             },
             
-            showPointsPopup(e, points, combo = 1) {
+            showPointsPopup(e, points) {
                 const popup = document.createElement('div');
                 popup.className = 'points-popup';
-                if (combo >= 2) {
-                    popup.classList.add('combo');
-                    popup.textContent = `+${points} (x${combo})`;
-                } else {
-                    popup.textContent = '+' + points;
-                }
-                if (combo >= 5) popup.classList.add('hot');
-                if (combo >= 8) popup.classList.add('fire');
+                popup.textContent = '+' + points;
                 
                 // Position ermitteln - bei Touch-Events changedTouches statt touches verwenden!
                 let x, y;
