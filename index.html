@@ -2017,10 +2017,11 @@
                 return {
                     level: level,
                     // Geschwindigkeit: Je höher, desto schneller (min 4s, max 15s bei Level 0)
-                    speedMultiplier: 1 + (level * 0.15), // 1.0, 1.15, 1.3, 1.45, 1.6, 1.75
-                    // Größen-Gewichtung: Je höher, desto mehr kleine Flocken
-                    smallChance: Math.min(0.5 + (level * 0.08), 0.8), // 50% -> 80% kleine
-                    mediumChance: Math.max(0.35 - (level * 0.05), 0.15), // 35% -> 15% mittlere
+                    speedMultiplier: 1 + (level * 0.12), // 1.0, 1.12, 1.24, 1.36, 1.48, 1.60 (langsamer)
+                    // Größen-Gewichtung: Am Anfang VIEL mehr große Flocken (leicht zu treffen!)
+                    smallChance: Math.min(0.15 + (level * 0.12), 0.7), // 15% -> 70% kleine (viel weniger am Anfang)
+                    mediumChance: Math.max(0.35 - (level * 0.04), 0.15), // 35% -> 15% mittlere
+                    // Rest sind große Flocken (50% am Anfang!)
                     // Animations-Komplexität: Mehr natürliche Varianten bei niedrigem Level, chaotischer bei hohem
                     minAnimationVariant: level <= 2 ? 1 : 6, // Niedrige Level: sanfte Animationen (1-5)
                     maxAnimationVariant: level <= 2 ? 5 : 10, // Hohe Level: chaotische Animationen (6-10)
@@ -2195,14 +2196,14 @@
                 snowflake.style.left = Math.random() * 100 + '%';
                 
                 // Geschwindigkeit basierend auf Größe UND Schwierigkeit
-                // Am Anfang sehr langsam und natürlich, später schneller
+                // Am Anfang SEHR langsam - leicht zu treffen!
                 let baseDuration;
                 if (size.class === 'large') {
-                    baseDuration = Math.random() * 8 + 18; // Große: 18-26 Sekunden (sehr langsam)
+                    baseDuration = Math.random() * 10 + 25; // Große: 25-35 Sekunden (super langsam!)
                 } else if (size.class === 'medium') {
-                    baseDuration = Math.random() * 7 + 15; // Mittlere: 15-22 Sekunden
+                    baseDuration = Math.random() * 8 + 20; // Mittlere: 20-28 Sekunden
                 } else {
-                    baseDuration = Math.random() * 6 + 12; // Kleine: 12-18 Sekunden
+                    baseDuration = Math.random() * 6 + 15; // Kleine: 15-21 Sekunden
                 }
                 
                 // Schneller bei höherer Schwierigkeit (aber min. 5 Sekunden)
