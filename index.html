@@ -2244,23 +2244,34 @@
                     fragment.textContent = '❄';
                     fragment.dataset.points = fragmentPoints;
                     
-                    // Zufällige Richtung für Fragment
-                    const angle = (i / fragmentCount) * 360 + Math.random() * 45;
-                    const distance = 30 + Math.random() * 50;
-                    const offsetX = Math.cos(angle * Math.PI / 180) * distance;
-                    const offsetY = Math.sin(angle * Math.PI / 180) * distance;
+                    // Zufällige Explosionsrichtung (alle Richtungen möglich)
+                    const explosionAngle = (i / fragmentCount) * 360 + Math.random() * 60 - 30;
+                    const explosionDistance = 40 + Math.random() * 60;
+                    const explosionX = Math.cos(explosionAngle * Math.PI / 180) * explosionDistance;
+                    const explosionY = Math.sin(explosionAngle * Math.PI / 180) * explosionDistance;
                     
-                    // Position setzen (relativ zum Container)
-                    const containerRect = container.getBoundingClientRect();
+                    // Zufällige seitliche Drift beim Fallen (nur nach unten, nie nach oben!)
+                    const driftX = (Math.random() - 0.5) * 80; // -40 bis +40px seitlich
+                    const fallDistance = 400 + Math.random() * 300; // 400-700px nach unten
+                    
+                    // Startposition (Zentrum der geplatzten Flocke)
                     fragment.style.position = 'fixed';
-                    fragment.style.left = (x + offsetX) + 'px';
-                    fragment.style.top = (y + offsetY) + 'px';
+                    fragment.style.left = x + 'px';
+                    fragment.style.top = y + 'px';
                     fragment.style.fontSize = '0.6rem';
-                    fragment.style.opacity = '0.9';
+                    fragment.style.opacity = '1';
                     fragment.style.zIndex = '100';
                     fragment.style.pointerEvents = 'auto';
                     fragment.style.cursor = 'pointer';
-                    fragment.style.animation = 'fragmentFall 3s ease-out forwards';
+                    
+                    // CSS-Variablen für individuelle Animation setzen
+                    fragment.style.setProperty('--explode-x', explosionX + 'px');
+                    fragment.style.setProperty('--explode-y', explosionY + 'px');
+                    fragment.style.setProperty('--drift-x', driftX + 'px');
+                    fragment.style.setProperty('--fall-distance', fallDistance + 'px');
+                    fragment.style.setProperty('--rotation', (Math.random() * 360) + 'deg');
+                    
+                    fragment.style.animation = 'fragmentExplodeAndFall 4s ease-out forwards';
                     
                     // Click Event für Fragment
                     fragment.addEventListener('click', (e) => {
@@ -2283,12 +2294,12 @@
                     
                     document.body.appendChild(fragment);
                     
-                    // Fragment nach 3 Sekunden entfernen falls nicht gefangen
+                    // Fragment nach 4 Sekunden entfernen falls nicht gefangen
                     setTimeout(() => {
                         if (fragment.parentNode) {
                             fragment.remove();
                         }
-                    }, 3000);
+                    }, 4000);
                 }
             },
             
