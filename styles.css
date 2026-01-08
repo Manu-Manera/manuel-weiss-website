@@ -4789,109 +4789,200 @@ img {
     100% { transform: translate(0, 2000px) rotate(360deg); }
 }
 
-/* ===== SANFTE ANIMATIONEN FÜR NIEDRIGE LEVEL (1-5) ===== */
-/* Diese Animationen sind langsam, schweben sanft und fühlen sich natürlich an */
+/* ===== BLATT-SEGELN ANIMATIONEN ===== */
+/* Sanftes Segeln wie ein fallendes Blatt - kontinuierlich nach unten mit kleinen Pendelbewegungen */
 
-/* Variante 1: Sanftes Segeln - fließend nach unten */
+/* Variante 1: Sanftes Blatt-Segeln mit leichter Drehung */
 @keyframes snowflakeFall1 {
-    0% { transform: translateY(-50px) rotate(0deg); opacity: 0.7; }
-    100% { transform: translateY(2000px) rotate(15deg); opacity: 0.7; }
-}
-
-/* Variante 2: Leichtes Wiegen - fließend mit minimalem Pendeln */
-@keyframes snowflakeFall2 {
     0% { transform: translate(0, -50px) rotate(0deg); opacity: 0.8; }
-    25% { transform: translate(8px, 500px) rotate(10deg); opacity: 1; }
-    50% { transform: translate(-5px, 1000px) rotate(-8deg); }
-    75% { transform: translate(6px, 1500px) rotate(8deg); }
+    5% { transform: translate(5px, 50px) rotate(15deg); opacity: 1; }
+    10% { transform: translate(-3px, 150px) rotate(-10deg); }
+    15% { transform: translate(6px, 250px) rotate(20deg); }
+    20% { transform: translate(-4px, 350px) rotate(-15deg); }
+    25% { transform: translate(5px, 450px) rotate(18deg); }
+    30% { transform: translate(-5px, 550px) rotate(-12deg); }
+    35% { transform: translate(4px, 650px) rotate(16deg); }
+    40% { transform: translate(-3px, 750px) rotate(-14deg); }
+    45% { transform: translate(6px, 850px) rotate(20deg); }
+    50% { transform: translate(-4px, 950px) rotate(-16deg); }
+    55% { transform: translate(5px, 1050px) rotate(15deg); }
+    60% { transform: translate(-5px, 1150px) rotate(-18deg); }
+    65% { transform: translate(4px, 1250px) rotate(14deg); }
+    70% { transform: translate(-3px, 1350px) rotate(-12deg); }
+    75% { transform: translate(5px, 1450px) rotate(16deg); }
+    80% { transform: translate(-4px, 1550px) rotate(-14deg); }
+    85% { transform: translate(6px, 1650px) rotate(18deg); }
+    90% { transform: translate(-5px, 1750px) rotate(-15deg); }
+    95% { transform: translate(4px, 1850px) rotate(12deg); opacity: 0.9; }
     100% { transform: translate(0, 2000px) rotate(0deg); opacity: 0.8; }
 }
 
-/* Variante 3: Sanftes Gleiten - fließend mit leichter Schräge */
+/* Variante 2: Pendelndes Blatt mit mehr Drehung */
+@keyframes snowflakeFall2 {
+    0% { transform: translate(0, -50px) rotate(0deg); opacity: 0.8; }
+    8% { transform: translate(8px, 110px) rotate(25deg); opacity: 1; }
+    16% { transform: translate(-6px, 270px) rotate(-20deg); }
+    24% { transform: translate(7px, 430px) rotate(30deg); }
+    32% { transform: translate(-8px, 590px) rotate(-25deg); }
+    40% { transform: translate(6px, 750px) rotate(28deg); }
+    48% { transform: translate(-7px, 910px) rotate(-22deg); }
+    56% { transform: translate(8px, 1070px) rotate(26deg); }
+    64% { transform: translate(-6px, 1230px) rotate(-24deg); }
+    72% { transform: translate(7px, 1390px) rotate(22deg); }
+    80% { transform: translate(-8px, 1550px) rotate(-20deg); }
+    88% { transform: translate(6px, 1710px) rotate(18deg); }
+    96% { transform: translate(-4px, 1870px) rotate(-12deg); opacity: 0.9; }
+    100% { transform: translate(0, 2000px) rotate(0deg); opacity: 0.8; }
+}
+
+/* Variante 3: Leichtes Segeln mit sanften Kurven */
 @keyframes snowflakeFall3 {
     0% { transform: translate(0, -50px) rotate(0deg); opacity: 0.75; }
-    50% { transform: translate(10px, 1000px) rotate(20deg); opacity: 1; }
-    100% { transform: translate(-5px, 2000px) rotate(-10deg); opacity: 0.75; }
+    10% { transform: translate(4px, 150px) rotate(12deg); opacity: 1; }
+    20% { transform: translate(-5px, 350px) rotate(-15deg); }
+    30% { transform: translate(6px, 550px) rotate(18deg); }
+    40% { transform: translate(-4px, 750px) rotate(-12deg); }
+    50% { transform: translate(5px, 950px) rotate(14deg); }
+    60% { transform: translate(-6px, 1150px) rotate(-16deg); }
+    70% { transform: translate(4px, 1350px) rotate(10deg); }
+    80% { transform: translate(-5px, 1550px) rotate(-14deg); }
+    90% { transform: translate(6px, 1750px) rotate(12deg); opacity: 0.9; }
+    100% { transform: translate(0, 2000px) rotate(0deg); opacity: 0.75; }
 }
 
-/* Variante 4: Drehend - kontinuierliche Rotation beim Fallen */
+/* Variante 4: Drehend wie ein Blatt im Wind */
 @keyframes snowflakeFall4 {
     0% { transform: translate(0, -50px) rotate(0deg); opacity: 0.8; }
-    25% { transform: translate(-8px, 500px) rotate(90deg); opacity: 1; }
-    50% { transform: translate(5px, 1000px) rotate(180deg); }
-    75% { transform: translate(-5px, 1500px) rotate(270deg); }
-    100% { transform: translate(0, 2000px) rotate(360deg); opacity: 0.8; }
+    10% { transform: translate(6px, 150px) rotate(45deg); opacity: 1; }
+    20% { transform: translate(-5px, 350px) rotate(90deg); }
+    30% { transform: translate(7px, 550px) rotate(135deg); }
+    40% { transform: translate(-6px, 750px) rotate(180deg); }
+    50% { transform: translate(5px, 950px) rotate(225deg); }
+    60% { transform: translate(-7px, 1150px) rotate(270deg); }
+    70% { transform: translate(6px, 1350px) rotate(315deg); }
+    80% { transform: translate(-5px, 1550px) rotate(360deg); }
+    90% { transform: translate(4px, 1750px) rotate(405deg); opacity: 0.9; }
+    100% { transform: translate(0, 2000px) rotate(450deg); opacity: 0.8; }
 }
 
-/* Variante 5: Schräg gleitend - sanft zur Seite driftend */
+/* Variante 5: Sanftes Schaukeln */
 @keyframes snowflakeFall5 {
-    0% { transform: translate(0, -50px) rotate(0deg); opacity: 0.75; }
-    33% { transform: translate(12px, 650px) rotate(15deg); opacity: 1; }
-    66% { transform: translate(-8px, 1350px) rotate(-12deg); }
-    100% { transform: translate(5px, 2000px) rotate(8deg); opacity: 0.75; }
+    0% { transform: translate(0, -50px) rotate(-5deg); opacity: 0.75; }
+    12% { transform: translate(7px, 200px) rotate(20deg); opacity: 1; }
+    25% { transform: translate(-5px, 450px) rotate(-18deg); }
+    37% { transform: translate(6px, 700px) rotate(22deg); }
+    50% { transform: translate(-7px, 950px) rotate(-20deg); }
+    62% { transform: translate(5px, 1200px) rotate(18deg); }
+    75% { transform: translate(-6px, 1450px) rotate(-16deg); }
+    87% { transform: translate(4px, 1700px) rotate(14deg); opacity: 0.9; }
+    100% { transform: translate(0, 2000px) rotate(0deg); opacity: 0.75; }
 }
 
-/* ===== SCHWIERIGERE ANIMATIONS-VARIANTEN (Level 1+) ===== */
+/* ===== SCHWIERIGERE ANIMATIONEN (Level 3+) ===== */
 
-/* Variante 6: Schnelle Zickzack-Bewegung */
-/* Variante 6: Etwas mehr Bewegung - für mittlere Level */
+/* Variante 6: Schnelleres Blatt-Pendeln */
 @keyframes snowflakeFall6 {
     0% { transform: translate(0, -50px) rotate(0deg); }
-    20% { transform: translate(15px, 400px) rotate(45deg); }
-    40% { transform: translate(-12px, 800px) rotate(90deg); }
-    60% { transform: translate(18px, 1200px) rotate(135deg); }
-    80% { transform: translate(-10px, 1600px) rotate(180deg); }
-    100% { transform: translate(0, 2000px) rotate(225deg); }
+    6% { transform: translate(10px, 70px) rotate(25deg); }
+    12% { transform: translate(-8px, 190px) rotate(-20deg); }
+    18% { transform: translate(12px, 310px) rotate(30deg); }
+    24% { transform: translate(-10px, 430px) rotate(-25deg); }
+    30% { transform: translate(8px, 550px) rotate(28deg); }
+    36% { transform: translate(-12px, 670px) rotate(-22deg); }
+    42% { transform: translate(10px, 790px) rotate(26deg); }
+    48% { transform: translate(-8px, 910px) rotate(-24deg); }
+    54% { transform: translate(12px, 1030px) rotate(22deg); }
+    60% { transform: translate(-10px, 1150px) rotate(-20deg); }
+    66% { transform: translate(8px, 1270px) rotate(24deg); }
+    72% { transform: translate(-12px, 1390px) rotate(-18deg); }
+    78% { transform: translate(10px, 1510px) rotate(20deg); }
+    84% { transform: translate(-8px, 1630px) rotate(-16deg); }
+    90% { transform: translate(6px, 1750px) rotate(14deg); }
+    96% { transform: translate(-4px, 1870px) rotate(-10deg); }
+    100% { transform: translate(0, 2000px) rotate(0deg); }
 }
 
-/* Variante 7: Spirale - sanft drehend */
+/* Variante 7: Wirbelndes Blatt */
 @keyframes snowflakeFall7 {
-    0% { transform: translate(0, -50px) rotate(0deg) scale(1); }
-    25% { transform: translate(20px, 500px) rotate(90deg) scale(0.95); }
-    50% { transform: translate(-15px, 1000px) rotate(180deg) scale(0.9); }
-    75% { transform: translate(15px, 1500px) rotate(270deg) scale(0.95); }
-    100% { transform: translate(0, 2000px) rotate(360deg) scale(1); }
+    0% { transform: translate(0, -50px) rotate(0deg); }
+    10% { transform: translate(10px, 150px) rotate(60deg); }
+    20% { transform: translate(-8px, 350px) rotate(120deg); }
+    30% { transform: translate(12px, 550px) rotate(180deg); }
+    40% { transform: translate(-10px, 750px) rotate(240deg); }
+    50% { transform: translate(8px, 950px) rotate(300deg); }
+    60% { transform: translate(-12px, 1150px) rotate(360deg); }
+    70% { transform: translate(10px, 1350px) rotate(420deg); }
+    80% { transform: translate(-8px, 1550px) rotate(480deg); }
+    90% { transform: translate(6px, 1750px) rotate(540deg); }
+    100% { transform: translate(0, 2000px) rotate(600deg); }
 }
 
-/* Variante 8: Chaotische Bewegung */
-/* Variante 8: Schneller mit etwas mehr Pendeln - für schwere Level */
+/* Variante 8: Dynamisches Schaukeln */
 @keyframes snowflakeFall8 {
     0% { transform: translate(0, -50px) rotate(0deg); }
-    16% { transform: translate(-20px, 330px) rotate(-30deg); }
-    33% { transform: translate(25px, 660px) rotate(40deg); }
-    50% { transform: translate(-22px, 1000px) rotate(-35deg); }
-    66% { transform: translate(18px, 1330px) rotate(30deg); }
-    83% { transform: translate(-15px, 1660px) rotate(-25deg); }
+    8% { transform: translate(12px, 110px) rotate(30deg); }
+    16% { transform: translate(-10px, 270px) rotate(-25deg); }
+    24% { transform: translate(14px, 430px) rotate(35deg); }
+    32% { transform: translate(-12px, 590px) rotate(-30deg); }
+    40% { transform: translate(10px, 750px) rotate(28deg); }
+    48% { transform: translate(-14px, 910px) rotate(-32deg); }
+    56% { transform: translate(12px, 1070px) rotate(26deg); }
+    64% { transform: translate(-10px, 1230px) rotate(-28deg); }
+    72% { transform: translate(14px, 1390px) rotate(24deg); }
+    80% { transform: translate(-12px, 1550px) rotate(-22deg); }
+    88% { transform: translate(8px, 1710px) rotate(18deg); }
+    96% { transform: translate(-4px, 1870px) rotate(-10deg); }
     100% { transform: translate(0, 2000px) rotate(0deg); }
 }
 
-/* Variante 9: Pendelbewegung - schnell und etwas unruhiger */
+/* Variante 9: Lebhaftes Blatt */
 @keyframes snowflakeFall9 {
     0% { transform: translate(0, -50px) rotate(0deg); }
-    12% { transform: translate(25px, 250px) rotate(30deg); }
-    25% { transform: translate(-20px, 500px) rotate(-25deg); }
-    37% { transform: translate(28px, 750px) rotate(35deg); }
-    50% { transform: translate(-25px, 1000px) rotate(-30deg); }
-    62% { transform: translate(22px, 1250px) rotate(28deg); }
-    75% { transform: translate(-18px, 1500px) rotate(-22deg); }
-    87% { transform: translate(15px, 1750px) rotate(18deg); }
+    5% { transform: translate(8px, 50px) rotate(20deg); }
+    10% { transform: translate(-10px, 150px) rotate(-25deg); }
+    15% { transform: translate(12px, 250px) rotate(30deg); }
+    20% { transform: translate(-8px, 350px) rotate(-20deg); }
+    25% { transform: translate(10px, 450px) rotate(25deg); }
+    30% { transform: translate(-12px, 550px) rotate(-28deg); }
+    35% { transform: translate(8px, 650px) rotate(22deg); }
+    40% { transform: translate(-10px, 750px) rotate(-24deg); }
+    45% { transform: translate(12px, 850px) rotate(26deg); }
+    50% { transform: translate(-8px, 950px) rotate(-22deg); }
+    55% { transform: translate(10px, 1050px) rotate(24deg); }
+    60% { transform: translate(-12px, 1150px) rotate(-26deg); }
+    65% { transform: translate(8px, 1250px) rotate(20deg); }
+    70% { transform: translate(-10px, 1350px) rotate(-22deg); }
+    75% { transform: translate(12px, 1450px) rotate(18deg); }
+    80% { transform: translate(-8px, 1550px) rotate(-16deg); }
+    85% { transform: translate(10px, 1650px) rotate(14deg); }
+    90% { transform: translate(-6px, 1750px) rotate(-12deg); }
+    95% { transform: translate(4px, 1850px) rotate(8deg); }
     100% { transform: translate(0, 2000px) rotate(0deg); }
 }
 
-/* Variante 10: Extrem (für Meister-Level) */
-/* Variante 10: Meister-Level - schnell mit mehr Bewegung aber immer noch fließend */
+/* Variante 10: Meister - intensives Wirbeln */
 @keyframes snowflakeFall10 {
-    0% { transform: translate(0, -50px) rotate(0deg) scale(1); }
-    10% { transform: translate(30px, 200px) rotate(36deg) scale(0.95); }
-    20% { transform: translate(-25px, 400px) rotate(-30deg) scale(1.02); }
-    30% { transform: translate(35px, 600px) rotate(50deg) scale(0.93); }
-    40% { transform: translate(-30px, 800px) rotate(-45deg) scale(1); }
-    50% { transform: translate(28px, 1000px) rotate(40deg) scale(0.96); }
-    60% { transform: translate(-32px, 1200px) rotate(-48deg) scale(1.01); }
-    70% { transform: translate(25px, 1400px) rotate(35deg) scale(0.94); }
-    80% { transform: translate(-20px, 1600px) rotate(-28deg) scale(1); }
-    90% { transform: translate(15px, 1800px) rotate(20deg) scale(0.97); }
-    100% { transform: translate(0, 2000px) rotate(0deg) scale(1); }
+    0% { transform: translate(0, -50px) rotate(0deg); }
+    5% { transform: translate(14px, 50px) rotate(35deg); }
+    10% { transform: translate(-12px, 150px) rotate(70deg); }
+    15% { transform: translate(16px, 250px) rotate(105deg); }
+    20% { transform: translate(-14px, 350px) rotate(140deg); }
+    25% { transform: translate(12px, 450px) rotate(175deg); }
+    30% { transform: translate(-16px, 550px) rotate(210deg); }
+    35% { transform: translate(14px, 650px) rotate(245deg); }
+    40% { transform: translate(-12px, 750px) rotate(280deg); }
+    45% { transform: translate(16px, 850px) rotate(315deg); }
+    50% { transform: translate(-14px, 950px) rotate(350deg); }
+    55% { transform: translate(12px, 1050px) rotate(385deg); }
+    60% { transform: translate(-16px, 1150px) rotate(420deg); }
+    65% { transform: translate(14px, 1250px) rotate(455deg); }
+    70% { transform: translate(-12px, 1350px) rotate(490deg); }
+    75% { transform: translate(16px, 1450px) rotate(525deg); }
+    80% { transform: translate(-14px, 1550px) rotate(560deg); }
+    85% { transform: translate(12px, 1650px) rotate(595deg); }
+    90% { transform: translate(-10px, 1750px) rotate(630deg); }
+    95% { transform: translate(6px, 1850px) rotate(665deg); }
+    100% { transform: translate(0, 2000px) rotate(700deg); }
 }
 
 /* ===== WIND-EFFEKT ===== */
@@ -5284,87 +5375,6 @@ img {
         opacity: 0;
         transform: translateY(-70px) scale(2);
     }
-}
-
-/* ===== POWER-UP STYLES ===== */
-.snowflake.powerup {
-    filter: drop-shadow(0 0 15px gold);
-    animation: powerupGlow 1s ease-in-out infinite alternate !important;
-}
-
-.snowflake.powerup.slowmo {
-    filter: drop-shadow(0 0 15px #00BFFF);
-}
-
-.snowflake.powerup.jackpot {
-    filter: drop-shadow(0 0 20px #FFD700);
-}
-
-.snowflake.powerup.magnet {
-    filter: drop-shadow(0 0 15px #FF00FF);
-}
-
-@keyframes powerupGlow {
-    0% { transform: scale(1); filter: drop-shadow(0 0 15px currentColor); }
-    100% { transform: scale(1.2); filter: drop-shadow(0 0 25px currentColor) brightness(1.3); }
-}
-
-.snowflake.powerup.collected {
-    animation: powerupCollect 0.3s ease-out forwards !important;
-}
-
-@keyframes powerupCollect {
-    0% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(2); opacity: 0.8; }
-    100% { transform: scale(0); opacity: 0; }
-}
-
-/* Slowmo Effekt */
-.snowflakes-container.slowmo-active .snowflake {
-    animation-duration: 40s !important;
-    filter: hue-rotate(180deg);
-}
-
-/* Magnet Effekt */
-.snowflakes-container.magnet-active .snowflake {
-    transition: transform 0.5s ease-out;
-}
-
-/* ===== EVENT POPUPS ===== */
-.event-popup {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 3rem;
-    font-weight: 900;
-    padding: 20px 40px;
-    border-radius: 20px;
-    z-index: 999999;
-    pointer-events: none;
-    animation: eventShow 2.5s ease-out forwards;
-}
-
-.event-popup.blizzard {
-    background: linear-gradient(135deg, rgba(100, 150, 255, 0.9), rgba(200, 220, 255, 0.9));
-    color: white;
-    text-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
-    border: 3px solid white;
-}
-
-.event-popup.powerup {
-    background: linear-gradient(135deg, rgba(255, 215, 0, 0.9), rgba(255, 165, 0, 0.9));
-    color: white;
-    text-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-    border: 3px solid gold;
-}
-
-@keyframes eventShow {
-    0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
-    15% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
-    30% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-    80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-    100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
 }
 
 /* Highscore Modal */
