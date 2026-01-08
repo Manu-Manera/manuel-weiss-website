@@ -2006,13 +2006,13 @@
             getDifficulty() {
                 const score = this.score;
                 
-                // Level-Stufen
+                // Level-Stufen - VIEL HÖHERE SCHWELLEN!
                 let level = 0;
-                if (score >= 2500) level = 5;      // Meister
-                else if (score >= 1500) level = 4; // Experte
-                else if (score >= 800) level = 3;  // Schwer
-                else if (score >= 400) level = 2;  // Mittel
-                else if (score >= 150) level = 1;  // Leicht
+                if (score >= 50000) level = 5;      // Meister
+                else if (score >= 15000) level = 4; // Experte
+                else if (score >= 8000) level = 3;  // Schwer
+                else if (score >= 3000) level = 2;  // Mittel
+                else if (score >= 1000) level = 1;  // Leicht
                 
                 return {
                     level: level,
@@ -2055,7 +2055,7 @@
                 container.classList.add(windClass);
                 
                 // Bei Wind: Extra Schneeflocken spawnen (Böe bringt mehr Schnee!)
-                const extraFlakes = 8 + Math.floor(Math.random() * 8); // 8-15 extra Flocken
+                const extraFlakes = 3 + Math.floor(Math.random() * 4); // 3-6 extra Flocken (weniger!)
                 for (let i = 0; i < extraFlakes; i++) {
                     setTimeout(() => {
                         this.createWindSnowflake(container, this.windDirection);
@@ -2085,20 +2085,18 @@
                 snowflake.classList.add(size.class);
                 snowflake.dataset.points = size.points;
                 
-                // Startposition: Von der Seite, wo der Wind herkommt
-                if (direction > 0) {
-                    // Wind von links -> Flocken starten links
-                    snowflake.style.left = '-5%';
-                } else {
-                    // Wind von rechts -> Flocken starten rechts
-                    snowflake.style.left = '105%';
-                }
-                snowflake.style.top = (Math.random() * 30) + '%'; // Obere 30% des Bildschirms
+                // Startposition: Von oben außerhalb des Bildschirms (wie normale Flocken)
+                snowflake.style.left = Math.random() * 100 + '%';
+                // WICHTIG: Startposition OBERHALB des Bildschirms (damit sie reinschneien, nicht oben hängen!)
+                const startOffset = -50 - Math.random() * 150; // -50 bis -200px oberhalb
+                snowflake.style.top = startOffset + 'px';
                 
-                // Diagonale Wind-Animation
-                const windAnimationName = direction > 0 ? 'windBlowRight' : 'windBlowLeft';
-                const duration = 2 + Math.random() * 2; // 2-4 Sekunden (schnell!)
-                snowflake.style.setProperty('animation', `${windAnimationName} ${duration}s ease-out forwards`, 'important');
+                // Wind-Animation: Schnellere normale Fall-Animation (wie normale Flocken, nur schneller)
+                const difficulty = this.getDifficulty();
+                const animationVariant = 3 + Math.floor(Math.random() * 3); // Variante 3-5
+                const animationName = `snowflakeFall${animationVariant}`;
+                const duration = 8 + Math.random() * 4; // 8-12 Sekunden (schneller als normal)
+                snowflake.style.setProperty('animation', `${animationName} ${duration}s ease-in-out forwards`, 'important');
                 
                 // Click Events
                 snowflake.addEventListener('click', (e) => this.catchSnowflake(e, snowflake, size.points));
@@ -2145,7 +2143,7 @@
                 }
                 
                 // Mobile: Weniger Schneeflocken für bessere Performance
-                const snowflakeCount = window.innerWidth < 768 ? 20 : 50;
+                const snowflakeCount = window.innerWidth < 768 ? 10 : 25;
                 console.log(`❄️ Erstelle ${snowflakeCount} Schneeflocken...`);
                 
                 for (let i = 0; i < snowflakeCount; i++) {
