@@ -2002,49 +2002,232 @@
             windActive: false,
             windDirection: 0,
             
-            // Schwierigkeitsberechnung basierend auf Score
+            // COMBO-SYSTEM
+            combo: 0,
+            lastCatchTime: 0,
+            comboTimeout: 2000, // 2 Sekunden für Combo
+            maxCombo: 10,
+            
+            // POWER-UPS
+            slowMotionActive: false,
+            magnetActive: false,
+            
+            // SCHNEEGESTÖBER
+            blizzardActive: false,
+            lastBlizzardTime: 0,
+            blizzardInterval: 45000, // Alle 45 Sekunden möglich
+            
+            // Schwierigkeitsberechnung basierend auf Score - SCHWIERIGER!
             getDifficulty() {
                 const score = this.score;
                 
-                // Level-Stufen: 0-99, 100-299, 300-599, 600-999, 1000-1499, 1500+
+                // Level-Stufen: SCHWIERIGER - höhere Schwellen!
                 let level = 0;
-                if (score >= 1500) level = 5;
-                else if (score >= 1000) level = 4;
-                else if (score >= 600) level = 3;
-                else if (score >= 300) level = 2;
-                else if (score >= 100) level = 1;
+                if (score >= 3000) level = 5;      // Meister (war 1500)
+                else if (score >= 2000) level = 4; // Experte (war 1000)
+                else if (score >= 1200) level = 3; // Schwer (war 600)
+                else if (score >= 600) level = 2;  // Mittel (war 300)
+                else if (score >= 200) level = 1;  // Leicht (war 100)
                 
                 return {
                     level: level,
-                    // Geschwindigkeit: Je höher, desto schneller (min 4s, max 15s bei Level 0)
-                    speedMultiplier: 1 + (level * 0.12), // 1.0, 1.12, 1.24, 1.36, 1.48, 1.60 (langsamer)
-                    // Größen-Gewichtung: Am Anfang VIEL mehr große Flocken (leicht zu treffen!)
-                    smallChance: Math.min(0.15 + (level * 0.12), 0.7), // 15% -> 70% kleine (viel weniger am Anfang)
-                    mediumChance: Math.max(0.35 - (level * 0.04), 0.15), // 35% -> 15% mittlere
-                    // Rest sind große Flocken (50% am Anfang!)
-                    // Animations-Komplexität: Mehr natürliche Varianten bei niedrigem Level, chaotischer bei hohem
-                    minAnimationVariant: level <= 2 ? 1 : 6, // Niedrige Level: sanfte Animationen (1-5)
-                    maxAnimationVariant: level <= 2 ? 5 : 10, // Hohe Level: chaotische Animationen (6-10)
-                    // Wind-Effekt ab Experte
+                    speedMultiplier: 1 + (level * 0.15), // Etwas schneller pro Level
+                    smallChance: Math.min(0.20 + (level * 0.12), 0.7), // 20% -> 70% kleine
+                    mediumChance: Math.max(0.35 - (level * 0.04), 0.15),
+                    minAnimationVariant: level <= 2 ? 1 : 6,
+                    maxAnimationVariant: level <= 2 ? 5 : 10,
                     hasWind: level >= 4,
-                    // Beschreibung für UI
                     name: ['Anfänger', 'Leicht', 'Mittel', 'Schwer', 'Experte', 'Meister'][level]
                 };
             },
             
-            // Wind-Effekt für Experten-Level
+            // Combo berechnen und anzeigen
+            updateCombo() {
+                const now = Date.now();
+                if (now - this.lastCatchTime < this.comboTimeout) {
+                    this.combo = Math.min(this.combo + 1, this.maxCombo);
+                } else {
+                    this.combo = 1;
+                }
+                this.lastCatchTime = now;
+                
+                // Combo-Anzeige aktualisieren
+                if (this.combo >= 2) {
+                    this.showComboPopup();
+                }
+                
+                return this.combo;
+            },
+            
+            showComboPopup() {
+                // Alte Combo-Anzeige entfernen
+                const oldCombo = document.querySelector('.combo-display');
+                if (oldCombo) oldCombo.remove();
+                
+                const comboDisplay = document.createElement('div');
+                comboDisplay.className = 'combo-display';
+                comboDisplay.innerHTML = `🔥 COMBO x${this.combo}!`;
+                if (this.combo >= 5) comboDisplay.classList.add('hot');
+                if (this.combo >= 8) comboDisplay.classList.add('fire');
+                document.body.appendChild(comboDisplay);
+                
+                setTimeout(() => comboDisplay.remove(), 1500);
+            },
+            
+            // Wind-Effekt für Experten-Level + Schneegestöber
             startWindEffect() {
                 if (this.windInterval) return;
                 
                 this.windInterval = setInterval(() => {
                     const difficulty = this.getDifficulty();
-                    if (!difficulty.hasWind) return;
                     
-                    // Zufällig Wind starten (ca. alle 8-15 Sekunden)
-                    if (Math.random() < 0.1) {
+                    // Wind ab Experte
+                    if (difficulty.hasWind && Math.random() < 0.1) {
                         this.triggerWind();
                     }
+                    
+                    // Schneegestöber-Check (alle 45+ Sekunden möglich)
+                    const now = Date.now();
+                    if (this.gameStarted && !this.blizzardActive && 
+                        now - this.lastBlizzardTime > this.blizzardInterval && 
+                        Math.random() < 0.05) {
+                        this.triggerBlizzard();
+                    }
                 }, 1000);
+            },
+            
+            // SCHNEEGESTÖBER-EVENT!
+            triggerBlizzard() {
+                if (this.blizzardActive) return;
+                
+                this.blizzardActive = true;
+                this.lastBlizzardTime = Date.now();
+                
+                // Ankündigung
+                this.showEventPopup('❄️ SCHNEEGESTÖBER! ❄️', 'blizzard');
+                
+                const container = document.getElementById('snowflakes');
+                if (!container) return;
+                
+                // Viele Extra-Flocken spawnen über 10 Sekunden
+                let flakesSpawned = 0;
+                const blizzardInterval = setInterval(() => {
+                    if (flakesSpawned >= 30) {
+                        clearInterval(blizzardInterval);
+                        this.blizzardActive = false;
+                        return;
+                    }
+                    
+                    // 3 Flocken pro Tick
+                    for (let i = 0; i < 3; i++) {
+                        this.createSingleSnowflake(container, true); // true = schneller
+                    }
+                    flakesSpawned += 3;
+                }, 300);
+            },
+            
+            // Power-Up Flocken erstellen
+            createPowerUpFlake(container) {
+                const powerUp = document.createElement('div');
+                
+                // Zufälliger Power-Up Typ
+                const types = [
+                    { class: 'slowmo', emoji: '⏱️', effect: 'slowmo', name: 'Zeitlupe!' },
+                    { class: 'jackpot', emoji: '💎', effect: 'jackpot', name: 'JACKPOT!' },
+                    { class: 'magnet', emoji: '🧲', effect: 'magnet', name: 'Magnet!' }
+                ];
+                const type = types[Math.floor(Math.random() * types.length)];
+                
+                powerUp.className = `snowflake clickable powerup ${type.class}`;
+                powerUp.textContent = type.emoji;
+                powerUp.dataset.effect = type.effect;
+                powerUp.dataset.effectName = type.name;
+                
+                powerUp.style.left = Math.random() * 80 + 10 + '%';
+                const startOffset = -100 - Math.random() * 100;
+                powerUp.style.top = startOffset + 'px';
+                powerUp.style.fontSize = '2.5rem';
+                powerUp.style.setProperty('animation', 'snowflakeFall3 12s ease-in-out forwards', 'important');
+                
+                // Click Event
+                powerUp.addEventListener('click', (e) => this.collectPowerUp(e, powerUp, type));
+                
+                // Touch Events
+                let touchStartTime = 0;
+                powerUp.addEventListener('touchstart', (e) => {
+                    touchStartTime = Date.now();
+                    e.preventDefault();
+                }, { passive: false });
+                
+                powerUp.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    if (Date.now() - touchStartTime < 300) {
+                        this.collectPowerUp(e, powerUp, type);
+                    }
+                }, { passive: false });
+                
+                container.appendChild(powerUp);
+                
+                // Nach 15 Sekunden entfernen
+                setTimeout(() => {
+                    if (powerUp.parentNode) powerUp.remove();
+                }, 15000);
+            },
+            
+            collectPowerUp(e, powerUp, type) {
+                e.stopPropagation();
+                
+                this.showEventPopup(type.emoji + ' ' + type.name, 'powerup');
+                
+                switch(type.effect) {
+                    case 'slowmo':
+                        this.activateSlowMotion();
+                        break;
+                    case 'jackpot':
+                        const bonus = 100 + Math.floor(Math.random() * 400);
+                        this.score += bonus;
+                        document.getElementById('snowflakeScore').textContent = this.score;
+                        this.showPointsPopup(e, bonus);
+                        break;
+                    case 'magnet':
+                        this.activateMagnet();
+                        break;
+                }
+                
+                powerUp.classList.add('collected');
+                setTimeout(() => powerUp.remove(), 300);
+            },
+            
+            activateSlowMotion() {
+                if (this.slowMotionActive) return;
+                this.slowMotionActive = true;
+                
+                document.getElementById('snowflakes').classList.add('slowmo-active');
+                
+                setTimeout(() => {
+                    this.slowMotionActive = false;
+                    document.getElementById('snowflakes').classList.remove('slowmo-active');
+                }, 5000);
+            },
+            
+            activateMagnet() {
+                if (this.magnetActive) return;
+                this.magnetActive = true;
+                
+                document.getElementById('snowflakes').classList.add('magnet-active');
+                
+                setTimeout(() => {
+                    this.magnetActive = false;
+                    document.getElementById('snowflakes').classList.remove('magnet-active');
+                }, 5000);
+            },
+            
+            showEventPopup(text, type) {
+                const popup = document.createElement('div');
+                popup.className = `event-popup ${type}`;
+                popup.textContent = text;
+                document.body.appendChild(popup);
+                setTimeout(() => popup.remove(), 2500);
             },
             
             triggerWind() {
@@ -2171,7 +2354,13 @@
                 console.log(`✅ ${snowflakeCount} Schneeflocken erstellt`);
             },
             
-            createSingleSnowflake(container) {
+            createSingleSnowflake(container, isBlizzard = false) {
+                // Chance auf Power-Up (ca. 2%)
+                if (this.gameStarted && Math.random() < 0.02) {
+                    this.createPowerUpFlake(container);
+                    return;
+                }
+                
                 const snowflake = document.createElement('div');
                 snowflake.className = 'snowflake clickable';
                 
@@ -2200,18 +2389,22 @@
                 snowflake.style.top = startOffset + 'px';
                 
                 // Geschwindigkeit basierend auf Größe UND Schwierigkeit
-                // Am Anfang SEHR langsam - leicht zu treffen!
                 let baseDuration;
                 if (size.class === 'large') {
-                    baseDuration = Math.random() * 10 + 25; // Große: 25-35 Sekunden (super langsam!)
+                    baseDuration = Math.random() * 8 + 18; // Große: 18-26 Sekunden
                 } else if (size.class === 'medium') {
-                    baseDuration = Math.random() * 8 + 20; // Mittlere: 20-28 Sekunden
+                    baseDuration = Math.random() * 6 + 14; // Mittlere: 14-20 Sekunden
                 } else {
-                    baseDuration = Math.random() * 6 + 15; // Kleine: 15-21 Sekunden
+                    baseDuration = Math.random() * 5 + 10; // Kleine: 10-15 Sekunden
                 }
                 
-                // Schneller bei höherer Schwierigkeit (aber min. 5 Sekunden)
-                const adjustedDuration = Math.max(baseDuration / difficulty.speedMultiplier, 5);
+                // Blizzard = schneller!
+                if (isBlizzard) {
+                    baseDuration = baseDuration * 0.6;
+                }
+                
+                // Schneller bei höherer Schwierigkeit (aber min. 4 Sekunden)
+                const adjustedDuration = Math.max(baseDuration / difficulty.speedMultiplier, 4);
                 
                 // Zufälliger Delay - gut verteilt über die Animationsdauer, damit nicht alle gleichzeitig starten
                 const animationDelay = Math.random() * adjustedDuration;
@@ -2257,8 +2450,12 @@
                 // Altes Level speichern für Level-Up-Effekt
                 const oldDifficulty = this.getDifficulty();
                 
-                // Add points
-                this.score += points;
+                // COMBO-SYSTEM: Multiplikator berechnen
+                const comboMultiplier = this.updateCombo();
+                const finalPoints = points * comboMultiplier;
+                
+                // Add points with combo multiplier
+                this.score += finalPoints;
                 document.getElementById('snowflakeScore').textContent = this.score;
                 
                 // Neues Level prüfen
@@ -2270,8 +2467,8 @@
                     this.showLevelUp(newDifficulty.name);
                 }
                 
-                // Visual feedback
-                this.showPointsPopup(e, points);
+                // Visual feedback (zeige finale Punkte mit Combo)
+                this.showPointsPopup(e, finalPoints, comboMultiplier);
                 
                 // Position für Fragmente ermitteln
                 const rect = snowflake.getBoundingClientRect();
@@ -2382,10 +2579,17 @@
                 setTimeout(() => levelUp.remove(), 2500);
             },
             
-            showPointsPopup(e, points) {
+            showPointsPopup(e, points, combo = 1) {
                 const popup = document.createElement('div');
                 popup.className = 'points-popup';
-                popup.textContent = '+' + points;
+                if (combo >= 2) {
+                    popup.classList.add('combo');
+                    popup.textContent = `+${points} (x${combo})`;
+                } else {
+                    popup.textContent = '+' + points;
+                }
+                if (combo >= 5) popup.classList.add('hot');
+                if (combo >= 8) popup.classList.add('fire');
                 
                 // Position ermitteln - bei Touch-Events changedTouches statt touches verwenden!
                 let x, y;

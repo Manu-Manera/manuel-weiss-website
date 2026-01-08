@@ -5286,6 +5286,161 @@ img {
     }
 }
 
+/* ===== COMBO-SYSTEM STYLES ===== */
+.points-popup.combo {
+    color: #FF6B00;
+    font-size: 2.2rem;
+}
+
+.points-popup.hot {
+    color: #FF3300 !important;
+    font-size: 2.5rem !important;
+    text-shadow: 
+        0 0 15px #FF3300,
+        0 0 30px #FF6600,
+        0 0 45px #FFCC00 !important;
+}
+
+.points-popup.fire {
+    color: #FF0000 !important;
+    font-size: 3rem !important;
+    text-shadow: 
+        0 0 20px #FF0000,
+        0 0 40px #FF6600,
+        0 0 60px #FFFF00 !important;
+    animation: firePoints 1.5s ease-out forwards !important;
+}
+
+@keyframes firePoints {
+    0% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
+    25% { opacity: 1; transform: translateY(-20px) scale(1.5) rotate(-5deg); }
+    50% { opacity: 1; transform: translateY(-40px) scale(1.8) rotate(5deg); }
+    75% { opacity: 0.8; transform: translateY(-60px) scale(1.5) rotate(-3deg); }
+    100% { opacity: 0; transform: translateY(-80px) scale(1) rotate(0deg); }
+}
+
+.combo-display {
+    position: fixed;
+    top: 150px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 2rem;
+    font-weight: 900;
+    color: #FF6B00;
+    text-shadow: 0 0 20px rgba(255, 107, 0, 0.8);
+    animation: comboShow 1.5s ease-out forwards;
+    z-index: 999999;
+    pointer-events: none;
+}
+
+.combo-display.hot {
+    font-size: 2.5rem;
+    color: #FF3300;
+}
+
+.combo-display.fire {
+    font-size: 3rem;
+    color: #FF0000;
+    animation: fireCombo 1.5s ease-out forwards;
+}
+
+@keyframes comboShow {
+    0% { opacity: 0; transform: translateX(-50%) scale(0.5); }
+    20% { opacity: 1; transform: translateX(-50%) scale(1.2); }
+    80% { opacity: 1; transform: translateX(-50%) scale(1); }
+    100% { opacity: 0; transform: translateX(-50%) scale(0.8); }
+}
+
+@keyframes fireCombo {
+    0% { opacity: 0; transform: translateX(-50%) scale(0.5) rotate(-10deg); }
+    20% { opacity: 1; transform: translateX(-50%) scale(1.3) rotate(5deg); }
+    40% { opacity: 1; transform: translateX(-50%) scale(1.1) rotate(-5deg); }
+    60% { opacity: 1; transform: translateX(-50%) scale(1.2) rotate(3deg); }
+    80% { opacity: 0.8; transform: translateX(-50%) scale(1) rotate(0deg); }
+    100% { opacity: 0; transform: translateX(-50%) scale(0.8); }
+}
+
+/* ===== POWER-UP STYLES ===== */
+.snowflake.powerup {
+    filter: drop-shadow(0 0 15px gold);
+    animation: powerupGlow 1s ease-in-out infinite alternate !important;
+}
+
+.snowflake.powerup.slowmo {
+    filter: drop-shadow(0 0 15px #00BFFF);
+}
+
+.snowflake.powerup.jackpot {
+    filter: drop-shadow(0 0 20px #FFD700);
+}
+
+.snowflake.powerup.magnet {
+    filter: drop-shadow(0 0 15px #FF00FF);
+}
+
+@keyframes powerupGlow {
+    0% { transform: scale(1); filter: drop-shadow(0 0 15px currentColor); }
+    100% { transform: scale(1.2); filter: drop-shadow(0 0 25px currentColor) brightness(1.3); }
+}
+
+.snowflake.powerup.collected {
+    animation: powerupCollect 0.3s ease-out forwards !important;
+}
+
+@keyframes powerupCollect {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(2); opacity: 0.8; }
+    100% { transform: scale(0); opacity: 0; }
+}
+
+/* Slowmo Effekt */
+.snowflakes-container.slowmo-active .snowflake {
+    animation-duration: 40s !important;
+    filter: hue-rotate(180deg);
+}
+
+/* Magnet Effekt */
+.snowflakes-container.magnet-active .snowflake {
+    transition: transform 0.5s ease-out;
+}
+
+/* ===== EVENT POPUPS ===== */
+.event-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 3rem;
+    font-weight: 900;
+    padding: 20px 40px;
+    border-radius: 20px;
+    z-index: 999999;
+    pointer-events: none;
+    animation: eventShow 2.5s ease-out forwards;
+}
+
+.event-popup.blizzard {
+    background: linear-gradient(135deg, rgba(100, 150, 255, 0.9), rgba(200, 220, 255, 0.9));
+    color: white;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+    border: 3px solid white;
+}
+
+.event-popup.powerup {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.9), rgba(255, 165, 0, 0.9));
+    color: white;
+    text-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    border: 3px solid gold;
+}
+
+@keyframes eventShow {
+    0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+    15% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+    30% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+}
+
 /* Highscore Modal */
 .highscore-modal {
     position: fixed;
