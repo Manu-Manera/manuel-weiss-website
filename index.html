@@ -2132,17 +2132,18 @@
                 snowflake.style.left = Math.random() * 100 + '%';
                 
                 // Geschwindigkeit basierend auf Größe UND Schwierigkeit
+                // Am Anfang sehr langsam und natürlich, später schneller
                 let baseDuration;
                 if (size.class === 'large') {
-                    baseDuration = Math.random() * 5 + 12; // Große: 12-17 Sekunden
+                    baseDuration = Math.random() * 8 + 18; // Große: 18-26 Sekunden (sehr langsam)
                 } else if (size.class === 'medium') {
-                    baseDuration = Math.random() * 5 + 10; // Mittlere: 10-15 Sekunden
+                    baseDuration = Math.random() * 7 + 15; // Mittlere: 15-22 Sekunden
                 } else {
-                    baseDuration = Math.random() * 5 + 8; // Kleine: 8-13 Sekunden
+                    baseDuration = Math.random() * 6 + 12; // Kleine: 12-18 Sekunden
                 }
                 
-                // Schneller bei höherer Schwierigkeit (aber min. 4 Sekunden)
-                const adjustedDuration = Math.max(baseDuration / difficulty.speedMultiplier, 4);
+                // Schneller bei höherer Schwierigkeit (aber min. 5 Sekunden)
+                const adjustedDuration = Math.max(baseDuration / difficulty.speedMultiplier, 5);
                 
                 const animationDelay = Math.random() * 8;
                 
