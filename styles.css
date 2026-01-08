@@ -4792,90 +4792,135 @@ img {
 /* ===== SANFTE ANIMATIONEN FÜR NIEDRIGE LEVEL (1-5) ===== */
 /* Diese Animationen sind langsam, schweben sanft und fühlen sich natürlich an */
 
-/* Variante 1: Sanftes Schweben mit leichter Drehung */
+/* Variante 1: Sanftes Schweben - sehr langsam und träumerisch */
 @keyframes snowflakeFall1 {
-    0% { transform: translate(0, -50px) rotate(0deg); opacity: 0.8; }
-    10% { transform: translate(15px, 180px) rotate(20deg); opacity: 1; }
-    20% { transform: translate(-10px, 380px) rotate(-15deg); }
-    30% { transform: translate(20px, 580px) rotate(35deg); }
-    40% { transform: translate(-15px, 780px) rotate(-10deg); }
-    50% { transform: translate(25px, 980px) rotate(45deg); }
-    60% { transform: translate(-20px, 1180px) rotate(-25deg); }
-    70% { transform: translate(18px, 1380px) rotate(30deg); }
-    80% { transform: translate(-12px, 1580px) rotate(-20deg); }
-    90% { transform: translate(10px, 1780px) rotate(15deg); }
-    100% { transform: translate(0, 2000px) rotate(0deg); opacity: 0.8; }
+    0% { transform: translate(0, -50px) rotate(0deg); opacity: 0.7; }
+    5% { transform: translate(8px, 80px) rotate(8deg); opacity: 0.9; }
+    10% { transform: translate(-5px, 180px) rotate(-5deg); opacity: 1; }
+    15% { transform: translate(12px, 280px) rotate(12deg); }
+    20% { transform: translate(-8px, 380px) rotate(-8deg); }
+    25% { transform: translate(15px, 500px) rotate(15deg); }
+    30% { transform: translate(-10px, 620px) rotate(-10deg); }
+    35% { transform: translate(10px, 740px) rotate(10deg); }
+    40% { transform: translate(-12px, 860px) rotate(-12deg); }
+    45% { transform: translate(8px, 980px) rotate(8deg); }
+    50% { transform: translate(-6px, 1100px) rotate(-6deg); }
+    55% { transform: translate(14px, 1220px) rotate(14deg); }
+    60% { transform: translate(-10px, 1340px) rotate(-10deg); }
+    65% { transform: translate(10px, 1460px) rotate(10deg); }
+    70% { transform: translate(-8px, 1580px) rotate(-8deg); }
+    75% { transform: translate(6px, 1700px) rotate(6deg); }
+    80% { transform: translate(-4px, 1800px) rotate(-4deg); }
+    85% { transform: translate(3px, 1880px) rotate(3deg); }
+    90% { transform: translate(-2px, 1940px) rotate(-2deg); }
+    95% { transform: translate(1px, 1980px) rotate(1deg); opacity: 0.9; }
+    100% { transform: translate(0, 2000px) rotate(0deg); opacity: 0.7; }
 }
 
-/* Variante 2: Pendel-Schwingen wie ein Blatt im Wind */
+/* Variante 2: Pendel-Schwingen wie ein Blatt im Wind - sehr sanft */
 @keyframes snowflakeFall2 {
-    0% { transform: translate(0, -50px) rotate(0deg) scale(1); }
-    8% { transform: translate(30px, 160px) rotate(25deg) scale(1.02); }
-    16% { transform: translate(-25px, 340px) rotate(-20deg) scale(0.98); }
-    24% { transform: translate(35px, 520px) rotate(30deg) scale(1.01); }
-    32% { transform: translate(-30px, 700px) rotate(-25deg) scale(0.99); }
-    40% { transform: translate(28px, 880px) rotate(22deg) scale(1.02); }
-    48% { transform: translate(-22px, 1060px) rotate(-18deg) scale(0.98); }
-    56% { transform: translate(25px, 1240px) rotate(20deg) scale(1); }
-    64% { transform: translate(-28px, 1420px) rotate(-22deg) scale(1.01); }
-    72% { transform: translate(20px, 1600px) rotate(15deg) scale(0.99); }
-    80% { transform: translate(-15px, 1780px) rotate(-12deg) scale(1); }
-    90% { transform: translate(10px, 1890px) rotate(8deg) scale(1); }
-    100% { transform: translate(0, 2000px) rotate(0deg) scale(1); }
+    0% { transform: translate(0, -50px) rotate(0deg) scale(1); opacity: 0.8; }
+    4% { transform: translate(12px, 60px) rotate(10deg) scale(1.01); opacity: 1; }
+    8% { transform: translate(-8px, 140px) rotate(-8deg) scale(0.99); }
+    12% { transform: translate(18px, 240px) rotate(15deg) scale(1.02); }
+    16% { transform: translate(-14px, 340px) rotate(-12deg) scale(0.98); }
+    20% { transform: translate(20px, 460px) rotate(18deg) scale(1.01); }
+    24% { transform: translate(-16px, 580px) rotate(-14deg) scale(0.99); }
+    28% { transform: translate(15px, 700px) rotate(12deg) scale(1); }
+    32% { transform: translate(-18px, 820px) rotate(-16deg) scale(1.01); }
+    36% { transform: translate(12px, 940px) rotate(10deg) scale(0.99); }
+    40% { transform: translate(-10px, 1060px) rotate(-8deg) scale(1); }
+    44% { transform: translate(16px, 1180px) rotate(14deg) scale(1.01); }
+    48% { transform: translate(-14px, 1300px) rotate(-12deg) scale(0.99); }
+    52% { transform: translate(10px, 1420px) rotate(8deg) scale(1); }
+    56% { transform: translate(-12px, 1540px) rotate(-10deg) scale(1); }
+    60% { transform: translate(8px, 1640px) rotate(6deg) scale(1); }
+    65% { transform: translate(-6px, 1720px) rotate(-5deg) scale(1); }
+    70% { transform: translate(5px, 1790px) rotate(4deg) scale(1); }
+    75% { transform: translate(-4px, 1850px) rotate(-3deg) scale(1); }
+    80% { transform: translate(3px, 1900px) rotate(2deg) scale(1); }
+    85% { transform: translate(-2px, 1940px) rotate(-1deg) scale(1); }
+    90% { transform: translate(1px, 1970px) rotate(0deg) scale(1); opacity: 0.9; }
+    100% { transform: translate(0, 2000px) rotate(0deg) scale(1); opacity: 0.8; }
 }
 
-/* Variante 3: Träge taumelnd mit Auf und Ab */
+/* Variante 3: Träge taumelnd - wie ein echtes Schneeflocken-Taumeln */
 @keyframes snowflakeFall3 {
-    0% { transform: translate(0, -50px) rotate(0deg); }
-    5% { transform: translate(12px, 80px) rotate(15deg); }
-    12% { transform: translate(-8px, 220px) rotate(-10deg); }
-    20% { transform: translate(18px, 400px) rotate(25deg); }
-    28% { transform: translate(-15px, 560px) rotate(-20deg); }
-    36% { transform: translate(22px, 720px) rotate(35deg); }
-    44% { transform: translate(-18px, 920px) rotate(-28deg); }
-    52% { transform: translate(15px, 1100px) rotate(22deg); }
-    60% { transform: translate(-20px, 1280px) rotate(-30deg); }
-    68% { transform: translate(18px, 1460px) rotate(25deg); }
-    76% { transform: translate(-12px, 1640px) rotate(-18deg); }
-    84% { transform: translate(10px, 1800px) rotate(12deg); }
-    92% { transform: translate(-5px, 1920px) rotate(-6deg); }
-    100% { transform: translate(0, 2000px) rotate(0deg); }
+    0% { transform: translate(0, -50px) rotate(0deg); opacity: 0.75; }
+    3% { transform: translate(5px, 30px) rotate(5deg); opacity: 0.9; }
+    6% { transform: translate(-3px, 80px) rotate(-3deg); opacity: 1; }
+    10% { transform: translate(10px, 160px) rotate(10deg); }
+    14% { transform: translate(-8px, 260px) rotate(-8deg); }
+    18% { transform: translate(12px, 360px) rotate(12deg); }
+    22% { transform: translate(-10px, 460px) rotate(-10deg); }
+    26% { transform: translate(8px, 560px) rotate(8deg); }
+    30% { transform: translate(-12px, 680px) rotate(-12deg); }
+    34% { transform: translate(10px, 800px) rotate(10deg); }
+    38% { transform: translate(-8px, 920px) rotate(-8deg); }
+    42% { transform: translate(12px, 1040px) rotate(12deg); }
+    46% { transform: translate(-10px, 1160px) rotate(-10deg); }
+    50% { transform: translate(8px, 1280px) rotate(8deg); }
+    54% { transform: translate(-6px, 1400px) rotate(-6deg); }
+    58% { transform: translate(10px, 1520px) rotate(10deg); }
+    62% { transform: translate(-8px, 1620px) rotate(-8deg); }
+    66% { transform: translate(6px, 1710px) rotate(6deg); }
+    70% { transform: translate(-5px, 1790px) rotate(-5deg); }
+    75% { transform: translate(4px, 1860px) rotate(4deg); }
+    80% { transform: translate(-3px, 1910px) rotate(-3deg); }
+    85% { transform: translate(2px, 1950px) rotate(2deg); }
+    90% { transform: translate(-1px, 1980px) rotate(-1deg); opacity: 0.9; }
+    100% { transform: translate(0, 2000px) rotate(0deg); opacity: 0.75; }
 }
 
-/* Variante 4: Spirale - sanft drehend abwärts */
+/* Variante 4: Spirale - sanft drehend, wie ein Tanz */
 @keyframes snowflakeFall4 {
-    0% { transform: translate(0, -50px) rotate(0deg) scale(1); }
-    10% { transform: translate(40px, 200px) rotate(36deg) scale(1.03); }
-    20% { transform: translate(0, 400px) rotate(72deg) scale(0.97); }
-    30% { transform: translate(-40px, 600px) rotate(108deg) scale(1.02); }
-    40% { transform: translate(0, 800px) rotate(144deg) scale(0.98); }
-    50% { transform: translate(35px, 1000px) rotate(180deg) scale(1.01); }
-    60% { transform: translate(0, 1200px) rotate(216deg) scale(0.99); }
-    70% { transform: translate(-35px, 1400px) rotate(252deg) scale(1.02); }
-    80% { transform: translate(0, 1600px) rotate(288deg) scale(0.98); }
-    90% { transform: translate(25px, 1800px) rotate(324deg) scale(1); }
-    100% { transform: translate(0, 2000px) rotate(360deg) scale(1); }
+    0% { transform: translate(0, -50px) rotate(0deg) scale(1); opacity: 0.8; }
+    5% { transform: translate(15px, 80px) rotate(18deg) scale(1.01); opacity: 1; }
+    10% { transform: translate(25px, 180px) rotate(36deg) scale(1.02); }
+    15% { transform: translate(15px, 300px) rotate(54deg) scale(1); }
+    20% { transform: translate(-5px, 420px) rotate(72deg) scale(0.98); }
+    25% { transform: translate(-20px, 540px) rotate(90deg) scale(1.01); }
+    30% { transform: translate(-25px, 660px) rotate(108deg) scale(1); }
+    35% { transform: translate(-15px, 780px) rotate(126deg) scale(0.99); }
+    40% { transform: translate(5px, 900px) rotate(144deg) scale(1.01); }
+    45% { transform: translate(20px, 1020px) rotate(162deg) scale(1); }
+    50% { transform: translate(22px, 1140px) rotate(180deg) scale(0.98); }
+    55% { transform: translate(12px, 1260px) rotate(198deg) scale(1); }
+    60% { transform: translate(-8px, 1380px) rotate(216deg) scale(1.01); }
+    65% { transform: translate(-18px, 1500px) rotate(234deg) scale(0.99); }
+    70% { transform: translate(-15px, 1620px) rotate(252deg) scale(1); }
+    75% { transform: translate(-5px, 1730px) rotate(270deg) scale(1); }
+    80% { transform: translate(8px, 1830px) rotate(288deg) scale(1); }
+    85% { transform: translate(12px, 1910px) rotate(306deg) scale(1); }
+    90% { transform: translate(6px, 1960px) rotate(324deg) scale(1); opacity: 0.9; }
+    100% { transform: translate(0, 2000px) rotate(360deg) scale(1); opacity: 0.8; }
 }
 
-/* Variante 5: Blatt im Herbstwind - langsam taumelnd mit mehr Bewegung */
+/* Variante 5: Blatt im sanften Wind - träumerisch schwebend */
 @keyframes snowflakeFall5 {
-    0% { transform: translate(0, -50px) rotate(0deg); }
-    6% { transform: translate(25px, 120px) rotate(18deg); }
-    12% { transform: translate(-20px, 260px) rotate(-12deg); }
-    18% { transform: translate(35px, 400px) rotate(28deg); }
-    24% { transform: translate(-30px, 540px) rotate(-22deg); }
-    30% { transform: translate(40px, 680px) rotate(35deg); }
-    36% { transform: translate(-35px, 820px) rotate(-28deg); }
-    42% { transform: translate(30px, 960px) rotate(25deg); }
-    48% { transform: translate(-25px, 1100px) rotate(-20deg); }
-    54% { transform: translate(35px, 1240px) rotate(30deg); }
-    60% { transform: translate(-30px, 1380px) rotate(-25deg); }
-    66% { transform: translate(28px, 1520px) rotate(22deg); }
-    72% { transform: translate(-22px, 1660px) rotate(-18deg); }
-    78% { transform: translate(18px, 1780px) rotate(14deg); }
-    84% { transform: translate(-12px, 1860px) rotate(-10deg); }
-    90% { transform: translate(8px, 1930px) rotate(6deg); }
-    100% { transform: translate(0, 2000px) rotate(0deg); }
+    0% { transform: translate(0, -50px) rotate(0deg); opacity: 0.75; }
+    4% { transform: translate(10px, 60px) rotate(8deg); opacity: 0.95; }
+    8% { transform: translate(-6px, 150px) rotate(-5deg); opacity: 1; }
+    12% { transform: translate(18px, 260px) rotate(15deg); }
+    16% { transform: translate(-12px, 370px) rotate(-10deg); }
+    20% { transform: translate(22px, 490px) rotate(20deg); }
+    24% { transform: translate(-18px, 610px) rotate(-15deg); }
+    28% { transform: translate(15px, 730px) rotate(12deg); }
+    32% { transform: translate(-20px, 850px) rotate(-18deg); }
+    36% { transform: translate(12px, 970px) rotate(10deg); }
+    40% { transform: translate(-15px, 1090px) rotate(-12deg); }
+    44% { transform: translate(18px, 1210px) rotate(15deg); }
+    48% { transform: translate(-14px, 1330px) rotate(-12deg); }
+    52% { transform: translate(10px, 1450px) rotate(8deg); }
+    56% { transform: translate(-12px, 1560px) rotate(-10deg); }
+    60% { transform: translate(8px, 1660px) rotate(6deg); }
+    65% { transform: translate(-8px, 1750px) rotate(-6deg); }
+    70% { transform: translate(6px, 1830px) rotate(5deg); }
+    75% { transform: translate(-5px, 1890px) rotate(-4deg); }
+    80% { transform: translate(4px, 1935px) rotate(3deg); }
+    85% { transform: translate(-2px, 1965px) rotate(-2deg); }
+    90% { transform: translate(1px, 1985px) rotate(1deg); opacity: 0.9; }
+    100% { transform: translate(0, 2000px) rotate(0deg); opacity: 0.75; }
 }
 
 /* ===== SCHWIERIGERE ANIMATIONS-VARIANTEN (Level 1+) ===== */
