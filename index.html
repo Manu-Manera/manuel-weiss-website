@@ -2192,8 +2192,12 @@
                 snowflake.classList.add(size.class);
                 snowflake.dataset.points = size.points;
                 
-                // Zufällige Position
+                // Zufällige horizontale Position
                 snowflake.style.left = Math.random() * 100 + '%';
+                
+                // WICHTIG: Startposition OBERHALB des Bildschirms (damit sie reinschneien)
+                const startOffset = -50 - Math.random() * 150; // -50 bis -200px oberhalb
+                snowflake.style.top = startOffset + 'px';
                 
                 // Geschwindigkeit basierend auf Größe UND Schwierigkeit
                 // Am Anfang SEHR langsam - leicht zu treffen!
@@ -2209,7 +2213,8 @@
                 // Schneller bei höherer Schwierigkeit (aber min. 5 Sekunden)
                 const adjustedDuration = Math.max(baseDuration / difficulty.speedMultiplier, 5);
                 
-                const animationDelay = Math.random() * 8;
+                // Zufälliger Delay - gut verteilt über die Animationsdauer, damit nicht alle gleichzeitig starten
+                const animationDelay = Math.random() * adjustedDuration;
                 
                 // Animation basierend auf Level: Sanfte für niedrige Level, chaotische für hohe
                 const animationRange = difficulty.maxAnimationVariant - difficulty.minAnimationVariant + 1;
