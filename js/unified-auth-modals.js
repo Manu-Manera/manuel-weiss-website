@@ -13,10 +13,223 @@ class UnifiedAuthModals {
 
     init() {
         this.addStyles();
+        this.createModalsHTML(); // Create modals if not existing
         this.setupEventListeners();
         
         // Warte auf Auth-System
         this.waitForAuthSystem();
+    }
+    
+    /**
+     * Create modal HTML if it doesn't exist
+     */
+    createModalsHTML() {
+        // Check if modals already exist
+        if (document.getElementById('loginModal')) {
+            console.log('✅ Auth modals already in DOM');
+            return;
+        }
+        
+        console.log('📝 Creating auth modals dynamically...');
+        
+        const container = document.createElement('div');
+        container.id = 'authModalsContainer';
+        container.innerHTML = `
+            <!-- Login Modal -->
+            <div class="auth-modal" id="loginModal" style="display: none;">
+                <div class="modal-backdrop" onclick="authModals.closeModal()"></div>
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2><i class="fas fa-sign-in-alt"></i> Anmelden</h2>
+                        <button class="modal-close" onclick="authModals.closeModal()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="loginForm" onsubmit="authModals.handleLogin(event)">
+                            <div class="form-group">
+                                <label for="loginEmail">E-Mail-Adresse</label>
+                                <input type="email" id="loginEmail" required placeholder="ihre@email.com">
+                            </div>
+                            <div class="form-group">
+                                <label for="loginPassword">Passwort</label>
+                                <input type="password" id="loginPassword" required placeholder="Ihr Passwort">
+                            </div>
+                            <div class="form-options">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="rememberMe">
+                                    <span class="checkmark"></span>
+                                    Angemeldet bleiben
+                                </label>
+                                <a href="#" onclick="authModals.showForgotPassword(); return false;" class="forgot-link">
+                                    Passwort vergessen?
+                                </a>
+                            </div>
+                            <button type="submit" class="btn-primary">
+                                <i class="fas fa-sign-in-alt"></i>
+                                Anmelden
+                            </button>
+                        </form>
+                        <div class="modal-footer">
+                            <p>Noch kein Konto? <a href="#" onclick="authModals.showRegister(); return false;">Jetzt registrieren</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Register Modal -->
+            <div class="auth-modal" id="registerModal" style="display: none;">
+                <div class="modal-backdrop" onclick="authModals.closeModal()"></div>
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2><i class="fas fa-user-plus"></i> Registrieren</h2>
+                        <button class="modal-close" onclick="authModals.closeModal()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="registerForm" onsubmit="authModals.handleRegister(event)">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="registerFirstName">Vorname</label>
+                                    <input type="text" id="registerFirstName" required placeholder="Ihr Vorname">
+                                </div>
+                                <div class="form-group">
+                                    <label for="registerLastName">Nachname</label>
+                                    <input type="text" id="registerLastName" required placeholder="Ihr Nachname">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="registerEmail">E-Mail-Adresse</label>
+                                <input type="email" id="registerEmail" required placeholder="ihre@email.com">
+                            </div>
+                            <div class="form-group">
+                                <label for="registerPassword">Passwort</label>
+                                <input type="password" id="registerPassword" required placeholder="Mindestens 8 Zeichen">
+                                <div class="password-requirements">
+                                    <small>Mindestens 8 Zeichen, Groß- und Kleinbuchstaben, Zahlen</small>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="registerPasswordConfirm">Passwort bestätigen</label>
+                                <input type="password" id="registerPasswordConfirm" required placeholder="Passwort wiederholen">
+                            </div>
+                            <div class="form-options">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="acceptTerms" required>
+                                    <span class="checkmark"></span>
+                                    Ich akzeptiere die <a href="../nutzungsbedingungen.html" target="_blank">Nutzungsbedingungen</a> und <a href="../datenschutz.html" target="_blank">Datenschutzerklärung</a>
+                                </label>
+                            </div>
+                            <button type="submit" class="btn-primary">
+                                <i class="fas fa-user-plus"></i>
+                                Registrieren
+                            </button>
+                        </form>
+                        <div class="modal-footer">
+                            <p>Bereits ein Konto? <a href="#" onclick="authModals.showLogin(); return false;">Jetzt anmelden</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Verification Modal -->
+            <div class="auth-modal" id="verificationModal" style="display: none;">
+                <div class="modal-backdrop" onclick="authModals.closeModal()"></div>
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2><i class="fas fa-envelope-open"></i> E-Mail bestätigen</h2>
+                        <button class="modal-close" onclick="authModals.closeModal()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="verification-icon">📧</div>
+                        <p class="verification-text">
+                            Wir haben einen Bestätigungscode an <strong id="verificationEmail"></strong> gesendet.
+                        </p>
+                        <form id="verificationForm" onsubmit="authModals.handleVerification(event)">
+                            <div class="form-group">
+                                <label for="verificationCode">Bestätigungscode</label>
+                                <input type="text" id="verificationCode" required placeholder="123456" maxlength="6">
+                            </div>
+                            <button type="submit" class="btn-primary">
+                                <i class="fas fa-check"></i>
+                                E-Mail bestätigen
+                            </button>
+                        </form>
+                        <div class="modal-footer">
+                            <p>Keinen Code erhalten? <a href="#" onclick="authModals.resendCode(); return false;">Erneut senden</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Forgot Password Modal -->
+            <div class="auth-modal" id="forgotPasswordModal" style="display: none;">
+                <div class="modal-backdrop" onclick="authModals.closeModal()"></div>
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2><i class="fas fa-key"></i> Passwort vergessen</h2>
+                        <button class="modal-close" onclick="authModals.closeModal()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Geben Sie Ihre E-Mail-Adresse ein. Wir senden Ihnen einen Code zum Zurücksetzen.</p>
+                        <form id="forgotPasswordForm" onsubmit="authModals.handleForgotPassword(event)">
+                            <div class="form-group">
+                                <label for="forgotEmail">E-Mail-Adresse</label>
+                                <input type="email" id="forgotEmail" required placeholder="ihre@email.com">
+                            </div>
+                            <button type="submit" class="btn-primary">
+                                <i class="fas fa-paper-plane"></i>
+                                Code senden
+                            </button>
+                        </form>
+                        <div class="modal-footer">
+                            <p><a href="#" onclick="authModals.showLogin(); return false;">Zurück zur Anmeldung</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reset Password Modal -->
+            <div class="auth-modal" id="resetPasswordModal" style="display: none;">
+                <div class="modal-backdrop" onclick="authModals.closeModal()"></div>
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2><i class="fas fa-lock"></i> Neues Passwort</h2>
+                        <button class="modal-close" onclick="authModals.closeModal()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="resetPasswordForm" onsubmit="authModals.handleResetPassword(event)">
+                            <div class="form-group">
+                                <label for="resetCode">Bestätigungscode</label>
+                                <input type="text" id="resetCode" required placeholder="123456" maxlength="6">
+                            </div>
+                            <div class="form-group">
+                                <label for="resetPassword">Neues Passwort</label>
+                                <input type="password" id="resetPassword" required placeholder="Mindestens 8 Zeichen">
+                            </div>
+                            <div class="form-group">
+                                <label for="resetPasswordConfirm">Passwort bestätigen</label>
+                                <input type="password" id="resetPasswordConfirm" required placeholder="Passwort wiederholen">
+                            </div>
+                            <button type="submit" class="btn-primary">
+                                <i class="fas fa-save"></i>
+                                Passwort speichern
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(container);
+        console.log('✅ Auth modals created dynamically');
     }
 
     /**
