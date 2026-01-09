@@ -7,16 +7,62 @@
     <meta name="description" content="Automatisiere deine Bewerbungen mit KI. 60-Sekunden-Anschreiben, Lebenslauf-Optimierung, Tracking und Interview-Vorbereitung.">
     
     <!-- CSS - Global Styles first for consistency -->
-    <link rel="stylesheet" href="../styles.css">
-    <link rel="stylesheet" href="css/dashboard.css">
-    <link rel="stylesheet" href="css/landing.css">
+    <link rel="stylesheet" href="../styles.css?v=20260109">
+    <link rel="stylesheet" href="css/dashboard.css?v=20260109">
+    <link rel="stylesheet" href="css/landing.css?v=20260109">
     
     <!-- Fonts - Same as Homepage -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
-    <!-- Mobile Navbar Override -->
+    <!-- Critical CSS Override - Fix hero layout -->
     <style>
+        /* Hide demo card unless viewport is very wide */
+        .hero-visual {
+            display: none !important;
+        }
+        
+        .landing-hero {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+        
+        .hero-content {
+            text-align: center !important;
+        }
+        
+        .hero-stats,
+        .hero-actions,
+        .hero-trust {
+            justify-content: center !important;
+        }
+        
+        @media (min-width: 1500px) {
+            .landing-hero {
+                display: grid !important;
+                grid-template-columns: 1fr 420px !important;
+                gap: 60px !important;
+                padding: 120px 80px 80px !important;
+            }
+            
+            .hero-content {
+                text-align: left !important;
+            }
+            
+            .hero-stats,
+            .hero-actions,
+            .hero-trust {
+                justify-content: flex-start !important;
+            }
+            
+            .hero-visual {
+                display: block !important;
+                position: relative !important;
+            }
+        }
+        
         @media (max-width: 768px) {
             .navbar.navbar-modern.navbar-transparent {
                 position: fixed !important;
