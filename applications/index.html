@@ -6,13 +6,55 @@
     <title>Bewerbungsmanager - KI-Power für deine Bewerbungen | Manuel Weiss</title>
     <meta name="description" content="Automatisiere deine Bewerbungen mit KI. 60-Sekunden-Anschreiben, Lebenslauf-Optimierung, Tracking und Interview-Vorbereitung.">
     
-    <!-- CSS -->
+    <!-- CSS - Global Styles first for consistency -->
+    <link rel="stylesheet" href="../styles.css">
     <link rel="stylesheet" href="css/dashboard.css">
     <link rel="stylesheet" href="css/landing.css">
     
-    <!-- Fonts -->
+    <!-- Fonts - Same as Homepage -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Mobile Navbar Override -->
+    <style>
+        @media (max-width: 768px) {
+            .navbar.navbar-modern.navbar-transparent {
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                display: block !important;
+                visibility: visible !important;
+                pointer-events: auto !important;
+                z-index: 10000 !important;
+                height: 60px !important;
+            }
+            
+            .navbar.navbar-modern .nav-container {
+                display: flex !important;
+                visibility: visible !important;
+                pointer-events: auto !important;
+                height: 60px !important;
+                padding: 0 15px !important;
+                align-items: center !important;
+                justify-content: space-between !important;
+            }
+            
+            .navbar.navbar-modern .mobile-hamburger {
+                display: flex !important;
+                visibility: visible !important;
+                pointer-events: auto !important;
+            }
+            
+            .navbar.navbar-modern .nav-menu:not(.active) {
+                display: none !important;
+            }
+            
+            .navbar.navbar-modern .auth-section {
+                display: none !important;
+            }
+        }
+    </style>
 </head>
 <body>
     <!-- Navigation - Modern & Clean -->
