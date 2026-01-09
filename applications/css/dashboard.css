@@ -83,7 +83,7 @@
     top: 0;
     left: 0;
     right: 0;
-    z-index: 1000;
+    z-index: 10000;
     background: var(--glass-bg);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
@@ -91,6 +91,8 @@
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     display: block !important;
     visibility: visible !important;
+    pointer-events: auto !important; /* Override global pointer-events: none */
+    height: 70px;
 }
 
 .navbar-modern .nav-container {
@@ -102,6 +104,7 @@
     justify-content: space-between;
     height: 70px;
     visibility: visible !important;
+    pointer-events: auto !important;
 }
 
 .navbar-modern .nav-menu {
