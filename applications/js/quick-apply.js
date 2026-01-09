@@ -301,12 +301,15 @@ function updateAPIStatusDisplay() {
 }
 
 function showLoginModal() {
-    if (window.realUserAuth?.showLoginModal) {
+    // Verwende unified auth system
+    if (window.authModals?.showLogin) {
+        window.authModals.showLogin();
+    } else if (window.realUserAuth?.showLoginModal) {
         window.realUserAuth.showLoginModal();
     } else {
-        // Fallback: Button klicken
-        const loginBtn = document.querySelector('.auth-btn');
-        if (loginBtn) loginBtn.click();
+        // Fallback: Auth-Button klicken
+        const authBtn = document.getElementById('authButton') || document.getElementById('mobileAuthButton');
+        if (authBtn) authBtn.click();
     }
 }
 
