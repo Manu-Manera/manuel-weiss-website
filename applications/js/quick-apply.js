@@ -418,10 +418,21 @@ async function initQuickApply() {
  * Prüft Login-Status und lädt API-Key aus AWS wenn angemeldet
  */
 async function checkLoginStatus() {
-    // Prüfe ob Nutzer angemeldet ist
-    if (window.realUserAuth) {
+    // Prüfe ob Nutzer angemeldet ist - Unterstütze beide Auth-Systeme
+    const auth = window.awsAuth || window.realUserAuth;
+    
+    if (auth) {
         try {
-            QuickApplyState.isLoggedIn = window.realUserAuth.isLoggedIn?.() || false;
+            // Prüfe verschiedene isLoggedIn Methoden
+            if (typeof auth.isLoggedIn === 'function') {
+                QuickApplyState.isLoggedIn = auth.isLoggedIn();
+            } else if (typeof auth.isAuthenticated === 'function') {
+                QuickApplyState.isLoggedIn = auth.isAuthenticated();
+            } else if (auth.currentUser || auth.user) {
+                QuickApplyState.isLoggedIn = !!(auth.currentUser || auth.user);
+            }
+            
+            console.log('📊 Auth Status:', QuickApplyState.isLoggedIn ? 'angemeldet' : 'nicht angemeldet');
             
             if (QuickApplyState.isLoggedIn) {
                 console.log('✅ Nutzer ist angemeldet, lade API-Key aus AWS...');
@@ -431,6 +442,9 @@ async function checkLoginStatus() {
             console.warn('⚠️ Auth-Check fehlgeschlagen:', error);
             QuickApplyState.isLoggedIn = false;
         }
+    } else {
+        console.log('ℹ️ Kein Auth-System verfügbar');
+        QuickApplyState.isLoggedIn = false;
     }
 }
 

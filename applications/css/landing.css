@@ -39,25 +39,32 @@ body {
     transition: all 0.3s ease;
 }
 
-.navbar.navbar-transparent .nav-link {
-    color: rgba(255, 255, 255, 0.9);
+.navbar.navbar-transparent .nav-link,
+.navbar.navbar-transparent .nav-link span,
+.navbar.navbar-transparent .nav-link i {
+    color: white !important;
 }
 
 .navbar.navbar-transparent .nav-link:hover {
-    color: white;
-    background: rgba(255, 255, 255, 0.1);
+    color: white !important;
+    background: rgba(255, 255, 255, 0.15) !important;
 }
 
 .navbar.navbar-transparent .nav-link.active {
-    background: rgba(255, 255, 255, 0.2);
-    color: white;
+    background: rgba(255, 255, 255, 0.25) !important;
+    color: white !important;
+}
+
+.navbar.navbar-transparent .nav-login-btn,
+.navbar.navbar-transparent .nav-login-btn span,
+.navbar.navbar-transparent .nav-login-btn i {
+    color: white !important;
 }
 
 .navbar.navbar-transparent .nav-login-btn {
-    background: rgba(255, 255, 255, 0.15);
-    color: white;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: none;
+    background: rgba(255, 255, 255, 0.15) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    box-shadow: none !important;
 }
 
 .navbar.navbar-transparent .nav-login-btn:hover {
@@ -528,8 +535,13 @@ body {
     color: white;
 }
 
+.feature-card.feature-primary h3 {
+    color: white !important;
+}
+
 .feature-card.feature-primary p {
-    opacity: 0.9;
+    color: rgba(255, 255, 255, 0.9) !important;
+    opacity: 1;
 }
 
 .feature-icon-wrapper {
