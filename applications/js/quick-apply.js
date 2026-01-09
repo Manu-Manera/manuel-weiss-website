@@ -30,7 +30,37 @@ function initQuickApply() {
     // Setup event listeners
     setupQuickApplyListeners();
     
+    // Check API status and show hint
+    updateAPIStatusDisplay();
+    
     console.log('✅ Quick Apply ready');
+}
+
+/**
+ * Zeigt den API-Status an und gibt Hinweis falls kein Key vorhanden
+ */
+function updateAPIStatusDisplay() {
+    const apiConfig = getOpenAIConfig();
+    const statusText = document.getElementById('apiStatusText');
+    const generationInfo = document.getElementById('generationInfo');
+    const apiHint = document.getElementById('apiHint');
+    
+    if (!statusText || !generationInfo) return;
+    
+    if (apiConfig && apiConfig.key) {
+        // API Key vorhanden
+        const model = apiConfig.model || 'gpt-4o-mini';
+        statusText.textContent = `${model} • Durchschnittlich 15 Sekunden`;
+        generationInfo.classList.add('has-api');
+        generationInfo.classList.remove('no-api');
+        if (apiHint) apiHint.classList.add('hidden');
+    } else {
+        // Kein API Key - Template-Modus
+        statusText.textContent = 'Template-Modus (kein API-Key konfiguriert)';
+        generationInfo.classList.add('no-api');
+        generationInfo.classList.remove('has-api');
+        if (apiHint) apiHint.classList.remove('hidden');
+    }
 }
 
 function checkProfileStatus() {
@@ -516,29 +546,85 @@ function collectProfileData() {
 }
 
 async function generateCoverLetter(jobData, profileData) {
-    // Check if we have an API key
-    const apiKey = localStorage.getItem('openai_api_key');
+    // Get API Key from Admin Panel (global_api_keys)
+    const apiConfig = getOpenAIConfig();
     
-    if (apiKey) {
-        // Use OpenAI API
-        return await generateWithOpenAI(jobData, profileData, apiKey);
+    if (apiConfig && apiConfig.key) {
+        // Use OpenAI API with config from Admin Panel
+        return await generateWithOpenAI(jobData, profileData, apiConfig);
     } else {
-        // Use template-based generation
+        // Use template-based generation (no API key)
+        console.log('ℹ️ Kein API Key gefunden - nutze Template-Generator');
         return generateWithTemplate(jobData, profileData);
     }
 }
 
-async function generateWithOpenAI(jobData, profileData, apiKey) {
+/**
+ * Hole OpenAI Konfiguration aus dem Admin Panel (global_api_keys)
+ * Priorität: globalAPIManager > localStorage.global_api_keys
+ */
+function getOpenAIConfig() {
+    // PRIORITÄT 1: GlobalAPIManager (falls geladen)
+    if (window.globalAPIManager) {
+        const config = window.globalAPIManager.getServiceConfig('openai');
+        if (config && config.key && config.key.startsWith('sk-')) {
+            console.log('✅ OpenAI Key aus globalAPIManager geladen');
+            return config;
+        }
+    }
+    
+    // PRIORITÄT 2: Direkt aus localStorage (global_api_keys vom Admin Panel)
+    try {
+        const raw = localStorage.getItem('global_api_keys');
+        if (raw) {
+            const parsed = JSON.parse(raw);
+            if (parsed.openai && parsed.openai.key && parsed.openai.key.startsWith('sk-')) {
+                console.log('✅ OpenAI Key aus global_api_keys geladen');
+                return {
+                    key: parsed.openai.key,
+                    model: parsed.openai.model || 'gpt-4o-mini',
+                    maxTokens: parsed.openai.maxTokens || 1000,
+                    temperature: parsed.openai.temperature || 0.7
+                };
+            }
+        }
+    } catch (error) {
+        console.warn('⚠️ Konnte global_api_keys nicht lesen:', error);
+    }
+    
+    // PRIORITÄT 3: Fallback zu altem localStorage Key (Legacy)
+    const legacyKey = localStorage.getItem('openai_api_key');
+    if (legacyKey && legacyKey.startsWith('sk-')) {
+        console.log('✅ OpenAI Key aus Legacy localStorage geladen');
+        return {
+            key: legacyKey,
+            model: 'gpt-4o-mini',
+            maxTokens: 1000,
+            temperature: 0.7
+        };
+    }
+    
+    return null;
+}
+
+async function generateWithOpenAI(jobData, profileData, apiConfig) {
     const prompt = buildPrompt(jobData, profileData);
+    
+    // Verwende Config aus Admin Panel
+    const model = apiConfig.model || 'gpt-4o-mini';
+    const temperature = apiConfig.temperature || 0.7;
+    const maxTokens = apiConfig.maxTokens || 1000;
+    
+    console.log(`🤖 Generiere mit ${model} (temp: ${temperature}, tokens: ${maxTokens})`);
     
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${apiKey}`
+            'Authorization': `Bearer ${apiConfig.key}`
         },
         body: JSON.stringify({
-            model: 'gpt-3.5-turbo',
+            model: model,
             messages: [
                 {
                     role: 'system',
@@ -551,8 +637,8 @@ async function generateWithOpenAI(jobData, profileData, apiKey) {
                     content: prompt
                 }
             ],
-            temperature: 0.7,
-            max_tokens: 1000
+            temperature: temperature,
+            max_tokens: maxTokens
         })
     });
     
