@@ -550,6 +550,16 @@ function setupQuickApplyListeners() {
     if (textInput) {
         textInput.addEventListener('input', handleTextInput);
     }
+    
+    // Event-Listener für Profilfelder (aktualisiert Button-Status)
+    const profileFields = ['quickName', 'quickExperience', 'quickSkills'];
+    profileFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            field.addEventListener('input', updateGenerateButtonState);
+            field.addEventListener('change', updateGenerateButtonState);
+        }
+    });
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -602,12 +612,19 @@ function handleUrlPaste(e) {
 function handleTextInput(e) {
     // Unterstütze sowohl Event-Parameter als auch direkten Aufruf
     const textInput = e?.target || document.getElementById('jobText');
-    const text = textInput?.value?.trim() || '';
+    const text = textInput?.value || '';
+    const trimmedText = text.trim();
+    
+    // Zeichenzähler aktualisieren
+    const charCount = document.getElementById('charCount');
+    if (charCount) {
+        charCount.textContent = text.length;
+    }
     
     updateGenerateButtonState();
     
-    if (text.length > 100) {
-        extractJobInfoFromText(text);
+    if (trimmedText.length > 100) {
+        extractJobInfoFromText(trimmedText);
     }
 }
 
