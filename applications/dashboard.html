@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bewerbungsmanager - Dashboard</title>
+    <meta name="description" content="Ihr persönliches Bewerbungs-Dashboard. KI-Anschreiben in 60 Sekunden, Lebenslauf-Editor, Tracking und Interview-Vorbereitung.">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="css/applications-main.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="../index.html">
+                    <img src="../images/manuel-weiss-portrait.jpg" alt="Manuel Weiss" class="nav-logo">
+                    <span class="nav-title">Manuel Weiss</span>
+                </a>
+            </div>
+            
+            <!-- Mobile Hamburger -->
+            <button class="mobile-hamburger" id="mobileHamburger" aria-label="Menü öffnen">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
+            
+            <div class="nav-menu">
+                <a href="../index.html" class="nav-link">Start</a>
+                <a href="dashboard.html" class="nav-link active">Bewerbungsmanager</a>
+                <a href="../persoenlichkeitsentwicklung-uebersicht.html" class="nav-link">Coaching</a>
+            </div>
+            
+            <div class="auth-section">
+                <button id="authButton" class="nav-login-btn">
+                    <i class="fas fa-user"></i>
+                    <span id="authButtonText">Anmelden</span>
+                </button>
+                <div class="user-dropdown" id="userDropdown" style="display: none;">
+                    <div class="user-dropdown-header">
+                        <img id="userAvatarImg" src="../images/default-avatar.png" alt="User" class="user-avatar-img">
+                        <div class="user-info-small">
+                            <div id="userName">Benutzer</div>
+                            <div id="userEmail" class="user-email-small"></div>
+                        </div>
+                    </div>
+                    <div class="user-dropdown-content">
+                        <a href="#" class="user-dropdown-item" onclick="showTab('profile')">
+                            <i class="fas fa-user-circle"></i> Profil
+                        </a>
+                        <div class="user-dropdown-divider"></div>
+                        <a href="#" class="user-dropdown-item logout" onclick="logout()">
+                            <i class="fas fa-sign-out-alt"></i> Abmelden
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
+    <div class="mobile-menu-fullscreen" id="mobileMenuFullscreen">
+        <div class="mobile-menu-content">
+            <a href="../index.html" class="mobile-menu-link"><i class="fas fa-home"></i> Start</a>
+            <a href="dashboard.html" class="mobile-menu-link active"><i class="fas fa-rocket"></i> Bewerbungsmanager</a>
+            <a href="../persoenlichkeitsentwicklung-uebersicht.html" class="mobile-menu-link"><i class="fas fa-brain"></i> Coaching</a>
+            <div class="mobile-menu-divider"></div>
+            <button id="mobileAuthButton" class="mobile-auth-btn"><i class="fas fa-user"></i> Anmelden</button>
+        </div>
+    </div>
+
+    <!-- MAIN DASHBOARD -->
+    <main class="dashboard-main">
+        <!-- Hero Stats Bar -->
+        <div class="dashboard-stats-bar">
+            <div class="stat-item">
+                <i class="fas fa-paper-plane"></i>
+                <div class="stat-content">
+                    <span class="stat-number" id="statTotal">0</span>
+                    <span class="stat-label">Bewerbungen</span>
+                </div>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-hourglass-half"></i>
+                <div class="stat-content">
+                    <span class="stat-number" id="statPending">0</span>
+                    <span class="stat-label">Offen</span>
+                </div>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-comments"></i>
+                <div class="stat-content">
+                    <span class="stat-number" id="statInterviews">0</span>
+                    <span class="stat-label">Interviews</span>
+                </div>
+            </div>
+            <div class="stat-item highlight">
+                <i class="fas fa-trophy"></i>
+                <div class="stat-content">
+                    <span class="stat-number" id="statSuccess">0%</span>
+                    <span class="stat-label">Erfolg</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="dashboard-tabs">
+            <button class="tab-btn active" data-tab="quick" onclick="showTab('quick')">
+                <i class="fas fa-bolt"></i>
+                <span>Quick Apply</span>
+                <span class="tab-badge new">NEU</span>
+            </button>
+            <button class="tab-btn" data-tab="cover" onclick="showTab('cover')">
+                <i class="fas fa-file-alt"></i>
+                <span>Anschreiben</span>
+            </button>
+            <button class="tab-btn" data-tab="resume" onclick="showTab('resume')">
+                <i class="fas fa-id-card"></i>
+                <span>Lebenslauf</span>
+            </button>
+            <button class="tab-btn" data-tab="tracking" onclick="showTab('tracking')">
+                <i class="fas fa-tasks"></i>
+                <span>Tracking</span>
+            </button>
+            <button class="tab-btn" data-tab="interview" onclick="showTab('interview')">
+                <i class="fas fa-microphone"></i>
+                <span>Interview</span>
+            </button>
+            <button class="tab-btn" data-tab="profile" onclick="showTab('profile')">
+                <i class="fas fa-user-cog"></i>
+                <span>Profil</span>
+            </button>
+        </div>
+
+        <!-- Tab Content Container -->
+        <div class="dashboard-content">
+            
+            <!-- ═══════════════════════════════════════════════════════════ -->
+            <!-- TAB 1: QUICK APPLY - Der Star des Dashboards -->
+            <!-- ═══════════════════════════════════════════════════════════ -->
+            <div id="tab-quick" class="tab-content active">
+                <div class="quick-apply-container">
+                    <div class="quick-apply-hero">
+                        <div class="hero-icon">
+                            <i class="fas fa-magic"></i>
+                        </div>
+                        <h1>Bewerbung in <span class="highlight-text">60 Sekunden</span></h1>
+                        <p>Stellenanzeige einfügen → KI generiert Anschreiben → Fertig!</p>
+                    </div>
+
+                    <!-- Step 1: Job Input -->
+                    <div class="quick-step" id="quickStep1">
+                        <div class="step-header">
+                            <span class="step-number">1</span>
+                            <h2>Stellenanzeige einfügen</h2>
+                        </div>
+                        
+                        <div class="input-toggle">
+                            <button class="toggle-btn active" data-input="url" onclick="toggleInputType('url')">
+                                <i class="fas fa-link"></i> URL einfügen
+                            </button>
+                            <button class="toggle-btn" data-input="text" onclick="toggleInputType('text')">
+                                <i class="fas fa-paste"></i> Text einfügen
+                            </button>
+                        </div>
+
+                        <div class="input-area" id="inputUrl">
+                            <div class="url-input-wrapper">
+                                <i class="fas fa-globe"></i>
+                                <input type="url" id="jobUrl" placeholder="https://www.stepstone.de/stellenangebote/..." 
+                                       onpaste="handleUrlPaste(event)" onkeyup="handleUrlInput(event)">
+                                <button class="btn-parse" id="parseUrlBtn" onclick="parseJobUrl()" disabled>
+                                    <i class="fas fa-search"></i> Analysieren
+                                </button>
+                            </div>
+                            <div class="url-hints">
+                                <span><i class="fas fa-check"></i> StepStone</span>
+                                <span><i class="fas fa-check"></i> Indeed</span>
+                                <span><i class="fas fa-check"></i> LinkedIn</span>
+                                <span><i class="fas fa-check"></i> XING</span>
+                                <span><i class="fas fa-check"></i> Jede URL</span>
+                            </div>
+                        </div>
+
+                        <div class="input-area hidden" id="inputText">
+                            <textarea id="jobText" rows="8" 
+                                      placeholder="Kopieren Sie hier die komplette Stellenanzeige ein...
+
+Beispiel:
+Senior Softwareentwickler (m/w/d)
+Firma XYZ GmbH, München
+Vollzeit | Ab sofort
+
+Ihre Aufgaben:
+- Entwicklung von...
+- ..."
+                                      oninput="handleTextInput()"></textarea>
+                            <div class="char-counter">
+                                <span id="charCount">0</span> Zeichen
+                            </div>
+                        </div>
+
+                        <!-- Parsed Job Preview -->
+                        <div class="parsed-job hidden" id="parsedJobPreview">
+                            <div class="parsed-header">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Stellenanzeige erkannt!</span>
+                                <button class="btn-edit" onclick="editParsedJob()">
+                                    <i class="fas fa-edit"></i> Bearbeiten
+                                </button>
+                            </div>
+                            <div class="parsed-content">
+                                <div class="parsed-field">
+                                    <label>Position</label>
+                                    <input type="text" id="parsedTitle" placeholder="Jobtitel">
+                                </div>
+                                <div class="parsed-field">
+                                    <label>Unternehmen</label>
+                                    <input type="text" id="parsedCompany" placeholder="Firmenname">
+                                </div>
+                                <div class="parsed-field">
+                                    <label>Standort</label>
+                                    <input type="text" id="parsedLocation" placeholder="Stadt">
+                                </div>
+                                <div class="parsed-field full-width">
+                                    <label>Anforderungen (erkannt)</label>
+                                    <div class="requirements-tags" id="parsedRequirements">
+                                        <!-- Wird dynamisch gefüllt -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Quick Profile (falls nicht vorhanden) -->
+                    <div class="quick-step hidden" id="quickStep2">
+                        <div class="step-header">
+                            <span class="step-number">2</span>
+                            <h2>Kurz über Sie <span class="optional-badge">Nur 5 Felder</span></h2>
+                        </div>
+                        
+                        <div class="quick-profile-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label><i class="fas fa-user"></i> Ihr Name *</label>
+                                    <input type="text" id="quickName" placeholder="Max Mustermann" required>
+                                </div>
+                                <div class="form-group">
+                                    <label><i class="fas fa-briefcase"></i> Aktuelle Position</label>
+                                    <input type="text" id="quickCurrentJob" placeholder="z.B. Softwareentwickler">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label><i class="fas fa-calendar"></i> Berufserfahrung *</label>
+                                    <select id="quickExperience" required>
+                                        <option value="">Bitte wählen...</option>
+                                        <option value="0-1">Berufseinsteiger (0-1 Jahre)</option>
+                                        <option value="1-3">Junior (1-3 Jahre)</option>
+                                        <option value="3-5">Mid-Level (3-5 Jahre)</option>
+                                        <option value="5-10">Senior (5-10 Jahre)</option>
+                                        <option value="10+">Expert (10+ Jahre)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label><i class="fas fa-map-marker-alt"></i> Ihr Standort</label>
+                                    <input type="text" id="quickLocation" placeholder="z.B. Berlin">
+                                </div>
+                            </div>
+                            <div class="form-group full-width">
+                                <label><i class="fas fa-star"></i> Ihre Top-3 Stärken *</label>
+                                <input type="text" id="quickSkills" placeholder="z.B. JavaScript, Projektmanagement, Teamführung" required>
+                                <small>Kommagetrennt eingeben</small>
+                            </div>
+                            <div class="form-group full-width">
+                                <label><i class="fas fa-heart"></i> Was motiviert Sie bei dieser Stelle?</label>
+                                <textarea id="quickMotivation" rows="3" placeholder="Optional: 1-2 Sätze warum diese Stelle Sie interessiert..."></textarea>
+                            </div>
+                        </div>
+
+                        <div class="profile-save-hint">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="saveQuickProfile" checked>
+                                <span>Diese Daten für zukünftige Bewerbungen speichern</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Generate -->
+                    <div class="quick-step" id="quickStep3">
+                        <div class="generation-options">
+                            <div class="option-group">
+                                <label>Tonalität</label>
+                                <div class="option-buttons">
+                                    <button class="option-btn active" data-tone="formal" onclick="selectTone('formal')">
+                                        <i class="fas fa-user-tie"></i> Formal
+                                    </button>
+                                    <button class="option-btn" data-tone="modern" onclick="selectTone('modern')">
+                                        <i class="fas fa-rocket"></i> Modern
+                                    </button>
+                                    <button class="option-btn" data-tone="creative" onclick="selectTone('creative')">
+                                        <i class="fas fa-paint-brush"></i> Kreativ
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="option-group">
+                                <label>Länge</label>
+                                <div class="option-buttons">
+                                    <button class="option-btn" data-length="short" onclick="selectLength('short')">
+                                        <i class="fas fa-compress-alt"></i> Kurz
+                                    </button>
+                                    <button class="option-btn active" data-length="medium" onclick="selectLength('medium')">
+                                        <i class="fas fa-align-left"></i> Mittel
+                                    </button>
+                                    <button class="option-btn" data-length="long" onclick="selectLength('long')">
+                                        <i class="fas fa-expand-alt"></i> Lang
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="btn-generate" id="generateBtn" onclick="generateQuickApplication()" disabled>
+                            <div class="btn-content">
+                                <i class="fas fa-magic"></i>
+                                <span>Anschreiben generieren</span>
+                            </div>
+                            <div class="btn-loading hidden">
+                                <div class="spinner"></div>
+                                <span>KI arbeitet...</span>
+                            </div>
+                        </button>
+
+                        <div class="generation-info">
+                            <i class="fas fa-info-circle"></i>
+                            <span>GPT-3.5 Turbo • Durchschnittlich 15 Sekunden • Kostenlos</span>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: Result -->
+                    <div class="quick-step hidden" id="quickStep4">
+                        <div class="step-header success">
+                            <i class="fas fa-check-circle"></i>
+                            <h2>Ihr Anschreiben ist fertig!</h2>
+                        </div>
+
+                        <div class="result-container">
+                            <div class="result-header">
+                                <div class="result-meta">
+                                    <span class="job-title" id="resultJobTitle">Senior Developer</span>
+                                    <span class="company-name" id="resultCompany">@ Firma XYZ</span>
+                                </div>
+                                <div class="result-actions">
+                                    <button class="btn-action" onclick="copyToClipboard()">
+                                        <i class="fas fa-copy"></i> Kopieren
+                                    </button>
+                                    <button class="btn-action" onclick="downloadAsPdf()">
+                                        <i class="fas fa-file-pdf"></i> PDF
+                                    </button>
+                                    <button class="btn-action" onclick="downloadAsDocx()">
+                                        <i class="fas fa-file-word"></i> Word
+                                    </button>
+                                    <button class="btn-action primary" onclick="sendViaEmail()">
+                                        <i class="fas fa-envelope"></i> Per E-Mail
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="result-editor">
+                                <textarea id="resultText" rows="20"></textarea>
+                                <div class="editor-toolbar">
+                                    <button onclick="regenerateCoverLetter()" title="Neu generieren">
+                                        <i class="fas fa-sync-alt"></i>
+                                    </button>
+                                    <button onclick="improveText('formal')" title="Formaler">
+                                        <i class="fas fa-user-tie"></i>
+                                    </button>
+                                    <button onclick="improveText('shorter')" title="Kürzen">
+                                        <i class="fas fa-compress"></i>
+                                    </button>
+                                    <button onclick="improveText('stronger')" title="Überzeugender">
+                                        <i class="fas fa-bolt"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="result-footer">
+                                <button class="btn-secondary" onclick="startNewApplication()">
+                                    <i class="fas fa-plus"></i> Neue Bewerbung
+                                </button>
+                                <button class="btn-primary" onclick="addToTracking()">
+                                    <i class="fas fa-tasks"></i> Zum Tracking hinzufügen
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════════════════════ -->
+            <!-- TAB 2: ANSCHREIBEN (Voller Editor) -->
+            <!-- ═══════════════════════════════════════════════════════════ -->
+            <div id="tab-cover" class="tab-content">
+                <div class="tab-placeholder">
+                    <i class="fas fa-file-alt"></i>
+                    <h2>Anschreiben-Generator</h2>
+                    <p>Detaillierter Editor mit Templates und erweiterten Optionen</p>
+                    <a href="application-generator.html" class="btn-primary">
+                        <i class="fas fa-external-link-alt"></i> Vollversion öffnen
+                    </a>
+                    <span class="migration-hint">Wird in nächster Phase hier integriert</span>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════════════════════ -->
+            <!-- TAB 3: LEBENSLAUF -->
+            <!-- ═══════════════════════════════════════════════════════════ -->
+            <div id="tab-resume" class="tab-content">
+                <div class="tab-placeholder">
+                    <i class="fas fa-id-card"></i>
+                    <h2>Lebenslauf-Editor</h2>
+                    <p>PDF-Upload mit OCR oder manuelle Eingabe</p>
+                    <div class="placeholder-actions">
+                        <a href="resume-editor.html" class="btn-primary">
+                            <i class="fas fa-edit"></i> Lebenslauf bearbeiten
+                        </a>
+                        <button class="btn-secondary" onclick="importFromLinkedIn()">
+                            <i class="fab fa-linkedin"></i> Von LinkedIn importieren
+                        </button>
+                    </div>
+                    <span class="migration-hint">Wird in nächster Phase hier integriert</span>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════════════════════ -->
+            <!-- TAB 4: TRACKING -->
+            <!-- ═══════════════════════════════════════════════════════════ -->
+            <div id="tab-tracking" class="tab-content">
+                <div class="tracking-container">
+                    <div class="tracking-header">
+                        <h2><i class="fas fa-tasks"></i> Meine Bewerbungen</h2>
+                        <button class="btn-primary" onclick="showAddApplicationModal()">
+                            <i class="fas fa-plus"></i> Neue Bewerbung
+                        </button>
+                    </div>
+
+                    <!-- Simple List View (statt komplexem Kanban) -->
+                    <div class="tracking-filters">
+                        <button class="filter-btn active" data-filter="all" onclick="filterApplications('all')">
+                            Alle <span class="count" id="filterAll">0</span>
+                        </button>
+                        <button class="filter-btn" data-filter="pending" onclick="filterApplications('pending')">
+                            <i class="fas fa-clock"></i> Offen <span class="count" id="filterPending">0</span>
+                        </button>
+                        <button class="filter-btn" data-filter="interview" onclick="filterApplications('interview')">
+                            <i class="fas fa-comments"></i> Interview <span class="count" id="filterInterview">0</span>
+                        </button>
+                        <button class="filter-btn" data-filter="offer" onclick="filterApplications('offer')">
+                            <i class="fas fa-star"></i> Angebot <span class="count" id="filterOffer">0</span>
+                        </button>
+                        <button class="filter-btn" data-filter="rejected" onclick="filterApplications('rejected')">
+                            <i class="fas fa-times"></i> Absage <span class="count" id="filterRejected">0</span>
+                        </button>
+                    </div>
+
+                    <div class="applications-list" id="applicationsList">
+                        <!-- Wird dynamisch gefüllt -->
+                        <div class="empty-state" id="emptyState">
+                            <i class="fas fa-inbox"></i>
+                            <h3>Noch keine Bewerbungen</h3>
+                            <p>Erstellen Sie Ihre erste Bewerbung mit dem Quick Apply!</p>
+                            <button class="btn-primary" onclick="showTab('quick')">
+                                <i class="fas fa-bolt"></i> Quick Apply starten
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════════════════════ -->
+            <!-- TAB 5: INTERVIEW -->
+            <!-- ═══════════════════════════════════════════════════════════ -->
+            <div id="tab-interview" class="tab-content">
+                <div class="tab-placeholder">
+                    <i class="fas fa-microphone"></i>
+                    <h2>Interview-Vorbereitung</h2>
+                    <p>KI-generierte Fragen und Musterantworten</p>
+                    <a href="interview-prep.html" class="btn-primary">
+                        <i class="fas fa-play"></i> Interview-Training starten
+                    </a>
+                    <span class="migration-hint">Wird in nächster Phase hier integriert</span>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════════════════════ -->
+            <!-- TAB 6: PROFIL -->
+            <!-- ═══════════════════════════════════════════════════════════ -->
+            <div id="tab-profile" class="tab-content">
+                <div class="profile-container">
+                    <div class="profile-header">
+                        <h2><i class="fas fa-user-cog"></i> Mein Bewerbungsprofil</h2>
+                        <p>Diese Daten werden für alle Bewerbungen verwendet</p>
+                    </div>
+
+                    <form id="profileForm" class="profile-form-compact">
+                        <!-- Persönliche Daten -->
+                        <section class="profile-section">
+                            <h3><i class="fas fa-user"></i> Persönliche Daten</h3>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Vorname *</label>
+                                    <input type="text" id="profileFirstName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Nachname *</label>
+                                    <input type="text" id="profileLastName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>E-Mail *</label>
+                                    <input type="email" id="profileEmail" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Telefon</label>
+                                    <input type="tel" id="profilePhone">
+                                </div>
+                                <div class="form-group">
+                                    <label>Wohnort</label>
+                                    <input type="text" id="profileLocation">
+                                </div>
+                                <div class="form-group">
+                                    <label>Aktuelle Position</label>
+                                    <input type="text" id="profileCurrentJob">
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Berufserfahrung -->
+                        <section class="profile-section">
+                            <h3><i class="fas fa-briefcase"></i> Berufserfahrung</h3>
+                            <div class="form-group full-width">
+                                <label>Jahre Berufserfahrung</label>
+                                <select id="profileExperience">
+                                    <option value="">Bitte wählen...</option>
+                                    <option value="0-1">Berufseinsteiger (0-1 Jahre)</option>
+                                    <option value="1-3">Junior (1-3 Jahre)</option>
+                                    <option value="3-5">Mid-Level (3-5 Jahre)</option>
+                                    <option value="5-10">Senior (5-10 Jahre)</option>
+                                    <option value="10+">Expert (10+ Jahre)</option>
+                                </select>
+                            </div>
+                            <div class="form-group full-width">
+                                <label>Kurzes Profil / Summary</label>
+                                <textarea id="profileSummary" rows="4" placeholder="2-3 Sätze über Sie und Ihre wichtigsten Qualifikationen..."></textarea>
+                            </div>
+                        </section>
+
+                        <!-- Skills -->
+                        <section class="profile-section">
+                            <h3><i class="fas fa-star"></i> Fähigkeiten & Stärken</h3>
+                            <div class="form-group full-width">
+                                <label>Ihre Top-Skills (kommagetrennt)</label>
+                                <input type="text" id="profileSkills" placeholder="z.B. JavaScript, Projektmanagement, Teamführung, Excel">
+                            </div>
+                            <div class="skills-tags" id="skillsTags">
+                                <!-- Wird dynamisch gefüllt -->
+                            </div>
+                        </section>
+
+                        <div class="profile-actions">
+                            <button type="button" class="btn-secondary" onclick="resetProfile()">
+                                <i class="fas fa-undo"></i> Zurücksetzen
+                            </button>
+                            <button type="submit" class="btn-primary" onclick="saveProfile(event)">
+                                <i class="fas fa-save"></i> Profil speichern
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Daten-Status -->
+                    <div class="profile-status">
+                        <div class="status-item">
+                            <i class="fas fa-database"></i>
+                            <span>Daten werden lokal in Ihrem Browser gespeichert</span>
+                        </div>
+                        <div class="status-item">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Keine Weitergabe an Dritte</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- End dashboard-content -->
+    </main>
+
+    <!-- Modal: Neue Bewerbung hinzufügen -->
+    <div class="modal-overlay hidden" id="addApplicationModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-plus"></i> Bewerbung hinzufügen</h3>
+                <button class="modal-close" onclick="closeModal('addApplicationModal')">&times;</button>
+            </div>
+            <form id="addApplicationForm" onsubmit="addApplication(event)">
+                <div class="form-group">
+                    <label>Position *</label>
+                    <input type="text" id="newAppPosition" required>
+                </div>
+                <div class="form-group">
+                    <label>Unternehmen *</label>
+                    <input type="text" id="newAppCompany" required>
+                </div>
+                <div class="form-group">
+                    <label>Bewerbungsdatum</label>
+                    <input type="date" id="newAppDate" value="">
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <select id="newAppStatus">
+                        <option value="pending">Gesendet / Offen</option>
+                        <option value="interview">Interview eingeladen</option>
+                        <option value="offer">Angebot erhalten</option>
+                        <option value="rejected">Absage</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Notizen</label>
+                    <textarea id="newAppNotes" rows="3"></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal('addApplicationModal')">Abbrechen</button>
+                    <button type="submit" class="btn-primary">Hinzufügen</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Scripts -->
+    <script src="../js/real-user-auth.js"></script>
+    <script src="js/dashboard-core.js"></script>
+    <script src="js/quick-apply.js"></script>
+    
+    <script>
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', () => {
+            initDashboard();
+        });
+    </script>
+</body>
+</html>
+
