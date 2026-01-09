@@ -582,8 +582,9 @@ function toggleInputType(type) {
 // ═══════════════════════════════════════════════════════════════════════════
 
 function handleUrlInput(e) {
-    const url = e.target.value.trim();
-    const analyzeBtn = document.getElementById('analyzeUrlBtn');
+    const url = e.target?.value?.trim() || '';
+    // Suche den Button mit beiden möglichen IDs
+    const analyzeBtn = document.getElementById('parseUrlBtn') || document.getElementById('analyzeUrlBtn');
     
     if (analyzeBtn) {
         const isValid = isValidJobUrl(url);
@@ -598,7 +599,10 @@ function handleUrlPaste(e) {
 }
 
 function handleTextInput(e) {
-    const text = e.target.value.trim();
+    // Unterstütze sowohl Event-Parameter als auch direkten Aufruf
+    const textInput = e?.target || document.getElementById('jobText');
+    const text = textInput?.value?.trim() || '';
+    
     updateGenerateButtonState();
     
     if (text.length > 100) {
@@ -646,7 +650,8 @@ async function analyzeJobUrl() {
         return;
     }
     
-    const analyzeBtn = document.getElementById('analyzeUrlBtn');
+    // Suche den Button mit beiden möglichen IDs
+    const analyzeBtn = document.getElementById('parseUrlBtn') || document.getElementById('analyzeUrlBtn');
     const originalText = analyzeBtn?.innerHTML;
     
     if (analyzeBtn) {
@@ -683,6 +688,9 @@ async function analyzeJobUrl() {
     
     updateGenerateButtonState();
 }
+
+// Alias für parseJobUrl (wird im HTML verwendet)
+window.parseJobUrl = analyzeJobUrl;
 
 function extractJobInfoFromText(text) {
     const positionPatterns = [
@@ -1244,14 +1252,26 @@ function copyToClipboard(text) {
 // EXPORTS
 // ═══════════════════════════════════════════════════════════════════════════
 
+// ═══════════════════════════════════════════════════════════════════════════
+// GLOBAL EXPORTS - Alle Funktionen die im HTML verwendet werden
+// ═══════════════════════════════════════════════════════════════════════════
 window.initQuickApply = initQuickApply;
 window.toggleInputType = toggleInputType;
 window.analyzeJobUrl = analyzeJobUrl;
+window.parseJobUrl = analyzeJobUrl; // Alias für HTML onclick
 window.generateCoverLetter = generateCoverLetter;
+window.generateQuickApplication = generateCoverLetter; // Alias für HTML onclick
 window.setTone = setTone;
+window.selectTone = setTone; // Alias für HTML onclick
 window.setLength = setLength;
+window.selectLength = setLength; // Alias für HTML onclick
 window.downloadLetter = downloadLetter;
 window.saveToDrafts = saveToDrafts;
 window.sendApplication = sendApplication;
 window.regenerateLetter = regenerateLetter;
 window.QuickApplyState = QuickApplyState;
+
+// Input Handler für HTML Events
+window.handleUrlInput = handleUrlInput;
+window.handleUrlPaste = handleUrlPaste;
+window.handleTextInput = handleTextInput;
