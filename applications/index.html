@@ -319,21 +319,6 @@
             document.getElementById('features').scrollIntoView({ behavior: 'smooth' });
         }
         
-        // Load Auth Modals HTML
-        async function loadAuthModals() {
-            const container = document.createElement('div');
-            container.id = 'authModalsContainer';
-            try {
-                const response = await fetch('../components/unified-auth-modals.html');
-                if (response.ok) {
-                    container.innerHTML = await response.text();
-                    document.body.appendChild(container);
-                }
-            } catch (e) {
-                console.warn('Could not load auth modals');
-            }
-        }
-        
         // Auth Handler - Unified AWS Auth
         async function handleAuth() {
             const isLoggedIn = window.awsAuth && window.awsAuth.isLoggedIn();
@@ -367,7 +352,6 @@
         
         // Check auth on load
         document.addEventListener('DOMContentLoaded', async () => {
-            await loadAuthModals();
             // Wait a bit for auth system to init
             setTimeout(updateAuthState, 500);
         });

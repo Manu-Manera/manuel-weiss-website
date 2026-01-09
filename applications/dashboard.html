@@ -856,22 +856,6 @@ Ihre Aufgaben:
     <script src="js/quick-apply.js"></script>
     
     <script>
-        // Load Auth Modals HTML
-        async function loadAuthModals() {
-            const container = document.createElement('div');
-            container.id = 'authModalsContainer';
-            try {
-                const response = await fetch('../components/unified-auth-modals.html');
-                if (response.ok) {
-                    container.innerHTML = await response.text();
-                    document.body.appendChild(container);
-                    console.log('✅ Auth Modals loaded');
-                }
-            } catch (e) {
-                console.warn('Could not load auth modals from external file');
-            }
-        }
-        
         // Initialize Global API Manager
         if (!window.globalAPIManager) {
             window.globalAPIManager = new GlobalAPIManager();
@@ -1006,9 +990,6 @@ Ihre Aufgaben:
         
         // Initialize on load
         document.addEventListener('DOMContentLoaded', async () => {
-            // Load auth modals HTML
-            await loadAuthModals();
-            
             // Wait for auth system
             await waitForAuthSystem();
             

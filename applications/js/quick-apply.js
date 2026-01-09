@@ -422,7 +422,7 @@ async function analyzeJobUrl() {
     const url = urlInput?.value.trim();
     
     if (!url || !isValidJobUrl(url)) {
-        showToast('Bitte geben Sie eine gültige URL ein', 'error');
+        quickApplyShowToast('Bitte geben Sie eine gültige URL ein', 'error');
         return;
     }
     
@@ -448,11 +448,11 @@ async function analyzeJobUrl() {
         if (data.parsedJob) {
             QuickApplyState.jobData = data.parsedJob;
             displayJobData(data.parsedJob);
-            showToast('Stellenanzeige analysiert!', 'success');
+            quickApplyShowToast('Stellenanzeige analysiert!', 'success');
         }
     } catch (error) {
         console.error('URL parsing failed:', error);
-        showToast('Analyse fehlgeschlagen. Bitte Text einfügen.', 'error');
+        quickApplyShowToast('Analyse fehlgeschlagen. Bitte Text einfügen.', 'error');
         toggleInputType('text');
     } finally {
         if (analyzeBtn) {
@@ -565,15 +565,15 @@ async function generateCoverLetter() {
             saveToTracking(userData);
         }
         
-        showToast('Anschreiben erstellt!', 'success');
+        quickApplyShowToast('Anschreiben erstellt!', 'success');
         
     } catch (error) {
         console.error('Generation failed:', error);
-        showToast('Fehler bei der Generierung: ' + error.message, 'error');
+        quickApplyShowToast('Fehler bei der Generierung: ' + error.message, 'error');
         
         // Fallback auf Templates bei Fehler
         if (QuickApplyState.isLoggedIn) {
-            showToast('Verwende Template als Fallback...', 'info');
+            quickApplyShowToast('Verwende Template als Fallback...', 'info');
             const coverLetter = generateFromTemplates(collectUserData());
             QuickApplyState.generatedText = coverLetter;
             displayGeneratedLetter(coverLetter);
@@ -748,17 +748,17 @@ function collectUserData() {
 
 function validateUserData(userData) {
     if (!userData.name) {
-        showToast('Bitte geben Sie Ihren Namen ein', 'error');
+        quickApplyShowToast('Bitte geben Sie Ihren Namen ein', 'error');
         document.getElementById('quickName')?.focus();
         return false;
     }
     if (!userData.experience) {
-        showToast('Bitte wählen Sie Ihre Berufserfahrung', 'error');
+        quickApplyShowToast('Bitte wählen Sie Ihre Berufserfahrung', 'error');
         document.getElementById('quickExperience')?.focus();
         return false;
     }
     if (!userData.skills) {
-        showToast('Bitte geben Sie Ihre Stärken ein', 'error');
+        quickApplyShowToast('Bitte geben Sie Ihre Stärken ein', 'error');
         document.getElementById('quickSkills')?.focus();
         return false;
     }
@@ -855,7 +855,7 @@ function downloadLetter() {
     a.click();
     URL.revokeObjectURL(url);
     
-    showToast('Anschreiben heruntergeladen', 'success');
+    quickApplyShowToast('Anschreiben heruntergeladen', 'success');
 }
 
 function saveToDrafts() {
@@ -870,11 +870,11 @@ function saveToDrafts() {
     });
     localStorage.setItem('cover_letter_drafts', JSON.stringify(drafts.slice(0, 10)));
     
-    showToast('Entwurf gespeichert', 'success');
+    quickApplyShowToast('Entwurf gespeichert', 'success');
 }
 
 function sendApplication() {
-    showToast('Bewerbungsfunktion kommt bald!', 'info');
+    quickApplyShowToast('Bewerbungsfunktion kommt bald!', 'info');
 }
 
 function saveToTracking(userData) {
@@ -928,15 +928,37 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-function showToast(message, type) {
-    if (window.showToast) return window.showToast(message, type);
-    console.log(`[${type}] ${message}`);
+// showToast - use dashboard-core's implementation or fallback
+function quickApplyShowToast(message, type = 'info') {
+    // Try NotificationManager from utils.js
+    if (window.NotificationManager && window.NotificationManager.showToast) {
+        return window.NotificationManager.quickApplyShowToast(message, type);
+    }
+    // Try dashboard-core's showToast (already defined on window)
+    const container = document.getElementById('toastContainer');
+    if (!container) {
+        console.log(`[${type}] ${message}`);
+        return;
+    }
+    
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check' : type === 'error' ? 'times' : 'info'}-circle"></i>
+        <span>${message}</span>
+    `;
+    container.appendChild(toast);
+    setTimeout(() => toast.classList.add('show'), 10);
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
 }
 
 function copyToClipboard(text) {
     if (window.copyToClipboard) return window.copyToClipboard(text);
     navigator.clipboard.writeText(text).then(() => {
-        showToast('In Zwischenablage kopiert', 'success');
+        quickApplyShowToast('In Zwischenablage kopiert', 'success');
     });
 }
 
