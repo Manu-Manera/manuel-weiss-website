@@ -90,6 +90,50 @@
                 visibility: visible !important;
             }
         }
+        
+        /* Progress Steps - Verbesserte Lesbarkeit */
+        .progress-steps {
+            display: flex !important;
+            justify-content: space-between !important;
+            gap: 12px !important;
+            padding: 0 12px !important;
+            margin-bottom: 20px !important;
+        }
+        
+        .progress-step {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            gap: 8px !important;
+            flex: 1 !important;
+            min-width: 0 !important;
+            padding: 4px !important;
+        }
+        
+        .step-label {
+            font-size: 0.7rem !important;
+            color: rgba(255, 255, 255, 0.7) !important;
+            font-weight: 600 !important;
+            text-align: center !important;
+            white-space: nowrap !important;
+            letter-spacing: 0.5px !important;
+        }
+        
+        .progress-step.active .step-label {
+            color: white !important;
+        }
+        
+        .step-dot {
+            width: 14px !important;
+            height: 14px !important;
+            min-width: 14px !important;
+            border-radius: 50% !important;
+        }
+        
+        .modal-header {
+            min-height: 95px !important;
+            padding: 28px 32px 24px !important;
+        }
     </style>
     
     <!-- Fonts -->
