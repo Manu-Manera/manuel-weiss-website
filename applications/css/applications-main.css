@@ -868,10 +868,10 @@
     background: rgba(255, 255, 255, 0.2);
 }
 
-/* Mobile Responsive */
+/* Mobile Responsive - Only for OLD navbar style, NOT .navbar-modern */
 @media (max-width: 768px) {
-    /* Navbar auf Mobile sichtbar machen */
-    .navbar {
+    /* Navbar auf Mobile sichtbar machen - only legacy nav */
+    .navbar:not(.navbar-modern) {
         position: fixed !important;
         top: 0 !important;
         left: 0 !important;
@@ -886,7 +886,7 @@
         pointer-events: auto !important;
     }
     
-    .nav-container {
+    .navbar:not(.navbar-modern) .nav-container {
         display: flex !important;
         justify-content: space-between !important;
         align-items: center !important;
@@ -896,27 +896,27 @@
         visibility: visible !important;
     }
     
-    .nav-brand {
+    .navbar:not(.navbar-modern) .nav-brand {
         display: flex !important;
         visibility: visible !important;
     }
     
-    .nav-title {
+    .navbar:not(.navbar-modern) .nav-title {
         display: none !important;
     }
     
-    .nav-logo {
+    .navbar:not(.navbar-modern) .nav-logo {
         width: 36px !important;
         height: 36px !important;
     }
     
-    .mobile-hamburger {
+    .navbar:not(.navbar-modern) .mobile-hamburger {
         display: flex !important;
         visibility: visible !important;
     }
     
-    .nav-menu,
-    .auth-section {
+    .navbar:not(.navbar-modern) .nav-menu,
+    .navbar:not(.navbar-modern) .auth-section {
         display: none !important;
     }
 }
