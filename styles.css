@@ -549,13 +549,13 @@ a:hover {
 }
 
 @media (max-width: 768px) {
-    /* Verstecke Desktop Navigation auf Mobile */
-    .nav-menu {
+    /* Verstecke Desktop Navigation auf Mobile - NICHT für navbar-modern */
+    .nav-menu:not(.navbar-modern .nav-menu) {
         display: none !important;
     }
     
-    /* Verstecke Desktop Auth Section auf Mobile */
-    .auth-section:not(.mobile-auth-section) {
+    /* Verstecke Desktop Auth Section auf Mobile - NICHT für navbar-modern */
+    .auth-section:not(.mobile-auth-section):not(.navbar-modern .auth-section) {
         display: none !important;
     }
     
