@@ -163,14 +163,20 @@ async function parseJobUrl() {
     }
     
     // Show loading
-    parseBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    parseBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analysiere...';
     parseBtn.disabled = true;
     
     try {
-        // Try to extract job data from URL
-        const jobData = await extractJobFromUrl(url);
+        // Versuche zuerst die Netlify Function
+        let jobData = await fetchJobDataFromApi(url);
         
-        if (jobData) {
+        // Fallback auf lokale Extraktion wenn API fehlschlägt
+        if (!jobData || (!jobData.title && !jobData.company)) {
+            console.log('API-Parsing unvollständig, nutze lokale Extraktion');
+            jobData = await extractJobFromUrl(url);
+        }
+        
+        if (jobData && (jobData.title || jobData.company)) {
             QuickApplyState.jobData = jobData;
             showParsedJob(jobData);
             showToast('Stellenanzeige erkannt!', 'success');
@@ -187,11 +193,46 @@ async function parseJobUrl() {
         }
     } catch (error) {
         console.error('Error parsing URL:', error);
-        showToast('Fehler beim Analysieren - bitte Text einfügen', 'error');
+        showToast('Analysieren fehlgeschlagen - bitte Text einfügen', 'error');
         toggleInputType('text');
     } finally {
         parseBtn.innerHTML = '<i class="fas fa-search"></i> Analysieren';
         parseBtn.disabled = false;
+    }
+}
+
+/**
+ * Rufe die Netlify Function zum Parsen der Job-URL auf
+ */
+async function fetchJobDataFromApi(url) {
+    try {
+        const response = await fetch('/.netlify/functions/job-parser', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                url: url,
+                type: 'url'
+            })
+        });
+        
+        if (!response.ok) {
+            console.warn('Job Parser API returned:', response.status);
+            return null;
+        }
+        
+        const result = await response.json();
+        
+        if (result.success && result.data) {
+            console.log('✅ Job-Daten von API erhalten:', result.data);
+            return result.data;
+        }
+        
+        return null;
+    } catch (error) {
+        console.warn('Job Parser API Fehler:', error);
+        return null;
     }
 }
 
@@ -274,6 +315,9 @@ function extractCompanyFromUrl(url) {
 // TEXT INPUT HANDLING
 // ═══════════════════════════════════════════════════════════════════════════
 
+// Debounce Timer für Text-Parsing
+let textParseTimeout = null;
+
 function handleTextInput() {
     const text = document.getElementById('jobText').value;
     const charCount = document.getElementById('charCount');
@@ -283,18 +327,78 @@ function handleTextInput() {
         charCount.textContent = text.length;
     }
     
-    // Parse text if enough content
+    // Debounce: Parse text nach 500ms Pause
+    clearTimeout(textParseTimeout);
+    
     if (text.length > 100) {
-        const jobData = parseJobText(text);
-        if (jobData.title || jobData.company) {
-            QuickApplyState.jobData = jobData;
-            showParsedJob(jobData);
-        }
+        textParseTimeout = setTimeout(async () => {
+            await parseAndShowJobText(text);
+        }, 500);
     } else {
         document.getElementById('parsedJobPreview').classList.add('hidden');
     }
     
     updateGenerateButton();
+}
+
+/**
+ * Parse Job-Text (lokal oder via API)
+ */
+async function parseAndShowJobText(text) {
+    // Versuche zuerst lokales Parsing (schneller)
+    let jobData = parseJobText(text);
+    
+    // Wenn lokales Parsing wenig findet, versuche API
+    if ((!jobData.title || !jobData.company) && text.length > 200) {
+        try {
+            const apiData = await fetchJobTextFromApi(text);
+            if (apiData) {
+                // Merge API-Daten mit lokalem Parsing
+                jobData = {
+                    ...jobData,
+                    ...apiData,
+                    // Behalte lokale Werte wenn API leer
+                    title: apiData.title || jobData.title,
+                    company: apiData.company || jobData.company,
+                    location: apiData.location || jobData.location,
+                    requirements: [...new Set([...(apiData.requirements || []), ...(jobData.requirements || [])])]
+                };
+            }
+        } catch (e) {
+            console.warn('API Text-Parsing fehlgeschlagen:', e);
+        }
+    }
+    
+    if (jobData.title || jobData.company || jobData.requirements.length > 0) {
+        QuickApplyState.jobData = jobData;
+        showParsedJob(jobData);
+    }
+}
+
+/**
+ * Rufe die Netlify Function zum Parsen von Job-Text auf
+ */
+async function fetchJobTextFromApi(text) {
+    try {
+        const response = await fetch('/.netlify/functions/job-parser', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                text: text,
+                type: 'text'
+            })
+        });
+        
+        if (!response.ok) return null;
+        
+        const result = await response.json();
+        return result.success ? result.data : null;
+    } catch (error) {
+        console.warn('Job Text Parser API Fehler:', error);
+        return null;
+    }
 }
 
 function parseJobText(text) {

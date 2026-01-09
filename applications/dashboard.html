@@ -428,19 +428,146 @@ Ihre Aufgaben:
             <!-- TAB 3: LEBENSLAUF -->
             <!-- ═══════════════════════════════════════════════════════════ -->
             <div id="tab-resume" class="tab-content">
-                <div class="tab-placeholder">
-                    <i class="fas fa-id-card"></i>
-                    <h2>Lebenslauf-Editor</h2>
-                    <p>PDF-Upload mit OCR oder manuelle Eingabe</p>
-                    <div class="placeholder-actions">
-                        <a href="resume-editor.html" class="btn-primary">
-                            <i class="fas fa-edit"></i> Lebenslauf bearbeiten
-                        </a>
-                        <button class="btn-secondary" onclick="importFromLinkedIn()">
-                            <i class="fab fa-linkedin"></i> Von LinkedIn importieren
-                        </button>
+                <div class="resume-container">
+                    <div class="resume-header">
+                        <h2><i class="fas fa-id-card"></i> Lebenslauf-Manager</h2>
+                        <div class="resume-actions">
+                            <button class="btn-secondary" onclick="uploadResumePdf()">
+                                <i class="fas fa-file-upload"></i> PDF hochladen
+                            </button>
+                            <button class="btn-secondary" onclick="importFromLinkedIn()">
+                                <i class="fab fa-linkedin"></i> LinkedIn Import
+                            </button>
+                            <a href="resume-editor.html" class="btn-primary">
+                                <i class="fas fa-edit"></i> Vollständiger Editor
+                            </a>
+                        </div>
                     </div>
-                    <span class="migration-hint">Wird in nächster Phase hier integriert</span>
+
+                    <!-- Quick Resume Form -->
+                    <div class="resume-quick-form">
+                        <div class="resume-section">
+                            <h3><i class="fas fa-user"></i> Persönliche Daten</h3>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Vorname</label>
+                                    <input type="text" id="resumeFirstName" placeholder="Max">
+                                </div>
+                                <div class="form-group">
+                                    <label>Nachname</label>
+                                    <input type="text" id="resumeLastName" placeholder="Mustermann">
+                                </div>
+                                <div class="form-group">
+                                    <label>Berufsbezeichnung</label>
+                                    <input type="text" id="resumeTitle" placeholder="z.B. Senior Software Engineer">
+                                </div>
+                                <div class="form-group">
+                                    <label>E-Mail</label>
+                                    <input type="email" id="resumeEmail" placeholder="max@example.de">
+                                </div>
+                                <div class="form-group">
+                                    <label>Telefon</label>
+                                    <input type="tel" id="resumePhone" placeholder="+49 123 456789">
+                                </div>
+                                <div class="form-group">
+                                    <label>Standort</label>
+                                    <input type="text" id="resumeLocation" placeholder="München, Deutschland">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="resume-section">
+                            <h3><i class="fas fa-align-left"></i> Kurzprofil</h3>
+                            <div class="form-group full-width">
+                                <textarea id="resumeSummary" rows="4" placeholder="2-3 Sätze über Sie: Ihre aktuelle Rolle, Jahre Erfahrung, und wichtigste Stärken..."></textarea>
+                                <small>Wichtig für ATS-Systeme! Nennen Sie Ihren Jobtitel und 3-5 zentrale Skills.</small>
+                            </div>
+                        </div>
+
+                        <div class="resume-section">
+                            <h3><i class="fas fa-briefcase"></i> Berufserfahrung</h3>
+                            <div id="experienceList" class="experience-list">
+                                <!-- Wird dynamisch gefüllt -->
+                            </div>
+                            <button class="btn-add" onclick="addExperienceEntry()">
+                                <i class="fas fa-plus"></i> Position hinzufügen
+                            </button>
+                        </div>
+
+                        <div class="resume-section">
+                            <h3><i class="fas fa-graduation-cap"></i> Ausbildung</h3>
+                            <div id="educationList" class="education-list">
+                                <!-- Wird dynamisch gefüllt -->
+                            </div>
+                            <button class="btn-add" onclick="addEducationEntry()">
+                                <i class="fas fa-plus"></i> Ausbildung hinzufügen
+                            </button>
+                        </div>
+
+                        <div class="resume-section">
+                            <h3><i class="fas fa-tools"></i> Skills</h3>
+                            <div class="form-group full-width">
+                                <input type="text" id="resumeSkills" placeholder="JavaScript, React, Python, Projektmanagement, Agile...">
+                                <small>Kommagetrennt eingeben</small>
+                            </div>
+                            <div class="skills-preview" id="skillsPreview">
+                                <!-- Skill-Tags werden hier angezeigt -->
+                            </div>
+                        </div>
+
+                        <div class="resume-section">
+                            <h3><i class="fas fa-globe"></i> Sprachen</h3>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Sprache</label>
+                                    <input type="text" id="resumeLang1" placeholder="Deutsch" value="Deutsch">
+                                </div>
+                                <div class="form-group">
+                                    <label>Niveau</label>
+                                    <select id="resumeLang1Level">
+                                        <option value="Muttersprache">Muttersprache</option>
+                                        <option value="C2">C2 - Verhandlungssicher</option>
+                                        <option value="C1">C1 - Fließend</option>
+                                        <option value="B2">B2 - Gut</option>
+                                        <option value="B1">B1 - Grundlagen</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Sprache</label>
+                                    <input type="text" id="resumeLang2" placeholder="Englisch" value="Englisch">
+                                </div>
+                                <div class="form-group">
+                                    <label>Niveau</label>
+                                    <select id="resumeLang2Level">
+                                        <option value="Muttersprache">Muttersprache</option>
+                                        <option value="C2">C2 - Verhandlungssicher</option>
+                                        <option value="C1" selected>C1 - Fließend</option>
+                                        <option value="B2">B2 - Gut</option>
+                                        <option value="B1">B1 - Grundlagen</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="resume-footer">
+                            <button class="btn-secondary" onclick="clearResumeForm()">
+                                <i class="fas fa-undo"></i> Zurücksetzen
+                            </button>
+                            <button class="btn-primary" onclick="saveResume()">
+                                <i class="fas fa-save"></i> Lebenslauf speichern
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- LinkedIn Import Modal Hint -->
+                    <div class="linkedin-hint" id="linkedinHint">
+                        <i class="fab fa-linkedin"></i>
+                        <div>
+                            <strong>LinkedIn-Import</strong>
+                            <p>Exportieren Sie Ihr LinkedIn-Profil als PDF und laden Sie es hier hoch.</p>
+                            <a href="https://www.linkedin.com/help/linkedin/answer/50191" target="_blank">Anleitung →</a>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -622,6 +749,10 @@ Ihre Aufgaben:
                     <input type="text" id="newAppCompany" required>
                 </div>
                 <div class="form-group">
+                    <label>Standort</label>
+                    <input type="text" id="newAppLocation" placeholder="z.B. München, Remote">
+                </div>
+                <div class="form-group">
                     <label>Bewerbungsdatum</label>
                     <input type="date" id="newAppDate" value="">
                 </div>
@@ -635,12 +766,70 @@ Ihre Aufgaben:
                     </select>
                 </div>
                 <div class="form-group">
+                    <label>Job-URL</label>
+                    <input type="url" id="newAppUrl" placeholder="https://...">
+                </div>
+                <div class="form-group">
                     <label>Notizen</label>
                     <textarea id="newAppNotes" rows="3"></textarea>
                 </div>
                 <div class="modal-actions">
                     <button type="button" class="btn-secondary" onclick="closeModal('addApplicationModal')">Abbrechen</button>
                     <button type="submit" class="btn-primary">Hinzufügen</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Bewerbung bearbeiten -->
+    <div class="modal-overlay hidden" id="editApplicationModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-edit"></i> Bewerbung bearbeiten</h3>
+                <button class="modal-close" onclick="closeModal('editApplicationModal')">&times;</button>
+            </div>
+            <form id="editApplicationForm" onsubmit="updateApplication(event)">
+                <input type="hidden" id="editAppId">
+                <div class="form-group">
+                    <label>Position *</label>
+                    <input type="text" id="editAppPosition" required>
+                </div>
+                <div class="form-group">
+                    <label>Unternehmen *</label>
+                    <input type="text" id="editAppCompany" required>
+                </div>
+                <div class="form-group">
+                    <label>Standort</label>
+                    <input type="text" id="editAppLocation">
+                </div>
+                <div class="form-group">
+                    <label>Bewerbungsdatum</label>
+                    <input type="date" id="editAppDate">
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <select id="editAppStatus">
+                        <option value="pending">Gesendet / Offen</option>
+                        <option value="interview">Interview eingeladen</option>
+                        <option value="offer">Angebot erhalten</option>
+                        <option value="rejected">Absage</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Job-URL</label>
+                    <input type="url" id="editAppUrl">
+                </div>
+                <div class="form-group">
+                    <label>Notizen</label>
+                    <textarea id="editAppNotes" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Anschreiben</label>
+                    <textarea id="editAppCoverLetter" rows="5" placeholder="Gespeichertes Anschreiben..."></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal('editApplicationModal')">Abbrechen</button>
+                    <button type="submit" class="btn-primary">Speichern</button>
                 </div>
             </form>
         </div>
