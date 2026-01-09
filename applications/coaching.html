@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bewerbungscoaching - Systemischer Workflow | Manuel Weiss</title>
+    <meta name="description" content="Professionelles Bewerbungscoaching mit systemischem Ansatz. Hilfe zur Selbsthilfe in 6 Schritten zur erfolgreichen Bewerbung.">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="css/applications-main.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/coaching.css">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation - Modern & Clean -->
+    <nav class="navbar navbar-modern">
+        <div class="nav-container">
+            <!-- Mobile Hamburger -->
+            <button class="mobile-hamburger" id="mobileHamburger" aria-label="Menü öffnen">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
+            
+            <div class="nav-menu">
+                <a href="../index.html" class="nav-link nav-link-home">
+                    <i class="fas fa-home"></i>
+                    <span>Start</span>
+                </a>
+                <a href="dashboard.html" class="nav-link">
+                    <i class="fas fa-briefcase"></i>
+                    <span>Bewerbungsmanager</span>
+                </a>
+                <a href="coaching.html" class="nav-link active">
+                    <i class="fas fa-compass"></i>
+                    <span>Coaching</span>
+                </a>
+            </div>
+            
+            <div class="auth-section">
+                <button id="authButton" class="nav-login-btn">
+                    <i class="fas fa-user"></i>
+                    <span id="authButtonText">Anmelden</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="coaching-hero">
+        <div class="hero-bg-decoration">
+            <div class="hero-shape shape-1"></div>
+            <div class="hero-shape shape-2"></div>
+            <div class="hero-shape shape-3"></div>
+        </div>
+        <div class="hero-content">
+            <div class="hero-badge">
+                <i class="fas fa-compass"></i>
+                <span>Systemisches Coaching</span>
+            </div>
+            <h1 class="hero-title">
+                Finde <span class="gradient-text">deinen Weg</span><br>
+                zur Traumkarriere
+            </h1>
+            <p class="hero-subtitle">
+                Ein professioneller Coaching-Workflow nach dem Prinzip "Hilfe zur Selbsthilfe". 
+                In 6 strukturierten Schritten erkennst du deine Stärken, definierst deine Ziele 
+                und entwickelst einen konkreten Aktionsplan für deinen beruflichen Erfolg.
+            </p>
+            <div class="hero-features">
+                <div class="feature-item">
+                    <i class="fas fa-brain"></i>
+                    <span>Systemischer Ansatz</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-clock"></i>
+                    <span>45-60 Minuten</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-save"></i>
+                    <span>Fortschritt speichern</span>
+                </div>
+            </div>
+            <div class="hero-actions">
+                <button class="btn btn-primary btn-lg" onclick="startCoachingWorkflow()">
+                    <i class="fas fa-play"></i>
+                    Coaching starten
+                </button>
+                <button class="btn btn-outline btn-lg" onclick="showMethodExplanation()">
+                    <i class="fas fa-info-circle"></i>
+                    Methode erfahren
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Workflow Overview -->
+    <section class="workflow-overview">
+        <div class="section-header">
+            <h2>Dein Coaching-Weg in 6 Schritten</h2>
+            <p>Jeder Schritt baut auf dem vorherigen auf und führt dich strukturiert zu deinem Ziel</p>
+        </div>
+        
+        <div class="workflow-steps">
+            <!-- Step 1 -->
+            <div class="workflow-step" data-step="1">
+                <div class="step-number">1</div>
+                <div class="step-icon"><i class="fas fa-search"></i></div>
+                <h3>Standortbestimmung</h3>
+                <p>Wo stehst du gerade? Analysiere deine aktuelle berufliche Situation, deine Zufriedenheit und deine Ressourcen.</p>
+                <ul class="step-details">
+                    <li>Aktuelle Situation reflektieren</li>
+                    <li>Zufriedenheit bewerten</li>
+                    <li>Ressourcen identifizieren</li>
+                </ul>
+            </div>
+            
+            <!-- Step 2 -->
+            <div class="workflow-step" data-step="2">
+                <div class="step-number">2</div>
+                <div class="step-icon"><i class="fas fa-gem"></i></div>
+                <h3>Stärken & Werte</h3>
+                <p>Was macht dich einzigartig? Entdecke deine natürlichen Talente, erworbenen Fähigkeiten und deine Kernwerte.</p>
+                <ul class="step-details">
+                    <li>Natürliche Talente erkennen</li>
+                    <li>Erworbene Fähigkeiten auflisten</li>
+                    <li>Persönliche Werte definieren</li>
+                </ul>
+            </div>
+            
+            <!-- Step 3 -->
+            <div class="workflow-step" data-step="3">
+                <div class="step-number">3</div>
+                <div class="step-icon"><i class="fas fa-bullseye"></i></div>
+                <h3>Zielfindung</h3>
+                <p>Wohin willst du? Entwickle eine klare Vision für deine berufliche Zukunft mit SMART-Zielen.</p>
+                <ul class="step-details">
+                    <li>Traumjob visualisieren</li>
+                    <li>Kurzfristige Ziele setzen</li>
+                    <li>Langfristige Vision entwickeln</li>
+                </ul>
+            </div>
+            
+            <!-- Step 4 -->
+            <div class="workflow-step" data-step="4">
+                <div class="step-number">4</div>
+                <div class="step-icon"><i class="fas fa-mountain"></i></div>
+                <h3>Hindernisse & Ressourcen</h3>
+                <p>Was steht im Weg? Identifiziere Hindernisse und entwickle Strategien, sie mit deinen Ressourcen zu überwinden.</p>
+                <ul class="step-details">
+                    <li>Blockaden erkennen</li>
+                    <li>Lösungsansätze finden</li>
+                    <li>Unterstützungssystem aufbauen</li>
+                </ul>
+            </div>
+            
+            <!-- Step 5 -->
+            <div class="workflow-step" data-step="5">
+                <div class="step-number">5</div>
+                <div class="step-icon"><i class="fas fa-tasks"></i></div>
+                <h3>Aktionsplan</h3>
+                <p>Was sind deine nächsten Schritte? Erstelle einen konkreten, umsetzbaren Plan mit Meilensteinen.</p>
+                <ul class="step-details">
+                    <li>Konkrete Maßnahmen definieren</li>
+                    <li>Zeitplan erstellen</li>
+                    <li>Meilensteine festlegen</li>
+                </ul>
+            </div>
+            
+            <!-- Step 6 -->
+            <div class="workflow-step" data-step="6">
+                <div class="step-number">6</div>
+                <div class="step-icon"><i class="fas fa-fire"></i></div>
+                <h3>Motivation & Commitment</h3>
+                <p>Wie bleibst du dran? Stärke deine Selbstmotivation und schaffe verbindliche Strukturen für den Erfolg.</p>
+                <ul class="step-details">
+                    <li>Motivatoren identifizieren</li>
+                    <li>Commitment stärken</li>
+                    <li>Erfolgsindikatoren definieren</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Method Explanation Section -->
+    <section class="method-section" id="methodSection">
+        <div class="method-content">
+            <div class="method-text">
+                <h2>Systemisches Coaching</h2>
+                <p class="method-intro">
+                    Systemisches Coaching basiert auf der Erkenntnis, dass du bereits alle Ressourcen 
+                    für deine Lösung in dir trägst. Als Coach begleite ich dich dabei, diese zu aktivieren.
+                </p>
+                
+                <div class="method-principles">
+                    <div class="principle">
+                        <div class="principle-icon"><i class="fas fa-user-check"></i></div>
+                        <h4>Hilfe zur Selbsthilfe</h4>
+                        <p>Du findest deine eigenen Antworten. Ich stelle die richtigen Fragen.</p>
+                    </div>
+                    <div class="principle">
+                        <div class="principle-icon"><i class="fas fa-project-diagram"></i></div>
+                        <h4>Ganzheitlicher Blick</h4>
+                        <p>Wir betrachten dein berufliches Umfeld als System mit verschiedenen Wechselwirkungen.</p>
+                    </div>
+                    <div class="principle">
+                        <div class="principle-icon"><i class="fas fa-lightbulb"></i></div>
+                        <h4>Ressourcenorientierung</h4>
+                        <p>Der Fokus liegt auf deinen Stärken und Möglichkeiten, nicht auf Defiziten.</p>
+                    </div>
+                    <div class="principle">
+                        <div class="principle-icon"><i class="fas fa-rocket"></i></div>
+                        <h4>Lösungsfokussierung</h4>
+                        <p>Wir konzentrieren uns auf die Zukunft und konkrete Schritte zum Ziel.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="method-visual">
+                <div class="coaching-circle">
+                    <div class="circle-center">
+                        <i class="fas fa-user"></i>
+                        <span>Du</span>
+                    </div>
+                    <div class="circle-orbit orbit-1">
+                        <div class="orbit-item"><i class="fas fa-heart"></i></div>
+                    </div>
+                    <div class="circle-orbit orbit-2">
+                        <div class="orbit-item"><i class="fas fa-brain"></i></div>
+                    </div>
+                    <div class="circle-orbit orbit-3">
+                        <div class="orbit-item"><i class="fas fa-users"></i></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials / Benefits -->
+    <section class="benefits-section">
+        <h2>Was du von diesem Coaching mitnimmst</h2>
+        <div class="benefits-grid">
+            <div class="benefit-card">
+                <div class="benefit-icon"><i class="fas fa-compass"></i></div>
+                <h3>Klarheit</h3>
+                <p>Du weißt genau, was du willst und warum – keine vagen Vorstellungen mehr.</p>
+            </div>
+            <div class="benefit-card">
+                <div class="benefit-icon"><i class="fas fa-shield-alt"></i></div>
+                <h3>Selbstvertrauen</h3>
+                <p>Du kennst deine Stärken und kannst sie überzeugend kommunizieren.</p>
+            </div>
+            <div class="benefit-card">
+                <div class="benefit-icon"><i class="fas fa-route"></i></div>
+                <h3>Konkreter Plan</h3>
+                <p>Du hast einen Schritt-für-Schritt Plan, den du sofort umsetzen kannst.</p>
+            </div>
+            <div class="benefit-card">
+                <div class="benefit-icon"><i class="fas fa-bolt"></i></div>
+                <h3>Motivation</h3>
+                <p>Du bist motiviert und weißt, wie du auch in schwierigen Phasen dranbleibst.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="cta-content">
+            <h2>Bereit für den nächsten Schritt?</h2>
+            <p>Starte jetzt dein persönliches Coaching und entdecke dein volles Potenzial.</p>
+            <button class="btn btn-primary btn-xl" onclick="startCoachingWorkflow()">
+                <i class="fas fa-play-circle"></i>
+                Coaching jetzt starten
+            </button>
+            <p class="cta-note">
+                <i class="fas fa-lock"></i> 
+                Deine Antworten werden verschlüsselt gespeichert und bleiben privat.
+            </p>
+        </div>
+    </section>
+
+    <!-- Coaching Workflow Modal -->
+    <div class="coaching-modal" id="coachingModal">
+        <div class="modal-backdrop" onclick="closeCoachingModal()"></div>
+        <div class="modal-container">
+            <div class="modal-header">
+                <div class="modal-progress">
+                    <div class="progress-steps">
+                        <div class="progress-step active" data-step="1">
+                            <span class="step-dot"></span>
+                            <span class="step-label">Stand</span>
+                        </div>
+                        <div class="progress-step" data-step="2">
+                            <span class="step-dot"></span>
+                            <span class="step-label">Stärken</span>
+                        </div>
+                        <div class="progress-step" data-step="3">
+                            <span class="step-dot"></span>
+                            <span class="step-label">Ziele</span>
+                        </div>
+                        <div class="progress-step" data-step="4">
+                            <span class="step-dot"></span>
+                            <span class="step-label">Hürden</span>
+                        </div>
+                        <div class="progress-step" data-step="5">
+                            <span class="step-dot"></span>
+                            <span class="step-label">Plan</span>
+                        </div>
+                        <div class="progress-step" data-step="6">
+                            <span class="step-dot"></span>
+                            <span class="step-label">Commit</span>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="modalProgressBar"></div>
+                    </div>
+                </div>
+                <button class="modal-close" onclick="closeCoachingModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="modal-body" id="coachingContent">
+                <!-- Content wird dynamisch geladen -->
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="prevStepBtn" onclick="previousCoachingStep()" style="display: none;">
+                    <i class="fas fa-arrow-left"></i> Zurück
+                </button>
+                <button class="btn btn-success" id="saveLaterBtn" onclick="saveCoachingProgress()">
+                    <i class="fas fa-save"></i> Speichern
+                </button>
+                <button class="btn btn-primary" id="nextStepBtn" onclick="nextCoachingStep()">
+                    Weiter <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../js/user-auth.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/coaching-workflow.js"></script>
+    <script>
+        // Mobile menu toggle
+        document.getElementById('mobileHamburger')?.addEventListener('click', function() {
+            document.querySelector('.nav-menu').classList.toggle('active');
+            this.classList.toggle('active');
+        });
+    </script>
+</body>
+</html>
+
