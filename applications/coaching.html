@@ -343,15 +343,70 @@
     </div>
 
     <!-- Scripts -->
-    <script src="../js/user-auth.js"></script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="../js/unified-aws-auth.js"></script>
+    <script src="../js/unified-auth-modals.js"></script>
     <script src="js/utils.js"></script>
     <script src="js/coaching-workflow.js"></script>
     <script>
+        // Load Auth Modals HTML
+        async function loadAuthModals() {
+            const container = document.createElement('div');
+            container.id = 'authModalsContainer';
+            try {
+                const response = await fetch('../components/unified-auth-modals.html');
+                if (response.ok) {
+                    container.innerHTML = await response.text();
+                    document.body.appendChild(container);
+                }
+            } catch (e) {
+                console.warn('Could not load auth modals');
+            }
+        }
+        
+        // Auth button handler
+        function setupAuthButton() {
+            const authButton = document.getElementById('authButton');
+            if (!authButton) return;
+            
+            authButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                const isLoggedIn = window.awsAuth && window.awsAuth.isLoggedIn();
+                
+                if (isLoggedIn) {
+                    window.location.href = 'dashboard.html';
+                } else if (window.authModals) {
+                    window.authModals.showLogin();
+                }
+            });
+            
+            // Update button state
+            updateAuthState();
+        }
+        
+        function updateAuthState() {
+            const authButton = document.getElementById('authButton');
+            const isLoggedIn = window.awsAuth && window.awsAuth.isLoggedIn();
+            
+            if (isLoggedIn && authButton) {
+                const userData = window.awsAuth.getUserDataFromToken();
+                authButton.innerHTML = `<i class="fas fa-th-large"></i><span>Dashboard</span>`;
+            }
+        }
+        
         // Mobile menu toggle
         document.getElementById('mobileHamburger')?.addEventListener('click', function() {
             document.querySelector('.nav-menu').classList.toggle('active');
             this.classList.toggle('active');
         });
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadAuthModals();
+            setTimeout(setupAuthButton, 500);
+        });
+        
+        window.addEventListener('authStateChanged', updateAuthState);
     </script>
 </body>
 </html>

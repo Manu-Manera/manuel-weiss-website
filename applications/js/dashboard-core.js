@@ -560,73 +560,83 @@ function setupMobileMenu() {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// AUTHENTICATION
+// AUTHENTICATION (Updated for unified-aws-auth.js)
 // ═══════════════════════════════════════════════════════════════════════════
 
 function setupAuth() {
-    const authBtn = document.getElementById('authButton');
-    const mobileAuthBtn = document.getElementById('mobileAuthButton');
+    // Auth is now handled in dashboard.html with setupAuthUI()
+    // This function remains for backwards compatibility
     
-    // Check if already logged in (via real-user-auth.js)
-    if (window.realUserAuth && window.realUserAuth.isLoggedIn()) {
-        updateAuthUI(true);
-    }
+    // Check auth status and update UI
+    checkAuthStatus();
     
-    // Auth button click handlers
-    [authBtn, mobileAuthBtn].forEach(btn => {
-        if (btn) {
-            btn.addEventListener('click', () => {
-                if (window.realUserAuth && window.realUserAuth.isLoggedIn()) {
-                    toggleUserDropdown();
-                } else {
-                    if (window.realUserAuth) {
-                        window.realUserAuth.showLoginModal();
-                    } else {
-                        showToast('Login-System wird geladen...', 'info');
-                    }
-                }
-            });
-        }
+    // Listen for auth changes
+    window.addEventListener('authStateChanged', () => {
+        checkAuthStatus();
     });
 }
 
-function updateAuthUI(isLoggedIn) {
-    const authBtn = document.getElementById('authButton');
-    const authText = document.getElementById('authButtonText');
-    const dropdown = document.getElementById('userDropdown');
+function checkAuthStatus() {
+    const isLoggedIn = window.awsAuth && window.awsAuth.isLoggedIn();
     
-    if (isLoggedIn && window.realUserAuth) {
-        const user = window.realUserAuth.getCurrentUser();
-        if (user) {
-            authText.textContent = user.firstName || user.email.split('@')[0];
-            document.getElementById('userName').textContent = `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Benutzer';
-            document.getElementById('userEmail').textContent = user.email;
-            
+    if (isLoggedIn) {
+        const userData = window.awsAuth.getUserDataFromToken();
+        if (userData) {
             // Pre-fill profile from auth
             if (!DashboardState.profile.email) {
-                DashboardState.profile.email = user.email;
-                DashboardState.profile.firstName = user.firstName || '';
-                DashboardState.profile.lastName = user.lastName || '';
+                DashboardState.profile.email = userData.email || '';
+                DashboardState.profile.firstName = userData.name?.split(' ')[0] || '';
+                DashboardState.profile.lastName = userData.name?.split(' ').slice(1).join(' ') || '';
                 saveState();
             }
         }
-    } else {
-        authText.textContent = 'Anmelden';
+    }
+    
+    updateAuthUI(isLoggedIn);
+}
+
+function updateAuthUI(isLoggedIn) {
+    // Main auth UI is handled in dashboard.html's setupAuthUI()
+    // This function handles dashboard-specific auth state updates
+    
+    if (isLoggedIn && window.awsAuth) {
+        const userData = window.awsAuth.getUserDataFromToken();
+        if (userData) {
+            // Update profile display if on profile tab
+            const profileDisplay = document.getElementById('profileDisplay');
+            if (profileDisplay) {
+                // Update any profile-specific elements
+            }
+        }
+    }
+    
+    // Update API status display if it exists
+    if (typeof updateAPIStatusDisplay === 'function') {
+        updateAPIStatusDisplay();
     }
 }
 
 function toggleUserDropdown() {
     const dropdown = document.getElementById('userDropdown');
-    dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+    if (dropdown) {
+        dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+    }
 }
 
-function logout() {
-    if (window.realUserAuth) {
-        window.realUserAuth.logout();
-    }
-    updateAuthUI(false);
-    showToast('Abgemeldet', 'info');
+// closeMobileMenu - exposed globally for auth buttons
+function closeMobileMenu() {
+    const hamburger = document.getElementById('mobileHamburger');
+    const overlay = document.getElementById('mobileMenuOverlay');
+    const menu = document.getElementById('mobileMenuFullscreen');
+    
+    if (hamburger) hamburger.classList.remove('active');
+    if (overlay) overlay.classList.remove('active');
+    if (menu) menu.classList.remove('active');
+    document.body.style.overflow = '';
 }
+
+// Expose globally
+window.closeMobileMenu = closeMobileMenu;
 
 // Close dropdown on click outside
 document.addEventListener('click', (e) => {
@@ -1047,4 +1057,13 @@ window.removeEducation = removeEducation;
 window.updateEducation = updateEducation;
 window.uploadResumePdf = uploadResumePdf;
 window.initResumeTab = initResumeTab;
+
+// Export DashboardCore for external access
+window.DashboardCore = {
+    checkAuthStatus,
+    updateAuthUI,
+    closeMobileMenu,
+    showTab,
+    showToast
+};
 
