@@ -26,7 +26,9 @@ const QuickApplyState = {
 // ═══════════════════════════════════════════════════════════════════════════
 
 const CoverLetterTemplates = {
-    // Eröffnungssätze nach Tonalität
+    // ═══════════════════════════════════════════════════════════════════════════
+    // ERÖFFNUNGSSÄTZE - Nach Tonalität (formal, modern, kreativ)
+    // ═══════════════════════════════════════════════════════════════════════════
     openings: {
         formal: [
             "mit großem Interesse habe ich Ihre Stellenausschreibung für die Position als {{position}} bei {{company}} gelesen.",
@@ -34,7 +36,13 @@ const CoverLetterTemplates = {
             "Ihre Stellenanzeige für {{position}} hat mein besonderes Interesse geweckt, da sie genau meinem Profil entspricht.",
             "bezugnehmend auf Ihre Stellenausschreibung für {{position}} bewerbe ich mich hiermit bei Ihrem Unternehmen.",
             "mit Begeisterung habe ich festgestellt, dass Sie aktuell einen {{position}} suchen.",
-            "Ihre Ausschreibung für die Position {{position}} spricht mich besonders an, da ich hier meine Stärken optimal einbringen kann."
+            "Ihre Ausschreibung für die Position {{position}} spricht mich besonders an, da ich hier meine Stärken optimal einbringen kann.",
+            "auf der Suche nach einer neuen beruflichen Herausforderung bin ich auf Ihre Stellenausschreibung für {{position}} aufmerksam geworden.",
+            "mit großer Motivation bewerbe ich mich für die Position {{position}} in Ihrem Unternehmen.",
+            "Ihre Stellenanzeige für die Position {{position}} entspricht exakt meinen beruflichen Vorstellungen.",
+            "hiermit möchte ich mein aufrichtiges Interesse an der ausgeschriebenen Position als {{position}} bekunden.",
+            "die ausgeschriebene Stelle als {{position}} bei {{company}} hat mein Interesse geweckt.",
+            "Ihre Vakanz im Bereich {{position}} reizt mich sehr, weshalb ich mich hiermit bewerbe."
         ],
         modern: [
             "als ich Ihre Stellenanzeige für {{position}} bei {{company}} entdeckte, wusste ich sofort: Das ist genau das, wonach ich suche!",
@@ -42,7 +50,13 @@ const CoverLetterTemplates = {
             "{{company}} und ich – das könnte der perfekte Match werden! Ihre Ausschreibung für {{position}} spricht mich auf ganzer Linie an.",
             "Ihre Stellenausschreibung für {{position}} hat mich nicht nur interessiert, sondern richtig inspiriert.",
             "als {{position}}-Position bei einem innovativen Unternehmen wie {{company}}? Da musste ich mich einfach bewerben!",
-            "ich möchte Teil von {{company}} werden! Die Position als {{position}} passt perfekt zu meinen Zielen."
+            "ich möchte Teil von {{company}} werden! Die Position als {{position}} passt perfekt zu meinen Zielen.",
+            "wow, {{position}} bei {{company}}? Das klingt nach genau dem, was ich gesucht habe!",
+            "ich habe Ihre Stellenanzeige gesehen und gedacht: Das ist meine Chance bei {{company}}!",
+            "die Position {{position}} bei {{company}} ist wie für mich gemacht – deshalb bewerbe ich mich jetzt.",
+            "{{company}} steht auf meiner Wunschliste ganz oben – und {{position}} ist die perfekte Rolle für mich.",
+            "ich bin begeistert von der Möglichkeit, als {{position}} bei {{company}} zu arbeiten.",
+            "Ihre Stellenanzeige hat bei mir sofort Klick gemacht – {{position}} ist genau mein Ding!"
         ],
         creative: [
             "stellen Sie sich vor: Ein {{position}}, der nicht nur Aufgaben erledigt, sondern echte Lösungen schafft. Das bin ich!",
@@ -50,11 +64,19 @@ const CoverLetterTemplates = {
             "drei Dinge, die mich auszeichnen: Leidenschaft, Expertise und der Wunsch, bei {{company}} als {{position}} durchzustarten.",
             "ich habe aufgehört zu träumen und angefangen zu handeln – deshalb bewerbe ich mich als {{position}} bei {{company}}.",
             "zwischen den Zeilen Ihrer Stellenanzeige habe ich gelesen: Sie suchen jemanden, der wirklich etwas bewegen will.",
-            "mein nächstes Kapitel soll bei {{company}} geschrieben werden – und zwar als Ihr neuer {{position}}."
+            "mein nächstes Kapitel soll bei {{company}} geschrieben werden – und zwar als Ihr neuer {{position}}.",
+            "manchmal weiß man einfach, dass etwas passt – so ging es mir bei Ihrer Anzeige für {{position}}.",
+            "Sie suchen einen {{position}}? Ich suche eine Herausforderung. Treffen wir uns in der Mitte?",
+            "bevor Sie weiterscrollen: Ich bin genau der {{position}}, der {{company}} noch gefehlt hat.",
+            "spoiler: Am Ende dieser Bewerbung werden Sie mich zum Gespräch einladen wollen.",
+            "ich habe Ihre Stellenanzeige dreimal gelesen – und jedes Mal wurde ich überzeugter, dass ich perfekt passe.",
+            "andere bewerben sich. Ich überzeuge. Starten wir?"
         ]
     },
 
-    // Qualifikations-/Stärken-Sätze
+    // ═══════════════════════════════════════════════════════════════════════════
+    // QUALIFIKATIONEN & STÄRKEN
+    // ═══════════════════════════════════════════════════════════════════════════
     qualifications: {
         experience: [
             "In meiner {{experience}}-jährigen Berufserfahrung konnte ich umfangreiche Kompetenzen in {{skills}} aufbauen.",
@@ -62,7 +84,11 @@ const CoverLetterTemplates = {
             "Als erfahrene Fachkraft mit {{experience}} Jahren Berufserfahrung bringe ich solide Expertise in {{skills}} mit.",
             "Während meiner {{experience}}-jährigen Laufbahn habe ich mich auf {{skills}} spezialisiert.",
             "Mit {{experience}} Jahren Erfahrung in der Branche verfüge ich über praxiserprobte Fähigkeiten in {{skills}}.",
-            "Meine berufliche Entwicklung über {{experience}} Jahre hat mich zu einem Experten in {{skills}} gemacht."
+            "Meine berufliche Entwicklung über {{experience}} Jahre hat mich zu einem Experten in {{skills}} gemacht.",
+            "In {{experience}} Jahren Berufstätigkeit habe ich tiefgreifende Kenntnisse in {{skills}} erworben.",
+            "Meine {{experience}}-jährige Karriere hat mir ermöglicht, mich kontinuierlich in {{skills}} weiterzubilden.",
+            "Die vergangenen {{experience}} Jahre haben mir intensive Praxiserfahrung in {{skills}} gebracht.",
+            "Durch {{experience}} Jahre fokussierte Arbeit verfüge ich über ausgeprägte Kompetenzen in {{skills}}."
         ],
         skills: [
             "Zu meinen Kernkompetenzen zählen {{skills}}, die ich erfolgreich in verschiedenen Projekten eingesetzt habe.",
@@ -70,7 +96,11 @@ const CoverLetterTemplates = {
             "Meine Stärken in {{skills}} ermöglichen es mir, komplexe Herausforderungen effizient zu lösen.",
             "{{skills}} sind nicht nur Fähigkeiten für mich, sondern meine Leidenschaft.",
             "Ich bringe fundierte Kenntnisse in {{skills}} mit, die ich kontinuierlich weiterentwickle.",
-            "Mein Profil zeichnet sich besonders durch Expertise in {{skills}} aus."
+            "Mein Profil zeichnet sich besonders durch Expertise in {{skills}} aus.",
+            "Mit meinen Kompetenzen in {{skills}} kann ich sofort einen Beitrag leisten.",
+            "Meine Spezialisierung auf {{skills}} macht mich zu einem idealen Kandidaten.",
+            "Dank meiner Fähigkeiten in {{skills}} konnte ich bereits viele Projekte erfolgreich umsetzen.",
+            "{{skills}} gehören zu meinen absoluten Stärken, die ich gerne bei Ihnen einbringe."
         ],
         achievements: [
             "Ein besonderer Erfolg war die Steigerung der Team-Effizienz um 30% durch Prozessoptimierung.",
@@ -78,11 +108,33 @@ const CoverLetterTemplates = {
             "Unter meiner Leitung wurde ein Projekt drei Wochen vor dem geplanten Termin erfolgreich abgeschlossen.",
             "Ich habe erfolgreich ein Team von fünf Mitarbeitern aufgebaut und entwickelt.",
             "Durch meine Initiative wurde ein neuer Arbeitsbereich etabliert, der heute zum Kerngeschäft gehört.",
-            "Meine Strategie führte zu einer Umsatzsteigerung von 40% innerhalb eines Jahres."
+            "Meine Strategie führte zu einer Umsatzsteigerung von 40% innerhalb eines Jahres.",
+            "Ich habe die Kundenzufriedenheit um 35% gesteigert durch Verbesserung der Serviceprozesse.",
+            "Ein von mir implementiertes System führte zu einer Reduktion der Bearbeitungszeit um 50%.",
+            "Ich konnte die Fehlerquote im Projekt um 60% reduzieren durch systematische Qualitätssicherung.",
+            "Mein Vorschlag zur Prozessoptimierung wurde unternehmensweit übernommen und sparte jährlich 100.000€.",
+            "Ich habe erfolgreich fünf Großprojekte mit einem Gesamtvolumen von über 2 Millionen Euro geleitet.",
+            "Die von mir entwickelte Lösung wird heute von über 200 Mitarbeitern täglich genutzt.",
+            "Ich wurde zweimal für meine außerordentlichen Leistungen mit dem Mitarbeiter-des-Jahres-Preis ausgezeichnet.",
+            "Mein Team erreichte unter meiner Führung die höchste Produktivität in der Abteilungsgeschichte."
+        ],
+        softSkills: [
+            "Ich zeichne mich durch eine strukturierte und lösungsorientierte Arbeitsweise aus.",
+            "Meine Kommunikationsstärke ermöglicht es mir, auch komplexe Sachverhalte verständlich zu vermitteln.",
+            "Als Teamplayer schätze ich den kollegialen Austausch und arbeite gerne an gemeinsamen Zielen.",
+            "Flexibilität und Anpassungsfähigkeit zählen zu meinen besonderen Stärken.",
+            "Ich bin bekannt für meine zuverlässige und eigenverantwortliche Arbeitsweise.",
+            "Meine ausgeprägte analytische Denkweise hilft mir, Probleme schnell zu identifizieren und zu lösen.",
+            "Ich bringe eine hohe Selbstmotivation und Eigeninitiative mit.",
+            "Mein diplomatisches Geschick macht mich zu einem geschätzten Vermittler in schwierigen Situationen.",
+            "Ich arbeite strukturiert, priorisiere effektiv und behalte auch in hektischen Phasen den Überblick.",
+            "Meine interkulturelle Kompetenz ermöglicht mir eine erfolgreiche Zusammenarbeit mit internationalen Teams."
         ]
     },
 
-    // Motivation-Sätze
+    // ═══════════════════════════════════════════════════════════════════════════
+    // MOTIVATION - Warum dieses Unternehmen?
+    // ═══════════════════════════════════════════════════════════════════════════
     motivation: {
         general: [
             "{{company}} als innovatives Unternehmen in der Branche reizt mich besonders.",
@@ -90,7 +142,13 @@ const CoverLetterTemplates = {
             "Ihr Unternehmen steht für Qualität und Innovation – Werte, die ich teile.",
             "Die Unternehmenskultur bei {{company}} und die spannenden Projekte haben mich überzeugt.",
             "Bei {{company}} sehe ich die perfekte Möglichkeit, meine Fähigkeiten einzusetzen und weiterzuentwickeln.",
-            "Die Herausforderungen dieser Position und das Umfeld bei {{company}} motivieren mich sehr."
+            "Die Herausforderungen dieser Position und das Umfeld bei {{company}} motivieren mich sehr.",
+            "Der gute Ruf von {{company}} als Arbeitgeber hat mein Interesse geweckt.",
+            "Die Wachstumsstrategie von {{company}} begeistert mich und ich möchte Teil dieser Entwicklung sein.",
+            "{{company}} steht für Werte wie Nachhaltigkeit und Innovation, die mir persönlich wichtig sind.",
+            "Die Möglichkeit, in einem dynamischen Umfeld wie bei {{company}} zu arbeiten, reizt mich besonders.",
+            "Ich schätze den Fokus von {{company}} auf Mitarbeiterentwicklung und kontinuierliches Lernen.",
+            "Die Position bietet mir die Chance, meine Expertise einzubringen und gleichzeitig zu wachsen."
         ],
         custom: [
             "{{motivation}}",
@@ -100,69 +158,228 @@ const CoverLetterTemplates = {
         ]
     },
 
-    // Mehrwert-Sätze
+    // ═══════════════════════════════════════════════════════════════════════════
+    // MEHRWERT - Was bringe ich mit?
+    // ═══════════════════════════════════════════════════════════════════════════
     value: {
         formal: [
             "Mit meiner Expertise werde ich einen wertvollen Beitrag zu Ihrem Team leisten.",
             "Ich bin überzeugt, dass ich mit meinen Fähigkeiten Ihr Unternehmen bereichern kann.",
             "Meine Erfahrung wird es mir ermöglichen, schnell produktiv zu werden und Mehrwert zu schaffen.",
             "Ich bringe nicht nur Fachwissen mit, sondern auch die Motivation, Ihr Team voranzubringen.",
-            "Mit meinem Engagement und meiner Expertise werde ich Ihre Erwartungen übertreffen."
+            "Mit meinem Engagement und meiner Expertise werde ich Ihre Erwartungen übertreffen.",
+            "Ich bin zuversichtlich, dass ich die Anforderungen dieser Position nicht nur erfülle, sondern übertreffen werde.",
+            "Mein Ziel ist es, vom ersten Tag an einen messbaren Beitrag zu leisten.",
+            "Ich werde mich mit vollem Einsatz für den Erfolg Ihres Unternehmens einsetzen.",
+            "Mit meiner Erfahrung kann ich dazu beitragen, Ihre Unternehmensziele zu erreichen."
         ],
         modern: [
             "Ich bin ready, bei {{company}} durchzustarten und echte Ergebnisse zu liefern!",
             "Lassen Sie uns gemeinsam Großes erreichen – ich bin bereit!",
             "Ich will nicht nur mitarbeiten, sondern aktiv zum Erfolg von {{company}} beitragen.",
             "Mit mir bekommen Sie nicht nur einen Mitarbeiter, sondern einen echten Teamplayer.",
-            "Ich bin hungrig auf neue Herausforderungen und bereit, mein Bestes zu geben."
+            "Ich bin hungrig auf neue Herausforderungen und bereit, mein Bestes zu geben.",
+            "Ich brenne darauf, meine Fähigkeiten in die Praxis umzusetzen und etwas zu bewegen.",
+            "Gemeinsam mit Ihrem Team werde ich dafür sorgen, dass wir unsere Ziele erreichen.",
+            "Ich bringe frische Perspektiven mit und freue mich auf den Austausch mit Ihrem Team.",
+            "Mit meiner Energie und meinem Know-how werde ich einen echten Unterschied machen."
         ],
         creative: [
             "Stellen Sie mich ein – und Sie werden sich fragen, wie Sie je ohne mich ausgekommen sind!",
             "Ich verspreche Ihnen: Langeweile wird es mit mir nicht geben.",
             "Mein Ziel? {{company}} noch besser machen. Meine Methode? Engagement, Kreativität und harte Arbeit.",
             "Ich bin die fehlende Zutat in Ihrem Erfolgsrezept – probieren Sie es aus!",
-            "Was ich mitbringe? 100% Einsatz, frische Ideen und die Bereitschaft, zu lernen und zu wachsen."
+            "Was ich mitbringe? 100% Einsatz, frische Ideen und die Bereitschaft, zu lernen und zu wachsen.",
+            "Ich bin nicht hier, um einen Job zu haben – ich bin hier, um einen Unterschied zu machen.",
+            "Meine Devise: Nicht labern, sondern liefern. Das werden Sie schnell merken.",
+            "Ich werde nicht einfach meine Arbeit machen – ich werde sie herausragend machen.",
+            "Sie suchen jemanden, der mitdenkt? Ich denke voraus."
         ]
     },
 
-    // Abschlusssätze
+    // ═══════════════════════════════════════════════════════════════════════════
+    // ÜBERGANGSSÄTZE - Verbindungen zwischen Abschnitten
+    // ═══════════════════════════════════════════════════════════════════════════
+    transitions: {
+        toQualifications: [
+            "Lassen Sie mich kurz meine relevanten Qualifikationen erläutern:",
+            "Folgende Kompetenzen bringe ich für diese Position mit:",
+            "Was mich für diese Position qualifiziert:",
+            "Mein fachlicher Hintergrund in Kürze:"
+        ],
+        toMotivation: [
+            "Was mich an dieser Position besonders reizt:",
+            "Warum ich mich für {{company}} entschieden habe:",
+            "Die Gründe für meine Bewerbung bei Ihnen:",
+            "{{company}} hat mich aus mehreren Gründen überzeugt:"
+        ],
+        toClosing: [
+            "Zusammenfassend lässt sich sagen:",
+            "Ich bin überzeugt, dass ich die richtige Wahl für Sie bin.",
+            "Abschließend möchte ich betonen:",
+            "Ich freue mich darauf, Sie kennenzulernen."
+        ]
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // ABSCHLUSSSÄTZE
+    // ═══════════════════════════════════════════════════════════════════════════
     closings: {
         formal: [
             "Über die Einladung zu einem persönlichen Gespräch würde ich mich sehr freuen.",
             "Gerne überzeuge ich Sie in einem persönlichen Gespräch von meinen Qualifikationen.",
             "Ich freue mich auf die Möglichkeit, meine Motivation in einem Gespräch zu vertiefen.",
             "Für ein persönliches Kennenlernen stehe ich Ihnen jederzeit gerne zur Verfügung.",
-            "Ich würde mich freuen, meine Eignung für diese Position in einem Gespräch unter Beweis zu stellen."
+            "Ich würde mich freuen, meine Eignung für diese Position in einem Gespräch unter Beweis zu stellen.",
+            "Über die Möglichkeit, mich persönlich bei Ihnen vorstellen zu dürfen, würde ich mich sehr freuen.",
+            "Ich bin gespannt auf Ihre Rückmeldung und ein mögliches persönliches Gespräch.",
+            "Gerne erläutere ich Ihnen meine Qualifikationen in einem persönlichen Gespräch näher.",
+            "Für Rückfragen stehe ich Ihnen jederzeit zur Verfügung und freue mich auf Ihre Kontaktaufnahme."
         ],
         modern: [
             "Lassen Sie uns telefonieren! Ich freue mich auf den Austausch.",
             "Ich bin gespannt auf Ihre Rückmeldung und ein erstes Kennenlernen!",
             "Wann können wir uns treffen? Ich bin flexibel und freue mich auf das Gespräch!",
             "Neugierig geworden? Dann lassen Sie uns sprechen!",
-            "Ich freue mich darauf, Sie persönlich von mir zu überzeugen!"
+            "Ich freue mich darauf, Sie persönlich von mir zu überzeugen!",
+            "Lassen Sie uns bei einem Kaffee über die Details sprechen!",
+            "Ich bin bereit für den nächsten Schritt – Sie auch?",
+            "Melden Sie sich gerne – ich antworte schnell!",
+            "Ich freue mich auf unser Gespräch und die Chance, Sie kennenzulernen!"
         ],
         creative: [
             "Der Ball liegt jetzt bei Ihnen – ich bin bereit für den nächsten Schritt!",
             "Ein Kaffee, ein Gespräch, eine Chance – mehr brauche ich nicht, um Sie zu überzeugen.",
             "Meine Bewerbung ist der erste Schritt. Das Gespräch der zweite. Wann starten wir?",
             "Ich habe Ihnen geschrieben. Jetzt sind Sie dran. Ich warte auf Ihren Anruf!",
-            "Das war mein Pitch. Jetzt würde ich gerne Ihre Fragen beantworten – persönlich."
+            "Das war mein Pitch. Jetzt würde ich gerne Ihre Fragen beantworten – persönlich.",
+            "Ich bin nur einen Anruf entfernt – nutzen Sie die Chance!",
+            "Cliffhanger: Was passiert als nächstes? Das entscheiden Sie. Rufen Sie an!",
+            "Fortsetzung folgt... hoffentlich in Ihrem Büro beim Vorstellungsgespräch.",
+            "P.S.: Ich bin auch per WhatsApp erreichbar, wenn es schnell gehen muss."
         ]
     },
 
-    // Grußformeln
+    // ═══════════════════════════════════════════════════════════════════════════
+    // GRUSSFORMELN
+    // ═══════════════════════════════════════════════════════════════════════════
     greetings: {
-        formal: ["Mit freundlichen Grüßen", "Hochachtungsvoll", "Mit besten Grüßen"],
-        modern: ["Beste Grüße", "Herzliche Grüße", "Viele Grüße"],
-        creative: ["Bis bald!", "Auf ein baldiges Kennenlernen!", "Freundliche Grüße"]
+        formal: [
+            "Mit freundlichen Grüßen",
+            "Hochachtungsvoll",
+            "Mit besten Grüßen",
+            "Mit verbindlichen Grüßen",
+            "Mit den besten Empfehlungen"
+        ],
+        modern: [
+            "Beste Grüße",
+            "Herzliche Grüße",
+            "Viele Grüße",
+            "Sonnige Grüße",
+            "Liebe Grüße"
+        ],
+        creative: [
+            "Bis bald!",
+            "Auf ein baldiges Kennenlernen!",
+            "Freundliche Grüße",
+            "Gespannt auf Ihre Antwort,",
+            "Voller Vorfreude,"
+        ]
     },
 
-    // Anreden
+    // ═══════════════════════════════════════════════════════════════════════════
+    // ANREDEN
+    // ═══════════════════════════════════════════════════════════════════════════
     salutations: {
-        formal: ["Sehr geehrte Damen und Herren,", "Sehr geehrte Personalverantwortliche,"],
-        modern: ["Guten Tag,", "Hallo zusammen,"],
-        creative: ["Liebe Personalabteilung,", "Hallo Team von {{company}},"]
-    }
+        formal: [
+            "Sehr geehrte Damen und Herren,",
+            "Sehr geehrte Personalverantwortliche,",
+            "Sehr geehrtes Recruiting-Team,",
+            "Sehr geehrte Personalleitung,"
+        ],
+        modern: [
+            "Guten Tag,",
+            "Hallo zusammen,",
+            "Liebes HR-Team,",
+            "Liebes Recruiting-Team,"
+        ],
+        creative: [
+            "Liebe Personalabteilung,",
+            "Hallo Team von {{company}},",
+            "Liebes {{company}}-Team,",
+            "Hi, liebes Recruiting!"
+        ]
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // BRANCHENSPEZIFISCHE SÄTZE
+    // ═══════════════════════════════════════════════════════════════════════════
+    industrySpecific: {
+        tech: [
+            "Mit meiner Erfahrung in agilen Entwicklungsmethoden wie Scrum und Kanban bin ich bestens auf moderne Arbeitsweisen vorbereitet.",
+            "Ich halte mich stets über die neuesten Technologietrends auf dem Laufenden und bilde mich kontinuierlich weiter.",
+            "Die digitale Transformation begeistert mich und ich bringe die nötigen Skills mit, um sie aktiv mitzugestalten.",
+            "Clean Code, Code Reviews und CI/CD sind für mich selbstverständliche Bestandteile professioneller Softwareentwicklung."
+        ],
+        marketing: [
+            "Datengetriebenes Marketing ist meine Stärke – ich verstehe es, KPIs zu analysieren und Kampagnen kontinuierlich zu optimieren.",
+            "Mit meiner Erfahrung in SEO, SEA und Social Media Marketing kann ich Ihre Online-Präsenz nachhaltig stärken.",
+            "Ich denke kreativ und strategisch zugleich – die perfekte Kombination für erfolgreiches Marketing.",
+            "Content-Erstellung, Kampagnen-Management und Performance-Analyse gehören zu meinen täglichen Aufgaben."
+        ],
+        sales: [
+            "Mein Fokus liegt auf dem Aufbau langfristiger Kundenbeziehungen, nicht nur auf kurzfristigen Abschlüssen.",
+            "Ich bringe ein überzeugendes Verkaufstalent und ausgeprägte Verhandlungskompetenz mit.",
+            "Kundenbedürfnisse zu verstehen und passgenaue Lösungen anzubieten ist meine Leidenschaft.",
+            "Ich bin zielorientiert und habe meine Vertriebsziele in den letzten Jahren stets übertroffen."
+        ],
+        healthcare: [
+            "Die Gesundheit und das Wohlbefinden von Menschen liegt mir sehr am Herzen.",
+            "Mit meiner Empathie und fachlichen Kompetenz kann ich Patienten bestmöglich betreuen.",
+            "Qualitätsmanagement und Hygienestandards sind für mich selbstverständliche Bestandteile meiner Arbeit.",
+            "Ich bringe Erfahrung in der interdisziplinären Zusammenarbeit im Gesundheitswesen mit."
+        ],
+        finance: [
+            "Analytisches Denken und ein ausgeprägtes Zahlenverständnis zeichnen meine Arbeitsweise aus.",
+            "Ich bin versiert im Umgang mit komplexen Finanzmodellen und regulatorischen Anforderungen.",
+            "Präzision und Sorgfalt sind in meiner Arbeit mit Finanzdaten selbstverständlich.",
+            "Ich verbinde fundiertes Fachwissen mit dem Blick für unternehmerische Zusammenhänge."
+        ]
+    },
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // KARRIEREWECHSEL & BERUFSEINSTIEG
+    // ═══════════════════════════════════════════════════════════════════════════
+    careerChange: [
+        "Obwohl ich aus einer anderen Branche komme, bin ich überzeugt, dass meine transferierbaren Fähigkeiten einen echten Mehrwert bieten.",
+        "Mein branchenübergreifender Hintergrund ermöglicht mir frische Perspektiven und innovative Ansätze.",
+        "Ich sehe meinen Quereinstieg als Bereicherung – ich bringe neue Impulse und bewährte Methoden mit.",
+        "Die Fähigkeiten, die ich in meiner bisherigen Karriere entwickelt habe, sind direkt auf diese Position übertragbar."
+    ],
+    
+    freshGraduate: [
+        "Als engagierter Absolvent bringe ich frisches Wissen und hohe Lernbereitschaft mit.",
+        "Durch Praktika und Projektarbeiten habe ich bereits wertvolle praktische Erfahrungen gesammelt.",
+        "Was mir an Erfahrung fehlt, mache ich durch Motivation, Lernbereitschaft und moderne Methoden wett.",
+        "Ich bin hochmotiviert, meine theoretischen Kenntnisse in die Praxis umzusetzen."
+    ],
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // GEHALTSVORSTELLUNG & EINTRITTSDATUM
+    // ═══════════════════════════════════════════════════════════════════════════
+    availability: [
+        "Ich stehe Ihnen ab sofort zur Verfügung.",
+        "Meine Kündigungsfrist beträgt drei Monate, sodass ich zum nächstmöglichen Termin bei Ihnen starten könnte.",
+        "Nach Absprache kann ich kurzfristig beginnen.",
+        "Ich bin ab dem [Datum] uneingeschränkt verfügbar und freue mich auf einen zeitnahen Start."
+    ],
+
+    salary: [
+        "Meine Gehaltsvorstellung liegt bei [Betrag] Euro brutto jährlich.",
+        "Bezüglich meiner Gehaltsvorstellung orientiere ich mich am branchenüblichen Niveau.",
+        "Über die Vergütung spreche ich gerne persönlich mit Ihnen.",
+        "Meine Gehaltsvorstellung bespreche ich gerne im persönlichen Gespräch."
+    ]
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -655,7 +872,8 @@ Erstelle ein überzeugendes, authentisches Anschreiben das die Stärken des Bewe
  * Generiert Anschreiben aus Templates (für nicht-angemeldete Nutzer)
  */
 function generateFromTemplates(userData) {
-    const tone = userData.tone;
+    const tone = userData.tone || 'formal';
+    const length = userData.length || 'medium';
     const templates = CoverLetterTemplates;
     const jobData = QuickApplyState.jobData || {
         title: 'die ausgeschriebene Position',
@@ -663,61 +881,118 @@ function generateFromTemplates(userData) {
     };
     
     // Zufällige Auswahl aus Arrays
-    const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+    const pick = (arr) => arr && arr.length > 0 ? arr[Math.floor(Math.random() * arr.length)] : '';
     
     // Platzhalter ersetzen
     const replace = (text) => {
+        if (!text) return '';
         return text
             .replace(/\{\{position\}\}/g, jobData.title || 'die ausgeschriebene Position')
             .replace(/\{\{company\}\}/g, jobData.company || 'Ihr Unternehmen')
-            .replace(/\{\{name\}\}/g, userData.name)
-            .replace(/\{\{skills\}\}/g, userData.skills)
+            .replace(/\{\{name\}\}/g, userData.name || '')
+            .replace(/\{\{skills\}\}/g, userData.skills || 'relevante Fachkenntnisse')
             .replace(/\{\{experience\}\}/g, getExperienceYears(userData.experience))
             .replace(/\{\{motivation\}\}/g, userData.motivation || 'die spannenden Herausforderungen dieser Position');
     };
     
-    // Anschreiben zusammenbauen
-    const salutation = replace(pick(templates.salutations[tone]));
-    const opening = replace(pick(templates.openings[tone]));
-    const qualification1 = replace(pick(templates.qualifications.experience));
-    const qualification2 = replace(pick(templates.qualifications.skills));
+    // ═══════════════════════════════════════════════════════════════════════════
+    // ANSCHREIBEN-STRUKTUR AUFBAUEN
+    // ═══════════════════════════════════════════════════════════════════════════
     
-    // Bei längeren Anschreiben: mehr Inhalt
+    // 1. ANREDE
+    const salutation = replace(pick(templates.salutations[tone]));
+    
+    // 2. ERÖFFNUNG
+    const opening = replace(pick(templates.openings[tone]));
+    
+    // 3. QUALIFIKATIONEN
+    const experienceSentence = replace(pick(templates.qualifications.experience));
+    const skillsSentence = replace(pick(templates.qualifications.skills));
+    
+    // 4. ZUSÄTZLICHER CONTENT je nach Länge
     let additionalContent = '';
-    if (userData.length !== 'short') {
+    
+    if (length === 'medium') {
+        // Mittlere Länge: +1 Achievement oder Soft Skill
         const achievement = replace(pick(templates.qualifications.achievements));
         additionalContent = `\n\n${achievement}`;
+    } else if (length === 'long') {
+        // Lange Version: +Achievement +Soft Skill +Übergang
+        const achievement = replace(pick(templates.qualifications.achievements));
+        const softSkill = replace(pick(templates.qualifications.softSkills));
+        const transition = replace(pick(templates.transitions.toMotivation));
+        additionalContent = `\n\n${achievement}\n\n${softSkill}\n\n${transition}`;
     }
     
+    // 5. MOTIVATION
     const motivation = userData.motivation 
         ? replace(pick(templates.motivation.custom))
         : replace(pick(templates.motivation.general));
     
+    // 6. MEHRWERT
     const value = replace(pick(templates.value[tone]));
+    
+    // 7. ABSCHLUSS
     const closing = replace(pick(templates.closings[tone]));
+    
+    // 8. GRUSSFORMEL
     const greeting = pick(templates.greetings[tone]);
     
-    // Datum hinzufügen
+    // ═══════════════════════════════════════════════════════════════════════════
+    // FINALES ANSCHREIBEN ZUSAMMENBAUEN
+    // ═══════════════════════════════════════════════════════════════════════════
+    
+    // Datum formatieren
     const today = new Date().toLocaleDateString('de-DE', {
         day: 'numeric',
         month: 'long',
         year: 'numeric'
     });
     
+    // Struktur je nach Länge anpassen
+    let letterBody = '';
+    
+    if (length === 'short') {
+        // Kurze Version: Kompakt und direkt
+        letterBody = `${opening}
+
+${experienceSentence} ${skillsSentence}
+
+${motivation}
+
+${closing}`;
+    } else if (length === 'medium') {
+        // Mittlere Version: Ausgewogen
+        letterBody = `${opening}
+
+${experienceSentence} ${skillsSentence}${additionalContent}
+
+${motivation} ${value}
+
+${closing}`;
+    } else {
+        // Lange Version: Ausführlich mit allen Details
+        letterBody = `${opening}
+
+${experienceSentence}
+
+${skillsSentence}${additionalContent}
+
+${motivation}
+
+${value}
+
+${closing}`;
+    }
+    
     return `${today}
 
 ${salutation}
 
-${opening}
-
-${qualification1} ${qualification2}${additionalContent}
-
-${motivation} ${value}
-
-${closing}
+${letterBody}
 
 ${greeting}
-${userData.name}`;
+${userData.name || 'Max Mustermann'}`;
 }
 
 function getExperienceYears(experience) {
