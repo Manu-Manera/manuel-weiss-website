@@ -1275,3 +1275,7 @@ window.QuickApplyState = QuickApplyState;
 window.handleUrlInput = handleUrlInput;
 window.handleUrlPaste = handleUrlPaste;
 window.handleTextInput = handleTextInput;
+
+// Utility Functions
+window.isValidJobUrl = isValidJobUrl;
+window.updateGenerateButtonState = updateGenerateButtonState;
