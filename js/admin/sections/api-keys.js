@@ -45,6 +45,75 @@ class ApiKeysSection {
         
         // Event Listeners hinzufügen
         this.attachEventListeners();
+    }
+    
+    /**
+     * API Keys aus AWS DynamoDB laden
+     */
+    async loadApiKeysFromAWS() {
+        try {
+            if (!window.awsProfileAPI || !window.awsProfileAPI.isInitialized) {
+                console.log('⏳ awsProfileAPI nicht bereit, überspringe AWS-Load');
+                return;
+            }
+            
+            // Versuche Admin-Konfiguration zu laden
+            const adminProfile = await window.awsProfileAPI.loadProfile('admin').catch(() => null);
+            
+            if (adminProfile && adminProfile.apiKeys) {
+                console.log('✅ API Keys aus AWS geladen');
+                const apiKeys = adminProfile.apiKeys;
+                
+                // Fülle Formulare
+                const services = ['openai', 'anthropic', 'google'];
+                services.forEach(service => {
+                    const serviceData = apiKeys[service];
+                    if (serviceData) {
+                        const keyInput = document.getElementById(`${service}-key`);
+                        if (keyInput && serviceData.apiKey) {
+                            keyInput.value = serviceData.apiKey;
+                        }
+                        
+                        const modelSelect = document.getElementById(`${service}-model`);
+                        if (modelSelect && serviceData.model) {
+                            modelSelect.value = serviceData.model;
+                        }
+                        
+                        const tokensInput = document.getElementById(`${service}-tokens`);
+                        if (tokensInput && serviceData.maxTokens) {
+                            tokensInput.value = serviceData.maxTokens;
+                        }
+                        
+                        const tempSlider = document.getElementById(`${service}-temperature`);
+                        const tempValue = document.getElementById(`${service}-temp-value`);
+                        if (tempSlider && serviceData.temperature !== undefined) {
+                            tempSlider.value = serviceData.temperature;
+                            if (tempValue) tempValue.textContent = serviceData.temperature;
+                        }
+                        
+                        // Status aktualisieren
+                        this.updateServiceStatus(service);
+                    }
+                });
+                
+                // Auch in StateManager aktualisieren
+                if (this.stateManager) {
+                    const currentSettings = this.stateManager.getState('apiKeys') || {};
+                    Object.keys(apiKeys).forEach(service => {
+                        currentSettings[service] = {
+                            ...currentSettings[service],
+                            apiKey: apiKeys[service].apiKey,
+                            model: apiKeys[service].model,
+                            maxTokens: apiKeys[service].maxTokens,
+                            temperature: apiKeys[service].temperature
+                        };
+                    });
+                    this.stateManager.setState('apiKeys', currentSettings);
+                }
+            }
+        } catch (error) {
+            console.warn('⚠️ Fehler beim Laden der API Keys aus AWS:', error);
+        }
         
         // Settings laden (aus localStorage + AWS)
         this.loadApiSettings();

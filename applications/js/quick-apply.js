@@ -1,6 +1,8 @@
 /**
  * QUICK APPLY - 60 Sekunden Bewerbung
- * Stellenanzeige → KI-Anschreiben → Fertig!
+ * ====================================
+ * - Nicht angemeldet: Template-Modus mit Beispielsätzen
+ * - Angemeldet: GPT-3.5-Turbo mit API-Key aus AWS DynamoDB
  */
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -14,15 +16,164 @@ const QuickApplyState = {
     length: 'medium',
     isGenerating: false,
     generatedText: '',
-    hasProfile: false
+    hasProfile: false,
+    isLoggedIn: false,
+    apiKey: null
+};
+
+// ═══════════════════════════════════════════════════════════════════════════
+// UMFANGREICHE TEMPLATE-DATENBANK (für nicht-angemeldete Nutzer)
+// ═══════════════════════════════════════════════════════════════════════════
+
+const CoverLetterTemplates = {
+    // Eröffnungssätze nach Tonalität
+    openings: {
+        formal: [
+            "mit großem Interesse habe ich Ihre Stellenausschreibung für die Position als {{position}} bei {{company}} gelesen.",
+            "auf Ihre Ausschreibung für die Position {{position}} bei {{company}} möchte ich mich hiermit bewerben.",
+            "Ihre Stellenanzeige für {{position}} hat mein besonderes Interesse geweckt, da sie genau meinem Profil entspricht.",
+            "bezugnehmend auf Ihre Stellenausschreibung für {{position}} bewerbe ich mich hiermit bei Ihrem Unternehmen.",
+            "mit Begeisterung habe ich festgestellt, dass Sie aktuell einen {{position}} suchen.",
+            "Ihre Ausschreibung für die Position {{position}} spricht mich besonders an, da ich hier meine Stärken optimal einbringen kann."
+        ],
+        modern: [
+            "als ich Ihre Stellenanzeige für {{position}} bei {{company}} entdeckte, wusste ich sofort: Das ist genau das, wonach ich suche!",
+            "die Position als {{position}} bei {{company}} hat mich sofort begeistert – hier möchte ich meine Karriere fortsetzen.",
+            "{{company}} und ich – das könnte der perfekte Match werden! Ihre Ausschreibung für {{position}} spricht mich auf ganzer Linie an.",
+            "Ihre Stellenausschreibung für {{position}} hat mich nicht nur interessiert, sondern richtig inspiriert.",
+            "als {{position}}-Position bei einem innovativen Unternehmen wie {{company}}? Da musste ich mich einfach bewerben!",
+            "ich möchte Teil von {{company}} werden! Die Position als {{position}} passt perfekt zu meinen Zielen."
+        ],
+        creative: [
+            "stellen Sie sich vor: Ein {{position}}, der nicht nur Aufgaben erledigt, sondern echte Lösungen schafft. Das bin ich!",
+            "was wäre, wenn Ihr neuer {{position}} genau die Person ist, die Sie noch nicht kannten, aber immer gesucht haben?",
+            "drei Dinge, die mich auszeichnen: Leidenschaft, Expertise und der Wunsch, bei {{company}} als {{position}} durchzustarten.",
+            "ich habe aufgehört zu träumen und angefangen zu handeln – deshalb bewerbe ich mich als {{position}} bei {{company}}.",
+            "zwischen den Zeilen Ihrer Stellenanzeige habe ich gelesen: Sie suchen jemanden, der wirklich etwas bewegen will.",
+            "mein nächstes Kapitel soll bei {{company}} geschrieben werden – und zwar als Ihr neuer {{position}}."
+        ]
+    },
+
+    // Qualifikations-/Stärken-Sätze
+    qualifications: {
+        experience: [
+            "In meiner {{experience}}-jährigen Berufserfahrung konnte ich umfangreiche Kompetenzen in {{skills}} aufbauen.",
+            "Meine bisherige Tätigkeit hat mir ermöglicht, fundierte Kenntnisse in {{skills}} zu entwickeln.",
+            "Als erfahrene Fachkraft mit {{experience}} Jahren Berufserfahrung bringe ich solide Expertise in {{skills}} mit.",
+            "Während meiner {{experience}}-jährigen Laufbahn habe ich mich auf {{skills}} spezialisiert.",
+            "Mit {{experience}} Jahren Erfahrung in der Branche verfüge ich über praxiserprobte Fähigkeiten in {{skills}}.",
+            "Meine berufliche Entwicklung über {{experience}} Jahre hat mich zu einem Experten in {{skills}} gemacht."
+        ],
+        skills: [
+            "Zu meinen Kernkompetenzen zählen {{skills}}, die ich erfolgreich in verschiedenen Projekten eingesetzt habe.",
+            "Besonders stark bin ich in {{skills}} – Fähigkeiten, die für diese Position essentiell sind.",
+            "Meine Stärken in {{skills}} ermöglichen es mir, komplexe Herausforderungen effizient zu lösen.",
+            "{{skills}} sind nicht nur Fähigkeiten für mich, sondern meine Leidenschaft.",
+            "Ich bringe fundierte Kenntnisse in {{skills}} mit, die ich kontinuierlich weiterentwickle.",
+            "Mein Profil zeichnet sich besonders durch Expertise in {{skills}} aus."
+        ],
+        achievements: [
+            "Ein besonderer Erfolg war die Steigerung der Team-Effizienz um 30% durch Prozessoptimierung.",
+            "Ich konnte in meiner letzten Position maßgeblich zur Kostensenkung von 25% beitragen.",
+            "Unter meiner Leitung wurde ein Projekt drei Wochen vor dem geplanten Termin erfolgreich abgeschlossen.",
+            "Ich habe erfolgreich ein Team von fünf Mitarbeitern aufgebaut und entwickelt.",
+            "Durch meine Initiative wurde ein neuer Arbeitsbereich etabliert, der heute zum Kerngeschäft gehört.",
+            "Meine Strategie führte zu einer Umsatzsteigerung von 40% innerhalb eines Jahres."
+        ]
+    },
+
+    // Motivation-Sätze
+    motivation: {
+        general: [
+            "{{company}} als innovatives Unternehmen in der Branche reizt mich besonders.",
+            "Die Möglichkeit, bei {{company}} zu arbeiten, entspricht genau meinen Karrierezielen.",
+            "Ihr Unternehmen steht für Qualität und Innovation – Werte, die ich teile.",
+            "Die Unternehmenskultur bei {{company}} und die spannenden Projekte haben mich überzeugt.",
+            "Bei {{company}} sehe ich die perfekte Möglichkeit, meine Fähigkeiten einzusetzen und weiterzuentwickeln.",
+            "Die Herausforderungen dieser Position und das Umfeld bei {{company}} motivieren mich sehr."
+        ],
+        custom: [
+            "{{motivation}}",
+            "Was mich besonders anspricht: {{motivation}}",
+            "Meine persönliche Motivation für diese Stelle: {{motivation}}",
+            "{{motivation}} – das ist der Grund, warum ich mich bei Ihnen bewerbe."
+        ]
+    },
+
+    // Mehrwert-Sätze
+    value: {
+        formal: [
+            "Mit meiner Expertise werde ich einen wertvollen Beitrag zu Ihrem Team leisten.",
+            "Ich bin überzeugt, dass ich mit meinen Fähigkeiten Ihr Unternehmen bereichern kann.",
+            "Meine Erfahrung wird es mir ermöglichen, schnell produktiv zu werden und Mehrwert zu schaffen.",
+            "Ich bringe nicht nur Fachwissen mit, sondern auch die Motivation, Ihr Team voranzubringen.",
+            "Mit meinem Engagement und meiner Expertise werde ich Ihre Erwartungen übertreffen."
+        ],
+        modern: [
+            "Ich bin ready, bei {{company}} durchzustarten und echte Ergebnisse zu liefern!",
+            "Lassen Sie uns gemeinsam Großes erreichen – ich bin bereit!",
+            "Ich will nicht nur mitarbeiten, sondern aktiv zum Erfolg von {{company}} beitragen.",
+            "Mit mir bekommen Sie nicht nur einen Mitarbeiter, sondern einen echten Teamplayer.",
+            "Ich bin hungrig auf neue Herausforderungen und bereit, mein Bestes zu geben."
+        ],
+        creative: [
+            "Stellen Sie mich ein – und Sie werden sich fragen, wie Sie je ohne mich ausgekommen sind!",
+            "Ich verspreche Ihnen: Langeweile wird es mit mir nicht geben.",
+            "Mein Ziel? {{company}} noch besser machen. Meine Methode? Engagement, Kreativität und harte Arbeit.",
+            "Ich bin die fehlende Zutat in Ihrem Erfolgsrezept – probieren Sie es aus!",
+            "Was ich mitbringe? 100% Einsatz, frische Ideen und die Bereitschaft, zu lernen und zu wachsen."
+        ]
+    },
+
+    // Abschlusssätze
+    closings: {
+        formal: [
+            "Über die Einladung zu einem persönlichen Gespräch würde ich mich sehr freuen.",
+            "Gerne überzeuge ich Sie in einem persönlichen Gespräch von meinen Qualifikationen.",
+            "Ich freue mich auf die Möglichkeit, meine Motivation in einem Gespräch zu vertiefen.",
+            "Für ein persönliches Kennenlernen stehe ich Ihnen jederzeit gerne zur Verfügung.",
+            "Ich würde mich freuen, meine Eignung für diese Position in einem Gespräch unter Beweis zu stellen."
+        ],
+        modern: [
+            "Lassen Sie uns telefonieren! Ich freue mich auf den Austausch.",
+            "Ich bin gespannt auf Ihre Rückmeldung und ein erstes Kennenlernen!",
+            "Wann können wir uns treffen? Ich bin flexibel und freue mich auf das Gespräch!",
+            "Neugierig geworden? Dann lassen Sie uns sprechen!",
+            "Ich freue mich darauf, Sie persönlich von mir zu überzeugen!"
+        ],
+        creative: [
+            "Der Ball liegt jetzt bei Ihnen – ich bin bereit für den nächsten Schritt!",
+            "Ein Kaffee, ein Gespräch, eine Chance – mehr brauche ich nicht, um Sie zu überzeugen.",
+            "Meine Bewerbung ist der erste Schritt. Das Gespräch der zweite. Wann starten wir?",
+            "Ich habe Ihnen geschrieben. Jetzt sind Sie dran. Ich warte auf Ihren Anruf!",
+            "Das war mein Pitch. Jetzt würde ich gerne Ihre Fragen beantworten – persönlich."
+        ]
+    },
+
+    // Grußformeln
+    greetings: {
+        formal: ["Mit freundlichen Grüßen", "Hochachtungsvoll", "Mit besten Grüßen"],
+        modern: ["Beste Grüße", "Herzliche Grüße", "Viele Grüße"],
+        creative: ["Bis bald!", "Auf ein baldiges Kennenlernen!", "Freundliche Grüße"]
+    },
+
+    // Anreden
+    salutations: {
+        formal: ["Sehr geehrte Damen und Herren,", "Sehr geehrte Personalverantwortliche,"],
+        modern: ["Guten Tag,", "Hallo zusammen,"],
+        creative: ["Liebe Personalabteilung,", "Hallo Team von {{company}},"]
+    }
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
 // INITIALIZATION
 // ═══════════════════════════════════════════════════════════════════════════
 
-function initQuickApply() {
+async function initQuickApply() {
     console.log('⚡ Initializing Quick Apply...');
+    
+    // Check login status first
+    await checkLoginStatus();
     
     // Check if profile exists
     checkProfileStatus();
@@ -30,63 +181,151 @@ function initQuickApply() {
     // Setup event listeners
     setupQuickApplyListeners();
     
-    // Check API status and show hint
+    // Update UI based on login status
     updateAPIStatusDisplay();
     
-    console.log('✅ Quick Apply ready');
+    console.log('✅ Quick Apply ready - Logged in:', QuickApplyState.isLoggedIn);
 }
 
 /**
- * Zeigt den API-Status an und gibt Hinweis falls kein Key vorhanden
+ * Prüft Login-Status und lädt API-Key aus AWS wenn angemeldet
+ */
+async function checkLoginStatus() {
+    // Prüfe ob Nutzer angemeldet ist
+    if (window.realUserAuth) {
+        try {
+            QuickApplyState.isLoggedIn = window.realUserAuth.isLoggedIn?.() || false;
+            
+            if (QuickApplyState.isLoggedIn) {
+                console.log('✅ Nutzer ist angemeldet, lade API-Key aus AWS...');
+                await loadAPIKeyFromAWS();
+            }
+        } catch (error) {
+            console.warn('⚠️ Auth-Check fehlgeschlagen:', error);
+            QuickApplyState.isLoggedIn = false;
+        }
+    }
+}
+
+/**
+ * Lädt den Admin-API-Key aus AWS DynamoDB
+ */
+async function loadAPIKeyFromAWS() {
+    try {
+        if (!window.awsProfileAPI) {
+            console.warn('⚠️ awsProfileAPI nicht verfügbar');
+            return null;
+        }
+
+        // Warte auf Initialisierung
+        if (!window.awsProfileAPI.isInitialized) {
+            await new Promise((resolve, reject) => {
+                const timeout = setTimeout(() => reject(new Error('Timeout')), 5000);
+                const check = setInterval(() => {
+                    if (window.awsProfileAPI.isInitialized) {
+                        clearInterval(check);
+                        clearTimeout(timeout);
+                        resolve();
+                    }
+                }, 100);
+            });
+        }
+
+        // Lade Admin-Konfiguration
+        const adminProfile = await window.awsProfileAPI.loadProfile('admin').catch(() => null);
+        
+        if (adminProfile?.apiKeys?.openai?.apiKey) {
+            const key = adminProfile.apiKeys.openai.apiKey;
+            if (key && key.startsWith('sk-')) {
+                QuickApplyState.apiKey = key;
+                console.log('✅ API-Key aus AWS geladen');
+                return key;
+            }
+        }
+        
+        console.log('ℹ️ Kein API-Key in AWS gefunden');
+        return null;
+    } catch (error) {
+        console.warn('⚠️ Fehler beim Laden des API-Keys aus AWS:', error);
+        return null;
+    }
+}
+
+/**
+ * Zeigt den Status an (Template-Modus vs GPT-3.5-Turbo)
  */
 function updateAPIStatusDisplay() {
-    const apiConfig = getOpenAIConfig();
     const statusText = document.getElementById('apiStatusText');
     const generationInfo = document.getElementById('generationInfo');
     const apiHint = document.getElementById('apiHint');
     
     if (!statusText || !generationInfo) return;
-    
-    if (apiConfig && apiConfig.key) {
-        // API Key vorhanden
-        const model = apiConfig.model || 'gpt-4o-mini';
-        statusText.textContent = `${model} • Durchschnittlich 15 Sekunden`;
+
+    if (QuickApplyState.isLoggedIn && QuickApplyState.apiKey) {
+        // Angemeldet MIT API-Key
+        statusText.innerHTML = '<i class="fas fa-robot"></i> GPT-3.5-Turbo • KI-generierte Anschreiben';
         generationInfo.classList.add('has-api');
         generationInfo.classList.remove('no-api');
         if (apiHint) apiHint.classList.add('hidden');
-    } else {
-        // Kein API Key - Template-Modus
-        statusText.textContent = 'Template-Modus (kein API-Key konfiguriert)';
+    } else if (QuickApplyState.isLoggedIn) {
+        // Angemeldet OHNE API-Key
+        statusText.innerHTML = '<i class="fas fa-file-alt"></i> Template-Modus • Melden Sie sich ab und wieder an';
         generationInfo.classList.add('no-api');
         generationInfo.classList.remove('has-api');
-        if (apiHint) apiHint.classList.remove('hidden');
+        if (apiHint) {
+            apiHint.classList.remove('hidden');
+            apiHint.innerHTML = `
+                <i class="fas fa-info-circle"></i>
+                <div>
+                    <strong>API-Key nicht gefunden</strong> - 
+                    <a href="/admin.html#api-keys" target="_blank">Im Admin Panel konfigurieren</a>
+                </div>
+            `;
+        }
+    } else {
+        // Nicht angemeldet - Template-Modus
+        statusText.innerHTML = '<i class="fas fa-magic"></i> Smart-Template • Anmelden für KI-Generierung';
+        generationInfo.classList.add('no-api');
+        generationInfo.classList.remove('has-api');
+        if (apiHint) {
+            apiHint.classList.remove('hidden');
+            apiHint.innerHTML = `
+                <i class="fas fa-user-plus"></i>
+                <div>
+                    <strong>Kostenlos testen!</strong> - 
+                    <a href="#" onclick="showLoginModal(); return false;">Anmelden für GPT-3.5-Turbo</a>
+                </div>
+            `;
+        }
+    }
+}
+
+function showLoginModal() {
+    if (window.realUserAuth?.showLoginModal) {
+        window.realUserAuth.showLoginModal();
+    } else {
+        // Fallback: Button klicken
+        const loginBtn = document.querySelector('.auth-btn');
+        if (loginBtn) loginBtn.click();
     }
 }
 
 function checkProfileStatus() {
-    const profile = DashboardState.profile;
+    const profile = window.DashboardState?.profile || {};
     QuickApplyState.hasProfile = !!(
         profile.firstName && 
         profile.skills && 
         profile.skills.length > 0
     );
-    
-    // Show/hide profile step
-    const profileStep = document.getElementById('quickStep2');
-    if (profileStep) {
-        profileStep.classList.toggle('hidden', QuickApplyState.hasProfile);
-    }
 }
 
 function setupQuickApplyListeners() {
-    // URL input - enable button on valid URL
     const urlInput = document.getElementById('jobUrl');
     if (urlInput) {
         urlInput.addEventListener('input', handleUrlInput);
         urlInput.addEventListener('paste', handleUrlPaste);
     }
     
-    // Text input
     const textInput = document.getElementById('jobText');
     if (textInput) {
         textInput.addEventListener('input', handleTextInput);
@@ -100,1041 +339,619 @@ function setupQuickApplyListeners() {
 function toggleInputType(type) {
     QuickApplyState.inputType = type;
     
-    // Update buttons
-    document.querySelectorAll('.toggle-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.input === type);
-    });
+    const urlGroup = document.getElementById('urlInputGroup');
+    const textGroup = document.getElementById('textInputGroup');
+    const urlBtn = document.querySelector('[onclick*="toggleInputType(\'url\')"]');
+    const textBtn = document.querySelector('[onclick*="toggleInputType(\'text\')"]');
     
-    // Show/hide inputs
-    document.getElementById('inputUrl').classList.toggle('hidden', type !== 'url');
-    document.getElementById('inputText').classList.toggle('hidden', type !== 'text');
-    
-    // Reset parsed preview
-    document.getElementById('parsedJobPreview').classList.add('hidden');
-    
-    // Update generate button state
-    updateGenerateButton();
-}
-
-// ═══════════════════════════════════════════════════════════════════════════
-// URL INPUT HANDLING
-// ═══════════════════════════════════════════════════════════════════════════
-
-function handleUrlInput(event) {
-    const url = event.target.value.trim();
-    const parseBtn = document.getElementById('parseUrlBtn');
-    
-    // Enable/disable parse button
-    const isValidUrl = isValidJobUrl(url);
-    parseBtn.disabled = !isValidUrl;
-    
-    // Auto-parse on paste
-    if (event.inputType === 'insertFromPaste' && isValidUrl) {
-        parseJobUrl();
+    if (type === 'url') {
+        urlGroup?.classList.remove('hidden');
+        textGroup?.classList.add('hidden');
+        urlBtn?.classList.add('active');
+        textBtn?.classList.remove('active');
+    } else {
+        urlGroup?.classList.add('hidden');
+        textGroup?.classList.remove('hidden');
+        urlBtn?.classList.remove('active');
+        textBtn?.classList.add('active');
     }
 }
 
-function handleUrlPaste(event) {
-    // Small delay to let the value update
+// ═══════════════════════════════════════════════════════════════════════════
+// URL & TEXT HANDLERS
+// ═══════════════════════════════════════════════════════════════════════════
+
+function handleUrlInput(e) {
+    const url = e.target.value.trim();
+    const analyzeBtn = document.getElementById('analyzeUrlBtn');
+    
+    if (analyzeBtn) {
+        const isValid = isValidJobUrl(url);
+        analyzeBtn.disabled = !isValid;
+    }
+}
+
+function handleUrlPaste(e) {
     setTimeout(() => {
-        const url = event.target.value.trim();
-        if (isValidJobUrl(url)) {
-            parseJobUrl();
-        }
+        handleUrlInput({ target: e.target });
     }, 100);
 }
 
+function handleTextInput(e) {
+    const text = e.target.value.trim();
+    updateGenerateButtonState();
+    
+    if (text.length > 100) {
+        extractJobInfoFromText(text);
+    }
+}
+
 function isValidJobUrl(url) {
+    if (!url) return false;
     try {
-        new URL(url);
-        return url.startsWith('http://') || url.startsWith('https://');
+        const parsed = new URL(url);
+        return parsed.protocol === 'http:' || parsed.protocol === 'https:';
     } catch {
         return false;
     }
 }
 
-async function parseJobUrl() {
-    const url = document.getElementById('jobUrl').value.trim();
-    const parseBtn = document.getElementById('parseUrlBtn');
+function updateGenerateButtonState() {
+    const generateBtn = document.getElementById('generateBtn');
+    if (!generateBtn) return;
     
-    if (!isValidJobUrl(url)) {
+    const nameInput = document.getElementById('quickName');
+    const experienceSelect = document.getElementById('quickExperience');
+    const skillsInput = document.getElementById('quickSkills');
+    
+    const hasName = nameInput?.value.trim().length > 0;
+    const hasExperience = experienceSelect?.value !== '';
+    const hasSkills = skillsInput?.value.trim().length > 0;
+    const hasJobData = QuickApplyState.jobData !== null || 
+                       document.getElementById('jobText')?.value.trim().length > 100;
+    
+    generateBtn.disabled = !(hasName && hasExperience && hasSkills);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// JOB ANALYSIS
+// ═══════════════════════════════════════════════════════════════════════════
+
+async function analyzeJobUrl() {
+    const urlInput = document.getElementById('jobUrl');
+    const url = urlInput?.value.trim();
+    
+    if (!url || !isValidJobUrl(url)) {
         showToast('Bitte geben Sie eine gültige URL ein', 'error');
         return;
     }
     
-    // Show loading
-    parseBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analysiere...';
-    parseBtn.disabled = true;
+    const analyzeBtn = document.getElementById('analyzeUrlBtn');
+    const originalText = analyzeBtn?.innerHTML;
+    
+    if (analyzeBtn) {
+        analyzeBtn.disabled = true;
+        analyzeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analysiere...';
+    }
     
     try {
-        // Versuche zuerst die Netlify Function
-        let jobData = await fetchJobDataFromApi(url);
+        const response = await fetch('/.netlify/functions/job-parser', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ input: url, inputType: 'url' })
+        });
         
-        // Fallback auf lokale Extraktion wenn API fehlschlägt
-        if (!jobData || (!jobData.title && !jobData.company)) {
-            console.log('API-Parsing unvollständig, nutze lokale Extraktion');
-            jobData = await extractJobFromUrl(url);
-        }
+        if (!response.ok) throw new Error('Parsing fehlgeschlagen');
         
-        if (jobData && (jobData.title || jobData.company)) {
-            QuickApplyState.jobData = jobData;
-            showParsedJob(jobData);
-            showToast('Stellenanzeige erkannt!', 'success');
-        } else {
-            // Fallback: Show manual entry
-            showToast('URL erkannt - bitte Details ergänzen', 'info');
-            showParsedJob({
-                title: '',
-                company: extractCompanyFromUrl(url),
-                location: '',
-                requirements: [],
-                url: url
-            });
+        const data = await response.json();
+        
+        if (data.parsedJob) {
+            QuickApplyState.jobData = data.parsedJob;
+            displayJobData(data.parsedJob);
+            showToast('Stellenanzeige analysiert!', 'success');
         }
     } catch (error) {
-        console.error('Error parsing URL:', error);
-        showToast('Analysieren fehlgeschlagen - bitte Text einfügen', 'error');
+        console.error('URL parsing failed:', error);
+        showToast('Analyse fehlgeschlagen. Bitte Text einfügen.', 'error');
         toggleInputType('text');
     } finally {
-        parseBtn.innerHTML = '<i class="fas fa-search"></i> Analysieren';
-        parseBtn.disabled = false;
+        if (analyzeBtn) {
+            analyzeBtn.disabled = false;
+            analyzeBtn.innerHTML = originalText;
+        }
     }
+    
+    updateGenerateButtonState();
 }
 
-/**
- * Rufe die Netlify Function zum Parsen der Job-URL auf
- */
-async function fetchJobDataFromApi(url) {
-    try {
-        const response = await fetch('/.netlify/functions/job-parser', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                url: url,
-                type: 'url'
-            })
-        });
-        
-        if (!response.ok) {
-            console.warn('Job Parser API returned:', response.status);
-            return null;
-        }
-        
-        const result = await response.json();
-        
-        if (result.success && result.data) {
-            console.log('✅ Job-Daten von API erhalten:', result.data);
-            return result.data;
-        }
-        
-        return null;
-    } catch (error) {
-        console.warn('Job Parser API Fehler:', error);
-        return null;
-    }
-}
-
-async function extractJobFromUrl(url) {
-    // In production, this would call a backend API to scrape the job posting
-    // For now, we'll extract what we can from the URL
-    
-    const urlObj = new URL(url);
-    const hostname = urlObj.hostname.toLowerCase();
-    
-    // Known job portals with URL patterns
-    const jobData = {
-        title: '',
-        company: '',
-        location: '',
-        requirements: [],
-        url: url
-    };
-    
-    // StepStone pattern
-    if (hostname.includes('stepstone')) {
-        const pathParts = urlObj.pathname.split('/');
-        // Try to extract title from URL
-        const titlePart = pathParts.find(p => p.length > 20 && !p.includes('-'));
-        if (titlePart) {
-            jobData.title = titlePart.replace(/-/g, ' ');
-        }
-    }
-    
-    // Indeed pattern
-    if (hostname.includes('indeed')) {
-        const params = new URLSearchParams(urlObj.search);
-        if (params.has('vjk')) {
-            // Job ID found, would need API to get details
-        }
-    }
-    
-    // LinkedIn pattern
-    if (hostname.includes('linkedin')) {
-        const pathParts = urlObj.pathname.split('/');
-        if (pathParts.includes('jobs') || pathParts.includes('view')) {
-            // LinkedIn job posting
-        }
-    }
-    
-    // Extract company from hostname if possible
-    jobData.company = extractCompanyFromUrl(url);
-    
-    return jobData;
-}
-
-function extractCompanyFromUrl(url) {
-    try {
-        const hostname = new URL(url).hostname;
-        
-        // Remove common prefixes/suffixes
-        let company = hostname
-            .replace('www.', '')
-            .replace('.de', '')
-            .replace('.com', '')
-            .replace('.jobs', '')
-            .replace('.careers', '')
-            .replace('karriere.', '')
-            .replace('jobs.', '');
-        
-        // Known portals - don't use as company name
-        const portals = ['stepstone', 'indeed', 'linkedin', 'xing', 'monster', 'glassdoor', 'kununu'];
-        if (portals.some(p => company.includes(p))) {
-            return '';
-        }
-        
-        // Capitalize first letter
-        return company.charAt(0).toUpperCase() + company.slice(1);
-    } catch {
-        return '';
-    }
-}
-
-// ═══════════════════════════════════════════════════════════════════════════
-// TEXT INPUT HANDLING
-// ═══════════════════════════════════════════════════════════════════════════
-
-// Debounce Timer für Text-Parsing
-let textParseTimeout = null;
-
-function handleTextInput() {
-    const text = document.getElementById('jobText').value;
-    const charCount = document.getElementById('charCount');
-    
-    // Update char counter
-    if (charCount) {
-        charCount.textContent = text.length;
-    }
-    
-    // Debounce: Parse text nach 500ms Pause
-    clearTimeout(textParseTimeout);
-    
-    if (text.length > 100) {
-        textParseTimeout = setTimeout(async () => {
-            await parseAndShowJobText(text);
-        }, 500);
-    } else {
-        document.getElementById('parsedJobPreview').classList.add('hidden');
-    }
-    
-    updateGenerateButton();
-}
-
-/**
- * Parse Job-Text (lokal oder via API)
- */
-async function parseAndShowJobText(text) {
-    // Versuche zuerst lokales Parsing (schneller)
-    let jobData = parseJobText(text);
-    
-    // Wenn lokales Parsing wenig findet, versuche API
-    if ((!jobData.title || !jobData.company) && text.length > 200) {
-        try {
-            const apiData = await fetchJobTextFromApi(text);
-            if (apiData) {
-                // Merge API-Daten mit lokalem Parsing
-                jobData = {
-                    ...jobData,
-                    ...apiData,
-                    // Behalte lokale Werte wenn API leer
-                    title: apiData.title || jobData.title,
-                    company: apiData.company || jobData.company,
-                    location: apiData.location || jobData.location,
-                    requirements: [...new Set([...(apiData.requirements || []), ...(jobData.requirements || [])])]
-                };
-            }
-        } catch (e) {
-            console.warn('API Text-Parsing fehlgeschlagen:', e);
-        }
-    }
-    
-    if (jobData.title || jobData.company || jobData.requirements.length > 0) {
-        QuickApplyState.jobData = jobData;
-        showParsedJob(jobData);
-    }
-}
-
-/**
- * Rufe die Netlify Function zum Parsen von Job-Text auf
- */
-async function fetchJobTextFromApi(text) {
-    try {
-        const response = await fetch('/.netlify/functions/job-parser', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                text: text,
-                type: 'text'
-            })
-        });
-        
-        if (!response.ok) return null;
-        
-        const result = await response.json();
-        return result.success ? result.data : null;
-    } catch (error) {
-        console.warn('Job Text Parser API Fehler:', error);
-        return null;
-    }
-}
-
-function parseJobText(text) {
-    const jobData = {
-        title: '',
-        company: '',
-        location: '',
-        requirements: [],
-        description: text
-    };
-    
-    const lines = text.split('\n').map(l => l.trim()).filter(l => l);
-    
-    // First non-empty line is often the title
-    if (lines.length > 0) {
-        const firstLine = lines[0];
-        // Check if it looks like a job title (contains m/w/d, contains typical keywords)
-        if (firstLine.length < 100 && 
-            (firstLine.includes('(m/w/d)') || 
-             firstLine.includes('(w/m/d)') ||
-             /developer|manager|engineer|berater|consultant|spezialist/i.test(firstLine))) {
-            jobData.title = firstLine.replace(/\(m\/w\/d\)|\(w\/m\/d\)/gi, '').trim();
-        }
-    }
-    
-    // Look for company name patterns
-    const companyPatterns = [
-        /(?:bei|für|company:|firma:|unternehmen:)\s*([A-Za-zäöüÄÖÜß\s&.-]+(?:GmbH|AG|SE|KG|Co\.?|Inc\.?)?)/i,
-        /^([A-Za-zäöüÄÖÜß\s&.-]+(?:GmbH|AG|SE|KG))\s*$/m
+function extractJobInfoFromText(text) {
+    const positionPatterns = [
+        /(?:Position|Stelle|Job|Jobtitel|Stellenbezeichnung)[:\s]+([^\n,]+)/i,
+        /(?:suchen|gesucht)[:\s]+(?:eine?n?\s+)?([^\n,]+)/i,
+        /^([A-Z][a-zA-Z\s\/\-]+)\s*\(m\/w\/d\)/m
     ];
+    
+    const companyPatterns = [
+        /(?:Unternehmen|Firma|Arbeitgeber|Company)[:\s]+([^\n,]+)/i,
+        /(?:bei|für)\s+(?:der|die|das)?\s*([A-Z][a-zA-Z\s&]+(?:GmbH|AG|SE|UG|KG|Inc|Ltd)?)/
+    ];
+    
+    let position = '';
+    let company = '';
+    
+    for (const pattern of positionPatterns) {
+        const match = text.match(pattern);
+        if (match) {
+            position = match[1].trim();
+            break;
+        }
+    }
     
     for (const pattern of companyPatterns) {
         const match = text.match(pattern);
-        if (match && match[1]) {
-            jobData.company = match[1].trim();
+        if (match) {
+            company = match[1].trim();
             break;
         }
     }
     
-    // Look for location
-    const locationPatterns = [
-        /(?:standort|location|ort):\s*([A-Za-zäöüÄÖÜß\s,-]+)/i,
-        /(?:in|@)\s+(Berlin|München|Hamburg|Frankfurt|Köln|Stuttgart|Düsseldorf|Leipzig|Dresden|Nürnberg|Hannover|Bremen|Wien|Zürich)/i
-    ];
-    
-    for (const pattern of locationPatterns) {
-        const match = text.match(pattern);
-        if (match && match[1]) {
-            jobData.location = match[1].trim();
-            break;
-        }
+    if (position || company) {
+        QuickApplyState.jobData = {
+            title: position || 'die ausgeschriebene Position',
+            company: company || 'Ihr Unternehmen',
+            description: text.substring(0, 500)
+        };
     }
-    
-    // Extract requirements (bullet points or keywords)
-    const requirementKeywords = [
-        'JavaScript', 'TypeScript', 'Python', 'Java', 'C#', 'React', 'Angular', 'Vue',
-        'Node.js', 'SQL', 'AWS', 'Azure', 'Docker', 'Kubernetes', 'Git',
-        'Projektmanagement', 'Scrum', 'Agile', 'Führungserfahrung', 'Teamleitung',
-        'SAP', 'Excel', 'PowerPoint', 'MS Office', 'ERP',
-        'Kommunikationsstärke', 'Englisch', 'Deutsch', 'B2', 'C1',
-        'Bachelor', 'Master', 'Studium', 'Ausbildung', 'Berufserfahrung'
-    ];
-    
-    const foundRequirements = requirementKeywords.filter(kw => 
-        text.toLowerCase().includes(kw.toLowerCase())
-    );
-    
-    jobData.requirements = foundRequirements.slice(0, 8); // Max 8 tags
-    
-    return jobData;
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// PARSED JOB PREVIEW
-// ═══════════════════════════════════════════════════════════════════════════
-
-function showParsedJob(jobData) {
-    const preview = document.getElementById('parsedJobPreview');
+function displayJobData(jobData) {
+    const container = document.getElementById('jobDataDisplay');
+    if (!container) return;
     
-    // Fill fields
-    document.getElementById('parsedTitle').value = jobData.title || '';
-    document.getElementById('parsedCompany').value = jobData.company || '';
-    document.getElementById('parsedLocation').value = jobData.location || '';
-    
-    // Show requirements tags
-    const tagsContainer = document.getElementById('parsedRequirements');
-    if (jobData.requirements && jobData.requirements.length > 0) {
-        tagsContainer.innerHTML = jobData.requirements.map(req => 
-            `<span class="tag">${escapeHtml(req)}</span>`
-        ).join('');
-    } else {
-        tagsContainer.innerHTML = '<span class="tag">Keine erkannt</span>';
-    }
-    
-    preview.classList.remove('hidden');
-    updateGenerateButton();
-}
-
-function editParsedJob() {
-    // Focus on title field
-    document.getElementById('parsedTitle').focus();
-}
-
-// ═══════════════════════════════════════════════════════════════════════════
-// GENERATION OPTIONS
-// ═══════════════════════════════════════════════════════════════════════════
-
-function selectTone(tone) {
-    QuickApplyState.tone = tone;
-    document.querySelectorAll('[data-tone]').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.tone === tone);
-    });
-}
-
-function selectLength(length) {
-    QuickApplyState.length = length;
-    document.querySelectorAll('[data-length]').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.length === length);
-    });
-}
-
-// ═══════════════════════════════════════════════════════════════════════════
-// GENERATE BUTTON STATE
-// ═══════════════════════════════════════════════════════════════════════════
-
-function updateGenerateButton() {
-    const btn = document.getElementById('generateBtn');
-    if (!btn) return;
-    
-    // Check requirements
-    let canGenerate = false;
-    
-    if (QuickApplyState.inputType === 'url') {
-        const url = document.getElementById('jobUrl').value.trim();
-        canGenerate = isValidJobUrl(url);
-    } else {
-        const text = document.getElementById('jobText').value.trim();
-        canGenerate = text.length > 50;
-    }
-    
-    // Also check if profile exists or quick profile is filled
-    if (!QuickApplyState.hasProfile) {
-        const quickName = document.getElementById('quickName');
-        const quickSkills = document.getElementById('quickSkills');
-        if (quickName && quickSkills) {
-            canGenerate = canGenerate && quickName.value.trim() && quickSkills.value.trim();
-        }
-    }
-    
-    btn.disabled = !canGenerate;
+    container.innerHTML = `
+        <div class="job-data-card">
+            <div class="job-data-header">
+                <i class="fas fa-briefcase"></i>
+                <span>Erkannte Stelleninformationen</span>
+            </div>
+            <div class="job-data-content">
+                <div class="job-data-item">
+                    <strong>Position:</strong> ${escapeHtml(jobData.title || 'Nicht erkannt')}
+                </div>
+                <div class="job-data-item">
+                    <strong>Unternehmen:</strong> ${escapeHtml(jobData.company || 'Nicht erkannt')}
+                </div>
+                ${jobData.location ? `
+                <div class="job-data-item">
+                    <strong>Standort:</strong> ${escapeHtml(jobData.location)}
+                </div>
+                ` : ''}
+            </div>
+        </div>
+    `;
+    container.classList.remove('hidden');
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
 // COVER LETTER GENERATION
 // ═══════════════════════════════════════════════════════════════════════════
 
-async function generateQuickApplication() {
+async function generateCoverLetter() {
     if (QuickApplyState.isGenerating) return;
     
-    const btn = document.getElementById('generateBtn');
+    const userData = collectUserData();
+    if (!validateUserData(userData)) return;
     
-    // Collect data
-    const jobData = collectJobData();
-    const profileData = collectProfileData();
-    
-    if (!jobData.title && !jobData.description) {
-        showToast('Bitte Stellenanzeige eingeben', 'error');
-        return;
-    }
-    
-    if (!profileData.name) {
-        showToast('Bitte Namen eingeben', 'error');
-        return;
-    }
-    
-    // Start generation
     QuickApplyState.isGenerating = true;
-    btn.classList.add('loading');
-    btn.disabled = true;
+    showGeneratingState();
     
     try {
-        const coverLetter = await generateCoverLetter(jobData, profileData);
+        let coverLetter;
         
-        // Save generated text
-        QuickApplyState.generatedText = coverLetter;
-        QuickApplyState.jobData = jobData;
-        
-        // Show result
-        showGenerationResult(coverLetter, jobData);
-        
-        // Save profile if checkbox is checked
-        const saveCheckbox = document.getElementById('saveQuickProfile');
-        if (saveCheckbox && saveCheckbox.checked && !QuickApplyState.hasProfile) {
-            saveQuickProfileData(profileData);
+        // Entscheidung: KI oder Template
+        if (QuickApplyState.isLoggedIn && QuickApplyState.apiKey) {
+            // GPT-3.5-Turbo für angemeldete Nutzer
+            coverLetter = await generateWithGPT(userData);
+        } else {
+            // Template-Modus für nicht-angemeldete Nutzer
+            coverLetter = generateFromTemplates(userData);
         }
         
-        showToast('Anschreiben generiert!', 'success');
+        QuickApplyState.generatedText = coverLetter;
+        displayGeneratedLetter(coverLetter);
+        
+        // In Tracking speichern wenn angemeldet
+        if (QuickApplyState.isLoggedIn && window.DashboardState) {
+            saveToTracking(userData);
+        }
+        
+        showToast('Anschreiben erstellt!', 'success');
         
     } catch (error) {
-        console.error('Generation error:', error);
+        console.error('Generation failed:', error);
         showToast('Fehler bei der Generierung: ' + error.message, 'error');
+        
+        // Fallback auf Templates bei Fehler
+        if (QuickApplyState.isLoggedIn) {
+            showToast('Verwende Template als Fallback...', 'info');
+            const coverLetter = generateFromTemplates(collectUserData());
+            QuickApplyState.generatedText = coverLetter;
+            displayGeneratedLetter(coverLetter);
+        }
     } finally {
         QuickApplyState.isGenerating = false;
-        btn.classList.remove('loading');
-        btn.disabled = false;
-    }
-}
-
-function collectJobData() {
-    // From parsed preview or text input
-    const parsedTitle = document.getElementById('parsedTitle');
-    const parsedCompany = document.getElementById('parsedCompany');
-    const parsedLocation = document.getElementById('parsedLocation');
-    const jobText = document.getElementById('jobText');
-    
-    return {
-        title: parsedTitle ? parsedTitle.value.trim() : '',
-        company: parsedCompany ? parsedCompany.value.trim() : '',
-        location: parsedLocation ? parsedLocation.value.trim() : '',
-        description: jobText ? jobText.value.trim() : '',
-        requirements: QuickApplyState.jobData?.requirements || []
-    };
-}
-
-function collectProfileData() {
-    // From existing profile or quick form
-    if (QuickApplyState.hasProfile) {
-        const p = DashboardState.profile;
-        return {
-            name: `${p.firstName} ${p.lastName}`.trim(),
-            currentJob: p.currentJob,
-            experience: p.experience,
-            location: p.location,
-            skills: p.skills,
-            motivation: ''
-        };
-    }
-    
-    // From quick form
-    return {
-        name: document.getElementById('quickName')?.value.trim() || '',
-        currentJob: document.getElementById('quickCurrentJob')?.value.trim() || '',
-        experience: document.getElementById('quickExperience')?.value || '',
-        location: document.getElementById('quickLocation')?.value.trim() || '',
-        skills: (document.getElementById('quickSkills')?.value || '')
-            .split(',').map(s => s.trim()).filter(s => s),
-        motivation: document.getElementById('quickMotivation')?.value.trim() || ''
-    };
-}
-
-async function generateCoverLetter(jobData, profileData) {
-    // Get API Key from Admin Panel (global_api_keys)
-    const apiConfig = getOpenAIConfig();
-    
-    if (apiConfig && apiConfig.key) {
-        // Use OpenAI API with config from Admin Panel
-        return await generateWithOpenAI(jobData, profileData, apiConfig);
-    } else {
-        // Use template-based generation (no API key)
-        console.log('ℹ️ Kein API Key gefunden - nutze Template-Generator');
-        return generateWithTemplate(jobData, profileData);
+        hideGeneratingState();
     }
 }
 
 /**
- * Hole OpenAI Konfiguration aus dem Admin Panel (global_api_keys)
- * Priorität: globalAPIManager > localStorage.global_api_keys
+ * Generiert Anschreiben mit GPT-3.5-Turbo
  */
-function getOpenAIConfig() {
-    // Nutze den zentralen AIProviderManager aus utils.js (falls verfügbar)
-    // Synchrone Wrapper-Funktion für Kompatibilität
-    
-    // PRIORITÄT 1: GlobalAPIManager (falls geladen)
-    if (window.globalAPIManager) {
-        const config = window.globalAPIManager.getServiceConfig('openai');
-        if (config && config.key && config.key.startsWith('sk-')) {
-            return config;
-        }
-    }
-    
-    // PRIORITÄT 2: Direkt aus localStorage (global_api_keys vom Admin Panel)
-    try {
-        const raw = localStorage.getItem('global_api_keys');
-        if (raw) {
-            const parsed = JSON.parse(raw);
-            if (parsed.openai && parsed.openai.key && parsed.openai.key.startsWith('sk-')) {
-                return {
-                    key: parsed.openai.key,
-                    model: parsed.openai.model || 'gpt-4o-mini',
-                    maxTokens: parsed.openai.maxTokens || 1000,
-                    temperature: parsed.openai.temperature || 0.7
-                };
-            }
-        }
-    } catch (error) {
-        console.warn('⚠️ Konnte global_api_keys nicht lesen:', error);
-    }
-    
-    // PRIORITÄT 3: Fallback zu altem localStorage Key (Legacy)
-    const legacyKey = localStorage.getItem('openai_api_key');
-    if (legacyKey && legacyKey.startsWith('sk-')) {
-        return {
-            key: legacyKey,
-            model: 'gpt-4o-mini',
-            maxTokens: 1000,
-            temperature: 0.7
-        };
-    }
-    
-    return null;
-}
-
-async function generateWithOpenAI(jobData, profileData, apiConfig) {
-    const prompt = buildPrompt(jobData, profileData);
-    
-    // Verwende Config aus Admin Panel
-    const model = apiConfig.model || 'gpt-4o-mini';
-    const temperature = apiConfig.temperature || 0.7;
-    const maxTokens = apiConfig.maxTokens || 1000;
-    
-    console.log(`🤖 Generiere mit ${model} (temp: ${temperature}, tokens: ${maxTokens})`);
+async function generateWithGPT(userData) {
+    const prompt = buildGPTPrompt(userData);
     
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${apiConfig.key}`
+            'Authorization': `Bearer ${QuickApplyState.apiKey}`
         },
         body: JSON.stringify({
-            model: model,
+            model: 'gpt-3.5-turbo',
             messages: [
                 {
                     role: 'system',
-                    content: `Du bist ein erfahrener Karriereberater, der professionelle Bewerbungsanschreiben auf Deutsch verfasst. 
-                    Schreibe ${QuickApplyState.tone === 'formal' ? 'formal und professionell' : QuickApplyState.tone === 'modern' ? 'modern und dynamisch' : 'kreativ und persönlich'}.
-                    Länge: ${QuickApplyState.length === 'short' ? 'kurz (max 200 Wörter)' : QuickApplyState.length === 'long' ? 'ausführlich (ca 400 Wörter)' : 'mittel (ca 300 Wörter)'}.`
+                    content: `Du bist ein erfahrener Bewerbungsberater aus dem DACH-Raum. 
+Erstelle professionelle, authentische Bewerbungsanschreiben auf Deutsch.
+- Verwende einen ${userData.tone === 'formal' ? 'professionellen und sachlichen' : userData.tone === 'modern' ? 'modernen und dynamischen' : 'kreativen und einzigartigen'} Ton.
+- Das Anschreiben soll ${userData.length === 'short' ? 'kurz (ca. 150 Wörter)' : userData.length === 'long' ? 'ausführlich (ca. 350 Wörter)' : 'mittellang (ca. 250 Wörter)'} sein.
+- Integriere die Stärken und Erfahrung des Bewerbers natürlich.
+- Vermeide Floskeln und generische Phrasen.`
                 },
                 {
                     role: 'user',
                     content: prompt
                 }
             ],
-            temperature: temperature,
-            max_tokens: maxTokens
+            temperature: 0.7,
+            max_tokens: 1000
         })
     });
     
     if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error?.message || 'API-Fehler');
+        const error = await response.json().catch(() => ({}));
+        throw new Error(error.error?.message || `API Error: ${response.status}`);
     }
     
     const data = await response.json();
     return data.choices[0].message.content;
 }
 
-function buildPrompt(jobData, profileData) {
-    return `Schreibe ein Bewerbungsanschreiben für folgende Stelle:
-
-STELLE:
-- Position: ${jobData.title || 'nicht angegeben'}
-- Unternehmen: ${jobData.company || 'nicht angegeben'}
-- Standort: ${jobData.location || 'nicht angegeben'}
-- Anforderungen: ${jobData.requirements.join(', ') || 'nicht angegeben'}
-${jobData.description ? `- Stellenbeschreibung: ${jobData.description.substring(0, 1000)}` : ''}
+function buildGPTPrompt(userData) {
+    const jobInfo = QuickApplyState.jobData || {};
+    
+    return `Erstelle ein Bewerbungsanschreiben mit folgenden Informationen:
 
 BEWERBER:
-- Name: ${profileData.name}
-- Aktuelle Position: ${profileData.currentJob || 'nicht angegeben'}
-- Berufserfahrung: ${profileData.experience || 'nicht angegeben'}
-- Standort: ${profileData.location || 'nicht angegeben'}
-- Skills: ${profileData.skills.join(', ') || 'nicht angegeben'}
-${profileData.motivation ? `- Motivation: ${profileData.motivation}` : ''}
+- Name: ${userData.name}
+- Aktuelle Position: ${userData.currentPosition || 'Nicht angegeben'}
+- Berufserfahrung: ${userData.experience}
+- Standort: ${userData.location || 'Nicht angegeben'}
+- Top-Stärken: ${userData.skills}
+${userData.motivation ? `- Motivation: ${userData.motivation}` : ''}
 
-Erstelle ein überzeugendes Anschreiben mit korrekter deutscher Briefform (Datum, Anrede, Grußformel).`;
+ZIELSTELLE:
+- Position: ${jobInfo.title || 'die ausgeschriebene Position'}
+- Unternehmen: ${jobInfo.company || 'das Unternehmen'}
+${jobInfo.description ? `- Stellenbeschreibung (Auszug): ${jobInfo.description.substring(0, 500)}` : ''}
+
+Erstelle ein überzeugendes, authentisches Anschreiben das die Stärken des Bewerbers mit den Anforderungen der Stelle verbindet.`;
 }
 
-function generateWithTemplate(jobData, profileData) {
-    // Template-based fallback (no API key)
+/**
+ * Generiert Anschreiben aus Templates (für nicht-angemeldete Nutzer)
+ */
+function generateFromTemplates(userData) {
+    const tone = userData.tone;
+    const templates = CoverLetterTemplates;
+    const jobData = QuickApplyState.jobData || {
+        title: 'die ausgeschriebene Position',
+        company: 'Ihr Unternehmen'
+    };
+    
+    // Zufällige Auswahl aus Arrays
+    const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+    
+    // Platzhalter ersetzen
+    const replace = (text) => {
+        return text
+            .replace(/\{\{position\}\}/g, jobData.title || 'die ausgeschriebene Position')
+            .replace(/\{\{company\}\}/g, jobData.company || 'Ihr Unternehmen')
+            .replace(/\{\{name\}\}/g, userData.name)
+            .replace(/\{\{skills\}\}/g, userData.skills)
+            .replace(/\{\{experience\}\}/g, getExperienceYears(userData.experience))
+            .replace(/\{\{motivation\}\}/g, userData.motivation || 'die spannenden Herausforderungen dieser Position');
+    };
+    
+    // Anschreiben zusammenbauen
+    const salutation = replace(pick(templates.salutations[tone]));
+    const opening = replace(pick(templates.openings[tone]));
+    const qualification1 = replace(pick(templates.qualifications.experience));
+    const qualification2 = replace(pick(templates.qualifications.skills));
+    
+    // Bei längeren Anschreiben: mehr Inhalt
+    let additionalContent = '';
+    if (userData.length !== 'short') {
+        const achievement = replace(pick(templates.qualifications.achievements));
+        additionalContent = `\n\n${achievement}`;
+    }
+    
+    const motivation = userData.motivation 
+        ? replace(pick(templates.motivation.custom))
+        : replace(pick(templates.motivation.general));
+    
+    const value = replace(pick(templates.value[tone]));
+    const closing = replace(pick(templates.closings[tone]));
+    const greeting = pick(templates.greetings[tone]);
+    
+    // Datum hinzufügen
     const today = new Date().toLocaleDateString('de-DE', {
-        day: '2-digit',
+        day: 'numeric',
         month: 'long',
         year: 'numeric'
     });
     
-    const greeting = jobData.company 
-        ? `Sehr geehrte Damen und Herren bei ${jobData.company},`
-        : 'Sehr geehrte Damen und Herren,';
-    
-    const skillsList = profileData.skills.length > 0
-        ? profileData.skills.slice(0, 3).join(', ')
-        : 'meine Fähigkeiten';
-    
-    const experienceText = getExperienceText(profileData.experience);
-    
-    const motivationText = profileData.motivation 
-        ? profileData.motivation
-        : jobData.company 
-            ? `Die Stelle als ${jobData.title || 'Mitarbeiter'} bei ${jobData.company} hat mein Interesse geweckt, da sie optimal zu meinem Profil passt.`
-            : `Die ausgeschriebene Stelle hat mein Interesse geweckt, da sie optimal zu meinem Profil passt.`;
-    
-    const template = `${profileData.name}
-${profileData.location || 'Deutschland'}
+    return `${today}
 
-${today}
+${salutation}
 
-Bewerbung als ${jobData.title || 'Ihre ausgeschriebene Stelle'}
+${opening}
+
+${qualification1} ${qualification2}${additionalContent}
+
+${motivation} ${value}
+
+${closing}
 
 ${greeting}
-
-${motivationText}
-
-${experienceText} bringe ich fundierte Kenntnisse in ${skillsList} mit. ${getStrengthSentence(jobData, profileData)}
-
-${getClosingSentence(QuickApplyState.tone)}
-
-Mit freundlichen Grüßen
-
-${profileData.name}`;
-
-    return template;
+${userData.name}`;
 }
 
-function getExperienceText(experience) {
-    const texts = {
-        '0-1': 'Als motivierter Berufseinsteiger',
-        '1-3': 'Mit meiner bisherigen Berufserfahrung',
-        '3-5': 'Mit mehrjähriger Berufserfahrung',
-        '5-10': 'Mit umfangreicher Berufserfahrung von über 5 Jahren',
-        '10+': 'Mit über 10 Jahren Berufserfahrung'
+function getExperienceYears(experience) {
+    const map = {
+        '': '1',
+        'entry': '1',
+        'junior': '2',
+        'mid': '4',
+        'senior': '7',
+        'expert': '10+'
     };
-    return texts[experience] || 'Mit meiner Berufserfahrung';
+    return map[experience] || '3';
 }
 
-function getStrengthSentence(jobData, profileData) {
-    if (jobData.requirements && jobData.requirements.length > 0) {
-        const matchingSkills = profileData.skills.filter(skill =>
-            jobData.requirements.some(req => 
-                req.toLowerCase().includes(skill.toLowerCase()) ||
-                skill.toLowerCase().includes(req.toLowerCase())
-            )
-        );
-        
-        if (matchingSkills.length > 0) {
-            return `Besonders meine Erfahrung mit ${matchingSkills.slice(0, 2).join(' und ')} macht mich zu einem idealen Kandidaten für diese Position.`;
-        }
+// ═══════════════════════════════════════════════════════════════════════════
+// UI HELPERS
+// ═══════════════════════════════════════════════════════════════════════════
+
+function collectUserData() {
+    return {
+        name: document.getElementById('quickName')?.value.trim() || '',
+        currentPosition: document.getElementById('quickPosition')?.value.trim() || '',
+        experience: document.getElementById('quickExperience')?.value || '',
+        location: document.getElementById('quickLocation')?.value.trim() || '',
+        skills: document.getElementById('quickSkills')?.value.trim() || '',
+        motivation: document.getElementById('quickMotivation')?.value.trim() || '',
+        tone: QuickApplyState.tone,
+        length: QuickApplyState.length
+    };
+}
+
+function validateUserData(userData) {
+    if (!userData.name) {
+        showToast('Bitte geben Sie Ihren Namen ein', 'error');
+        document.getElementById('quickName')?.focus();
+        return false;
+    }
+    if (!userData.experience) {
+        showToast('Bitte wählen Sie Ihre Berufserfahrung', 'error');
+        document.getElementById('quickExperience')?.focus();
+        return false;
+    }
+    if (!userData.skills) {
+        showToast('Bitte geben Sie Ihre Stärken ein', 'error');
+        document.getElementById('quickSkills')?.focus();
+        return false;
+    }
+    return true;
+}
+
+function showGeneratingState() {
+    const generateBtn = document.getElementById('generateBtn');
+    const resultSection = document.getElementById('resultSection');
+    
+    if (generateBtn) {
+        generateBtn.disabled = true;
+        generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Wird erstellt...';
     }
     
-    return 'Ich bin überzeugt, dass ich mit meinen Fähigkeiten einen wertvollen Beitrag zu Ihrem Team leisten kann.';
+    if (resultSection) {
+        resultSection.innerHTML = `
+            <div class="generating-animation">
+                <div class="generating-icon">
+                    <i class="fas fa-pen-fancy fa-3x"></i>
+                </div>
+                <h3>Anschreiben wird erstellt...</h3>
+                <p>${QuickApplyState.isLoggedIn && QuickApplyState.apiKey ? 'GPT-3.5-Turbo formuliert Ihr individuelles Anschreiben' : 'Intelligente Templates werden zusammengestellt'}</p>
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+            </div>
+        `;
+        resultSection.classList.remove('hidden');
+    }
 }
 
-function getClosingSentence(tone) {
-    const sentences = {
-        formal: 'Über die Einladung zu einem persönlichen Gespräch würde ich mich sehr freuen.',
-        modern: 'Ich freue mich darauf, Sie in einem Gespräch von meinen Qualifikationen zu überzeugen!',
-        creative: 'Lassen Sie uns gemeinsam herausfinden, wie ich Ihr Team bereichern kann - ich freue mich auf unser Gespräch!'
-    };
-    return sentences[tone] || sentences.formal;
+function hideGeneratingState() {
+    const generateBtn = document.getElementById('generateBtn');
+    if (generateBtn) {
+        generateBtn.disabled = false;
+        generateBtn.innerHTML = '<i class="fas fa-magic"></i> Anschreiben generieren';
+    }
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// RESULT DISPLAY
-// ═══════════════════════════════════════════════════════════════════════════
-
-function showGenerationResult(coverLetter, jobData) {
-    // Hide other steps
-    document.getElementById('quickStep1').classList.add('hidden');
-    document.getElementById('quickStep2').classList.add('hidden');
-    document.getElementById('quickStep3').classList.add('hidden');
+function displayGeneratedLetter(letter) {
+    const resultSection = document.getElementById('resultSection');
+    if (!resultSection) return;
     
-    // Show result
-    const resultStep = document.getElementById('quickStep4');
-    resultStep.classList.remove('hidden');
+    const modeLabel = QuickApplyState.isLoggedIn && QuickApplyState.apiKey
+        ? '<span class="mode-badge ai"><i class="fas fa-robot"></i> GPT-3.5-Turbo</span>'
+        : '<span class="mode-badge template"><i class="fas fa-magic"></i> Smart-Template</span>';
     
-    // Fill result data
-    document.getElementById('resultJobTitle').textContent = jobData.title || 'Bewerbung';
-    document.getElementById('resultCompany').textContent = jobData.company ? `@ ${jobData.company}` : '';
-    document.getElementById('resultText').value = coverLetter;
-    
-    // Scroll to result
-    resultStep.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-
-// ═══════════════════════════════════════════════════════════════════════════
-// RESULT ACTIONS
-// ═══════════════════════════════════════════════════════════════════════════
-
-function copyToClipboard() {
-    const text = document.getElementById('resultText').value;
-    navigator.clipboard.writeText(text).then(() => {
-        showToast('In Zwischenablage kopiert!', 'success');
-    }).catch(err => {
-        showToast('Kopieren fehlgeschlagen', 'error');
-    });
-}
-
-function downloadAsPdf() {
-    const text = document.getElementById('resultText').value;
-    const jobTitle = QuickApplyState.jobData?.title || 'Bewerbung';
-    const company = QuickApplyState.jobData?.company || '';
-    
-    // Create printable HTML
-    const printContent = `
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <meta charset="UTF-8">
-            <title>Bewerbung - ${jobTitle}</title>
-            <style>
-                body {
-                    font-family: 'Georgia', serif;
-                    font-size: 12pt;
-                    line-height: 1.6;
-                    max-width: 700px;
-                    margin: 50px auto;
-                    padding: 20px;
-                }
-                pre {
-                    white-space: pre-wrap;
-                    font-family: inherit;
-                }
-            </style>
-        </head>
-        <body>
-            <pre>${escapeHtml(text)}</pre>
-        </body>
-        </html>
+    resultSection.innerHTML = `
+        <div class="result-header">
+            <h3><i class="fas fa-file-alt"></i> Ihr Anschreiben ${modeLabel}</h3>
+            <div class="result-actions">
+                <button onclick="copyToClipboard(QuickApplyState.generatedText)" class="btn-icon" title="Kopieren">
+                    <i class="fas fa-copy"></i>
+                </button>
+                <button onclick="downloadLetter()" class="btn-icon" title="Herunterladen">
+                    <i class="fas fa-download"></i>
+                </button>
+                <button onclick="regenerateLetter()" class="btn-icon" title="Neu generieren">
+                    <i class="fas fa-sync"></i>
+                </button>
+            </div>
+        </div>
+        <div class="result-content">
+            <textarea id="generatedLetter" class="letter-textarea">${escapeHtml(letter)}</textarea>
+        </div>
+        <div class="result-footer">
+            <button onclick="saveToDrafts()" class="btn-secondary">
+                <i class="fas fa-save"></i> Als Entwurf speichern
+            </button>
+            <button onclick="sendApplication()" class="btn-primary">
+                <i class="fas fa-paper-plane"></i> Bewerbung absenden
+            </button>
+        </div>
     `;
     
-    // Open print dialog
-    const printWindow = window.open('', '_blank');
-    printWindow.document.write(printContent);
-    printWindow.document.close();
-    printWindow.print();
-    
-    showToast('PDF-Druck geöffnet', 'info');
+    resultSection.classList.remove('hidden');
+    resultSection.scrollIntoView({ behavior: 'smooth' });
 }
 
-function downloadAsDocx() {
-    // For now, download as .txt (docx would require a library)
-    const text = document.getElementById('resultText').value;
-    const jobTitle = QuickApplyState.jobData?.title || 'Bewerbung';
-    const company = QuickApplyState.jobData?.company || '';
+function regenerateLetter() {
+    generateCoverLetter();
+}
+
+function downloadLetter() {
+    const letter = document.getElementById('generatedLetter')?.value || QuickApplyState.generatedText;
+    const jobData = QuickApplyState.jobData || {};
     
-    const filename = `Anschreiben_${company || 'Bewerbung'}_${new Date().toISOString().split('T')[0]}.txt`;
-    
-    const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+    const blob = new Blob([letter], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
-    
     const a = document.createElement('a');
     a.href = url;
-    a.download = filename;
+    a.download = `Anschreiben_${jobData.company || 'Bewerbung'}_${new Date().toISOString().split('T')[0]}.txt`;
     a.click();
-    
     URL.revokeObjectURL(url);
-    showToast('Download gestartet', 'success');
+    
+    showToast('Anschreiben heruntergeladen', 'success');
 }
 
-function sendViaEmail() {
-    const text = document.getElementById('resultText').value;
-    const jobTitle = QuickApplyState.jobData?.title || 'Bewerbung';
-    const company = QuickApplyState.jobData?.company || '';
+function saveToDrafts() {
+    const letter = document.getElementById('generatedLetter')?.value || QuickApplyState.generatedText;
     
-    const subject = encodeURIComponent(`Bewerbung als ${jobTitle}${company ? ` bei ${company}` : ''}`);
-    const body = encodeURIComponent(text);
+    const drafts = JSON.parse(localStorage.getItem('cover_letter_drafts') || '[]');
+    drafts.unshift({
+        id: Date.now().toString(36),
+        content: letter,
+        jobData: QuickApplyState.jobData,
+        createdAt: new Date().toISOString()
+    });
+    localStorage.setItem('cover_letter_drafts', JSON.stringify(drafts.slice(0, 10)));
     
-    window.location.href = `mailto:?subject=${subject}&body=${body}`;
-    
-    showToast('E-Mail-Programm geöffnet', 'info');
+    showToast('Entwurf gespeichert', 'success');
 }
 
-function regenerateCoverLetter() {
-    if (confirm('Neues Anschreiben generieren?')) {
-        // Go back to step 3
-        document.getElementById('quickStep4').classList.add('hidden');
-        document.getElementById('quickStep1').classList.remove('hidden');
-        document.getElementById('quickStep3').classList.remove('hidden');
-        
-        if (!QuickApplyState.hasProfile) {
-            document.getElementById('quickStep2').classList.remove('hidden');
-        }
-        
-        // Generate again
-        generateQuickApplication();
-    }
+function sendApplication() {
+    showToast('Bewerbungsfunktion kommt bald!', 'info');
 }
 
-function improveText(type) {
-    showToast(`"${type}" Verbesserung kommt bald!`, 'info');
-    // TODO: Implement text improvement with AI
-}
-
-function startNewApplication() {
-    // Reset state
-    QuickApplyState.jobData = null;
-    QuickApplyState.generatedText = '';
+function saveToTracking(userData) {
+    if (!window.DashboardState) return;
     
-    // Reset form
-    document.getElementById('jobUrl').value = '';
-    document.getElementById('jobText').value = '';
-    document.getElementById('charCount').textContent = '0';
-    document.getElementById('parsedJobPreview').classList.add('hidden');
-    
-    // Show steps
-    document.getElementById('quickStep1').classList.remove('hidden');
-    document.getElementById('quickStep3').classList.remove('hidden');
-    
-    if (!QuickApplyState.hasProfile) {
-        document.getElementById('quickStep2').classList.remove('hidden');
-    }
-    
-    // Hide result
-    document.getElementById('quickStep4').classList.add('hidden');
-    
-    // Scroll to top
-    document.querySelector('.quick-apply-container').scrollIntoView({ behavior: 'smooth' });
-    
-    updateGenerateButton();
-}
-
-function addToTracking() {
-    const jobData = QuickApplyState.jobData;
-    
-    if (!jobData) {
-        showToast('Keine Stellendaten vorhanden', 'error');
-        return;
-    }
-    
-    // Add to applications
-    const newApp = {
-        id: Date.now().toString(36) + Math.random().toString(36).substr(2),
-        position: jobData.title || 'Bewerbung',
-        company: jobData.company || 'Unbekannt',
-        location: jobData.location || '',
+    const jobData = QuickApplyState.jobData || {};
+    const application = {
+        id: Date.now().toString(36),
+        position: jobData.title || 'Unbekannte Position',
+        company: jobData.company || 'Unbekanntes Unternehmen',
         date: new Date().toISOString().split('T')[0],
         status: 'pending',
-        notes: 'Erstellt mit Quick Apply',
         coverLetter: QuickApplyState.generatedText,
         createdAt: new Date().toISOString()
     };
     
-    DashboardState.applications.unshift(newApp);
-    calculateStats();
-    saveState();
-    updateStatsBar();
-    
-    showToast('Zum Tracking hinzugefügt!', 'success');
-    
-    // Switch to tracking tab
-    setTimeout(() => {
-        showTab('tracking');
-    }, 1000);
+    window.DashboardState.applications.unshift(application);
+    if (window.saveState) window.saveState();
+    if (window.updateStatsBar) window.updateStatsBar();
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// SAVE QUICK PROFILE
+// TONE & LENGTH SELECTION
 // ═══════════════════════════════════════════════════════════════════════════
 
-function saveQuickProfileData(profileData) {
-    const nameParts = profileData.name.split(' ');
+function setTone(tone) {
+    QuickApplyState.tone = tone;
     
-    DashboardState.profile = {
-        ...DashboardState.profile,
-        firstName: nameParts[0] || '',
-        lastName: nameParts.slice(1).join(' ') || '',
-        currentJob: profileData.currentJob,
-        experience: profileData.experience,
-        location: profileData.location,
-        skills: profileData.skills
-    };
+    document.querySelectorAll('.tone-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.tone === tone);
+    });
+}
+
+function setLength(length) {
+    QuickApplyState.length = length;
     
-    saveState();
-    QuickApplyState.hasProfile = true;
-    
-    console.log('📝 Quick profile saved');
+    document.querySelectorAll('.length-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.length === length);
+    });
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// LINKEDIN IMPORT (Placeholder)
-// ═══════════════════════════════════════════════════════════════════════════
-
-function importFromLinkedIn() {
-    showToast('LinkedIn-Import kommt bald!', 'info');
-    // TODO: Implement LinkedIn OAuth or CSV import
-}
-
-// ═══════════════════════════════════════════════════════════════════════════
-// HELPER FUNCTIONS
+// UTILITY FUNCTIONS (Fallbacks wenn utils.js nicht geladen)
 // ═══════════════════════════════════════════════════════════════════════════
 
 function escapeHtml(text) {
+    if (window.escapeHtml) return window.escapeHtml(text);
     if (!text) return '';
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
 }
 
-// Calculate stats helper (imported from dashboard-core)
-function calculateStats() {
-    if (typeof window.calculateStats === 'function') {
-        window.calculateStats();
-    } else {
-        const apps = DashboardState.applications;
-        DashboardState.stats = {
-            total: apps.length,
-            pending: apps.filter(a => a.status === 'pending').length,
-            interviews: apps.filter(a => a.status === 'interview').length,
-            offers: apps.filter(a => a.status === 'offer').length,
-            rejected: apps.filter(a => a.status === 'rejected').length,
-            successRate: apps.length > 0 
-                ? Math.round((apps.filter(a => a.status === 'offer').length / apps.length) * 100) 
-                : 0
-        };
-    }
+function showToast(message, type) {
+    if (window.showToast) return window.showToast(message, type);
+    console.log(`[${type}] ${message}`);
+}
+
+function copyToClipboard(text) {
+    if (window.copyToClipboard) return window.copyToClipboard(text);
+    navigator.clipboard.writeText(text).then(() => {
+        showToast('In Zwischenablage kopiert', 'success');
+    });
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// EXPORT
+// EXPORTS
 // ═══════════════════════════════════════════════════════════════════════════
 
 window.initQuickApply = initQuickApply;
 window.toggleInputType = toggleInputType;
-window.handleUrlInput = handleUrlInput;
-window.handleUrlPaste = handleUrlPaste;
-window.parseJobUrl = parseJobUrl;
-window.handleTextInput = handleTextInput;
-window.selectTone = selectTone;
-window.selectLength = selectLength;
-window.generateQuickApplication = generateQuickApplication;
-window.copyToClipboard = copyToClipboard;
-window.downloadAsPdf = downloadAsPdf;
-window.downloadAsDocx = downloadAsDocx;
-window.sendViaEmail = sendViaEmail;
-window.regenerateCoverLetter = regenerateCoverLetter;
-window.improveText = improveText;
-window.startNewApplication = startNewApplication;
-window.addToTracking = addToTracking;
-window.importFromLinkedIn = importFromLinkedIn;
-
+window.analyzeJobUrl = analyzeJobUrl;
+window.generateCoverLetter = generateCoverLetter;
+window.setTone = setTone;
+window.setLength = setLength;
+window.downloadLetter = downloadLetter;
+window.saveToDrafts = saveToDrafts;
+window.sendApplication = sendApplication;
+window.regenerateLetter = regenerateLetter;
+window.QuickApplyState = QuickApplyState;
