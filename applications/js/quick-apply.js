@@ -1235,7 +1235,6 @@ function setLength(length) {
 // ═══════════════════════════════════════════════════════════════════════════
 
 function escapeHtml(text) {
-    if (window.escapeHtml) return window.escapeHtml(text);
     if (!text) return '';
     const div = document.createElement('div');
     div.textContent = text;
@@ -1270,7 +1269,6 @@ function quickApplyShowToast(message, type = 'info') {
 }
 
 function copyToClipboard(text) {
-    if (window.copyToClipboard) return window.copyToClipboard(text);
     navigator.clipboard.writeText(text).then(() => {
         quickApplyShowToast('In Zwischenablage kopiert', 'success');
     });
