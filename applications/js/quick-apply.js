@@ -395,11 +395,21 @@ async function initQuickApply() {
     // Check if profile exists
     checkProfileStatus();
     
+    // Zeige Profilformular immer an (wird für Template-Generierung benötigt)
+    const quickStep2 = document.getElementById('quickStep2');
+    if (quickStep2) {
+        quickStep2.classList.remove('hidden');
+        console.log('📝 Quick Profile Form angezeigt');
+    }
+    
     // Setup event listeners
     setupQuickApplyListeners();
     
     // Update UI based on login status
     updateAPIStatusDisplay();
+    
+    // Initial Button-Status prüfen
+    updateGenerateButtonState();
     
     console.log('✅ Quick Apply ready - Logged in:', QuickApplyState.isLoggedIn);
 }
