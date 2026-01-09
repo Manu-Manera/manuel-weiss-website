@@ -559,10 +559,11 @@ function setupQuickApplyListeners() {
 function toggleInputType(type) {
     QuickApplyState.inputType = type;
     
-    const urlGroup = document.getElementById('urlInputGroup');
-    const textGroup = document.getElementById('textInputGroup');
-    const urlBtn = document.querySelector('[onclick*="toggleInputType(\'url\')"]');
-    const textBtn = document.querySelector('[onclick*="toggleInputType(\'text\')"]');
+    // Unterstütze beide möglichen ID-Formate
+    const urlGroup = document.getElementById('inputUrl') || document.getElementById('urlInputGroup');
+    const textGroup = document.getElementById('inputText') || document.getElementById('textInputGroup');
+    const urlBtn = document.querySelector('[data-input="url"]') || document.querySelector('[onclick*="toggleInputType(\'url\')"]');
+    const textBtn = document.querySelector('[data-input="text"]') || document.querySelector('[onclick*="toggleInputType(\'text\')"]');
     
     if (type === 'url') {
         urlGroup?.classList.remove('hidden');
