@@ -339,9 +339,13 @@ Ihre Aufgaben:
                             </div>
                         </button>
 
-                        <div class="generation-info">
+                        <div class="generation-info" id="generationInfo">
                             <i class="fas fa-info-circle"></i>
-                            <span>GPT-3.5 Turbo • Durchschnittlich 15 Sekunden • Kostenlos</span>
+                            <span id="apiStatusText">Prüfe API-Konfiguration...</span>
+                        </div>
+                        <div class="api-hint hidden" id="apiHint">
+                            <i class="fas fa-key"></i>
+                            <span>Kein API-Key? <a href="../admin.html#api-keys" target="_blank">Im Admin Panel konfigurieren</a></span>
                         </div>
                     </div>
 
@@ -647,10 +651,16 @@ Ihre Aufgaben:
 
     <!-- Scripts -->
     <script src="../js/real-user-auth.js"></script>
+    <script src="../js/global-api-manager.js"></script>
     <script src="js/dashboard-core.js"></script>
     <script src="js/quick-apply.js"></script>
     
     <script>
+        // Initialize Global API Manager
+        if (!window.globalAPIManager) {
+            window.globalAPIManager = new GlobalAPIManager();
+        }
+        
         // Initialize on load
         document.addEventListener('DOMContentLoaded', () => {
             initDashboard();
