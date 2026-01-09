@@ -3,173 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bewerbungsmanager - Intelligente Bewerbungstools</title>
-    <meta name="description" content="Automatisieren Sie Ihre Bewerbungen mit KI-gestützten Tools. 90% Zeitersparnis durch intelligente Anschreiben-Generierung, Lebenslauf-Optimierung und Bewerbungs-Tracking.">
+    <title>Bewerbungsmanager - KI-Power für deine Bewerbungen | Manuel Weiss</title>
+    <meta name="description" content="Automatisiere deine Bewerbungen mit KI. 60-Sekunden-Anschreiben, Lebenslauf-Optimierung, Tracking und Interview-Vorbereitung.">
     
     <!-- CSS -->
-    <link rel="stylesheet" href="../styles.css">
-    <link rel="stylesheet" href="css/applications-main.css">
-    <link rel="stylesheet" href="../css/persoenlichkeitsentwicklung-uebersicht.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/landing.css">
     
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar">
+    <!-- Navigation - Modern & Clean -->
+    <nav class="navbar navbar-modern navbar-transparent">
         <div class="nav-container">
-            <div class="nav-brand">
-                <img src="../images/manuel-weiss-portrait.jpg" alt="Manuel Weiss" class="nav-logo">
-                <span class="nav-title">Manuel Weiss</span>
-            </div>
-            
-            <!-- Mobile Hamburger Button -->
+            <!-- Mobile Hamburger -->
             <button class="mobile-hamburger" id="mobileHamburger" aria-label="Menü öffnen">
                 <span class="hamburger-line"></span>
                 <span class="hamburger-line"></span>
                 <span class="hamburger-line"></span>
             </button>
             
-            <div class="nav-menu">
-                <a href="../index.html" class="nav-link" data-de="Start" data-en="Home">Start</a>
-                <a href="../persoenlichkeitsentwicklung-uebersicht.html" class="nav-link" data-de="Persönlichkeitsentwicklung" data-en="Personality Development">Persönlichkeitsentwicklung</a>
-                <a href="index.html" class="nav-link active" data-de="Bewerbungsmanager" data-en="Application Manager">Bewerbungsmanager</a>
-                <a href="../website-services.html" class="nav-link" data-de="Services" data-en="Services">Services</a>
-                
-                <!-- Language Switcher - Kompakt -->
-                <div class="language-switcher-compact">
-                    <button class="lang-link-compact" data-lang="de" title="Deutsch">🇩🇪</button>
-                    <button class="lang-link-compact" data-lang="en" title="English">🇬🇧</button>
-                </div>
+            <div class="nav-menu" id="navMenu">
+                <a href="../index.html" class="nav-link nav-link-home">
+                    <i class="fas fa-home"></i>
+                    <span>Start</span>
+                </a>
+                <a href="index.html" class="nav-link active">
+                    <i class="fas fa-briefcase"></i>
+                    <span>Bewerbungsmanager</span>
+                </a>
+                <a href="coaching.html" class="nav-link">
+                    <i class="fas fa-compass"></i>
+                    <span>Coaching</span>
+                </a>
             </div>
             
             <div class="auth-section">
-                <div class="nav-user" id="navUser">
-                    <button id="realAuthButton" class="nav-login-btn">
+                <button id="authButton" class="nav-login-btn" onclick="handleAuth()">
                         <i class="fas fa-user"></i>
-                        <span data-de="Anmelden" data-en="Login">Anmelden</span>
+                    <span id="authButtonText">Anmelden</span>
                     </button>
-                    
-                    <!-- User Dropdown Menu -->
-                    <div class="user-dropdown" id="userDropdown" style="display: none;">
-                        <div class="user-dropdown-header">
-                            <div class="user-avatar-small">
-                                <img id="userAvatarImg" src="../images/manuel-weiss-portrait.jpg" alt="User" class="user-avatar-img">
-                            </div>
-                            <div class="user-info-small">
-                                <div class="user-name-small" id="userName">Benutzer</div>
-                                <div class="user-email-small" id="userEmail">weiss-manuel@gmx.de</div>
-                            </div>
-                        </div>
-                        <div class="user-dropdown-content">
-                            <a href="#" class="user-dropdown-item" onclick="openProfile(); return false;">
-                                <i class="fas fa-user-circle"></i>
-                                <span>Profil</span>
-                            </a>
-                            <a href="#" class="user-dropdown-item" onclick="openSettings(); return false;">
-                                <i class="fas fa-cog"></i>
-                                <span>Einstellungen</span>
-                            </a>
-                            <a href="#" class="user-dropdown-item" onclick="openProgress(); return false;">
-                                <i class="fas fa-chart-line"></i>
-                                <span>Fortschritt</span>
-                            </a>
-                            <div class="user-dropdown-divider"></div>
-                            <a href="#" class="user-dropdown-item logout" onclick="window.realUserAuth.logout(); return false;">
-                                <i class="fas fa-sign-out-alt"></i>
-                                <span>Abmelden</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </nav>
-    
-    <!-- Mobile Menu Fullscreen -->
-    <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
-    <div class="mobile-menu-fullscreen" id="mobileMenuFullscreen">
-        <div class="mobile-menu-content">
-            <a href="../index.html" class="mobile-menu-link" data-de="Start" data-en="Home">
-                <i class="fas fa-home"></i> Start
-            </a>
-            <a href="../persoenlichkeitsentwicklung-uebersicht.html" class="mobile-menu-link" data-de="Persönlichkeitsentwicklung" data-en="Personality Development">
-                <i class="fas fa-brain"></i> Persönlichkeitsentwicklung
-            </a>
-            <a href="index.html" class="mobile-menu-link active" data-de="Bewerbungsmanager" data-en="Application Manager">
-                <i class="fas fa-file-alt"></i> Bewerbungsmanager
-            </a>
-            <a href="../website-services.html" class="mobile-menu-link" data-de="Services" data-en="Services">
-                <i class="fas fa-cogs"></i> Services
-            </a>
+
+    <!-- Hero Section - Immersive -->
+    <section class="landing-hero">
+        <div class="hero-bg-gradient"></div>
+        <div class="hero-particles" id="particles"></div>
+        
+            <div class="hero-content">
+            <div class="hero-badge animate-in">
+                <i class="fas fa-bolt"></i>
+                <span>KI-Powered</span>
+            </div>
             
-            <div class="mobile-menu-divider"></div>
+            <h1 class="hero-title animate-in">
+                Bewerbung in <span class="highlight-text">60 Sekunden</span>
+                </h1>
             
-            <!-- Auth Button im Mobile Menu -->
-            <button id="mobileAuthButton" class="mobile-auth-btn">
-                <i class="fas fa-user"></i>
-                <span data-de="Anmelden" data-en="Login">Anmelden</span>
-            </button>
+            <p class="hero-subtitle animate-in">
+                Stelle einfügen → KI analysiert → Anschreiben fertig. 
+                <br class="mobile-break">So einfach war Bewerben noch nie.
+            </p>
             
-            <!-- Mobile Language Switcher -->
-            <div class="mobile-language-switcher">
-                <button class="mobile-lang-btn" data-lang="de" title="Deutsch">🇩🇪 Deutsch</button>
-                <button class="mobile-lang-btn" data-lang="en" title="English">🇬🇧 English</button>
+            <div class="hero-stats animate-in">
+                <div class="hero-stat">
+                    <span class="stat-value">90%</span>
+                    <span class="stat-label">Zeitersparnis</span>
+                    </div>
+                <div class="hero-stat">
+                    <span class="stat-value">3x</span>
+                    <span class="stat-label">Mehr Bewerbungen</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="stat-value">∞</span>
+                    <span class="stat-label">Varianten</span>
+                </div>
+            </div>
+            
+            <div class="hero-actions animate-in">
+                <a href="dashboard.html" class="btn btn-hero-primary">
+                    <i class="fas fa-rocket"></i>
+                    Jetzt starten
+                </a>
+                <button class="btn btn-hero-outline" onclick="scrollToFeatures()">
+                    <i class="fas fa-play-circle"></i>
+                    So funktioniert's
+                </button>
+            </div>
+            
+            <div class="hero-trust animate-in">
+                <span class="trust-text">Kostenlos testen</span>
+                <span class="trust-separator">•</span>
+                <span class="trust-text">Keine Kreditkarte</span>
+                <span class="trust-separator">•</span>
+                <span class="trust-text">DSGVO-konform</span>
             </div>
         </div>
-    </div>
-
-    <!-- Hero Section -->
-    <section class="hero-section">
-        <div class="hero-container">
-            <div class="hero-content">
-                <h1 class="hero-title">
-                    <span class="gradient-text" data-de="Bewerbungsmanager" data-en="Application Manager">Bewerbungsmanager</span>
-                    <br><span data-de="mit KI-Power" data-en="with AI Power">mit KI-Power</span>
-                </h1>
-                <p class="hero-subtitle" data-de="Automatisieren Sie Ihre Bewerbungen und sparen Sie 90% Ihrer Zeit. KI-gestützte Anschreiben, optimierte Lebensläufe und intelligentes Tracking." data-en="Automate your applications and save 90% of your time. AI-powered cover letters, optimized resumes and intelligent tracking.">
-                    Automatisieren Sie Ihre Bewerbungen und sparen Sie 90% Ihrer Zeit. 
-                    KI-gestützte Anschreiben, optimierte Lebensläufe und intelligentes Tracking.
-                </p>
-                <div class="hero-stats">
-                    <div class="stat-item">
-                        <span class="stat-number">90%</span>
-                        <span class="stat-label" data-de="Zeitersparnis" data-en="Time Savings">Zeitersparnis</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number">3x</span>
-                        <span class="stat-label" data-de="Mehr Bewerbungen" data-en="More Applications">Mehr Bewerbungen</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number">85%</span>
-                        <span class="stat-label" data-de="Erfolgsrate" data-en="Success Rate">Erfolgsrate</span>
-                    </div>
+        
+        <div class="hero-visual animate-in">
+            <div class="demo-card">
+                <div class="demo-header">
+                    <div class="demo-dot red"></div>
+                    <div class="demo-dot yellow"></div>
+                    <div class="demo-dot green"></div>
+                    <span class="demo-title">Quick Apply</span>
                 </div>
-                <div class="hero-actions">
-                    <a href="dashboard.html" class="btn btn-primary btn-large">
-                        <i class="fas fa-bolt"></i>
-                        <span data-de="Quick Apply starten" data-en="Start Quick Apply">Quick Apply starten</span>
-                    </a>
-                    <a href="dashboard.html#tracking" class="btn btn-outline btn-large">
-                        <i class="fas fa-tasks"></i>
-                        <span data-de="Zum Dashboard" data-en="Go to Dashboard">Zum Dashboard</span>
-                    </a>
-                </div>
-            </div>
-            <div class="hero-visual">
-                <div class="floating-cards">
-                    <div class="card card-1">
-                        <i class="fas fa-file-alt"></i>
-                        <span data-de="Anschreiben" data-en="Cover Letter">Anschreiben</span>
+                <div class="demo-body">
+                    <div class="demo-input-group">
+                        <i class="fas fa-link"></i>
+                        <span class="demo-placeholder">Stellenanzeige einfügen...</span>
                     </div>
-                    <div class="card card-2">
-                        <i class="fas fa-user-tie"></i>
-                        <span data-de="Lebenslauf" data-en="Resume">Lebenslauf</span>
+                    <div class="demo-generating">
+                        <div class="demo-spinner"></div>
+                        <span>KI generiert Anschreiben...</span>
                     </div>
-                    <div class="card card-3">
-                        <i class="fas fa-chart-line"></i>
-                        <span data-de="Tracking" data-en="Tracking">Tracking</span>
+                    <div class="demo-result">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Fertig in 47 Sekunden!</span>
                     </div>
                 </div>
             </div>
@@ -177,191 +131,135 @@
     </section>
 
     <!-- Features Section -->
-    <section id="features" class="features-section">
-        <div class="container">
+    <section class="features-section" id="features">
+        <div class="section-container">
             <div class="section-header">
-                <h2 class="section-title" data-de="Intelligente Bewerbungstools" data-en="Intelligent Application Tools">Intelligente Bewerbungstools</h2>
-                <p class="section-subtitle" data-de="Alles was Sie für erfolgreiche Bewerbungen brauchen - automatisiert und optimiert" data-en="Everything you need for successful applications - automated and optimized">
-                    Alles was Sie für erfolgreiche Bewerbungen brauchen - automatisiert und optimiert
-                </p>
+                <h2 class="section-title">Alles für erfolgreiche Bewerbungen</h2>
+                <p class="section-subtitle">Von der Stellenanzeige bis zum Interview – wir begleiten dich</p>
             </div>
             
             <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-robot"></i>
+                <div class="feature-card feature-primary">
+                    <div class="feature-icon-wrapper">
+                        <i class="fas fa-bolt"></i>
                     </div>
-                    <h3 class="feature-title">KI-Anschreiben-Generator</h3>
-                    <p class="feature-description">
-                        Automatische Generierung personalisierter Anschreiben basierend auf Stellenbeschreibung und Ihrem Profil.
-                    </p>
-                    <ul class="feature-benefits">
-                        <li>GPT-3.5 Turbo Integration</li>
-                        <li>Branchen-spezifische Templates</li>
-                        <li>A/B-Testing für Optimierung</li>
-                    </ul>
-                    <a href="application-generator.html" class="feature-link">
-                        Generator starten <i class="fas fa-arrow-right"></i>
-                    </a>
+                    <h3>Quick Apply</h3>
+                    <p>Stellenanzeige einfügen, 60 Sekunden warten, fertiges Anschreiben erhalten.</p>
+                    <div class="feature-tag">Beliebteste Funktion</div>
                 </div>
                 
                 <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-file-user"></i>
+                    <div class="feature-icon-wrapper">
+                        <i class="fas fa-file-alt"></i>
                     </div>
-                    <h3 class="feature-title">Lebenslauf-Optimierung</h3>
-                    <p class="feature-description">
-                        KI-gestützte Analyse und Optimierung Ihres Lebenslaufs für maximale ATS-Kompatibilität.
-                    </p>
-                    <ul class="feature-benefits">
-                        <li>Keyword-Optimierung</li>
-                        <li>ATS-Kompatibilität</li>
-                        <li>Multi-Version-Management</li>
-                    </ul>
-                    <a href="document-upload.html" class="feature-link">
-                        Optimieren <i class="fas fa-arrow-right"></i>
-                    </a>
+                    <h3>KI-Anschreiben</h3>
+                    <p>GPT-3.5-Turbo erstellt personalisierte Anschreiben, die zu dir passen.</p>
                 </div>
                 
                 <div class="feature-card">
-                    <div class="feature-icon">
+                    <div class="feature-icon-wrapper">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <h3>Lebenslauf-Editor</h3>
+                    <p>Moderner Editor mit Templates und ATS-Optimierung für maximale Chancen.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper">
                         <i class="fas fa-chart-line"></i>
                     </div>
-                    <h3 class="feature-title">Bewerbungs-Tracking</h3>
-                    <p class="feature-description">
-                        Übersichtliche Verwaltung aller Bewerbungen mit Kanban-Board und automatischen Erinnerungen.
-                    </p>
-                    <ul class="feature-benefits">
-                        <li>Kanban-Board Interface</li>
-                        <li>Automatische Erinnerungen</li>
-                        <li>Timeline-Übersicht</li>
-                    </ul>
-                    <a href="../user-profile.html#applications" class="feature-link">
-                        Dashboard öffnen <i class="fas fa-arrow-right"></i>
-                    </a>
+                    <h3>Bewerbungs-Tracking</h3>
+                    <p>Behalte den Überblick über alle Bewerbungen mit Status und Erinnerungen.</p>
                 </div>
                 
                 <div class="feature-card">
-                    <div class="feature-icon">
+                    <div class="feature-icon-wrapper">
                         <i class="fas fa-comments"></i>
                     </div>
-                    <h3 class="feature-title">Interview-Vorbereitung</h3>
-                    <p class="feature-description">
-                        Intelligente Vorbereitung mit KI-generierten Fragen und personalisierten Antwortvorschlägen.
-                    </p>
-                    <ul class="feature-benefits">
-                        <li>KI-Fragen-Generator</li>
-                        <li>STAR-Methode Training</li>
-                        <li>Unternehmens-Recherche</li>
-                    </ul>
-                    <a href="interview-prep.html" class="feature-link">
-                        Vorbereiten <i class="fas fa-arrow-right"></i>
-                    </a>
+                    <h3>Interview-Prep</h3>
+                    <p>KI-generierte Fragen und Antworten basierend auf der Stellenbeschreibung.</p>
                 </div>
                 
                 <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-analytics"></i>
+                    <div class="feature-icon-wrapper">
+                        <i class="fas fa-compass"></i>
                     </div>
-                    <h3 class="feature-title">Analytics Dashboard</h3>
-                    <p class="feature-description">
-                        Detaillierte Erfolgsanalyse mit KPIs, Erfolgsraten und Optimierungsvorschlägen.
-                    </p>
-                    <ul class="feature-benefits">
-                        <li>Erfolgs-Metriken</li>
-                        <li>Gehalts-Benchmarking</li>
-                        <li>Optimierungsvorschläge</li>
-                    </ul>
-                    <a href="../user-profile.html#applications" class="feature-link">
-                        Analytics anzeigen <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
-                
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-cogs"></i>
-                    </div>
-                    <h3 class="feature-title">Automatisierung</h3>
-                    <p class="feature-description">
-                        Automatische Workflows für Follow-ups, E-Mail-Versendung und Status-Updates.
-                    </p>
-                    <ul class="feature-benefits">
-                        <li>E-Mail-Integration</li>
-                        <li>Automatische Workflows</li>
-                        <li>Batch-Processing</li>
-                    </ul>
-                    <a href="#" class="feature-link" onclick="handleJetztStarten(); return false;">
-                        Setup starten <i class="fas fa-arrow-right"></i>
-                    </a>
+                    <h3>Coaching</h3>
+                    <p>Systemisches Bewerbungscoaching für Klarheit und den perfekten Plan.</p>
+                    <a href="coaching.html" class="feature-link">Zum Coaching →</a>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Workflow Section -->
-    <section class="workflow-section">
-        <div class="container">
+    <!-- How it Works -->
+    <section class="how-section">
+        <div class="section-container">
             <div class="section-header">
-                <h2 class="section-title">Ihr Bewerbungs-Workflow</h2>
-                <p class="section-subtitle">
-                    Von der Profilerstellung bis zur erfolgreichen Bewerbung - alles in 5 einfachen Schritten
-                </p>
+                <h2 class="section-title">In 3 Schritten zur Bewerbung</h2>
+                <p class="section-subtitle">So einfach war es noch nie</p>
             </div>
             
-            <div class="workflow-steps">
-                <div class="workflow-step">
+            <div class="steps-container">
+                <div class="step-item">
                     <div class="step-number">1</div>
                     <div class="step-content">
-                        <h3 class="step-title">Profil erstellen</h3>
-                        <p class="step-description">
-                            Erstellen Sie Ihr persönliches Profil mit Erfahrungen, Fähigkeiten und Karrierezielen.
-                        </p>
-                        <a href="#" class="step-link" onclick="handleJetztStarten(); return false;">Profil starten</a>
+                        <h3>Stelle einfügen</h3>
+                        <p>Kopiere die URL oder den Text der Stellenanzeige</p>
+                    </div>
+                    <div class="step-visual">
+                        <i class="fas fa-paste"></i>
                     </div>
                 </div>
                 
-                <div class="workflow-step">
+                <div class="step-connector">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+                
+                <div class="step-item">
                     <div class="step-number">2</div>
                     <div class="step-content">
-                        <h3 class="step-title">Dokumente hochladen</h3>
-                        <p class="step-description">
-                            Laden Sie Ihren Lebenslauf und relevante Dokumente hoch für die KI-Analyse.
-                        </p>
-                        <a href="document-upload.html" class="step-link">Dokumente hochladen</a>
+                        <h3>Kurzes Profil</h3>
+                        <p>Name, Erfahrung, Top-Skills – nur 5 Felder</p>
+                    </div>
+                    <div class="step-visual">
+                        <i class="fas fa-user-edit"></i>
                     </div>
                 </div>
                 
-                <div class="workflow-step">
+                <div class="step-connector">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+                
+                <div class="step-item">
                     <div class="step-number">3</div>
                     <div class="step-content">
-                        <h3 class="step-title">Bewerbung generieren</h3>
-                        <p class="step-description">
-                            Erstellen Sie automatisch personalisierte Anschreiben für jede Stellenausschreibung.
-                        </p>
-                        <a href="application-generator.html" class="step-link">Generator starten</a>
+                        <h3>Fertig!</h3>
+                        <p>KI erstellt dein personalisiertes Anschreiben</p>
+                    </div>
+                    <div class="step-visual">
+                        <i class="fas fa-check-double"></i>
                     </div>
                 </div>
-                
-                <div class="workflow-step">
-                    <div class="step-number">4</div>
-                    <div class="step-content">
-                        <h3 class="step-title">Bewerbungen tracken</h3>
-                        <p class="step-description">
-                            Verwalten Sie alle Ihre Bewerbungen übersichtlich und erhalten Sie automatische Erinnerungen.
-                        </p>
-                        <a href="../user-profile.html#applications" class="step-link">Dashboard öffnen</a>
-                    </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonial / Social Proof -->
+    <section class="social-proof-section">
+        <div class="section-container">
+            <div class="proof-stats">
+                <div class="proof-stat">
+                    <span class="proof-number">500+</span>
+                    <span class="proof-label">Generierte Anschreiben</span>
                 </div>
-                
-                <div class="workflow-step">
-                    <div class="step-number">5</div>
-                    <div class="step-content">
-                        <h3 class="step-title">Interview vorbereiten</h3>
-                        <p class="step-description">
-                            Bereiten Sie sich optimal auf Interviews vor mit KI-generierten Fragen und Antworten.
-                        </p>
-                        <a href="interview-prep.html" class="step-link">Vorbereitung starten</a>
-                    </div>
+                <div class="proof-stat">
+                    <span class="proof-number">47s</span>
+                    <span class="proof-label">Durchschnittliche Zeit</span>
+                </div>
+                <div class="proof-stat">
+                    <span class="proof-number">4.8★</span>
+                    <span class="proof-label">Nutzerzufriedenheit</span>
                 </div>
             </div>
         </div>
@@ -369,20 +267,18 @@
 
     <!-- CTA Section -->
     <section class="cta-section">
-        <div class="container">
+        <div class="cta-container">
             <div class="cta-content">
-                <h2 class="cta-title">Bereit für den nächsten Karriereschritt?</h2>
-                <p class="cta-description">
-                    Starten Sie noch heute mit der Automatisierung Ihrer Bewerbungen und sparen Sie wertvolle Zeit.
-                </p>
+                <h2>Bereit für deine nächste Bewerbung?</h2>
+                <p>Starte jetzt kostenlos und erlebe, wie einfach Bewerben sein kann.</p>
                 <div class="cta-actions">
-                    <a href="#" class="btn btn-primary btn-large" onclick="handleJetztStarten(); return false;">
+                    <a href="dashboard.html" class="btn btn-cta-primary">
                         <i class="fas fa-rocket"></i>
                         Kostenlos starten
                     </a>
-                    <a href="#features" class="btn btn-outline btn-large">
-                        <i class="fas fa-info-circle"></i>
-                        Mehr erfahren
+                    <a href="coaching.html" class="btn btn-cta-outline">
+                        <i class="fas fa-compass"></i>
+                        Coaching erkunden
                     </a>
                 </div>
             </div>
@@ -390,390 +286,121 @@
     </section>
 
     <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
+    <footer class="landing-footer">
+        <div class="footer-container">
             <div class="footer-content">
-                <div class="footer-section">
-                    <h3 class="footer-title">Bewerbungsmanager</h3>
-                    <p class="footer-description">
-                        Intelligente Tools für erfolgreiche Bewerbungen. Automatisierung, KI-Power und maximale Effizienz.
-                    </p>
+                <div class="footer-brand">
+                    <span class="footer-logo">Manuel Weiss</span>
+                    <p>Bewerbungsmanager mit KI-Power</p>
                 </div>
-                
-                <div class="footer-section">
-                    <h4 class="footer-subtitle">Features</h4>
-                    <ul class="footer-links">
-                        <li><a href="application-generator.html">KI-Anschreiben</a></li>
-                        <li><a href="document-upload.html">CV-Optimierung</a></li>
-                        <li><a href="../user-profile.html#applications">Bewerbungs-Tracking</a></li>
-                        <li><a href="interview-prep.html">Interview-Vorbereitung</a></li>
-                    </ul>
-                </div>
-                
-                <div class="footer-section">
-                    <h4 class="footer-subtitle">Support</h4>
-                    <ul class="footer-links">
-                        <li><a href="../index.html">Startseite</a></li>
-                        <li><a href="../persoenlichkeitsentwicklung-uebersicht.html">Persönlichkeitsentwicklung</a></li>
-                        <li><a href="../website-services.html">Services</a></li>
-                        <li><a href="../impressum.html">Impressum</a></li>
-                    </ul>
+                <div class="footer-links">
+                    <a href="../index.html">Startseite</a>
+                    <a href="dashboard.html">Dashboard</a>
+                    <a href="coaching.html">Coaching</a>
+                    <a href="../impressum.html">Impressum</a>
                 </div>
             </div>
-            
             <div class="footer-bottom">
-                <p>&copy; 2024 Manuel Weiss. Alle Rechte vorbehalten.</p>
+                <p>© 2025 Manuel Weiss. Alle Rechte vorbehalten.</p>
             </div>
         </div>
     </footer>
 
     <!-- Scripts -->
-    
     <script>
-        // AWS Configuration for Production - INLINE
-        window.AWS_CONFIG = {
-            // Cognito User Pool Configuration
-            userPoolId: 'eu-central-1_8gP4gLK9r',
-            clientId: '7kc5tt6a23fgh53d60vkefm812',
-            region: 'eu-central-1',
-            apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod',
-            
-            // Domain Configuration
-            domain: {
-                name: 'manuel-weiss.ch',
-                email: 'mail@manuel-weiss.ch',
-                region: 'eu-central-1'
-            },
-            
-            // S3 Configuration for file uploads
-            s3: {
-                bucket: 'mawps-user-files-1760106396',
-                region: 'eu-central-1'
-            },
-            
-            // DynamoDB Configuration for user data
-            dynamoDB: {
-                tableName: 'mawps-user-profiles',
-                region: 'eu-central-1'
-            },
-            
-            // API Gateway Configuration
-            apiGateway: {
-                baseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod',
-                endpoints: {
-                    userProfile: '/user/profile',
-                    userProgress: '/user/progress',
-                    userSettings: '/user/settings'
-                }
-            }
-        };
-        
-        // Initialize AWS with configuration
-        if (typeof AWS !== 'undefined') {
-            AWS.config.update({
-                region: window.AWS_CONFIG.region
-            });
-            
-            // Configure Cognito
-            window.AWS_COGNITO_CONFIG = {
-                UserPoolId: window.AWS_CONFIG.userPoolId,
-                ClientId: window.AWS_CONFIG.clientId
-            };
-            
-            console.log('AWS Configuration loaded (inline)');
-        } else {
-            console.log('AWS SDK not loaded yet, will configure when loaded');
-        }
-    </script>
-
-    <!-- Auth & Core - mit Cache-Busting -->
-
-    <!-- Applications Core -->
-    
-    <!-- AWS Config MUSS ZUERST kommen -->
-    <script>
-        window.AWS_CONFIG = {
-            userPoolId: 'eu-central-1_8gP4gLK9r',
-            clientId: '7kc5tt6a23fgh53d60vkefm812',
-            region: 'eu-central-1',
-            apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod',
-            domain: {
-                name: 'manuel-weiss.ch',
-                email: 'mail@manuel-weiss.ch',
-                region: 'eu-central-1'
-            },
-            s3: {
-                bucket: 'mawps-user-files-1760106396',
-                region: 'eu-central-1'
-            },
-            dynamoDB: {
-                tableName: 'mawps-user-profiles',
-                region: 'eu-central-1'
-            },
-            apiGateway: {
-                baseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod',
-                endpoints: {
-                    userProfile: '/user/profile',
-                    userProgress: '/user/progress',
-                    userSettings: '/user/settings'
-                }
-            }
-        };
-    </script>
-    
-    <!-- AWS SDK -->
-    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
-    
-    <!-- Auth System MUSS VOR den Application Scripts kommen -->
-    <script src="../js/real-user-auth-system.js?v=20250116"></script>
-    
-    <!-- Core APIs -->
-    <script src="../js/aws-profile-api.js"></script>
-    <script src="../js/user-progress-tracker.js"></script>
-    
-    <!-- Workflow Integration -->
-    <script src="../js/workflow-progress-integration.js"></script>
-    
-    <!-- Simple Translation Manager -->
-    <script src="../js/simple-translation.js"></script>
-    
-    <!-- Application Scripts ZULETZT laden -->
-    <script src="js/applications-core.js"></script>
-    
-    <!-- Initialize Language Switcher -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Language Switcher Event Listeners
-            document.querySelectorAll('.lang-link-compact[data-lang]').forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const lang = this.getAttribute('data-lang');
-                    if (window.simpleTranslation) {
-                        window.simpleTranslation.setLanguage(lang);
-                    }
-                });
-            });
+        // Mobile Menu
+        document.getElementById('mobileHamburger')?.addEventListener('click', function() {
+            this.classList.toggle('active');
+            document.getElementById('navMenu').classList.toggle('active');
         });
-    </script>
-    
-    <!-- Final Check -->
-    <script>
-        // Finale Prüfung nach 2 Sekunden
-        setTimeout(function() {
-            console.log('=== AUTH SYSTEM STATUS ===');
-            console.log('AWS_CONFIG:', window.AWS_CONFIG);
-            console.log('AWS SDK:', typeof AWS !== 'undefined' ? 'Geladen' : 'Nicht geladen');
-            console.log('realUserAuth:', window.realUserAuth ? 'Vorhanden' : 'Nicht vorhanden');
-            if (window.realUserAuth) {
-                console.log('  - Initialisiert:', window.realUserAuth.isInitialized);
-                console.log('  - User Pool ID:', window.realUserAuth.userPoolId);
-                console.log('  - Client ID:', window.realUserAuth.clientId);
-                console.log('  - Region:', window.realUserAuth.region);
-            }
-        }, 2000);
         
-        // Menü-Funktionen (wie bei Persönlichkeitsentwicklung)
-        function openProfile() {
-            if (window.realUserAuth && window.realUserAuth.showNotification) {
-                window.realUserAuth.showNotification('Profil wird geöffnet...', 'info');
-            }
-            setTimeout(() => {
-                // Einheitliche Profil-Seite - lädt automatisch bestehende Daten
-                window.location.href = '../user-profile.html#personal';
-            }, 500);
+        // Smooth scroll
+        function scrollToFeatures() {
+            document.getElementById('features').scrollIntoView({ behavior: 'smooth' });
         }
         
-        // "Jetzt starten" Button-Handler - prüft ob Profildaten existieren
-        async function handleJetztStarten() {
-            // Prüfe ob Benutzer angemeldet ist
-            if (!window.realUserAuth || !window.realUserAuth.isLoggedIn || !window.realUserAuth.isLoggedIn()) {
-                // Nicht angemeldet - zeige Auth-Modal
-                if (window.realUserAuth && window.realUserAuth.showAuthModal) {
-                    window.realUserAuth.showAuthModal();
-                } else {
-                    window.location.href = 'profile-setup.html';
-                }
-                return;
-            }
-            
-            const user = window.realUserAuth.getCurrentUser();
-            if (!user) {
-                window.location.href = 'profile-setup.html';
-                return;
-            }
-            
-            // Prüfe ob Profildaten existieren
+        // Load Auth Modals HTML
+        async function loadAuthModals() {
+            const container = document.createElement('div');
+            container.id = 'authModalsContainer';
             try {
-                if (window.awsProfileAPI && window.awsProfileAPI.isInitialized) {
-                    const profile = await window.awsProfileAPI.loadProfile();
-                    
-                    // Prüfe ob Profildaten vorhanden sind
-                    const hasProfileData = profile && (
-                        profile.firstName || 
-                        profile.lastName || 
-                        profile.personal?.firstName ||
-                        profile['application-profile']?.personal?.firstName
-                    );
-                    
-                    if (hasProfileData) {
-                        // Profildaten existieren - weiterleiten zur Profil-Seite (kann bearbeitet werden)
-                        window.location.href = '../user-profile.html#personal';
-                    } else {
-                        // Keine Profildaten - weiterleiten zur Setup-Seite
-                        window.location.href = 'profile-setup.html';
-                    }
-                } else {
-                    // AWS API nicht verfügbar - weiterleiten zur Setup-Seite
-                    window.location.href = 'profile-setup.html';
+                const response = await fetch('../components/unified-auth-modals.html');
+                if (response.ok) {
+                    container.innerHTML = await response.text();
+                    document.body.appendChild(container);
                 }
-            } catch (error) {
-                console.error('Fehler beim Prüfen der Profildaten:', error);
-                // Bei Fehler - weiterleiten zur Setup-Seite
-                window.location.href = 'profile-setup.html';
+            } catch (e) {
+                console.warn('Could not load auth modals');
             }
         }
         
-        function openSettings() {
-            if (window.realUserAuth && window.realUserAuth.showNotification) {
-                window.realUserAuth.showNotification('Einstellungen werden geöffnet...', 'info');
-            }
-            setTimeout(() => {
-                window.location.href = '../user-profile.html#settings';
-            }, 500);
-        }
-        
-        function openProgress() {
-            if (window.realUserAuth && window.realUserAuth.showNotification) {
-                window.realUserAuth.showNotification('Fortschritt wird angezeigt...', 'info');
-            }
-            setTimeout(() => {
-                window.location.href = '../user-profile.html#progress';
-            }, 500);
-        }
-        
-        // Close dropdown when clicking outside (mit Verzögerung für Button-Click)
-        document.addEventListener('click', function(event) {
-            const navUser = document.getElementById('navUser');
-            const userDropdown = document.getElementById('userDropdown');
-            const authButton = document.getElementById('realAuthButton');
+        // Auth Handler - Unified AWS Auth
+        async function handleAuth() {
+            const isLoggedIn = window.awsAuth && window.awsAuth.isLoggedIn();
             
-            // Prüfe ob der Klick auf den Auth-Button war
-            if (authButton && authButton.contains(event.target)) {
-                // Button-Click wird separat behandelt, nichts tun
-                return;
+            if (isLoggedIn) {
+                // Already logged in - go to dashboard
+                window.location.href = 'dashboard.html';
+            } else if (window.authModals) {
+                // Show auth modal
+                window.authModals.showLogin();
+            } else {
+                // Fallback - go to dashboard
+                window.location.href = 'dashboard.html';
             }
+        }
+        
+        // Update auth button state
+        function updateAuthState() {
+            const authButton = document.getElementById('authButton');
+            const authText = document.getElementById('authButtonText');
+            const isLoggedIn = window.awsAuth && window.awsAuth.isLoggedIn();
             
-            // Prüfe ob der Klick außerhalb des User-Systems war
-            if (navUser && userDropdown && !navUser.contains(event.target)) {
-                // Kleine Verzögerung, damit Button-Clicks zuerst verarbeitet werden
-                setTimeout(() => {
-                    if (userDropdown) {
-                        userDropdown.style.display = 'none';
-                    }
-                }, 10);
+            if (isLoggedIn) {
+                const userData = window.awsAuth.getUserDataFromToken();
+                if (authButton) {
+                    authButton.innerHTML = '<i class="fas fa-th-large"></i><span>Dashboard</span>';
+                    authButton.onclick = () => window.location.href = 'dashboard.html';
+                }
+            }
+        }
+        
+        // Check auth on load
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadAuthModals();
+            // Wait a bit for auth system to init
+            setTimeout(updateAuthState, 500);
+        });
+        
+        // Listen for auth changes
+        window.addEventListener('authStateChanged', updateAuthState);
+        
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
             }
         });
+        
+        // Animation on scroll
+        const animateElements = document.querySelectorAll('.animate-in');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        animateElements.forEach(el => observer.observe(el));
     </script>
     
-    <!-- Mobile Menu Script -->
-    <script>
-        // Mobile Menu Functionality
-        (function() {
-            const mobileHamburger = document.getElementById('mobileHamburger');
-            const mobileMenuFullscreen = document.getElementById('mobileMenuFullscreen');
-            const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
-            const mobileAuthButton = document.getElementById('mobileAuthButton');
-            
-            if (!mobileHamburger || !mobileMenuFullscreen) {
-                console.log('Mobile menu elements not found');
-                return;
-            }
-            
-            let menuOpen = false;
-            
-            function openMenu() {
-                menuOpen = true;
-                mobileHamburger.classList.add('active');
-                mobileMenuFullscreen.classList.add('active');
-                if (mobileMenuOverlay) mobileMenuOverlay.classList.add('active');
-                document.body.style.overflow = 'hidden';
-            }
-            
-            function closeMenu() {
-                menuOpen = false;
-                mobileHamburger.classList.remove('active');
-                mobileMenuFullscreen.classList.remove('active');
-                if (mobileMenuOverlay) mobileMenuOverlay.classList.remove('active');
-                document.body.style.overflow = '';
-            }
-            
-            // Hamburger Click Handler
-            mobileHamburger.onclick = function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                if (menuOpen) {
-                    closeMenu();
-                } else {
-                    openMenu();
-                }
-            };
-            
-            // Close menu on link click
-            const mobileMenuLinks = mobileMenuFullscreen.querySelectorAll('.mobile-menu-link');
-            mobileMenuLinks.forEach(link => {
-                link.onclick = function() {
-                    closeMenu();
-                };
-            });
-            
-            // Close menu on overlay click
-            if (mobileMenuOverlay) {
-                mobileMenuOverlay.onclick = closeMenu;
-            }
-            
-            // Mobile Auth Button - Sync with main auth
-            if (mobileAuthButton) {
-                mobileAuthButton.onclick = function() {
-                    closeMenu();
-                    // Trigger the main auth button
-                    const mainAuthButton = document.getElementById('realAuthButton');
-                    if (mainAuthButton) {
-                        mainAuthButton.click();
-                    }
-                };
-                
-                // Update mobile auth button state based on login status
-                function updateMobileAuthState() {
-                    if (window.realUserAuth && window.realUserAuth.getCurrentUser && window.realUserAuth.getCurrentUser()) {
-                        const user = window.realUserAuth.getCurrentUser();
-                        mobileAuthButton.innerHTML = '<i class="fas fa-user-check"></i> <span>' + (user.name || 'Angemeldet') + '</span>';
-                        mobileAuthButton.classList.add('logged-in');
-                    } else {
-                        mobileAuthButton.innerHTML = '<i class="fas fa-user"></i> <span data-de="Anmelden" data-en="Login">Anmelden</span>';
-                        mobileAuthButton.classList.remove('logged-in');
-                    }
-                }
-                
-                // Check auth state on load and periodically
-                updateMobileAuthState();
-                setInterval(updateMobileAuthState, 2000);
-            }
-            
-            // Mobile Language Buttons
-            const mobileLangBtns = mobileMenuFullscreen.querySelectorAll('.mobile-lang-btn');
-            mobileLangBtns.forEach(btn => {
-                btn.onclick = function() {
-                    const lang = this.dataset.lang;
-                    if (window.simpleTranslation && window.simpleTranslation.setLanguage) {
-                        window.simpleTranslation.setLanguage(lang);
-                    }
-                    // Update active state
-                    mobileLangBtns.forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                };
-            });
-        })();
-    </script>
+    <!-- Auth System -->
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="../js/unified-aws-auth.js"></script>
+    <script src="../js/unified-auth-modals.js"></script>
 </body>
 </html>
-

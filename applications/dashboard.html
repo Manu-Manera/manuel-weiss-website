@@ -73,8 +73,8 @@
     <div class="mobile-menu-fullscreen" id="mobileMenuFullscreen">
         <div class="mobile-menu-content">
             <a href="../index.html" class="mobile-menu-link"><i class="fas fa-home"></i> Start</a>
-            <a href="dashboard.html" class="mobile-menu-link active"><i class="fas fa-rocket"></i> Bewerbungsmanager</a>
-            <a href="../persoenlichkeitsentwicklung-uebersicht.html" class="mobile-menu-link"><i class="fas fa-brain"></i> Coaching</a>
+            <a href="dashboard.html" class="mobile-menu-link active"><i class="fas fa-briefcase"></i> Bewerbungsmanager</a>
+            <a href="coaching.html" class="mobile-menu-link"><i class="fas fa-compass"></i> Coaching</a>
             <div class="mobile-menu-divider"></div>
             <button id="mobileAuthButton" class="mobile-auth-btn"><i class="fas fa-user"></i> Anmelden</button>
         </div>
@@ -847,20 +847,180 @@ Ihre Aufgaben:
     <div class="toast-container" id="toastContainer"></div>
 
     <!-- Scripts -->
-    <script src="../js/real-user-auth.js"></script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="../js/unified-aws-auth.js"></script>
+    <script src="../js/unified-auth-modals.js"></script>
     <script src="../js/global-api-manager.js"></script>
     <script src="js/utils.js"></script>
     <script src="js/dashboard-core.js"></script>
     <script src="js/quick-apply.js"></script>
     
     <script>
+        // Load Auth Modals HTML
+        async function loadAuthModals() {
+            const container = document.createElement('div');
+            container.id = 'authModalsContainer';
+            try {
+                const response = await fetch('../components/unified-auth-modals.html');
+                if (response.ok) {
+                    container.innerHTML = await response.text();
+                    document.body.appendChild(container);
+                    console.log('✅ Auth Modals loaded');
+                }
+            } catch (e) {
+                console.warn('Could not load auth modals from external file');
+            }
+        }
+        
         // Initialize Global API Manager
         if (!window.globalAPIManager) {
             window.globalAPIManager = new GlobalAPIManager();
         }
         
+        // Wait for AWS Auth System
+        function waitForAuthSystem() {
+            return new Promise(resolve => {
+                if (window.awsAuth && window.awsAuth.isInitialized) {
+                    resolve();
+                } else {
+                    const checkInterval = setInterval(() => {
+                        if (window.awsAuth && window.awsAuth.isInitialized) {
+                            clearInterval(checkInterval);
+                            resolve();
+                        }
+                    }, 100);
+                    setTimeout(() => {
+                        clearInterval(checkInterval);
+                        resolve(); // Resolve anyway after timeout
+                    }, 5000);
+                }
+            });
+        }
+        
+        // Setup Auth UI
+        function setupAuthUI() {
+            const authButton = document.getElementById('authButton');
+            const authButtonText = document.getElementById('authButtonText');
+            const mobileAuthButton = document.getElementById('mobileAuthButton');
+            const userDropdown = document.getElementById('userDropdown');
+            
+            if (!authButton) return;
+            
+            // Update UI based on login state
+            function updateAuthState() {
+                const isLoggedIn = window.awsAuth && window.awsAuth.isLoggedIn();
+                const userData = isLoggedIn ? window.awsAuth.getUserDataFromToken() : null;
+                
+                if (isLoggedIn && userData) {
+                    // Logged in
+                    authButton.innerHTML = `
+                        <img src="${userData.picture || '../images/default-avatar.png'}" alt="User" class="nav-user-avatar">
+                        <span>${userData.name || userData.email.split('@')[0]}</span>
+                        <i class="fas fa-chevron-down"></i>
+                    `;
+                    authButton.classList.add('logged-in');
+                    
+                    // Update dropdown
+                    if (document.getElementById('userName')) {
+                        document.getElementById('userName').textContent = userData.name || 'Benutzer';
+                    }
+                    if (document.getElementById('userEmail')) {
+                        document.getElementById('userEmail').textContent = userData.email || '';
+                    }
+                    if (document.getElementById('userAvatarImg')) {
+                        document.getElementById('userAvatarImg').src = userData.picture || '../images/default-avatar.png';
+                    }
+                    
+                    // Mobile
+                    if (mobileAuthButton) {
+                        mobileAuthButton.innerHTML = `<i class="fas fa-sign-out-alt"></i> Abmelden`;
+                        mobileAuthButton.onclick = () => window.awsAuth.logout();
+                    }
+                } else {
+                    // Not logged in
+                    authButton.innerHTML = `<i class="fas fa-user"></i><span>Anmelden</span>`;
+                    authButton.classList.remove('logged-in');
+                    if (userDropdown) userDropdown.style.display = 'none';
+                    
+                    // Mobile
+                    if (mobileAuthButton) {
+                        mobileAuthButton.innerHTML = `<i class="fas fa-user"></i> Anmelden`;
+                        mobileAuthButton.onclick = () => {
+                            closeMobileMenu();
+                            if (window.authModals) window.authModals.showLogin();
+                        };
+                    }
+                }
+                
+                // Trigger dashboard update
+                if (window.DashboardCore && window.DashboardCore.checkAuthStatus) {
+                    window.DashboardCore.checkAuthStatus();
+                }
+            }
+            
+            // Auth button click handler
+            authButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const isLoggedIn = window.awsAuth && window.awsAuth.isLoggedIn();
+                
+                if (isLoggedIn) {
+                    // Toggle dropdown
+                    if (userDropdown) {
+                        userDropdown.style.display = userDropdown.style.display === 'none' ? 'block' : 'none';
+                    }
+                } else {
+                    // Show login modal
+                    if (window.authModals) {
+                        window.authModals.showLogin();
+                    } else {
+                        console.error('Auth modals not available');
+                        showToast('Auth-System wird geladen...', 'info');
+                    }
+                }
+            });
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                if (userDropdown && !authButton.contains(e.target) && !userDropdown.contains(e.target)) {
+                    userDropdown.style.display = 'none';
+                }
+            });
+            
+            // Listen for auth state changes
+            window.addEventListener('authStateChanged', updateAuthState);
+            
+            // Initial state
+            updateAuthState();
+        }
+        
+        // Logout function for dropdown
+        window.logout = async function() {
+            if (window.awsAuth) {
+                await window.awsAuth.logout();
+                showToast('Erfolgreich abgemeldet', 'success');
+                setTimeout(() => location.reload(), 500);
+            }
+        };
+        
         // Initialize on load
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Load auth modals HTML
+            await loadAuthModals();
+            
+            // Wait for auth system
+            await waitForAuthSystem();
+            
+            // Setup auth UI
+            setupAuthUI();
+            
+            // Initialize auth modals if not already done
+            if (!window.authModals && window.UnifiedAuthModals) {
+                window.authModals = new UnifiedAuthModals();
+            }
+            
+            // Initialize dashboard
             initDashboard();
         });
     </script>
