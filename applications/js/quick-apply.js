@@ -668,11 +668,13 @@ async function generateCoverLetter(jobData, profileData) {
  * Priorität: globalAPIManager > localStorage.global_api_keys
  */
 function getOpenAIConfig() {
+    // Nutze den zentralen AIProviderManager aus utils.js (falls verfügbar)
+    // Synchrone Wrapper-Funktion für Kompatibilität
+    
     // PRIORITÄT 1: GlobalAPIManager (falls geladen)
     if (window.globalAPIManager) {
         const config = window.globalAPIManager.getServiceConfig('openai');
         if (config && config.key && config.key.startsWith('sk-')) {
-            console.log('✅ OpenAI Key aus globalAPIManager geladen');
             return config;
         }
     }
@@ -683,7 +685,6 @@ function getOpenAIConfig() {
         if (raw) {
             const parsed = JSON.parse(raw);
             if (parsed.openai && parsed.openai.key && parsed.openai.key.startsWith('sk-')) {
-                console.log('✅ OpenAI Key aus global_api_keys geladen');
                 return {
                     key: parsed.openai.key,
                     model: parsed.openai.model || 'gpt-4o-mini',
@@ -699,7 +700,6 @@ function getOpenAIConfig() {
     // PRIORITÄT 3: Fallback zu altem localStorage Key (Legacy)
     const legacyKey = localStorage.getItem('openai_api_key');
     if (legacyKey && legacyKey.startsWith('sk-')) {
-        console.log('✅ OpenAI Key aus Legacy localStorage geladen');
         return {
             key: legacyKey,
             model: 'gpt-4o-mini',
