@@ -661,27 +661,33 @@
 
 .modal-header {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    padding: 24px 32px;
+    padding: 28px 32px 24px;
     position: relative;
+    min-height: 90px;
 }
 
 .progress-steps {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
+    padding: 0 10px;
+    gap: 8px;
 }
 
 .progress-step {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     flex: 1;
+    min-width: 0;
+    padding: 4px 2px;
 }
 
 .step-dot {
-    width: 12px;
-    height: 12px;
+    width: 14px;
+    height: 14px;
+    min-width: 14px;
     background: rgba(255, 255, 255, 0.3);
     border-radius: 50%;
     transition: all 0.3s ease;
@@ -698,9 +704,12 @@
 }
 
 .step-label {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     color: rgba(255, 255, 255, 0.7);
-    font-weight: 500;
+    font-weight: 600;
+    text-align: center;
+    white-space: nowrap;
+    letter-spacing: 0.3px;
 }
 
 .progress-step.active .step-label {
@@ -997,5 +1006,112 @@
         min-width: 120px;
         justify-content: center;
     }
+    
+    .related-methods-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RELATED METHODS SECTION - Persönlichkeitsentwicklung Links
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.related-methods-section {
+    margin-top: 40px;
+    padding: 24px;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(124, 58, 237, 0.08) 100%);
+    border-radius: 16px;
+    border: 1px solid rgba(99, 102, 241, 0.15);
+}
+
+.related-methods-section h4 {
+    margin: 0 0 8px 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #4f46e5;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.related-methods-section h4 i {
+    color: #7c3aed;
+}
+
+.related-methods-intro {
+    margin: 0 0 16px 0;
+    font-size: 0.9rem;
+    color: #6b7280;
+}
+
+.related-methods-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 12px;
+}
+
+.related-method-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: white;
+    border-radius: 12px;
+    border: 1px solid rgba(99, 102, 241, 0.1);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.related-method-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.15);
+    border-color: rgba(99, 102, 241, 0.3);
+}
+
+.related-method-card > i:first-child {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 10px;
+    color: white;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.related-method-card .method-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.related-method-card .method-name {
+    display: block;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #1f2937;
+    margin-bottom: 2px;
+}
+
+.related-method-card .method-desc {
+    display: block;
+    font-size: 0.8rem;
+    color: #6b7280;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.related-method-card .method-arrow {
+    color: #9ca3af;
+    font-size: 0.8rem;
+    transition: all 0.3s ease;
+}
+
+.related-method-card:hover .method-arrow {
+    color: #4f46e5;
+    transform: translateX(3px);
 }
 

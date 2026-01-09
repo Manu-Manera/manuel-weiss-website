@@ -47,6 +47,40 @@ class CoachingWorkflow {
             accountabilityPartner: ''
         };
         
+        // Verlinkung zu Persönlichkeitsentwicklungsmethoden
+        this.relatedMethods = {
+            1: [
+                { id: 'wheel_of_life', name: 'Rad des Lebens', desc: 'Bewerte verschiedene Lebensbereiche', icon: 'fa-circle-notch' },
+                { id: 'self-assessment', name: 'Selbsteinschätzung', desc: 'Erkenne dein volles Potenzial', icon: 'fa-mirror' }
+            ],
+            2: [
+                { id: 'ikigai', name: 'Ikigai', desc: 'Finde deinen Lebenszweck', icon: 'fa-compass' },
+                { id: 'via-strengths', name: 'VIA-Stärken', desc: 'Entdecke deine Charakterstärken', icon: 'fa-gem' },
+                { id: 'swot', name: 'SWOT-Analyse', desc: 'Stärken, Schwächen, Chancen, Risiken', icon: 'fa-th-large' },
+                { id: 'values-clarification', name: 'Werteklärung', desc: 'Was ist dir wirklich wichtig?', icon: 'fa-heart' }
+            ],
+            3: [
+                { id: 'goal-setting', name: 'SMART-Ziele', desc: 'Setze messbare Ziele', icon: 'fa-bullseye' },
+                { id: 'vision-board', name: 'Vision Board', desc: 'Visualisiere deine Zukunft', icon: 'fa-images' },
+                { id: 'nlp-meta-goal', name: 'NLP Meta-Ziel', desc: 'Finde dein übergeordnetes Ziel', icon: 'fa-brain' }
+            ],
+            4: [
+                { id: 'resource-analysis', name: 'Ressourcenanalyse', desc: 'Entdecke deine verborgenen Stärken', icon: 'fa-boxes' },
+                { id: 'nlp-dilts', name: 'NLP Dilts-Pyramide', desc: 'Verstehe deine Verhaltensebenen', icon: 'fa-layer-group' },
+                { id: 'solution-focused', name: 'Lösungsfokussiert', desc: 'Fokus auf was funktioniert', icon: 'fa-lightbulb' }
+            ],
+            5: [
+                { id: 'change-stages', name: 'Veränderungsphasen', desc: 'Verstehe den Veränderungsprozess', icon: 'fa-sync-alt' },
+                { id: 'target-coaching', name: 'Ziel-Coaching', desc: 'Präzise Zielerreichung', icon: 'fa-crosshairs' },
+                { id: 'rubikon-model', name: 'Rubikon-Modell', desc: 'Von der Entscheidung zur Handlung', icon: 'fa-route' }
+            ],
+            6: [
+                { id: 'habit-building', name: 'Gewohnheiten', desc: 'Baue positive Routinen auf', icon: 'fa-redo' },
+                { id: 'moment-excellence', name: 'Moment of Excellence', desc: 'Aktiviere deine Bestleistung', icon: 'fa-star' },
+                { id: 'mindfulness', name: 'Achtsamkeit', desc: 'Entwickle innere Ruhe', icon: 'fa-spa' }
+            ]
+        };
+        
         this.stepConfig = [
             {
                 id: 1,
@@ -401,6 +435,7 @@ class CoachingWorkflow {
     renderStep(stepNumber) {
         const step = this.stepConfig[stepNumber - 1];
         const container = document.getElementById('coachingContent');
+        const methods = this.relatedMethods[stepNumber] || [];
         
         let html = `
             <div class="step-content">
@@ -411,6 +446,31 @@ class CoachingWorkflow {
         step.questions.forEach(q => {
             html += this.renderQuestion(q);
         });
+        
+        // Vertiefende Persönlichkeitsentwicklungsmethoden
+        if (methods.length > 0) {
+            html += `
+                <div class="related-methods-section">
+                    <h4><i class="fas fa-compass"></i> Du möchtest noch tiefer gehen?</h4>
+                    <p class="related-methods-intro">Diese Entwicklungsmethoden können dir weiter helfen:</p>
+                    <div class="related-methods-grid">
+                        ${methods.map(m => `
+                            <a href="/persoenlichkeitsentwicklung-uebersicht.html#${m.id}" 
+                               class="related-method-card" 
+                               target="_blank"
+                               title="${m.desc}">
+                                <i class="fas ${m.icon}"></i>
+                                <div class="method-info">
+                                    <span class="method-name">${m.name}</span>
+                                    <span class="method-desc">${m.desc}</span>
+                                </div>
+                                <i class="fas fa-external-link-alt method-arrow"></i>
+                            </a>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
         
         html += `</div>`;
         container.innerHTML = html;
