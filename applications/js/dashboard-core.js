@@ -161,6 +161,8 @@ function showTab(tabId) {
         updateApplicationsList();
     } else if (tabId === 'profile') {
         updateProfileForm();
+    } else if (tabId === 'resume') {
+        initResumeTab();
     }
 }
 
@@ -227,12 +229,22 @@ function updateApplicationsList(filter = 'all') {
             <div class="status-indicator ${app.status}"></div>
             <div class="card-content">
                 <div class="job-title">${escapeHtml(app.position)}</div>
-                <div class="company-name">${escapeHtml(app.company)}</div>
+                <div class="company-name">
+                    ${escapeHtml(app.company)}
+                    ${app.location ? `<span class="company-location"><i class="fas fa-map-marker-alt"></i> ${escapeHtml(app.location)}</span>` : ''}
+                </div>
+                ${app.url ? `<a href="${escapeHtml(app.url)}" target="_blank" class="job-link"><i class="fas fa-external-link-alt"></i> Stellenanzeige</a>` : ''}
             </div>
             <div class="card-meta">
                 <span><i class="fas fa-calendar"></i> ${formatDate(app.date)}</span>
-                <span><i class="fas fa-tag"></i> ${getStatusLabel(app.status)}</span>
+                <select class="status-select status-${app.status}" onchange="changeStatus('${app.id}', this.value)">
+                    <option value="pending" ${app.status === 'pending' ? 'selected' : ''}>📤 Offen</option>
+                    <option value="interview" ${app.status === 'interview' ? 'selected' : ''}>🗓 Interview</option>
+                    <option value="offer" ${app.status === 'offer' ? 'selected' : ''}>🎉 Angebot</option>
+                    <option value="rejected" ${app.status === 'rejected' ? 'selected' : ''}>❌ Absage</option>
+                </select>
             </div>
+            ${app.notes ? `<div class="card-notes"><i class="fas fa-sticky-note"></i> ${escapeHtml(app.notes).substring(0, 50)}${app.notes.length > 50 ? '...' : ''}</div>` : ''}
             <div class="card-actions">
                 <button onclick="editApplication('${app.id}')" title="Bearbeiten">
                     <i class="fas fa-edit"></i>
@@ -311,9 +323,12 @@ function addApplication(event) {
         id: generateId(),
         position: document.getElementById('newAppPosition').value.trim(),
         company: document.getElementById('newAppCompany').value.trim(),
+        location: document.getElementById('newAppLocation')?.value.trim() || '',
         date: document.getElementById('newAppDate').value || new Date().toISOString().split('T')[0],
         status: document.getElementById('newAppStatus').value,
+        url: document.getElementById('newAppUrl')?.value.trim() || '',
         notes: document.getElementById('newAppNotes').value.trim(),
+        coverLetter: '',
         createdAt: new Date().toISOString()
     };
     
@@ -343,8 +358,89 @@ function deleteApplication(id) {
 }
 
 function editApplication(id) {
-    // TODO: Implement edit modal
-    showToast('Bearbeiten kommt bald!', 'info');
+    const app = DashboardState.applications.find(a => a.id === id);
+    if (!app) return;
+    
+    // Fill edit form
+    document.getElementById('editAppId').value = app.id;
+    document.getElementById('editAppPosition').value = app.position || '';
+    document.getElementById('editAppCompany').value = app.company || '';
+    document.getElementById('editAppLocation').value = app.location || '';
+    document.getElementById('editAppDate').value = app.date || '';
+    document.getElementById('editAppStatus').value = app.status || 'pending';
+    document.getElementById('editAppUrl').value = app.url || '';
+    document.getElementById('editAppNotes').value = app.notes || '';
+    document.getElementById('editAppCoverLetter').value = app.coverLetter || '';
+    
+    openModal('editApplicationModal');
+}
+
+function updateApplication(event) {
+    event.preventDefault();
+    
+    const id = document.getElementById('editAppId').value;
+    const appIndex = DashboardState.applications.findIndex(a => a.id === id);
+    
+    if (appIndex === -1) {
+        showToast('Bewerbung nicht gefunden', 'error');
+        return;
+    }
+    
+    const oldStatus = DashboardState.applications[appIndex].status;
+    const newStatus = document.getElementById('editAppStatus').value;
+    
+    DashboardState.applications[appIndex] = {
+        ...DashboardState.applications[appIndex],
+        position: document.getElementById('editAppPosition').value.trim(),
+        company: document.getElementById('editAppCompany').value.trim(),
+        location: document.getElementById('editAppLocation').value.trim(),
+        date: document.getElementById('editAppDate').value,
+        status: newStatus,
+        url: document.getElementById('editAppUrl').value.trim(),
+        notes: document.getElementById('editAppNotes').value.trim(),
+        coverLetter: document.getElementById('editAppCoverLetter').value,
+        updatedAt: new Date().toISOString()
+    };
+    
+    calculateStats();
+    saveState();
+    updateStatsBar();
+    updateApplicationsList();
+    closeModal('editApplicationModal');
+    
+    // Special messages for status changes
+    if (oldStatus !== newStatus) {
+        if (newStatus === 'interview') {
+            showToast('🎉 Glückwunsch zum Interview!', 'success');
+        } else if (newStatus === 'offer') {
+            showToast('🎊 Großartig - ein Angebot!', 'success');
+        } else {
+            showToast('Bewerbung aktualisiert', 'success');
+        }
+    } else {
+        showToast('Bewerbung aktualisiert', 'success');
+    }
+}
+
+function changeStatus(id, newStatus) {
+    const app = DashboardState.applications.find(a => a.id === id);
+    if (!app) return;
+    
+    const oldStatus = app.status;
+    app.status = newStatus;
+    app.updatedAt = new Date().toISOString();
+    
+    calculateStats();
+    saveState();
+    updateStatsBar();
+    updateApplicationsList();
+    
+    // Celebrate milestones
+    if (newStatus === 'interview' && oldStatus !== 'interview') {
+        showToast('🎉 Interview-Einladung! Viel Erfolg!', 'success');
+    } else if (newStatus === 'offer' && oldStatus !== 'offer') {
+        showToast('🎊 Herzlichen Glückwunsch zum Angebot!', 'success');
+    }
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -598,13 +694,357 @@ function formatDate(dateString) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
+// RESUME TAB FUNCTIONS
+// ═══════════════════════════════════════════════════════════════════════════
+
+// Resume State
+const ResumeState = {
+    experiences: [],
+    education: []
+};
+
+function initResumeTab() {
+    // Load saved resume data
+    loadResumeData();
+    
+    // Setup skills input
+    const skillsInput = document.getElementById('resumeSkills');
+    if (skillsInput) {
+        skillsInput.addEventListener('input', updateSkillsPreview);
+    }
+}
+
+function loadResumeData() {
+    try {
+        const saved = localStorage.getItem('bewerbungsmanager_resume');
+        if (saved) {
+            const data = JSON.parse(saved);
+            
+            // Fill form fields
+            const fields = ['resumeFirstName', 'resumeLastName', 'resumeTitle', 'resumeEmail', 
+                           'resumePhone', 'resumeLocation', 'resumeSummary', 'resumeSkills'];
+            
+            fields.forEach(id => {
+                const el = document.getElementById(id);
+                if (el && data[id]) el.value = data[id];
+            });
+            
+            // Load experiences
+            if (data.experiences) {
+                ResumeState.experiences = data.experiences;
+                renderExperiences();
+            }
+            
+            // Load education
+            if (data.education) {
+                ResumeState.education = data.education;
+                renderEducation();
+            }
+            
+            // Update skills preview
+            updateSkillsPreview();
+        }
+    } catch (e) {
+        console.error('Error loading resume:', e);
+    }
+}
+
+function saveResume() {
+    try {
+        const data = {
+            resumeFirstName: document.getElementById('resumeFirstName')?.value || '',
+            resumeLastName: document.getElementById('resumeLastName')?.value || '',
+            resumeTitle: document.getElementById('resumeTitle')?.value || '',
+            resumeEmail: document.getElementById('resumeEmail')?.value || '',
+            resumePhone: document.getElementById('resumePhone')?.value || '',
+            resumeLocation: document.getElementById('resumeLocation')?.value || '',
+            resumeSummary: document.getElementById('resumeSummary')?.value || '',
+            resumeSkills: document.getElementById('resumeSkills')?.value || '',
+            experiences: ResumeState.experiences,
+            education: ResumeState.education,
+            languages: [
+                { name: document.getElementById('resumeLang1')?.value, level: document.getElementById('resumeLang1Level')?.value },
+                { name: document.getElementById('resumeLang2')?.value, level: document.getElementById('resumeLang2Level')?.value }
+            ],
+            lastUpdated: new Date().toISOString()
+        };
+        
+        localStorage.setItem('bewerbungsmanager_resume', JSON.stringify(data));
+        
+        // Sync with profile
+        DashboardState.profile.firstName = data.resumeFirstName;
+        DashboardState.profile.lastName = data.resumeLastName;
+        DashboardState.profile.email = data.resumeEmail;
+        DashboardState.profile.phone = data.resumePhone;
+        DashboardState.profile.location = data.resumeLocation;
+        DashboardState.profile.currentJob = data.resumeTitle;
+        DashboardState.profile.skills = data.resumeSkills.split(',').map(s => s.trim()).filter(s => s);
+        saveState();
+        
+        showToast('Lebenslauf gespeichert!', 'success');
+    } catch (e) {
+        console.error('Error saving resume:', e);
+        showToast('Fehler beim Speichern', 'error');
+    }
+}
+
+function clearResumeForm() {
+    if (!confirm('Alle Lebenslauf-Daten löschen?')) return;
+    
+    localStorage.removeItem('bewerbungsmanager_resume');
+    ResumeState.experiences = [];
+    ResumeState.education = [];
+    
+    // Clear all inputs
+    document.querySelectorAll('.resume-quick-form input, .resume-quick-form textarea').forEach(el => {
+        el.value = '';
+    });
+    
+    renderExperiences();
+    renderEducation();
+    updateSkillsPreview();
+    
+    showToast('Lebenslauf zurückgesetzt', 'info');
+}
+
+function addExperienceEntry() {
+    const id = Date.now().toString(36);
+    ResumeState.experiences.push({
+        id,
+        title: '',
+        company: '',
+        location: '',
+        startDate: '',
+        endDate: '',
+        current: false,
+        description: ''
+    });
+    renderExperiences();
+}
+
+function removeExperience(id) {
+    ResumeState.experiences = ResumeState.experiences.filter(e => e.id !== id);
+    renderExperiences();
+}
+
+function renderExperiences() {
+    const container = document.getElementById('experienceList');
+    if (!container) return;
+    
+    if (ResumeState.experiences.length === 0) {
+        container.innerHTML = '<p class="empty-hint">Noch keine Berufserfahrung hinzugefügt</p>';
+        return;
+    }
+    
+    container.innerHTML = ResumeState.experiences.map((exp, index) => `
+        <div class="experience-entry" data-id="${exp.id}">
+            <div class="entry-header">
+                <h4>Position ${index + 1}</h4>
+                <button class="entry-remove" onclick="removeExperience('${exp.id}')" title="Entfernen">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Jobtitel</label>
+                    <input type="text" value="${escapeHtml(exp.title)}" 
+                           onchange="updateExperience('${exp.id}', 'title', this.value)"
+                           placeholder="z.B. Software Engineer">
+                </div>
+                <div class="form-group">
+                    <label>Unternehmen</label>
+                    <input type="text" value="${escapeHtml(exp.company)}"
+                           onchange="updateExperience('${exp.id}', 'company', this.value)"
+                           placeholder="z.B. Tech GmbH">
+                </div>
+                <div class="form-group">
+                    <label>Von</label>
+                    <input type="month" value="${exp.startDate}"
+                           onchange="updateExperience('${exp.id}', 'startDate', this.value)">
+                </div>
+                <div class="form-group">
+                    <label>Bis</label>
+                    <input type="month" value="${exp.endDate}" ${exp.current ? 'disabled' : ''}
+                           onchange="updateExperience('${exp.id}', 'endDate', this.value)">
+                    <label class="checkbox-label" style="margin-top: 4px;">
+                        <input type="checkbox" ${exp.current ? 'checked' : ''}
+                               onchange="updateExperience('${exp.id}', 'current', this.checked)">
+                        <span>Aktuell</span>
+                    </label>
+                </div>
+                <div class="form-group full-width">
+                    <label>Beschreibung</label>
+                    <textarea rows="2" 
+                              onchange="updateExperience('${exp.id}', 'description', this.value)"
+                              placeholder="Hauptaufgaben und Erfolge...">${escapeHtml(exp.description)}</textarea>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function updateExperience(id, field, value) {
+    const exp = ResumeState.experiences.find(e => e.id === id);
+    if (exp) {
+        exp[field] = value;
+        if (field === 'current' && value) {
+            exp.endDate = '';
+        }
+    }
+}
+
+function addEducationEntry() {
+    const id = Date.now().toString(36);
+    ResumeState.education.push({
+        id,
+        degree: '',
+        institution: '',
+        field: '',
+        startDate: '',
+        endDate: ''
+    });
+    renderEducation();
+}
+
+function removeEducation(id) {
+    ResumeState.education = ResumeState.education.filter(e => e.id !== id);
+    renderEducation();
+}
+
+function renderEducation() {
+    const container = document.getElementById('educationList');
+    if (!container) return;
+    
+    if (ResumeState.education.length === 0) {
+        container.innerHTML = '<p class="empty-hint">Noch keine Ausbildung hinzugefügt</p>';
+        return;
+    }
+    
+    container.innerHTML = ResumeState.education.map((edu, index) => `
+        <div class="education-entry" data-id="${edu.id}">
+            <div class="entry-header">
+                <h4>Ausbildung ${index + 1}</h4>
+                <button class="entry-remove" onclick="removeEducation('${edu.id}')" title="Entfernen">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Abschluss</label>
+                    <select onchange="updateEducation('${edu.id}', 'degree', this.value)">
+                        <option value="">Bitte wählen...</option>
+                        <option value="Bachelor" ${edu.degree === 'Bachelor' ? 'selected' : ''}>Bachelor</option>
+                        <option value="Master" ${edu.degree === 'Master' ? 'selected' : ''}>Master</option>
+                        <option value="Diplom" ${edu.degree === 'Diplom' ? 'selected' : ''}>Diplom</option>
+                        <option value="Promotion" ${edu.degree === 'Promotion' ? 'selected' : ''}>Promotion</option>
+                        <option value="Ausbildung" ${edu.degree === 'Ausbildung' ? 'selected' : ''}>Ausbildung</option>
+                        <option value="Abitur" ${edu.degree === 'Abitur' ? 'selected' : ''}>Abitur</option>
+                        <option value="Sonstiges" ${edu.degree === 'Sonstiges' ? 'selected' : ''}>Sonstiges</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Institution</label>
+                    <input type="text" value="${escapeHtml(edu.institution)}"
+                           onchange="updateEducation('${edu.id}', 'institution', this.value)"
+                           placeholder="z.B. TU München">
+                </div>
+                <div class="form-group">
+                    <label>Fachrichtung</label>
+                    <input type="text" value="${escapeHtml(edu.field)}"
+                           onchange="updateEducation('${edu.id}', 'field', this.value)"
+                           placeholder="z.B. Informatik">
+                </div>
+                <div class="form-group">
+                    <label>Zeitraum</label>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <input type="month" value="${edu.startDate}" style="flex: 1;"
+                               onchange="updateEducation('${edu.id}', 'startDate', this.value)">
+                        <span>–</span>
+                        <input type="month" value="${edu.endDate}" style="flex: 1;"
+                               onchange="updateEducation('${edu.id}', 'endDate', this.value)">
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function updateEducation(id, field, value) {
+    const edu = ResumeState.education.find(e => e.id === id);
+    if (edu) {
+        edu[field] = value;
+    }
+}
+
+function updateSkillsPreview() {
+    const input = document.getElementById('resumeSkills');
+    const preview = document.getElementById('skillsPreview');
+    
+    if (!input || !preview) return;
+    
+    const skills = input.value.split(',').map(s => s.trim()).filter(s => s);
+    
+    if (skills.length === 0) {
+        preview.innerHTML = '<span class="empty-hint">Skills erscheinen hier als Tags...</span>';
+        return;
+    }
+    
+    preview.innerHTML = skills.map(skill => 
+        `<span class="skill-tag">${escapeHtml(skill)}</span>`
+    ).join('');
+}
+
+function uploadResumePdf() {
+    // Create hidden file input
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.pdf';
+    input.style.display = 'none';
+    
+    input.onchange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        showToast('PDF-Upload wird verarbeitet...', 'info');
+        
+        // In a real implementation, this would send to a backend for OCR
+        // For now, redirect to the full editor with the file
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        // Store file reference for the editor
+        sessionStorage.setItem('pendingResumeUpload', file.name);
+        
+        showToast('Bitte nutze den vollständigen Editor für PDF-Upload', 'info');
+        window.location.href = 'resume-editor.html';
+    };
+    
+    document.body.appendChild(input);
+    input.click();
+    document.body.removeChild(input);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
 // EXPORT FOR OTHER MODULES
 // ═══════════════════════════════════════════════════════════════════════════
 
 window.DashboardState = DashboardState;
+window.ResumeState = ResumeState;
 window.showTab = showTab;
 window.showToast = showToast;
 window.saveState = saveState;
 window.updateStatsBar = updateStatsBar;
 window.updateApplicationsList = updateApplicationsList;
+window.updateApplication = updateApplication;
+window.changeStatus = changeStatus;
+window.saveResume = saveResume;
+window.clearResumeForm = clearResumeForm;
+window.addExperienceEntry = addExperienceEntry;
+window.removeExperience = removeExperience;
+window.updateExperience = updateExperience;
+window.addEducationEntry = addEducationEntry;
+window.removeEducation = removeEducation;
+window.updateEducation = updateEducation;
+window.uploadResumePdf = uploadResumePdf;
+window.initResumeTab = initResumeTab;
 
