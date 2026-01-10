@@ -1578,8 +1578,8 @@
 /* Method Cards Grid - Improved Spacing */
 .methods-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
-    gap: 3rem;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: var(--spacing-xl);
     margin: 4rem 0;
     padding: 0 2rem;
     max-width: 1400px;
@@ -1719,19 +1719,39 @@
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border-radius: 20px;
-    padding: 1.5rem;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-    transition: all 0.3s ease;
+    padding: var(--spacing-xl);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    transition: all var(--transition-base);
     border: 1px solid rgba(255, 255, 255, 0.2);
     position: relative;
-    overflow: visible;
-    height: auto;
-    min-height: 400px;
+    overflow: hidden;
+    height: 440px;
     display: flex;
     flex-direction: column;
     cursor: pointer;
     box-sizing: border-box;
     width: 100%;
+    color: white;
+}
+
+.method-card h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: white;
+    margin: 0 0 1rem 0;
+    line-height: 1.3;
+}
+
+.method-card p {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin: 0 0 1rem 0;
+    flex: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 .method-card::before {
@@ -1752,9 +1772,26 @@
 }
 
 .method-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 20px 60px rgba(99, 102, 241, 0.15);
-    border-color: #6366f1;
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    border-color: var(--primary);
+    background: var(--white);
+    color: var(--gray-800);
+}
+
+.method-card:hover h3,
+.method-card:hover .method-info h3 {
+    color: var(--primary);
+}
+
+.method-card:hover p,
+.method-card:hover .method-info p {
+    color: var(--primary-dark);
+}
+
+.method-card:hover .method-tag {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
 }
 
 .method-card.hidden {
@@ -1763,12 +1800,16 @@
 
 .method-header {
     display: flex;
+    flex-direction: column;
     align-items: flex-start;
-    gap: 1.5rem;
+    gap: 1rem;
     margin-bottom: 1rem;
     flex-shrink: 0;
-    /* Feste Höhe für Header-Bereich */
-    min-height: 100px;
+}
+
+.method-icon {
+    order: 0;
+    margin-bottom: 0.5rem;
 }
 
 .method-title {
@@ -1784,6 +1825,70 @@
     font-size: 0.95rem;
     line-height: 1.5;
     margin-bottom: 1rem;
+}
+
+.method-card .service-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    font-size: var(--font-size-xl);
+    margin-bottom: var(--spacing-lg);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+}
+
+.method-card h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: white;
+    margin: 0 0 1rem 0;
+    line-height: 1.3;
+}
+
+.method-card p {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin: 0 0 1rem 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.method-card .service-cta {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.method-card .service-cta:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.method-card .service-cta .cta-text {
+    color: white;
+    font-weight: 600;
+}
+
+.method-card:hover .service-cta .cta-text {
+    color: var(--primary);
+}
+
+.method-card:hover .service-cta {
+    background: rgba(99, 102, 241, 0.1);
 }
 
 .method-icon {
@@ -1845,50 +1950,64 @@
 
 .method-info h3 {
     font-size: 1.5rem;
-    font-weight: 800;
-    color: #1e293b;
+    font-weight: 700;
+    color: white;
     margin: 0 0 0.75rem 0;
-    line-height: 1.2;
-    letter-spacing: -0.02em;
+    line-height: 1.3;
     word-wrap: break-word;
     overflow-wrap: break-word;
-    hyphens: auto;
 }
 
 .method-info p {
-    color: #64748b;
+    color: rgba(255, 255, 255, 0.9);
     font-size: 0.95rem;
     line-height: 1.6;
     margin: 0 0 1rem 0;
     font-weight: 400;
-    /* Text-Overflow: Maximal 4 Zeilen */
     display: -webkit-box;
-    -webkit-line-clamp: 4;
+    -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
-    min-height: 6.4rem; /* 4 Zeilen * 1.6 line-height * 1rem font-size */
-    max-height: 6.4rem;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    hyphens: auto;
+    min-height: 4.8rem;
+    max-height: 4.8rem;
 }
 
 .method-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.8rem;
+    display: none; /* Tags ausblenden - werden durch Features ersetzt */
+}
+
+/* Service-Features Stil für Method-Cards */
+.method-card .service-features {
+    list-style: none;
+    padding: 0;
     margin: 1rem 0;
-    padding: 1rem 0;
-    border-top: 1px solid #f1f5f9;
-    align-items: flex-start;
-    justify-content: flex-start;
-    /* Feste Höhe für Tags-Bereich */
-    min-height: 60px;
-    flex-shrink: 0;
-    overflow: hidden; /* Verhindert Überlauf */
-    width: 100%; /* Verhindert Überlauf */
-    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.method-card .service-features li {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.9rem;
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+.method-card .service-features li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 700;
+}
+
+.method-card:hover .service-features li {
+    color: var(--gray-700);
+}
+
+.method-card:hover .service-features li::before {
+    color: var(--primary);
 }
 
 .method-tag {
@@ -1914,22 +2033,7 @@
 }
 
 .method-stats {
-    display: flex;
-    gap: 0.5rem;
-    margin: 0.75rem 0;
-    padding: 0.75rem;
-    background: linear-gradient(135deg, #f8fafc, #e2e8f0);
-    border-radius: 12px;
-    border: 1px solid rgba(99, 102, 241, 0.1);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    align-items: stretch;
-    flex-wrap: nowrap;
-    justify-content: space-between;
-    min-height: auto;
-    flex-shrink: 0;
-    overflow: visible;
-    width: 100%; /* Verhindert Überlauf */
-    box-sizing: border-box;
+    display: none; /* Stats ausblenden - werden durch Features ersetzt */
 }
 
 .stat-item {
