@@ -1476,12 +1476,12 @@ a:hover {
 
 /* Services Section */
 .services {
-    padding: var(--spacing-3xl) 0;
+    padding: var(--spacing-3xl) 0 calc(var(--spacing-3xl) + 40px) 0; /* Mehr Platz unten */
     background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 50%, #7c3aed 100%);
     position: relative;
-    overflow: hidden;
+    overflow: visible; /* Kacheln nicht abschneiden */
     color: white;
-    z-index: 10; /* Über Hero-Video (z-index 8) */
+    z-index: 10; /* Über Hero-Video (z-index: 8) */
 }
 
 /* Mobile: Reduziertes Padding für schnelleres Erreichen */
@@ -1838,11 +1838,21 @@ a:hover {
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
     display: flex;
     flex-direction: column;
-    height: 420px; /* Feste Höhe für alle Kacheln */
+    height: 440px; /* Feste Höhe für alle Kacheln - erhöht für bessere Lesbarkeit */
     position: relative;
     z-index: 200 !important; /* Über den Schneeflocken (z-index: 100) */
     cursor: pointer;
     overflow: hidden;
+}
+
+/* Icon bei Hover für Kacheln mit Badge (NEU) - bleibt lila statt weiß */
+.service-card:hover .service-icon {
+    background: var(--primary);
+    color: white;
+}
+
+.service-card:hover .service-icon i {
+    color: white;
 }
 
 /* Service-Bild-Container */
