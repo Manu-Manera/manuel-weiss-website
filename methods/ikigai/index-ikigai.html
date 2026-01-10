@@ -128,66 +128,181 @@
                 <h2>7 Schritte zu deinem Ikigai</h2>
                 <p>Entdecke deinen Lebenszweck durch unsere strukturierte, 7-stufige Ikigai-Methode. Jeder Schritt führt dich näher zu deinem persönlichen Ikigai.</p>
             
-            <!-- NEUES MODERNES IKIGAI DIAGRAMM - Services-Style Kacheln -->
-            <div class="ikigai-modern-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; max-width: 800px; margin: 3rem auto; padding: 0 1rem;">
-                <!-- Passion Kachel -->
-                <a href="step2-ikigai.html" class="ikigai-card" style="background: linear-gradient(135deg, #ff6b9d 0%, #ff4757 100%); border-radius: 20px; padding: 2rem; color: white; text-decoration: none; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; min-height: 180px; box-shadow: 0 10px 30px rgba(255,75,87,0.3); transition: all 0.3s ease; border: 3px solid rgba(255,255,255,0.3);">
-                    <span style="font-size: 3rem; margin-bottom: 0.5rem;">❤️</span>
-                    <h4 style="font-size: 1.3rem; font-weight: 700; margin: 0 0 0.3rem 0;">Was du liebst</h4>
-                    <p style="font-size: 0.95rem; opacity: 0.9; margin: 0;">Passion</p>
-                </a>
-                
-                <!-- Mission Kachel -->
-                <a href="step3-ikigai.html" class="ikigai-card" style="background: linear-gradient(135deg, #4ecdc4 0%, #00d2d3 100%); border-radius: 20px; padding: 2rem; color: white; text-decoration: none; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; min-height: 180px; box-shadow: 0 10px 30px rgba(0,210,211,0.3); transition: all 0.3s ease; border: 3px solid rgba(255,255,255,0.3);">
-                    <span style="font-size: 3rem; margin-bottom: 0.5rem;">🌍</span>
-                    <h4 style="font-size: 1.3rem; font-weight: 700; margin: 0 0 0.3rem 0;">Was die Welt braucht</h4>
-                    <p style="font-size: 0.95rem; opacity: 0.9; margin: 0;">Mission</p>
-                </a>
-                
-                <!-- Profession Kachel -->
-                <a href="step4-ikigai.html" class="ikigai-card" style="background: linear-gradient(135deg, #f9ca24 0%, #f0932b 100%); border-radius: 20px; padding: 2rem; color: white; text-decoration: none; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; min-height: 180px; box-shadow: 0 10px 30px rgba(240,147,43,0.3); transition: all 0.3s ease; border: 3px solid rgba(255,255,255,0.3);">
-                    <span style="font-size: 3rem; margin-bottom: 0.5rem;">💰</span>
-                    <h4 style="font-size: 1.3rem; font-weight: 700; margin: 0 0 0.3rem 0;">Womit du Geld verdienst</h4>
-                    <p style="font-size: 0.95rem; opacity: 0.9; margin: 0;">Profession</p>
-                </a>
-                
-                <!-- Vocation Kachel -->
-                <a href="step5-ikigai.html" class="ikigai-card" style="background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%); border-radius: 20px; padding: 2rem; color: white; text-decoration: none; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; min-height: 180px; box-shadow: 0 10px 30px rgba(9,132,227,0.3); transition: all 0.3s ease; border: 3px solid rgba(255,255,255,0.3);">
-                    <span style="font-size: 3rem; margin-bottom: 0.5rem;">⭐</span>
-                    <h4 style="font-size: 1.3rem; font-weight: 700; margin: 0 0 0.3rem 0;">Was du gut kannst</h4>
-                    <p style="font-size: 0.95rem; opacity: 0.9; margin: 0;">Vocation</p>
-                </a>
-                
-                <!-- Ikigai Center - Volle Breite -->
-                <a href="step6-ikigai.html" class="ikigai-card ikigai-center-card" style="grid-column: span 2; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 20px; padding: 2.5rem; color: white; text-decoration: none; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; min-height: 150px; box-shadow: 0 15px 40px rgba(102,126,234,0.4); transition: all 0.3s ease; border: 4px solid rgba(255,255,255,0.5);">
-                    <span style="font-size: 3.5rem; margin-bottom: 0.5rem;">🎯</span>
-                    <h4 style="font-size: 1.6rem; font-weight: 800; margin: 0 0 0.3rem 0;">Dein Ikigai</h4>
-                    <p style="font-size: 1rem; opacity: 0.95; margin: 0;">Der Schnittpunkt aller vier Bereiche</p>
-                </a>
+            <!-- INTERAKTIVES VENN-DIAGRAMM wie Referenzbild -->
+            <div class="ikigai-venn-container">
+                <!-- Venn Diagramm -->
+                <div class="ikigai-venn">
+                    <!-- 4 überlappende Kreise -->
+                    <a href="step2-ikigai.html" class="venn-circle venn-passion" title="Was du liebst">
+                        <span class="venn-label">What you<br>love</span>
+                    </a>
+                    <a href="step3-ikigai.html" class="venn-circle venn-mission" title="Was die Welt braucht">
+                        <span class="venn-label">What the<br>world needs</span>
+                    </a>
+                    <a href="step5-ikigai.html" class="venn-circle venn-vocation" title="Was du gut kannst">
+                        <span class="venn-label">What you<br>are good at</span>
+                    </a>
+                    <a href="step4-ikigai.html" class="venn-circle venn-profession" title="Womit du Geld verdienst">
+                        <span class="venn-label">What you can<br>be paid for</span>
+                    </a>
+                    
+                    <!-- Schnittmengen-Labels -->
+                    <span class="venn-intersection venn-passion-label">Passion</span>
+                    <span class="venn-intersection venn-mission-label">Mission</span>
+                    <span class="venn-intersection venn-profession-label">Profession</span>
+                    <span class="venn-intersection venn-vocation-label">Vocation</span>
+                    
+                    <!-- Ikigai Zentrum -->
+                    <a href="step6-ikigai.html" class="venn-center" title="Dein Ikigai">
+                        <span>Ikigai</span>
+                    </a>
+                </div>
             </div>
             
             <style>
-                .ikigai-card:hover {
-                    transform: translateY(-8px) scale(1.02);
-                    box-shadow: 0 20px 50px rgba(0,0,0,0.25) !important;
+                .ikigai-venn-container {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    padding: 2rem;
+                    margin: 2rem auto;
                 }
-                @media (max-width: 600px) {
-                    .ikigai-modern-grid {
-                        grid-template-columns: 1fr !important;
-                        gap: 1rem !important;
+                
+                .ikigai-venn {
+                    position: relative;
+                    width: 400px;
+                    height: 400px;
+                }
+                
+                .venn-circle {
+                    position: absolute;
+                    width: 200px;
+                    height: 200px;
+                    border-radius: 50%;
+                    opacity: 0.75;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    text-decoration: none;
+                    transition: all 0.3s ease;
+                    cursor: pointer;
+                }
+                
+                .venn-circle:hover {
+                    opacity: 0.9;
+                    transform: scale(1.05);
+                    z-index: 10;
+                }
+                
+                .venn-label {
+                    color: white;
+                    font-weight: 700;
+                    font-size: 0.85rem;
+                    text-align: center;
+                    line-height: 1.3;
+                    text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+                    pointer-events: none;
+                }
+                
+                /* Kreise positionieren wie im Referenzbild */
+                .venn-passion {
+                    background: #e74c3c;
+                    top: 0;
+                    left: 50%;
+                    transform: translateX(-50%);
+                }
+                .venn-passion .venn-label { margin-top: -30px; }
+                
+                .venn-mission {
+                    background: #27ae60;
+                    top: 50%;
+                    right: 0;
+                    transform: translateY(-50%);
+                }
+                .venn-mission .venn-label { margin-left: 30px; }
+                
+                .venn-vocation {
+                    background: #3498db;
+                    top: 50%;
+                    left: 0;
+                    transform: translateY(-50%);
+                }
+                .venn-vocation .venn-label { margin-right: 30px; }
+                
+                .venn-profession {
+                    background: #f39c12;
+                    bottom: 0;
+                    left: 50%;
+                    transform: translateX(-50%);
+                }
+                .venn-profession .venn-label { margin-bottom: -30px; }
+                
+                /* Schnittmengen-Labels */
+                .venn-intersection {
+                    position: absolute;
+                    font-size: 0.7rem;
+                    font-weight: 600;
+                    color: #333;
+                    background: rgba(255,255,255,0.85);
+                    padding: 3px 8px;
+                    border-radius: 10px;
+                    z-index: 5;
+                    pointer-events: none;
+                }
+                
+                .venn-passion-label { top: 25%; left: 25%; }
+                .venn-mission-label { top: 25%; right: 25%; }
+                .venn-vocation-label { bottom: 25%; left: 25%; }
+                .venn-profession-label { bottom: 25%; right: 25%; }
+                
+                /* Ikigai Zentrum */
+                .venn-center {
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    width: 80px;
+                    height: 80px;
+                    background: linear-gradient(135deg, #8e44ad, #9b59b6);
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    z-index: 15;
+                    text-decoration: none;
+                    box-shadow: 0 5px 20px rgba(142, 68, 173, 0.5);
+                    transition: all 0.3s ease;
+                }
+                
+                .venn-center:hover {
+                    transform: translate(-50%, -50%) scale(1.1);
+                    box-shadow: 0 8px 30px rgba(142, 68, 173, 0.7);
+                }
+                
+                .venn-center span {
+                    color: white;
+                    font-weight: 800;
+                    font-size: 1rem;
+                }
+                
+                @media (max-width: 500px) {
+                    .ikigai-venn {
+                        width: 300px;
+                        height: 300px;
                     }
-                    .ikigai-center-card {
-                        grid-column: span 1 !important;
+                    .venn-circle {
+                        width: 150px;
+                        height: 150px;
                     }
-                    .ikigai-card {
-                        min-height: 140px !important;
-                        padding: 1.5rem !important;
+                    .venn-center {
+                        width: 60px;
+                        height: 60px;
                     }
-                    .ikigai-card span {
-                        font-size: 2.5rem !important;
+                    .venn-center span {
+                        font-size: 0.8rem;
                     }
-                    .ikigai-card h4 {
-                        font-size: 1.1rem !important;
+                    .venn-label {
+                        font-size: 0.7rem;
                     }
                 }
             </style>
