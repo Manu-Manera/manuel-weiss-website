@@ -558,17 +558,19 @@
     }
 }
 
-/* Cross-Browser Support */
+/* Cross-Browser Support - Fallback für Browser ohne backdrop-filter */
 @supports not (backdrop-filter: blur(10px)) {
     .method-card {
-        background: #ffffff;
+        /* Lila Hintergrund als Fallback statt weiß, damit weißer Text lesbar bleibt */
+        background: rgba(55, 48, 163, 0.8);
     }
 }
 
-/* Firefox Support */
+/* Firefox Support - Fallback für ältere Firefox-Versionen */
 @-moz-document url-prefix() {
     .method-card {
-        background: #ffffff;
+        /* Lila Hintergrund als Fallback statt weiß, damit weißer Text lesbar bleibt */
+        background: rgba(55, 48, 163, 0.8);
     }
     
     .method-card::before {
