@@ -417,16 +417,16 @@ a:hover {
 .nav-container {
     max-width: 900px;
     margin: 0 auto;
-    padding: 0.4rem 1.5rem;
+    padding: 0.5rem 1.5rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: var(--spacing-lg);
-    background: rgba(255, 255, 255, 0.92);
+    background: rgba(255, 255, 255, 0.75);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-radius: 999px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.06);
     border: none;
     pointer-events: auto;
 }
