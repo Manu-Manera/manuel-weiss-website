@@ -32,76 +32,57 @@
     <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-pe">
+    <!-- Navigation - Schlanke Menüleiste wie Bewerbungsmanager -->
+    <nav class="navbar navbar-slim">
         <div class="nav-container">
-            <div class="nav-brand">
-                <div class="nav-logo-container">
-                    <img src="manuel-weiss-portrait.jpg" alt="Manuel Weiss" class="nav-logo">
-                </div>
-                <span class="nav-name">Manuel Weiss</span>
-            </div>
-            
-            <div class="nav-menu">
-                <a href="index.html" class="nav-link" data-de="Start" data-en="Home">Start</a>
-                <a href="persoenlichkeitsentwicklung-uebersicht.html" class="nav-link active" data-de="Persönlichkeitsentwicklung" data-en="Persönlichkeitsentwicklung">Persönlichkeitsentwicklung</a>
-                <a href="applications/index.html" class="nav-link" data-de="Bewerbungsmanager" data-en="Application Manager">Bewerbungsmanager</a>
-                <a href="website-services.html" class="nav-link" data-de="Services" data-en="Services">Services</a>
-                
-                <!-- Language Switcher - Kompakt -->
-                <div class="language-switcher-compact">
-                    <button class="lang-link-compact" data-lang="de" title="Deutsch">🇩🇪</button>
-                    <button class="lang-link-compact" data-lang="en" title="English">🇬🇧</button>
-                </div>
-            </div>
-            
-            <div class="auth-section">
-                <div class="nav-user" id="navUser">
-                    <button id="realAuthButton" class="nav-login-btn">
-                        <i class="fas fa-user"></i>
-                        <span data-de="Anmelden" data-en="Login">Anmelden</span>
-                    </button>
+            <div class="nav-menu" id="navMenu">
+                <a href="index.html" class="nav-link">Start</a>
+                <a href="persoenlichkeitsentwicklung-uebersicht.html" class="nav-link active">Persönlichkeitsentwicklung</a>
+                <a href="applications/index.html" class="nav-link">Bewerbungsmanager</a>
+                <a href="applications/coaching.html" class="nav-link">Coaching</a>
+                <div class="nav-divider"></div>
+                <button class="lang-link-compact" data-lang="de" title="Deutsch">🇩🇪</button>
+                <button class="lang-link-compact" data-lang="en" title="English">🇬🇧</button>
+                <button id="authButton" class="nav-auth-btn">
+                    <i class="fas fa-user"></i>
+                    <span id="authButtonText">Anmelden</span>
+                </button>
+                <!-- User Dropdown (hidden until logged in) -->
+                <div class="user-dropdown" id="userDropdown" style="display: none;">
+                    <a href="user-profile.html" class="dropdown-item"><i class="fas fa-user-circle"></i> Mein Profil</a>
+                    <a href="applications/dashboard.html" class="dropdown-item"><i class="fas fa-th-large"></i> Dashboard</a>
+                    <hr class="dropdown-divider">
+                    <button class="dropdown-item" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Abmelden</button>
                 </div>
             </div>
             
-            <!-- Mobile Hamburger Button -->
+            <!-- Mobile Hamburger -->
             <button class="mobile-hamburger" id="mobileHamburger" aria-label="Menü öffnen">
                 <span></span>
                 <span></span>
                 <span></span>
             </button>
         </div>
+        
+        <!-- Mobile Fullscreen Menu -->
+        <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
+        <div class="mobile-menu-fullscreen" id="mobileMenuFullscreen">
+            <div class="mobile-menu-content">
+                <a href="index.html" class="mobile-menu-link">Start</a>
+                <a href="persoenlichkeitsentwicklung-uebersicht.html" class="mobile-menu-link active">Persönlichkeitsentwicklung</a>
+                <a href="applications/index.html" class="mobile-menu-link">Bewerbungsmanager</a>
+                <a href="applications/coaching.html" class="mobile-menu-link">Coaching</a>
+                <div class="mobile-language-switcher">
+                    <button class="lang-link-compact" data-lang="de" title="Deutsch">🇩🇪</button>
+                    <button class="lang-link-compact" data-lang="en" title="English">🇬🇧</button>
+                </div>
+                <button id="mobileAuthButton" class="mobile-auth-btn">
+                    <i class="fas fa-user"></i>
+                    <span id="mobileAuthButtonText">Anmelden</span>
+                </button>
+            </div>
+        </div>
     </nav>
-    
-    <!-- Mobile Fullscreen Menu -->
-    <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
-    <div class="mobile-menu-fullscreen" id="mobileMenuFullscreen">
-        <div class="mobile-menu-header">
-            <div class="nav-brand">
-                <img src="manuel-weiss-portrait.jpg" alt="Manuel Weiss" class="nav-logo">
-                <span class="nav-name">Manuel Weiss</span>
-            </div>
-            <button class="mobile-hamburger active" id="mobileHamburgerClose" aria-label="Menü schließen">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-        </div>
-        <div class="mobile-menu-content">
-            <a href="index.html" class="mobile-menu-link" data-de="Start" data-en="Home">Start</a>
-            <a href="persoenlichkeitsentwicklung-uebersicht.html" class="mobile-menu-link active" data-de="Persönlichkeitsentwicklung" data-en="Personality Development">Persönlichkeitsentwicklung</a>
-            <a href="applications/index.html" class="mobile-menu-link" data-de="Bewerbungsmanager" data-en="Application Manager">Bewerbungsmanager</a>
-            <a href="website-services.html" class="mobile-menu-link" data-de="Services" data-en="Services">Services</a>
-            <div class="mobile-language-switcher">
-                <button class="lang-link-compact" data-lang="de" title="Deutsch">🇩🇪</button>
-                <button class="lang-link-compact" data-lang="en" title="English">🇬🇧</button>
-            </div>
-            <button id="mobileAuthButton" class="mobile-auth-btn">
-                <i class="fas fa-user"></i>
-                <span>Anmelden</span>
-            </button>
-        </div>
-    </div>
 
     <!-- Hero Section -->
     <section class="personality-hero">
@@ -3149,9 +3130,116 @@
     <!-- AWS SDK laden -->
     <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js" 
             onerror="console.error('Fehler beim Laden von AWS SDK');"></script>
-    <!-- Auth & Core - mit Cache-Busting -->
-    <script src="js/real-user-auth-system.js?v=20250116" 
+    <!-- Unified Auth System -->
+    <script src="js/unified-aws-auth.js?v=20260110"></script>
+    <script src="js/unified-auth-modals.js?v=20260110"></script>
+    <!-- Legacy Auth - Fallback -->
+    <script src="js/real-user-auth-system.js?v=20260110" 
             onerror="console.error('Fehler beim Laden von real-user-auth-system.js');"></script>
+    
+    <!-- Auth State Management -->
+    <script>
+        // Update auth button state with dropdown support
+        function updateAuthState() {
+            const authButton = document.getElementById('authButton');
+            const authButtonText = document.getElementById('authButtonText');
+            const mobileAuthButton = document.getElementById('mobileAuthButton');
+            const mobileAuthButtonText = document.getElementById('mobileAuthButtonText');
+            const userDropdown = document.getElementById('userDropdown');
+            const logoutBtn = document.getElementById('logoutBtn');
+            
+            const isLoggedIn = (window.awsAuth && window.awsAuth.isLoggedIn()) || 
+                               (window.realUserAuth && window.realUserAuth.isLoggedIn?.());
+            
+            if (isLoggedIn) {
+                const auth = window.awsAuth || window.realUserAuth;
+                const userData = auth.getUserDataFromToken?.() || auth.getCurrentUser?.() || {};
+                const displayName = userData?.name || userData?.email?.split('@')[0] || 'Profil';
+                
+                // Update desktop button
+                if (authButton && authButtonText) {
+                    authButton.classList.add('logged-in');
+                    authButtonText.textContent = displayName;
+                    const icon = authButton.querySelector('i');
+                    if (icon) icon.className = 'fas fa-user-check';
+                }
+                
+                // Update mobile button
+                if (mobileAuthButton && mobileAuthButtonText) {
+                    mobileAuthButtonText.textContent = displayName;
+                    const icon = mobileAuthButton.querySelector('i');
+                    if (icon) icon.className = 'fas fa-user-check';
+                }
+                
+                // Show dropdown on click
+                if (authButton) {
+                    authButton.onclick = (e) => {
+                        e.stopPropagation();
+                        if (userDropdown) {
+                            userDropdown.style.display = userDropdown.style.display === 'none' ? 'block' : 'none';
+                        }
+                    };
+                }
+                
+                // Logout handler
+                if (logoutBtn) {
+                    logoutBtn.onclick = async () => {
+                        const auth = window.awsAuth || window.realUserAuth;
+                        if (auth?.logout) {
+                            await auth.logout();
+                        }
+                        localStorage.removeItem('awsUserSession');
+                        localStorage.removeItem('awsAuthTokens');
+                        window.location.reload();
+                    };
+                }
+            } else {
+                // Not logged in - show login option
+                if (authButton && authButtonText) {
+                    authButton.classList.remove('logged-in');
+                    authButtonText.textContent = 'Anmelden';
+                    const icon = authButton.querySelector('i');
+                    if (icon) icon.className = 'fas fa-user';
+                    authButton.onclick = () => {
+                        if (window.authModals?.showLogin) {
+                            window.authModals.showLogin();
+                        } else if (window.realUserAuth?.showLoginModal) {
+                            window.realUserAuth.showLoginModal();
+                        }
+                    };
+                }
+                
+                if (mobileAuthButton && mobileAuthButtonText) {
+                    mobileAuthButtonText.textContent = 'Anmelden';
+                    const icon = mobileAuthButton.querySelector('i');
+                    if (icon) icon.className = 'fas fa-user';
+                }
+                
+                if (userDropdown) {
+                    userDropdown.style.display = 'none';
+                }
+            }
+        }
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            const userDropdown = document.getElementById('userDropdown');
+            const authButton = document.getElementById('authButton');
+            if (userDropdown && !authButton?.contains(e.target)) {
+                userDropdown.style.display = 'none';
+            }
+        });
+        
+        // Check auth on load
+        document.addEventListener('DOMContentLoaded', async () => {
+            setTimeout(updateAuthState, 300);
+            setTimeout(updateAuthState, 1000);
+        });
+        
+        // Listen for auth changes
+        window.addEventListener('authStateChanged', updateAuthState);
+        window.addEventListener('userLoggedIn', updateAuthState);
+    </script>
     <!-- Progress Tracking -->
     <script src="js/aws-profile-api.js"></script>
     <script src="js/user-progress-tracker.js"></script>
