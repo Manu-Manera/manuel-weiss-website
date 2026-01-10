@@ -68,7 +68,7 @@
 
 .navbar.navbar-slim .nav-link.active {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    color: #1e293b;
 }
 
 .navbar.navbar-slim .nav-divider {
@@ -98,7 +98,7 @@
     align-items: center;
     gap: 0.5rem;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    color: #1e293b;
     border: none;
     padding: 0.5rem 1rem;
     border-radius: 25px;
@@ -256,7 +256,7 @@
 
 .navbar .nav-link.active {
     background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-    color: white;
+    color: #1e293b;
     box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
 }
 
@@ -287,7 +287,7 @@
 
 .navbar .nav-login-btn {
     background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-    color: white;
+    color: #1e293b;
     border: none;
     padding: 10px 20px;
     border-radius: 10px;
@@ -415,7 +415,7 @@
     flex-direction: column;
     padding: 20px;
     box-sizing: border-box;
-    color: white;
+    color: #1e293b;
 }
 
 .mobile-menu-fullscreen.active {
@@ -445,7 +445,7 @@
 .mobile-menu-header .nav-name {
     font-size: 1.3rem;
     font-weight: 700;
-    color: white;
+    color: #1e293b;
 }
 
 .mobile-menu-header .mobile-hamburger {
@@ -497,7 +497,7 @@
 
 .mobile-menu-link:hover,
 .mobile-menu-link.active {
-    color: white;
+    color: #1e293b;
     padding-left: 10px;
 }
 
@@ -529,7 +529,7 @@
     background: rgba(255,255,255,0.2);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255,255,255,0.3);
-    color: white;
+    color: #1e293b;
     padding: 16px 24px;
     border-radius: 12px;
     font-size: 1.1rem;
@@ -844,7 +844,7 @@
 
 .language-switcher select option {
     background: #333;
-    color: white;
+    color: #1e293b;
     padding: 0.5rem;
 }
 
@@ -1432,7 +1432,7 @@
     border-radius: 16px;
     padding: 1.5rem 1rem;
     text-align: center;
-    color: white;
+    color: #1e293b;
     transition: all 0.3s ease;
     cursor: pointer;
 }
@@ -1570,7 +1570,7 @@
 .filter-tag.active {
     background: linear-gradient(135deg, #667eea, #764ba2);
     border-color: #667eea;
-    color: white;
+    color: #1e293b;
     box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
     transform: translateY(-2px);
 }
@@ -1709,7 +1709,7 @@
 
 .filter-tag.active {
     background: linear-gradient(135deg, #667eea, #764ba2);
-    color: white;
+    color: #1e293b;
     border-color: #667eea;
     box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
 }
@@ -1737,7 +1737,7 @@
 .method-card h3 {
     font-size: 1.5rem;
     font-weight: 700;
-    color: white;
+    color: #1e293b;
     margin: 0 0 1rem 0;
     line-height: 1.3;
 }
@@ -1791,7 +1791,7 @@
 
 .method-card:hover .method-tag {
     background: linear-gradient(135deg, var(--primary), var(--secondary));
-    color: white;
+    color: #1e293b;
 }
 
 .method-card.hidden {
@@ -1855,13 +1855,13 @@
 .method-card h3 {
     font-size: 1.5rem;
     font-weight: 700;
-    color: white;
+    color: #1e293b;
     margin: 0 0 1rem 0;
     line-height: 1.3;
 }
 
 .method-card p {
-    color: rgba(255, 255, 255, 0.9);
+    color: #64748b;
     font-size: 0.95rem;
     line-height: 1.6;
     margin: 0 0 1rem 0;
@@ -1889,7 +1889,7 @@
 }
 
 .method-card .service-cta .cta-text {
-    color: white;
+    color: #1e293b;
     font-weight: 600;
 }
 
@@ -1909,7 +1909,7 @@
     align-items: center;
     justify-content: center;
     font-size: 1.8rem;
-    color: white;
+    color: #1e293b;
     flex-shrink: 0;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
     transition: all 0.3s ease;
@@ -2023,7 +2023,7 @@
 
 .method-tag {
     background: linear-gradient(135deg, #6366f1, #8b5cf6);
-    color: white;
+    color: #1e293b;
     padding: 0.5rem 1rem;
     border-radius: 20px;
     font-size: 0.8rem;
@@ -2110,7 +2110,7 @@
 }
 
 .method-card .service-cta .cta-text {
-    color: white;
+    color: #1e293b;
     font-weight: 600;
 }
 
@@ -2146,7 +2146,7 @@
 
 .btn-primary {
     background: linear-gradient(135deg, #6366f1, #8b5cf6);
-    color: white;
+    color: #1e293b;
     box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
 }
 
@@ -2433,7 +2433,7 @@
 
 .chatbot-header {
     background: linear-gradient(135deg, #4f46e5, #7c3aed);
-    color: white;
+    color: #1e293b;
     padding: 1rem;
     display: flex;
     align-items: center;
@@ -2473,7 +2473,7 @@
     right: 1rem;
     background: rgba(255, 255, 255, 0.2);
     border: none;
-    color: white;
+    color: #1e293b;
     width: 30px;
     height: 30px;
     border-radius: 50%;
@@ -2515,7 +2515,7 @@
 
 .coach-message .message-avatar {
     background: linear-gradient(135deg, #4f46e5, #7c3aed);
-    color: white;
+    color: #1e293b;
 }
 
 .user-message .message-avatar {
@@ -2538,7 +2538,7 @@
 
 .user-message .message-content {
     background: linear-gradient(135deg, #4f46e5, #7c3aed);
-    color: white;
+    color: #1e293b;
 }
 
 .quick-actions {
@@ -2564,7 +2564,7 @@
 
 .quick-action-btn:hover {
     background: #4f46e5;
-    color: white;
+    color: #1e293b;
     transform: scale(1.05);
 }
 
@@ -2597,7 +2597,7 @@
 
 .send-button {
     background: linear-gradient(135deg, #4f46e5, #7c3aed);
-    color: white;
+    color: #1e293b;
     border: none;
     width: 40px;
     height: 40px;
@@ -2646,7 +2646,7 @@
     width: 60px;
     height: 60px;
     background: linear-gradient(135deg, #4f46e5, #7c3aed);
-    color: white;
+    color: #1e293b;
     border: none;
     border-radius: 50%;
     cursor: pointer;
