@@ -731,7 +731,7 @@ a:hover {
     position: absolute;
     inset: 0;
     overflow: hidden;
-    z-index: 8; /* Video-Wrapper über Schneeflocken, aber unter Content und Navigation */
+    z-index: 50; /* Video-Wrapper VOR Content, hinter Navigation */
 }
 
 .hero-video {
@@ -755,7 +755,7 @@ a:hover {
 
 .hero-container {
     position: relative;
-    z-index: 50; /* Content über Video und Overlay, aber unter Navigation (1000) */
+    z-index: 5; /* Content HINTER Video (z-index 50), aber über Hintergrund */
     max-width: var(--container-max-width);
     margin: 0 auto;
     padding: 0 var(--spacing-xl);
@@ -771,15 +771,15 @@ a:hover {
     isolation: isolate;
 }
 
-/* Hero Content explizit über Video positionieren */
+/* Hero Content HINTER dem Video */
 .hero-content {
     position: relative;
-    z-index: 51; /* Explizit über Video (5), Overlay (6), Schneeflocken (7) */
+    z-index: 5; /* Content hinter Video */
 }
 
 .hero-visual {
     position: relative;
-    z-index: 51; /* Explizit über Video */
+    z-index: 5; /* Bild hinter Video */
 }
 
 .hero-title {
@@ -3869,13 +3869,11 @@ a:hover {
     }
     
     .hero-video-wrapper {
-        /* Video-Wrapper für Mobile optimiert */
+        /* Video-Wrapper für Mobile VOR Content */
         position: absolute;
         inset: 0;
-        z-index: 1 !important; /* Deutlich unter Content (z-index 100+) - !important für Mobile */
-        /* Sicherstellen dass Video nicht über Content liegt */
+        z-index: 50 !important; /* Video VOR Content */
         pointer-events: none;
-        /* Video sollte definitiv im Hintergrund sein */
         transform: translateZ(0);
     }
     
@@ -3902,7 +3900,7 @@ a:hover {
         min-height: auto;
         max-height: 70vh; /* Begrenze Container-Höhe */
         position: relative;
-        z-index: 100 !important; /* Deutlich über Video (z-index 8) - !important für Mobile */
+        z-index: 5 !important; /* Content HINTER Video */
         /* KEIN isolation: isolate - verursacht verschwommenen Text in Safari */
         /* KEIN transform: translateZ(0) - verursacht verschwommenen Text */
         display: flex;
@@ -3913,7 +3911,7 @@ a:hover {
     .hero-content {
         order: 2;
         position: relative;
-        z-index: 101 !important; /* Explizit über Container und Video - !important für Mobile */
+        z-index: 5 !important; /* Content HINTER Video */
         /* Bessere Lesbarkeit auf Mobile */
         text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
         /* Nur Text anzeigen, keine Buttons */
