@@ -728,36 +728,37 @@
 
 /* Removed all keyframe animations */
 
-/* KOMPLETT NEUES IKIGAI DIAGRAMM - MINIMALE ÜBERLAPPUNG, MAXIMALE LESBARKEIT */
+/* KOMPLETT NEUES IKIGAI DIAGRAMM - MODERNES VENN-LAYOUT */
 .ikigai-diagram-enhanced {
     position: relative;
     width: 100%;
-    max-width: 1000px;
-    height: 900px;
+    max-width: 800px;
+    height: 700px;
     margin: 3rem auto;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #ffffff;
-    border-radius: 20px;
-    padding: 3rem;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border-radius: 24px;
+    padding: 2rem;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+    border: 1px solid rgba(0,0,0,0.05);
 }
 
 .ikigai-flower-enhanced {
     position: relative;
     width: 100%;
     height: 100%;
-    max-width: 850px;
-    max-height: 850px;
+    max-width: 700px;
+    max-height: 600px;
     margin: 0 auto;
 }
 
-/* Hauptbereiche - Größere Kreise mit mehr Abstand, weniger Überlappung */
+/* Hauptbereiche - Kreise mit klarer Überlappung */
 .ikigai-petal-enhanced {
     position: absolute;
-    width: 280px;
-    height: 280px;
+    width: 220px;
+    height: 220px;
     border-radius: 50%;
     display: flex;
     flex-direction: column;
@@ -766,15 +767,17 @@
     text-align: center;
     font-weight: 700;
     color: white !important;
-    text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-    transition: all 0.3s ease;
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.4);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
-    border: 5px solid rgba(255,255,255,0.4);
+    border: 4px solid rgba(255,255,255,0.6);
     z-index: 2;
-    padding: 2rem 1.5rem;
+    padding: 1.5rem 1rem;
     box-sizing: border-box;
-    overflow: hidden;
+    overflow: visible;
+    backdrop-filter: blur(4px);
+    opacity: 0.9;
 }
 
 .ikigai-petal-enhanced:hover {
@@ -828,35 +831,33 @@
 }
 
 /* Positionierung - Kreise weiter auseinander, nur leichte Überlappung am Rand */
+/* KORRIGIERTES IKIGAI VENN-DIAGRAMM LAYOUT */
+/* Die 4 Kreise überlappen sich in der Mitte */
 .petal-passion {
     background: linear-gradient(135deg, #ff6b9d 0%, #ff4757 100%);
-    top: 5%;
-    left: 50%;
-    transform: translateX(-50%);
+    top: 10%;
+    left: 20%;
     z-index: 4;
 }
 
 .petal-mission {
     background: linear-gradient(135deg, #4ecdc4 0%, #00d2d3 100%);
-    top: 50%;
-    right: 5%;
-    transform: translateY(-50%);
+    top: 10%;
+    right: 20%;
     z-index: 3;
 }
 
 .petal-profession {
-    background: linear-gradient(135deg, #a8edea 0%, #96c6ea 100%);
-    bottom: 5%;
-    left: 50%;
-    transform: translateX(-50%);
+    background: linear-gradient(135deg, #f9ca24 0%, #f0932b 100%);
+    bottom: 10%;
+    left: 35%;
     z-index: 4;
 }
 
 .petal-vocation {
-    background: linear-gradient(135deg, #ffecd2 0%, #ff9a9e 100%);
-    top: 50%;
-    left: 5%;
-    transform: translateY(-50%);
+    background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+    bottom: 10%;
+    right: 35%;
     z-index: 3;
 }
 
@@ -912,38 +913,22 @@
 }
 
 /* Positionierung der Schnittbereiche - genau in der Mitte zwischen den Kreisen */
-.intersection-passion-mission {
-    background: linear-gradient(135deg, rgba(255,107,157,0.85), rgba(78,205,196,0.85));
-    top: 28%;
-    left: 68%;
-}
-
-.intersection-mission-profession {
-    background: linear-gradient(135deg, rgba(78,205,196,0.85), rgba(168,237,234,0.85));
-    top: 68%;
-    right: 28%;
-}
-
-.intersection-profession-vocation {
-    background: linear-gradient(135deg, rgba(168,237,234,0.85), rgba(255,236,210,0.85));
-    bottom: 28%;
-    left: 68%;
-}
-
+/* SCHNITTBEREICHE - versteckt für saubereres Design */
+.intersection-passion-mission,
+.intersection-mission-profession,
+.intersection-profession-vocation,
 .intersection-vocation-passion {
-    background: linear-gradient(135deg, rgba(255,236,210,0.85), rgba(255,107,157,0.85));
-    top: 68%;
-    left: 28%;
+    display: none !important;
 }
 
-/* Zentrum - Ikigai - kompakt und klar */
+/* Zentrum - Ikigai - prominent und klar */
 .ikigai-center-enhanced {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 160px;
-    height: 160px;
+    width: 140px;
+    height: 140px;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     border-radius: 50%;
     display: flex;
@@ -952,13 +937,13 @@
     justify-content: center;
     color: white !important;
     text-align: center;
-    z-index: 35;
-    box-shadow: 0 12px 35px rgba(102,126,234,0.5), inset 0 2px 8px rgba(255,255,255,0.25);
-    border: 6px solid rgba(255,255,255,0.95);
-    transition: all 0.3s ease;
+    z-index: 50;
+    box-shadow: 0 15px 45px rgba(102,126,234,0.6), 0 0 0 8px rgba(255,255,255,0.9);
+    border: none;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     font-weight: 700;
-    text-shadow: 2px 2px 6px rgba(0,0,0,0.6);
-    padding: 1.2rem;
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
+    padding: 1rem;
     box-sizing: border-box;
 }
 
