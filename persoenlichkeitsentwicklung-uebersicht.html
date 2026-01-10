@@ -33,7 +33,7 @@
 </head>
 <body>
     <!-- Navigation -->
-    <nav class="navbar">
+    <nav class="navbar navbar-pe">
         <div class="nav-container">
             <div class="nav-brand">
                 <div class="nav-logo-container">
@@ -44,7 +44,7 @@
             
             <div class="nav-menu">
                 <a href="index.html" class="nav-link" data-de="Start" data-en="Home">Start</a>
-                <a href="persoenlichkeitsentwicklung-uebersicht.html" class="nav-link active" data-de="Persönlichkeitsentwicklung" data-en="Personality Development">Persönlichkeitsentwicklung</a>
+                <a href="persoenlichkeitsentwicklung-uebersicht.html" class="nav-link active" data-de="Persönlichkeitsentwicklung" data-en="Persönlichkeitsentwicklung">Persönlichkeitsentwicklung</a>
                 <a href="applications/index.html" class="nav-link" data-de="Bewerbungsmanager" data-en="Application Manager">Bewerbungsmanager</a>
                 <a href="website-services.html" class="nav-link" data-de="Services" data-en="Services">Services</a>
                 
@@ -61,48 +61,47 @@
                         <i class="fas fa-user"></i>
                         <span data-de="Anmelden" data-en="Login">Anmelden</span>
                     </button>
-                    
-                    <!-- User Dropdown Menu -->
-                    <div class="user-dropdown" id="userDropdown" style="display: none;">
-                        <div class="user-dropdown-header">
-                            <div class="user-avatar-small">
-                                <img id="userAvatarImg" src="manuel-weiss-portrait.jpg" alt="User" class="user-avatar-img">
-                            </div>
-                            <div class="user-info-small">
-                                <div class="user-name-small" id="userName">Benutzer</div>
-                                <div class="user-email-small" id="userEmail">weiss-manuel@gmx.de</div>
-                            </div>
-                        </div>
-                        <div class="user-dropdown-content">
-                            <a href="#" class="user-dropdown-item" onclick="openProfile(); return false;">
-                                <i class="fas fa-user-circle"></i>
-                                <span>Profil</span>
-                            </a>
-                            <a href="#" class="user-dropdown-item" onclick="openSettings(); return false;">
-                                <i class="fas fa-cog"></i>
-                                <span>Einstellungen</span>
-                            </a>
-                            <a href="#" class="user-dropdown-item" onclick="openProgress(); return false;">
-                                <i class="fas fa-chart-line"></i>
-                                <span>Fortschritt</span>
-                            </a>
-                            <div class="user-dropdown-divider"></div>
-                            <a href="#" class="user-dropdown-item logout" onclick="window.realUserAuth.logout(); return false;">
-                                <i class="fas fa-sign-out-alt"></i>
-                                <span>Abmelden</span>
-                            </a>
-                        </div>
-                    </div>
                 </div>
             </div>
             
-            <div class="nav-toggle" id="navToggle">
+            <!-- Mobile Hamburger Button -->
+            <button class="mobile-hamburger" id="mobileHamburger" aria-label="Menü öffnen">
                 <span></span>
                 <span></span>
                 <span></span>
-            </div>
+            </button>
         </div>
     </nav>
+    
+    <!-- Mobile Fullscreen Menu -->
+    <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
+    <div class="mobile-menu-fullscreen" id="mobileMenuFullscreen">
+        <div class="mobile-menu-header">
+            <div class="nav-brand">
+                <img src="manuel-weiss-portrait.jpg" alt="Manuel Weiss" class="nav-logo">
+                <span class="nav-name">Manuel Weiss</span>
+            </div>
+            <button class="mobile-hamburger active" id="mobileHamburgerClose" aria-label="Menü schließen">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+        <div class="mobile-menu-content">
+            <a href="index.html" class="mobile-menu-link" data-de="Start" data-en="Home">Start</a>
+            <a href="persoenlichkeitsentwicklung-uebersicht.html" class="mobile-menu-link active" data-de="Persönlichkeitsentwicklung" data-en="Personality Development">Persönlichkeitsentwicklung</a>
+            <a href="applications/index.html" class="mobile-menu-link" data-de="Bewerbungsmanager" data-en="Application Manager">Bewerbungsmanager</a>
+            <a href="website-services.html" class="mobile-menu-link" data-de="Services" data-en="Services">Services</a>
+            <div class="mobile-language-switcher">
+                <button class="lang-link-compact" data-lang="de" title="Deutsch">🇩🇪</button>
+                <button class="lang-link-compact" data-lang="en" title="English">🇬🇧</button>
+            </div>
+            <button id="mobileAuthButton" class="mobile-auth-btn">
+                <i class="fas fa-user"></i>
+                <span>Anmelden</span>
+            </button>
+        </div>
+    </div>
 
     <!-- Hero Section -->
     <section class="personality-hero">
@@ -1874,22 +1873,35 @@
     });
 
     function initializeMobileNav() {
-        const navToggle = document.getElementById('navToggle');
-        const navMenu = document.getElementById('navMenu');
+        // Neues Fullscreen Mobile Menu
+        const mobileHamburger = document.getElementById('mobileHamburger');
+        const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+        const mobileMenuFullscreen = document.getElementById('mobileMenuFullscreen');
+        const mobileHamburgerClose = document.getElementById('mobileHamburgerClose');
         
-        if (navToggle && navMenu) {
-            navToggle.addEventListener('click', function() {
-                navMenu.classList.toggle('active');
-                navToggle.classList.toggle('active');
-            });
-            
-            // Close menu when clicking on a link
-            const navLinks = document.querySelectorAll('.nav-link');
-            navLinks.forEach(link => {
-                link.addEventListener('click', function() {
-                    navMenu.classList.remove('active');
-                    navToggle.classList.remove('active');
-                });
+        function toggleMobileMenu() {
+            mobileHamburger?.classList.toggle('active');
+            mobileMenuOverlay?.classList.toggle('active');
+            mobileMenuFullscreen?.classList.toggle('active');
+            document.body.style.overflow = mobileMenuFullscreen?.classList.contains('active') ? 'hidden' : '';
+        }
+        
+        mobileHamburger?.addEventListener('click', toggleMobileMenu);
+        mobileHamburgerClose?.addEventListener('click', toggleMobileMenu);
+        mobileMenuOverlay?.addEventListener('click', toggleMobileMenu);
+        
+        // Schließe Menü wenn ein Link geklickt wird
+        document.querySelectorAll('.mobile-menu-link').forEach(link => {
+            link.addEventListener('click', toggleMobileMenu);
+        });
+        
+        // Mobile Auth Button
+        const mobileAuthButton = document.getElementById('mobileAuthButton');
+        if (mobileAuthButton) {
+            mobileAuthButton.addEventListener('click', () => {
+                toggleMobileMenu();
+                const authButton = document.getElementById('realAuthButton');
+                if (authButton) authButton.click();
             });
         }
     }
