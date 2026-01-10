@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="../styles.css">
     <link rel="stylesheet" href="css/applications-main.css">
     <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/landing.css?v=20260110">
     
     <!-- Critical Mobile Navbar Override - Loaded LAST to ensure highest priority -->
     <style>
@@ -96,69 +97,57 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <!-- Navigation - Modern & Clean -->
-    <nav class="navbar navbar-modern">
+    <!-- Navigation - Schlanke Menüleiste wie Landing Page -->
+    <nav class="navbar navbar-slim">
         <div class="nav-container">
-            <!-- Mobile Hamburger -->
-            <button class="mobile-hamburger" id="mobileHamburger" aria-label="Menü öffnen">
-                <span class="hamburger-line"></span>
-                <span class="hamburger-line"></span>
-                <span class="hamburger-line"></span>
-            </button>
-            
-            <div class="nav-menu">
-                <a href="../index.html" class="nav-link nav-link-home">
-                    <i class="fas fa-home"></i>
-                    <span>Start</span>
-                </a>
-                <a href="dashboard.html" class="nav-link active">
-                    <i class="fas fa-briefcase"></i>
-                    <span>Bewerbungsmanager</span>
-                </a>
-                <a href="coaching.html" class="nav-link">
-                    <i class="fas fa-compass"></i>
-                    <span>Coaching</span>
-                </a>
-            </div>
-            
-            <div class="auth-section">
-                <button id="authButton" class="nav-login-btn">
+            <div class="nav-menu" id="navMenu">
+                <a href="../index.html" class="nav-link">Start</a>
+                <a href="../persoenlichkeitsentwicklung-uebersicht.html" class="nav-link">Persönlichkeitsentwicklung</a>
+                <a href="index.html" class="nav-link">Bewerbungsmanager</a>
+                <a href="coaching.html" class="nav-link">Coaching</a>
+                <div class="nav-divider"></div>
+                <button class="lang-link-compact" data-lang="de" title="Deutsch">🇩🇪</button>
+                <button class="lang-link-compact" data-lang="en" title="English">🇬🇧</button>
+                <button id="authButton" class="nav-auth-btn">
                     <i class="fas fa-user"></i>
                     <span id="authButtonText">Anmelden</span>
                 </button>
+                <!-- User Dropdown (hidden until logged in) -->
                 <div class="user-dropdown" id="userDropdown" style="display: none;">
-                    <div class="user-dropdown-header">
-                        <img id="userAvatarImg" src="../images/default-avatar.png" alt="User" class="user-avatar-img">
-                        <div class="user-info-small">
-                            <div id="userName">Benutzer</div>
-                            <div id="userEmail" class="user-email-small"></div>
-                        </div>
-                    </div>
-                    <div class="user-dropdown-content">
-                        <a href="#" class="user-dropdown-item" onclick="showTab('profile')">
-                            <i class="fas fa-user-circle"></i> Profil
-                        </a>
-                        <div class="user-dropdown-divider"></div>
-                        <a href="#" class="user-dropdown-item logout" onclick="logout()">
-                            <i class="fas fa-sign-out-alt"></i> Abmelden
-                        </a>
-                    </div>
+                    <a href="../user-profile.html" class="dropdown-item"><i class="fas fa-user-circle"></i> Mein Profil</a>
+                    <a href="dashboard.html" class="dropdown-item"><i class="fas fa-th-large"></i> Dashboard</a>
+                    <hr class="dropdown-divider">
+                    <button class="dropdown-item" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Abmelden</button>
                 </div>
+            </div>
+            
+            <!-- Mobile Hamburger -->
+            <button class="mobile-hamburger" id="mobileHamburger" aria-label="Menü öffnen">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+        
+        <!-- Mobile Fullscreen Menu -->
+        <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
+        <div class="mobile-menu-fullscreen" id="mobileMenuFullscreen">
+            <div class="mobile-menu-content">
+                <a href="../index.html" class="mobile-menu-link">Start</a>
+                <a href="../persoenlichkeitsentwicklung-uebersicht.html" class="mobile-menu-link">Persönlichkeitsentwicklung</a>
+                <a href="index.html" class="mobile-menu-link">Bewerbungsmanager</a>
+                <a href="coaching.html" class="mobile-menu-link">Coaching</a>
+                <div class="mobile-language-switcher">
+                    <button class="lang-link-compact" data-lang="de" title="Deutsch">🇩🇪</button>
+                    <button class="lang-link-compact" data-lang="en" title="English">🇬🇧</button>
+                </div>
+                <button id="mobileAuthButton" class="mobile-auth-btn">
+                    <i class="fas fa-user"></i>
+                    <span id="mobileAuthButtonText">Anmelden</span>
+                </button>
             </div>
         </div>
     </nav>
-
-    <!-- Mobile Menu -->
-    <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
-    <div class="mobile-menu-fullscreen" id="mobileMenuFullscreen">
-        <div class="mobile-menu-content">
-            <a href="../index.html" class="mobile-menu-link"><i class="fas fa-home"></i> Start</a>
-            <a href="dashboard.html" class="mobile-menu-link active"><i class="fas fa-briefcase"></i> Bewerbungsmanager</a>
-            <a href="coaching.html" class="mobile-menu-link"><i class="fas fa-compass"></i> Coaching</a>
-            <div class="mobile-menu-divider"></div>
-            <button id="mobileAuthButton" class="mobile-auth-btn"><i class="fas fa-user"></i> Anmelden</button>
-        </div>
-    </div>
 
     <!-- MAIN DASHBOARD -->
     <main class="dashboard-main">
@@ -504,11 +493,11 @@ Ihre Aufgaben:
                 <div class="tab-placeholder">
                     <i class="fas fa-file-alt"></i>
                     <h2>Anschreiben-Generator</h2>
-                    <p>Detaillierter Editor mit Templates und erweiterten Optionen</p>
-                    <a href="application-generator.html" class="btn-primary">
-                        <i class="fas fa-external-link-alt"></i> Vollversion öffnen
-                    </a>
-                    <span class="migration-hint">Wird in nächster Phase hier integriert</span>
+                    <p>Nutzen Sie den Quick Apply Tab für die schnelle Anschreiben-Generierung!</p>
+                    <button onclick="showTab('quick')" class="btn-primary">
+                        <i class="fas fa-rocket"></i> Zum Quick Apply
+                    </button>
+                    <span class="migration-hint">Alle Funktionen sind jetzt im Quick Apply Tab vereint</span>
                 </div>
             </div>
 

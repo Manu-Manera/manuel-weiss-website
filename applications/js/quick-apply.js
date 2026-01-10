@@ -418,6 +418,11 @@ async function initQuickApply() {
  * Prüft Login-Status und lädt API-Key aus AWS wenn angemeldet
  */
 async function checkLoginStatus() {
+    console.log('🔍 Prüfe Login-Status...');
+    
+    // Warte kurz auf Auth-System Initialisierung
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
     // Prüfe ob Nutzer angemeldet ist - Unterstütze beide Auth-Systeme
     const auth = window.awsAuth || window.realUserAuth;
     
@@ -437,16 +442,43 @@ async function checkLoginStatus() {
             if (QuickApplyState.isLoggedIn) {
                 console.log('✅ Nutzer ist angemeldet, lade API-Key aus AWS...');
                 await loadAPIKeyFromAWS();
+                console.log('🔑 API-Key Status:', QuickApplyState.apiKey ? 'vorhanden' : 'nicht vorhanden');
             }
         } catch (error) {
             console.warn('⚠️ Auth-Check fehlgeschlagen:', error);
             QuickApplyState.isLoggedIn = false;
         }
     } else {
-        console.log('ℹ️ Kein Auth-System verfügbar');
+        console.log('ℹ️ Kein Auth-System verfügbar - warte...');
         QuickApplyState.isLoggedIn = false;
+        
+        // Versuche nochmals nach 1 Sekunde
+        setTimeout(async () => {
+            const authDelayed = window.awsAuth || window.realUserAuth;
+            if (authDelayed && typeof authDelayed.isLoggedIn === 'function') {
+                QuickApplyState.isLoggedIn = authDelayed.isLoggedIn();
+                if (QuickApplyState.isLoggedIn) {
+                    console.log('✅ Verzögerter Auth-Check: Nutzer ist angemeldet');
+                    await loadAPIKeyFromAWS();
+                    updateAPIStatusDisplay();
+                }
+            }
+        }, 1000);
     }
 }
+
+/**
+ * Erneut Login-Status prüfen (für nach dem Einloggen)
+ */
+async function recheckLoginStatus() {
+    console.log('🔄 Erneute Login-Prüfung...');
+    await checkLoginStatus();
+    updateAPIStatusDisplay();
+}
+
+// Auf Auth-State-Changes hören
+window.addEventListener('authStateChanged', recheckLoginStatus);
+window.addEventListener('userLoggedIn', recheckLoginStatus);
 
 /**
  * Lädt den Admin-API-Key aus AWS DynamoDB
@@ -1230,16 +1262,20 @@ function saveToTracking(userData) {
 
 function setTone(tone) {
     QuickApplyState.tone = tone;
+    console.log('🎨 Tonalität gesetzt:', tone);
     
-    document.querySelectorAll('.tone-btn').forEach(btn => {
+    // Support both .tone-btn and .option-btn[data-tone]
+    document.querySelectorAll('.tone-btn, .option-btn[data-tone]').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.tone === tone);
     });
 }
 
 function setLength(length) {
     QuickApplyState.length = length;
+    console.log('📏 Länge gesetzt:', length);
     
-    document.querySelectorAll('.length-btn').forEach(btn => {
+    // Support both .length-btn and .option-btn[data-length]
+    document.querySelectorAll('.length-btn, .option-btn[data-length]').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.length === length);
     });
 }
