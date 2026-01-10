@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎯 SMART-Ziele Step 1: Ziel-Identifikation</title>
+    
+    <!-- Meta Tags -->
+    <meta name="description" content="Identifiziere deine wichtigsten Ziele in verschiedenen Lebensbereichen. Beginne deine SMART-Zielsetzung.">
+    <meta name="keywords" content="smart ziele, zielsetzung, ziele, smart methode, zielerreichung">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="goal-setting.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../../manuel-weiss-photo.svg">
+
+    <!-- Progress Badge & Step Styles -->
+    <style>
+        .user-progress-badge {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: white;
+            border-radius: 8px;
+            padding: 12px 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 14px;
+            min-width: 200px;
+        }
+        
+        .user-progress-badge .user-info,
+        .user-progress-badge .progress-sync {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #4a5568;
+        }
+        
+        .user-progress-badge i {
+            font-size: 16px;
+            color: #667eea;
+        }
+        
+        @media (max-width: 768px) {
+            .user-progress-badge {
+                top: auto;
+                bottom: 20px;
+                right: 10px;
+                left: 10px;
+                min-width: auto;
+            }
+        }
+
+        .step-header {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .step-header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .step-info h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .step-description {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .step-progress {
+            margin-top: 1rem;
+        }
+
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.3);
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: white;
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            margin-top: 0.5rem;
+            display: block;
+            font-size: 0.9rem;
+        }
+
+        .step-main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem 4rem;
+        }
+
+        .step-container {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 2rem;
+        }
+
+        @media (max-width: 1024px) {
+            .step-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .questions-column {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .step-intro {
+            margin-bottom: 2rem;
+        }
+
+        .step-intro h2 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+        }
+
+        .step-intro p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .goal-category-card {
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            background: #fffbeb;
+            border-radius: 12px;
+            border-left: 4px solid #f59e0b;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .goal-category-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .category-icon {
+            font-size: 2rem;
+        }
+
+        .category-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .category-description {
+            color: #666;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .goal-input-group {
+            display: none;
+            margin-top: 1rem;
+        }
+
+        .goal-category-card.active .goal-input-group {
+            display: block;
+        }
+
+        .goal-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            margin-bottom: 0.5rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .goal-input:focus {
+            outline: none;
+            border-color: #f59e0b;
+        }
+
+        .goals-list {
+            margin-top: 2rem;
+        }
+
+        .goal-item {
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .goal-item-text {
+            flex: 1;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        .goal-item-category {
+            color: #666;
+            font-size: 0.85rem;
+            margin-left: 1rem;
+        }
+
+        .btn-remove-goal {
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-remove-goal:hover {
+            background: #dc2626;
+        }
+
+        .form-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(245, 158, 11, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #2c3e50;
+            border: 2px solid #e0e0e0;
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .tools-box,
+        .resources-box {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .tools-box h4,
+        .resources-box h4 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tool-categories,
+        .resource-links {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .tool-category,
+        .resource-section {
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .tool-category:last-child,
+        .resource-section:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .tool-category h5,
+        .resource-section h5 {
+            color: #f59e0b;
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+        }
+
+        .tool-category ul,
+        .resource-section ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .tool-category li,
+        .resource-section li {
+            padding: 0.5rem 0;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .tool-category strong,
+        .resource-section strong {
+            color: #2c3e50;
+        }
+
+        .resource-section a {
+            color: #f59e0b;
+            text-decoration: none;
+        }
+
+        .resource-section a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body data-page-id="step1-goal-setting">
+
+    <!-- Progress Badge -->
+    <div class="user-progress-badge" style="display: none;">
+        <div class="user-info">
+            <i class="fas fa-user-circle"></i>
+            <span>Nicht angemeldet</span>
+        </div>
+        <div class="progress-sync">
+            <i class="fas fa-cloud-off-alt"></i>
+            <span>Fortschritt lokal</span>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="step-header">
+        <div class="step-header-content">
+            <div class="step-info">
+                <h1>🎯 SMART-Ziele Step 1: Ziel-Identifikation</h1>
+                <p class="step-description">Identifiziere deine wichtigsten Ziele in verschiedenen Lebensbereichen</p>
+            </div>
+            <div class="step-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 16.7%"></div>
+                </div>
+                <span class="progress-text">1 von 6</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="step-main">
+        <div class="step-container">
+            <!-- Left Column: Questions -->
+            <div class="questions-column">
+                <div class="step-intro">
+                    <h2>Deine Ziele identifizieren</h2>
+                    <p>Ziele geben deinem Leben Richtung und Motivation. Identifiziere deine wichtigsten Ziele in verschiedenen Lebensbereichen. Klicke auf eine Kategorie, um ein Ziel hinzuzufügen.</p>
+                </div>
+
+                <form class="goals-form" id="goalsForm" data-auto-save="true">
+                    <!-- Beruf & Karriere -->
+                    <div class="goal-category-card" data-category="beruf">
+                        <div class="category-header">
+                            <div class="category-icon">💼</div>
+                            <h3 class="category-title">Beruf & Karriere</h3>
+                        </div>
+                        <p class="category-description">Ziele für deine berufliche Entwicklung, Karrierewachstum und berufliche Erfüllung</p>
+                        <div class="goal-input-group">
+                            <input type="text" class="goal-input" placeholder="z.B. 'In 6 Monaten eine Führungsposition erreichen'" data-category="beruf">
+                            <button type="button" class="btn btn-primary" onclick="addGoal('beruf', this)">Ziel hinzufügen</button>
+                        </div>
+                    </div>
+
+                    <!-- Gesundheit & Fitness -->
+                    <div class="goal-category-card" data-category="gesundheit">
+                        <div class="category-header">
+                            <div class="category-icon">💪</div>
+                            <h3 class="category-title">Gesundheit & Fitness</h3>
+                        </div>
+                        <p class="category-description">Ziele für deine körperliche und mentale Gesundheit, Fitness und Wohlbefinden</p>
+                        <div class="goal-input-group">
+                            <input type="text" class="goal-input" placeholder="z.B. '3x pro Woche Sport machen'" data-category="gesundheit">
+                            <button type="button" class="btn btn-primary" onclick="addGoal('gesundheit', this)">Ziel hinzufügen</button>
+                        </div>
+                    </div>
+
+                    <!-- Beziehungen -->
+                    <div class="goal-category-card" data-category="beziehungen">
+                        <div class="category-header">
+                            <div class="category-icon">❤️</div>
+                            <h3 class="category-title">Beziehungen</h3>
+                        </div>
+                        <p class="category-description">Ziele für Familie, Freunde, Partnerschaft und soziale Beziehungen</p>
+                        <div class="goal-input-group">
+                            <input type="text" class="goal-input" placeholder="z.B. 'Mehr Zeit mit der Familie verbringen'" data-category="beziehungen">
+                            <button type="button" class="btn btn-primary" onclick="addGoal('beziehungen', this)">Ziel hinzufügen</button>
+                        </div>
+                    </div>
+
+                    <!-- Finanzen -->
+                    <div class="goal-category-card" data-category="finanzen">
+                        <div class="category-header">
+                            <div class="category-icon">💰</div>
+                            <h3 class="category-title">Finanzen</h3>
+                        </div>
+                        <p class="category-description">Ziele für deine finanzielle Situation, Sparen, Investitionen und finanzielle Freiheit</p>
+                        <div class="goal-input-group">
+                            <input type="text" class="goal-input" placeholder="z.B. '10.000€ sparen bis Ende des Jahres'" data-category="finanzen">
+                            <button type="button" class="btn btn-primary" onclick="addGoal('finanzen', this)">Ziel hinzufügen</button>
+                        </div>
+                    </div>
+
+                    <!-- Bildung & Lernen -->
+                    <div class="goal-category-card" data-category="bildung">
+                        <div class="category-header">
+                            <div class="category-icon">📚</div>
+                            <h3 class="category-title">Bildung & Lernen</h3>
+                        </div>
+                        <p class="category-description">Ziele für deine persönliche Weiterbildung, Lernen und Kompetenzentwicklung</p>
+                        <div class="goal-input-group">
+                            <input type="text" class="goal-input" placeholder="z.B. 'Eine neue Sprache lernen'" data-category="bildung">
+                            <button type="button" class="btn btn-primary" onclick="addGoal('bildung', this)">Ziel hinzufügen</button>
+                        </div>
+                    </div>
+
+                    <!-- Hobbys & Interessen -->
+                    <div class="goal-category-card" data-category="hobby">
+                        <div class="category-header">
+                            <div class="category-icon">🎨</div>
+                            <h3 class="category-title">Hobbys & Interessen</h3>
+                        </div>
+                        <p class="category-description">Ziele für deine Freizeit, Hobbys, Leidenschaften und persönliche Interessen</p>
+                        <div class="goal-input-group">
+                            <input type="text" class="goal-input" placeholder="z.B. 'Ein Buch schreiben'" data-category="hobby">
+                            <button type="button" class="btn btn-primary" onclick="addGoal('hobby', this)">Ziel hinzufügen</button>
+                        </div>
+                    </div>
+
+                    <!-- Goals List -->
+                    <div class="goals-list" id="goals-list">
+                        <h3 style="margin-bottom: 1rem; color: #2c3e50;">📝 Deine Ziele</h3>
+                        <div id="goals-container">
+                            <p style="color: #666; text-align: center; padding: 2rem;">Klicke auf eine Kategorie, um dein erstes Ziel hinzuzufügen.</p>
+                        </div>
+                    </div>
+
+                    <!-- Navigation Buttons -->
+                    <div class="form-navigation">
+                        <a href="goal-setting.html" class="btn btn-secondary">
+                            <i class="fas fa-home"></i>
+                            Zurück zur Übersicht
+                        </a>
+                        <button type="button" class="btn btn-primary" onclick="saveAndContinue()">
+                            Weiter zur SMART-Formulierung
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Right Column: Tools & Resources -->
+            <div class="sidebar">
+                <div class="tools-box">
+                    <h4><i class="fas fa-tools"></i> Hilfreiche Tools & Methoden</h4>
+                    
+                    <div class="tool-categories">
+                        <div class="tool-category">
+                            <h5>Zielsetzungs-Methoden</h5>
+                            <ul>
+                                <li><strong>SMART:</strong> Spezifisch, Messbar, Attraktiv, Realistisch, Terminiert</li>
+                                <li><strong>OKR:</strong> Objectives & Key Results</li>
+                                <li><strong>Backwards Planning:</strong> Vom Ziel rückwärts planen</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="tool-category">
+                            <h5>Ziel-Kategorien</h5>
+                            <ul>
+                                <li><strong>Kurzfristig:</strong> 1-3 Monate</li>
+                                <li><strong>Mittelfristig:</strong> 3-12 Monate</li>
+                                <li><strong>Langfristig:</strong> 1-3 Jahre</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="resources-box">
+                    <h4><i class="fas fa-book"></i> Empfohlene Ressourcen</h4>
+                    
+                    <div class="resource-links">
+                        <div class="resource-section">
+                            <h5>Bücher</h5>
+                            <ul>
+                                <li><strong>"Atomic Habits"</strong> von James Clear</li>
+                                <li><strong>"The 12 Week Year"</strong> von Brian Moran</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="resource-section">
+                            <h5>Verwandte Workflows</h5>
+                            <ul>
+                                <li><a href="../ikigai/index-ikigai.html">Ikigai</a> - Finde deinen Lebenszweck</li>
+                                <li><a href="../target-coaching/target-coaching.html">Ziel-Coaching</a> - Strukturierte Zielerreichung</li>
+                                <li><a href="../wheel-of-life/step1-wheel.html">Wheel of Life</a> - Lebensbalance</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script>
+        let goals = [];
+
+        document.querySelectorAll('.goal-category-card').forEach(card => {
+            card.addEventListener('click', function(e) {
+                if (!e.target.closest('.goal-input-group') && !e.target.closest('button')) {
+                    this.classList.toggle('active');
+                }
+            });
+        });
+
+        function addGoal(category, button) {
+            const input = button.previousElementSibling;
+            const goalText = input.value.trim();
+            
+            if (goalText) {
+                const goal = {
+                    id: Date.now(),
+                    text: goalText,
+                    category: category,
+                    categoryName: getCategoryName(category)
+                };
+                
+                goals.push(goal);
+                input.value = '';
+                updateGoalsList();
+                autoSave();
+            }
+        }
+
+        function getCategoryName(category) {
+            const names = {
+                'beruf': 'Beruf & Karriere',
+                'gesundheit': 'Gesundheit & Fitness',
+                'beziehungen': 'Beziehungen',
+                'finanzen': 'Finanzen',
+                'bildung': 'Bildung & Lernen',
+                'hobby': 'Hobbys & Interessen'
+            };
+            return names[category] || category;
+        }
+
+        function removeGoal(id) {
+            goals = goals.filter(goal => goal.id !== id);
+            updateGoalsList();
+            autoSave();
+        }
+
+        function updateGoalsList() {
+            const container = document.getElementById('goals-container');
+            
+            if (goals.length === 0) {
+                container.innerHTML = '<p style="color: #666; text-align: center; padding: 2rem;">Klicke auf eine Kategorie, um dein erstes Ziel hinzuzufügen.</p>';
+            } else {
+                container.innerHTML = goals.map(goal => `
+                    <div class="goal-item">
+                        <div>
+                            <div class="goal-item-text">${goal.text}</div>
+                            <div class="goal-item-category">${goal.categoryName}</div>
+                        </div>
+                        <button type="button" class="btn-remove-goal" onclick="removeGoal(${goal.id})">×</button>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function saveAndContinue() {
+            if (goals.length === 0) {
+                alert('Bitte füge mindestens ein Ziel hinzu, bevor du fortfährst.');
+                return;
+            }
+            
+            const formData = {
+                goals: goals,
+                step: 1,
+                timestamp: new Date().toISOString()
+            };
+            
+            await window.workflowAPI.saveWorkflowStep('goalSetting', 'step1', formData);
+            
+            // Redirect to step 2 (SMART formulation)
+            window.location.href = 'goal-setting.html#step-2';
+        }
+        
+        function autoSave() {
+            const formData = {
+                goals: goals,
+                step: 1,
+                timestamp: new Date().toISOString()
+            };
+            await window.workflowAPI.saveWorkflowStep('goalSetting', 'step1', formData);
+        }
+        
+        // Load saved data if available
+        window.addEventListener('load', function() {
+            const savedData = await window.workflowAPI.loadSavedProgress('goalSetting', 'step1');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                if (data.goals) {
+                    goals = data.goals;
+                    updateGoalsList();
+                }
+            }
+        });
+    </script>
+
+    <!-- AWS Configuration -->
+    <script>
+        window.AWS_CONFIG = {
+            region: 'eu-central-1',
+            userPoolId: 'eu-central-1_8gP4gLK9r',
+            clientId: '7kc5tt6a23fgh53d60vkefm812',
+            apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod',
+            dynamoDB: {
+                tableName: 'mawps-user-profiles',
+                region: 'eu-central-1'
+            },
+            s3: {
+                bucket: 'mawps-user-files-1760106396',
+                region: 'eu-central-1'
+            }
+        };
+    </script>
+    
+    <!-- AWS SDK -->
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    
+    <!-- Workflow API (API-First) -->
+    <script src="/js/workflow-api.js"></script>
+    <!-- Auth & Progress Tracking -->
+    <script src="/js/aws-profile-api.js"></script>
+    <script src="/js/real-user-auth-system.js?v=20250116"></script>
+    <script src="/js/user-progress-tracker.js"></script>
+    <script src="/js/personality-auth-integration.js"></script>
+</body>
+</html>

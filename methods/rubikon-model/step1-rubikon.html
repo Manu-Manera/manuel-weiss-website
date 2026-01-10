@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 Rubikon-Modell Step 1: Prädezisionale Phase</title>
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="rubikon-model.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="../../manuel-weiss-photo.svg">
+    <style>
+        .user-progress-badge { position: fixed; top: 80px; right: 20px; background: white; border-radius: 8px; padding: 12px 16px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); z-index: 100; display: flex; flex-direction: column; gap: 8px; font-size: 14px; min-width: 200px; }
+        .step-header { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 2rem 0; margin-bottom: 2rem; }
+        .step-header-content { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+        .step-info h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+        .step-description { font-size: 1.1rem; opacity: 0.9; }
+        .step-progress { margin-top: 1rem; }
+        .progress-bar { background: rgba(255, 255, 255, 0.3); height: 8px; border-radius: 4px; overflow: hidden; }
+        .progress-fill { background: white; height: 100%; transition: width 0.3s ease; }
+        .progress-text { margin-top: 0.5rem; display: block; font-size: 0.9rem; }
+        .step-main { max-width: 1200px; margin: 0 auto; padding: 0 2rem 4rem; }
+        .step-container { display: grid; grid-template-columns: 1fr 350px; gap: 2rem; }
+        @media (max-width: 1024px) { .step-container { grid-template-columns: 1fr; } }
+        .questions-column { background: white; border-radius: 16px; padding: 2rem; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); }
+        .step-intro { margin-bottom: 2rem; }
+        .step-intro h2 { font-size: 1.8rem; margin-bottom: 0.5rem; color: #2c3e50; }
+        .step-intro p { color: #666; line-height: 1.6; }
+        .phase-section { margin-bottom: 2rem; padding: 1.5rem; background: #f0fdf4; border-radius: 12px; border-left: 4px solid #10b981; }
+        .phase-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+        .phase-number { background: #10b981; color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+        .phase-title { font-size: 1.3rem; font-weight: 600; color: #2c3e50; }
+        .phase-description { color: #666; margin-bottom: 1rem; line-height: 1.5; }
+        .phase-textarea { width: 100%; min-height: 100px; padding: 1rem; border: 2px solid #e0e0e0; border-radius: 8px; font-family: inherit; font-size: 0.95rem; resize: vertical; transition: border-color 0.3s ease; }
+        .phase-textarea:focus { outline: none; border-color: #10b981; }
+        .detailed-hints { margin-top: 1rem; padding: 1rem; background: #dcfce7; border-radius: 8px; }
+        .detailed-hints h5 { color: #166534; margin-bottom: 0.5rem; }
+        .detailed-hints ul { margin: 0; padding-left: 1.5rem; color: #166534; }
+        .detailed-hints li { margin-bottom: 0.5rem; line-height: 1.5; }
+        .form-navigation { display: flex; justify-content: space-between; align-items: center; margin-top: 3rem; padding-top: 2rem; border-top: 2px solid #e0e0e0; }
+        .btn { padding: 0.75rem 1.5rem; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; }
+        .btn-primary { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4); }
+        .btn-secondary { background: #f8f9fa; color: #2c3e50; border: 2px solid #e0e0e0; }
+        .btn-secondary:hover { background: #e9ecef; }
+        .sidebar { display: flex; flex-direction: column; gap: 1.5rem; }
+        .tools-box, .resources-box { background: white; border-radius: 16px; padding: 1.5rem; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); }
+        .tools-box h4, .resources-box h4 { color: #2c3e50; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+        .tool-categories, .resource-links { display: flex; flex-direction: column; gap: 1.5rem; }
+        .tool-category, .resource-section { padding-bottom: 1.5rem; border-bottom: 1px solid #e0e0e0; }
+        .tool-category:last-child, .resource-section:last-child { border-bottom: none; padding-bottom: 0; }
+        .tool-category h5, .resource-section h5 { color: #10b981; margin-bottom: 0.75rem; font-size: 1rem; }
+        .tool-category ul, .resource-section ul { list-style: none; padding: 0; margin: 0; }
+        .tool-category li, .resource-section li { padding: 0.5rem 0; color: #666; line-height: 1.5; }
+        .tool-category strong, .resource-section strong { color: #2c3e50; }
+        .resource-section a { color: #10b981; text-decoration: none; }
+        .resource-section a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body data-page-id="step1-rubikon">
+    <div class="user-progress-badge" style="display: none;">
+        <div class="user-info"><i class="fas fa-user-circle"></i><span>Nicht angemeldet</span></div>
+        <div class="progress-sync"><i class="fas fa-cloud-off-alt"></i><span>Fortschritt lokal</span></div>
+    </div>
+    <header class="step-header">
+        <div class="step-header-content">
+            <div class="step-info">
+                <h1>🚀 Rubikon-Modell Step 1: Prädezisionale Phase</h1>
+                <p class="step-description">Verstehe die 4 Phasen von der Entscheidung zur Handlung</p>
+            </div>
+            <div class="step-progress">
+                <div class="progress-bar"><div class="progress-fill" style="width: 25%"></div></div>
+                <span class="progress-text">1 von 4</span>
+            </div>
+        </div>
+    </header>
+    <main class="step-main">
+        <div class="step-container">
+            <div class="questions-column">
+                <div class="step-intro">
+                    <h2>Das Rubikon-Modell</h2>
+                    <p>Das Rubikon-Modell beschreibt 4 Phasen von der Absicht zur Handlung. Es hilft dir zu verstehen, warum du manchmal nicht vom Wollen zum Tun kommst.</p>
+                </div>
+                <form class="rubikon-form" id="rubikonForm">
+                    <div class="phase-section">
+                        <div class="phase-header">
+                            <div class="phase-number">1</div>
+                            <h3 class="phase-title">Prädezisionale Phase</h3>
+                        </div>
+                        <p class="phase-description">Du wäbst verschiedene Handlungsmöglichkeiten ab. Noch keine endgültige Entscheidung.</p>
+                        <textarea class="phase-textarea" id="predecision" placeholder="Welche Handlungsmöglichkeiten siehst du? Was wägst du ab?"></textarea>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li>Welche Optionen hast du?</li>
+                                <li>Was sind die Vor- und Nachteile?</li>
+                                <li>Was hält dich noch zurück?</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="form-navigation">
+                        <a href="rubikon-model.html" class="btn btn-secondary"><i class="fas fa-home"></i> Zurück</a>
+                        <button type="button" class="btn btn-primary" onclick="saveAndContinue()">Weiter <i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </form>
+            </div>
+            <div class="sidebar">
+                <div class="tools-box"><h4><i class="fas fa-tools"></i> Tools</h4><p>Verwandte Methoden: Ziel-Coaching, SMART-Ziele</p></div>
+            </div>
+        </div>
+    </main>
+    <script>
+        function saveAndContinue() {
+            localStorage.setItem('rubikonStep1', JSON.stringify({predecision: document.getElementById('predecision').value, step: 1, timestamp: new Date().toISOString()}));
+            window.location.href = 'rubikon-model.html#step-2';
+        }
+        window.addEventListener('load', function() {
+            const saved = await window.workflowAPI.loadSavedProgress('rubikon', 'step1');
+            if (saved) { const d = JSON.parse(saved); document.getElementById('predecision').value = d.predecision || ''; }
+        });
+    </script>
+    <script>
+        window.AWS_CONFIG = { region: 'eu-central-1', userPoolId: 'eu-central-1_8gP4gLK9r', clientId: '7kc5tt6a23fgh53d60vkefm812', apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod', dynamoDB: { tableName: 'mawps-user-profiles', region: 'eu-central-1' }, s3: { bucket: 'mawps-user-files-1760106396', region: 'eu-central-1' } };
+    </script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="/js/aws-profile-api.js"></script>
+    <script src="/js/real-user-auth-system.js?v=20250116"></script>
+    <script src="/js/user-progress-tracker.js"></script>
+    <script src="/js/personality-auth-integration.js"></script>
+    <!-- Workflow API (API-First) -->
+    <script src="/js/workflow-api.js"></script>
+</body>
+</html>

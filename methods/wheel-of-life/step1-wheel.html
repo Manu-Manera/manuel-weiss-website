@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎯 Wheel of Life Step 1: Lebensbereiche bewerten</title>
+    
+    <!-- Meta Tags -->
+    <meta name="description" content="Bewerte deine Zufriedenheit in verschiedenen Lebensbereichen. Beginne deine Wheel of Life Analyse mit einer detaillierten Selbstreflexion.">
+    <meta name="keywords" content="wheel of life, lebensbalance, lebensbereiche, zufriedenheit, selbstreflexion">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="css/wheel-of-life-smart-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../../manuel-weiss-photo.svg">
+
+    <!-- Progress Badge Styles -->
+    <style>
+        .user-progress-badge {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: white;
+            border-radius: 8px;
+            padding: 12px 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 14px;
+            min-width: 200px;
+        }
+        
+        .user-progress-badge .user-info,
+        .user-progress-badge .progress-sync {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #4a5568;
+        }
+        
+        .user-progress-badge i {
+            font-size: 16px;
+            color: #667eea;
+        }
+        
+        @media (max-width: 768px) {
+            .user-progress-badge {
+                top: auto;
+                bottom: 20px;
+                right: 10px;
+                left: 10px;
+                min-width: auto;
+            }
+        }
+
+        /* Step-specific styles */
+        .step-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .step-header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .step-info h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .step-description {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .step-progress {
+            margin-top: 1rem;
+        }
+
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.3);
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: white;
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            margin-top: 0.5rem;
+            display: block;
+            font-size: 0.9rem;
+        }
+
+        .step-main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem 4rem;
+        }
+
+        .step-container {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 2rem;
+        }
+
+        @media (max-width: 1024px) {
+            .step-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .questions-column {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .step-intro {
+            margin-bottom: 2rem;
+        }
+
+        .step-intro h2 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+        }
+
+        .step-intro p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .life-area-section {
+            margin-bottom: 2.5rem;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+        }
+
+        .life-area-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .life-area-icon {
+            font-size: 2rem;
+        }
+
+        .life-area-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .life-area-description {
+            color: #666;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .score-input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .score-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .score-label span {
+            font-weight: 600;
+            color: #667eea;
+            font-size: 1.2rem;
+        }
+
+        .score-slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: #e0e0e0;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .score-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+        }
+
+        .score-slider::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+        }
+
+        .reflection-questions {
+            margin-top: 1.5rem;
+        }
+
+        .reflection-questions h5 {
+            color: #2c3e50;
+            margin-bottom: 0.75rem;
+            font-size: 1.1rem;
+        }
+
+        .reflection-questions textarea {
+            width: 100%;
+            min-height: 80px;
+            padding: 0.75rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+
+        .reflection-questions textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .detailed-hints {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #fff3cd;
+            border-radius: 8px;
+            border-left: 4px solid #ffc107;
+        }
+
+        .detailed-hints h5 {
+            color: #856404;
+            margin-bottom: 0.5rem;
+        }
+
+        .detailed-hints ul {
+            margin: 0;
+            padding-left: 1.5rem;
+            color: #856404;
+        }
+
+        .detailed-hints li {
+            margin-bottom: 0.5rem;
+            line-height: 1.5;
+        }
+
+        .form-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #2c3e50;
+            border: 2px solid #e0e0e0;
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .tools-box,
+        .resources-box {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .tools-box h4,
+        .resources-box h4 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tool-categories,
+        .resource-links {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .tool-category,
+        .resource-section {
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .tool-category:last-child,
+        .resource-section:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .tool-category h5,
+        .resource-section h5 {
+            color: #667eea;
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+        }
+
+        .tool-category ul,
+        .resource-section ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .tool-category li,
+        .resource-section li {
+            padding: 0.5rem 0;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .tool-category strong,
+        .resource-section strong {
+            color: #2c3e50;
+        }
+
+        .resource-section a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .resource-section a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body data-page-id="step1-wheel">
+
+    <!-- Progress Badge -->
+    <div class="user-progress-badge" style="display: none;">
+        <div class="user-info">
+            <i class="fas fa-user-circle"></i>
+            <span>Nicht angemeldet</span>
+        </div>
+        <div class="progress-sync">
+            <i class="fas fa-cloud-off-alt"></i>
+            <span>Fortschritt lokal</span>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="step-header">
+        <div class="step-header-content">
+            <div class="step-info">
+                <h1>🎯 Wheel of Life Step 1: Lebensbereiche bewerten</h1>
+                <p class="step-description">Bewerte deine Zufriedenheit in verschiedenen Lebensbereichen auf einer Skala von 1-10.</p>
+            </div>
+            <div class="step-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 25%"></div>
+                </div>
+                <span class="progress-text">1 von 4</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="step-main">
+        <div class="step-container">
+            <!-- Left Column: Questions -->
+            <div class="questions-column">
+                <div class="step-intro">
+                    <h2>Deine Lebensbereiche</h2>
+                    <p>Bewerte jeden Lebensbereich ehrlich auf einer Skala von 1-10. Nimm dir Zeit für diese Reflexion - es gibt keine richtigen oder falschen Antworten. Sei ehrlich mit dir selbst.</p>
+                </div>
+
+                <form class="wheel-form" id="wheelForm" data-auto-save="true">
+                    <!-- Karriere & Beruf -->
+                    <div class="life-area-section" data-area="career">
+                        <div class="life-area-header">
+                            <div class="life-area-icon">💼</div>
+                            <h3 class="life-area-title">Karriere & Beruf</h3>
+                        </div>
+                        <p class="life-area-description">
+                            Deine berufliche Entwicklung, Zufriedenheit im Job, Karrierewachstum und berufliche Erfüllung.
+                        </p>
+                        <div class="score-input-group">
+                            <div class="score-label">
+                                <span>Zufriedenheit bewerten:</span>
+                                <span class="score-value" data-area="career">5</span>
+                            </div>
+                            <input type="range" class="score-slider" min="1" max="10" value="5" data-area="career" id="career-score">
+                        </div>
+                        <div class="reflection-questions">
+                            <h5>💭 Reflexionsfragen:</h5>
+                            <textarea placeholder="Was gefällt dir an deiner aktuellen beruflichen Situation? Was würdest du gerne ändern?" id="career-reflection"></textarea>
+                        </div>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li><strong>Zufriedenheit:</strong> Bist du mit deiner aktuellen Position zufrieden?</li>
+                                <li><strong>Wachstum:</strong> Hast du Möglichkeiten zur Weiterentwicklung?</li>
+                                <li><strong>Work-Life-Balance:</strong> Wie ist das Verhältnis zwischen Arbeit und Privatleben?</li>
+                                <li><strong>Zukunft:</strong> Siehst du eine klare berufliche Perspektive?</li>
+                                <li><strong>Werte:</strong> Entspricht dein Job deinen Werten und Interessen?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Finanzen -->
+                    <div class="life-area-section" data-area="finances">
+                        <div class="life-area-header">
+                            <div class="life-area-icon">💰</div>
+                            <h3 class="life-area-title">Finanzen</h3>
+                        </div>
+                        <p class="life-area-description">
+                            Deine finanzielle Situation, Einkommen, Sparmöglichkeiten, finanzielle Sicherheit und Geldmanagement.
+                        </p>
+                        <div class="score-input-group">
+                            <div class="score-label">
+                                <span>Zufriedenheit bewerten:</span>
+                                <span class="score-value" data-area="finances">5</span>
+                            </div>
+                            <input type="range" class="score-slider" min="1" max="10" value="5" data-area="finances" id="finances-score">
+                        </div>
+                        <div class="reflection-questions">
+                            <h5>💭 Reflexionsfragen:</h5>
+                            <textarea placeholder="Wie zufrieden bist du mit deiner finanziellen Situation? Was würdest du gerne verbessern?" id="finances-reflection"></textarea>
+                        </div>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li><strong>Einkommen:</strong> Verdienst du genug für deine Bedürfnisse?</li>
+                                <li><strong>Sparen:</strong> Kannst du regelmäßig Geld zur Seite legen?</li>
+                                <li><strong>Schulden:</strong> Hast du finanzielle Verpflichtungen, die dich belasten?</li>
+                                <li><strong>Zukunft:</strong> Fühlst du dich finanziell abgesichert für die Zukunft?</li>
+                                <li><strong>Freiheit:</strong> Gibt dir deine finanzielle Situation die Freiheit, die du brauchst?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Gesundheit & Fitness -->
+                    <div class="life-area-section" data-area="health">
+                        <div class="life-area-header">
+                            <div class="life-area-icon">🏃‍♂️</div>
+                            <h3 class="life-area-title">Gesundheit & Fitness</h3>
+                        </div>
+                        <p class="life-area-description">
+                            Deine körperliche und mentale Gesundheit, Fitnesslevel, Ernährung, Energie und Wohlbefinden.
+                        </p>
+                        <div class="score-input-group">
+                            <div class="score-label">
+                                <span>Zufriedenheit bewerten:</span>
+                                <span class="score-value" data-area="health">5</span>
+                            </div>
+                            <input type="range" class="score-slider" min="1" max="10" value="5" data-area="health" id="health-score">
+                        </div>
+                        <div class="reflection-questions">
+                            <h5>💭 Reflexionsfragen:</h5>
+                            <textarea placeholder="Wie fühlst du dich körperlich und mental? Was tust du für deine Gesundheit?" id="health-reflection"></textarea>
+                        </div>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li><strong>Körper:</strong> Wie ist dein körperliches Wohlbefinden?</li>
+                                <li><strong>Fitness:</strong> Treibst du regelmäßig Sport oder bewegst du dich genug?</li>
+                                <li><strong>Ernährung:</strong> Ernährst du dich ausgewogen und gesund?</li>
+                                <li><strong>Mental:</strong> Wie geht es dir mental? Fühlst du dich gestresst oder ausgeglichen?</li>
+                                <li><strong>Energie:</strong> Hast du genug Energie für deinen Alltag?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Familie & Beziehungen -->
+                    <div class="life-area-section" data-area="family">
+                        <div class="life-area-header">
+                            <div class="life-area-icon">👨‍👩‍👧‍👦</div>
+                            <h3 class="life-area-title">Familie & Beziehungen</h3>
+                        </div>
+                        <p class="life-area-description">
+                            Deine Beziehungen zu deiner Familie, Zeit mit Angehörigen, Familienharmonie und familiäre Unterstützung.
+                        </p>
+                        <div class="score-input-group">
+                            <div class="score-label">
+                                <span>Zufriedenheit bewerten:</span>
+                                <span class="score-value" data-area="family">5</span>
+                            </div>
+                            <input type="range" class="score-slider" min="1" max="10" value="5" data-area="family" id="family-score">
+                        </div>
+                        <div class="reflection-questions">
+                            <h5>💭 Reflexionsfragen:</h5>
+                            <textarea placeholder="Wie ist deine Beziehung zu deiner Familie? Verbringst du genug Zeit mit ihnen?" id="family-reflection"></textarea>
+                        </div>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li><strong>Zeit:</strong> Verbringst du genug Zeit mit deiner Familie?</li>
+                                <li><strong>Qualität:</strong> Wie ist die Qualität deiner Familienbeziehungen?</li>
+                                <li><strong>Unterstützung:</strong> Fühlst du dich von deiner Familie unterstützt?</li>
+                                <li><strong>Harmonie:</strong> Gibt es Konflikte oder Harmonie in der Familie?</li>
+                                <li><strong>Verantwortung:</strong> Fühlst du dich deiner Familie gegenüber verantwortlich?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Freunde & Soziales -->
+                    <div class="life-area-section" data-area="social">
+                        <div class="life-area-header">
+                            <div class="life-area-icon">👥</div>
+                            <h3 class="life-area-title">Freunde & Soziales</h3>
+                        </div>
+                        <p class="life-area-description">
+                            Deine Freundschaften, soziale Kontakte, Netzwerk, Gemeinschaft und zwischenmenschliche Beziehungen.
+                        </p>
+                        <div class="score-input-group">
+                            <div class="score-label">
+                                <span>Zufriedenheit bewerten:</span>
+                                <span class="score-value" data-area="social">5</span>
+                            </div>
+                            <input type="range" class="score-slider" min="1" max="10" value="5" data-area="social" id="social-score">
+                        </div>
+                        <div class="reflection-questions">
+                            <h5>💭 Reflexionsfragen:</h5>
+                            <textarea placeholder="Wie zufrieden bist du mit deinen Freundschaften? Hast du ein unterstützendes soziales Netzwerk?" id="social-reflection"></textarea>
+                        </div>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li><strong>Freundschaften:</strong> Hast du enge, vertrauensvolle Freundschaften?</li>
+                                <li><strong>Netzwerk:</strong> Hast du ein gutes soziales Netzwerk?</li>
+                                <li><strong>Zeit:</strong> Verbringst du genug Zeit mit Freunden?</li>
+                                <li><strong>Qualität:</strong> Wie ist die Qualität deiner sozialen Beziehungen?</li>
+                                <li><strong>Gemeinschaft:</strong> Fühlst du dich einer Gemeinschaft zugehörig?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Persönliche Entwicklung -->
+                    <div class="life-area-section" data-area="development">
+                        <div class="life-area-header">
+                            <div class="life-area-icon">📚</div>
+                            <h3 class="life-area-title">Persönliche Entwicklung</h3>
+                        </div>
+                        <p class="life-area-description">
+                            Dein persönliches Wachstum, Lernen, Weiterbildung, Selbstreflexion und Entwicklung deiner Fähigkeiten.
+                        </p>
+                        <div class="score-input-group">
+                            <div class="score-label">
+                                <span>Zufriedenheit bewerten:</span>
+                                <span class="score-value" data-area="development">5</span>
+                            </div>
+                            <input type="range" class="score-slider" min="1" max="10" value="5" data-area="development" id="development-score">
+                        </div>
+                        <div class="reflection-questions">
+                            <h5>💭 Reflexionsfragen:</h5>
+                            <textarea placeholder="Wie investierst du in deine persönliche Entwicklung? Was lernst du gerade?" id="development-reflection"></textarea>
+                        </div>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li><strong>Lernen:</strong> Lernst du regelmäßig Neues?</li>
+                                <li><strong>Wachstum:</strong> Fühlst du dich persönlich wachsend?</li>
+                                <li><strong>Fähigkeiten:</strong> Entwickelst du deine Fähigkeiten weiter?</li>
+                                <li><strong>Reflexion:</strong> Nimmst du dir Zeit für Selbstreflexion?</li>
+                                <li><strong>Ziele:</strong> Hast du klare Entwicklungsziele?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Hobbys & Freizeit -->
+                    <div class="life-area-section" data-area="hobbies">
+                        <div class="life-area-header">
+                            <div class="life-area-icon">🎨</div>
+                            <h3 class="life-area-title">Hobbys & Freizeit</h3>
+                        </div>
+                        <p class="life-area-description">
+                            Deine Hobbys, Interessen, Freizeitaktivitäten, Erholung und Aktivitäten, die dir Freude bereiten.
+                        </p>
+                        <div class="score-input-group">
+                            <div class="score-label">
+                                <span>Zufriedenheit bewerten:</span>
+                                <span class="score-value" data-area="hobbies">5</span>
+                            </div>
+                            <input type="range" class="score-slider" min="1" max="10" value="5" data-area="hobbies" id="hobbies-score">
+                        </div>
+                        <div class="reflection-questions">
+                            <h5>💭 Reflexionsfragen:</h5>
+                            <textarea placeholder="Was machst du in deiner Freizeit? Welche Hobbys bereiten dir Freude?" id="hobbies-reflection"></textarea>
+                        </div>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li><strong>Zeit:</strong> Hast du genug Zeit für Hobbys und Freizeit?</li>
+                                <li><strong>Interessen:</strong> Verfolgst du deine Interessen und Leidenschaften?</li>
+                                <li><strong>Erholung:</strong> Kannst du dich in deiner Freizeit erholen?</li>
+                                <li><strong>Balance:</strong> Ist deine Freizeit ausgewogen?</li>
+                                <li><strong>Freude:</strong> Bereiten dir deine Freizeitaktivitäten Freude?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Spiritualität & Sinn -->
+                    <div class="life-area-section" data-area="spirituality">
+                        <div class="life-area-header">
+                            <div class="life-area-icon">🌍</div>
+                            <h3 class="life-area-title">Spiritualität & Sinn</h3>
+                        </div>
+                        <p class="life-area-description">
+                            Dein Sinn im Leben, Werte, Glaube, Spiritualität, Achtsamkeit und Verbindung zu etwas Größerem.
+                        </p>
+                        <div class="score-input-group">
+                            <div class="score-label">
+                                <span>Zufriedenheit bewerten:</span>
+                                <span class="score-value" data-area="spirituality">5</span>
+                            </div>
+                            <input type="range" class="score-slider" min="1" max="10" value="5" data-area="spirituality" id="spirituality-score">
+                        </div>
+                        <div class="reflection-questions">
+                            <h5>💭 Reflexionsfragen:</h5>
+                            <textarea placeholder="Was gibt deinem Leben Sinn? Welche Werte sind dir wichtig?" id="spirituality-reflection"></textarea>
+                        </div>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li><strong>Sinn:</strong> Fühlst du einen Sinn in deinem Leben?</li>
+                                <li><strong>Werte:</strong> Lebst du nach deinen Werten?</li>
+                                <li><strong>Glaube:</strong> Hast du einen Glauben oder eine spirituelle Praxis?</li>
+                                <li><strong>Achtsamkeit:</strong> Praktizierst du Achtsamkeit oder Meditation?</li>
+                                <li><strong>Verbindung:</strong> Fühlst du dich mit etwas Größerem verbunden?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Navigation Buttons -->
+                    <div class="form-navigation">
+                        <a href="index-wheel-of-life.html" class="btn btn-secondary">
+                            <i class="fas fa-home"></i>
+                            Zurück zur Übersicht
+                        </a>
+                        <button type="button" class="btn btn-primary" onclick="saveAndContinue()">
+                            Weiter zur Balance-Analyse
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Right Column: Tools & Resources -->
+            <div class="sidebar">
+                <div class="tools-box">
+                    <h4><i class="fas fa-tools"></i> Hilfreiche Tools & Methoden</h4>
+                    
+                    <div class="tool-categories">
+                        <div class="tool-category">
+                            <h5>Bewertungsmethoden</h5>
+                            <ul>
+                                <li><strong>Skalierung:</strong> Nutze die 1-10 Skala für objektive Bewertung</li>
+                                <li><strong>Vergleich:</strong> Vergleiche verschiedene Zeitpunkte</li>
+                                <li><strong>Reflexion:</strong> Regelmäßige Selbstreflexion für Klarheit</li>
+                                <li><strong>Feedback:</strong> Hole Feedback von vertrauten Personen</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="tool-category">
+                            <h5>Balance-Tools</h5>
+                            <ul>
+                                <li><strong>Wheel of Life Diagramm:</strong> Visuelle Darstellung deiner Balance</li>
+                                <li><strong>Priorisierung:</strong> Identifiziere Bereiche, die Aufmerksamkeit brauchen</li>
+                                <li><strong>Zielsetzung:</strong> Setze konkrete Ziele für jeden Bereich</li>
+                                <li><strong>Tracking:</strong> Verfolge deine Fortschritte über Zeit</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="resources-box">
+                    <h4><i class="fas fa-book"></i> Empfohlene Ressourcen</h4>
+                    
+                    <div class="resource-links">
+                        <div class="resource-section">
+                            <h5>Bücher</h5>
+                            <ul>
+                                <li><strong>"The Wheel of Life"</strong> von Elisabeth Kübler-Ross</li>
+                                <li><strong>"Designing Your Life"</strong> von Bill Burnett & Dave Evans</li>
+                                <li><strong>"The 7 Habits of Highly Effective People"</strong> von Stephen Covey</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="resource-section">
+                            <h5>Verwandte Workflows</h5>
+                            <ul>
+                                <li><a href="../ikigai/index-ikigai.html">Ikigai</a> - Finde deinen Lebenszweck</li>
+                                <li><a href="../swot-analysis/swot-analysis.html">SWOT-Analyse</a> - Stärken und Schwächen</li>
+                                <li><a href="../values-clarification/values-clarification.html">Werteklärung</a> - Was ist dir wichtig?</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="js/wheel-of-life-workflow.js"></script>
+    
+    <script>
+        // Initialize sliders
+        document.querySelectorAll('.score-slider').forEach(slider => {
+            slider.addEventListener('input', function() {
+                const value = this.value;
+                const area = this.dataset.area;
+                const valueDisplay = document.querySelector(`.score-value[data-area="${area}"]`);
+                if (valueDisplay) {
+                    valueDisplay.textContent = value;
+                }
+                autoSave();
+            });
+        });
+
+        // API-First: Workflow API Integration
+        const METHOD_ID = 'wheel-of-life';
+        const STEP_ID = 'step1';
+        const TOTAL_STEPS = 4;
+
+        function collectFormData() {
+            // Check which fields exist (hobbies vs leisure)
+            const hobbiesEl = document.getElementById('hobbies-score');
+            const leisureEl = document.getElementById('leisure-score');
+            const hobbiesReflectionEl = document.getElementById('hobbies-reflection');
+            const leisureReflectionEl = document.getElementById('leisure-reflection');
+            
+            const formData = {
+                career: {
+                    score: parseInt(document.getElementById('career-score')?.value || 5),
+                    reflection: document.getElementById('career-reflection')?.value || ''
+                },
+                finances: {
+                    score: parseInt(document.getElementById('finances-score')?.value || 5),
+                    reflection: document.getElementById('finances-reflection')?.value || ''
+                },
+                health: {
+                    score: parseInt(document.getElementById('health-score')?.value || 5),
+                    reflection: document.getElementById('health-reflection')?.value || ''
+                },
+                family: {
+                    score: parseInt(document.getElementById('family-score')?.value || 5),
+                    reflection: document.getElementById('family-reflection')?.value || ''
+                },
+                social: {
+                    score: parseInt(document.getElementById('social-score')?.value || 5),
+                    reflection: document.getElementById('social-reflection')?.value || ''
+                },
+                development: {
+                    score: parseInt(document.getElementById('development-score')?.value || 5),
+                    reflection: document.getElementById('development-reflection')?.value || ''
+                },
+                spirituality: {
+                    score: parseInt(document.getElementById('spirituality-score')?.value || 5),
+                    reflection: document.getElementById('spirituality-reflection')?.value || ''
+                },
+                step: 1,
+                timestamp: new Date().toISOString()
+            };
+            
+            // Add hobbies or leisure based on what exists
+            if (hobbiesEl) {
+                formData.hobbies = {
+                    score: parseInt(hobbiesEl.value || 5),
+                    reflection: hobbiesReflectionEl?.value || ''
+                };
+            } else if (leisureEl) {
+                formData.leisure = {
+                    score: parseInt(leisureEl.value || 5),
+                    reflection: leisureReflectionEl?.value || ''
+                };
+            }
+            
+            return formData;
+        }
+
+        async function saveAndContinue() {
+            try {
+                const formData = collectFormData();
+                
+                // Save via API
+                await window.workflowAPI.saveWorkflowStep(METHOD_ID, STEP_ID, formData);
+                
+                // Update progress
+                await window.workflowAPI.updateWorkflowProgress(METHOD_ID, 1, TOTAL_STEPS);
+                
+                console.log('✅ Step saved via API');
+                
+                // Redirect to step 2
+                window.location.href = 'step2-wheel.html';
+            } catch (error) {
+                console.error('❌ Error saving step:', error);
+                alert('Fehler beim Speichern. Bitte versuche es erneut.');
+            }
+        }
+        
+        async function autoSave() {
+            try {
+                const formData = collectFormData();
+                await window.workflowAPI.autoSave(METHOD_ID, STEP_ID, formData);
+            } catch (error) {
+                console.warn('⚠️ Auto-save failed:', error);
+            }
+        }
+        
+        function restoreFormData(data) {
+            if (!data) return;
+            
+            Object.keys(data).forEach(key => {
+                if (key !== 'step' && key !== 'timestamp' && data[key] && data[key].score !== undefined) {
+                    const slider = document.getElementById(`${key}-score`);
+                    const reflection = document.getElementById(`${key}-reflection`);
+                    if (slider) {
+                        slider.value = data[key].score;
+                        slider.dispatchEvent(new Event('input'));
+                    }
+                    if (reflection && data[key].reflection) {
+                        reflection.value = data[key].reflection;
+                    }
+                }
+            });
+        }
+        
+        // Load saved data on page load via API
+        window.addEventListener('load', async function() {
+            try {
+                const savedData = await window.workflowAPI.loadSavedProgress(METHOD_ID, STEP_ID);
+                if (savedData) {
+                    restoreFormData(savedData);
+                    console.log('✅ Loaded saved progress from API');
+                }
+            } catch (error) {
+                console.warn('⚠️ Could not load saved progress:', error);
+            }
+        });
+        
+        // Auto-save on input
+        document.querySelectorAll('textarea, .score-slider').forEach(element => {
+            element.addEventListener('input', autoSave);
+        });
+    </script>
+
+    <!-- AWS Configuration -->
+    <script>
+        window.AWS_CONFIG = {
+            region: 'eu-central-1',
+            userPoolId: 'eu-central-1_8gP4gLK9r',
+            clientId: '7kc5tt6a23fgh53d60vkefm812',
+            apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod',
+            dynamoDB: {
+                tableName: 'mawps-user-profiles',
+                region: 'eu-central-1'
+            },
+            s3: {
+                bucket: 'mawps-user-files-1760106396',
+                region: 'eu-central-1'
+            }
+        };
+    </script>
+    
+    <!-- AWS SDK -->
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    
+    <!-- Workflow API (API-First) -->
+    <script src="/js/workflow-api.js"></script>
+    
+    <!-- Auth & Progress Tracking -->
+    <script src="/js/aws-profile-api.js"></script>
+    <script src="/js/real-user-auth-system.js?v=20250116"></script>
+    <script src="/js/user-progress-tracker.js"></script>
+    <script src="/js/personality-auth-integration.js"></script>
+</body>
+</html>

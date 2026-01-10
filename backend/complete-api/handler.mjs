@@ -63,6 +63,11 @@ export const handler = async (event) => {
       return await handleDocuments(event, user, hdr);
     }
 
+    // === WORKFLOW MANAGEMENT ===
+    if (path.includes('/workflows')) {
+      return await handleWorkflows(event, user, hdr);
+    }
+
     // === METHOD RESULTS ===
     if (path.includes('/method-results')) {
       if (method === 'GET') {
@@ -391,6 +396,209 @@ async function saveMethodResults(userId, data) {
   }));
 
   return { id, userId, ...data, completedAt: timestamp };
+}
+
+// === WORKFLOW MANAGEMENT ===
+async function handleWorkflows(event, user, hdr) {
+  const method = event.httpMethod;
+  const path = event.path || event.resource || '';
+  
+  // Parse methodId and stepId from path: /api/v1/workflows/{methodId}/steps/{stepId}
+  const workflowMatch = path.match(/\/workflows\/([^\/]+)(?:\/steps\/([^\/]+))?(?:\/progress)?(?:\/results)?/);
+  const methodId = workflowMatch ? workflowMatch[1] : null;
+  const stepId = workflowMatch ? workflowMatch[2] : null;
+  
+  // Workflow Progress
+  if (path.includes('/progress')) {
+    if (method === 'GET') {
+      const progress = await getWorkflowProgress(user.userId, methodId);
+      return json(200, progress, hdr);
+    }
+    if (method === 'PUT' || method === 'POST') {
+      const body = JSON.parse(event.body || '{}');
+      const progress = await updateWorkflowProgress(user.userId, methodId, body);
+      return json(200, progress, hdr);
+    }
+  }
+  
+  // Workflow Results
+  if (path.includes('/results')) {
+    if (method === 'GET') {
+      const results = await getWorkflowResults(user.userId, methodId);
+      return json(200, results, hdr);
+    }
+    if (method === 'POST') {
+      const body = JSON.parse(event.body || '{}');
+      const results = await saveWorkflowResults(user.userId, methodId, body);
+      return json(201, results, hdr);
+    }
+  }
+  
+  // Workflow Steps
+  if (stepId) {
+    if (method === 'GET') {
+      const step = await getWorkflowStep(user.userId, methodId, stepId);
+      return json(200, step, hdr);
+    }
+    if (method === 'POST' || method === 'PUT') {
+      const body = JSON.parse(event.body || '{}');
+      const step = await saveWorkflowStep(user.userId, methodId, stepId, body);
+      return json(200, step, hdr);
+    }
+  } else if (path.includes('/steps')) {
+    // GET all steps
+    if (method === 'GET') {
+      const steps = await getWorkflowSteps(user.userId, methodId);
+      return json(200, steps, hdr);
+    }
+  }
+  
+  return json(404, { message: 'Workflow endpoint not found' }, hdr);
+}
+
+async function getWorkflowStep(userId, methodId, stepId) {
+  const result = await ddb.send(new GetItemCommand({
+    TableName: process.env.TABLE_NAME,
+    Key: {
+      pk: { S: `user#${userId}` },
+      sk: { S: `workflow#${methodId}#step#${stepId}` }
+    }
+  }));
+
+  if (!result.Item) {
+    return null;
+  }
+
+  return {
+    methodId,
+    stepId,
+    stepData: JSON.parse(result.Item.stepData?.S || '{}'),
+    timestamp: result.Item.timestamp?.S,
+    lastUpdated: result.Item.lastUpdated?.S
+  };
+}
+
+async function saveWorkflowStep(userId, methodId, stepId, data) {
+  const timestamp = new Date().toISOString();
+
+  await ddb.send(new PutItemCommand({
+    TableName: process.env.TABLE_NAME,
+    Item: {
+      pk: { S: `user#${userId}` },
+      sk: { S: `workflow#${methodId}#step#${stepId}` },
+      userId: { S: userId },
+      methodId: { S: methodId },
+      stepId: { S: stepId },
+      stepData: { S: JSON.stringify(data.stepData || {}) },
+      timestamp: { S: data.timestamp || timestamp },
+      lastUpdated: { S: timestamp },
+      gsi1pk: { S: `workflow#${methodId}` },
+      gsi1sk: { S: stepId }
+    }
+  }));
+
+  return { methodId, stepId, stepData: data.stepData, timestamp, lastUpdated: timestamp };
+}
+
+async function getWorkflowSteps(userId, methodId) {
+  const result = await ddb.send(new QueryCommand({
+    TableName: process.env.TABLE_NAME,
+    KeyConditionExpression: 'pk = :pk AND begins_with(sk, :sk)',
+    ExpressionAttributeValues: {
+      ':pk': { S: `user#${userId}` },
+      ':sk': { S: `workflow#${methodId}#step#` }
+    }
+  }));
+
+  return (result.Items || []).map(item => ({
+    methodId: item.methodId?.S,
+    stepId: item.stepId?.S,
+    stepData: JSON.parse(item.stepData?.S || '{}'),
+    timestamp: item.timestamp?.S,
+    lastUpdated: item.lastUpdated?.S
+  }));
+}
+
+async function getWorkflowProgress(userId, methodId) {
+  const result = await ddb.send(new GetItemCommand({
+    TableName: process.env.TABLE_NAME,
+    Key: {
+      pk: { S: `user#${userId}` },
+      sk: { S: `workflow#${methodId}#progress` }
+    }
+  }));
+
+  if (!result.Item) {
+    return { methodId, currentStep: 1, totalSteps: null, status: 'not-started' };
+  }
+
+  return {
+    methodId,
+    currentStep: parseInt(result.Item.currentStep?.N || '1'),
+    totalSteps: result.Item.totalSteps?.N ? parseInt(result.Item.totalSteps.N) : null,
+    completionPercentage: result.Item.completionPercentage?.N ? parseInt(result.Item.completionPercentage.N) : 0,
+    status: result.Item.status?.S || 'in-progress',
+    lastUpdated: result.Item.lastUpdated?.S
+  };
+}
+
+async function updateWorkflowProgress(userId, methodId, progressData) {
+  const timestamp = new Date().toISOString();
+
+  await ddb.send(new PutItemCommand({
+    TableName: process.env.TABLE_NAME,
+    Item: {
+      pk: { S: `user#${userId}` },
+      sk: { S: `workflow#${methodId}#progress` },
+      userId: { S: userId },
+      methodId: { S: methodId },
+      currentStep: { N: String(progressData.currentStep || 1) },
+      totalSteps: progressData.totalSteps ? { N: String(progressData.totalSteps) } : undefined,
+      completionPercentage: { N: String(progressData.completionPercentage || 0) },
+      status: { S: progressData.status || 'in-progress' },
+      lastUpdated: { S: timestamp }
+    }
+  }));
+
+  return { ...progressData, lastUpdated: timestamp };
+}
+
+async function getWorkflowResults(userId, methodId) {
+  const result = await ddb.send(new GetItemCommand({
+    TableName: process.env.TABLE_NAME,
+    Key: {
+      pk: { S: `user#${userId}` },
+      sk: { S: `workflow#${methodId}#results` }
+    }
+  }));
+
+  if (!result.Item) {
+    return null;
+  }
+
+  return {
+    methodId,
+    results: JSON.parse(result.Item.results?.S || '{}'),
+    completedAt: result.Item.completedAt?.S
+  };
+}
+
+async function saveWorkflowResults(userId, methodId, data) {
+  const timestamp = new Date().toISOString();
+
+  await ddb.send(new PutItemCommand({
+    TableName: process.env.TABLE_NAME,
+    Item: {
+      pk: { S: `user#${userId}` },
+      sk: { S: `workflow#${methodId}#results` },
+      userId: { S: userId },
+      methodId: { S: methodId },
+      results: { S: JSON.stringify(data.results || {}) },
+      completedAt: { S: timestamp }
+    }
+  }));
+
+  return { methodId, results: data.results, completedAt: timestamp };
 }
 
 // === APPLICATION MANAGEMENT ===

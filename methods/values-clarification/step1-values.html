@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>❤️ Werteklärung Step 1: Werte-Entdeckung</title>
+    
+    <!-- Meta Tags -->
+    <meta name="description" content="Entdecke deine wichtigsten Werte. Beginne deine Werteklärung mit gezielten Fragen und Reflexion.">
+    <meta name="keywords" content="werte, werteklärung, persönlichkeitsentwicklung, wertefindung">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="values-clarification-modern.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../../manuel-weiss-photo.svg">
+
+    <!-- Progress Badge & Step Styles -->
+    <style>
+        .user-progress-badge {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: white;
+            border-radius: 8px;
+            padding: 12px 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 14px;
+            min-width: 200px;
+        }
+        
+        .user-progress-badge .user-info,
+        .user-progress-badge .progress-sync {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #4a5568;
+        }
+        
+        .user-progress-badge i {
+            font-size: 16px;
+            color: #667eea;
+        }
+        
+        @media (max-width: 768px) {
+            .user-progress-badge {
+                top: auto;
+                bottom: 20px;
+                right: 10px;
+                left: 10px;
+                min-width: auto;
+            }
+        }
+
+        .step-header {
+            background: linear-gradient(135deg, #ec4899 0%, #f43f5e 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .step-header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .step-info h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .step-description {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .step-progress {
+            margin-top: 1rem;
+        }
+
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.3);
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: white;
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            margin-top: 0.5rem;
+            display: block;
+            font-size: 0.9rem;
+        }
+
+        .step-main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem 4rem;
+        }
+
+        .step-container {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 2rem;
+        }
+
+        @media (max-width: 1024px) {
+            .step-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .questions-column {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .step-intro {
+            margin-bottom: 2rem;
+        }
+
+        .step-intro h2 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+        }
+
+        .step-intro p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .values-question-section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #fef2f2;
+            border-radius: 12px;
+            border-left: 4px solid #ec4899;
+        }
+
+        .question-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .question-number {
+            background: #ec4899;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .question-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .question-textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+
+        .question-textarea:focus {
+            outline: none;
+            border-color: #ec4899;
+        }
+
+        .detailed-hints {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #fce7f3;
+            border-radius: 8px;
+        }
+
+        .detailed-hints h5 {
+            color: #9f1239;
+            margin-bottom: 0.5rem;
+        }
+
+        .detailed-hints ul {
+            margin: 0;
+            padding-left: 1.5rem;
+            color: #9f1239;
+        }
+
+        .detailed-hints li {
+            margin-bottom: 0.5rem;
+            line-height: 1.5;
+        }
+
+        .form-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #ec4899 0%, #f43f5e 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(236, 72, 153, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #2c3e50;
+            border: 2px solid #e0e0e0;
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .tools-box,
+        .resources-box {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .tools-box h4,
+        .resources-box h4 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tool-categories,
+        .resource-links {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .tool-category,
+        .resource-section {
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .tool-category:last-child,
+        .resource-section:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .tool-category h5,
+        .resource-section h5 {
+            color: #ec4899;
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+        }
+
+        .tool-category ul,
+        .resource-section ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .tool-category li,
+        .resource-section li {
+            padding: 0.5rem 0;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .tool-category strong,
+        .resource-section strong {
+            color: #2c3e50;
+        }
+
+        .resource-section a {
+            color: #ec4899;
+            text-decoration: none;
+        }
+
+        .resource-section a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body data-page-id="step1-values">
+
+    <!-- Progress Badge -->
+    <div class="user-progress-badge" style="display: none;">
+        <div class="user-info">
+            <i class="fas fa-user-circle"></i>
+            <span>Nicht angemeldet</span>
+        </div>
+        <div class="progress-sync">
+            <i class="fas fa-cloud-off-alt"></i>
+            <span>Fortschritt lokal</span>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="step-header">
+        <div class="step-header-content">
+            <div class="step-info">
+                <h1>❤️ Werteklärung Step 1: Werte-Entdeckung</h1>
+                <p class="step-description">Entdecke deine wichtigsten Werte durch gezielte Fragen und tiefe Reflexion</p>
+            </div>
+            <div class="step-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 25%"></div>
+                </div>
+                <span class="progress-text">1 von 4</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="step-main">
+        <div class="step-container">
+            <!-- Left Column: Questions -->
+            <div class="questions-column">
+                <div class="step-intro">
+                    <h2>Deine Werte-Entdeckung</h2>
+                    <p>Werte sind die Grundprinzipien, die dein Leben leiten. Sie beeinflussen deine Entscheidungen, dein Verhalten und dein Wohlbefinden. Nimm dir Zeit für diese Fragen - es gibt keine richtigen oder falschen Antworten.</p>
+                </div>
+
+                <form class="values-form" id="valuesForm" data-auto-save="true">
+                    <!-- Frage 1 -->
+                    <div class="values-question-section">
+                        <div class="question-header">
+                            <div class="question-number">1</div>
+                            <h3 class="question-title">Was ist dir im Leben wirklich wichtig?</h3>
+                        </div>
+                        <textarea class="question-textarea" id="q1" placeholder="Denke an Momente, in denen du dich wirklich lebendig gefühlt hast. Was war daran wichtig?"></textarea>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li>Wofür würdest du kämpfen, auch wenn es schwierig wird?</li>
+                                <li>Was macht dich wirklich glücklich?</li>
+                                <li>Worauf bist du stolz in deinem Leben?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Frage 2 -->
+                    <div class="values-question-section">
+                        <div class="question-header">
+                            <div class="question-number">2</div>
+                            <h3 class="question-title">Welche Prinzipien leiten deine Entscheidungen?</h3>
+                        </div>
+                        <textarea class="question-textarea" id="q2" placeholder="Wenn du wichtige Entscheidungen triffst, welche Grundsätze befolgst du?"></textarea>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li>Was ist dir wichtiger: Sicherheit oder Freiheit?</li>
+                                <li>Wie behandelst du andere Menschen?</li>
+                                <li>Was ist dir wichtiger: Erfolg oder Sinn?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Frage 3 -->
+                    <div class="values-question-section">
+                        <div class="question-header">
+                            <div class="question-number">3</div>
+                            <h3 class="question-title">Was würdest du anderen weitergeben wollen?</h3>
+                        </div>
+                        <textarea class="question-textarea" id="q3" placeholder="Wenn du deine Weisheit weitergeben könntest, was wäre das?"></textarea>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li>Was hast du gelernt, das anderen helfen könnte?</li>
+                                <li>Welche Werte möchtest du an deine Kinder weitergeben?</li>
+                                <li>Was ist dein Vermächtnis?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Frage 4 -->
+                    <div class="values-question-section">
+                        <div class="question-header">
+                            <div class="question-number">4</div>
+                            <h3 class="question-title">Wofür bist du dankbar?</h3>
+                        </div>
+                        <textarea class="question-textarea" id="q4" placeholder="Was in deinem Leben schätzt du am meisten?"></textarea>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li>Was macht dein Leben reich und erfüllt?</li>
+                                <li>Welche Menschen, Erfahrungen oder Dinge sind dir wertvoll?</li>
+                                <li>Wofür bist du jeden Tag dankbar?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Frage 5 -->
+                    <div class="values-question-section">
+                        <div class="question-header">
+                            <div class="question-number">5</div>
+                            <h3 class="question-title">Was macht dich wütend oder traurig?</h3>
+                        </div>
+                        <textarea class="question-textarea" id="q5" placeholder="Negative Emotionen zeigen oft, was uns wichtig ist. Was verletzt oder ärgert dich?"></textarea>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li>Was empört dich in der Welt?</li>
+                                <li>Welche Ungerechtigkeiten berühren dich?</li>
+                                <li>Was würde dich dazu bringen, aktiv zu werden?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Frage 6 -->
+                    <div class="values-question-section">
+                        <div class="question-header">
+                            <div class="question-number">6</div>
+                            <h3 class="question-title">Wie möchtest du in Erinnerung bleiben?</h3>
+                        </div>
+                        <textarea class="question-textarea" id="q6" placeholder="Stell dir vor, Menschen sprechen über dich. Was sollen sie sagen?"></textarea>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li>Welche Eigenschaften sollen andere an dir schätzen?</li>
+                                <li>Was soll dein Beitrag zur Welt sein?</li>
+                                <li>Wie möchtest du andere inspiriert haben?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Frage 7 -->
+                    <div class="values-question-section">
+                        <div class="question-header">
+                            <div class="question-number">7</div>
+                            <h3 class="question-title">Was gibt deinem Leben Sinn?</h3>
+                        </div>
+                        <textarea class="question-textarea" id="q7" placeholder="Was macht dein Leben bedeutsam und erfüllend?"></textarea>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li>Wofür stehst du morgens auf?</li>
+                                <li>Was gibt dir Energie und Motivation?</li>
+                                <li>Was ist dein "Warum"?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Frage 8 -->
+                    <div class="values-question-section">
+                        <div class="question-header">
+                            <div class="question-number">8</div>
+                            <h3 class="question-title">Welche Werte hast du von wichtigen Menschen gelernt?</h3>
+                        </div>
+                        <textarea class="question-textarea" id="q8" placeholder="Welche Werte haben dir deine Eltern, Mentoren oder Vorbilder vermittelt?"></textarea>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li>Was hast du von deiner Familie gelernt?</li>
+                                <li>Welche Werte schätzt du an deinen Vorbildern?</li>
+                                <li>Welche Werte möchtest du beibehalten oder ändern?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Navigation Buttons -->
+                    <div class="form-navigation">
+                        <a href="values-clarification.html" class="btn btn-secondary">
+                            <i class="fas fa-home"></i>
+                            Zurück zur Übersicht
+                        </a>
+                        <button type="button" class="btn btn-primary" onclick="saveAndContinue()">
+                            Weiter zum Werte-Ranking
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Right Column: Tools & Resources -->
+            <div class="sidebar">
+                <div class="tools-box">
+                    <h4><i class="fas fa-tools"></i> Hilfreiche Tools & Methoden</h4>
+                    
+                    <div class="tool-categories">
+                        <div class="tool-category">
+                            <h5>Werte-Identifikation</h5>
+                            <ul>
+                                <li><strong>Reflexion:</strong> Tägliche Selbstreflexion</li>
+                                <li><strong>Journaling:</strong> Werte-Tagebuch führen</li>
+                                <li><strong>Feedback:</strong> Andere nach deinen Werten fragen</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="tool-category">
+                            <h5>Werte-Tests</h5>
+                            <ul>
+                                <li><strong>VIA Values:</strong> Charakterstärken-Test</li>
+                                <li><strong>Schwartz Values:</strong> Universelle Werte</li>
+                                <li><strong>Personal Values Assessment:</strong> Individuelle Werte</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="resources-box">
+                    <h4><i class="fas fa-book"></i> Empfohlene Ressourcen</h4>
+                    
+                    <div class="resource-links">
+                        <div class="resource-section">
+                            <h5>Bücher</h5>
+                            <ul>
+                                <li><strong>"The Values Factor"</strong> von John Demartini</li>
+                                <li><strong>"Values Clarification"</strong> von Sidney Simon</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="resource-section">
+                            <h5>Verwandte Workflows</h5>
+                            <ul>
+                                <li><a href="../ikigai/index-ikigai.html">Ikigai</a> - Finde deinen Lebenszweck</li>
+                                <li><a href="../swot-analysis/step1-swot.html">SWOT-Analyse</a> - Stärken und Schwächen</li>
+                                <li><a href="../wheel-of-life/step1-wheel.html">Wheel of Life</a> - Lebensbalance</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script>
+        function saveAndContinue() {
+            // Collect all answers
+            const formData = {
+                q1: document.getElementById('q1').value,
+                q2: document.getElementById('q2').value,
+                q3: document.getElementById('q3').value,
+                q4: document.getElementById('q4').value,
+                q5: document.getElementById('q5').value,
+                q6: document.getElementById('q6').value,
+                q7: document.getElementById('q7').value,
+                q8: document.getElementById('q8').value,
+                step: 1,
+                timestamp: new Date().toISOString()
+            };
+            
+            await window.workflowAPI.saveWorkflowStep('values', 'step1', formData);
+            
+            // Redirect to step 2 (values ranking)
+            window.location.href = 'values-clarification.html#step-2';
+        }
+        
+        function autoSave() {
+            const formData = {
+                q1: document.getElementById('q1').value,
+                q2: document.getElementById('q2').value,
+                q3: document.getElementById('q3').value,
+                q4: document.getElementById('q4').value,
+                q5: document.getElementById('q5').value,
+                q6: document.getElementById('q6').value,
+                q7: document.getElementById('q7').value,
+                q8: document.getElementById('q8').value,
+                step: 1,
+                timestamp: new Date().toISOString()
+            };
+            await window.workflowAPI.saveWorkflowStep('values', 'step1', formData);
+        }
+        
+        // Load saved data if available
+        window.addEventListener('load', function() {
+            const savedData = await window.workflowAPI.loadSavedProgress('values', 'step1');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                for (let i = 1; i <= 8; i++) {
+                    const textarea = document.getElementById(`q${i}`);
+                    if (textarea && data[`q${i}`]) {
+                        textarea.value = data[`q${i}`];
+                    }
+                }
+            }
+        });
+        
+        // Auto-save on input
+        document.querySelectorAll('.question-textarea').forEach(textarea => {
+            textarea.addEventListener('input', autoSave);
+        });
+    </script>
+
+    <!-- AWS Configuration -->
+    <script>
+        window.AWS_CONFIG = {
+            region: 'eu-central-1',
+            userPoolId: 'eu-central-1_8gP4gLK9r',
+            clientId: '7kc5tt6a23fgh53d60vkefm812',
+            apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod',
+            dynamoDB: {
+                tableName: 'mawps-user-profiles',
+                region: 'eu-central-1'
+            },
+            s3: {
+                bucket: 'mawps-user-files-1760106396',
+                region: 'eu-central-1'
+            }
+        };
+    </script>
+    
+    <!-- AWS SDK -->
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    
+    <!-- Workflow API (API-First) -->
+    <script src="/js/workflow-api.js"></script>
+    <!-- Auth & Progress Tracking -->
+    <script src="/js/aws-profile-api.js"></script>
+    <script src="/js/real-user-auth-system.js?v=20250116"></script>
+    <script src="/js/user-progress-tracker.js"></script>
+    <script src="/js/personality-auth-integration.js"></script>
+</body>
+</html>

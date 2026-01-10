@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💎 VIA-Stärken Step 1: Einführung</title>
+    
+    <!-- Meta Tags -->
+    <meta name="description" content="Entdecke deine Charakterstärken mit dem VIA-Stärken-Test. Beginne deine Reise zur Selbsterkenntnis.">
+    <meta name="keywords" content="via stärken, charakterstärken, persönlichkeitsentwicklung, stärkenfinder">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="via-strengths.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../../manuel-weiss-photo.svg">
+
+    <!-- Progress Badge & Step Styles -->
+    <style>
+        .user-progress-badge {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: white;
+            border-radius: 8px;
+            padding: 12px 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 14px;
+            min-width: 200px;
+        }
+        
+        .user-progress-badge .user-info,
+        .user-progress-badge .progress-sync {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #4a5568;
+        }
+        
+        .user-progress-badge i {
+            font-size: 16px;
+            color: #667eea;
+        }
+        
+        @media (max-width: 768px) {
+            .user-progress-badge {
+                top: auto;
+                bottom: 20px;
+                right: 10px;
+                left: 10px;
+                min-width: auto;
+            }
+        }
+
+        .step-header {
+            background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .step-header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .step-info h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .step-description {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .step-progress {
+            margin-top: 1rem;
+        }
+
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.3);
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: white;
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            margin-top: 0.5rem;
+            display: block;
+            font-size: 0.9rem;
+        }
+
+        .step-main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem 4rem;
+        }
+
+        .step-container {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 2rem;
+        }
+
+        @media (max-width: 1024px) {
+            .step-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .questions-column {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .step-intro {
+            margin-bottom: 2rem;
+        }
+
+        .step-intro h2 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+        }
+
+        .step-intro p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .intro-section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #faf5ff;
+            border-radius: 12px;
+            border-left: 4px solid #a855f7;
+        }
+
+        .intro-section h3 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .intro-section p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .strengths-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .strength-card {
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .strength-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 12px rgba(168, 85, 247, 0.2);
+        }
+
+        .strength-card i {
+            font-size: 2rem;
+            color: #a855f7;
+            margin-bottom: 0.5rem;
+        }
+
+        .strength-card h6 {
+            color: #2c3e50;
+            margin: 0.5rem 0;
+            font-size: 0.9rem;
+        }
+
+        .form-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(168, 85, 247, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #2c3e50;
+            border: 2px solid #e0e0e0;
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .tools-box,
+        .resources-box {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .tools-box h4,
+        .resources-box h4 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tool-categories,
+        .resource-links {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .tool-category,
+        .resource-section {
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .tool-category:last-child,
+        .resource-section:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .tool-category h5,
+        .resource-section h5 {
+            color: #a855f7;
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+        }
+
+        .tool-category ul,
+        .resource-section ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .tool-category li,
+        .resource-section li {
+            padding: 0.5rem 0;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .tool-category strong,
+        .resource-section strong {
+            color: #2c3e50;
+        }
+
+        .resource-section a {
+            color: #a855f7;
+            text-decoration: none;
+        }
+
+        .resource-section a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body data-page-id="step1-via">
+
+    <!-- Progress Badge -->
+    <div class="user-progress-badge" style="display: none;">
+        <div class="user-info">
+            <i class="fas fa-user-circle"></i>
+            <span>Nicht angemeldet</span>
+        </div>
+        <div class="progress-sync">
+            <i class="fas fa-cloud-off-alt"></i>
+            <span>Fortschritt lokal</span>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="step-header">
+        <div class="step-header-content">
+            <div class="step-info">
+                <h1>💎 VIA-Stärken Step 1: Einführung</h1>
+                <p class="step-description">Entdecke deine Charakterstärken und erkenne, was dich wirklich ausmacht</p>
+            </div>
+            <div class="step-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 25%"></div>
+                </div>
+                <span class="progress-text">1 von 4</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="step-main">
+        <div class="step-container">
+            <!-- Left Column: Content -->
+            <div class="questions-column">
+                <div class="step-intro">
+                    <h2>Willkommen zu VIA-Stärken</h2>
+                    <p>VIA (Values in Action) ist ein wissenschaftlich fundiertes System zur Identifikation deiner Charakterstärken. Es basiert auf der Positiven Psychologie und hilft dir, deine natürlichen Talente zu erkennen und zu nutzen.</p>
+                </div>
+
+                <div class="intro-section">
+                    <h3>Was sind VIA-Stärken?</h3>
+                    <p>VIA-Stärken sind 24 universelle Charakterstärken, die in 6 Kategorien unterteilt sind. Jeder Mensch besitzt alle diese Stärken, aber in unterschiedlicher Ausprägung. Deine Top-Stärken sind die, die du am häufigsten und natürlichsten einsetzt.</p>
+                    
+                    <h4 style="margin-top: 1.5rem; margin-bottom: 1rem; color: #2c3e50;">Die 6 Kategorien:</h4>
+                    <div class="strengths-grid">
+                        <div class="strength-card">
+                            <i class="fas fa-brain"></i>
+                            <h6>Weisheit & Wissen</h6>
+                        </div>
+                        <div class="strength-card">
+                            <i class="fas fa-shield-alt"></i>
+                            <h6>Mut</h6>
+                        </div>
+                        <div class="strength-card">
+                            <i class="fas fa-heart"></i>
+                            <h6>Menschlichkeit</h6>
+                        </div>
+                        <div class="strength-card">
+                            <i class="fas fa-balance-scale"></i>
+                            <h6>Gerechtigkeit</h6>
+                        </div>
+                        <div class="strength-card">
+                            <i class="fas fa-hand-holding-heart"></i>
+                            <h6>Mäßigung</h6>
+                        </div>
+                        <div class="strength-card">
+                            <i class="fas fa-star"></i>
+                            <h6>Transzendenz</h6>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="intro-section">
+                    <h3>Warum VIA-Stärken?</h3>
+                    <ul style="list-style: none; padding: 0; margin: 1rem 0;">
+                        <li style="padding: 0.75rem 0; color: #2c3e50; display: flex; align-items: start; gap: 0.75rem;">
+                            <i class="fas fa-check-circle" style="color: #a855f7; margin-top: 0.25rem;"></i>
+                            <strong>Wissenschaftlich fundiert:</strong> Basierend auf jahrzehntelanger Forschung
+                        </li>
+                        <li style="padding: 0.75rem 0; color: #2c3e50; display: flex; align-items: start; gap: 0.75rem;">
+                            <i class="fas fa-check-circle" style="color: #a855f7; margin-top: 0.25rem;"></i>
+                            <strong>Positiv orientiert:</strong> Fokus auf deine Stärken, nicht Schwächen
+                        </li>
+                        <li style="padding: 0.75rem 0; color: #2c3e50; display: flex; align-items: start; gap: 0.75rem;">
+                            <i class="fas fa-check-circle" style="color: #a855f7; margin-top: 0.25rem;"></i>
+                            <strong>Praktisch anwendbar:</strong> Nutze deine Stärken im Alltag
+                        </li>
+                        <li style="padding: 0.75rem 0; color: #2c3e50; display: flex; align-items: start; gap: 0.75rem;">
+                            <i class="fas fa-check-circle" style="color: #a855f7; margin-top: 0.25rem;"></i>
+                            <strong>Persönliche Entwicklung:</strong> Entwickle dich weiter durch Stärken-Nutzung
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Navigation Buttons -->
+                <div class="form-navigation">
+                    <a href="via-strengths.html" class="btn btn-secondary">
+                        <i class="fas fa-home"></i>
+                        Zurück zur Übersicht
+                    </a>
+                    <button type="button" class="btn btn-primary" onclick="saveAndContinue()">
+                        Weiter zum Assessment
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right Column: Tools & Resources -->
+            <div class="sidebar">
+                <div class="tools-box">
+                    <h4><i class="fas fa-tools"></i> Hilfreiche Tools & Methoden</h4>
+                    
+                    <div class="tool-categories">
+                        <div class="tool-category">
+                            <h5>Stärken-Tests</h5>
+                            <ul>
+                                <li><strong>VIA Survey:</strong> Offizieller VIA-Test</li>
+                                <li><strong>StrengthsFinder:</strong> Gallup Stärken-Test</li>
+                                <li><strong>Big Five:</strong> Persönlichkeitsmerkmale</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="tool-category">
+                            <h5>Stärken-Nutzung</h5>
+                            <ul>
+                                <li><strong>Stärken-Tagebuch:</strong> Tägliche Reflexion</li>
+                                <li><strong>Stärken-Challenge:</strong> Neue Anwendungen</li>
+                                <li><strong>Stärken-Coaching:</strong> Professionelle Begleitung</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="resources-box">
+                    <h4><i class="fas fa-book"></i> Empfohlene Ressourcen</h4>
+                    
+                    <div class="resource-links">
+                        <div class="resource-section">
+                            <h5>Bücher</h5>
+                            <ul>
+                                <li><strong>"Character Strengths and Virtues"</strong> von Peterson & Seligman</li>
+                                <li><strong>"The Strengths Book"</strong> von Alex Linley</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="resource-section">
+                            <h5>Verwandte Workflows</h5>
+                            <ul>
+                                <li><a href="../ikigai/index-ikigai.html">Ikigai</a> - Finde deinen Lebenszweck</li>
+                                <li><a href="../swot-analysis/step1-swot.html">SWOT-Analyse</a> - Stärken und Schwächen</li>
+                                <li><a href="../self-assessment/step1-self-assessment.html">Selbsteinschätzung</a> - Vollständiges Profil</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script>
+        function saveAndContinue() {
+            const formData = {
+                step: 1,
+                timestamp: new Date().toISOString(),
+                completed: true
+            };
+            
+            await window.workflowAPI.saveWorkflowStep('via', 'step1', formData);
+            
+            // Redirect to assessment
+            window.location.href = 'via-strengths.html#step-2';
+        }
+    </script>
+
+    <!-- AWS Configuration -->
+    <script>
+        window.AWS_CONFIG = {
+            region: 'eu-central-1',
+            userPoolId: 'eu-central-1_8gP4gLK9r',
+            clientId: '7kc5tt6a23fgh53d60vkefm812',
+            apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod',
+            dynamoDB: {
+                tableName: 'mawps-user-profiles',
+                region: 'eu-central-1'
+            },
+            s3: {
+                bucket: 'mawps-user-files-1760106396',
+                region: 'eu-central-1'
+            }
+        };
+    </script>
+    
+    <!-- AWS SDK -->
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    
+    <!-- Workflow API (API-First) -->
+    <script src="/js/workflow-api.js"></script>
+    <!-- Auth & Progress Tracking -->
+    <script src="/js/aws-profile-api.js"></script>
+    <script src="/js/real-user-auth-system.js?v=20250116"></script>
+    <script src="/js/user-progress-tracker.js"></script>
+    <script src="/js/personality-auth-integration.js"></script>
+</body>
+</html>

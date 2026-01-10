@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧠 NLP Dilts-Pyramide Step 1: Einführung</title>
+    
+    <!-- Meta Tags -->
+    <meta name="description" content="Verstehe die 6 Ebenen der Veränderung mit der NLP Dilts-Pyramide. Beginne deine Reise zur ganzheitlichen Entwicklung.">
+    <meta name="keywords" content="nlp, dilts pyramide, verhaltensebenen, veränderung, persönlichkeitsentwicklung">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="nlp-dilts.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../../manuel-weiss-photo.svg">
+
+    <!-- Progress Badge & Step Styles -->
+    <style>
+        .user-progress-badge {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: white;
+            border-radius: 8px;
+            padding: 12px 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 14px;
+            min-width: 200px;
+        }
+        
+        .user-progress-badge .user-info,
+        .user-progress-badge .progress-sync {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #4a5568;
+        }
+        
+        .user-progress-badge i {
+            font-size: 16px;
+            color: #667eea;
+        }
+        
+        @media (max-width: 768px) {
+            .user-progress-badge {
+                top: auto;
+                bottom: 20px;
+                right: 10px;
+                left: 10px;
+                min-width: auto;
+            }
+        }
+
+        .step-header {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .step-header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .step-info h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .step-description {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .step-progress {
+            margin-top: 1rem;
+        }
+
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.3);
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: white;
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            margin-top: 0.5rem;
+            display: block;
+            font-size: 0.9rem;
+        }
+
+        .step-main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem 4rem;
+        }
+
+        .step-container {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 2rem;
+        }
+
+        @media (max-width: 1024px) {
+            .step-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .questions-column {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .step-intro {
+            margin-bottom: 2rem;
+        }
+
+        .step-intro h2 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+        }
+
+        .step-intro p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .pyramid-level {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #faf5ff;
+            border-radius: 12px;
+            border-left: 4px solid #8b5cf6;
+        }
+
+        .level-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .level-number {
+            background: #8b5cf6;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .level-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .level-description {
+            color: #666;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .level-question {
+            width: 100%;
+            min-height: 100px;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+
+        .level-question:focus {
+            outline: none;
+            border-color: #8b5cf6;
+        }
+
+        .detailed-hints {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f3e8ff;
+            border-radius: 8px;
+        }
+
+        .detailed-hints h5 {
+            color: #6b21a8;
+            margin-bottom: 0.5rem;
+        }
+
+        .detailed-hints ul {
+            margin: 0;
+            padding-left: 1.5rem;
+            color: #6b21a8;
+        }
+
+        .detailed-hints li {
+            margin-bottom: 0.5rem;
+            line-height: 1.5;
+        }
+
+        .form-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(139, 92, 246, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #2c3e50;
+            border: 2px solid #e0e0e0;
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .tools-box,
+        .resources-box {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .tools-box h4,
+        .resources-box h4 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tool-categories,
+        .resource-links {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .tool-category,
+        .resource-section {
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .tool-category:last-child,
+        .resource-section:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .tool-category h5,
+        .resource-section h5 {
+            color: #8b5cf6;
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+        }
+
+        .tool-category ul,
+        .resource-section ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .tool-category li,
+        .resource-section li {
+            padding: 0.5rem 0;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .tool-category strong,
+        .resource-section strong {
+            color: #2c3e50;
+        }
+
+        .resource-section a {
+            color: #8b5cf6;
+            text-decoration: none;
+        }
+
+        .resource-section a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body data-page-id="step1-dilts">
+
+    <!-- Progress Badge -->
+    <div class="user-progress-badge" style="display: none;">
+        <div class="user-info">
+            <i class="fas fa-user-circle"></i>
+            <span>Nicht angemeldet</span>
+        </div>
+        <div class="progress-sync">
+            <i class="fas fa-cloud-off-alt"></i>
+            <span>Fortschritt lokal</span>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="step-header">
+        <div class="step-header-content">
+            <div class="step-info">
+                <h1>🧠 NLP Dilts-Pyramide Step 1: Einführung</h1>
+                <p class="step-description">Verstehe die 6 Ebenen der Veränderung und beginne deine ganzheitliche Entwicklung</p>
+            </div>
+            <div class="step-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 16.7%"></div>
+                </div>
+                <span class="progress-text">1 von 6</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="step-main">
+        <div class="step-container">
+            <!-- Left Column: Questions -->
+            <div class="questions-column">
+                <div class="step-intro">
+                    <h2>Die Dilts-Pyramide</h2>
+                    <p>Die Dilts-Pyramide (auch Logische Ebenen genannt) ist ein NLP-Modell, das die verschiedenen Ebenen menschlicher Erfahrung beschreibt. Jede Ebene beeinflusst die darunter liegenden Ebenen und wird von den darüber liegenden beeinflusst.</p>
+                </div>
+
+                <form class="dilts-form" id="diltsForm" data-auto-save="true">
+                    <!-- Ebene 6: Umwelt -->
+                    <div class="pyramid-level" data-level="6">
+                        <div class="level-header">
+                            <div class="level-number">6</div>
+                            <h3 class="level-title">Umwelt</h3>
+                        </div>
+                        <p class="level-description">Wo und wann? Die äußere Umgebung, in der du dich bewegst.</p>
+                        <textarea class="level-question" id="environment" placeholder="Wo und wann tritt das Verhalten auf? Welche Umgebung beeinflusst dich?"></textarea>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li>In welcher Umgebung lebst und arbeitest du?</li>
+                                <li>Welche Orte inspirieren dich?</li>
+                                <li>Welche Umgebungen meidest du?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Ebene 5: Verhalten -->
+                    <div class="pyramid-level" data-level="5">
+                        <div class="level-header">
+                            <div class="level-number">5</div>
+                            <h3 class="level-title">Verhalten</h3>
+                        </div>
+                        <p class="level-description">Was? Deine konkreten Handlungen und Verhaltensweisen.</p>
+                        <textarea class="level-question" id="behavior" placeholder="Was tust du konkret? Welche Handlungen führst du aus?"></textarea>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li>Welche konkreten Handlungen führst du aus?</li>
+                                <li>Was ist dein typisches Verhalten?</li>
+                                <li>Welche Gewohnheiten hast du?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Ebene 4: Fähigkeiten -->
+                    <div class="pyramid-level" data-level="4">
+                        <div class="level-header">
+                            <div class="level-number">4</div>
+                            <h3 class="level-title">Fähigkeiten</h3>
+                        </div>
+                        <p class="level-description">Wie? Deine Kompetenzen, Strategien und Fähigkeiten.</p>
+                        <textarea class="level-question" id="capabilities" placeholder="Wie machst du es? Welche Fähigkeiten und Strategien nutzt du?"></textarea>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li>Welche Fähigkeiten besitzt du?</li>
+                                <li>Wie löst du Probleme?</li>
+                                <li>Welche Strategien wendest du an?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Ebene 3: Überzeugungen & Werte -->
+                    <div class="pyramid-level" data-level="3">
+                        <div class="level-header">
+                            <div class="level-number">3</div>
+                            <h3 class="level-title">Überzeugungen & Werte</h3>
+                        </div>
+                        <p class="level-description">Warum? Deine Glaubenssätze, Werte und Überzeugungen.</p>
+                        <textarea class="level-question" id="beliefs" placeholder="Warum machst du es? Was glaubst du? Welche Werte sind dir wichtig?"></textarea>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li>Was glaubst du über dich selbst?</li>
+                                <li>Welche Werte leiten dich?</li>
+                                <li>Welche Überzeugungen hast du?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Ebene 2: Identität -->
+                    <div class="pyramid-level" data-level="2">
+                        <div class="level-header">
+                            <div class="level-number">2</div>
+                            <h3 class="level-title">Identität</h3>
+                        </div>
+                        <p class="level-description">Wer? Dein Selbstbild und deine Identität.</p>
+                        <textarea class="level-question" id="identity" placeholder="Wer bist du? Wie siehst du dich selbst? Was ist deine Identität?"></textarea>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li>Wer bist du wirklich?</li>
+                                <li>Wie definierst du dich selbst?</li>
+                                <li>Welche Rollen nimmst du ein?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Ebene 1: Spiritualität -->
+                    <div class="pyramid-level" data-level="1">
+                        <div class="level-header">
+                            <div class="level-number">1</div>
+                            <h3 class="level-title">Spiritualität & Sinn</h3>
+                        </div>
+                        <p class="level-description">Wofür? Dein größerer Zweck, deine Mission, dein Beitrag zur Welt.</p>
+                        <textarea class="level-question" id="spirituality" placeholder="Wofür bist du hier? Was ist dein größerer Zweck? Wie trägst du zur Welt bei?"></textarea>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li>Was ist dein Lebenszweck?</li>
+                                <li>Wie trägst du zur Welt bei?</li>
+                                <li>Was ist deine Mission?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Navigation Buttons -->
+                    <div class="form-navigation">
+                        <a href="nlp-dilts.html" class="btn btn-secondary">
+                            <i class="fas fa-home"></i>
+                            Zurück zur Übersicht
+                        </a>
+                        <button type="button" class="btn btn-primary" onclick="saveAndContinue()">
+                            Weiter zur Analyse
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Right Column: Tools & Resources -->
+            <div class="sidebar">
+                <div class="tools-box">
+                    <h4><i class="fas fa-tools"></i> Hilfreiche Tools & Methoden</h4>
+                    
+                    <div class="tool-categories">
+                        <div class="tool-category">
+                            <h5>NLP-Techniken</h5>
+                            <ul>
+                                <li><strong>Reframing:</strong> Neue Perspektiven</li>
+                                <li><strong>Ankern:</strong> Ressourcen aktivieren</li>
+                                <li><strong>Timeline:</strong> Zeitreise-Technik</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="tool-category">
+                            <h5>Ebenen-Arbeit</h5>
+                            <ul>
+                                <li><strong>Bottom-Up:</strong> Von unten nach oben</li>
+                                <li><strong>Top-Down:</strong> Von oben nach unten</li>
+                                <li><strong>Alignment:</strong> Ebenen ausrichten</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="resources-box">
+                    <h4><i class="fas fa-book"></i> Empfohlene Ressourcen</h4>
+                    
+                    <div class="resource-links">
+                        <div class="resource-section">
+                            <h5>Bücher</h5>
+                            <ul>
+                                <li><strong>"Changing Belief Systems with NLP"</strong> von Robert Dilts</li>
+                                <li><strong>"NLP: The New Technology"</strong> von Bandler & Grinder</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="resource-section">
+                            <h5>Verwandte Workflows</h5>
+                            <ul>
+                                <li><a href="../ikigai/index-ikigai.html">Ikigai</a> - Finde deinen Lebenszweck</li>
+                                <li><a href="../nlp-meta-goal/step1-nlp-meta.html">NLP Meta-Ziel</a> - Übergeordnete Ziele</li>
+                                <li><a href="../values-clarification/step1-values.html">Werteklärung</a> - Deine Werte</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script>
+        function saveAndContinue() {
+            const formData = {
+                environment: document.getElementById('environment').value,
+                behavior: document.getElementById('behavior').value,
+                capabilities: document.getElementById('capabilities').value,
+                beliefs: document.getElementById('beliefs').value,
+                identity: document.getElementById('identity').value,
+                spirituality: document.getElementById('spirituality').value,
+                step: 1,
+                timestamp: new Date().toISOString()
+            };
+            
+            await window.workflowAPI.saveWorkflowStep('dilts', 'step1', formData);
+            
+            // Redirect to step 2
+            window.location.href = 'nlp-dilts.html#step-2';
+        }
+        
+        function autoSave() {
+            const formData = {
+                environment: document.getElementById('environment').value,
+                behavior: document.getElementById('behavior').value,
+                capabilities: document.getElementById('capabilities').value,
+                beliefs: document.getElementById('beliefs').value,
+                identity: document.getElementById('identity').value,
+                spirituality: document.getElementById('spirituality').value,
+                step: 1,
+                timestamp: new Date().toISOString()
+            };
+            await window.workflowAPI.saveWorkflowStep('dilts', 'step1', formData);
+        }
+        
+        // Load saved data if available
+        window.addEventListener('load', function() {
+            const savedData = await window.workflowAPI.loadSavedProgress('dilts', 'step1');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                document.getElementById('environment').value = data.environment || '';
+                document.getElementById('behavior').value = data.behavior || '';
+                document.getElementById('capabilities').value = data.capabilities || '';
+                document.getElementById('beliefs').value = data.beliefs || '';
+                document.getElementById('identity').value = data.identity || '';
+                document.getElementById('spirituality').value = data.spirituality || '';
+            }
+        });
+        
+        // Auto-save on input
+        document.querySelectorAll('.level-question').forEach(textarea => {
+            textarea.addEventListener('input', autoSave);
+        });
+    </script>
+
+    <!-- AWS Configuration -->
+    <script>
+        window.AWS_CONFIG = {
+            region: 'eu-central-1',
+            userPoolId: 'eu-central-1_8gP4gLK9r',
+            clientId: '7kc5tt6a23fgh53d60vkefm812',
+            apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod',
+            dynamoDB: {
+                tableName: 'mawps-user-profiles',
+                region: 'eu-central-1'
+            },
+            s3: {
+                bucket: 'mawps-user-files-1760106396',
+                region: 'eu-central-1'
+            }
+        };
+    </script>
+    
+    <!-- AWS SDK -->
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    
+    <!-- Workflow API (API-First) -->
+    <script src="/js/workflow-api.js"></script>
+    <!-- Auth & Progress Tracking -->
+    <script src="/js/aws-profile-api.js"></script>
+    <script src="/js/real-user-auth-system.js?v=20250116"></script>
+    <script src="/js/user-progress-tracker.js"></script>
+    <script src="/js/personality-auth-integration.js"></script>
+</body>
+</html>
