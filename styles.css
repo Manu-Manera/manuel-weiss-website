@@ -1129,6 +1129,8 @@ a:hover {
     display: flex;
     align-items: center; /* Text vertikal zentrieren */
     box-sizing: border-box; /* Padding und Border in der Höhe berücksichtigen */
+    margin-top: auto; /* Button immer am unteren Rand */
+    flex-shrink: 0;
 }
 
 .service-card .btn-primary {
@@ -1836,10 +1838,9 @@ a:hover {
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
     display: flex;
     flex-direction: column;
-    height: 100%;
+    height: 420px; /* Feste Höhe für alle Kacheln */
     position: relative;
     z-index: 200 !important; /* Über den Schneeflocken (z-index: 100) */
-    min-height: 400px;
     cursor: pointer;
     overflow: hidden;
 }
@@ -2116,13 +2117,16 @@ a:hover {
 }
 
 .service-card p {
-    flex: 1;
-    margin-bottom: var(--spacing-lg);
+    flex-shrink: 0;
+    margin-bottom: var(--spacing-md);
 }
 
 .service-features {
-    flex-shrink: 0;
+    flex: 1; /* Nimmt den verfügbaren Platz ein */
     margin-bottom: var(--spacing-lg);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
 }
 
 .service-card .btn {
