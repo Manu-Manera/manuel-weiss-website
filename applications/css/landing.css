@@ -26,8 +26,73 @@ body {
 
 /* ═══════════════════════════════════════════════════════════════════════════
    NAVBAR HOMEPAGE STYLE - Weißer Hintergrund mit violetter Schrift
+   Funktioniert sowohl für .navbar-homepage als auch für alte .navbar-transparent
    ═══════════════════════════════════════════════════════════════════════════ */
 
+/* Fallback: Alte Navbar-Transparent auch mit weißem Hintergrund stylen */
+.navbar.navbar-modern.navbar-transparent {
+    position: fixed;
+    top: 1.5rem;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: auto;
+    background: transparent !important;
+    border: none;
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 1rem;
+}
+
+.navbar.navbar-modern.navbar-transparent .nav-container {
+    max-width: 900px;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border-radius: 50px !important;
+    padding: 0.75rem 1.5rem !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+}
+
+.navbar.navbar-modern.navbar-transparent .nav-link,
+.navbar.navbar-modern.navbar-transparent .nav-link span,
+.navbar.navbar-modern.navbar-transparent .nav-link i {
+    color: #4f46e5 !important;
+    font-weight: 600 !important;
+}
+
+.navbar.navbar-modern.navbar-transparent .nav-link:hover {
+    color: #7c3aed !important;
+    background: rgba(99, 102, 241, 0.1) !important;
+}
+
+.navbar.navbar-modern.navbar-transparent .nav-login-btn,
+.navbar.navbar-modern.navbar-transparent .nav-login-btn span,
+.navbar.navbar-modern.navbar-transparent .nav-login-btn i {
+    color: #4f46e5 !important;
+}
+
+.navbar.navbar-modern.navbar-transparent .nav-login-btn {
+    background: rgba(99, 102, 241, 0.1) !important;
+    border: 1px solid rgba(99, 102, 241, 0.3) !important;
+}
+
+.navbar.navbar-modern.navbar-transparent .nav-login-btn:hover {
+    background: rgba(99, 102, 241, 0.2) !important;
+}
+
+.navbar.navbar-modern.navbar-transparent .hamburger-line {
+    background: #4f46e5 !important;
+}
+
+/* Neue Navbar Homepage Klasse */
 .navbar.navbar-homepage {
     position: fixed;
     top: 1.5rem;
