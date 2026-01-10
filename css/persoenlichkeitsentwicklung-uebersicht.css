@@ -194,7 +194,7 @@
 }
 
 /* Legacy navbar - für Fallback */
-.navbar:not(.navbar-slim) {
+/* Hinweis: Dieser Block wurde korrigiert - die leere Navbar-Regel wurde entfernt */
 
 .navbar .nav-container {
     display: flex;
@@ -2166,9 +2166,6 @@
 
 .method-card:hover .service-cta i {
     transform: translateX(4px);
-}
-    width: 100%; /* Verhindert Überlauf */
-    box-sizing: border-box;
 }
 
 .btn {
