@@ -318,39 +318,25 @@ class TranslationManager {
     }
     
     createLanguageSwitcher() {
-        // Create language switcher if it doesn't exist
-        let switcher = document.getElementById('language-switcher');
-        if (!switcher) {
-            switcher = document.createElement('div');
-            switcher.id = 'language-switcher';
-            switcher.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                z-index: 1000;
-                background: white;
-                border-radius: 8px;
-                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-                padding: 0.5rem;
-            `;
-            document.body.appendChild(switcher);
+        // DEAKTIVIERT: Dropdown wurde entfernt - nur Flaggen-Buttons werden verwendet
+        // Entferne bestehendes Dropdown falls vorhanden
+        const existingSwitcher = document.getElementById('language-switcher');
+        if (existingSwitcher) {
+            existingSwitcher.remove();
         }
-        
+        // Update nur die Flaggen-Buttons
         this.updateLanguageSwitcher();
     }
     
     updateLanguageSwitcher() {
-        const switcher = document.getElementById('language-switcher');
-        if (!switcher) return;
-        
-        switcher.innerHTML = `
-            <select onchange="window.translationManager.setLanguage(this.value)" 
-                    style="border: none; background: none; font-size: 0.9rem; cursor: pointer;">
-                ${Object.entries(this.availableLanguages).map(([code, name]) => 
-                    `<option value="${code}" ${code === this.currentLanguage ? 'selected' : ''}>${name}</option>`
-                ).join('')}
-            </select>
-        `;
+        // DEAKTIVIERT: Update lang-link-compact Buttons stattdessen
+        document.querySelectorAll('.lang-link-compact[data-lang]').forEach(link => {
+            if (link.getAttribute('data-lang') === this.currentLanguage) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active');
+            }
+        });
     }
     
     // Method to get current language
