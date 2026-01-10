@@ -628,11 +628,16 @@
 
 .coaching-modal {
     position: fixed;
-    inset: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     z-index: 10000;
     display: none;
     align-items: center;
     justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
 }
 
 .coaching-modal.active {
@@ -640,22 +645,27 @@
 }
 
 .modal-backdrop {
-    position: absolute;
-    inset: 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     background: rgba(0, 0, 0, 0.8);
     backdrop-filter: blur(8px);
+    z-index: -1;
 }
 
 .modal-container {
     position: relative;
-    width: 95%;
+    width: 100%;
     max-width: 900px;
-    max-height: 90vh;
+    max-height: calc(100vh - 40px);
     background: white;
     border-radius: 24px;
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    margin: auto;
     box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3);
 }
 
@@ -978,14 +988,27 @@
         grid-template-columns: 1fr;
     }
     
+    .coaching-modal {
+        padding: 0;
+    }
+    
     .modal-container {
         width: 100%;
         max-height: 100vh;
+        height: 100vh;
         border-radius: 0;
+        margin: 0;
     }
     
     .progress-steps {
-        display: none;
+        display: flex;
+        gap: 4px;
+        overflow-x: auto;
+        padding: 0 10px;
+    }
+    
+    .step-label {
+        font-size: 0.6rem;
     }
     
     .modal-header .progress-bar {
@@ -993,7 +1016,9 @@
     }
     
     .modal-body {
-        padding: 24px 20px;
+        padding: 20px 16px;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
     }
     
     .modal-footer {
