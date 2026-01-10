@@ -864,11 +864,11 @@
 
 /* Hero Section - Ultra Modern Redesign like Ikigai */
 .personality-hero {
-    background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 50%, #7c3aed 100%);
+    background: #ffffff;
     padding: 5rem 0 3rem; /* Reduziert von 8rem 0 4rem */
     position: relative;
     overflow: hidden;
-    color: white !important;
+    color: #1e293b;
     margin-top: var(--header-height, 80px);
 }
 
@@ -1334,7 +1334,7 @@
 }
 
 .personality-hero * {
-    color: #1e293b !important;
+    color: #1e293b;
     position: relative;
     z-index: 1;
 }
@@ -1350,18 +1350,18 @@
 .hero-title {
     font-size: 3.5rem;
     font-weight: 800;
-    color: #1e293b !important;
+    color: #1e293b;
     margin-bottom: 0.75rem; /* Reduziert von 1.5rem */
     line-height: 1.2;
     text-shadow: none;
     max-width: 100%;
-    word-break: keep-all !important;
-    overflow-wrap: normal !important;
-    white-space: nowrap !important;
-    overflow: visible !important;
-    text-overflow: unset !important;
-    display: block !important;
-    width: 100% !important;
+    word-break: keep-all;
+    overflow-wrap: normal;
+    white-space: nowrap;
+    overflow: visible;
+    text-overflow: unset;
+    display: block;
+    width: 100%;
 }
 
 .personality-hero .hero-title,
@@ -2671,6 +2671,185 @@
 /* Typing Indicator */
 .typing-message {
     opacity: 0.8;
+}
+
+/* Contact Section Styles */
+.contact {
+    background: #ffffff;
+    padding: 4rem 0;
+    margin-top: 2rem;
+}
+
+.contact .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.contact .section-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.contact .section-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin-bottom: 0.75rem;
+    line-height: 1.2;
+}
+
+.contact .section-subtitle {
+    font-size: 1.125rem;
+    color: #64748b;
+    max-width: 700px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+.contact-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    margin-top: 2rem;
+}
+
+.contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.contact-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background: #f8fafc;
+    border-radius: 16px;
+    transition: all 0.3s ease;
+}
+
+.contact-item:hover {
+    background: #f1f5f9;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.contact-item i {
+    font-size: 1.5rem;
+    color: #6366f1;
+    min-width: 24px;
+    margin-top: 0.25rem;
+}
+
+.contact-item h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0 0 0.5rem 0;
+}
+
+.contact-item p {
+    font-size: 0.95rem;
+    color: #64748b;
+    margin: 0;
+    line-height: 1.6;
+}
+
+.contact-item a {
+    color: #6366f1;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.contact-item a:hover {
+    color: #4f46e5;
+    text-decoration: underline;
+}
+
+.contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 2rem;
+    background: #f8fafc;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.contact-form .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.contact-form input,
+.contact-form textarea {
+    width: 100%;
+    padding: 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-family: inherit;
+    background: #ffffff;
+    color: #1e293b;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+.contact-form input:focus,
+.contact-form textarea:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.contact-form textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.contact-form .btn-primary {
+    align-self: flex-start;
+    margin-top: 0.5rem;
+}
+
+/* Mobile Contact Section */
+@media (max-width: 768px) {
+    .contact {
+        padding: 3rem 0;
+    }
+    
+    .contact .section-title {
+        font-size: 2rem;
+    }
+    
+    .contact .section-subtitle {
+        font-size: 1rem;
+    }
+    
+    .contact-content {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    
+    .contact-form {
+        padding: 1.5rem;
+    }
+    
+    .contact-item {
+        padding: 1.25rem;
+    }
+}
+
+/* Ensure method cards are visible by default */
+.method-card {
+    display: flex !important;
+}
+
+.method-card.hidden {
+    display: none !important;
 }
 
 .typing-dots {
