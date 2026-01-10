@@ -103,30 +103,29 @@
     </style>
 </head>
 <body>
-    <!-- Navigation - Wie auf Haupthomepage -->
-    <nav class="navbar navbar-homepage">
-        <!-- Mobile: Nur Hamburger-Icon -->
-        <button class="mobile-hamburger" id="mobileHamburger" aria-label="Menü öffnen">
-            <span></span>
-            <span></span>
-            <span></span>
-        </button>
-        
-        <!-- Desktop Navigation -->
-        <div class="nav-container desktop-nav">
-            <div class="nav-brand">
-                <img src="../manuel-weiss-portrait.jpg" alt="MW" class="nav-logo">
-                <span class="nav-name">Manuel Weiss</span>
-            </div>
-            
+    <!-- Navigation - Schlanke Menüleiste -->
+    <nav class="navbar navbar-slim">
+        <div class="nav-container">
             <div class="nav-menu" id="navMenu">
                 <a href="../index.html" class="nav-link">Start</a>
                 <a href="index.html" class="nav-link active">Bewerbungsmanager</a>
                 <a href="coaching.html" class="nav-link">Coaching</a>
                 <a href="../index.html#contact" class="nav-link">Kontakt</a>
+                <div class="nav-divider"></div>
                 <button class="lang-link-compact" data-lang="de" title="Deutsch">🇩🇪</button>
                 <button class="lang-link-compact" data-lang="en" title="English">🇬🇧</button>
+                <button id="authButton" class="nav-auth-btn">
+                    <i class="fas fa-user"></i>
+                    <span>Anmelden</span>
+                </button>
             </div>
+            
+            <!-- Mobile Hamburger -->
+            <button class="mobile-hamburger" id="mobileHamburger" aria-label="Menü öffnen">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
         </div>
         
         <!-- Mobile Fullscreen Menu -->
@@ -141,6 +140,10 @@
                     <button class="lang-link-compact" data-lang="de" title="Deutsch">🇩🇪</button>
                     <button class="lang-link-compact" data-lang="en" title="English">🇬🇧</button>
                 </div>
+                <button id="mobileAuthButton" class="mobile-auth-btn">
+                    <i class="fas fa-user"></i>
+                    <span>Anmelden</span>
+                </button>
             </div>
         </div>
     </nav>
@@ -741,5 +744,67 @@
     <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
     <script src="../js/unified-aws-auth.js"></script>
     <script src="../js/unified-auth-modals.js"></script>
+    
+    <script>
+    // Mobile Navigation
+    document.addEventListener('DOMContentLoaded', function() {
+        const mobileHamburger = document.getElementById('mobileHamburger');
+        const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+        const mobileMenuFullscreen = document.getElementById('mobileMenuFullscreen');
+        
+        function toggleMobileMenu() {
+            mobileMenuOverlay?.classList.toggle('active');
+            mobileMenuFullscreen?.classList.toggle('active');
+            document.body.style.overflow = mobileMenuFullscreen?.classList.contains('active') ? 'hidden' : '';
+        }
+        
+        mobileHamburger?.addEventListener('click', toggleMobileMenu);
+        mobileMenuOverlay?.addEventListener('click', toggleMobileMenu);
+        
+        // Close menu when clicking a link
+        mobileMenuFullscreen?.querySelectorAll('.mobile-menu-link').forEach(link => {
+            link.addEventListener('click', toggleMobileMenu);
+        });
+        
+        // Auth Button Click
+        const authButton = document.getElementById('authButton');
+        const mobileAuthButton = document.getElementById('mobileAuthButton');
+        
+        function handleAuthClick() {
+            if (window.authModals?.showLogin) {
+                window.authModals.showLogin();
+            } else if (window.awsAuth?.showLoginModal) {
+                window.awsAuth.showLoginModal();
+            } else {
+                console.log('Auth system not loaded');
+            }
+        }
+        
+        authButton?.addEventListener('click', handleAuthClick);
+        mobileAuthButton?.addEventListener('click', function() {
+            toggleMobileMenu();
+            handleAuthClick();
+        });
+        
+        // Update Auth UI based on login status
+        function updateAuthUI() {
+            const isLoggedIn = window.awsAuth?.isLoggedIn?.() || false;
+            const user = window.awsAuth?.getCurrentUser?.();
+            
+            if (isLoggedIn && user) {
+                const displayName = user.name || user.email?.split('@')[0] || 'Profil';
+                if (authButton) {
+                    authButton.innerHTML = `<i class="fas fa-user-check"></i> <span>${displayName}</span>`;
+                }
+                if (mobileAuthButton) {
+                    mobileAuthButton.innerHTML = `<i class="fas fa-user-check"></i> <span>${displayName}</span>`;
+                }
+            }
+        }
+        
+        // Check auth status after a short delay
+        setTimeout(updateAuthUI, 500);
+    });
+    </script>
 </body>
 </html>
