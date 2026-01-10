@@ -7,9 +7,9 @@
     <meta name="description" content="Automatisiere deine Bewerbungen mit KI. 60-Sekunden-Anschreiben, Lebenslauf-Optimierung, Tracking und Interview-Vorbereitung.">
     
     <!-- CSS - Global Styles first for consistency -->
-    <link rel="stylesheet" href="../styles.css?v=20260109d">
-    <link rel="stylesheet" href="css/dashboard.css?v=20260109d">
-    <link rel="stylesheet" href="css/landing.css?v=20260109d">
+    <link rel="stylesheet" href="../styles.css?v=20260110a">
+    <link rel="stylesheet" href="css/dashboard.css?v=20260110a">
+    <link rel="stylesheet" href="css/landing.css?v=20260110a">
     
     <!-- Fonts - Same as Homepage -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -103,36 +103,44 @@
     </style>
 </head>
 <body>
-    <!-- Navigation - Modern & Clean -->
-    <nav class="navbar navbar-modern navbar-transparent">
-        <div class="nav-container">
-            <!-- Mobile Hamburger -->
-            <button class="mobile-hamburger" id="mobileHamburger" aria-label="Menü öffnen">
-                <span class="hamburger-line"></span>
-                <span class="hamburger-line"></span>
-                <span class="hamburger-line"></span>
-            </button>
-            
-            <div class="nav-menu" id="navMenu">
-                <a href="../index.html" class="nav-link nav-link-home">
-                    <i class="fas fa-home"></i>
-                    <span>Start</span>
-                </a>
-                <a href="index.html" class="nav-link active">
-                    <i class="fas fa-briefcase"></i>
-                    <span>Bewerbungsmanager</span>
-                </a>
-                <a href="coaching.html" class="nav-link">
-                    <i class="fas fa-compass"></i>
-                    <span>Coaching</span>
-                </a>
+    <!-- Navigation - Wie auf Haupthomepage -->
+    <nav class="navbar navbar-homepage">
+        <!-- Mobile: Nur Hamburger-Icon -->
+        <button class="mobile-hamburger" id="mobileHamburger" aria-label="Menü öffnen">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        
+        <!-- Desktop Navigation -->
+        <div class="nav-container desktop-nav">
+            <div class="nav-brand">
+                <img src="../manuel-weiss-portrait.jpg" alt="MW" class="nav-logo">
+                <span class="nav-name">Manuel Weiss</span>
             </div>
             
-            <div class="auth-section">
-                <button id="authButton" class="nav-login-btn" onclick="handleAuth()">
-                        <i class="fas fa-user"></i>
-                    <span id="authButtonText">Anmelden</span>
-                    </button>
+            <div class="nav-menu" id="navMenu">
+                <a href="../index.html" class="nav-link">Start</a>
+                <a href="index.html" class="nav-link active">Bewerbungsmanager</a>
+                <a href="coaching.html" class="nav-link">Coaching</a>
+                <a href="../index.html#contact" class="nav-link">Kontakt</a>
+                <button class="lang-link-compact" data-lang="de" title="Deutsch">🇩🇪</button>
+                <button class="lang-link-compact" data-lang="en" title="English">🇬🇧</button>
+            </div>
+        </div>
+        
+        <!-- Mobile Fullscreen Menu -->
+        <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
+        <div class="mobile-menu-fullscreen" id="mobileMenuFullscreen">
+            <div class="mobile-menu-content">
+                <a href="../index.html" class="mobile-menu-link">Start</a>
+                <a href="index.html" class="mobile-menu-link active">Bewerbungsmanager</a>
+                <a href="coaching.html" class="mobile-menu-link">Coaching</a>
+                <a href="../index.html#contact" class="mobile-menu-link">Kontakt</a>
+                <div class="mobile-language-switcher">
+                    <button class="lang-link-compact" data-lang="de" title="Deutsch">🇩🇪</button>
+                    <button class="lang-link-compact" data-lang="en" title="English">🇬🇧</button>
+                </div>
             </div>
         </div>
     </nav>
@@ -376,10 +384,24 @@
 
     <!-- Scripts -->
     <script>
-        // Mobile Menu
-        document.getElementById('mobileHamburger')?.addEventListener('click', function() {
-            this.classList.toggle('active');
-            document.getElementById('navMenu').classList.toggle('active');
+        // Mobile Menu - Fullscreen Toggle
+        const mobileHamburger = document.getElementById('mobileHamburger');
+        const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+        const mobileMenuFullscreen = document.getElementById('mobileMenuFullscreen');
+        
+        function toggleMobileMenu() {
+            mobileHamburger?.classList.toggle('active');
+            mobileMenuOverlay?.classList.toggle('active');
+            mobileMenuFullscreen?.classList.toggle('active');
+            document.body.style.overflow = mobileMenuFullscreen?.classList.contains('active') ? 'hidden' : '';
+        }
+        
+        mobileHamburger?.addEventListener('click', toggleMobileMenu);
+        mobileMenuOverlay?.addEventListener('click', toggleMobileMenu);
+        
+        // Schließe Menü bei Link-Klick
+        document.querySelectorAll('.mobile-menu-link').forEach(link => {
+            link.addEventListener('click', toggleMobileMenu);
         });
         
         // Smooth scroll
