@@ -1034,6 +1034,168 @@ function uploadResumePdf() {
     document.body.removeChild(input);
 }
 
+/**
+ * LinkedIn PDF Import
+ * Nutzer lädt LinkedIn PDF hoch, wir parsen und füllen Formular
+ */
+function importFromLinkedIn() {
+    // Create hidden file input for PDF
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.pdf';
+    input.style.display = 'none';
+    
+    input.onchange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        if (!file.name.toLowerCase().endsWith('.pdf')) {
+            showToast('Bitte laden Sie eine PDF-Datei hoch', 'error');
+            return;
+        }
+        
+        showToast('LinkedIn PDF wird analysiert...', 'info');
+        
+        try {
+            // Read and parse the PDF using pdf.js
+            const text = await extractTextFromPDF(file);
+            
+            if (text) {
+                // Parse LinkedIn format
+                const data = parseLinkedInPDF(text);
+                fillResumeFromData(data);
+                showToast('LinkedIn-Daten erfolgreich importiert!', 'success');
+            } else {
+                showToast('PDF konnte nicht gelesen werden. Nutze den vollständigen Editor.', 'error');
+                window.location.href = 'resume-editor.html';
+            }
+        } catch (error) {
+            console.error('LinkedIn import error:', error);
+            showToast('Import fehlgeschlagen: ' + error.message, 'error');
+        }
+    };
+    
+    document.body.appendChild(input);
+    input.click();
+    document.body.removeChild(input);
+}
+
+/**
+ * Extrahiert Text aus PDF mit pdf.js
+ */
+async function extractTextFromPDF(file) {
+    try {
+        // Load pdf.js dynamically if not available
+        if (!window.pdfjsLib) {
+            // Fallback: Use FileReader to get basic text
+            return await new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    // Basic text extraction from PDF bytes
+                    const text = extractTextFromPDFBytes(e.target.result);
+                    resolve(text);
+                };
+                reader.onerror = reject;
+                reader.readAsArrayBuffer(file);
+            });
+        }
+        
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await window.pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        
+        let text = '';
+        for (let i = 1; i <= pdf.numPages; i++) {
+            const page = await pdf.getPage(i);
+            const content = await page.getTextContent();
+            text += content.items.map(item => item.str).join(' ') + '\n';
+        }
+        
+        return text;
+    } catch (error) {
+        console.warn('PDF extraction failed:', error);
+        return null;
+    }
+}
+
+/**
+ * Fallback: Basic text extraction from PDF bytes
+ */
+function extractTextFromPDFBytes(buffer) {
+    const bytes = new Uint8Array(buffer);
+    let text = '';
+    
+    // Very basic PDF text extraction (works for simple PDFs)
+    for (let i = 0; i < bytes.length; i++) {
+        if (bytes[i] >= 32 && bytes[i] <= 126) {
+            text += String.fromCharCode(bytes[i]);
+        } else if (bytes[i] === 10 || bytes[i] === 13) {
+            text += '\n';
+        }
+    }
+    
+    // Clean up the text
+    text = text.replace(/\s+/g, ' ').trim();
+    return text;
+}
+
+/**
+ * Parst LinkedIn PDF Format
+ */
+function parseLinkedInPDF(text) {
+    const data = {
+        firstName: '',
+        lastName: '',
+        title: '',
+        email: '',
+        phone: '',
+        location: '',
+        summary: '',
+        skills: '',
+        experience: [],
+        education: []
+    };
+    
+    // Try to extract name (usually first line in LinkedIn PDF)
+    const nameMatch = text.match(/^([A-ZÄÖÜ][a-zäöüß]+)\s+([A-ZÄÖÜ][a-zäöüß]+)/);
+    if (nameMatch) {
+        data.firstName = nameMatch[1];
+        data.lastName = nameMatch[2];
+    }
+    
+    // Extract email
+    const emailMatch = text.match(/[\w.-]+@[\w.-]+\.\w+/);
+    if (emailMatch) data.email = emailMatch[0];
+    
+    // Extract phone
+    const phoneMatch = text.match(/(\+?\d[\d\s()-]{8,})/);
+    if (phoneMatch) data.phone = phoneMatch[0].trim();
+    
+    // Extract skills (often listed with commas or bullets)
+    const skillsMatch = text.match(/Skills[:\s]+([\w,\s•·-]+)/i);
+    if (skillsMatch) {
+        data.skills = skillsMatch[1].replace(/[•·]/g, ',').trim();
+    }
+    
+    return data;
+}
+
+/**
+ * Füllt das Lebenslauf-Formular mit importierten Daten
+ */
+function fillResumeFromData(data) {
+    if (data.firstName) document.getElementById('resumeFirstName').value = data.firstName;
+    if (data.lastName) document.getElementById('resumeLastName').value = data.lastName;
+    if (data.title) document.getElementById('resumeTitle').value = data.title;
+    if (data.email) document.getElementById('resumeEmail').value = data.email;
+    if (data.phone) document.getElementById('resumePhone').value = data.phone;
+    if (data.location) document.getElementById('resumeLocation').value = data.location;
+    if (data.summary) document.getElementById('resumeSummary').value = data.summary;
+    if (data.skills) document.getElementById('resumeSkills').value = data.skills;
+    
+    // Save the resume after import
+    saveResume();
+}
+
 // ═══════════════════════════════════════════════════════════════════════════
 // EXPORT FOR OTHER MODULES
 // ═══════════════════════════════════════════════════════════════════════════
@@ -1056,6 +1218,7 @@ window.addEducationEntry = addEducationEntry;
 window.removeEducation = removeEducation;
 window.updateEducation = updateEducation;
 window.uploadResumePdf = uploadResumePdf;
+window.importFromLinkedIn = importFromLinkedIn;
 window.initResumeTab = initResumeTab;
 
 // Export DashboardCore for external access
