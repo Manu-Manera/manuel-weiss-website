@@ -368,7 +368,7 @@
                 timestamp: new Date().toISOString()
             };
             
-            localStorage.setItem('fachlicheEntwicklungStep1', JSON.stringify(formData));
+            await window.workflowAPI.saveWorkflowStep('fachlicheEntwicklung', 'step1', formData);
             
             // Redirect to step 2
             window.location.href = 'step2-fachliche-entwicklung.html';
@@ -376,7 +376,7 @@
         
         // Load saved data if available
         window.addEventListener('load', function() {
-            const savedData = localStorage.getItem('fachlicheEntwicklungStep1');
+            const savedData = await window.workflowAPI.loadSavedProgress('fachlicheEntwicklung', 'step1');
             if (savedData) {
                 try {
                     const data = JSON.parse(savedData);
@@ -500,6 +500,8 @@
             skillRadar.update('none');
         }
     </script>
+    <!-- Workflow API (API-First) -->
+    <script src="/js/workflow-api.js"></script>
 </body>
 </html>
 

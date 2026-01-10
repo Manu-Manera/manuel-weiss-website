@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚖️ Wheel of Life Step 2: Balance analysieren</title>
+    
+    <!-- Meta Tags -->
+    <meta name="description" content="Analysiere deine Lebensbalance und identifiziere Bereiche, die mehr Aufmerksamkeit benötigen.">
+    <meta name="keywords" content="wheel of life, lebensbalance, balance, analyse, zufriedenheit">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="wheel-of-life.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../../manuel-weiss-photo.svg">
+
+    <!-- Progress Badge & Step Styles -->
+    <style>
+        .user-progress-badge {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: white;
+            border-radius: 8px;
+            padding: 12px 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 14px;
+            min-width: 200px;
+        }
+        
+        .user-progress-badge .user-info,
+        .user-progress-badge .progress-sync {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #4a5568;
+        }
+        
+        .user-progress-badge i {
+            font-size: 16px;
+            color: #667eea;
+        }
+        
+        @media (max-width: 768px) {
+            .user-progress-badge {
+                top: auto;
+                bottom: 20px;
+                right: 10px;
+                left: 10px;
+                min-width: auto;
+            }
+        }
+
+        .step-header {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .step-header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .step-info h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .step-description {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .step-progress {
+            margin-top: 1rem;
+        }
+
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.3);
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: white;
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            margin-top: 0.5rem;
+            display: block;
+            font-size: 0.9rem;
+        }
+
+        .step-main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem 4rem;
+        }
+
+        .step-container {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 2rem;
+        }
+
+        @media (max-width: 1024px) {
+            .step-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .questions-column {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .step-intro {
+            margin-bottom: 2rem;
+        }
+
+        .step-intro h2 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+        }
+
+        .step-intro p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .analysis-section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #f0fdf4;
+            border-radius: 12px;
+            border-left: 4px solid #10b981;
+        }
+
+        .analysis-section h3 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .insight-item {
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .insight-item h4 {
+            color: #10b981;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .insight-item p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .balance-visual {
+            text-align: center;
+            padding: 2rem;
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+        }
+
+        .balance-score-display {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #10b981;
+            margin: 1rem 0;
+        }
+
+        .form-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #2c3e50;
+            border: 2px solid #e0e0e0;
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .tools-box,
+        .resources-box {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .tools-box h4,
+        .resources-box h4 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+    </style>
+</head>
+<body data-page-id="step2-wheel">
+
+    <!-- Progress Badge -->
+    <div class="user-progress-badge" style="display: none;">
+        <div class="user-info">
+            <i class="fas fa-user-circle"></i>
+            <span>Nicht angemeldet</span>
+        </div>
+        <div class="progress-sync">
+            <i class="fas fa-cloud-off-alt"></i>
+            <span>Fortschritt lokal</span>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="step-header">
+        <div class="step-header-content">
+            <div class="step-info">
+                <h1>⚖️ Wheel of Life Step 2: Balance analysieren</h1>
+                <p class="step-description">Analysiere deine Lebensbalance und identifiziere Bereiche, die mehr Aufmerksamkeit benötigen</p>
+            </div>
+            <div class="step-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 50%"></div>
+                </div>
+                <span class="progress-text">2 von 4</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="step-main">
+        <div class="step-container">
+            <!-- Left Column: Analysis -->
+            <div class="questions-column">
+                <div class="step-intro">
+                    <h2>Deine Balance-Analyse</h2>
+                    <p>Eine ausgewogene Lebensbalance ist der Schlüssel zu Zufriedenheit und Wohlbefinden. Analysiere deine Bewertungen aus Schritt 1.</p>
+                </div>
+
+                <div class="balance-visual">
+                    <h3>Deine Gesamtbalance</h3>
+                    <div class="balance-score-display" id="overall-balance">0.0</div>
+                    <p style="color: #666;">von 10.0</p>
+                </div>
+
+                <div class="analysis-section">
+                    <h3>🎯 Stärkste Bereiche</h3>
+                    <div id="strongest-areas">
+                        <p style="color: #666;">Lade deine Daten aus Schritt 1...</p>
+                    </div>
+                </div>
+
+                <div class="analysis-section">
+                    <h3>⚠️ Verbesserungsbereiche</h3>
+                    <div id="improvement-areas">
+                        <p style="color: #666;">Lade deine Daten aus Schritt 1...</p>
+                    </div>
+                </div>
+
+                <div class="analysis-section">
+                    <h3>📈 Balance-Trend</h3>
+                    <div id="balance-trend">
+                        <p style="color: #666;">Analysiere deine Bewertungen für Balance-Erkenntnisse.</p>
+                    </div>
+                </div>
+
+                <!-- Navigation Buttons -->
+                <div class="form-navigation">
+                    <a href="step1-wheel.html" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i>
+                        Zurück zu Schritt 1
+                    </a>
+                    <button type="button" class="btn btn-primary" onclick="saveAndContinue()">
+                        Weiter zu Prioritäten
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right Column: Tools & Resources -->
+            <div class="sidebar">
+                <div class="tools-box">
+                    <h4><i class="fas fa-tools"></i> Hilfreiche Tools</h4>
+                    <p>Balance-Tipps und Strategien für mehr Ausgewogenheit</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="/js/workflow-api.js"></script>
+    <script>
+        const METHOD_ID = 'wheel-of-life';
+        const STEP_ID = 'step2';
+        const TOTAL_STEPS = 4;
+
+        async function loadStep1Data() {
+            try {
+                const step1Data = await window.workflowAPI.loadWorkflowStep(METHOD_ID, 'step1');
+                if (step1Data && step1Data.stepData) {
+                    analyzeBalance(step1Data.stepData);
+                } else {
+                    console.warn('No step1 data found');
+                }
+            } catch (error) {
+                console.error('Error loading step1 data:', error);
+            }
+        }
+
+        function analyzeBalance(data) {
+            // Get all available areas (hobbies or leisure)
+            const areas = ['career', 'finances', 'health', 'family', 'social', 'development', 'spirituality'];
+            if (data.hobbies) areas.push('hobbies');
+            if (data.leisure) areas.push('leisure');
+            
+            const scores = areas.map(area => data[area]?.score || 5);
+            const avgScore = scores.reduce((a, b) => a + b, 0) / scores.length;
+            
+            document.getElementById('overall-balance').textContent = avgScore.toFixed(1);
+            
+            // Find strongest areas
+            const areaScores = areas.map((area, i) => ({ area, score: scores[i] }));
+            areaScores.sort((a, b) => b.score - a.score);
+            const strongest = areaScores.slice(0, 3);
+            
+            document.getElementById('strongest-areas').innerHTML = strongest.map(item => 
+                `<div class="insight-item"><h4>${getAreaName(item.area)}</h4><p>Score: ${item.score}/10</p></div>`
+            ).join('');
+            
+            // Find improvement areas
+            const weakest = areaScores.slice(-3).reverse();
+            document.getElementById('improvement-areas').innerHTML = weakest.map(item => 
+                `<div class="insight-item"><h4>${getAreaName(item.area)}</h4><p>Score: ${item.score}/10 - Verbesserungspotenzial</p></div>`
+            ).join('');
+        }
+
+        function getAreaName(area) {
+            const names = {
+                'career': 'Karriere & Beruf',
+                'finances': 'Finanzen',
+                'health': 'Gesundheit & Fitness',
+                'family': 'Familie & Beziehungen',
+                'social': 'Freunde & Soziales',
+                'development': 'Persönliche Entwicklung',
+                'hobbies': 'Hobbys & Freizeit',
+                'spirituality': 'Spiritualität & Sinn'
+            };
+            return names[area] || area;
+        }
+
+        async function saveAndContinue() {
+            try {
+                const analysisData = {
+                    analyzedAt: new Date().toISOString(),
+                    step: 2
+                };
+                
+                await window.workflowAPI.saveWorkflowStep(METHOD_ID, STEP_ID, analysisData);
+                await window.workflowAPI.updateWorkflowProgress(METHOD_ID, 2, TOTAL_STEPS);
+                
+                window.location.href = 'step3-wheel.html';
+            } catch (error) {
+                console.error('Error saving step:', error);
+                alert('Fehler beim Speichern. Bitte versuche es erneut.');
+            }
+        }
+
+        window.addEventListener('load', loadStep1Data);
+    </script>
+
+    <!-- AWS Configuration -->
+    <script>
+        window.AWS_CONFIG = {
+            region: 'eu-central-1',
+            userPoolId: 'eu-central-1_8gP4gLK9r',
+            clientId: '7kc5tt6a23fgh53d60vkefm812',
+            apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod',
+            dynamoDB: {
+                tableName: 'mawps-user-profiles',
+                region: 'eu-central-1'
+            },
+            s3: {
+                bucket: 'mawps-user-files-1760106396',
+                region: 'eu-central-1'
+            }
+        };
+    </script>
+    
+    <!-- AWS SDK -->
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    
+    <!-- Auth & Progress Tracking -->
+    <script src="/js/aws-profile-api.js"></script>
+    <script src="/js/real-user-auth-system.js?v=20250116"></script>
+    <script src="/js/user-progress-tracker.js"></script>
+    <script src="/js/personality-auth-integration.js"></script>
+</body>
+</html>

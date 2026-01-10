@@ -50,34 +50,34 @@ class CoachingWorkflow {
         // Verlinkung zu Persönlichkeitsentwicklungsmethoden - Direkte Links zu Workflow-Seiten
         this.relatedMethods = {
             1: [
-                { id: 'wheel-of-life', name: 'Rad des Lebens', desc: 'Bewerte verschiedene Lebensbereiche', icon: 'fa-circle-notch', path: '/methods/wheel-of-life/wheel-of-life.html' },
-                { id: 'self-assessment', name: 'Selbsteinschätzung', desc: 'Erkenne dein volles Potenzial', icon: 'fa-user-check', path: '/methods/self-assessment/self-assessment.html' }
+                { id: 'wheel-of-life', name: 'Rad des Lebens', desc: 'Bewerte verschiedene Lebensbereiche', icon: 'fa-circle-notch', path: '/methods/wheel-of-life/step1-wheel.html' },
+                { id: 'self-assessment', name: 'Selbsteinschätzung', desc: 'Erkenne dein volles Potenzial', icon: 'fa-user-check', path: '/methods/self-assessment/step1-self-assessment.html' }
             ],
             2: [
                 { id: 'ikigai', name: 'Ikigai', desc: 'Finde deinen Lebenszweck', icon: 'fa-compass', path: '/ikigai.html' },
-                { id: 'via-strengths', name: 'VIA-Stärken', desc: 'Entdecke deine Charakterstärken', icon: 'fa-gem', path: '/methods/via-strengths/via-strengths.html' },
-                { id: 'swot', name: 'SWOT-Analyse', desc: 'Stärken, Schwächen, Chancen, Risiken', icon: 'fa-th-large', path: '/methods/swot-analysis/swot-analysis.html' },
-                { id: 'values-clarification', name: 'Werteklärung', desc: 'Was ist dir wirklich wichtig?', icon: 'fa-heart', path: '/methods/values-clarification/values-clarification.html' }
+                { id: 'via-strengths', name: 'VIA-Stärken', desc: 'Entdecke deine Charakterstärken', icon: 'fa-gem', path: '/methods/via-strengths/step1-via.html' },
+                { id: 'swot', name: 'SWOT-Analyse', desc: 'Stärken, Schwächen, Chancen, Risiken', icon: 'fa-th-large', path: '/methods/swot-analysis/step1-swot.html' },
+                { id: 'values-clarification', name: 'Werteklärung', desc: 'Was ist dir wirklich wichtig?', icon: 'fa-heart', path: '/methods/values-clarification/step1-values.html' }
             ],
             3: [
-                { id: 'goal-setting', name: 'SMART-Ziele', desc: 'Setze messbare Ziele', icon: 'fa-bullseye', path: '/methods/goal-setting/goal-setting.html' },
-                { id: 'vision-board', name: 'Vision Board', desc: 'Visualisiere deine Zukunft', icon: 'fa-images', path: '/methods/vision-board/vision-board.html' },
-                { id: 'nlp-meta-goal', name: 'NLP Meta-Ziel', desc: 'Finde dein übergeordnetes Ziel', icon: 'fa-brain', path: '/methods/nlp-meta-goal/nlp-meta-goal.html' }
+                { id: 'goal-setting', name: 'SMART-Ziele', desc: 'Setze messbare Ziele', icon: 'fa-bullseye', path: '/methods/goal-setting/step1-goal-setting.html' },
+                { id: 'vision-board', name: 'Vision Board', desc: 'Visualisiere deine Zukunft', icon: 'fa-images', path: '/methods/vision-board/step1-vision.html' },
+                { id: 'nlp-meta-goal', name: 'NLP Meta-Ziel', desc: 'Finde dein übergeordnetes Ziel', icon: 'fa-brain', path: '/methods/nlp-meta-goal/step1-nlp-meta.html' }
             ],
             4: [
-                { id: 'resource-analysis', name: 'Ressourcenanalyse', desc: 'Entdecke deine verborgenen Stärken', icon: 'fa-boxes', path: '/methods/resource-analysis/resource-analysis.html' },
-                { id: 'nlp-dilts', name: 'NLP Dilts-Pyramide', desc: 'Verstehe deine Verhaltensebenen', icon: 'fa-layer-group', path: '/methods/nlp-dilts/nlp-dilts.html' },
-                { id: 'solution-focused', name: 'Lösungsfokussiert', desc: 'Fokus auf was funktioniert', icon: 'fa-lightbulb', path: '/methods/solution-focused/solution-focused.html' }
+                { id: 'resource-analysis', name: 'Ressourcenanalyse', desc: 'Entdecke deine verborgenen Stärken', icon: 'fa-boxes', path: '/methods/resource-analysis/step1-resources.html' },
+                { id: 'nlp-dilts', name: 'NLP Dilts-Pyramide', desc: 'Verstehe deine Verhaltensebenen', icon: 'fa-layer-group', path: '/methods/nlp-dilts/step1-dilts.html' },
+                { id: 'solution-focused', name: 'Lösungsfokussiert', desc: 'Fokus auf was funktioniert', icon: 'fa-lightbulb', path: '/methods/solution-focused/step1-solution.html' }
             ],
             5: [
-                { id: 'change-stages', name: 'Veränderungsphasen', desc: 'Verstehe den Veränderungsprozess', icon: 'fa-sync-alt', path: '/methods/change-stages/change-stages.html' },
+                { id: 'change-stages', name: 'Veränderungsphasen', desc: 'Verstehe den Veränderungsprozess', icon: 'fa-sync-alt', path: '/methods/change-stages/step1-change.html' },
                 { id: 'target-coaching', name: 'Ziel-Coaching', desc: 'Präzise Zielerreichung', icon: 'fa-crosshairs', path: '/methods/target-coaching/target-coaching.html' },
-                { id: 'rubikon-model', name: 'Rubikon-Modell', desc: 'Von der Entscheidung zur Handlung', icon: 'fa-route', path: '/methods/rubikon-model/rubikon-model.html' }
+                { id: 'rubikon-model', name: 'Rubikon-Modell', desc: 'Von der Entscheidung zur Handlung', icon: 'fa-route', path: '/methods/rubikon-model/step1-rubikon.html' }
             ],
             6: [
-                { id: 'habit-building', name: 'Gewohnheiten', desc: 'Baue positive Routinen auf', icon: 'fa-redo', path: '/methods/habit-building/habit-building.html' },
-                { id: 'moment-excellence', name: 'Moment of Excellence', desc: 'Aktiviere deine Bestleistung', icon: 'fa-star', path: '/methods/moment-excellence/moment-excellence.html' },
-                { id: 'mindfulness', name: 'Achtsamkeit', desc: 'Entwickle innere Ruhe', icon: 'fa-spa', path: '/methods/mindfulness/mindfulness.html' }
+                { id: 'habit-building', name: 'Gewohnheiten', desc: 'Baue positive Routinen auf', icon: 'fa-redo', path: '/methods/habit-building/step1-habit.html' },
+                { id: 'moment-excellence', name: 'Moment of Excellence', desc: 'Aktiviere deine Bestleistung', icon: 'fa-star', path: '/methods/moment-excellence/step1-excellence.html' },
+                { id: 'mindfulness', name: 'Achtsamkeit', desc: 'Entwickle innere Ruhe', icon: 'fa-spa', path: '/methods/mindfulness/step1-mindfulness.html' }
             ]
         };
         

@@ -337,7 +337,7 @@
                 timestamp: new Date().toISOString()
             };
             
-            localStorage.setItem('ikigaiStep1', JSON.stringify(formData));
+            await window.workflowAPI.saveWorkflowStep('ikigai', 'step1', formData);
             
             // Redirect to step 2
             window.location.href = 'step2-ikigai.html';
@@ -345,7 +345,7 @@
         
         // Load saved data if available
         window.addEventListener('load', function() {
-            const savedData = localStorage.getItem('ikigaiStep1');
+            const savedData = await window.workflowAPI.loadSavedProgress('ikigai', 'step1');
             if (savedData) {
                 const data = JSON.parse(savedData);
                 document.getElementById('values').value = data.values || '';
@@ -379,7 +379,7 @@
                     step: 1,
                     timestamp: new Date().toISOString()
                 };
-                localStorage.setItem('ikigaiStep1', JSON.stringify(formData));
+                await window.workflowAPI.saveWorkflowStep('ikigai', 'step1', formData);
             });
         });
     </script>
@@ -405,6 +405,8 @@
     <!-- AWS SDK -->
     <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
     
+    <!-- Workflow API (API-First) -->
+    <script src="/js/workflow-api.js"></script>
     <!-- Auth & Progress Tracking -->
     <script src="/js/aws-profile-api.js"></script>
     <script src="/js/real-user-auth-system.js?v=20250116"></script>

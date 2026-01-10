@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💪 SWOT-Analyse Step 1: Stärken analysieren</title>
+    
+    <!-- Meta Tags -->
+    <meta name="description" content="Identifiziere deine persönlichen Stärken, Fähigkeiten und Ressourcen. Beginne deine SWOT-Analyse mit einer detaillierten Stärken-Analyse.">
+    <meta name="keywords" content="swot, stärken, schwächen, chancen, risiken, analyse, strategie">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="stylesheet" href="swot-analysis.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="../../manuel-weiss-photo.svg">
+
+    <!-- Progress Badge & Step Styles -->
+    <style>
+        .user-progress-badge {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: white;
+            border-radius: 8px;
+            padding: 12px 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 14px;
+            min-width: 200px;
+        }
+        
+        .user-progress-badge .user-info,
+        .user-progress-badge .progress-sync {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #4a5568;
+        }
+        
+        .user-progress-badge i {
+            font-size: 16px;
+            color: #667eea;
+        }
+        
+        @media (max-width: 768px) {
+            .user-progress-badge {
+                top: auto;
+                bottom: 20px;
+                right: 10px;
+                left: 10px;
+                min-width: auto;
+            }
+        }
+
+        .step-header {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .step-header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .step-info h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .step-description {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .step-progress {
+            margin-top: 1rem;
+        }
+
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.3);
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: white;
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            margin-top: 0.5rem;
+            display: block;
+            font-size: 0.9rem;
+        }
+
+        .step-main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem 4rem;
+        }
+
+        .step-container {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 2rem;
+        }
+
+        @media (max-width: 1024px) {
+            .step-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .questions-column {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .step-intro {
+            margin-bottom: 2rem;
+        }
+
+        .step-intro h2 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+        }
+
+        .step-intro p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .strength-category-section {
+            margin-bottom: 2.5rem;
+            padding: 1.5rem;
+            background: #f0fdf4;
+            border-radius: 12px;
+            border-left: 4px solid #10b981;
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .category-icon {
+            font-size: 2rem;
+        }
+
+        .category-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .category-description {
+            color: #666;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .strength-input-group {
+            margin-bottom: 1rem;
+        }
+
+        .strength-item {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+            align-items: center;
+        }
+
+        .strength-item input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .strength-item input:focus {
+            outline: none;
+            border-color: #10b981;
+        }
+
+        .btn-remove {
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-remove:hover {
+            background: #dc2626;
+            transform: scale(1.05);
+        }
+
+        .btn-add {
+            background: #10b981;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-add:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
+        .detailed-hints {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #d1fae5;
+            border-radius: 8px;
+            border-left: 4px solid #10b981;
+        }
+
+        .detailed-hints h5 {
+            color: #065f46;
+            margin-bottom: 0.5rem;
+        }
+
+        .detailed-hints ul {
+            margin: 0;
+            padding-left: 1.5rem;
+            color: #065f46;
+        }
+
+        .detailed-hints li {
+            margin-bottom: 0.5rem;
+            line-height: 1.5;
+        }
+
+        .form-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #2c3e50;
+            border: 2px solid #e0e0e0;
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .tools-box,
+        .resources-box {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .tools-box h4,
+        .resources-box h4 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tool-categories,
+        .resource-links {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .tool-category,
+        .resource-section {
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .tool-category:last-child,
+        .resource-section:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .tool-category h5,
+        .resource-section h5 {
+            color: #10b981;
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+        }
+
+        .tool-category ul,
+        .resource-section ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .tool-category li,
+        .resource-section li {
+            padding: 0.5rem 0;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .tool-category strong,
+        .resource-section strong {
+            color: #2c3e50;
+        }
+
+        .resource-section a {
+            color: #10b981;
+            text-decoration: none;
+        }
+
+        .resource-section a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body data-page-id="step1-swot">
+
+    <!-- Progress Badge -->
+    <div class="user-progress-badge" style="display: none;">
+        <div class="user-info">
+            <i class="fas fa-user-circle"></i>
+            <span>Nicht angemeldet</span>
+        </div>
+        <div class="progress-sync">
+            <i class="fas fa-cloud-off-alt"></i>
+            <span>Fortschritt lokal</span>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="step-header">
+        <div class="step-header-content">
+            <div class="step-info">
+                <h1>💪 SWOT-Analyse Step 1: Stärken analysieren</h1>
+                <p class="step-description">Identifiziere deine persönlichen Stärken, Fähigkeiten und Ressourcen. Was machst du besonders gut?</p>
+            </div>
+            <div class="step-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 25%"></div>
+                </div>
+                <span class="progress-text">1 von 4</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="step-main">
+        <div class="step-container">
+            <!-- Left Column: Questions -->
+            <div class="questions-column">
+                <div class="step-intro">
+                    <h2>Deine Stärken</h2>
+                    <p>Stärken sind deine positiven Eigenschaften, Fähigkeiten und Ressourcen, die dir einen Vorteil verschaffen. Sei ehrlich und umfassend - jede Stärke zählt!</p>
+                </div>
+
+                <form class="swot-form" id="swotForm" data-auto-save="true">
+                    <!-- Persönliche Stärken -->
+                    <div class="strength-category-section" data-category="personal">
+                        <div class="category-header">
+                            <div class="category-icon">🎯</div>
+                            <h3 class="category-title">Persönliche Stärken</h3>
+                        </div>
+                        <p class="category-description">
+                            Deine Charaktereigenschaften, Soft Skills und persönlichen Qualitäten, die dich auszeichnen.
+                        </p>
+                        <div class="strength-input-group" id="personal-strengths">
+                            <div class="strength-item">
+                                <input type="text" placeholder="z.B. 'Kommunikationsfähigkeit'" class="strength-input" data-category="personal">
+                                <button type="button" class="btn-remove" onclick="removeStrength(this)">×</button>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-add" onclick="addStrength('personal')">
+                            <i class="fas fa-plus"></i>
+                            Stärke hinzufügen
+                        </button>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li><strong>Kommunikation:</strong> Kannst du gut zuhören, erklären, verhandeln?</li>
+                                <li><strong>Führung:</strong> Bist du ein guter Leader oder Teamplayer?</li>
+                                <li><strong>Kreativität:</strong> Bist du innovativ und ideenreich?</li>
+                                <li><strong>Resilienz:</strong> Wie gehst du mit Herausforderungen um?</li>
+                                <li><strong>Empathie:</strong> Kannst du dich gut in andere hineinversetzen?</li>
+                                <li><strong>Organisation:</strong> Bist du strukturiert und organisiert?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Fachliche Stärken -->
+                    <div class="strength-category-section" data-category="professional">
+                        <div class="category-header">
+                            <div class="category-icon">🔧</div>
+                            <h3 class="category-title">Fachliche Stärken</h3>
+                        </div>
+                        <p class="category-description">
+                            Deine beruflichen Fähigkeiten, Expertise und technischen Kompetenzen.
+                        </p>
+                        <div class="strength-input-group" id="professional-strengths">
+                            <div class="strength-item">
+                                <input type="text" placeholder="z.B. 'Projektmanagement'" class="strength-input" data-category="professional">
+                                <button type="button" class="btn-remove" onclick="removeStrength(this)">×</button>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-add" onclick="addStrength('professional')">
+                            <i class="fas fa-plus"></i>
+                            Stärke hinzufügen
+                        </button>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li><strong>Hard Skills:</strong> Welche technischen Fähigkeiten beherrschst du?</li>
+                                <li><strong>Tools:</strong> Welche Software, Programme oder Tools kennst du?</li>
+                                <li><strong>Branchenwissen:</strong> Welches Fachwissen hast du in deiner Branche?</li>
+                                <li><strong>Erfahrung:</strong> Welche berufliche Erfahrung bringst du mit?</li>
+                                <li><strong>Spezialisierung:</strong> Gibt es Bereiche, in denen du besonders gut bist?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Ausbildungsstärken -->
+                    <div class="strength-category-section" data-category="education">
+                        <div class="category-header">
+                            <div class="category-icon">🎓</div>
+                            <h3 class="category-title">Ausbildungsstärken</h3>
+                        </div>
+                        <p class="category-description">
+                            Deine Bildung, Abschlüsse, Zertifikate, Qualifikationen und kontinuierliches Lernen.
+                        </p>
+                        <div class="strength-input-group" id="education-strengths">
+                            <div class="strength-item">
+                                <input type="text" placeholder="z.B. 'Master-Abschluss in Wirtschaft'" class="strength-input" data-category="education">
+                                <button type="button" class="btn-remove" onclick="removeStrength(this)">×</button>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-add" onclick="addStrength('education')">
+                            <i class="fas fa-plus"></i>
+                            Stärke hinzufügen
+                        </button>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li><strong>Abschlüsse:</strong> Welche Schul- und Hochschulabschlüsse hast du?</li>
+                                <li><strong>Zertifikate:</strong> Welche Zertifikate oder Weiterbildungen hast du?</li>
+                                <li><strong>Sprachen:</strong> Welche Sprachen sprichst du?</li>
+                                <li><strong>Lernbereitschaft:</strong> Bist du bereit, kontinuierlich zu lernen?</li>
+                                <li><strong>Online-Kurse:</strong> Hast du relevante Online-Kurse absolviert?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Netzwerk-Stärken -->
+                    <div class="strength-category-section" data-category="network">
+                        <div class="category-header">
+                            <div class="category-icon">🤝</div>
+                            <h3 class="category-title">Netzwerk-Stärken</h3>
+                        </div>
+                        <p class="category-description">
+                            Deine Beziehungen, Kontakte, Netzwerk und sozialen Ressourcen.
+                        </p>
+                        <div class="strength-input-group" id="network-strengths">
+                            <div class="strength-item">
+                                <input type="text" placeholder="z.B. 'Großes berufliches Netzwerk'" class="strength-input" data-category="network">
+                                <button type="button" class="btn-remove" onclick="removeStrength(this)">×</button>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-add" onclick="addStrength('network')">
+                            <i class="fas fa-plus"></i>
+                            Stärke hinzufügen
+                        </button>
+                        <div class="detailed-hints">
+                            <h5>💡 Denkanstöße:</h5>
+                            <ul>
+                                <li><strong>Berufliches Netzwerk:</strong> Welche Kontakte hast du in deiner Branche?</li>
+                                <li><strong>Mentoren:</strong> Hast du Mentoren oder Vorbilder?</li>
+                                <li><strong>Community:</strong> Bist du Teil von Communities oder Verbänden?</li>
+                                <li><strong>Social Media:</strong> Nutzt du LinkedIn, XING oder andere Plattformen?</li>
+                                <li><strong>Beziehungen:</strong> Welche wertvollen Beziehungen pflegst du?</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Navigation Buttons -->
+                    <div class="form-navigation">
+                        <a href="swot-analysis.html" class="btn btn-secondary">
+                            <i class="fas fa-home"></i>
+                            Zurück zur Übersicht
+                        </a>
+                        <button type="button" class="btn btn-primary" onclick="saveAndContinue()">
+                            Weiter zu Schwächen
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Right Column: Tools & Resources -->
+            <div class="sidebar">
+                <div class="tools-box">
+                    <h4><i class="fas fa-tools"></i> Hilfreiche Tools & Methoden</h4>
+                    
+                    <div class="tool-categories">
+                        <div class="tool-category">
+                            <h5>Stärken-Identifikation</h5>
+                            <ul>
+                                <li><strong>Feedback:</strong> Frage andere nach deinen Stärken</li>
+                                <li><strong>Selbstreflexion:</strong> Denke an Situationen, in denen du erfolgreich warst</li>
+                                <li><strong>VIA-Stärken:</strong> Nutze den VIA-Stärken-Test</li>
+                                <li><strong>Gallup StrengthsFinder:</strong> Identifiziere deine Top-Stärken</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="tool-category">
+                            <h5>SWOT-Methode</h5>
+                            <ul>
+                                <li><strong>Systematisch:</strong> Gehe strukturiert durch alle Bereiche</li>
+                                <li><strong>Ehrlich:</strong> Sei ehrlich zu dir selbst</li>
+                                <li><strong>Umfassend:</strong> Denke an alle Aspekte</li>
+                                <li><strong>Konkret:</strong> Formuliere spezifische Stärken</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="resources-box">
+                    <h4><i class="fas fa-book"></i> Empfohlene Ressourcen</h4>
+                    
+                    <div class="resource-links">
+                        <div class="resource-section">
+                            <h5>Bücher</h5>
+                            <ul>
+                                <li><strong>"StrengthsFinder 2.0"</strong> von Tom Rath</li>
+                                <li><strong>"Now, Discover Your Strengths"</strong> von Marcus Buckingham</li>
+                                <li><strong>"The Art of Strategy"</strong> von Avinash K. Dixit</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="resource-section">
+                            <h5>Verwandte Workflows</h5>
+                            <ul>
+                                <li><a href="../ikigai/index-ikigai.html">Ikigai</a> - Finde deinen Lebenszweck</li>
+                                <li><a href="../via-strengths/via-strengths.html">VIA-Stärken</a> - Charakterstärken</li>
+                                <li><a href="../wheel-of-life/step1-wheel.html">Wheel of Life</a> - Lebensbalance</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="swot-analysis.js"></script>
+    
+    <script>
+        function addStrength(category) {
+            const container = document.getElementById(`${category}-strengths`);
+            const newItem = document.createElement('div');
+            newItem.className = 'strength-item';
+            newItem.innerHTML = `
+                <input type="text" placeholder="Stärke eingeben..." class="strength-input" data-category="${category}">
+                <button type="button" class="btn-remove" onclick="removeStrength(this)">×</button>
+            `;
+            container.appendChild(newItem);
+            autoSave();
+        }
+
+        function removeStrength(button) {
+            const container = button.closest('.strength-input-group');
+            if (container.querySelectorAll('.strength-item').length > 1) {
+                button.closest('.strength-item').remove();
+                autoSave();
+            } else {
+                alert('Mindestens eine Stärke pro Kategorie ist erforderlich.');
+            }
+        }
+
+        function saveAndContinue() {
+            // Collect all strengths
+            const formData = {
+                personal: [],
+                professional: [],
+                education: [],
+                network: [],
+                step: 1,
+                timestamp: new Date().toISOString()
+            };
+
+            document.querySelectorAll('.strength-input').forEach(input => {
+                const category = input.dataset.category;
+                const value = input.value.trim();
+                if (value) {
+                    formData[category].push(value);
+                }
+            });
+            
+            await window.workflowAPI.saveWorkflowStep('swot', 'step1', formData);
+            
+            // Redirect to step 2
+            window.location.href = 'step2-swot.html';
+        }
+        
+        function autoSave() {
+            const formData = {
+                personal: [],
+                professional: [],
+                education: [],
+                network: [],
+                step: 1,
+                timestamp: new Date().toISOString()
+            };
+
+            document.querySelectorAll('.strength-input').forEach(input => {
+                const category = input.dataset.category;
+                const value = input.value.trim();
+                if (value) {
+                    formData[category].push(value);
+                }
+            });
+            await window.workflowAPI.saveWorkflowStep('swot', 'step1', formData);
+        }
+        
+        // Load saved data if available
+        window.addEventListener('load', function() {
+            const savedData = await window.workflowAPI.loadSavedProgress('swot', 'step1');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                
+                // Restore strengths for each category
+                ['personal', 'professional', 'education', 'network'].forEach(category => {
+                    const container = document.getElementById(`${category}-strengths`);
+                    if (container && data[category] && data[category].length > 0) {
+                        // Clear existing items except the first one
+                        const existingItems = container.querySelectorAll('.strength-item');
+                        existingItems.forEach((item, index) => {
+                            if (index === 0 && data[category][0]) {
+                                item.querySelector('input').value = data[category][0];
+                            } else if (index > 0) {
+                                item.remove();
+                            }
+                        });
+                        
+                        // Add additional items
+                        for (let i = 1; i < data[category].length; i++) {
+                            addStrength(category);
+                            const inputs = container.querySelectorAll('input');
+                            if (inputs[i]) {
+                                inputs[i].value = data[category][i];
+                            }
+                        }
+                    }
+                });
+            }
+        });
+        
+        // Auto-save on input
+        document.addEventListener('input', function(e) {
+            if (e.target.classList.contains('strength-input')) {
+                autoSave();
+            }
+        });
+    </script>
+
+    <!-- AWS Configuration -->
+    <script>
+        window.AWS_CONFIG = {
+            region: 'eu-central-1',
+            userPoolId: 'eu-central-1_8gP4gLK9r',
+            clientId: '7kc5tt6a23fgh53d60vkefm812',
+            apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod',
+            dynamoDB: {
+                tableName: 'mawps-user-profiles',
+                region: 'eu-central-1'
+            },
+            s3: {
+                bucket: 'mawps-user-files-1760106396',
+                region: 'eu-central-1'
+            }
+        };
+    </script>
+    
+    <!-- AWS SDK -->
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    
+    <!-- Workflow API (API-First) -->
+    <script src="/js/workflow-api.js"></script>
+    <!-- Auth & Progress Tracking -->
+    <script src="/js/aws-profile-api.js"></script>
+    <script src="/js/real-user-auth-system.js?v=20250116"></script>
+    <script src="/js/user-progress-tracker.js"></script>
+    <script src="/js/personality-auth-integration.js"></script>
+</body>
+</html>
