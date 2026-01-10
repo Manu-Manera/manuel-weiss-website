@@ -447,12 +447,12 @@ class CoachingWorkflow {
             html += this.renderQuestion(q);
         });
         
-        // Vertiefende Persönlichkeitsentwicklungsmethoden - Direktlinks zu Workflows
+        // Vertiefende Persönlichkeitsentwicklungsmethoden - Kacheln als komplette Links
         if (methods.length > 0) {
             html += `
                 <div class="related-methods-section">
                     <h4><i class="fas fa-compass"></i> Du möchtest noch tiefer gehen?</h4>
-                    <p class="related-methods-intro">Starte einen interaktiven Workflow zu diesen Methoden:</p>
+                    <p class="related-methods-intro">Klicke auf eine Methode für einen interaktiven Workflow:</p>
                     <div class="related-methods-grid">
                         ${methods.map(m => `
                             <a href="${m.path}" 
@@ -466,10 +466,6 @@ class CoachingWorkflow {
                                 <div class="method-info">
                                     <span class="method-name">${m.name}</span>
                                     <span class="method-desc">${m.desc}</span>
-                                </div>
-                                <div class="method-cta">
-                                    <span>Workflow starten</span>
-                                    <i class="fas fa-arrow-right"></i>
                                 </div>
                             </a>
                         `).join('')}
