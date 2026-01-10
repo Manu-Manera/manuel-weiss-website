@@ -7,10 +7,11 @@
     <meta name="description" content="Professionelles Bewerbungscoaching mit systemischem Ansatz. Hilfe zur Selbsthilfe in 6 Schritten zur erfolgreichen Bewerbung.">
     
     <!-- CSS -->
-    <link rel="stylesheet" href="../styles.css?v=20260109">
-    <link rel="stylesheet" href="css/applications-main.css?v=20260109">
-    <link rel="stylesheet" href="css/dashboard.css?v=20260109">
-    <link rel="stylesheet" href="css/coaching.css?v=20260109">
+    <link rel="stylesheet" href="../styles.css?v=20260110b">
+    <link rel="stylesheet" href="css/applications-main.css?v=20260110b">
+    <link rel="stylesheet" href="css/dashboard.css?v=20260110b">
+    <link rel="stylesheet" href="css/landing.css?v=20260110b">
+    <link rel="stylesheet" href="css/coaching.css?v=20260110b">
     
     <!-- Critical Mobile Navbar Override - Loaded LAST to ensure highest priority -->
     <style>
@@ -141,35 +142,46 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <!-- Navigation - Modern & Clean -->
-    <nav class="navbar navbar-modern">
+    <!-- Navigation - Schlanke Menüleiste -->
+    <nav class="navbar navbar-slim">
         <div class="nav-container">
-            <!-- Mobile Hamburger -->
-            <button class="mobile-hamburger" id="mobileHamburger" aria-label="Menü öffnen">
-                <span class="hamburger-line"></span>
-                <span class="hamburger-line"></span>
-                <span class="hamburger-line"></span>
-            </button>
-            
-            <div class="nav-menu">
-                <a href="../index.html" class="nav-link nav-link-home">
-                    <i class="fas fa-home"></i>
-                    <span>Start</span>
-                </a>
-                <a href="dashboard.html" class="nav-link">
-                    <i class="fas fa-briefcase"></i>
-                    <span>Bewerbungsmanager</span>
-                </a>
-                <a href="coaching.html" class="nav-link active">
-                    <i class="fas fa-compass"></i>
-                    <span>Coaching</span>
-                </a>
+            <div class="nav-menu" id="navMenu">
+                <a href="../index.html" class="nav-link">Start</a>
+                <a href="dashboard.html" class="nav-link">Bewerbungsmanager</a>
+                <a href="coaching.html" class="nav-link active">Coaching</a>
+                <a href="../index.html#contact" class="nav-link">Kontakt</a>
+                <div class="nav-divider"></div>
+                <button class="lang-link-compact" data-lang="de" title="Deutsch">🇩🇪</button>
+                <button class="lang-link-compact" data-lang="en" title="English">🇬🇧</button>
+                <button id="authButton" class="nav-auth-btn">
+                    <i class="fas fa-user"></i>
+                    <span>Anmelden</span>
+                </button>
             </div>
             
-            <div class="auth-section">
-                <button id="authButton" class="nav-login-btn">
+            <!-- Mobile Hamburger -->
+            <button class="mobile-hamburger" id="mobileHamburger" aria-label="Menü öffnen">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+        
+        <!-- Mobile Fullscreen Menu -->
+        <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
+        <div class="mobile-menu-fullscreen" id="mobileMenuFullscreen">
+            <div class="mobile-menu-content">
+                <a href="../index.html" class="mobile-menu-link">Start</a>
+                <a href="dashboard.html" class="mobile-menu-link">Bewerbungsmanager</a>
+                <a href="coaching.html" class="mobile-menu-link active">Coaching</a>
+                <a href="../index.html#contact" class="mobile-menu-link">Kontakt</a>
+                <div class="mobile-language-switcher">
+                    <button class="lang-link-compact" data-lang="de" title="Deutsch">🇩🇪</button>
+                    <button class="lang-link-compact" data-lang="en" title="English">🇬🇧</button>
+                </div>
+                <button id="mobileAuthButton" class="mobile-auth-btn">
                     <i class="fas fa-user"></i>
-                    <span id="authButtonText">Anmelden</span>
+                    <span>Anmelden</span>
                 </button>
             </div>
         </div>
