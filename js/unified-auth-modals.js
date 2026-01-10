@@ -725,15 +725,13 @@ class UnifiedAuthModals {
             
             if (result.success) {
                 this.closeModal();
-                // Optional: Weiterleitung zur Profilseite nach kurzer Verzögerung
-                setTimeout(() => {
-                    // Nur weiterleiten wenn auf bestimmten Seiten
-                    const currentPath = window.location.pathname;
-                    if (currentPath.includes('index.html') || currentPath === '/' || currentPath.endsWith('/')) {
-                        // Optional: Weiterleitung zu Profil
-                        // window.location.href = 'user-profile.html';
-                    }
-                }, 1000);
+                
+                // Dispatch auth state changed event
+                window.dispatchEvent(new CustomEvent('authStateChanged', { detail: { loggedIn: true } }));
+                window.dispatchEvent(new CustomEvent('userLoggedIn', { detail: result.user }));
+                
+                // Show success message
+                this.showToast('Erfolgreich angemeldet!', 'success');
             }
         } catch (error) {
             console.error('Login error:', error);
@@ -942,6 +940,41 @@ class UnifiedAuthModals {
             window.awsAuth.showNotification(message, 'error');
         } else {
             alert(message);
+        }
+    }
+    
+    showToast(message, type = 'success') {
+        if (window.awsAuth?.showNotification) {
+            window.awsAuth.showNotification(message, type);
+        } else {
+            // Fallback Toast
+            const toast = document.createElement('div');
+            toast.className = `auth-toast auth-toast-${type}`;
+            toast.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${message}`;
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 16px 24px;
+                background: ${type === 'success' ? 'linear-gradient(135deg, #10b981, #059669)' : 'linear-gradient(135deg, #ef4444, #dc2626)'};
+                color: white;
+                border-radius: 12px;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+                z-index: 100001;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                font-weight: 600;
+                animation: slideIn 0.3s ease;
+            `;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
+                toast.style.transition = 'all 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
         }
     }
 }
