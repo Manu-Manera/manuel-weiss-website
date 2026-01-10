@@ -2778,16 +2778,21 @@
         cards.forEach(card => {
             if (category === 'all' || card.dataset.category === category) {
                 card.style.display = 'block';
-                } else {
+            } else {
                 card.style.display = 'none';
             }
         });
         
-        // Update active filter
-        document.querySelectorAll('.filter-tab').forEach(tab => {
+        // Update active filter - unterstütze sowohl filter-tab als auch filter-tag
+        document.querySelectorAll('.filter-tab, .filter-tag').forEach(tab => {
             tab.classList.remove('active');
         });
-        document.querySelector(`[data-filter="${category}"]`).classList.add('active');
+        
+        // Suche nach data-filter oder data-category
+        const activeTab = document.querySelector(`[data-filter="${category}"], [data-category="${category}"]`);
+        if (activeTab) {
+            activeTab.classList.add('active');
+        }
     }
     
     // Enhanced Search function with similarity matching
@@ -3020,6 +3025,25 @@
         
         // Set default filter to 'all'
         filterMethods('all');
+        
+        // Event-Listener für Filter-Tags hinzufügen
+        document.querySelectorAll('.filter-tag').forEach(tag => {
+            tag.addEventListener('click', function() {
+                const category = this.getAttribute('data-category');
+                filterMethods(category);
+            });
+        });
+        
+        // Event-Listener für Suchfeld
+        const searchInput = document.getElementById('methodSearch');
+        if (searchInput) {
+            searchInput.addEventListener('input', searchMethods);
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    searchMethods();
+                }
+            });
+        }
         
         // Initialize language switcher
         const savedLanguage = localStorage.getItem('selectedLanguage') || 'de';

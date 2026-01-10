@@ -1137,30 +1137,9 @@
     line-height: 1.4;
 }
 
-.related-method-card .method-cta {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: #4f46e5;
-    padding-top: 12px;
-    border-top: 1px solid rgba(99, 102, 241, 0.1);
-    position: relative;
-    z-index: 1;
-    transition: all 0.3s ease;
-}
-
-.related-method-card .method-cta i {
-    transition: transform 0.3s ease;
-}
-
-.related-method-card:hover .method-cta {
-    color: #7c3aed;
-}
-
-.related-method-card:hover .method-cta i {
-    transform: translateX(4px);
+.related-method-card:hover .method-icon-wrapper {
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
     transform: translateX(3px);
 }
 
