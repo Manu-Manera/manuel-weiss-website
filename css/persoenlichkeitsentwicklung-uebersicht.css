@@ -1639,16 +1639,17 @@
 .personality-methods-overview .section-title {
     font-size: 2.5rem;
     font-weight: 800;
-    color: white;
+    /* Dunkler Text für Lesbarkeit auf weißem Hintergrund der search-filter-section */
+    color: #1e293b;
     margin-bottom: 0.75rem;
     line-height: 1.2;
     letter-spacing: -0.02em;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .personality-methods-overview .section-subtitle {
     font-size: 1.125rem;
-    color: rgba(255, 255, 255, 0.9);
+    /* Dunkler Text für Lesbarkeit auf weißem Hintergrund */
+    color: #64748b;
     max-width: 700px;
     margin: 0 auto;
     line-height: 1.6;
@@ -1728,13 +1729,14 @@
 
 .method-card {
     padding: var(--spacing-xl);
-    background: rgba(255, 255, 255, 0.1);
+    /* Fester lila Hintergrund für Lesbarkeit - weißer Text auf lila */
+    background: linear-gradient(135deg, #4f46e5 0%, #6366f1 50%, #7c3aed 100%);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 20px;
     transition: all var(--transition-base);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 8px 32px rgba(99, 102, 241, 0.3);
     display: flex;
     flex-direction: column;
     height: 440px;
