@@ -1013,105 +1013,154 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   RELATED METHODS SECTION - Persönlichkeitsentwicklung Links
+   RELATED METHODS SECTION - Direkte Workflow-Links
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .related-methods-section {
     margin-top: 40px;
-    padding: 24px;
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(124, 58, 237, 0.08) 100%);
-    border-radius: 16px;
-    border: 1px solid rgba(99, 102, 241, 0.15);
+    padding: 28px;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(124, 58, 237, 0.12) 100%);
+    border-radius: 20px;
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.related-methods-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 50%, #7c3aed 100%);
 }
 
 .related-methods-section h4 {
     margin: 0 0 8px 0;
-    font-size: 1.1rem;
-    font-weight: 700;
+    font-size: 1.2rem;
+    font-weight: 800;
     color: #4f46e5;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
 }
 
 .related-methods-section h4 i {
     color: #7c3aed;
+    font-size: 1.1rem;
 }
 
 .related-methods-intro {
-    margin: 0 0 16px 0;
-    font-size: 0.9rem;
+    margin: 0 0 20px 0;
+    font-size: 0.95rem;
     color: #6b7280;
 }
 
 .related-methods-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 12px;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
 }
 
 .related-method-card {
     display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 14px 16px;
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px;
     background: white;
-    border-radius: 12px;
-    border: 1px solid rgba(99, 102, 241, 0.1);
+    border-radius: 16px;
+    border: 1px solid rgba(99, 102, 241, 0.15);
     text-decoration: none;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.related-method-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 0;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(124, 58, 237, 0.08) 100%);
+    transition: height 0.3s ease;
 }
 
 .related-method-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.15);
-    border-color: rgba(99, 102, 241, 0.3);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(99, 102, 241, 0.2);
+    border-color: rgba(99, 102, 241, 0.4);
 }
 
-.related-method-card > i:first-child {
-    width: 40px;
-    height: 40px;
+.related-method-card:hover::after {
+    height: 100%;
+}
+
+.related-method-card .method-icon-wrapper {
+    width: 48px;
+    height: 48px;
     display: flex;
     align-items: center;
     justify-content: center;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 10px;
+    border-radius: 14px;
     color: white;
-    font-size: 1rem;
+    font-size: 1.2rem;
     flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
 }
 
 .related-method-card .method-info {
     flex: 1;
     min-width: 0;
+    position: relative;
+    z-index: 1;
 }
 
 .related-method-card .method-name {
     display: block;
-    font-weight: 600;
-    font-size: 0.95rem;
+    font-weight: 700;
+    font-size: 1.05rem;
     color: #1f2937;
-    margin-bottom: 2px;
+    margin-bottom: 4px;
 }
 
 .related-method-card .method-desc {
     display: block;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     color: #6b7280;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    line-height: 1.4;
 }
 
-.related-method-card .method-arrow {
-    color: #9ca3af;
-    font-size: 0.8rem;
+.related-method-card .method-cta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #4f46e5;
+    padding-top: 12px;
+    border-top: 1px solid rgba(99, 102, 241, 0.1);
+    position: relative;
+    z-index: 1;
     transition: all 0.3s ease;
 }
 
-.related-method-card:hover .method-arrow {
-    color: #4f46e5;
+.related-method-card .method-cta i {
+    transition: transform 0.3s ease;
+}
+
+.related-method-card:hover .method-cta {
+    color: #7c3aed;
+}
+
+.related-method-card:hover .method-cta i {
+    transform: translateX(4px);
     transform: translateX(3px);
 }
 
