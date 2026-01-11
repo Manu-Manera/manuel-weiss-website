@@ -3855,6 +3855,7 @@ a:hover {
         padding: calc(var(--header-height) + var(--spacing-md)) 0 var(--spacing-md) 0;
         position: relative;
         overflow: hidden;
+        isolation: auto !important; /* WICHTIG: Deaktiviere isolation für Mobile */
     }
     
     /* DEAKTIVIERE alle Pseudo-Element-Animationen auf Mobile für Performance */
@@ -3901,7 +3902,7 @@ a:hover {
         max-height: 70vh; /* Begrenze Container-Höhe */
         position: relative;
         z-index: 5 !important; /* Content HINTER Video */
-        /* KEIN isolation: isolate - verursacht verschwommenen Text in Safari */
+        isolation: auto !important; /* WICHTIG: Deaktiviere isolation für Mobile */
         /* KEIN transform: translateZ(0) - verursacht verschwommenen Text */
         display: flex;
         align-items: center;
