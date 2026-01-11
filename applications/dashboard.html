@@ -12,46 +12,57 @@
     <link rel="stylesheet" href="css/dashboard.css">
     <link rel="stylesheet" href="css/landing.css?v=20260110">
     
-    <!-- Critical Mobile Navbar Override - Loaded LAST to ensure highest priority -->
+    <!-- Critical Mobile Navbar Override - Wie Hauptseite -->
     <style>
-        /* Override ALL conflicting global styles for navbar-modern */
+        /* Mobile: Nur Hamburger sichtbar, kein weißer Balken */
         @media (max-width: 768px) {
-            .navbar.navbar-modern {
+            /* Navbar transparent auf Mobile */
+            .navbar {
                 position: fixed !important;
                 top: 0 !important;
                 left: 0 !important;
                 right: 0 !important;
-                display: block !important;
-                visibility: visible !important;
-                pointer-events: auto !important;
-                z-index: 10000 !important;
-                height: 60px !important;
-                background: rgba(30, 58, 138, 0.95) !important;
+                background: transparent !important;
+                border: none !important;
+                box-shadow: none !important;
+                z-index: 1000 !important;
+                pointer-events: none !important;
+            }
+            
+            /* Desktop Nav verstecken */
+            .navbar .desktop-nav {
+                display: none !important;
+            }
+            
+            /* Hamburger rechts mit Milchglas-Kreis wie Hauptseite */
+            .navbar .mobile-hamburger {
+                display: flex !important;
+                position: fixed !important;
+                top: 16px !important;
+                right: 16px !important;
+                width: 48px !important;
+                height: 48px !important;
+                border-radius: 50% !important;
+                background: rgba(255, 255, 255, 0.95) !important;
                 backdrop-filter: blur(10px) !important;
-            }
-            
-            .navbar.navbar-modern .nav-container {
-                display: flex !important;
-                visibility: visible !important;
+                -webkit-backdrop-filter: blur(10px) !important;
+                border: 1px solid rgba(255, 255, 255, 0.5) !important;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+                z-index: 10000 !important;
+                cursor: pointer !important;
                 pointer-events: auto !important;
-                height: 60px !important;
-                padding: 0 15px !important;
+                flex-direction: column !important;
+                justify-content: center !important;
                 align-items: center !important;
-                justify-content: space-between !important;
+                gap: 5px !important;
             }
             
-            .navbar.navbar-modern .mobile-hamburger {
-                display: flex !important;
-                visibility: visible !important;
-                pointer-events: auto !important;
-            }
-            
-            .navbar.navbar-modern .nav-menu {
-                display: none !important;
-            }
-            
-            .navbar.navbar-modern .auth-section {
-                display: none !important;
+            .navbar .mobile-hamburger span {
+                width: 22px !important;
+                height: 2px !important;
+                background: #1e3a8a !important;
+                border-radius: 2px !important;
+                transition: all 0.3s ease !important;
             }
             
             /* Mobile Fullscreen Menu */
@@ -65,11 +76,38 @@
                 z-index: 9999 !important;
                 transition: left 0.3s ease !important;
                 display: flex !important;
+                flex-direction: column !important;
+                justify-content: center !important;
+                align-items: center !important;
                 visibility: visible !important;
             }
             
             .mobile-menu-fullscreen.active {
                 left: 0 !important;
+            }
+            
+            /* Close Button für Mobile Menu */
+            .mobile-menu-close {
+                position: absolute !important;
+                top: 20px !important;
+                right: 20px !important;
+                width: 48px !important;
+                height: 48px !important;
+                border-radius: 50% !important;
+                background: rgba(255, 255, 255, 0.2) !important;
+                border: none !important;
+                color: white !important;
+                font-size: 24px !important;
+                cursor: pointer !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                transition: all 0.3s ease !important;
+            }
+            
+            .mobile-menu-close:hover {
+                background: rgba(255, 255, 255, 0.3) !important;
+                transform: scale(1.1) !important;
             }
             
             .mobile-menu-overlay {
@@ -89,6 +127,57 @@
                 opacity: 1 !important;
                 visibility: visible !important;
             }
+            
+            /* Mobile Menu Content */
+            .mobile-menu-content {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                gap: 20px !important;
+            }
+            
+            .mobile-menu-link {
+                color: white !important;
+                font-size: 1.5rem !important;
+                font-weight: 600 !important;
+                text-decoration: none !important;
+                padding: 12px 24px !important;
+                border-radius: 12px !important;
+                transition: all 0.3s ease !important;
+            }
+            
+            .mobile-menu-link:hover,
+            .mobile-menu-link.active {
+                background: rgba(255, 255, 255, 0.2) !important;
+            }
+            
+            .mobile-auth-btn {
+                margin-top: 20px !important;
+                padding: 14px 28px !important;
+                background: rgba(255, 255, 255, 0.2) !important;
+                border: 2px solid white !important;
+                border-radius: 12px !important;
+                color: white !important;
+                font-size: 1.1rem !important;
+                font-weight: 600 !important;
+                cursor: pointer !important;
+                display: flex !important;
+                align-items: center !important;
+                gap: 10px !important;
+            }
+            
+            .mobile-language-switcher {
+                display: flex !important;
+                gap: 12px !important;
+                margin-top: 10px !important;
+            }
+            
+            .mobile-language-switcher button {
+                font-size: 1.5rem !important;
+                background: transparent !important;
+                border: none !important;
+                cursor: pointer !important;
+            }
         }
     </style>
     
@@ -97,45 +186,45 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <!-- Navigation - Schlanke Menüleiste wie Landing Page -->
-    <nav class="navbar navbar-slim">
-        <div class="nav-container">
-            <div class="nav-menu" id="navMenu">
-                <a href="../index.html" class="nav-link">Start</a>
-                <a href="../persoenlichkeitsentwicklung-uebersicht.html" class="nav-link">Persönlichkeitsentwicklung</a>
-                <a href="index.html" class="nav-link">Bewerbungsmanager</a>
-                <a href="coaching.html" class="nav-link">Coaching</a>
-                <div class="nav-divider"></div>
-                <button class="lang-link-compact" data-lang="de" title="Deutsch">🇩🇪</button>
-                <button class="lang-link-compact" data-lang="en" title="English">🇬🇧</button>
-                <button id="authButton" class="nav-auth-btn">
-                    <i class="fas fa-user"></i>
-                    <span id="authButtonText">Anmelden</span>
-                </button>
-                <!-- User Dropdown (hidden until logged in) -->
-                <div class="user-dropdown" id="userDropdown" style="display: none;">
-                    <a href="../user-profile.html" class="dropdown-item"><i class="fas fa-user-circle"></i> Mein Profil</a>
-                    <a href="dashboard.html" class="dropdown-item"><i class="fas fa-th-large"></i> Dashboard</a>
-                    <hr class="dropdown-divider">
-                    <button class="dropdown-item" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Abmelden</button>
+    <!-- Navigation - Wie auf Hauptseite: Nur Hamburger auf Mobile, transparent -->
+    <nav class="navbar">
+        <!-- Mobile: Nur Hamburger-Icon (rechts positioniert wie Hauptseite) -->
+        <button class="mobile-hamburger" id="mobileHamburger" aria-label="Menü öffnen">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        
+        <!-- Desktop Navigation -->
+        <div class="desktop-nav">
+            <div class="nav-container">
+                <div class="nav-menu" id="navMenu">
+                    <a href="../index.html" class="nav-link">Start</a>
+                    <a href="../persoenlichkeitsentwicklung-uebersicht.html" class="nav-link">Persönlichkeitsentwicklung</a>
+                    <a href="index.html" class="nav-link">Bewerbungsmanager</a>
+                    <a href="coaching.html" class="nav-link">Coaching</a>
+                    <div class="nav-divider"></div>
+                    <button class="lang-link-compact" data-lang="de" title="Deutsch">🇩🇪</button>
+                    <button class="lang-link-compact" data-lang="en" title="English">🇬🇧</button>
+                    <button id="authButton" class="nav-auth-btn">
+                        <i class="fas fa-user"></i>
+                        <span id="authButtonText">Anmelden</span>
+                    </button>
                 </div>
             </div>
-            
-            <!-- Mobile Hamburger -->
-            <button class="mobile-hamburger" id="mobileHamburger" aria-label="Menü öffnen">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
         </div>
         
         <!-- Mobile Fullscreen Menu -->
         <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
         <div class="mobile-menu-fullscreen" id="mobileMenuFullscreen">
+            <!-- Close Button -->
+            <button class="mobile-menu-close" id="mobileMenuClose" aria-label="Menü schließen">
+                <i class="fas fa-times"></i>
+            </button>
             <div class="mobile-menu-content">
                 <a href="../index.html" class="mobile-menu-link">Start</a>
                 <a href="../persoenlichkeitsentwicklung-uebersicht.html" class="mobile-menu-link">Persönlichkeitsentwicklung</a>
-                <a href="index.html" class="mobile-menu-link">Bewerbungsmanager</a>
+                <a href="index.html" class="mobile-menu-link active">Bewerbungsmanager</a>
                 <a href="coaching.html" class="mobile-menu-link">Coaching</a>
                 <div class="mobile-language-switcher">
                     <button class="lang-link-compact" data-lang="de" title="Deutsch">🇩🇪</button>
@@ -1058,8 +1147,68 @@ Ihre Aufgaben:
             }
         };
         
+        // Mobile Menu Functions
+        function openMobileMenu() {
+            const mobileMenu = document.getElementById('mobileMenuFullscreen');
+            const overlay = document.getElementById('mobileMenuOverlay');
+            const hamburger = document.getElementById('mobileHamburger');
+            
+            if (mobileMenu) mobileMenu.classList.add('active');
+            if (overlay) overlay.classList.add('active');
+            if (hamburger) hamburger.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeMobileMenu() {
+            const mobileMenu = document.getElementById('mobileMenuFullscreen');
+            const overlay = document.getElementById('mobileMenuOverlay');
+            const hamburger = document.getElementById('mobileHamburger');
+            
+            if (mobileMenu) mobileMenu.classList.remove('active');
+            if (overlay) overlay.classList.remove('active');
+            if (hamburger) hamburger.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobileMenuFullscreen');
+            if (mobileMenu && mobileMenu.classList.contains('active')) {
+                closeMobileMenu();
+            } else {
+                openMobileMenu();
+            }
+        }
+        
+        // Setup Mobile Menu Event Listeners
+        function setupMobileMenu() {
+            const hamburger = document.getElementById('mobileHamburger');
+            const closeBtn = document.getElementById('mobileMenuClose');
+            const overlay = document.getElementById('mobileMenuOverlay');
+            const menuLinks = document.querySelectorAll('.mobile-menu-link');
+            
+            if (hamburger) {
+                hamburger.addEventListener('click', toggleMobileMenu);
+            }
+            
+            if (closeBtn) {
+                closeBtn.addEventListener('click', closeMobileMenu);
+            }
+            
+            if (overlay) {
+                overlay.addEventListener('click', closeMobileMenu);
+            }
+            
+            // Close menu when clicking a link
+            menuLinks.forEach(link => {
+                link.addEventListener('click', closeMobileMenu);
+            });
+        }
+        
         // Initialize on load
         document.addEventListener('DOMContentLoaded', async () => {
+            // Setup mobile menu
+            setupMobileMenu();
+            
             // Wait for auth system
             await waitForAuthSystem();
             
