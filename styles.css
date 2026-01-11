@@ -5192,6 +5192,19 @@ img {
 
 /* Mobile: Schneeflocken-Größen anpassen */
 @media (max-width: 768px) {
+    /* WICHTIG: Schneeflocken VOR dem Video auf iOS Safari */
+    .snowflakes-container {
+        z-index: 100 !important; /* Höher als Video-Wrapper (z-index: 50) */
+    }
+    
+    .snowflake {
+        z-index: 100 !important; /* Schneeflocken VOR dem Video */
+    }
+    
+    .snowflake.clickable {
+        z-index: 100 !important; /* Klickbare Schneeflocken auch VOR dem Video */
+    }
+    
     .snowflake.small {
         font-size: 0.8rem; /* Größer auf Mobile */
     }
