@@ -47,37 +47,38 @@ class CoachingWorkflow {
             accountabilityPartner: ''
         };
         
-        // Verlinkung zu Persönlichkeitsentwicklungsmethoden - Direkte Links zu Workflow-Seiten
+        // Verlinkung zu Persönlichkeitsentwicklungsmethoden - Vollständige Workflows oder Hauptseiten
+        // HINWEIS: Links führen zu vollständigen Workflows (wo vorhanden) oder zu den Hauptseiten
         this.relatedMethods = {
             1: [
-                { id: 'wheel-of-life', name: 'Rad des Lebens', desc: 'Bewerte verschiedene Lebensbereiche', icon: 'fa-circle-notch', path: '/methods/wheel-of-life/step1-wheel.html' },
-                { id: 'self-assessment', name: 'Selbsteinschätzung', desc: 'Erkenne dein volles Potenzial', icon: 'fa-user-check', path: '/methods/self-assessment/step1-self-assessment.html' }
+                { id: 'wheel-of-life', name: 'Rad des Lebens', desc: 'Bewerte verschiedene Lebensbereiche (4 Schritte)', icon: 'fa-circle-notch', path: '/methods/wheel-of-life/index-wheel-of-life.html', hasFullWorkflow: true },
+                { id: 'self-assessment', name: 'Selbsteinschätzung', desc: 'Erkenne dein volles Potenzial', icon: 'fa-user-check', path: '/methods/self-assessment/self-assessment.html', hasFullWorkflow: false }
             ],
             2: [
-                { id: 'ikigai', name: 'Ikigai', desc: 'Finde deinen Lebenszweck', icon: 'fa-compass', path: '/ikigai.html' },
-                { id: 'via-strengths', name: 'VIA-Stärken', desc: 'Entdecke deine Charakterstärken', icon: 'fa-gem', path: '/methods/via-strengths/step1-via.html' },
-                { id: 'swot', name: 'SWOT-Analyse', desc: 'Stärken, Schwächen, Chancen, Risiken', icon: 'fa-th-large', path: '/methods/swot-analysis/step1-swot.html' },
-                { id: 'values-clarification', name: 'Werteklärung', desc: 'Was ist dir wirklich wichtig?', icon: 'fa-heart', path: '/methods/values-clarification/step1-values.html' }
+                { id: 'ikigai', name: 'Ikigai', desc: 'Finde deinen Lebenszweck (7 Schritte)', icon: 'fa-compass', path: '/methods/ikigai/index-ikigai.html', hasFullWorkflow: true },
+                { id: 'via-strengths', name: 'VIA-Stärken', desc: 'Entdecke deine Charakterstärken', icon: 'fa-gem', path: '/methods/via-strengths/via-strengths.html', hasFullWorkflow: false },
+                { id: 'swot', name: 'SWOT-Analyse', desc: 'Stärken, Schwächen, Chancen, Risiken (2 Schritte)', icon: 'fa-th-large', path: '/methods/swot-analysis/step1-swot.html', hasFullWorkflow: true },
+                { id: 'values-clarification', name: 'Werteklärung', desc: 'Was ist dir wirklich wichtig?', icon: 'fa-heart', path: '/methods/values-clarification/values-clarification-modern.html', hasFullWorkflow: false }
             ],
             3: [
-                { id: 'goal-setting', name: 'SMART-Ziele', desc: 'Setze messbare Ziele', icon: 'fa-bullseye', path: '/methods/goal-setting/step1-goal-setting.html' },
-                { id: 'vision-board', name: 'Vision Board', desc: 'Visualisiere deine Zukunft', icon: 'fa-images', path: '/methods/vision-board/step1-vision.html' },
-                { id: 'nlp-meta-goal', name: 'NLP Meta-Ziel', desc: 'Finde dein übergeordnetes Ziel', icon: 'fa-brain', path: '/methods/nlp-meta-goal/step1-nlp-meta.html' }
+                { id: 'goal-setting', name: 'SMART-Ziele', desc: 'Setze messbare Ziele', icon: 'fa-bullseye', path: '/methods/goal-setting/goal-setting.html', hasFullWorkflow: false },
+                { id: 'vision-board', name: 'Vision Board', desc: 'Visualisiere deine Zukunft', icon: 'fa-images', path: '/methods/vision-board/vision-board.html', hasFullWorkflow: false },
+                { id: 'nlp-meta-goal', name: 'NLP Meta-Ziel', desc: 'Finde dein übergeordnetes Ziel', icon: 'fa-brain', path: '/methods/nlp-meta-goal/nlp-meta-goal.html', hasFullWorkflow: false }
             ],
             4: [
-                { id: 'resource-analysis', name: 'Ressourcenanalyse', desc: 'Entdecke deine verborgenen Stärken', icon: 'fa-boxes', path: '/methods/resource-analysis/step1-resources.html' },
-                { id: 'nlp-dilts', name: 'NLP Dilts-Pyramide', desc: 'Verstehe deine Verhaltensebenen', icon: 'fa-layer-group', path: '/methods/nlp-dilts/step1-dilts.html' },
-                { id: 'solution-focused', name: 'Lösungsfokussiert', desc: 'Fokus auf was funktioniert', icon: 'fa-lightbulb', path: '/methods/solution-focused/step1-solution.html' }
+                { id: 'resource-analysis', name: 'Ressourcenanalyse', desc: 'Entdecke deine verborgenen Stärken', icon: 'fa-boxes', path: '/methods/resource-analysis/resource-analysis.html', hasFullWorkflow: false },
+                { id: 'nlp-dilts', name: 'NLP Dilts-Pyramide', desc: 'Verstehe deine Verhaltensebenen', icon: 'fa-layer-group', path: '/methods/nlp-dilts/nlp-dilts.html', hasFullWorkflow: false },
+                { id: 'solution-focused', name: 'Lösungsfokussiert', desc: 'Fokus auf was funktioniert', icon: 'fa-lightbulb', path: '/methods/solution-focused/solution-focused.html', hasFullWorkflow: false }
             ],
             5: [
-                { id: 'change-stages', name: 'Veränderungsphasen', desc: 'Verstehe den Veränderungsprozess', icon: 'fa-sync-alt', path: '/methods/change-stages/step1-change.html' },
-                { id: 'target-coaching', name: 'Ziel-Coaching', desc: 'Präzise Zielerreichung', icon: 'fa-crosshairs', path: '/methods/target-coaching/target-coaching.html' },
-                { id: 'rubikon-model', name: 'Rubikon-Modell', desc: 'Von der Entscheidung zur Handlung', icon: 'fa-route', path: '/methods/rubikon-model/step1-rubikon.html' }
+                { id: 'change-stages', name: 'Veränderungsphasen', desc: 'Verstehe den Veränderungsprozess', icon: 'fa-sync-alt', path: '/methods/change-stages/change-stages.html', hasFullWorkflow: false },
+                { id: 'target-coaching', name: 'Ziel-Coaching', desc: 'Präzise Zielerreichung', icon: 'fa-crosshairs', path: '/methods/target-coaching/target-coaching.html', hasFullWorkflow: false },
+                { id: 'rubikon-model', name: 'Rubikon-Modell', desc: 'Von der Entscheidung zur Handlung', icon: 'fa-route', path: '/methods/rubikon-model/rubikon-model.html', hasFullWorkflow: false }
             ],
             6: [
-                { id: 'habit-building', name: 'Gewohnheiten', desc: 'Baue positive Routinen auf', icon: 'fa-redo', path: '/methods/habit-building/step1-habit.html' },
-                { id: 'moment-excellence', name: 'Moment of Excellence', desc: 'Aktiviere deine Bestleistung', icon: 'fa-star', path: '/methods/moment-excellence/step1-excellence.html' },
-                { id: 'mindfulness', name: 'Achtsamkeit', desc: 'Entwickle innere Ruhe', icon: 'fa-spa', path: '/methods/mindfulness/step1-mindfulness.html' }
+                { id: 'habit-building', name: 'Gewohnheiten', desc: 'Baue positive Routinen auf', icon: 'fa-redo', path: '/methods/habit-building/habit-building.html', hasFullWorkflow: false },
+                { id: 'moment-excellence', name: 'Moment of Excellence', desc: 'Aktiviere deine Bestleistung', icon: 'fa-star', path: '/methods/moment-excellence/moment-excellence.html', hasFullWorkflow: false },
+                { id: 'mindfulness', name: 'Achtsamkeit', desc: 'Entwickle innere Ruhe', icon: 'fa-spa', path: '/methods/mindfulness/mindfulness.html', hasFullWorkflow: false }
             ]
         };
         
@@ -456,7 +457,7 @@ class CoachingWorkflow {
                     <div class="related-methods-grid">
                         ${methods.map(m => `
                             <a href="${m.path}" 
-                               class="related-method-card" 
+                               class="related-method-card ${m.hasFullWorkflow ? 'has-workflow' : ''}" 
                                target="_blank"
                                rel="noopener noreferrer"
                                title="${m.name} - ${m.desc}">
@@ -466,6 +467,7 @@ class CoachingWorkflow {
                                 <div class="method-info">
                                     <span class="method-name">${m.name}</span>
                                     <span class="method-desc">${m.desc}</span>
+                                    ${m.hasFullWorkflow ? '<span class="workflow-badge"><i class="fas fa-tasks"></i> Workflow</span>' : ''}
                                 </div>
                             </a>
                         `).join('')}
