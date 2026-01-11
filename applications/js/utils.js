@@ -19,14 +19,61 @@ const AIProviderManager = {
     /**
      * Holt den aktiven AI-Provider mit API-Key
      * Prioritäten:
-     * 1. AWS DynamoDB (Admin-Konfiguration)
+     * 0. AWS API Settings (neues sicheres System)
+     * 1. AWS DynamoDB (Admin-Konfiguration - Legacy)
      * 2. Admin-Panel State (localStorage)
      * 3. GlobalAPIManager
      * 4. global_api_keys (localStorage)
      * 5. Legacy openai_api_key
+     * 6. ki_settings (localStorage)
      */
     async getActiveProvider() {
-        // PRIORITÄT 1: AWS DynamoDB (Admin-Konfiguration)
+        // PRIORITÄT 0: AWS API Settings (neues sicheres System)
+        try {
+            if (window.awsAPISettings && window.awsAPISettings.isUserLoggedIn()) {
+                const settings = await window.awsAPISettings.getSettings();
+                if (settings?.hasSettings && settings.settings) {
+                    const s = settings.settings;
+                    const preferredProvider = s.preferredProvider || 'openai';
+                    
+                    // Versuche den bevorzugten Provider zuerst
+                    if (s[preferredProvider]?.configured) {
+                        console.log(`✅ Nutze ${preferredProvider} API Key aus AWS (sicher gespeichert)`);
+                        return {
+                            type: preferredProvider,
+                            key: 'AWS_STORED', // Key wird serverseitig verwendet
+                            config: {
+                                model: s[preferredProvider].model,
+                                maxTokens: s[preferredProvider].maxTokens,
+                                temperature: s[preferredProvider].temperature
+                            },
+                            useAWSBackend: true // Flag für serverseitige Generierung
+                        };
+                    }
+                    
+                    // Fallback auf andere konfigurierte Provider
+                    for (const type of ['openai', 'anthropic', 'google']) {
+                        if (s[type]?.configured) {
+                            console.log(`✅ Nutze ${type} API Key aus AWS (sicher gespeichert)`);
+                            return {
+                                type,
+                                key: 'AWS_STORED',
+                                config: {
+                                    model: s[type].model,
+                                    maxTokens: s[type].maxTokens,
+                                    temperature: s[type].temperature
+                                },
+                                useAWSBackend: true
+                            };
+                        }
+                    }
+                }
+            }
+        } catch (error) {
+            console.warn('⚠️ Fehler beim Lesen aus AWS API Settings:', error);
+        }
+        
+        // PRIORITÄT 1: AWS DynamoDB (Admin-Konfiguration - Legacy)
         try {
             if (window.awsProfileAPI && window.awsProfileAPI.isInitialized) {
                 const adminProfile = await window.awsProfileAPI.loadProfile('admin').catch(() => 
@@ -36,7 +83,7 @@ const AIProviderManager = {
                 if (adminProfile?.apiKeys) {
                     const provider = this._extractProviderFromKeys(adminProfile.apiKeys);
                     if (provider) {
-                        console.log(`✅ Nutze ${provider.type} API Key aus AWS DynamoDB`);
+                        console.log(`✅ Nutze ${provider.type} API Key aus AWS DynamoDB (Legacy)`);
                         return provider;
                     }
                 }

@@ -14,6 +14,65 @@
         .header h1 { color: #1e293b; font-size: 2.5rem; margin-bottom: 0.5rem; }
         .header p { color: #64748b; font-size: 1.1rem; }
         
+        /* Cloud Storage Banner */
+        .cloud-banner {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .cloud-banner.not-logged-in {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+        .cloud-banner i { font-size: 2rem; }
+        .cloud-banner h3 { margin: 0 0 0.25rem 0; font-size: 1.1rem; }
+        .cloud-banner p { margin: 0; opacity: 0.9; font-size: 0.9rem; }
+        .cloud-banner .btn-login {
+            margin-left: auto;
+            background: white;
+            color: #059669;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+        .cloud-banner .btn-login:hover { transform: translateY(-2px); }
+        
+        /* Storage Toggle */
+        .storage-toggle {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            background: #f1f5f9;
+            padding: 0.5rem;
+            border-radius: 10px;
+        }
+        .storage-toggle button {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            color: #64748b;
+            transition: all 0.2s;
+        }
+        .storage-toggle button.active {
+            background: white;
+            color: #1e293b;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .storage-toggle button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
         .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem; }
         
         .settings-card { 
@@ -113,6 +172,28 @@
         <div class="header">
             <h1><i class="fas fa-brain"></i> KI-Einstellungen</h1>
             <p>Konfigurieren Sie Ihre OpenAI-Integration für die Bewerbungsanalyse</p>
+        </div>
+        
+        <!-- Cloud Storage Banner -->
+        <div class="cloud-banner not-logged-in" id="cloudBanner">
+            <i class="fas fa-cloud"></i>
+            <div>
+                <h3 id="cloudBannerTitle">Sichere Cloud-Speicherung</h3>
+                <p id="cloudBannerText">Melden Sie sich an, um Ihre API-Keys sicher in AWS zu speichern. So sind sie auf allen Geräten verfügbar.</p>
+            </div>
+            <a href="applications/dashboard.html" class="btn-login" id="cloudBannerBtn">
+                <i class="fas fa-sign-in-alt"></i> Anmelden
+            </a>
+        </div>
+        
+        <!-- Storage Toggle -->
+        <div class="storage-toggle">
+            <button id="storageLocal" class="active" onclick="setStorageMode('local')">
+                <i class="fas fa-laptop"></i> Lokal speichern
+            </button>
+            <button id="storageCloud" onclick="setStorageMode('cloud')" disabled>
+                <i class="fas fa-cloud"></i> In AWS speichern
+            </button>
         </div>
         
         <div class="settings-grid">
@@ -227,14 +308,94 @@
         </div>
     </div>
 
+    <!-- AWS Auth Scripts -->
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="js/unified-aws-auth.js"></script>
+    <script src="js/aws-api-settings.js"></script>
+    
     <script>
+        // Storage Mode
+        let storageMode = 'local';
+        
         // Temperature Slider Update
         document.getElementById('temperature').addEventListener('input', function() {
             document.getElementById('temperature-value').textContent = this.value;
         });
         
-        // Load saved settings
-        function loadSettings() {
+        // Set Storage Mode
+        function setStorageMode(mode) {
+            storageMode = mode;
+            document.getElementById('storageLocal').classList.toggle('active', mode === 'local');
+            document.getElementById('storageCloud').classList.toggle('active', mode === 'cloud');
+        }
+        
+        // Update Cloud Banner based on login state
+        function updateCloudBanner() {
+            const banner = document.getElementById('cloudBanner');
+            const title = document.getElementById('cloudBannerTitle');
+            const text = document.getElementById('cloudBannerText');
+            const btn = document.getElementById('cloudBannerBtn');
+            const cloudBtn = document.getElementById('storageCloud');
+            
+            const isLoggedIn = window.awsAuth && window.awsAuth.isLoggedIn();
+            
+            if (isLoggedIn) {
+                banner.classList.remove('not-logged-in');
+                title.textContent = '✓ Cloud-Speicherung aktiv';
+                text.textContent = 'Ihre API-Keys werden sicher in AWS gespeichert und sind auf allen Geräten verfügbar.';
+                btn.innerHTML = '<i class="fas fa-sync"></i> Sync';
+                btn.onclick = syncToCloud;
+                cloudBtn.disabled = false;
+                
+                // Auto-switch to cloud mode if logged in
+                setStorageMode('cloud');
+                loadCloudSettings();
+            } else {
+                banner.classList.add('not-logged-in');
+                title.textContent = 'Sichere Cloud-Speicherung';
+                text.textContent = 'Melden Sie sich an, um Ihre API-Keys sicher in AWS zu speichern.';
+                btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Anmelden';
+                btn.href = 'applications/dashboard.html';
+                cloudBtn.disabled = true;
+            }
+        }
+        
+        // Load settings from cloud
+        async function loadCloudSettings() {
+            try {
+                const data = await window.awsAPISettings.getSettings();
+                if (data && data.hasSettings && data.settings) {
+                    const settings = data.settings;
+                    
+                    if (settings.openai) {
+                        document.getElementById('openai-api-key').value = '';
+                        document.getElementById('openai-api-key').placeholder = settings.openai.keyMasked || 'In AWS gespeichert';
+                        document.getElementById('openai-model').value = settings.openai.model || 'gpt-4o-mini';
+                        document.getElementById('max-tokens').value = settings.openai.maxTokens || 1000;
+                        document.getElementById('temperature').value = settings.openai.temperature || 0.3;
+                        document.getElementById('temperature-value').textContent = settings.openai.temperature || 0.3;
+                    }
+                    
+                    showStatus('save-status', '☁️ Cloud-Einstellungen geladen', 'info');
+                }
+            } catch (error) {
+                console.error('Fehler beim Laden der Cloud-Settings:', error);
+            }
+        }
+        
+        // Sync to cloud
+        async function syncToCloud() {
+            try {
+                showStatus('save-status', '☁️ Synchronisiere...', 'info');
+                await window.awsAPISettings.syncLocalToAWS();
+                showStatus('save-status', '✅ Synchronisation erfolgreich!', 'success');
+            } catch (error) {
+                showStatus('save-status', `❌ Sync fehlgeschlagen: ${error.message}`, 'error');
+            }
+        }
+        
+        // Load saved settings from localStorage
+        function loadLocalSettings() {
             const settings = JSON.parse(localStorage.getItem('ki_settings') || '{}');
             
             document.getElementById('openai-api-key').value = settings.apiKey || '';
@@ -249,9 +410,10 @@
         }
         
         // Save settings
-        function saveSettings() {
+        async function saveSettings() {
+            const apiKey = document.getElementById('openai-api-key').value;
             const settings = {
-                apiKey: document.getElementById('openai-api-key').value,
+                apiKey: apiKey,
                 model: document.getElementById('openai-model').value,
                 maxTokens: parseInt(document.getElementById('max-tokens').value),
                 temperature: parseFloat(document.getElementById('temperature').value),
@@ -261,10 +423,30 @@
                 retryAttempts: parseInt(document.getElementById('retry-attempts').value)
             };
             
+            // Immer lokal speichern
             localStorage.setItem('ki_settings', JSON.stringify(settings));
-            localStorage.setItem('openai_api_key', settings.apiKey);
+            if (apiKey) {
+                localStorage.setItem('openai_api_key', apiKey);
+            }
             
-            showStatus('save-status', '✅ Einstellungen erfolgreich gespeichert!', 'success');
+            // In Cloud speichern wenn eingeloggt und Cloud-Modus aktiv
+            if (storageMode === 'cloud' && window.awsAPISettings && window.awsAPISettings.isUserLoggedIn()) {
+                try {
+                    showStatus('save-status', '☁️ Speichere in AWS...', 'info');
+                    
+                    await window.awsAPISettings.saveOpenAIKey(apiKey, {
+                        model: settings.model,
+                        maxTokens: settings.maxTokens,
+                        temperature: settings.temperature
+                    });
+                    
+                    showStatus('save-status', '✅ In AWS gespeichert! Ihre Einstellungen sind jetzt auf allen Geräten verfügbar.', 'success');
+                } catch (error) {
+                    showStatus('save-status', `⚠️ Lokal gespeichert, aber AWS-Speicherung fehlgeschlagen: ${error.message}`, 'error');
+                }
+            } else {
+                showStatus('save-status', '✅ Lokal gespeichert!', 'success');
+            }
         }
         
         // Save advanced settings
@@ -313,7 +495,7 @@
                 
                 if (response.ok) {
                     const data = await response.json();
-                    showStatus('test-status', '✅ Verbindung erfolgreich!', 'success');
+                    showStatus('test-status', '✅ Verbindung erfolgreich! API-Key ist gültig.', 'success');
                     console.log('Test Response:', data);
                 } else {
                     const error = await response.json();
@@ -378,9 +560,36 @@
             element.innerHTML = `<div class="status ${type}">${message}</div>`;
         }
         
+        // Wait for auth system
+        function waitForAuth() {
+            return new Promise(resolve => {
+                if (window.awsAuth && window.awsAuth.isInitialized) {
+                    resolve();
+                } else {
+                    const checkInterval = setInterval(() => {
+                        if (window.awsAuth && window.awsAuth.isInitialized) {
+                            clearInterval(checkInterval);
+                            resolve();
+                        }
+                    }, 100);
+                    setTimeout(() => {
+                        clearInterval(checkInterval);
+                        resolve();
+                    }, 3000);
+                }
+            });
+        }
+        
         // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            loadSettings();
+        document.addEventListener('DOMContentLoaded', async function() {
+            loadLocalSettings();
+            
+            // Wait for auth and update UI
+            await waitForAuth();
+            updateCloudBanner();
+            
+            // Listen for auth changes
+            window.addEventListener('authStateChanged', updateCloudBanner);
         });
     </script>
 </body>
