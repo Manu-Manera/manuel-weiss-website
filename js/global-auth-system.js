@@ -156,10 +156,19 @@ class GlobalAuthSystem {
         if (window.authModals && window.authModals.showLogin) {
             console.log('📧 Opening login modal...');
             window.authModals.showLogin();
+        } else if (window.awsAuth && window.awsAuth.showLoginModal) {
+            console.log('📧 Opening AWS auth login modal...');
+            window.awsAuth.showLoginModal();
         } else {
-            console.log('🔄 Redirecting to login page...');
-            // Fallback: redirect to main page with login
-            window.location.href = 'persoenlichkeitsentwicklung-uebersicht.html';
+            // Fallback: Warte kurz und versuche erneut (Auth-System könnte noch laden)
+            console.log('⏳ Waiting for auth system...');
+            setTimeout(() => {
+                if (window.authModals && window.authModals.showLogin) {
+                    window.authModals.showLogin();
+                } else {
+                    console.warn('⚠️ Auth modal not available - staying on current page');
+                }
+            }, 500);
         }
     }
     

@@ -224,15 +224,30 @@ class UserProfile {
     }
 
     showLoginPrompt() {
-        // Don't show any login prompt - just redirect silently
-        console.log('🔄 Redirecting to login page...');
-        window.location.href = 'persoenlichkeitsentwicklung-uebersicht.html';
+        // Show login modal instead of redirecting
+        console.log('🔐 Showing login modal...');
+        if (window.authModals && window.authModals.showLogin) {
+            window.authModals.showLogin();
+        } else if (window.awsAuth && window.awsAuth.showLoginModal) {
+            window.awsAuth.showLoginModal();
+        } else {
+            // Fallback: Redirect to current page origin with login intent
+            const currentPath = window.location.pathname;
+            console.log('⚠️ No auth modal available, staying on page');
+        }
     }
 
     redirectToLogin() {
-        // Silent redirect without notification
-        console.log('🔄 Redirecting to login page...');
-        window.location.href = 'persoenlichkeitsentwicklung-uebersicht.html';
+        // Show login modal instead of redirecting away
+        console.log('🔐 Showing login modal...');
+        if (window.authModals && window.authModals.showLogin) {
+            window.authModals.showLogin();
+        } else if (window.awsAuth && window.awsAuth.showLoginModal) {
+            window.awsAuth.showLoginModal();
+        } else {
+            // Fallback: Stay on current page
+            console.log('⚠️ No auth modal available');
+        }
     }
 
     setupEventListeners() {
