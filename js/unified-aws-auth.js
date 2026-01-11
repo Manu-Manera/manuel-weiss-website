@@ -588,6 +588,7 @@ class UnifiedAWSAuth {
 
     /**
      * Aktuelle Session prüfen
+     * KOMPATIBEL mit Sessions von real-user-auth-system.js und unified-aws-auth.js
      */
     checkCurrentUser() {
         const session = localStorage.getItem(window.AWS_AUTH_CONFIG.token.storageKey);
@@ -606,11 +607,22 @@ class UnifiedAWSAuth {
                     return false;
                 }
                 
-                // Session-Daten validieren
-                if (!this.currentUser.email || !this.currentUser.accessToken) {
-                    console.log('❌ Invalid session data, logging out');
+                // Prüfe ob accessToken vorhanden ist
+                if (!this.currentUser.accessToken) {
+                    console.log('❌ No access token in session, logging out');
                     this.logout();
                     return false;
+                }
+                
+                // Wenn email fehlt, versuche sie aus dem idToken zu extrahieren
+                if (!this.currentUser.email && this.currentUser.idToken) {
+                    const tokenData = this.decodeJWT(this.currentUser.idToken);
+                    if (tokenData && tokenData.email) {
+                        this.currentUser.email = tokenData.email;
+                        console.log('📧 Email aus Token extrahiert:', this.currentUser.email);
+                        // Session mit email aktualisieren
+                        localStorage.setItem(window.AWS_AUTH_CONFIG.token.storageKey, JSON.stringify(this.currentUser));
+                    }
                 }
                 
                 this.updateUI(true);
@@ -627,36 +639,75 @@ class UnifiedAWSAuth {
         }
         return false;
     }
+    
+    /**
+     * JWT-Token dekodieren (ohne Validierung)
+     */
+    decodeJWT(token) {
+        try {
+            const parts = token.split('.');
+            if (parts.length !== 3) return null;
+            const payload = parts[1];
+            const decoded = atob(payload.replace(/-/g, '+').replace(/_/g, '/'));
+            return JSON.parse(decoded);
+        } catch (error) {
+            console.error('❌ Error decoding JWT:', error);
+            return null;
+        }
+    }
 
     /**
      * Token-Ablauf prüfen
+     * KOMPATIBEL mit beiden Session-Formaten:
+     * - expiresAt (ISO String) von real-user-auth-system.js
+     * - expiresIn + loginTime von unified-aws-auth.js
      */
     isTokenExpired() {
-        if (!this.currentUser || !this.currentUser.expiresIn || !this.currentUser.loginTime) {
-            console.log('❌ Token validation failed: missing data');
+        if (!this.currentUser) {
+            console.log('❌ Token validation failed: no current user');
             return true;
         }
         
-        // Token-Alter in Sekunden berechnen
-        const currentTime = Math.floor(Date.now() / 1000);
-        const loginTime = Math.floor(this.currentUser.loginTime / 1000);
-        const tokenAge = currentTime - loginTime;
+        const threshold = window.AWS_AUTH_CONFIG.token.refreshThreshold; // 5 Minuten Puffer
+        const now = Date.now();
         
-        console.log('🕐 Token age:', tokenAge, 'seconds, expires in:', this.currentUser.expiresIn, 'seconds');
-        
-        // Prüfe ob Token abgelaufen ist (mit 5 Minuten Puffer)
-        const threshold = window.AWS_AUTH_CONFIG.token.refreshThreshold;
-        const isExpired = tokenAge >= (this.currentUser.expiresIn - threshold);
-        
-        if (isExpired) {
-            console.log('⏰ Token expired');
+        // Format 1: expiresAt (ISO String) - von real-user-auth-system.js
+        if (this.currentUser.expiresAt) {
+            const expiresAt = new Date(this.currentUser.expiresAt).getTime();
+            const timeUntilExpiry = (expiresAt - now) / 1000; // in Sekunden
+            
+            console.log('🕐 Token expires at:', this.currentUser.expiresAt, ', time until expiry:', Math.floor(timeUntilExpiry), 'seconds');
+            
+            if (timeUntilExpiry <= threshold) {
+                console.log('⏰ Token expired or about to expire');
+                return true;
+            }
+            return false;
         }
         
-        return isExpired;
+        // Format 2: expiresIn + loginTime - von unified-aws-auth.js
+        if (this.currentUser.expiresIn && this.currentUser.loginTime) {
+            const currentTime = Math.floor(now / 1000);
+            const loginTime = Math.floor(this.currentUser.loginTime / 1000);
+            const tokenAge = currentTime - loginTime;
+            
+            console.log('🕐 Token age:', tokenAge, 'seconds, expires in:', this.currentUser.expiresIn, 'seconds');
+            
+            if (tokenAge >= (this.currentUser.expiresIn - threshold)) {
+                console.log('⏰ Token expired');
+                return true;
+            }
+            return false;
+        }
+        
+        // Kein Ablauf-Datum vorhanden - Token als gültig betrachten
+        console.log('⚠️ No expiration data found, assuming token is valid');
+        return false;
     }
 
     /**
      * Token aktualisieren
+     * KOMPATIBEL mit beiden Session-Formaten
      */
     async refreshToken() {
         if (!this.currentUser || !this.currentUser.refreshToken) {
@@ -676,11 +727,21 @@ class UnifiedAWSAuth {
             
             const result = await this.cognitoIdentityServiceProvider.initiateAuth(params).promise();
             
-            // Session aktualisieren
+            // Session aktualisieren - beide Formate unterstützen
             this.currentUser.accessToken = result.AuthenticationResult.AccessToken;
             this.currentUser.idToken = result.AuthenticationResult.IdToken;
             this.currentUser.expiresIn = result.AuthenticationResult.ExpiresIn;
             this.currentUser.loginTime = Date.now();
+            // Auch expiresAt aktualisieren für Kompatibilität mit real-user-auth-system.js
+            this.currentUser.expiresAt = new Date(Date.now() + result.AuthenticationResult.ExpiresIn * 1000).toISOString();
+            
+            // Email aus Token extrahieren falls fehlend
+            if (!this.currentUser.email && result.AuthenticationResult.IdToken) {
+                const tokenData = this.decodeJWT(result.AuthenticationResult.IdToken);
+                if (tokenData && tokenData.email) {
+                    this.currentUser.email = tokenData.email;
+                }
+            }
             
             localStorage.setItem(
                 window.AWS_AUTH_CONFIG.token.storageKey,

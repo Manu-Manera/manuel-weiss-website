@@ -1349,9 +1349,24 @@ class RealUserAuthSystem {
             expiresAt = new Date(Date.now() + expiresIn * 1000).toISOString();
         }
         
-        // Save AWS Cognito session with expiration
+        // Email aus dem idToken extrahieren für Kompatibilität mit unified-aws-auth.js
+        let email = session.email;
+        if (!email && session.idToken) {
+            try {
+                const parts = session.idToken.split('.');
+                if (parts.length === 3) {
+                    const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
+                    email = payload.email;
+                }
+            } catch (e) {
+                console.warn('⚠️ Konnte Email nicht aus Token extrahieren:', e);
+            }
+        }
+        
+        // Save AWS Cognito session with expiration and email
         const sessionData = {
             ...session,
+            email: email, // Für Kompatibilität mit unified-aws-auth.js
             expiresAt: expiresAt,
             rememberMe: rememberMe
         };
@@ -1364,6 +1379,9 @@ class RealUserAuthSystem {
         
         console.log('💾 Session gespeichert:', rememberMe ? '30 Tage (Angemeldet bleiben)' : '60 Minuten');
         console.log('⏰ Session läuft ab um:', new Date(expiresAt).toLocaleString());
+        if (email) {
+            console.log('📧 Email in Session:', email);
+        }
     }
 
     clearSession() {
