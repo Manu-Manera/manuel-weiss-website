@@ -17,27 +17,22 @@ class AWSProfileAPI {
 
     async init() {
         try {
-            // Wait for AWS SDK to be loaded
-            if (typeof AWS === 'undefined') {
-                console.log('⏳ Waiting for AWS SDK...');
+            // API Gateway-basierte Initialisierung (keine direkten AWS Credentials nötig)
+            // Prüfe ob AWS_CONFIG verfügbar ist
+            if (!window.AWS_CONFIG?.apiBaseUrl) {
+                console.log('⏳ Waiting for AWS_CONFIG...');
                 setTimeout(() => this.init(), 100);
                 return;
             }
 
-            // Initialize DynamoDB
-            this.dynamoDB = new AWS.DynamoDB.DocumentClient({
-                region: this.region,
-                credentials: AWS.config.credentials
-            });
-
-            // Initialize S3
-            this.s3 = new AWS.S3({
-                region: this.region,
-                credentials: AWS.config.credentials
-            });
-
+            // WICHTIG: Wir verwenden AUSSCHLIESSLICH das API Gateway
+            // Direkte DynamoDB/S3 Verbindungen sind im Browser nicht möglich
+            // ohne komplexe Cognito Identity Pool Konfiguration
+            this.apiBaseUrl = window.AWS_CONFIG.apiBaseUrl;
+            
             this.isInitialized = true;
-            console.log('✅ AWS Profile API initialized');
+            console.log('✅ AWS Profile API initialized (API Gateway mode)');
+            console.log('🌐 API Base URL:', this.apiBaseUrl);
         } catch (error) {
             console.error('❌ AWS Profile API initialization failed:', error);
         }
@@ -106,46 +101,43 @@ class AWSProfileAPI {
                 }
             });
 
-            // Use API Gateway endpoint if available
-            if (window.AWS_CONFIG?.apiBaseUrl) {
+            // Verwende AUSSCHLIESSLICH API Gateway
+            if (!this.apiBaseUrl) {
+                throw new Error('API Gateway nicht konfiguriert. Bitte Seite neu laden.');
+            }
+            
+            const headers = {
+                'Content-Type': 'application/json'
+            };
+            
+            // Authorization Header hinzufügen, wenn idToken vorhanden ist
+            if (idToken) {
+                headers['Authorization'] = `Bearer ${idToken}`;
+            }
+            
+            console.log('📤 Sending profile to API Gateway:', this.apiBaseUrl + '/profile');
+            
+            // Use PUT for updates
+            const response = await fetch(`${this.apiBaseUrl}/profile`, {
+                method: 'PUT',
+                headers: headers,
+                body: JSON.stringify(item)
+            });
+
+            if (!response.ok) {
+                let errorMessage = `API Error: ${response.status} ${response.statusText}`;
                 try {
-                    const headers = {
-                        'Content-Type': 'application/json'
-                    };
-                    
-                    // Nur Authorization Header hinzufügen, wenn idToken vorhanden ist
-                    if (idToken) {
-                        headers['Authorization'] = `Bearer ${idToken}`;
-                    }
-                    
-                    // Use PUT for updates (POST is also supported for backward compatibility)
-                    const response = await fetch(`${window.AWS_CONFIG.apiBaseUrl}/profile`, {
-                        method: 'PUT',
-                        headers: headers,
-                        body: JSON.stringify(item)
-                    });
-
-                    if (!response.ok) {
-                        let errorMessage = `API Error: ${response.status} ${response.statusText}`;
-                        try {
-                            const errorData = await response.json();
-                            errorMessage = errorData.error || errorData.message || errorMessage;
-                        } catch (e) {
-                            // ignore JSON parse error
-                        }
-                        throw new Error(errorMessage);
-                    }
-
-                    const result = await response.json();
-                    console.log('✅ Profile saved successfully via API');
-                    return result;
-                } catch (apiError) {
-                    console.warn('⚠️ API save failed, falling back to DynamoDB:', apiError.message);
+                    const errorData = await response.json();
+                    errorMessage = errorData.error || errorData.message || errorMessage;
+                } catch (e) {
+                    // ignore JSON parse error
                 }
+                throw new Error(errorMessage);
             }
 
-            // Direct DynamoDB call (requires proper IAM permissions)
-            return await this.saveProfileDirect(item);
+            const result = await response.json();
+            console.log('✅ Profile saved successfully via API Gateway');
+            return result;
 
         } catch (error) {
             console.error('❌ Failed to save profile:', error);
@@ -153,15 +145,11 @@ class AWSProfileAPI {
         }
     }
 
+    // DEPRECATED: Direkte DynamoDB-Methode - nicht mehr verwendet
+    // Alle Operationen laufen über API Gateway
     async saveProfileDirect(item) {
-        const params = {
-            TableName: this.tableName,
-            Item: item
-        };
-
-        await this.dynamoDB.put(params).promise();
-        console.log('✅ Profile saved successfully to DynamoDB (direct fallback)');
-        return item;
+        console.warn('⚠️ saveProfileDirect ist deprecated - verwende API Gateway');
+        throw new Error('Direkte DynamoDB-Verbindung nicht unterstützt. Verwende API Gateway.');
     }
 
     /**
@@ -187,49 +175,42 @@ class AWSProfileAPI {
                 idToken = credentials.idToken;
             }
 
-            // Use API Gateway endpoint if available
-            if (window.AWS_CONFIG?.apiBaseUrl) {
-                try {
-                    const headers = {};
-                    
-                    // Nur Authorization Header hinzufügen, wenn idToken vorhanden ist
-                    if (idToken) {
-                        headers['Authorization'] = `Bearer ${idToken}`;
-                    }
-                    
-                    // Wenn userIdOverride angegeben ist, als Query-Parameter hinzufügen
-                    const url = userIdOverride 
-                        ? `${window.AWS_CONFIG.apiBaseUrl}/profile?userId=${userIdOverride}`
-                        : `${window.AWS_CONFIG.apiBaseUrl}/profile`;
-                    
-                    const response = await fetch(url, {
-                        method: 'GET',
-                        headers: headers
-                    });
+            // Verwende AUSSCHLIESSLICH API Gateway
+            if (!this.apiBaseUrl) {
+                console.warn('⚠️ API Gateway nicht konfiguriert');
+                return null;
+            }
+            
+            const headers = {};
+            
+            // Authorization Header hinzufügen, wenn idToken vorhanden ist
+            if (idToken) {
+                headers['Authorization'] = `Bearer ${idToken}`;
+            }
+            
+            // Wenn userIdOverride angegeben ist, als Query-Parameter hinzufügen
+            const url = userIdOverride 
+                ? `${this.apiBaseUrl}/profile?userId=${userIdOverride}`
+                : `${this.apiBaseUrl}/profile`;
+            
+            console.log('📥 Loading profile from API Gateway:', url);
+            
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: headers
+            });
 
-                    if (!response.ok) {
-                        if (response.status === 404) {
-                            console.log('ℹ️ No profile found, returning empty data');
-                            return null;
-                        }
-                        throw new Error(`API Error: ${response.statusText}`);
-                    }
-
-                    const result = await response.json();
-                    console.log('✅ Profile loaded successfully from API');
-                    return result;
-                } catch (apiError) {
-                    console.warn('⚠️ API load failed, falling back to DynamoDB:', apiError.message);
+            if (!response.ok) {
+                if (response.status === 404) {
+                    console.log('ℹ️ No profile found, returning empty data');
+                    return null;
                 }
+                throw new Error(`API Error: ${response.status} ${response.statusText}`);
             }
 
-            const directProfile = await this.loadProfileDirect(userId);
-            if (directProfile) {
-                console.log('✅ Profile loaded successfully from DynamoDB (fallback)');
-            } else {
-                console.log('ℹ️ No profile found in DynamoDB fallback');
-            }
-            return directProfile;
+            const result = await response.json();
+            console.log('✅ Profile loaded successfully from API Gateway');
+            return result;
 
         } catch (error) {
             console.error('❌ Failed to load profile:', error);
@@ -238,16 +219,11 @@ class AWSProfileAPI {
         }
     }
 
+    // DEPRECATED: Direkte DynamoDB-Methode - nicht mehr verwendet
+    // Alle Operationen laufen über API Gateway
     async loadProfileDirect(userId) {
-        const params = {
-            TableName: this.tableName,
-            Key: {
-                userId: userId
-            }
-        };
-
-        const result = await this.dynamoDB.get(params).promise();
-        return result.Item || null;
+        console.warn('⚠️ loadProfileDirect ist deprecated - verwende API Gateway');
+        return null;
     }
 
     /**
