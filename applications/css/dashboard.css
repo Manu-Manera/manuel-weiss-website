@@ -2686,53 +2686,65 @@
     }
     
     .dashboard-stats-bar .stat-item {
-        padding: 16px 12px;
+        padding: 16px 14px;
         min-width: unset;
-        border-radius: 16px;
-        flex-direction: row;
+        border-radius: 18px;
+        flex-direction: column;
         align-items: center;
-        gap: 12px;
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.15) !important;
+        backdrop-filter: blur(20px) saturate(180%) !important;
+        -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+        border: 1px solid rgba(255, 255, 255, 0.25);
     }
     
     .dashboard-stats-bar .stat-item i {
-        font-size: 1.25rem;
+        font-size: 1.5rem;
         margin-bottom: 0;
-        width: 36px;
-        height: 36px;
+        width: 42px;
+        height: 42px;
         display: flex;
         align-items: center;
         justify-content: center;
-        background: var(--primary-bg);
-        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.15) !important;
+        border-radius: 12px;
+        color: white !important;
     }
     
     .dashboard-stats-bar .stat-item.highlight i {
-        background: rgba(255, 255, 255, 0.2);
+        background: rgba(255, 255, 255, 0.25) !important;
     }
     
     .dashboard-stats-bar .stat-content {
-        text-align: left;
+        text-align: center;
     }
     
     .dashboard-stats-bar .stat-item .stat-value,
     .dashboard-stats-bar .stat-number {
         font-size: 1.5rem;
-        font-weight: 700;
+        font-weight: 800;
+        color: white !important;
     }
     
     .dashboard-stats-bar .stat-item .stat-label {
-        font-size: 0.7rem;
+        font-size: 0.65rem;
+        color: rgba(255, 255, 255, 0.85) !important;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
     
     /* Tab Navigation - Horizontal Scroll mit Icons */
     .dashboard-tabs {
         padding: 8px 12px;
         margin: 0 16px 16px;
-        border-radius: 16px;
+        border-radius: 25px;
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
         scrollbar-width: none;
         gap: 6px;
+        background: rgba(255, 255, 255, 0.1) !important;
+        backdrop-filter: blur(20px) saturate(180%) !important;
+        -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
     }
     
     .dashboard-tabs::-webkit-scrollbar {
@@ -2741,9 +2753,15 @@
     
     .tab-btn {
         padding: 10px 14px;
-        border-radius: 12px;
+        border-radius: 20px;
         flex-shrink: 0;
         min-width: 44px;
+        color: rgba(255, 255, 255, 0.8) !important;
+    }
+    
+    .tab-btn.active {
+        background: rgba(255, 255, 255, 0.2) !important;
+        color: white !important;
     }
     
     .tab-btn span {
@@ -2753,6 +2771,7 @@
     .tab-btn i {
         margin: 0;
         font-size: 1.1rem;
+        color: inherit !important;
     }
     
     .tab-badge {
