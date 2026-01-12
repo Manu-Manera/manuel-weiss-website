@@ -1065,6 +1065,9 @@ class UnifiedAWSAuth {
 // Globale Instanz erstellen
 window.awsAuth = new UnifiedAWSAuth();
 
+// WICHTIG: Alias für Kompatibilität mit user-profile.js und anderen Modulen
+window.realUserAuth = window.awsAuth;
+
 // CSS für Notifications hinzufügen
 const style = document.createElement('style');
 style.textContent = `
