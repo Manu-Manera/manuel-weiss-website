@@ -84,6 +84,18 @@
                         <i class="fas fa-trophy"></i>
                         Erfolge
                     </button>
+                    <button class="tab-btn" data-tab="training">
+                        <i class="fas fa-dumbbell"></i>
+                        Training
+                    </button>
+                    <button class="tab-btn" data-tab="nutrition">
+                        <i class="fas fa-utensils"></i>
+                        Ernährung
+                    </button>
+                    <button class="tab-btn" data-tab="coach">
+                        <i class="fas fa-user-tie"></i>
+                        Coach
+                    </button>
                 </div>
             </section>
 
@@ -577,6 +589,306 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Training Tab -->
+                <div class="tab-panel" id="training">
+                    <div class="training-dashboard">
+                        <div class="dashboard-header">
+                            <h3><i class="fas fa-dumbbell"></i> Dein Trainingsplan</h3>
+                            <p>Erstelle und verfolge deinen personalisierten Trainingsplan</p>
+                        </div>
+
+                        <!-- Training Stats -->
+                        <div class="training-stats-grid">
+                            <div class="stat-card training-stat">
+                                <div class="stat-icon" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                                    <i class="fas fa-calendar-check"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h3 id="trainingTotalWorkouts">0</h3>
+                                    <p>Workouts gesamt</p>
+                                </div>
+                            </div>
+                            <div class="stat-card training-stat">
+                                <div class="stat-icon" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                                    <i class="fas fa-fire"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h3 id="trainingCurrentStreak">0</h3>
+                                    <p>Tage Streak</p>
+                                </div>
+                            </div>
+                            <div class="stat-card training-stat">
+                                <div class="stat-icon" style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h3 id="trainingTotalMinutes">0</h3>
+                                    <p>Minuten trainiert</p>
+                                </div>
+                            </div>
+                            <div class="stat-card training-stat">
+                                <div class="stat-icon" style="background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);">
+                                    <i class="fas fa-trophy"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h3 id="trainingLongestStreak">0</h3>
+                                    <p>Längster Streak</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Current Plan -->
+                        <div class="current-plan-section">
+                            <h4><i class="fas fa-clipboard-list"></i> Aktueller Trainingsplan</h4>
+                            <div id="currentTrainingPlan" class="plan-container">
+                                <div class="empty-state">
+                                    <div class="empty-state-icon">🏋️</div>
+                                    <h4>Noch kein Trainingsplan</h4>
+                                    <p>Erstelle deinen ersten personalisierten Trainingsplan</p>
+                                    <a href="personal-training.html" class="btn-primary">
+                                        <i class="fas fa-plus"></i>
+                                        Trainingsplan erstellen
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recent Workouts -->
+                        <div class="recent-workouts-section">
+                            <h4><i class="fas fa-history"></i> Letzte Workouts</h4>
+                            <div id="recentWorkouts" class="workouts-list">
+                                <div class="empty-state small">
+                                    <p>Noch keine Workouts protokolliert</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Actions -->
+                        <div class="training-actions">
+                            <a href="personal-training.html" class="action-btn primary">
+                                <i class="fas fa-plus"></i>
+                                Neuer Trainingsplan
+                            </a>
+                            <button class="action-btn secondary" onclick="logWorkout()">
+                                <i class="fas fa-check"></i>
+                                Workout protokollieren
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nutrition Tab -->
+                <div class="tab-panel" id="nutrition">
+                    <div class="nutrition-dashboard">
+                        <div class="dashboard-header">
+                            <h3><i class="fas fa-utensils"></i> Dein Ernährungsplan</h3>
+                            <p>Plane und tracke deine Ernährung für optimale Ergebnisse</p>
+                        </div>
+
+                        <!-- Today's Summary -->
+                        <div class="today-summary">
+                            <h4><i class="fas fa-calendar-day"></i> Heute</h4>
+                            <div class="calories-overview">
+                                <div class="calories-ring">
+                                    <svg class="calories-ring-svg" width="150" height="150">
+                                        <circle cx="75" cy="75" r="65" fill="transparent" stroke="#e5e7eb" stroke-width="10"/>
+                                        <circle id="caloriesRingFill" cx="75" cy="75" r="65" fill="transparent" stroke="#10b981" stroke-width="10" stroke-linecap="round" stroke-dasharray="408" stroke-dashoffset="408"/>
+                                    </svg>
+                                    <div class="calories-text">
+                                        <span id="todaysCalories" class="calories-number">0</span>
+                                        <span class="calories-label">/ <span id="calorieGoal">2000</span> kcal</span>
+                                    </div>
+                                </div>
+                                <div class="macros-breakdown">
+                                    <div class="macro-item">
+                                        <div class="macro-bar protein">
+                                            <div class="macro-fill" id="proteinFill" style="width: 0%"></div>
+                                        </div>
+                                        <span class="macro-label">Protein</span>
+                                        <span id="todaysProtein" class="macro-value">0g</span>
+                                    </div>
+                                    <div class="macro-item">
+                                        <div class="macro-bar carbs">
+                                            <div class="macro-fill" id="carbsFill" style="width: 0%"></div>
+                                        </div>
+                                        <span class="macro-label">Kohlenhydrate</span>
+                                        <span id="todaysCarbs" class="macro-value">0g</span>
+                                    </div>
+                                    <div class="macro-item">
+                                        <div class="macro-bar fat">
+                                            <div class="macro-fill" id="fatFill" style="width: 0%"></div>
+                                        </div>
+                                        <span class="macro-label">Fett</span>
+                                        <span id="todaysFat" class="macro-value">0g</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Nutrition Stats -->
+                        <div class="nutrition-stats-grid">
+                            <div class="stat-card nutrition-stat">
+                                <div class="stat-icon" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                                    <i class="fas fa-utensils"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h3 id="nutritionMealsLogged">0</h3>
+                                    <p>Mahlzeiten geloggt</p>
+                                </div>
+                            </div>
+                            <div class="stat-card nutrition-stat">
+                                <div class="stat-icon" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                                    <i class="fas fa-fire"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h3 id="nutritionAvgCalories">0</h3>
+                                    <p>Ø Kalorien/Tag</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Current Meal Plan -->
+                        <div class="current-plan-section">
+                            <h4><i class="fas fa-clipboard-list"></i> Aktueller Ernährungsplan</h4>
+                            <div id="currentNutritionPlan" class="plan-container">
+                                <div class="empty-state">
+                                    <div class="empty-state-icon">🥗</div>
+                                    <h4>Noch kein Ernährungsplan</h4>
+                                    <p>Erstelle deinen ersten personalisierten Ernährungsplan</p>
+                                    <a href="ernaehrungsberatung.html" class="btn-primary">
+                                        <i class="fas fa-plus"></i>
+                                        Ernährungsplan erstellen
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Actions -->
+                        <div class="nutrition-actions">
+                            <button class="action-btn primary" onclick="logMeal()">
+                                <i class="fas fa-plus"></i>
+                                Mahlzeit loggen
+                            </button>
+                            <a href="ernaehrungsberatung.html" class="action-btn secondary">
+                                <i class="fas fa-calendar-alt"></i>
+                                Plan erstellen
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Coach Tab -->
+                <div class="tab-panel" id="coach">
+                    <div class="coach-dashboard">
+                        <div class="dashboard-header">
+                            <h3><i class="fas fa-user-tie"></i> Dein Coach-Bereich</h3>
+                            <p>Deine aggregierten Erfolge und Coaching-Empfehlungen</p>
+                        </div>
+
+                        <!-- Level & Points -->
+                        <div class="level-section">
+                            <div class="level-card">
+                                <div class="level-badge">
+                                    <span id="userLevel">1</span>
+                                </div>
+                                <div class="level-info">
+                                    <h4>Level <span id="userLevelText">1</span></h4>
+                                    <div class="level-progress">
+                                        <div class="level-bar">
+                                            <div id="levelProgressFill" class="level-fill" style="width: 0%"></div>
+                                        </div>
+                                        <span class="level-text"><span id="currentLevelPoints">0</span> / 100 Punkte</span>
+                                    </div>
+                                </div>
+                                <div class="total-points">
+                                    <span id="totalPoints">0</span>
+                                    <span class="points-label">Gesamtpunkte</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Success Categories -->
+                        <div class="success-categories">
+                            <h4><i class="fas fa-chart-pie"></i> Erfolge nach Kategorie</h4>
+                            <div class="categories-grid">
+                                <div class="success-category" data-category="personality">
+                                    <div class="category-icon">🧠</div>
+                                    <div class="category-name">Persönlichkeit</div>
+                                    <div class="category-stats">
+                                        <span id="personalityAchievements">0</span> / 20
+                                    </div>
+                                </div>
+                                <div class="success-category" data-category="training">
+                                    <div class="category-icon">💪</div>
+                                    <div class="category-name">Training</div>
+                                    <div class="category-stats">
+                                        <span id="trainingAchievements">0</span> / 15
+                                    </div>
+                                </div>
+                                <div class="success-category" data-category="nutrition">
+                                    <div class="category-icon">🥗</div>
+                                    <div class="category-name">Ernährung</div>
+                                    <div class="category-stats">
+                                        <span id="nutritionAchievements">0</span> / 15
+                                    </div>
+                                </div>
+                                <div class="success-category" data-category="applications">
+                                    <div class="category-icon">📝</div>
+                                    <div class="category-name">Bewerbungen</div>
+                                    <div class="category-stats">
+                                        <span id="applicationsAchievements">0</span> / 10
+                                    </div>
+                                </div>
+                                <div class="success-category" data-category="snowflakes">
+                                    <div class="category-icon">❄️</div>
+                                    <div class="category-name">Schneeflocken</div>
+                                    <div class="category-stats">
+                                        <span id="snowflakesAchievements">0</span> / 10
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recent Achievements -->
+                        <div class="recent-achievements-section">
+                            <h4><i class="fas fa-medal"></i> Neueste Erfolge</h4>
+                            <div id="recentAchievementsList" class="achievements-list">
+                                <div class="empty-state small">
+                                    <p>Noch keine Erfolge freigeschaltet</p>
+                                    <span>Starte deine Reise und sammle Erfolge!</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Coach Recommendations -->
+                        <div class="recommendations-section">
+                            <h4><i class="fas fa-lightbulb"></i> Empfehlungen für dich</h4>
+                            <div id="coachRecommendations" class="recommendations-list">
+                                <div class="recommendation-card">
+                                    <div class="rec-icon">🎯</div>
+                                    <div class="rec-content">
+                                        <h5>Starte mit Ikigai</h5>
+                                        <p>Entdecke deine Leidenschaft und deinen Lebenszweck</p>
+                                    </div>
+                                    <a href="methods/ikigai/index-ikigai.html" class="rec-action">
+                                        <i class="fas fa-arrow-right"></i>
+                                    </a>
+                                </div>
+                                <div class="recommendation-card">
+                                    <div class="rec-icon">💪</div>
+                                    <div class="rec-content">
+                                        <h5>Erstelle einen Trainingsplan</h5>
+                                        <p>Personalisiertes Training für deine Ziele</p>
+                                    </div>
+                                    <a href="personal-training.html" class="rec-action">
+                                        <i class="fas fa-arrow-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </main>
@@ -608,8 +920,241 @@
     <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
     <script src="js/real-user-auth-system.js?v=20250116"></script>
     <script src="js/aws-profile-api.js"></script>
+    <script src="js/aws-training-api.js"></script>
+    <script src="js/aws-nutrition-api.js"></script>
+    <script src="js/aws-achievements-api.js"></script>
+    <script src="js/aws-applications-api.js"></script>
     <script src="js/user-profile.js"></script>
     <script>
+        // Tab Data Loading Functions
+        async function loadTrainingTabData() {
+            if (!window.awsTrainingAPI) return;
+            try {
+                const data = await window.awsTrainingAPI.loadTraining();
+                
+                // Update stats
+                document.getElementById('trainingTotalWorkouts').textContent = data.stats?.totalWorkouts || 0;
+                document.getElementById('trainingCurrentStreak').textContent = data.stats?.currentStreak || 0;
+                document.getElementById('trainingTotalMinutes').textContent = data.stats?.totalMinutes || 0;
+                document.getElementById('trainingLongestStreak').textContent = data.stats?.longestStreak || 0;
+                
+                // Update current plan
+                if (data.currentPlan) {
+                    const planContainer = document.getElementById('currentTrainingPlan');
+                    planContainer.innerHTML = `
+                        <div class="plan-card">
+                            <h5>${data.currentPlan.title || 'Mein Trainingsplan'}</h5>
+                            <p>${data.currentPlan.frequency || '3x'} pro Woche, ${data.currentPlan.timePerSession || '45'} Min</p>
+                            <a href="personal-training.html?view=current" class="btn-link">Plan ansehen</a>
+                        </div>
+                    `;
+                }
+                
+                // Update recent workouts
+                if (data.workouts && data.workouts.length > 0) {
+                    const workoutsList = document.getElementById('recentWorkouts');
+                    workoutsList.innerHTML = data.workouts.slice(0, 5).map(w => `
+                        <div class="workout-item">
+                            <div class="workout-icon"><i class="fas fa-dumbbell"></i></div>
+                            <div class="workout-info">
+                                <h5>${w.planId || 'Workout'}</h5>
+                                <span>${w.duration || 0} Min</span>
+                            </div>
+                            <div class="workout-date">${new Date(w.date).toLocaleDateString('de-DE')}</div>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Error loading training data:', error);
+            }
+        }
+        
+        async function loadNutritionTabData() {
+            if (!window.awsNutritionAPI) return;
+            try {
+                const summary = await window.awsNutritionAPI.getTodaysSummary();
+                const stats = await window.awsNutritionAPI.getStats();
+                
+                // Update today's calories
+                document.getElementById('todaysCalories').textContent = summary.calories || 0;
+                document.getElementById('calorieGoal').textContent = summary.goal || 2000;
+                
+                // Update macros
+                document.getElementById('todaysProtein').textContent = (summary.macros?.protein || 0) + 'g';
+                document.getElementById('todaysCarbs').textContent = (summary.macros?.carbs || 0) + 'g';
+                document.getElementById('todaysFat').textContent = (summary.macros?.fat || 0) + 'g';
+                
+                // Update calories ring
+                const progress = Math.min((summary.calories / summary.goal) * 100, 100);
+                const circumference = 2 * Math.PI * 65;
+                const offset = circumference - (progress / 100) * circumference;
+                document.getElementById('caloriesRingFill').style.strokeDashoffset = offset;
+                
+                // Update stats
+                document.getElementById('nutritionMealsLogged').textContent = stats.mealsLogged || 0;
+                document.getElementById('nutritionAvgCalories').textContent = stats.avgCaloriesPerDay || 0;
+            } catch (error) {
+                console.error('Error loading nutrition data:', error);
+            }
+        }
+        
+        async function loadCoachTabData() {
+            if (!window.awsAchievementsAPI) return;
+            try {
+                const achievements = await window.awsAchievementsAPI.loadAchievements();
+                const levelProgress = await window.awsAchievementsAPI.getLevelProgress();
+                
+                // Update level display
+                document.getElementById('userLevel').textContent = levelProgress.level;
+                document.getElementById('userLevelText').textContent = levelProgress.level;
+                document.getElementById('currentLevelPoints').textContent = levelProgress.currentLevelPoints;
+                document.getElementById('totalPoints').textContent = levelProgress.totalPoints;
+                document.getElementById('levelProgressFill').style.width = levelProgress.progress + '%';
+                
+                // Update category stats
+                if (achievements.categories) {
+                    document.getElementById('personalityAchievements').textContent = achievements.categories.personality?.unlocked || 0;
+                    document.getElementById('trainingAchievements').textContent = achievements.categories.training?.unlocked || 0;
+                    document.getElementById('nutritionAchievements').textContent = achievements.categories.nutrition?.unlocked || 0;
+                    document.getElementById('applicationsAchievements').textContent = achievements.categories.applications?.unlocked || 0;
+                    document.getElementById('snowflakesAchievements').textContent = achievements.categories.snowflakes?.unlocked || 0;
+                }
+                
+                // Update recent achievements
+                if (achievements.achievements && achievements.achievements.length > 0) {
+                    const recentList = document.getElementById('recentAchievementsList');
+                    recentList.innerHTML = achievements.achievements.slice(0, 5).map(a => `
+                        <div class="achievement-item">
+                            <div class="achievement-icon">${a.icon}</div>
+                            <div class="achievement-info">
+                                <h5>${a.title}</h5>
+                                <span>${a.description}</span>
+                            </div>
+                            <div class="achievement-points">+${a.points}</div>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Error loading coach data:', error);
+            }
+        }
+        
+        // Log workout modal
+        function logWorkout() {
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <h3>Workout protokollieren</h3>
+                    <div class="form-group">
+                        <label>Dauer (Minuten)</label>
+                        <input type="number" id="workoutDuration" value="30" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Notizen</label>
+                        <textarea id="workoutNotes" rows="3"></textarea>
+                    </div>
+                    <div class="modal-actions">
+                        <button class="btn-secondary" onclick="this.closest('.modal-overlay').remove()">Abbrechen</button>
+                        <button class="btn-primary" onclick="saveWorkout()">Speichern</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+        
+        async function saveWorkout() {
+            const duration = parseInt(document.getElementById('workoutDuration').value) || 30;
+            const notes = document.getElementById('workoutNotes').value;
+            
+            try {
+                await window.awsTrainingAPI.logWorkout({
+                    duration,
+                    notes,
+                    completed: true
+                });
+                document.querySelector('.modal-overlay').remove();
+                loadTrainingTabData();
+                showNotification('Workout erfolgreich protokolliert!', 'success');
+            } catch (error) {
+                showNotification('Fehler beim Speichern', 'error');
+            }
+        }
+        
+        // Log meal modal
+        function logMeal() {
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <h3>Mahlzeit loggen</h3>
+                    <div class="form-group">
+                        <label>Mahlzeit</label>
+                        <select id="mealType">
+                            <option value="breakfast">Frühstück</option>
+                            <option value="lunch">Mittagessen</option>
+                            <option value="dinner">Abendessen</option>
+                            <option value="snack">Snack</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Beschreibung</label>
+                        <input type="text" id="mealName" placeholder="Was hast du gegessen?">
+                    </div>
+                    <div class="form-group">
+                        <label>Kalorien (geschätzt)</label>
+                        <input type="number" id="mealCalories" value="400" min="1">
+                    </div>
+                    <div class="modal-actions">
+                        <button class="btn-secondary" onclick="this.closest('.modal-overlay').remove()">Abbrechen</button>
+                        <button class="btn-primary" onclick="saveMeal()">Speichern</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+        
+        async function saveMeal() {
+            const type = document.getElementById('mealType').value;
+            const name = document.getElementById('mealName').value;
+            const calories = parseInt(document.getElementById('mealCalories').value) || 400;
+            
+            try {
+                await window.awsNutritionAPI.logMeal({
+                    type,
+                    name,
+                    calories
+                });
+                document.querySelector('.modal-overlay').remove();
+                loadNutritionTabData();
+                showNotification('Mahlzeit erfolgreich geloggt!', 'success');
+            } catch (error) {
+                showNotification('Fehler beim Speichern', 'error');
+            }
+        }
+        
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `<span>${message}</span>`;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+        }
+        
+        // Tab change handler
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const tab = btn.dataset.tab;
+                    
+                    // Load tab-specific data
+                    if (tab === 'training') loadTrainingTabData();
+                    if (tab === 'nutrition') loadNutritionTabData();
+                    if (tab === 'coach') loadCoachTabData();
+                });
+            });
+        });
+        
         // Intelligente Zurück-Navigation
         function goBack() {
             // Prüfe ob es einen sinnvollen Referrer gibt

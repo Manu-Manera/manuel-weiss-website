@@ -255,6 +255,124 @@ export const handler = async (event) => {
       return json(200, result, hdr);
     }
 
+    // === TRAINING ENDPUNKTE ===
+    // GET /training - Trainingsplan laden
+    if (httpMethod === 'GET' && route.includes('/training') && !route.includes('/training/')) {
+      const user = authUser(event);
+      const training = await getUserTraining(user.userId);
+      return json(200, training, hdr);
+    }
+
+    // POST /training - Trainingsplan speichern
+    if (httpMethod === 'POST' && route.includes('/training') && !route.includes('/training/')) {
+      const user = authUser(event);
+      const body = JSON.parse(event.body || '{}');
+      const training = await saveUserTraining(user.userId, body);
+      return json(200, training, hdr);
+    }
+
+    // POST /training/workout - Workout-Session speichern
+    if (httpMethod === 'POST' && route.includes('/training/workout')) {
+      const user = authUser(event);
+      const body = JSON.parse(event.body || '{}');
+      const workout = await saveWorkoutSession(user.userId, body);
+      return json(200, workout, hdr);
+    }
+
+    // GET /training/history - Workout-Historie laden
+    if (httpMethod === 'GET' && route.includes('/training/history')) {
+      const user = authUser(event);
+      const history = await getWorkoutHistory(user.userId);
+      return json(200, history, hdr);
+    }
+
+    // === NUTRITION ENDPUNKTE ===
+    // GET /nutrition - Ernährungsplan laden
+    if (httpMethod === 'GET' && route.includes('/nutrition') && !route.includes('/nutrition/')) {
+      const user = authUser(event);
+      const nutrition = await getUserNutrition(user.userId);
+      return json(200, nutrition, hdr);
+    }
+
+    // POST /nutrition - Ernährungsplan speichern
+    if (httpMethod === 'POST' && route.includes('/nutrition') && !route.includes('/nutrition/')) {
+      const user = authUser(event);
+      const body = JSON.parse(event.body || '{}');
+      const nutrition = await saveUserNutrition(user.userId, body);
+      return json(200, nutrition, hdr);
+    }
+
+    // POST /nutrition/meal - Mahlzeit loggen
+    if (httpMethod === 'POST' && route.includes('/nutrition/meal')) {
+      const user = authUser(event);
+      const body = JSON.parse(event.body || '{}');
+      const meal = await logMeal(user.userId, body);
+      return json(200, meal, hdr);
+    }
+
+    // GET /nutrition/history - Ernährungs-Historie laden
+    if (httpMethod === 'GET' && route.includes('/nutrition/history')) {
+      const user = authUser(event);
+      const history = await getNutritionHistory(user.userId);
+      return json(200, history, hdr);
+    }
+
+    // === ACHIEVEMENTS ENDPUNKTE ===
+    // GET /achievements - Alle Erfolge laden
+    if (httpMethod === 'GET' && route.includes('/achievements')) {
+      const user = authUser(event);
+      const achievements = await getUserAchievements(user.userId);
+      return json(200, achievements, hdr);
+    }
+
+    // POST /achievements - Neuen Erfolg hinzufügen
+    if (httpMethod === 'POST' && route.includes('/achievements')) {
+      const user = authUser(event);
+      const body = JSON.parse(event.body || '{}');
+      const achievement = await addAchievement(user.userId, body);
+      return json(200, achievement, hdr);
+    }
+
+    // === APPLICATIONS ENDPUNKTE ===
+    // GET /applications - Alle Bewerbungen laden
+    if (httpMethod === 'GET' && route.includes('/applications') && !route.includes('/applications/')) {
+      const user = authUser(event);
+      const applications = await getUserApplications(user.userId);
+      return json(200, applications, hdr);
+    }
+
+    // POST /applications - Neue Bewerbung erstellen
+    if (httpMethod === 'POST' && route.includes('/applications') && !route.includes('/applications/')) {
+      const user = authUser(event);
+      const body = JSON.parse(event.body || '{}');
+      const application = await createApplication(user.userId, body);
+      return json(200, application, hdr);
+    }
+
+    // PUT /applications/{id} - Bewerbung aktualisieren
+    if (httpMethod === 'PUT' && route.includes('/applications/')) {
+      const user = authUser(event);
+      const applicationId = pathParameters.id || route.split('/applications/')[1]?.split('/')[0];
+      const body = JSON.parse(event.body || '{}');
+      const application = await updateApplication(user.userId, applicationId, body);
+      return json(200, application, hdr);
+    }
+
+    // DELETE /applications/{id} - Bewerbung löschen
+    if (httpMethod === 'DELETE' && route.includes('/applications/')) {
+      const user = authUser(event);
+      const applicationId = pathParameters.id || route.split('/applications/')[1]?.split('/')[0];
+      await deleteApplication(user.userId, applicationId);
+      return json(200, { message: 'Application deleted successfully' }, hdr);
+    }
+
+    // GET /applications/stats - Bewerbungsstatistiken
+    if (httpMethod === 'GET' && route.includes('/applications/stats')) {
+      const user = authUser(event);
+      const stats = await getApplicationStats(user.userId);
+      return json(200, stats, hdr);
+    }
+
     return json(404, { message: 'not found', route, method: httpMethod }, hdr);
   } catch (e) {
     console.error('Handler error:', e);
@@ -1148,6 +1266,530 @@ function parseOCRText(text) {
   }
   
   return parsed;
+}
+
+// ========================================
+// TRAINING FUNKTIONEN
+// ========================================
+
+async function getUserTraining(userId) {
+  try {
+    const result = await getDynamoDB().send(new GetItemCommand({
+      TableName: process.env.TABLE || process.env.PROFILE_TABLE || 'mawps-user-profiles',
+      Key: {
+        pk: { S: `user#${userId}` },
+        sk: { S: 'training' }
+      }
+    }));
+
+    if (!result.Item) {
+      return {
+        userId,
+        currentPlan: null,
+        workouts: [],
+        stats: {
+          totalWorkouts: 0,
+          totalMinutes: 0,
+          currentStreak: 0,
+          longestStreak: 0
+        },
+        lastWorkout: null
+      };
+    }
+
+    return {
+      userId,
+      currentPlan: JSON.parse(result.Item.currentPlan?.S || 'null'),
+      workouts: JSON.parse(result.Item.workouts?.S || '[]'),
+      stats: JSON.parse(result.Item.stats?.S || '{}'),
+      lastWorkout: result.Item.lastWorkout?.S || null,
+      updatedAt: result.Item.updatedAt?.S
+    };
+  } catch (error) {
+    console.error('Error getting user training:', error);
+    throw error;
+  }
+}
+
+async function saveUserTraining(userId, trainingData) {
+  const timestamp = new Date().toISOString();
+  
+  const training = {
+    userId,
+    currentPlan: trainingData.currentPlan || null,
+    workouts: trainingData.workouts || [],
+    stats: trainingData.stats || {
+      totalWorkouts: 0,
+      totalMinutes: 0,
+      currentStreak: 0,
+      longestStreak: 0
+    },
+    lastWorkout: trainingData.lastWorkout || null,
+    updatedAt: timestamp
+  };
+
+  await getDynamoDB().send(new PutItemCommand({
+    TableName: process.env.TABLE || process.env.PROFILE_TABLE || 'mawps-user-profiles',
+    Item: {
+      pk: { S: `user#${userId}` },
+      sk: { S: 'training' },
+      userId: { S: training.userId },
+      currentPlan: { S: JSON.stringify(training.currentPlan) },
+      workouts: { S: JSON.stringify(training.workouts) },
+      stats: { S: JSON.stringify(training.stats) },
+      lastWorkout: { S: training.lastWorkout || '' },
+      updatedAt: { S: training.updatedAt }
+    }
+  }));
+
+  return training;
+}
+
+async function saveWorkoutSession(userId, workoutData) {
+  // Load existing training data
+  const existing = await getUserTraining(userId);
+  
+  const workout = {
+    id: workoutData.id || `workout_${Date.now()}`,
+    date: workoutData.date || new Date().toISOString(),
+    planId: workoutData.planId,
+    duration: workoutData.duration || 0,
+    exercises: workoutData.exercises || [],
+    notes: workoutData.notes || '',
+    completed: workoutData.completed !== false
+  };
+  
+  // Add to workouts array (limit to last 100)
+  const workouts = [workout, ...(existing.workouts || [])].slice(0, 100);
+  
+  // Update stats
+  const stats = existing.stats || {};
+  stats.totalWorkouts = (stats.totalWorkouts || 0) + 1;
+  stats.totalMinutes = (stats.totalMinutes || 0) + workout.duration;
+  
+  // Calculate streak
+  const lastWorkoutDate = existing.lastWorkout ? new Date(existing.lastWorkout) : null;
+  const today = new Date();
+  const daysSinceLastWorkout = lastWorkoutDate 
+    ? Math.floor((today - lastWorkoutDate) / (1000 * 60 * 60 * 24))
+    : 999;
+  
+  if (daysSinceLastWorkout <= 1) {
+    stats.currentStreak = (stats.currentStreak || 0) + 1;
+  } else {
+    stats.currentStreak = 1;
+  }
+  stats.longestStreak = Math.max(stats.longestStreak || 0, stats.currentStreak);
+  
+  // Save updated training data
+  return await saveUserTraining(userId, {
+    ...existing,
+    workouts,
+    stats,
+    lastWorkout: workout.date
+  });
+}
+
+async function getWorkoutHistory(userId) {
+  const training = await getUserTraining(userId);
+  return {
+    workouts: training.workouts || [],
+    stats: training.stats || {}
+  };
+}
+
+// ========================================
+// NUTRITION FUNKTIONEN
+// ========================================
+
+async function getUserNutrition(userId) {
+  try {
+    const result = await getDynamoDB().send(new GetItemCommand({
+      TableName: process.env.TABLE || process.env.PROFILE_TABLE || 'mawps-user-profiles',
+      Key: {
+        pk: { S: `user#${userId}` },
+        sk: { S: 'nutrition' }
+      }
+    }));
+
+    if (!result.Item) {
+      return {
+        userId,
+        currentPlan: null,
+        meals: [],
+        stats: {
+          totalCalories: 0,
+          avgCaloriesPerDay: 0,
+          mealsLogged: 0,
+          currentStreak: 0
+        },
+        preferences: {
+          dailyCalorieGoal: 2000,
+          macros: { protein: 30, carbs: 40, fat: 30 },
+          allergies: [],
+          dietType: 'balanced'
+        },
+        lastMeal: null
+      };
+    }
+
+    return {
+      userId,
+      currentPlan: JSON.parse(result.Item.currentPlan?.S || 'null'),
+      meals: JSON.parse(result.Item.meals?.S || '[]'),
+      stats: JSON.parse(result.Item.stats?.S || '{}'),
+      preferences: JSON.parse(result.Item.preferences?.S || '{}'),
+      lastMeal: result.Item.lastMeal?.S || null,
+      updatedAt: result.Item.updatedAt?.S
+    };
+  } catch (error) {
+    console.error('Error getting user nutrition:', error);
+    throw error;
+  }
+}
+
+async function saveUserNutrition(userId, nutritionData) {
+  const timestamp = new Date().toISOString();
+  
+  const nutrition = {
+    userId,
+    currentPlan: nutritionData.currentPlan || null,
+    meals: nutritionData.meals || [],
+    stats: nutritionData.stats || {},
+    preferences: nutritionData.preferences || {},
+    lastMeal: nutritionData.lastMeal || null,
+    updatedAt: timestamp
+  };
+
+  await getDynamoDB().send(new PutItemCommand({
+    TableName: process.env.TABLE || process.env.PROFILE_TABLE || 'mawps-user-profiles',
+    Item: {
+      pk: { S: `user#${userId}` },
+      sk: { S: 'nutrition' },
+      userId: { S: nutrition.userId },
+      currentPlan: { S: JSON.stringify(nutrition.currentPlan) },
+      meals: { S: JSON.stringify(nutrition.meals) },
+      stats: { S: JSON.stringify(nutrition.stats) },
+      preferences: { S: JSON.stringify(nutrition.preferences) },
+      lastMeal: { S: nutrition.lastMeal || '' },
+      updatedAt: { S: nutrition.updatedAt }
+    }
+  }));
+
+  return nutrition;
+}
+
+async function logMeal(userId, mealData) {
+  const existing = await getUserNutrition(userId);
+  
+  const meal = {
+    id: mealData.id || `meal_${Date.now()}`,
+    date: mealData.date || new Date().toISOString(),
+    type: mealData.type || 'snack', // breakfast, lunch, dinner, snack
+    name: mealData.name || '',
+    calories: mealData.calories || 0,
+    macros: mealData.macros || { protein: 0, carbs: 0, fat: 0 },
+    foods: mealData.foods || [],
+    notes: mealData.notes || ''
+  };
+  
+  // Add to meals array (limit to last 200)
+  const meals = [meal, ...(existing.meals || [])].slice(0, 200);
+  
+  // Update stats
+  const stats = existing.stats || {};
+  stats.mealsLogged = (stats.mealsLogged || 0) + 1;
+  stats.totalCalories = (stats.totalCalories || 0) + meal.calories;
+  
+  // Calculate average calories per day (simple version)
+  const today = new Date().toDateString();
+  const todaysMeals = meals.filter(m => new Date(m.date).toDateString() === today);
+  const todaysCalories = todaysMeals.reduce((sum, m) => sum + (m.calories || 0), 0);
+  stats.todaysCalories = todaysCalories;
+  
+  return await saveUserNutrition(userId, {
+    ...existing,
+    meals,
+    stats,
+    lastMeal: meal.date
+  });
+}
+
+async function getNutritionHistory(userId) {
+  const nutrition = await getUserNutrition(userId);
+  return {
+    meals: nutrition.meals || [],
+    stats: nutrition.stats || {},
+    preferences: nutrition.preferences || {}
+  };
+}
+
+// ========================================
+// ACHIEVEMENTS FUNKTIONEN
+// ========================================
+
+async function getUserAchievements(userId) {
+  try {
+    const result = await getDynamoDB().send(new GetItemCommand({
+      TableName: process.env.TABLE || process.env.PROFILE_TABLE || 'mawps-user-profiles',
+      Key: {
+        pk: { S: `user#${userId}` },
+        sk: { S: 'achievements' }
+      }
+    }));
+
+    if (!result.Item) {
+      return {
+        userId,
+        achievements: [],
+        totalPoints: 0,
+        level: 1,
+        categories: {
+          personality: { unlocked: 0, total: 20 },
+          training: { unlocked: 0, total: 15 },
+          nutrition: { unlocked: 0, total: 15 },
+          applications: { unlocked: 0, total: 10 },
+          snowflakes: { unlocked: 0, total: 10 }
+        }
+      };
+    }
+
+    return {
+      userId,
+      achievements: JSON.parse(result.Item.achievements?.S || '[]'),
+      totalPoints: parseInt(result.Item.totalPoints?.N || '0'),
+      level: parseInt(result.Item.level?.N || '1'),
+      categories: JSON.parse(result.Item.categories?.S || '{}'),
+      updatedAt: result.Item.updatedAt?.S
+    };
+  } catch (error) {
+    console.error('Error getting user achievements:', error);
+    throw error;
+  }
+}
+
+async function addAchievement(userId, achievementData) {
+  const existing = await getUserAchievements(userId);
+  
+  // Check if achievement already exists
+  const alreadyExists = existing.achievements.some(a => a.id === achievementData.id);
+  if (alreadyExists) {
+    return existing; // Don't add duplicate
+  }
+  
+  const achievement = {
+    id: achievementData.id || `achievement_${Date.now()}`,
+    type: achievementData.type || 'general',
+    category: achievementData.category || 'personality',
+    title: achievementData.title || '',
+    description: achievementData.description || '',
+    icon: achievementData.icon || '🏆',
+    points: achievementData.points || 10,
+    unlockedAt: new Date().toISOString(),
+    metadata: achievementData.metadata || {}
+  };
+  
+  const achievements = [...existing.achievements, achievement];
+  const totalPoints = achievements.reduce((sum, a) => sum + (a.points || 0), 0);
+  
+  // Calculate level (every 100 points = 1 level)
+  const level = Math.floor(totalPoints / 100) + 1;
+  
+  // Update category counts
+  const categories = existing.categories || {};
+  if (categories[achievement.category]) {
+    categories[achievement.category].unlocked = (categories[achievement.category].unlocked || 0) + 1;
+  }
+  
+  const timestamp = new Date().toISOString();
+  
+  await getDynamoDB().send(new PutItemCommand({
+    TableName: process.env.TABLE || process.env.PROFILE_TABLE || 'mawps-user-profiles',
+    Item: {
+      pk: { S: `user#${userId}` },
+      sk: { S: 'achievements' },
+      userId: { S: userId },
+      achievements: { S: JSON.stringify(achievements) },
+      totalPoints: { N: String(totalPoints) },
+      level: { N: String(level) },
+      categories: { S: JSON.stringify(categories) },
+      updatedAt: { S: timestamp }
+    }
+  }));
+
+  return {
+    userId,
+    achievements,
+    totalPoints,
+    level,
+    categories,
+    newAchievement: achievement
+  };
+}
+
+// ========================================
+// APPLICATIONS FUNKTIONEN
+// ========================================
+
+async function getUserApplications(userId) {
+  try {
+    const result = await getDynamoDB().send(new GetItemCommand({
+      TableName: process.env.TABLE || process.env.PROFILE_TABLE || 'mawps-user-profiles',
+      Key: {
+        pk: { S: `user#${userId}` },
+        sk: { S: 'applications' }
+      }
+    }));
+
+    if (!result.Item) {
+      return {
+        userId,
+        applications: [],
+        stats: {
+          total: 0,
+          pending: 0,
+          interview: 0,
+          offer: 0,
+          rejected: 0,
+          accepted: 0
+        }
+      };
+    }
+
+    const applications = JSON.parse(result.Item.applications?.S || '[]');
+    const stats = calculateApplicationStats(applications);
+
+    return {
+      userId,
+      applications,
+      stats,
+      updatedAt: result.Item.updatedAt?.S
+    };
+  } catch (error) {
+    console.error('Error getting user applications:', error);
+    throw error;
+  }
+}
+
+async function createApplication(userId, applicationData) {
+  const existing = await getUserApplications(userId);
+  
+  const application = {
+    id: applicationData.id || `app_${Date.now()}`,
+    company: applicationData.company || '',
+    position: applicationData.position || '',
+    location: applicationData.location || '',
+    status: applicationData.status || 'pending',
+    appliedDate: applicationData.appliedDate || new Date().toISOString(),
+    source: applicationData.source || '',
+    salary: applicationData.salary || '',
+    notes: applicationData.notes || '',
+    contacts: applicationData.contacts || [],
+    documents: applicationData.documents || [],
+    timeline: [{
+      status: 'pending',
+      date: new Date().toISOString(),
+      note: 'Bewerbung erstellt'
+    }],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+  
+  const applications = [application, ...existing.applications];
+  const stats = calculateApplicationStats(applications);
+  
+  await saveApplications(userId, applications);
+  
+  return { application, stats };
+}
+
+async function updateApplication(userId, applicationId, updateData) {
+  const existing = await getUserApplications(userId);
+  
+  const applicationIndex = existing.applications.findIndex(a => a.id === applicationId);
+  if (applicationIndex === -1) {
+    throw new Error('Application not found');
+  }
+  
+  const oldApplication = existing.applications[applicationIndex];
+  const updatedApplication = {
+    ...oldApplication,
+    ...updateData,
+    id: applicationId, // Preserve original ID
+    updatedAt: new Date().toISOString()
+  };
+  
+  // Add to timeline if status changed
+  if (updateData.status && updateData.status !== oldApplication.status) {
+    updatedApplication.timeline = [
+      ...(updatedApplication.timeline || []),
+      {
+        status: updateData.status,
+        date: new Date().toISOString(),
+        note: updateData.statusNote || `Status geändert zu: ${updateData.status}`
+      }
+    ];
+  }
+  
+  existing.applications[applicationIndex] = updatedApplication;
+  const stats = calculateApplicationStats(existing.applications);
+  
+  await saveApplications(userId, existing.applications);
+  
+  return { application: updatedApplication, stats };
+}
+
+async function deleteApplication(userId, applicationId) {
+  const existing = await getUserApplications(userId);
+  const applications = existing.applications.filter(a => a.id !== applicationId);
+  await saveApplications(userId, applications);
+}
+
+async function saveApplications(userId, applications) {
+  const timestamp = new Date().toISOString();
+  const stats = calculateApplicationStats(applications);
+  
+  await getDynamoDB().send(new PutItemCommand({
+    TableName: process.env.TABLE || process.env.PROFILE_TABLE || 'mawps-user-profiles',
+    Item: {
+      pk: { S: `user#${userId}` },
+      sk: { S: 'applications' },
+      userId: { S: userId },
+      applications: { S: JSON.stringify(applications) },
+      stats: { S: JSON.stringify(stats) },
+      updatedAt: { S: timestamp }
+    }
+  }));
+}
+
+async function getApplicationStats(userId) {
+  const data = await getUserApplications(userId);
+  return data.stats;
+}
+
+function calculateApplicationStats(applications) {
+  const stats = {
+    total: applications.length,
+    pending: 0,
+    interview: 0,
+    offer: 0,
+    rejected: 0,
+    accepted: 0,
+    withdrawn: 0
+  };
+  
+  applications.forEach(app => {
+    const status = (app.status || 'pending').toLowerCase();
+    if (stats.hasOwnProperty(status)) {
+      stats[status]++;
+    }
+  });
+  
+  // Calculate success rate
+  const completed = stats.accepted + stats.rejected;
+  stats.successRate = completed > 0 ? Math.round((stats.accepted / completed) * 100) : 0;
+  
+  return stats;
 }
 
 function authUser(event) {
