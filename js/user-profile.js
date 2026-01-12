@@ -1428,18 +1428,22 @@ class UserProfile {
             // Vorausfüllen der Workflow-Daten mit Profildaten
             this.prefillWorkflowFromProfile(profileData);
             
-            // Starte Workflow-Modal
+            // Starte Workflow-Modal - nur wenn verfügbar
             if (typeof window.showSmartWorkflowModal === 'function') {
                 window.showSmartWorkflowModal();
             } else if (typeof window.startSmartWorkflow === 'function') {
                 window.startSmartWorkflow();
             } else {
-                throw new Error('Workflow-Funktion nicht gefunden');
+                // Fallback: Navigiere zur Bewerbungsseite
+                console.log('ℹ️ Workflow-Funktionen nicht verfügbar, navigiere zur Bewerbungsseite...');
+                window.location.href = '/applications/dashboard.html?action=new-application';
             }
             
         } catch (error) {
             console.error('❌ Failed to start application workflow:', error);
-            this.showNotification('Fehler beim Starten des Workflows: ' + (error.message || 'Unbekannter Fehler'), 'error');
+            // Bei Fehler: Navigiere zur Bewerbungsseite
+            console.log('ℹ️ Fehler beim Starten, navigiere zur Bewerbungsseite...');
+            window.location.href = '/applications/dashboard.html?action=new-application';
         }
     }
 
@@ -1449,7 +1453,22 @@ class UserProfile {
     prefillWorkflowFromProfile(profileData) {
         // Initialisiere Workflow-Daten falls nicht vorhanden
         if (!window.workflowData) {
-            window.initializeWorkflowData();
+            // Fallback: Falls shared-functions.js nicht geladen wurde
+            if (typeof window.initializeWorkflowData !== 'function') {
+                window.workflowData = {
+                    currentStep: 0,
+                    applicationType: null,
+                    skipJobAnalysis: false,
+                    company: '',
+                    position: '',
+                    jobDescription: '',
+                    requirements: [],
+                    aiAnalysisResult: null,
+                    isInitiativeApplication: false
+                };
+            } else {
+                window.initializeWorkflowData();
+            }
         }
 
         // Mapping: Profil → Workflow
@@ -1480,7 +1499,16 @@ class UserProfile {
         };
 
         // Speichere für späteren Zugriff
-        window.saveWorkflowData();
+        if (typeof window.saveWorkflowData === 'function') {
+            window.saveWorkflowData();
+        } else {
+            // Fallback: Speichere direkt in localStorage
+            try {
+                localStorage.setItem('smartWorkflowData', JSON.stringify(window.workflowData));
+            } catch (e) {
+                console.warn('⚠️ Konnte Workflow-Daten nicht speichern:', e);
+            }
+        }
 
         console.log('✅ Workflow-Daten mit Profildaten vorausgefüllt:', workflowData);
     }
