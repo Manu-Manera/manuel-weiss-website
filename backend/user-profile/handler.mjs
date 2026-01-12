@@ -2176,14 +2176,17 @@ function calculateJournalStats(entries) {
 
 /**
  * API-Einstellungen laden
+ * Verwendet userId als Primary Key (ohne pk/sk Schema)
  */
 async function getApiSettings(userId) {
   try {
+    // API Settings werden unter einer speziellen userId gespeichert: api-settings#{userId}
+    const apiSettingsId = `api-settings#${userId}`;
+    
     const result = await getDynamoDB().send(new GetItemCommand({
       TableName: process.env.TABLE || process.env.PROFILE_TABLE || 'mawps-user-profiles',
       Key: {
-        pk: { S: `user#${userId}` },
-        sk: { S: 'api-settings' }
+        userId: { S: apiSettingsId }
       }
     }));
     
@@ -2231,14 +2234,18 @@ function maskApiKey(key) {
 
 /**
  * API-Einstellungen speichern
+ * Verwendet userId als Primary Key (ohne pk/sk Schema)
  */
 async function saveApiSettings(userId, settings) {
   try {
+    // API Settings werden unter einer speziellen userId gespeichert: api-settings#{userId}
+    const apiSettingsId = `api-settings#${userId}`;
+    
     const item = {
-      pk: { S: `user#${userId}` },
-      sk: { S: 'api-settings' },
-      userId: { S: userId },
-      updatedAt: { S: new Date().toISOString() }
+      userId: { S: apiSettingsId },
+      originalUserId: { S: userId },
+      updatedAt: { S: new Date().toISOString() },
+      type: { S: 'api-settings' }
     };
     
     // Provider-spezifische Einstellungen speichern
@@ -2277,11 +2284,13 @@ async function saveApiSettings(userId, settings) {
  */
 async function deleteApiSettings(userId) {
   try {
+    // API Settings werden unter einer speziellen userId gespeichert: api-settings#{userId}
+    const apiSettingsId = `api-settings#${userId}`;
+    
     await getDynamoDB().send(new DeleteItemCommand({
       TableName: process.env.TABLE || process.env.PROFILE_TABLE || 'mawps-user-profiles',
       Key: {
-        pk: { S: `user#${userId}` },
-        sk: { S: 'api-settings' }
+        userId: { S: apiSettingsId }
       }
     }));
     
