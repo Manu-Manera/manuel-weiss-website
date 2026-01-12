@@ -243,7 +243,7 @@
                     <div class="nav-divider"></div>
                     <button class="lang-link-compact" data-lang="de" title="Deutsch">🇩🇪</button>
                     <button class="lang-link-compact" data-lang="en" title="English">🇬🇧</button>
-                    <button id="authButton" class="nav-auth-btn">
+                    <button id="authButton" class="nav-login-btn">
                         <i class="fas fa-user"></i>
                         <span id="authButtonText">Anmelden</span>
                     </button>
@@ -1091,22 +1091,43 @@ Ihre Aufgaben:
             if (!authButton) return;
             
             // Update UI based on login state
-            function updateAuthState() {
+            async function updateAuthState() {
                 const isLoggedIn = window.awsAuth && window.awsAuth.isLoggedIn();
                 const userData = isLoggedIn ? window.awsAuth.getUserDataFromToken() : null;
                 
                 if (isLoggedIn && userData) {
+                    // Versuche Name aus dem Profil zu laden (falls verfügbar)
+                    let displayName = userData.name;
+                    
+                    // Wenn kein Name im Token, versuche Profil zu laden
+                    if (!displayName && window.awsProfileAPI) {
+                        try {
+                            const profile = await window.awsProfileAPI.loadProfile();
+                            if (profile && profile.firstName) {
+                                displayName = profile.firstName + (profile.lastName ? ' ' + profile.lastName : '');
+                            }
+                        } catch (e) {
+                            console.log('ℹ️ Profil nicht verfügbar, verwende Email als Fallback');
+                        }
+                    }
+                    
+                    // Fallback: Email-Vorname (nur wenn länger als 3 Zeichen, sonst "Profil")
+                    if (!displayName && userData.email) {
+                        const emailName = userData.email.split('@')[0];
+                        displayName = emailName.length > 3 ? emailName : 'Profil';
+                    }
+                    
                     // Logged in
                     authButton.innerHTML = `
                         <img src="${userData.picture || '../images/default-avatar.png'}" alt="User" class="nav-user-avatar">
-                        <span>${userData.name || userData.email.split('@')[0]}</span>
+                        <span>${displayName || 'Profil'}</span>
                         <i class="fas fa-chevron-down"></i>
                     `;
                     authButton.classList.add('logged-in');
                     
                     // Update dropdown
                     if (document.getElementById('userName')) {
-                        document.getElementById('userName').textContent = userData.name || 'Benutzer';
+                        document.getElementById('userName').textContent = displayName || 'Benutzer';
                     }
                     if (document.getElementById('userEmail')) {
                         document.getElementById('userEmail').textContent = userData.email || '';
