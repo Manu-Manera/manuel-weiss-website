@@ -436,7 +436,7 @@
         }
         
         // Update auth button state with dropdown support
-        function updateAuthState() {
+        async function updateAuthState() {
             const authButton = document.getElementById('authButton');
             const authButtonText = document.getElementById('authButtonText');
             const mobileAuthButton = document.getElementById('mobileAuthButton');
@@ -448,7 +448,43 @@
             
             if (isLoggedIn) {
                 const userData = window.awsAuth.getUserDataFromToken();
-                const displayName = userData?.name || userData?.email?.split('@')[0] || 'Profil';
+                let displayName = userData?.name;
+                
+                // Wenn kein Name im Token, versuche AWS-Profil zu laden
+                if (!displayName && window.awsProfileAPI) {
+                    try {
+                        if (!window.awsProfileAPI.isInitialized) {
+                            await new Promise((resolve) => {
+                                let attempts = 0;
+                                const check = setInterval(() => {
+                                    attempts++;
+                                    if (window.awsProfileAPI?.isInitialized || attempts > 20) {
+                                        clearInterval(check);
+                                        resolve();
+                                    }
+                                }, 100);
+                            });
+                        }
+                        const profile = await window.awsProfileAPI.loadProfile();
+                        if (profile) {
+                            const firstName = profile.firstName || profile.personal?.firstName || '';
+                            const lastName = profile.lastName || profile.personal?.lastName || '';
+                            if (firstName) {
+                                displayName = firstName + (lastName ? ' ' + lastName : '');
+                            }
+                        }
+                    } catch (e) {
+                        console.log('ℹ️ Profil nicht verfügbar');
+                    }
+                }
+                
+                // Fallback: Email-Vorname (nur wenn länger als 3 Zeichen, sonst "Profil")
+                if (!displayName && userData?.email) {
+                    const emailName = userData.email.split('@')[0];
+                    displayName = emailName.length > 3 ? emailName : 'Profil';
+                }
+                
+                displayName = displayName || 'Profil';
                 
                 // Update desktop button
                 if (authButton && authButtonText) {

@@ -1099,15 +1099,40 @@ Ihre Aufgaben:
                     // Versuche Name aus dem Profil zu laden (falls verfügbar)
                     let displayName = userData.name;
                     
-                    // Wenn kein Name im Token, versuche Profil zu laden
+                    // Wenn kein Name im Token, versuche AWS-Profil zu laden
                     if (!displayName && window.awsProfileAPI) {
                         try {
+                            // Warte auf awsProfileAPI Initialisierung
+                            if (!window.awsProfileAPI.isInitialized) {
+                                console.log('⏳ Warte auf awsProfileAPI...');
+                                await new Promise((resolve) => {
+                                    let attempts = 0;
+                                    const check = setInterval(() => {
+                                        attempts++;
+                                        if (window.awsProfileAPI?.isInitialized || attempts > 20) {
+                                            clearInterval(check);
+                                            resolve();
+                                        }
+                                    }, 100);
+                                });
+                            }
+                            
+                            console.log('📡 Lade Profil für Auth-Button...');
                             const profile = await window.awsProfileAPI.loadProfile();
-                            if (profile && profile.firstName) {
-                                displayName = profile.firstName + (profile.lastName ? ' ' + profile.lastName : '');
+                            console.log('📋 Geladenes Profil:', profile);
+                            
+                            if (profile) {
+                                // Unterstütze verschiedene Profil-Formate
+                                const firstName = profile.firstName || profile.personal?.firstName || '';
+                                const lastName = profile.lastName || profile.personal?.lastName || '';
+                                
+                                if (firstName) {
+                                    displayName = firstName + (lastName ? ' ' + lastName : '');
+                                    console.log('✅ Name aus Profil:', displayName);
+                                }
                             }
                         } catch (e) {
-                            console.log('ℹ️ Profil nicht verfügbar, verwende Email als Fallback');
+                            console.log('ℹ️ Profil nicht verfügbar:', e.message);
                         }
                     }
                     
@@ -1115,6 +1140,7 @@ Ihre Aufgaben:
                     if (!displayName && userData.email) {
                         const emailName = userData.email.split('@')[0];
                         displayName = emailName.length > 3 ? emailName : 'Profil';
+                        console.log('ℹ️ Verwende Email-Fallback:', displayName);
                     }
                     
                     // Logged in
