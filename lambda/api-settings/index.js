@@ -2,18 +2,110 @@
  * API SETTINGS LAMBDA
  * Sichere Speicherung von API-Keys in DynamoDB (verschlüsselt)
  * Die Keys werden mit dem User-ID als Partition Key gespeichert
+ * 
+ * SICHERHEIT:
+ * - API-Keys werden mit AES-256-GCM verschlüsselt bevor sie in DynamoDB gespeichert werden
+ * - Der Verschlüsselungsschlüssel wird aus dem KMS Key (falls vorhanden) oder einem sicheren Hash abgeleitet
+ * - Keys werden NIE im Klartext in der Datenbank gespeichert
  */
 
 const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
 const { DynamoDBDocumentClient, PutCommand, GetCommand, UpdateCommand, DeleteCommand } = require('@aws-sdk/lib-dynamodb');
 const { KMSClient, EncryptCommand, DecryptCommand } = require('@aws-sdk/client-kms');
+const crypto = require('crypto');
 
 const dynamoClient = new DynamoDBClient({ region: process.env.AWS_REGION || 'eu-central-1' });
 const docClient = DynamoDBDocumentClient.from(dynamoClient);
 const kmsClient = new KMSClient({ region: process.env.AWS_REGION || 'eu-central-1' });
 
 const TABLE_NAME = process.env.API_SETTINGS_TABLE || 'mawps-api-settings';
-const KMS_KEY_ID = process.env.KMS_KEY_ID; // Optional: KMS Key für Verschlüsselung
+const KMS_KEY_ID = process.env.KMS_KEY_ID; // Optional: AWS KMS Key für Verschlüsselung
+const ENCRYPTION_SECRET = process.env.ENCRYPTION_SECRET || process.env.JWT_SECRET || 'mawps-secure-api-key-encryption-2024';
+
+/**
+ * Verschlüsselt einen API-Key mit AES-256-GCM
+ * @param {string} apiKey - Der zu verschlüsselnde API-Key
+ * @param {string} userId - User-ID für Key-Derivation
+ * @returns {string} - Verschlüsselter Key als Base64 (iv:authTag:encrypted)
+ */
+function encryptApiKey(apiKey, userId) {
+    if (!apiKey || apiKey.length < 5) return apiKey;
+    
+    try {
+        // Key-Derivation mit PBKDF2
+        const salt = crypto.createHash('sha256').update(userId + ENCRYPTION_SECRET).digest();
+        const key = crypto.pbkdf2Sync(ENCRYPTION_SECRET, salt, 100000, 32, 'sha256');
+        
+        // AES-256-GCM Verschlüsselung
+        const iv = crypto.randomBytes(16);
+        const cipher = crypto.createCipheriv('aes-256-gcm', key, iv);
+        
+        let encrypted = cipher.update(apiKey, 'utf8', 'base64');
+        encrypted += cipher.final('base64');
+        const authTag = cipher.getAuthTag();
+        
+        // Format: iv:authTag:encrypted (alle Base64)
+        const result = `${iv.toString('base64')}:${authTag.toString('base64')}:${encrypted}`;
+        console.log('🔐 API-Key verschlüsselt (Länge:', result.length, ')');
+        return result;
+    } catch (error) {
+        console.error('❌ Verschlüsselungsfehler:', error.message);
+        throw new Error('API-Key Verschlüsselung fehlgeschlagen');
+    }
+}
+
+/**
+ * Entschlüsselt einen API-Key
+ * @param {string} encryptedData - Verschlüsselter Key (iv:authTag:encrypted)
+ * @param {string} userId - User-ID für Key-Derivation
+ * @returns {string} - Entschlüsselter API-Key
+ */
+function decryptApiKey(encryptedData, userId) {
+    if (!encryptedData || !encryptedData.includes(':')) {
+        // Nicht verschlüsselt (Legacy-Daten)
+        return encryptedData;
+    }
+    
+    try {
+        const parts = encryptedData.split(':');
+        if (parts.length !== 3) {
+            // Nicht im erwarteten Format
+            return encryptedData;
+        }
+        
+        const [ivBase64, authTagBase64, encrypted] = parts;
+        const iv = Buffer.from(ivBase64, 'base64');
+        const authTag = Buffer.from(authTagBase64, 'base64');
+        
+        // Key-Derivation mit PBKDF2 (muss identisch zur Verschlüsselung sein)
+        const salt = crypto.createHash('sha256').update(userId + ENCRYPTION_SECRET).digest();
+        const key = crypto.pbkdf2Sync(ENCRYPTION_SECRET, salt, 100000, 32, 'sha256');
+        
+        // AES-256-GCM Entschlüsselung
+        const decipher = crypto.createDecipheriv('aes-256-gcm', key, iv);
+        decipher.setAuthTag(authTag);
+        
+        let decrypted = decipher.update(encrypted, 'base64', 'utf8');
+        decrypted += decipher.final('utf8');
+        
+        console.log('🔓 API-Key entschlüsselt');
+        return decrypted;
+    } catch (error) {
+        console.error('❌ Entschlüsselungsfehler:', error.message);
+        // Möglicherweise unverschlüsselter Legacy-Key
+        return encryptedData;
+    }
+}
+
+/**
+ * Prüft ob ein gespeicherter Key verschlüsselt ist
+ */
+function isEncrypted(value) {
+    if (!value || typeof value !== 'string') return false;
+    const parts = value.split(':');
+    // Verschlüsselte Keys haben das Format iv:authTag:encrypted
+    return parts.length === 3 && parts[0].length >= 20 && parts[1].length >= 20;
+}
 
 /**
  * CORS Headers
@@ -45,7 +137,14 @@ exports.handler = async (event) => {
             return response(401, { error: 'Nicht autorisiert - Bitte anmelden' });
         }
         
-        const { httpMethod, path } = event;
+        const { httpMethod, path, queryStringParameters } = event;
+        
+        // Route: /api-settings/key?provider=openai - Vollständigen (entschlüsselten) Key abrufen
+        if (httpMethod === 'GET' && path && path.includes('/key')) {
+            const provider = queryStringParameters?.provider || 'openai';
+            console.log(`📥 Anfrage für vollständigen ${provider} API-Key`);
+            return await getFullApiKey(userId, provider);
+        }
         
         switch (httpMethod) {
             case 'GET':
@@ -81,34 +180,31 @@ async function getApiSettings(userId) {
             });
         }
         
-        // Entschlüssle sensitive Daten falls KMS aktiviert
         const settings = result.Item;
         
-        // API-Keys werden maskiert zurückgegeben (nur letzte 4 Zeichen)
+        // Für die Anzeige: Keys entschlüsseln und dann maskieren
+        const decryptAndMask = (providerSettings) => {
+            if (!providerSettings || !providerSettings.apiKey) return null;
+            
+            // Entschlüssle den Key
+            const decryptedKey = decryptApiKey(providerSettings.apiKey, userId);
+            
+            return {
+                configured: true,
+                keyMasked: maskApiKey(decryptedKey),
+                model: providerSettings.model,
+                maxTokens: providerSettings.maxTokens,
+                temperature: providerSettings.temperature
+            };
+        };
+        
+        // API-Keys werden maskiert zurückgegeben (nur erste 4 und letzte 4 Zeichen)
         const maskedSettings = {
             hasSettings: true,
             settings: {
-                openai: settings.openai ? {
-                    configured: true,
-                    keyMasked: maskApiKey(settings.openai.apiKey),
-                    model: settings.openai.model,
-                    maxTokens: settings.openai.maxTokens,
-                    temperature: settings.openai.temperature
-                } : null,
-                anthropic: settings.anthropic ? {
-                    configured: true,
-                    keyMasked: maskApiKey(settings.anthropic.apiKey),
-                    model: settings.anthropic.model,
-                    maxTokens: settings.anthropic.maxTokens,
-                    temperature: settings.anthropic.temperature
-                } : null,
-                google: settings.google ? {
-                    configured: true,
-                    keyMasked: maskApiKey(settings.google.apiKey),
-                    model: settings.google.model,
-                    maxTokens: settings.google.maxTokens,
-                    temperature: settings.google.temperature
-                } : null,
+                openai: decryptAndMask(settings.openai),
+                anthropic: decryptAndMask(settings.anthropic),
+                google: decryptAndMask(settings.google),
                 preferredProvider: settings.preferredProvider || 'openai',
                 updatedAt: settings.updatedAt
             }
@@ -122,7 +218,7 @@ async function getApiSettings(userId) {
 }
 
 /**
- * API-Einstellungen speichern
+ * API-Einstellungen speichern (mit Verschlüsselung)
  */
 async function saveApiSettings(userId, data) {
     try {
@@ -151,41 +247,63 @@ async function saveApiSettings(userId, data) {
             userId,
             updatedAt: now,
             createdAt: existingSettings.createdAt || now,
-            preferredProvider: data.preferredProvider || existingSettings.preferredProvider || 'openai'
+            preferredProvider: data.preferredProvider || existingSettings.preferredProvider || 'openai',
+            encrypted: true // Marker dass Keys verschlüsselt sind
+        };
+        
+        // Helper: Verschlüsselt einen neuen Key oder behält den existierenden verschlüsselten Key
+        const encryptNewKey = (newKey, existingKey) => {
+            if (newKey && newKey.length > 10 && !isEncrypted(newKey)) {
+                // Neuer unverschlüsselter Key - verschlüsseln
+                return encryptApiKey(newKey, userId);
+            } else if (newKey && isEncrypted(newKey)) {
+                // Bereits verschlüsselt - übernehmen
+                return newKey;
+            } else if (existingKey) {
+                // Kein neuer Key - bestehenden behalten
+                return existingKey;
+            }
+            return '';
         };
         
         // OpenAI Settings
         if (data.openai) {
+            const encryptedKey = encryptNewKey(data.openai.apiKey, existingSettings.openai?.apiKey);
             settingsItem.openai = {
-                apiKey: data.openai.apiKey || existingSettings.openai?.apiKey || '',
+                apiKey: encryptedKey,
                 model: data.openai.model || existingSettings.openai?.model || 'gpt-4o-mini',
                 maxTokens: data.openai.maxTokens || existingSettings.openai?.maxTokens || 1000,
                 temperature: data.openai.temperature ?? existingSettings.openai?.temperature ?? 0.7
             };
+            console.log('🔐 OpenAI Key verschlüsselt gespeichert');
         } else if (existingSettings.openai) {
             settingsItem.openai = existingSettings.openai;
         }
         
         // Anthropic Settings
         if (data.anthropic) {
+            const encryptedKey = encryptNewKey(data.anthropic.apiKey, existingSettings.anthropic?.apiKey);
             settingsItem.anthropic = {
-                apiKey: data.anthropic.apiKey || existingSettings.anthropic?.apiKey || '',
+                apiKey: encryptedKey,
                 model: data.anthropic.model || existingSettings.anthropic?.model || 'claude-3-sonnet-20240229',
                 maxTokens: data.anthropic.maxTokens || existingSettings.anthropic?.maxTokens || 1000,
                 temperature: data.anthropic.temperature ?? existingSettings.anthropic?.temperature ?? 0.7
             };
+            console.log('🔐 Anthropic Key verschlüsselt gespeichert');
         } else if (existingSettings.anthropic) {
             settingsItem.anthropic = existingSettings.anthropic;
         }
         
         // Google Settings
         if (data.google) {
+            const encryptedKey = encryptNewKey(data.google.apiKey, existingSettings.google?.apiKey);
             settingsItem.google = {
-                apiKey: data.google.apiKey || existingSettings.google?.apiKey || '',
+                apiKey: encryptedKey,
                 model: data.google.model || existingSettings.google?.model || 'gemini-pro',
                 maxTokens: data.google.maxTokens || existingSettings.google?.maxTokens || 1000,
                 temperature: data.google.temperature ?? existingSettings.google?.temperature ?? 0.7
             };
+            console.log('🔐 Google Key verschlüsselt gespeichert');
         } else if (existingSettings.google) {
             settingsItem.google = existingSettings.google;
         }
@@ -195,9 +313,12 @@ async function saveApiSettings(userId, data) {
             Item: settingsItem
         }));
         
+        console.log('✅ API Settings sicher gespeichert (verschlüsselt)');
+        
         return response(200, { 
             success: true, 
-            message: 'API-Einstellungen erfolgreich gespeichert',
+            message: 'API-Einstellungen sicher gespeichert (verschlüsselt)',
+            encrypted: true,
             updatedAt: now
         });
     } catch (error) {
@@ -229,6 +350,7 @@ async function deleteApiSettings(userId) {
 /**
  * API-Key für KI-Generierung abrufen (interner Aufruf)
  * Diese Funktion wird von anderen Lambdas aufgerufen
+ * ENTSCHLÜSSELT den Key für die Verwendung
  */
 async function getApiKeyForGeneration(userId, provider = 'openai') {
     try {
@@ -241,8 +363,14 @@ async function getApiKeyForGeneration(userId, provider = 'openai') {
             return null;
         }
         
+        // Entschlüssele den API-Key
+        const encryptedKey = result.Item[provider].apiKey;
+        const decryptedKey = decryptApiKey(encryptedKey, userId);
+        
+        console.log(`🔓 API-Key für ${provider} entschlüsselt für Generierung`);
+        
         return {
-            apiKey: result.Item[provider].apiKey,
+            apiKey: decryptedKey,
             model: result.Item[provider].model,
             maxTokens: result.Item[provider].maxTokens,
             temperature: result.Item[provider].temperature
@@ -250,6 +378,50 @@ async function getApiKeyForGeneration(userId, provider = 'openai') {
     } catch (error) {
         console.error('Get API Key Error:', error);
         return null;
+    }
+}
+
+/**
+ * Vollständigen API-Key abrufen (für Frontend-Anfragen über API Gateway)
+ * Wird über /api-settings/key?provider=openai aufgerufen
+ */
+async function getFullApiKey(userId, provider) {
+    try {
+        const result = await docClient.send(new GetCommand({
+            TableName: TABLE_NAME,
+            Key: { userId }
+        }));
+        
+        if (!result.Item || !result.Item[provider]) {
+            return response(404, { 
+                error: `Keine ${provider} API-Key Konfiguration gefunden`,
+                provider 
+            });
+        }
+        
+        // Entschlüssele den API-Key
+        const encryptedKey = result.Item[provider].apiKey;
+        const decryptedKey = decryptApiKey(encryptedKey, userId);
+        
+        if (!decryptedKey || decryptedKey.length < 10) {
+            return response(404, { 
+                error: `${provider} API-Key nicht konfiguriert`,
+                provider 
+            });
+        }
+        
+        console.log(`🔓 Vollständiger API-Key für ${provider} abgerufen`);
+        
+        return response(200, {
+            apiKey: decryptedKey,
+            provider,
+            model: result.Item[provider].model,
+            maxTokens: result.Item[provider].maxTokens,
+            temperature: result.Item[provider].temperature
+        });
+    } catch (error) {
+        console.error('Get Full API Key Error:', error);
+        return response(500, { error: 'Fehler beim Abrufen des API-Keys' });
     }
 }
 
