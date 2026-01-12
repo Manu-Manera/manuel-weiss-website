@@ -177,15 +177,50 @@ class ApiKeysSection {
     }
     
     /**
-     * API Settings laden (aus localStorage + AWS)
+     * API Settings laden (aus GlobalAPIManager, StateManager, localStorage)
      */
     loadApiSettings() {
-        // Lade aus State Manager (localStorage)
-        const settings = this.stateManager?.getState('apiKeys') || {};
-        
         const services = ['openai', 'anthropic', 'google'];
+        
         services.forEach(service => {
-            const serviceSettings = settings[service];
+            let serviceSettings = null;
+            
+            // 1. Versuch: GlobalAPIManager
+            if (window.GlobalAPIManager) {
+                const config = window.GlobalAPIManager.getServiceConfig(service);
+                if (config && config.key) {
+                    serviceSettings = {
+                        apiKey: config.key,
+                        model: config.model,
+                        maxTokens: config.maxTokens,
+                        temperature: config.temperature
+                    };
+                }
+            }
+            
+            // 2. Versuch: State Manager
+            if (!serviceSettings && this.stateManager) {
+                const settings = this.stateManager.getState('apiKeys') || {};
+                if (settings[service]) {
+                    serviceSettings = settings[service];
+                }
+            }
+            
+            // 3. Versuch: Direkt aus global_api_keys
+            if (!serviceSettings) {
+                try {
+                    const globalKeys = JSON.parse(localStorage.getItem('global_api_keys') || '{}');
+                    if (globalKeys[service] && globalKeys[service].key) {
+                        serviceSettings = {
+                            apiKey: globalKeys[service].key,
+                            model: globalKeys[service].model,
+                            maxTokens: globalKeys[service].maxTokens,
+                            temperature: globalKeys[service].temperature
+                        };
+                    }
+                } catch (e) {}
+            }
+            
             if (serviceSettings) {
                 // API Key
                 const keyInput = document.getElementById(`${service}-key`);
@@ -272,6 +307,32 @@ class ApiKeysSection {
             const currentSettings = this.stateManager.getState('apiKeys') || {};
             currentSettings[service] = serviceData;
             this.stateManager.setState('apiKeys', currentSettings);
+        }
+        
+        // WICHTIG: Auch in GlobalAPIManager speichern (für quick-apply.js etc.)
+        if (window.GlobalAPIManager) {
+            window.GlobalAPIManager.setAPIKey(service, serviceData.apiKey, {
+                model: serviceData.model,
+                maxTokens: serviceData.maxTokens,
+                temperature: serviceData.temperature
+            });
+            console.log(`✅ ${service} API-Key in GlobalAPIManager gespeichert`);
+        } else {
+            // Fallback: Direkt in localStorage unter global_api_keys
+            try {
+                const globalKeys = JSON.parse(localStorage.getItem('global_api_keys') || '{}');
+                globalKeys[service] = {
+                    key: serviceData.apiKey,
+                    model: serviceData.model,
+                    maxTokens: serviceData.maxTokens,
+                    temperature: serviceData.temperature,
+                    enabled: !!serviceData.apiKey
+                };
+                localStorage.setItem('global_api_keys', JSON.stringify(globalKeys));
+                console.log(`✅ ${service} API-Key in global_api_keys gespeichert`);
+            } catch (e) {
+                console.error('Fehler beim Speichern in global_api_keys:', e);
+            }
         }
         
         // ZUSÄTZLICH: In AWS DynamoDB speichern (für alle User verfügbar)
