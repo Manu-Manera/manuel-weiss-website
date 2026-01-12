@@ -310,24 +310,24 @@
         <!-- Hero Stats Bar -->
         <div class="dashboard-stats-bar">
             <div class="stat-item">
+                <i class="fas fa-envelope"></i>
+                <div class="stat-content">
+                    <span class="stat-number" id="statCoverLetters">0</span>
+                    <span class="stat-label">Anschreiben</span>
+                </div>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-file-alt"></i>
+                <div class="stat-content">
+                    <span class="stat-number" id="statResumes">1</span>
+                    <span class="stat-label">Lebensläufe</span>
+                </div>
+            </div>
+            <div class="stat-item">
                 <i class="fas fa-paper-plane"></i>
                 <div class="stat-content">
                     <span class="stat-number" id="statTotal">0</span>
                     <span class="stat-label">Bewerbungen</span>
-                </div>
-            </div>
-            <div class="stat-item">
-                <i class="fas fa-hourglass-half"></i>
-                <div class="stat-content">
-                    <span class="stat-number" id="statPending">0</span>
-                    <span class="stat-label">Offen</span>
-                </div>
-            </div>
-            <div class="stat-item">
-                <i class="fas fa-comments"></i>
-                <div class="stat-content">
-                    <span class="stat-number" id="statInterviews">0</span>
-                    <span class="stat-label">Interviews</span>
                 </div>
             </div>
             <div class="stat-item highlight">
@@ -353,6 +353,10 @@
             <button class="tab-btn" data-tab="resume" onclick="showTab('resume')">
                 <i class="fas fa-id-card"></i>
                 <span>Lebenslauf</span>
+            </button>
+            <button class="tab-btn" data-tab="documents" onclick="showTab('documents')">
+                <i class="fas fa-certificate"></i>
+                <span>Zeugnisse</span>
             </button>
             <button class="tab-btn" data-tab="tracking" onclick="showTab('tracking')">
                 <i class="fas fa-tasks"></i>
@@ -819,6 +823,62 @@ Ihre Aufgaben:
             </div>
 
             <!-- ═══════════════════════════════════════════════════════════ -->
+            <!-- TAB: ZEUGNISSE & ZERTIFIKATE -->
+            <!-- ═══════════════════════════════════════════════════════════ -->
+            <div id="tab-documents" class="tab-content">
+                <div class="documents-container">
+                    <div class="documents-header">
+                        <h2><i class="fas fa-certificate"></i> Zeugnisse & Zertifikate</h2>
+                        <p>Laden Sie Ihre Zeugnisse und Zertifikate hoch, um sie bei Bewerbungen schnell anhängen zu können.</p>
+                    </div>
+                    
+                    <!-- Upload Area -->
+                    <div class="documents-upload-area">
+                        <input type="file" id="documentFileInput" accept=".pdf" multiple style="display: none;">
+                        <div class="upload-dropzone" onclick="document.getElementById('documentFileInput').click()">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <h3>Dokumente hochladen</h3>
+                            <p>PDF-Dateien hier ablegen oder klicken</p>
+                            <span class="upload-hint">Max. 10MB pro Datei</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Document Categories -->
+                    <div class="documents-categories">
+                        <div class="category-section">
+                            <h3><i class="fas fa-graduation-cap"></i> Zeugnisse</h3>
+                            <div id="documentsCertificates" class="documents-list">
+                                <div class="empty-state-small" id="noCertificates">
+                                    <i class="fas fa-file-pdf"></i>
+                                    <p>Noch keine Zeugnisse hochgeladen</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="category-section">
+                            <h3><i class="fas fa-award"></i> Zertifikate & Weiterbildungen</h3>
+                            <div id="documentsAwards" class="documents-list">
+                                <div class="empty-state-small" id="noAwards">
+                                    <i class="fas fa-file-pdf"></i>
+                                    <p>Noch keine Zertifikate hochgeladen</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="category-section">
+                            <h3><i class="fas fa-briefcase"></i> Arbeitszeugnisse</h3>
+                            <div id="documentsWork" class="documents-list">
+                                <div class="empty-state-small" id="noWorkDocs">
+                                    <i class="fas fa-file-pdf"></i>
+                                    <p>Noch keine Arbeitszeugnisse hochgeladen</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══════════════════════════════════════════════════════════ -->
             <!-- TAB 4: TRACKING -->
             <!-- ═══════════════════════════════════════════════════════════ -->
             <div id="tab-tracking" class="tab-content">
@@ -1255,77 +1315,68 @@ Ihre Aufgaben:
                 }
             }
             
-            // ROBUST: Dropdown nur bei echtem Benutzerklick öffnen
-            let lastUserInteraction = 0;
-            let dropdownClickEnabled = true;
+            // RADIKAL VEREINFACHT: Dropdown nur bei ECHTEM User-Klick
+            // e.isTrusted ist nur true bei echten Benutzer-Aktionen, nicht bei programmatischen
+            let dropdownOpen = false;
             
-            // Funktion zum Schließen des Dropdowns
             function closeDropdown() {
-                if (userDropdown) {
-                    userDropdown.style.display = 'none';
-                }
+                dropdownOpen = false;
+                if (userDropdown) userDropdown.style.display = 'none';
             }
             
-            // WICHTIG: Bei Fensterwechsel, Blur, Visibility-Change immer schließen
+            function openDropdown() {
+                dropdownOpen = true;
+                if (userDropdown) userDropdown.style.display = 'block';
+            }
+            
+            // Schließe bei JEDEM dieser Events
             window.addEventListener('blur', closeDropdown);
-            window.addEventListener('visibilitychange', () => {
-                if (document.hidden) closeDropdown();
-            });
+            window.addEventListener('focus', closeDropdown); // Auch bei focus schließen!
             document.addEventListener('visibilitychange', closeDropdown);
             
-            // Auth button click handler - NUR bei echtem Mausklick
+            // Auth button - NUR bei e.isTrusted = true (echter Benutzerklick)
             authButton.addEventListener('click', (e) => {
-                // Sicherheitscheck: War es ein echter Benutzerklick?
-                const now = Date.now();
-                const timeSinceLastInteraction = now - lastUserInteraction;
-                
-                // Wenn keine kürzliche Benutzerinteraktion, ignorieren
-                if (timeSinceLastInteraction > 1000) {
-                    console.log('⚠️ Ignoriere Klick - keine kürzliche Benutzerinteraktion');
+                // KRITISCH: Nur echte Benutzerklicks akzeptieren!
+                if (!e.isTrusted) {
+                    console.log('❌ Programmatischer Klick ignoriert');
                     return;
                 }
                 
                 e.preventDefault();
                 e.stopPropagation();
                 
-                // Debounce für Doppelklicks
-                if (!dropdownClickEnabled) return;
-                dropdownClickEnabled = false;
-                setTimeout(() => { dropdownClickEnabled = true; }, 300);
-                
                 const isLoggedIn = window.awsAuth && window.awsAuth.isLoggedIn();
                 
                 if (isLoggedIn) {
-                    if (userDropdown) {
-                        const isHidden = userDropdown.style.display === 'none' || !userDropdown.style.display;
-                        userDropdown.style.display = isHidden ? 'block' : 'none';
+                    // Toggle dropdown
+                    if (dropdownOpen) {
+                        closeDropdown();
+                    } else {
+                        openDropdown();
                     }
                 } else {
+                    closeDropdown();
                     if (window.authModals) {
                         window.authModals.showLogin();
                     } else if (window.unifiedAuthModals) {
                         window.unifiedAuthModals.showLogin();
-                    } else {
-                        showToast('Auth-System wird geladen...', 'info');
                     }
                 }
             });
             
-            // Tracke echte Benutzerinteraktionen
-            ['mousedown', 'touchstart', 'keydown'].forEach(eventType => {
-                document.addEventListener(eventType, () => {
-                    lastUserInteraction = Date.now();
-                }, { passive: true });
-            });
-            
-            // Close dropdown when clicking outside
+            // Klick außerhalb schließt Dropdown
             document.addEventListener('click', (e) => {
-                if (!userDropdown) return;
-                const clickedAuthButton = authButton.contains(e.target);
-                const clickedDropdown = userDropdown.contains(e.target);
-                if (!clickedAuthButton && !clickedDropdown) {
+                if (!e.isTrusted) return; // Nur echte Klicks
+                if (!userDropdown || !dropdownOpen) return;
+                
+                if (!authButton.contains(e.target) && !userDropdown.contains(e.target)) {
                     closeDropdown();
                 }
+            });
+            
+            // Escape schließt
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') closeDropdown();
             });
             
             // Close on escape
@@ -1567,7 +1618,251 @@ Ihre Aufgaben:
             
             // Load cover letters when switching to that tab
             loadCoverLetters();
+            
+            // Initialize documents tab
+            initDocumentsTab();
+            
+            // Update stats
+            updateDashboardStats();
         });
+        
+        // ═══════════════════════════════════════════════════════════════════════════
+        // DOKUMENTE / ZEUGNISSE FUNKTIONEN
+        // ═══════════════════════════════════════════════════════════════════════════
+        
+        function initDocumentsTab() {
+            const fileInput = document.getElementById('documentFileInput');
+            if (!fileInput) return;
+            
+            fileInput.addEventListener('change', handleDocumentUpload);
+            
+            // Drag & Drop
+            const dropzone = document.querySelector('.documents-upload-area .upload-dropzone');
+            if (dropzone) {
+                dropzone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    dropzone.style.borderColor = 'var(--primary)';
+                });
+                dropzone.addEventListener('dragleave', () => {
+                    dropzone.style.borderColor = '';
+                });
+                dropzone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    dropzone.style.borderColor = '';
+                    const files = e.dataTransfer.files;
+                    if (files.length) processDocumentFiles(files);
+                });
+            }
+            
+            // Lade gespeicherte Dokumente
+            loadSavedDocuments();
+        }
+        
+        async function handleDocumentUpload(e) {
+            const files = e.target.files;
+            if (files.length) {
+                await processDocumentFiles(files);
+            }
+        }
+        
+        async function processDocumentFiles(files) {
+            for (const file of files) {
+                if (file.type !== 'application/pdf') {
+                    showToast('Nur PDF-Dateien erlaubt', 'error');
+                    continue;
+                }
+                if (file.size > 10 * 1024 * 1024) {
+                    showToast(`${file.name} ist zu groß (max. 10MB)`, 'error');
+                    continue;
+                }
+                
+                // Zeige Kategorie-Auswahl
+                showCategoryModal(file);
+            }
+        }
+        
+        function showCategoryModal(file) {
+            const modal = document.createElement('div');
+            modal.className = 'document-category-modal';
+            modal.innerHTML = `
+                <div class="category-modal-content">
+                    <h3>Kategorie für "${file.name}"</h3>
+                    <div class="category-options">
+                        <div class="category-option" onclick="saveDocument('${file.name}', 'certificates', this)">
+                            <i class="fas fa-graduation-cap"></i>
+                            <span>Zeugnis</span>
+                        </div>
+                        <div class="category-option" onclick="saveDocument('${file.name}', 'awards', this)">
+                            <i class="fas fa-award"></i>
+                            <span>Zertifikat / Weiterbildung</span>
+                        </div>
+                        <div class="category-option" onclick="saveDocument('${file.name}', 'work', this)">
+                            <i class="fas fa-briefcase"></i>
+                            <span>Arbeitszeugnis</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Speichere File temporär
+            window.pendingDocumentFile = file;
+            
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) modal.remove();
+            });
+            
+            document.body.appendChild(modal);
+        }
+        
+        window.saveDocument = async function(fileName, category, element) {
+            const file = window.pendingDocumentFile;
+            if (!file) return;
+            
+            try {
+                // In localStorage speichern (Base64)
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const documents = JSON.parse(localStorage.getItem('user_documents') || '{}');
+                    if (!documents[category]) documents[category] = [];
+                    
+                    documents[category].push({
+                        id: Date.now().toString(36),
+                        name: file.name,
+                        size: file.size,
+                        data: e.target.result,
+                        uploadedAt: new Date().toISOString()
+                    });
+                    
+                    localStorage.setItem('user_documents', JSON.stringify(documents));
+                    
+                    // Modal schließen
+                    element.closest('.document-category-modal').remove();
+                    
+                    // Liste aktualisieren
+                    loadSavedDocuments();
+                    showToast('Dokument gespeichert!', 'success');
+                };
+                reader.readAsDataURL(file);
+                
+            } catch (error) {
+                console.error('Document save error:', error);
+                showToast('Fehler beim Speichern', 'error');
+            }
+        };
+        
+        function loadSavedDocuments() {
+            const documents = JSON.parse(localStorage.getItem('user_documents') || '{}');
+            
+            const categories = {
+                certificates: 'documentsCertificates',
+                awards: 'documentsAwards',
+                work: 'documentsWork'
+            };
+            
+            const emptyStates = {
+                certificates: 'noCertificates',
+                awards: 'noAwards',
+                work: 'noWorkDocs'
+            };
+            
+            Object.entries(categories).forEach(([cat, containerId]) => {
+                const container = document.getElementById(containerId);
+                const emptyState = document.getElementById(emptyStates[cat]);
+                if (!container) return;
+                
+                const docs = documents[cat] || [];
+                
+                if (docs.length === 0) {
+                    if (emptyState) emptyState.style.display = 'block';
+                    return;
+                }
+                
+                if (emptyState) emptyState.style.display = 'none';
+                
+                container.innerHTML = docs.map(doc => `
+                    <div class="document-item" data-id="${doc.id}">
+                        <div class="document-info">
+                            <i class="fas fa-file-pdf"></i>
+                            <div class="document-details">
+                                <h4>${doc.name}</h4>
+                                <span>${formatFileSize(doc.size)} • ${new Date(doc.uploadedAt).toLocaleDateString('de-DE')}</span>
+                            </div>
+                        </div>
+                        <div class="document-actions">
+                            <button onclick="viewDocument('${cat}', '${doc.id}')" title="Ansehen">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button onclick="downloadDocument('${cat}', '${doc.id}')" title="Herunterladen">
+                                <i class="fas fa-download"></i>
+                            </button>
+                            <button onclick="deleteDocument('${cat}', '${doc.id}')" class="btn-danger" title="Löschen">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            });
+        }
+        
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        }
+        
+        window.viewDocument = function(category, id) {
+            const documents = JSON.parse(localStorage.getItem('user_documents') || '{}');
+            const doc = documents[category]?.find(d => d.id === id);
+            if (!doc) return;
+            
+            // PDF in neuem Tab öffnen
+            const win = window.open();
+            win.document.write(`<iframe src="${doc.data}" style="width:100%;height:100%;border:none;"></iframe>`);
+        };
+        
+        window.downloadDocument = function(category, id) {
+            const documents = JSON.parse(localStorage.getItem('user_documents') || '{}');
+            const doc = documents[category]?.find(d => d.id === id);
+            if (!doc) return;
+            
+            const a = document.createElement('a');
+            a.href = doc.data;
+            a.download = doc.name;
+            a.click();
+        };
+        
+        window.deleteDocument = function(category, id) {
+            if (!confirm('Dokument wirklich löschen?')) return;
+            
+            const documents = JSON.parse(localStorage.getItem('user_documents') || '{}');
+            documents[category] = documents[category]?.filter(d => d.id !== id) || [];
+            localStorage.setItem('user_documents', JSON.stringify(documents));
+            
+            loadSavedDocuments();
+            showToast('Dokument gelöscht', 'success');
+        };
+        
+        // ═══════════════════════════════════════════════════════════════════════════
+        // DASHBOARD STATISTIKEN
+        // ═══════════════════════════════════════════════════════════════════════════
+        
+        function updateDashboardStats() {
+            // Anschreiben zählen
+            const coverLetters = JSON.parse(localStorage.getItem('cover_letter_drafts') || '[]');
+            const statCoverLetters = document.getElementById('statCoverLetters');
+            if (statCoverLetters) statCoverLetters.textContent = coverLetters.length;
+            
+            // Bewerbungen aus DashboardState
+            const apps = JSON.parse(localStorage.getItem('bewerbungsmanager_applications') || '[]');
+            const statTotal = document.getElementById('statTotal');
+            if (statTotal) statTotal.textContent = apps.length;
+            
+            // Erfolgsquote
+            const offers = apps.filter(a => a.status === 'offer').length;
+            const successRate = apps.length > 0 ? Math.round((offers / apps.length) * 100) : 0;
+            const statSuccess = document.getElementById('statSuccess');
+            if (statSuccess) statSuccess.textContent = successRate + '%';
+        }
     </script>
 </body>
 </html>
