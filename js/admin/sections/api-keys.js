@@ -40,28 +40,29 @@ class ApiKeysSection {
             });
         }
         
-        // Lade API Keys aus AWS (falls vorhanden)
-        await this.loadApiKeysFromAWS();
-        
-        // Event Listeners hinzufügen
+        // Event Listeners hinzufügen (funktioniert auch ohne DOM, da bei Navigation erneut aufgerufen)
         this.attachEventListeners();
+        
+        // Prüfe, ob wir gerade auf der API-Keys-Sektion sind
+        if (window.location.hash === '#api-keys') {
+            console.log('ℹ️ API Keys Section: Direkt auf Section, lade Daten...');
+            // Warte kurz auf DOM und lade dann
+            setTimeout(() => this.onNavigate(), 500);
+        } else {
+            console.log('ℹ️ API Keys Section init() abgeschlossen - Laden passiert bei Navigation');
+        }
     }
     
     /**
      * API Keys aus AWS Cloud laden
+     * ACHTUNG: Diese Funktion erwartet, dass die DOM-Elemente bereits vorhanden sind!
+     * Wird nur von onNavigate() aufgerufen, nachdem das Template geladen wurde.
      */
     async loadApiKeysFromAWS() {
         try {
-            // Warte bis DOM-Elemente verfügbar sind (max 3 Sekunden)
-            let attempts = 0;
-            const maxAttempts = 30;
-            while (!document.getElementById('openai-key') && attempts < maxAttempts) {
-                await new Promise(resolve => setTimeout(resolve, 100));
-                attempts++;
-            }
-            
-            if (attempts >= maxAttempts) {
-                console.warn('⚠️ DOM-Elemente für API Keys nicht gefunden nach 3 Sekunden');
+            // Prüfe ob DOM-Elemente vorhanden sind
+            if (!document.getElementById('openai-key')) {
+                console.warn('⚠️ DOM-Elemente für API Keys nicht gefunden - überspringe Laden');
                 return;
             }
             
@@ -175,9 +176,9 @@ class ApiKeysSection {
     async onNavigate() {
         console.log('🔄 API Keys Section: onNavigate aufgerufen');
         // Warte kurz bis DOM aktualisiert ist
-        await new Promise(resolve => setTimeout(resolve, 200));
-        // Lade Keys aus AWS neu
-        await this.refreshFromAWS();
+        await new Promise(resolve => setTimeout(resolve, 300));
+        // Lade Keys aus AWS
+        await this.loadApiKeysFromAWS();
     }
     
     /**
