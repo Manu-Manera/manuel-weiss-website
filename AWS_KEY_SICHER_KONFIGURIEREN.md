@@ -31,7 +31,7 @@
 
 1. Gehe zu **AWS Console** → **IAM** → **Users** → `manu-ses-smtp-user`
 2. Klicke auf **"Security credentials"** Tab
-3. Finde den alten Key `AKIAQR3HB4M3JM24NYXH`
+3. Finde den alten (deaktivierten) Key
 4. Klicke auf **"Make inactive"** (NICHT löschen, falls noch Probleme auftreten)
 5. Teste die Anwendung
 6. Wenn alles funktioniert, **lösche** den alten Key endgültig

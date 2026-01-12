@@ -11,7 +11,7 @@ Dear AWS Security Team,
 Thank you for alerting me about the potentially compromised access key. I have immediately taken the following security measures:
 
 **Step 1 - Key Rotation: ✅ Completed**
-- The exposed access key `AKIAQR3HB4M3JM24NYXH` has been **deactivated**
+- The exposed access key has been **deactivated**
 - A new access key has been created and is now in use
 - All applications have been updated to use the new credentials
 
@@ -54,7 +54,7 @@ Sehr geehrtes AWS Security Team,
 vielen Dank für die Benachrichtigung über den möglicherweise kompromittierten Zugriffsschlüssel. Ich habe umgehend folgende Sicherheitsmaßnahmen ergriffen:
 
 **Schritt 1 - Schlüsselrotation: ✅ Abgeschlossen**
-- Der exponierte Zugriffsschlüssel `AKIAQR3HB4M3JM24NYXH` wurde **deaktiviert**
+- Der exponierte Zugriffsschlüssel wurde **deaktiviert**
 - Ein neuer Zugriffsschlüssel wurde erstellt und ist jetzt aktiv
 - Alle Anwendungen wurden auf die neuen Anmeldedaten umgestellt
 
