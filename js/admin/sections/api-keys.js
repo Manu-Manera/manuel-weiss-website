@@ -52,6 +52,19 @@ class ApiKeysSection {
      */
     async loadApiKeysFromAWS() {
         try {
+            // Warte bis DOM-Elemente verfügbar sind (max 3 Sekunden)
+            let attempts = 0;
+            const maxAttempts = 30;
+            while (!document.getElementById('openai-key') && attempts < maxAttempts) {
+                await new Promise(resolve => setTimeout(resolve, 100));
+                attempts++;
+            }
+            
+            if (attempts >= maxAttempts) {
+                console.warn('⚠️ DOM-Elemente für API Keys nicht gefunden nach 3 Sekunden');
+                return;
+            }
+            
             // Versuche aus awsAPISettings zu laden (Cloud-Speicherung)
             if (window.awsAPISettings && window.awsAPISettings.isUserLoggedIn()) {
                 console.log('☁️ Lade API Keys aus AWS Cloud...');
@@ -157,6 +170,53 @@ class ApiKeysSection {
     }
     
     /**
+     * Wird aufgerufen wenn zur Section navigiert wird
+     */
+    async onNavigate() {
+        console.log('🔄 API Keys Section: onNavigate aufgerufen');
+        // Warte kurz bis DOM aktualisiert ist
+        await new Promise(resolve => setTimeout(resolve, 200));
+        // Lade Keys aus AWS neu
+        await this.refreshFromAWS();
+    }
+    
+    /**
+     * Daten aus AWS neu laden und UI aktualisieren
+     */
+    async refreshFromAWS() {
+        try {
+            if (!window.awsAPISettings || !window.awsAPISettings.isUserLoggedIn()) {
+                console.log('ℹ️ Nicht eingeloggt, überspringe AWS-Refresh');
+                return;
+            }
+            
+            console.log('🔄 Aktualisiere API Keys aus AWS...');
+            const awsSettings = await window.awsAPISettings.getSettings(true);
+            
+            if (awsSettings && awsSettings.hasSettings && awsSettings.settings) {
+                const services = ['openai', 'anthropic', 'google'];
+                services.forEach(service => {
+                    const serviceData = awsSettings.settings[service];
+                    if (serviceData && (serviceData.apiKey || serviceData.configured)) {
+                        const keyInput = document.getElementById(`${service}-key`);
+                        if (keyInput) {
+                            keyInput.value = serviceData.keyMasked || this.maskKey(serviceData.apiKey) || '••••••••';
+                            keyInput.dataset.hasKey = 'true';
+                        }
+                        
+                        // Status auf Aktiv setzen
+                        this.updateServiceStatus(service, true);
+                        
+                        console.log(`✅ ${service} Key aus AWS geladen`);
+                    }
+                });
+            }
+        } catch (error) {
+            console.warn('⚠️ Fehler beim Aktualisieren aus AWS:', error);
+        }
+    }
+    
+    /**
      * Event Listeners hinzufügen
      */
     attachEventListeners() {
@@ -183,6 +243,13 @@ class ApiKeysSection {
                     this.updateServiceStatus(service);
                 });
             });
+        });
+        
+        // Hash-Change Listener für Navigation zur API-Keys-Sektion
+        window.addEventListener('hashchange', () => {
+            if (window.location.hash === '#api-keys') {
+                this.onNavigate();
+            }
         });
     }
     
