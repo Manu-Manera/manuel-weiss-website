@@ -1168,3 +1168,32 @@
     transform: translateX(3px);
 }
 
+/* Workflow Badge für Methoden mit vollständigem Workflow */
+.related-method-card.has-workflow {
+    border-color: rgba(16, 185, 129, 0.3);
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, white 100%);
+}
+
+.related-method-card.has-workflow .method-icon-wrapper {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.related-method-card .workflow-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 8px;
+    padding: 4px 10px;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 600;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.related-method-card .workflow-badge i {
+    font-size: 0.65rem;
+}
+

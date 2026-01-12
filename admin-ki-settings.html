@@ -313,7 +313,7 @@
     <script src="js/success-checkmark.js?v=20260112"></script>
     <script src="js/unified-aws-auth.js?v=20260112"></script>
     <script src="js/aws-api-settings.js"></script>
-    
+
     <script>
         // Storage Mode
         let storageMode = 'local';
@@ -440,7 +440,7 @@
                         maxTokens: settings.maxTokens,
                         temperature: settings.temperature
                     });
-                    
+            
                     showStatus('save-status', '✅ In AWS gespeichert! Ihre Einstellungen sind jetzt auf allen Geräten verfügbar.', 'success');
                 } catch (error) {
                     showStatus('save-status', `⚠️ Lokal gespeichert, aber AWS-Speicherung fehlgeschlagen: ${error.message}`, 'error');
