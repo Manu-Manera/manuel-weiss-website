@@ -437,6 +437,48 @@ export const handler = async (event) => {
     // ============================================================================
 
     // GET /api-settings - GLOBALE API-Einstellungen laden (für alle User)
+    // WICHTIG: Spezifischere Routen müssen VOR allgemeineren geprüft werden!
+    
+    // GET /api-settings/key - Vollständigen API-Key für KI-Generierung laden
+    // ACHTUNG: Dieser Endpoint gibt den echten Key zurück! Nur für eingeloggte User.
+    // MUSS VOR /api-settings geprüft werden!
+    if (httpMethod === 'GET' && route.includes('/api-settings/key')) {
+      console.log('🔑 API-Settings/Key Endpoint aufgerufen');
+      const user = authUser(event); // Authentifizierung erforderlich
+      const queryParams = event.queryStringParameters || {};
+      const provider = queryParams.provider || 'openai';
+      
+      const keyData = await getFullApiKey(provider);
+      
+      if (!keyData) {
+        return json(404, { 
+          error: 'API Key not configured', 
+          message: `Kein ${provider} API-Key konfiguriert. Bitte im Admin Panel einrichten.`,
+          isGlobal: true 
+        }, hdr);
+      }
+      
+      // Vollständigen Key zurückgeben (NUR für eingeloggte User!)
+      console.log(`✅ Vollständiger API-Key für ${provider} zurückgegeben (Länge: ${keyData.apiKey?.length || 0})`);
+      return json(200, {
+        provider,
+        apiKey: keyData.apiKey,
+        model: keyData.model,
+        maxTokens: keyData.maxTokens,
+        temperature: keyData.temperature,
+        isGlobal: true
+      }, hdr);
+    }
+
+    // POST /api-settings/test - API-Key testen (verwendet globale Settings)
+    if (httpMethod === 'POST' && route.includes('/api-settings/test')) {
+      const user = authUser(event);
+      const body = JSON.parse(event.body || '{}');
+      const result = await testApiKey('global', body.provider); // Global testen
+      return json(200, result, hdr);
+    }
+
+    // GET /api-settings - GLOBALE API-Einstellungen laden (maskiert!)
     if (httpMethod === 'GET' && route.includes('/api-settings')) {
       const user = authUser(event); // Nur zur Authentifizierung
       const settings = await getApiSettings('global'); // Immer global laden
@@ -456,42 +498,6 @@ export const handler = async (event) => {
       const user = authUser(event);
       await deleteApiSettings('global');
       return json(200, { message: 'API settings deleted successfully' }, hdr);
-    }
-
-    // POST /api-settings/test - API-Key testen (verwendet globale Settings)
-    if (httpMethod === 'POST' && route.includes('/api-settings/test')) {
-      const user = authUser(event);
-      const body = JSON.parse(event.body || '{}');
-      const result = await testApiKey('global', body.provider); // Global testen
-      return json(200, result, hdr);
-    }
-
-    // GET /api-settings/key - Vollständigen API-Key für KI-Generierung laden
-    // ACHTUNG: Dieser Endpoint gibt den echten Key zurück! Nur für eingeloggte User.
-    if (httpMethod === 'GET' && route.includes('/api-settings/key')) {
-      const user = authUser(event); // Authentifizierung erforderlich
-      const queryParams = event.queryStringParameters || {};
-      const provider = queryParams.provider || 'openai';
-      
-      const keyData = await getFullApiKey(provider);
-      
-      if (!keyData) {
-        return json(404, { 
-          error: 'API Key not configured', 
-          message: `Kein ${provider} API-Key konfiguriert. Bitte im Admin Panel einrichten.`,
-          isGlobal: true 
-        }, hdr);
-      }
-      
-      // Vollständigen Key zurückgeben (NUR für eingeloggte User!)
-      return json(200, {
-        provider,
-        apiKey: keyData.apiKey,
-        model: keyData.model,
-        maxTokens: keyData.maxTokens,
-        temperature: keyData.temperature,
-        isGlobal: true
-      }, hdr);
     }
 
     return json(404, { message: 'not found', route, method: httpMethod }, hdr);
