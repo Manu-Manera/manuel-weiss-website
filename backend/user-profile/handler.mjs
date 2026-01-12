@@ -381,6 +381,57 @@ export const handler = async (event) => {
       return json(200, stats, hdr);
     }
 
+    // === JOURNAL/TAGEBUCH ENDPUNKTE ===
+    // GET /journal - Alle Journal-Einträge laden
+    if (httpMethod === 'GET' && route.includes('/journal') && !route.includes('/journal/')) {
+      const user = authUser(event);
+      // Optional: Zeitraum-Filter aus Query-Parametern
+      const queryParams = event.queryStringParameters || {};
+      const entries = await getJournalEntries(user.userId, queryParams);
+      return json(200, entries, hdr);
+    }
+
+    // GET /journal/{date} - Einträge für spezifisches Datum
+    if (httpMethod === 'GET' && route.includes('/journal/')) {
+      const user = authUser(event);
+      const date = pathParameters.date || route.split('/journal/')[1]?.split('/')[0];
+      const entries = await getJournalEntriesByDate(user.userId, date);
+      return json(200, entries, hdr);
+    }
+
+    // POST /journal - Neuen Journal-Eintrag erstellen
+    if (httpMethod === 'POST' && route.includes('/journal') && !route.includes('/journal/')) {
+      const user = authUser(event);
+      const body = JSON.parse(event.body || '{}');
+      const entry = await createJournalEntry(user.userId, body);
+      return json(200, entry, hdr);
+    }
+
+    // PUT /journal/{id} - Journal-Eintrag aktualisieren
+    if (httpMethod === 'PUT' && route.includes('/journal/')) {
+      const user = authUser(event);
+      const entryId = pathParameters.id || route.split('/journal/')[1]?.split('/')[0];
+      const body = JSON.parse(event.body || '{}');
+      const entry = await updateJournalEntry(user.userId, entryId, body);
+      return json(200, entry, hdr);
+    }
+
+    // DELETE /journal/{id} - Journal-Eintrag löschen
+    if (httpMethod === 'DELETE' && route.includes('/journal/')) {
+      const user = authUser(event);
+      const entryId = pathParameters.id || route.split('/journal/')[1]?.split('/')[0];
+      await deleteJournalEntry(user.userId, entryId);
+      return json(200, { message: 'Journal entry deleted successfully' }, hdr);
+    }
+
+    // POST /journal/activity - Automatische Aktivität tracken
+    if (httpMethod === 'POST' && route.includes('/journal/activity')) {
+      const user = authUser(event);
+      const body = JSON.parse(event.body || '{}');
+      const activity = await trackActivity(user.userId, body);
+      return json(200, activity, hdr);
+    }
+
     return json(404, { message: 'not found', route, method: httpMethod }, hdr);
   } catch (e) {
     console.error('Handler error:', e);
