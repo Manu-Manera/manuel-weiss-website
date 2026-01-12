@@ -317,6 +317,13 @@ class UserProfile {
             if (tabName === 'journal') {
                 this.initJournalTab();
             }
+            
+            // Lade Bewerbungsdaten beim Wechsel zum applications-Tab
+            if (tabName === 'applications') {
+                this.loadApplicationsData();
+                this.loadCoverLetters();
+                this.loadResumes();
+            }
         } catch (error) {
             console.error(`❌ Fehler beim Wechseln zum Tab "${tabName}":`, error);
         }
