@@ -79,6 +79,19 @@
       "Resource": "arn:aws:dynamodb:eu-central-1:038333965110:table/mawps-api-settings"
     },
     {
+      "Sid": "DynamoDBUserDataTableAccess",
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:PutItem",
+        "dynamodb:GetItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:Query",
+        "dynamodb:Scan"
+      ],
+      "Resource": "arn:aws:dynamodb:eu-central-1:038333965110:table/mawps-user-data"
+    },
+    {
       "Sid": "SESEmailSending",
       "Effect": "Allow",
       "Action": [

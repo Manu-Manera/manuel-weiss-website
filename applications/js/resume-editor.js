@@ -31,8 +31,16 @@ async function loadResume() {
         const action = urlParams.get('action');
         
         if (resumeId) {
-            // Lade bestehenden Lebenslauf aus localStorage
-            const resumes = JSON.parse(localStorage.getItem('user_resumes') || '[]');
+            // Versuche aus Cloud zu laden
+            let resumes = [];
+            if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
+                console.log('📄 Lade Lebenslauf aus Cloud...');
+                resumes = await window.cloudDataService.getResumes();
+            } else {
+                // Fallback: localStorage
+                resumes = JSON.parse(localStorage.getItem('user_resumes') || '[]');
+            }
+            
             const resume = resumes.find(r => r.id === resumeId);
             
             if (resume) {
@@ -41,7 +49,7 @@ async function loadResume() {
                 showNotification('Lebenslauf geladen', 'success');
                 
                 // PDF-Export-Modus?
-                if (action === 'pdf') {
+                if (action === 'pdf' || action === 'export') {
                     setTimeout(() => {
                         exportToPDF();
                     }, 500);
@@ -50,34 +58,9 @@ async function loadResume() {
             }
         }
         
-        // Kein ID oder nicht gefunden - versuche AWS oder Profildaten
-        const token = await getAuthToken();
-        if (!token) {
-            await loadProfileData();
-            return;
-        }
-
-        // Versuche von AWS zu laden
-        try {
-            const resumeResponse = await fetch('https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod/resume', {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-            
-            if (resumeResponse.ok) {
-                const data = await resumeResponse.json();
-                resumeData = data;
-                populateForm(data);
-                showNotification('Lebenslauf geladen', 'success');
-            } else {
-                // Kein Lebenslauf - lade Profildaten für Vorausfüllung
-                await loadProfileData();
-            }
-        } catch (awsError) {
-            console.warn('AWS load failed, using profile data:', awsError);
-            await loadProfileData();
-        }
+        // Kein ID oder nicht gefunden - versuche Profildaten zu laden
+        await loadProfileData();
+        
     } catch (error) {
         console.error('Error loading resume:', error);
         await loadProfileData();
@@ -87,17 +70,29 @@ async function loadResume() {
 // Load profile data for pre-filling
 async function loadProfileData() {
     try {
-        const token = await getAuthToken();
-        if (!token) return;
+        let profile = null;
+        
+        // Versuche Cloud-Service zu nutzen
+        if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
+            console.log('📄 Lade Profildaten aus Cloud...');
+            profile = await window.cloudDataService.getProfile();
+        } else {
+            // Fallback: API direkt
+            const token = await getAuthToken();
+            if (!token) return;
 
-        const response = await fetch('https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod/profile', {
-            headers: {
-                'Authorization': `Bearer ${token}`
+            const response = await fetch('https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod/profile', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (response.ok) {
+                profile = await response.json();
             }
-        });
-
-        if (response.ok) {
-            const profile = await response.json();
+        }
+        
+        if (profile) {
             
             // Fülle Formular mit Profildaten vor
             if (profile.firstName) document.getElementById('firstName').value = profile.firstName;
@@ -169,54 +164,35 @@ document.getElementById('resumeForm').addEventListener('submit', async (e) => {
         const urlParams = new URLSearchParams(window.location.search);
         let resumeId = urlParams.get('id');
         
-        // Lade bestehende Lebensläufe
-        let resumes = JSON.parse(localStorage.getItem('user_resumes') || '[]');
-        
-        if (resumeId) {
-            // Bestehenden Lebenslauf aktualisieren
-            const index = resumes.findIndex(r => r.id === resumeId);
-            if (index !== -1) {
-                resumes[index] = {
-                    ...resumes[index],
-                    ...formData,
-                    updatedAt: new Date().toISOString()
-                };
-            }
-        } else {
-            // Neuen Lebenslauf erstellen
+        // Generiere ID falls neu
+        if (!resumeId) {
             resumeId = Date.now().toString(36);
-            const newResume = {
-                id: resumeId,
-                ...formData,
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString()
-            };
-            resumes.unshift(newResume);
         }
         
-        // In localStorage speichern
-        localStorage.setItem('user_resumes', JSON.stringify(resumes));
-        console.log('✅ Lebenslauf in localStorage gespeichert:', resumeId);
+        const resumeData = {
+            id: resumeId,
+            ...formData,
+            createdAt: formData.createdAt || new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+        };
         
-        // Auch in AWS speichern, falls angemeldet
-        const token = await getAuthToken();
-        if (token) {
-            try {
-                const response = await fetch('https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod/resume', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify(formData)
-                });
-                
-                if (response.ok) {
-                    console.log('✅ Lebenslauf auch in AWS gespeichert');
-                }
-            } catch (awsError) {
-                console.warn('⚠️ AWS-Speicherung fehlgeschlagen, aber localStorage OK:', awsError);
+        // Cloud-Service nutzen wenn verfügbar
+        if (window.cloudDataService) {
+            const result = await window.cloudDataService.saveResume(resumeData);
+            if (result.success) {
+                console.log('✅ Lebenslauf in Cloud gespeichert:', resumeId);
             }
+        } else {
+            // Fallback: localStorage
+            let resumes = JSON.parse(localStorage.getItem('user_resumes') || '[]');
+            const index = resumes.findIndex(r => r.id === resumeId);
+            if (index !== -1) {
+                resumes[index] = resumeData;
+            } else {
+                resumes.unshift(resumeData);
+            }
+            localStorage.setItem('user_resumes', JSON.stringify(resumes));
+            console.log('✅ Lebenslauf in localStorage gespeichert:', resumeId);
         }
         
         showNotification('✅ Lebenslauf gespeichert!', 'success');
