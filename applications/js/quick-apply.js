@@ -469,13 +469,41 @@ window.addEventListener('storage', (e) => {
 });
 
 /**
- * Lädt den API-Key aus dem GlobalAPIManager (Admin Panel API Keys)
+ * Lädt den API-Key aus AWS Cloud oder localStorage
  */
 async function loadAPIKeyFromAWS() {
     try {
         console.log('🔑 Versuche API-Key zu laden...');
         
-        // Methode 1: Aus GlobalAPIManager laden (Admin Panel API Keys)
+        // Methode 1: Aus AWS Cloud laden (awsAPISettings)
+        if (window.awsAPISettings && window.awsAPISettings.isUserLoggedIn()) {
+            try {
+                console.log('☁️ Versuche API-Key aus AWS Cloud zu laden...');
+                const awsSettings = await window.awsAPISettings.getSettings();
+                
+                if (awsSettings?.hasSettings && awsSettings.settings?.openai?.apiKey) {
+                    const key = awsSettings.settings.openai.apiKey;
+                    if (key && key.startsWith('sk-')) {
+                        QuickApplyState.apiKey = key;
+                        console.log('✅ API-Key aus AWS Cloud geladen');
+                        
+                        // Auch in GlobalAPIManager synchronisieren
+                        if (window.GlobalAPIManager) {
+                            window.GlobalAPIManager.setAPIKey('openai', key, {
+                                model: awsSettings.settings.openai.model,
+                                maxTokens: awsSettings.settings.openai.maxTokens,
+                                temperature: awsSettings.settings.openai.temperature
+                            });
+                        }
+                        return key;
+                    }
+                }
+            } catch (e) {
+                console.log('ℹ️ AWS Cloud nicht verfügbar:', e.message);
+            }
+        }
+        
+        // Methode 2: Aus GlobalAPIManager laden (localStorage)
         if (window.GlobalAPIManager) {
             const openaiKey = window.GlobalAPIManager.getAPIKey('openai');
             if (openaiKey && openaiKey.startsWith('sk-')) {
@@ -485,7 +513,7 @@ async function loadAPIKeyFromAWS() {
             }
         }
         
-        // Methode 2: Direkt aus global_api_keys localStorage
+        // Methode 3: Direkt aus global_api_keys localStorage
         const globalKeys = localStorage.getItem('global_api_keys');
         if (globalKeys) {
             try {
@@ -497,21 +525,6 @@ async function loadAPIKeyFromAWS() {
                 }
             } catch (e) {
                 console.log('ℹ️ global_api_keys nicht parsebar:', e.message);
-            }
-        }
-        
-        // Methode 3: Fallback auf ki_settings
-        const kiSettings = localStorage.getItem('ki_settings');
-        if (kiSettings) {
-            try {
-                const parsed = JSON.parse(kiSettings);
-                if (parsed.apiKey && parsed.apiKey.startsWith('sk-')) {
-                    QuickApplyState.apiKey = parsed.apiKey;
-                    console.log('✅ API-Key aus ki_settings geladen');
-                    return parsed.apiKey;
-                }
-            } catch (e) {
-                console.log('ℹ️ ki_settings nicht parsebar:', e.message);
             }
         }
         
