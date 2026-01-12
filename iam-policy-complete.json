@@ -67,6 +67,18 @@
       "Resource": "arn:aws:dynamodb:eu-central-1:038333965110:table/snowflake-highscores"
     },
     {
+      "Sid": "DynamoDBApiSettingsTableAccess",
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:PutItem",
+        "dynamodb:GetItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:Query"
+      ],
+      "Resource": "arn:aws:dynamodb:eu-central-1:038333965110:table/mawps-api-settings"
+    },
+    {
       "Sid": "SESEmailSending",
       "Effect": "Allow",
       "Action": [
