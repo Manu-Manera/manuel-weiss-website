@@ -114,7 +114,7 @@ check_ses_verification() {
             if [ "$dkim_status" = "Success" ]; then
                 print_success "SES verification and DKIM completed successfully!"
                 send_notification "✅ E-Mail-Setup für $DOMAIN abgeschlossen!" \
-                    "Deine E-Mail-Adresse mail@manuel-weiss.ch ist jetzt vollständig funktionsfähig!\n\nSMTP-Einstellungen:\nServer: email-smtp.eu-central-1.amazonaws.com\nPort: 587 (TLS)\nBenutzername: AKIAQR3HB4M3JM24NYXH\nPasswort: Hxzwq6fSFKzMFIVtm56IfC99TN5PqBWecSnc1Aqo\n\nDu kannst jetzt E-Mails senden und empfangen!"
+                    "Deine E-Mail-Adresse mail@manuel-weiss.ch ist jetzt vollständig funktionsfähig!\n\nSMTP-Einstellungen:\nServer: email-smtp.eu-central-1.amazonaws.com\nPort: 587 (TLS)\nBenutzername: [IHR_AWS_ACCESS_KEY_ID]\nPasswort: [GENERIERTES_SMTP_PASSWORT]\n\nDu kannst jetzt E-Mails senden und empfangen!"
                 return 0
             else
                 print_status "SES verification successful, DKIM still pending..."
