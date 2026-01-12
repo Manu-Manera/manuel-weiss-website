@@ -247,9 +247,12 @@ class ApiKeysSection {
         });
         
         // Hash-Change Listener für Navigation zur API-Keys-Sektion
+        // Speichere Referenz auf 'this' für den Callback
+        const self = this;
         window.addEventListener('hashchange', () => {
             if (window.location.hash === '#api-keys') {
-                this.onNavigate();
+                console.log('🔄 Hash changed to #api-keys, triggering onNavigate');
+                self.onNavigate();
             }
         });
     }
@@ -795,8 +798,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Warten bis AdminApp verfügbar ist
     const initSection = () => {
         if (window.AdminApp && window.AdminApp.sections) {
-            window.AdminApp.sections.apiKeys = new ApiKeysSection();
-            window.AdminApp.sections.apiKeys.init();
+            const section = new ApiKeysSection();
+            window.AdminApp.sections.apiKeys = section;
+            // Auch global verfügbar machen für einfachen Zugriff
+            window.apiKeysSection = section;
+            section.init();
         } else {
             setTimeout(initSection, 100);
         }
