@@ -432,6 +432,40 @@ export const handler = async (event) => {
       return json(200, activity, hdr);
     }
 
+    // ============================================================================
+    // API SETTINGS ENDPOINTS - Für globale API-Key Speicherung
+    // ============================================================================
+
+    // GET /api-settings - API-Einstellungen laden
+    if (httpMethod === 'GET' && route.includes('/api-settings')) {
+      const user = authUser(event);
+      const settings = await getApiSettings(user.userId);
+      return json(200, settings, hdr);
+    }
+
+    // PUT /api-settings - API-Einstellungen speichern
+    if (httpMethod === 'PUT' && route.includes('/api-settings')) {
+      const user = authUser(event);
+      const body = JSON.parse(event.body || '{}');
+      const result = await saveApiSettings(user.userId, body);
+      return json(200, result, hdr);
+    }
+
+    // DELETE /api-settings - API-Einstellungen löschen
+    if (httpMethod === 'DELETE' && route.includes('/api-settings')) {
+      const user = authUser(event);
+      await deleteApiSettings(user.userId);
+      return json(200, { message: 'API settings deleted successfully' }, hdr);
+    }
+
+    // POST /api-settings/test - API-Key testen
+    if (httpMethod === 'POST' && route.includes('/api-settings/test')) {
+      const user = authUser(event);
+      const body = JSON.parse(event.body || '{}');
+      const result = await testApiKey(user.userId, body.provider);
+      return json(200, result, hdr);
+    }
+
     return json(404, { message: 'not found', route, method: httpMethod }, hdr);
   } catch (e) {
     console.error('Handler error:', e);

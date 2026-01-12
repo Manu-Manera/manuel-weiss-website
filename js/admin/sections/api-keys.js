@@ -48,74 +48,88 @@ class ApiKeysSection {
     }
     
     /**
-     * API Keys aus AWS DynamoDB laden
+     * API Keys aus AWS Cloud laden
      */
     async loadApiKeysFromAWS() {
         try {
-            if (!window.awsProfileAPI || !window.awsProfileAPI.isInitialized) {
-                console.log('⏳ awsProfileAPI nicht bereit, überspringe AWS-Load');
-                return;
-            }
-            
-            // Versuche Admin-Konfiguration zu laden
-            const adminProfile = await window.awsProfileAPI.loadProfile('admin').catch(() => null);
-            
-            if (adminProfile && adminProfile.apiKeys) {
-                console.log('✅ API Keys aus AWS geladen');
-                const apiKeys = adminProfile.apiKeys;
+            // Versuche aus awsAPISettings zu laden (Cloud-Speicherung)
+            if (window.awsAPISettings && window.awsAPISettings.isUserLoggedIn()) {
+                console.log('☁️ Lade API Keys aus AWS Cloud...');
+                const awsSettings = await window.awsAPISettings.getSettings(true); // Force refresh
                 
-                // Fülle Formulare
-                const services = ['openai', 'anthropic', 'google'];
-                services.forEach(service => {
-                    const serviceData = apiKeys[service];
-                    if (serviceData) {
-                        const keyInput = document.getElementById(`${service}-key`);
-                        if (keyInput && serviceData.apiKey) {
-                            keyInput.value = serviceData.apiKey;
+                if (awsSettings && awsSettings.hasSettings && awsSettings.settings) {
+                    console.log('✅ API Keys aus AWS Cloud geladen');
+                    const settings = awsSettings.settings;
+                    
+                    // Fülle Formulare und GlobalAPIManager
+                    const services = ['openai', 'anthropic', 'google'];
+                    services.forEach(service => {
+                        const serviceData = settings[service];
+                        if (serviceData && serviceData.apiKey) {
+                            // Formular füllen
+                            const keyInput = document.getElementById(`${service}-key`);
+                            if (keyInput) {
+                                keyInput.value = serviceData.apiKey;
+                            }
+                            
+                            const modelSelect = document.getElementById(`${service}-model`);
+                            if (modelSelect && serviceData.model) {
+                                modelSelect.value = serviceData.model;
+                            }
+                            
+                            const tokensInput = document.getElementById(`${service}-tokens`);
+                            if (tokensInput && serviceData.maxTokens) {
+                                tokensInput.value = serviceData.maxTokens;
+                            }
+                            
+                            const tempSlider = document.getElementById(`${service}-temperature`);
+                            const tempValue = document.getElementById(`${service}-temp-value`);
+                            if (tempSlider && serviceData.temperature !== undefined) {
+                                tempSlider.value = serviceData.temperature;
+                                if (tempValue) tempValue.textContent = serviceData.temperature;
+                            }
+                            
+                            // Auch in GlobalAPIManager synchronisieren
+                            if (window.GlobalAPIManager) {
+                                window.GlobalAPIManager.setAPIKey(service, serviceData.apiKey, {
+                                    model: serviceData.model,
+                                    maxTokens: serviceData.maxTokens,
+                                    temperature: serviceData.temperature
+                                });
+                            }
+                            
+                            // Status aktualisieren
+                            this.updateServiceStatus(service);
                         }
-                        
-                        const modelSelect = document.getElementById(`${service}-model`);
-                        if (modelSelect && serviceData.model) {
-                            modelSelect.value = serviceData.model;
-                        }
-                        
-                        const tokensInput = document.getElementById(`${service}-tokens`);
-                        if (tokensInput && serviceData.maxTokens) {
-                            tokensInput.value = serviceData.maxTokens;
-                        }
-                        
-                        const tempSlider = document.getElementById(`${service}-temperature`);
-                        const tempValue = document.getElementById(`${service}-temp-value`);
-                        if (tempSlider && serviceData.temperature !== undefined) {
-                            tempSlider.value = serviceData.temperature;
-                            if (tempValue) tempValue.textContent = serviceData.temperature;
-                        }
-                        
-                        // Status aktualisieren
-                        this.updateServiceStatus(service);
-                    }
-                });
-                
-                // Auch in StateManager aktualisieren
-                if (this.stateManager) {
-                    const currentSettings = this.stateManager.getState('apiKeys') || {};
-                    Object.keys(apiKeys).forEach(service => {
-                        currentSettings[service] = {
-                            ...currentSettings[service],
-                            apiKey: apiKeys[service].apiKey,
-                            model: apiKeys[service].model,
-                            maxTokens: apiKeys[service].maxTokens,
-                            temperature: apiKeys[service].temperature
-                        };
                     });
-                    this.stateManager.setState('apiKeys', currentSettings);
+                    
+                    // Auch in StateManager aktualisieren
+                    if (this.stateManager) {
+                        const currentSettings = this.stateManager.getState('apiKeys') || {};
+                        Object.keys(settings).forEach(service => {
+                            if (settings[service] && settings[service].apiKey) {
+                                currentSettings[service] = {
+                                    ...currentSettings[service],
+                                    apiKey: settings[service].apiKey,
+                                    model: settings[service].model,
+                                    maxTokens: settings[service].maxTokens,
+                                    temperature: settings[service].temperature
+                                };
+                            }
+                        });
+                        this.stateManager.setState('apiKeys', currentSettings);
+                    }
+                } else {
+                    console.log('ℹ️ Keine API Keys in AWS Cloud gespeichert');
                 }
+            } else {
+                console.log('ℹ️ Nicht eingeloggt oder awsAPISettings nicht verfügbar');
             }
         } catch (error) {
             console.warn('⚠️ Fehler beim Laden der API Keys aus AWS:', error);
         }
         
-        // Settings laden (aus localStorage + AWS)
+        // Settings laden (aus localStorage als Fallback)
         this.loadApiSettings();
         
         // Temperature Sliders einrichten
@@ -335,67 +349,48 @@ class ApiKeysSection {
             }
         }
         
-        // ZUSÄTZLICH: In AWS DynamoDB speichern (für alle User verfügbar)
+        // AWS Cloud-Speicherung über awsAPISettings (benutzerspezifisch)
         try {
-            // Warte auf awsProfileAPI Initialisierung
-            if (window.awsProfileAPI && !window.awsProfileAPI.isInitialized) {
-                await new Promise(resolve => {
-                    const checkInit = setInterval(() => {
-                        if (window.awsProfileAPI && window.awsProfileAPI.isInitialized) {
-                            clearInterval(checkInit);
-                            resolve();
-                        }
-                    }, 100);
-                    setTimeout(() => {
-                        clearInterval(checkInit);
-                        resolve();
-                    }, 5000);
-                });
-            }
-            
-            if (window.awsProfileAPI && window.awsProfileAPI.isInitialized) {
-                // Lade aktuelle Admin-Konfiguration (userId: 'admin')
-                let adminProfile = {};
-                try {
-                    // Versuche zuerst mit 'admin' userId
-                    const adminProfileAdmin = await window.awsProfileAPI.loadProfile('admin').catch(() => null);
-                    if (adminProfileAdmin && adminProfileAdmin.userId === 'admin') {
-                        adminProfile = adminProfileAdmin;
-                    } else {
-                        // Fallback: Versuche mit 'owner' userId
-                        const adminProfileOwner = await window.awsProfileAPI.loadProfile('owner').catch(() => null);
-                        if (adminProfileOwner && adminProfileOwner.userId === 'owner') {
-                            adminProfile = adminProfileOwner;
-                        }
-                    }
-                } catch (error) {
-                    console.warn('⚠️ Fehler beim Laden des Admin-Profils:', error);
-                }
+            if (window.awsAPISettings && window.awsAPISettings.isUserLoggedIn()) {
+                console.log('☁️ Speichere API-Key in AWS Cloud...');
                 
-                // Aktualisiere API Keys in Admin-Profil
-                const updatedProfile = {
-                    ...adminProfile,
-                    userId: 'admin', // Admin-Konfiguration (konsistent)
-                    type: 'admin-config',
-                    apiKeys: {
-                        ...(adminProfile?.apiKeys || {}),
-                        [service]: {
-                            ...serviceData, // Enthält den vollständigen API Key
-                            updatedAt: new Date().toISOString()
-                        }
-                    },
-                    updatedAt: new Date().toISOString()
+                // Baue Settings-Objekt für AWS
+                const awsSettings = {};
+                awsSettings[service] = {
+                    apiKey: serviceData.apiKey,
+                    model: serviceData.model,
+                    maxTokens: serviceData.maxTokens,
+                    temperature: serviceData.temperature
                 };
                 
-                // Speichere in AWS
-                await window.awsProfileAPI.saveProfile(updatedProfile);
-                console.log('✅ API Key in AWS gespeichert für Service:', service);
+                // Speichere mit der entsprechenden Methode
+                if (service === 'openai') {
+                    await window.awsAPISettings.saveOpenAIKey(serviceData.apiKey, {
+                        model: serviceData.model,
+                        maxTokens: serviceData.maxTokens,
+                        temperature: serviceData.temperature
+                    });
+                } else if (service === 'anthropic') {
+                    await window.awsAPISettings.saveAnthropicKey(serviceData.apiKey, {
+                        model: serviceData.model,
+                        maxTokens: serviceData.maxTokens,
+                        temperature: serviceData.temperature
+                    });
+                } else if (service === 'google') {
+                    await window.awsAPISettings.saveGoogleKey(serviceData.apiKey, {
+                        model: serviceData.model,
+                        maxTokens: serviceData.maxTokens,
+                        temperature: serviceData.temperature
+                    });
+                }
+                
+                console.log('✅ API-Key in AWS Cloud gespeichert für Service:', service);
             } else {
-                console.warn('⚠️ awsProfileAPI nicht verfügbar, speichere nur lokal');
+                console.log('ℹ️ Nicht eingeloggt - API-Key nur lokal gespeichert');
             }
         } catch (error) {
             console.error('❌ Fehler beim Speichern in AWS:', error);
-            // Weiterhin lokal speichern, auch wenn AWS fehlschlägt
+            // Lokal ist bereits gespeichert
         }
         
         // Status aktualisieren
