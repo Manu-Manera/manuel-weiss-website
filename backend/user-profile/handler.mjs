@@ -344,7 +344,7 @@ async function getUserProfile(userId) {
     
     // Standard-Verhalten für normale User (Cognito)
     result = await getDynamoDB().send(new GetItemCommand({
-      TableName: process.env.TABLE,
+      TableName: process.env.TABLE || process.env.PROFILE_TABLE || 'mawps-user-profiles',
       Key: {
         pk: { S: `user#${userId}` },
         sk: { S: 'profile' }
@@ -544,7 +544,7 @@ async function saveUserProfile(userId, profileData) {
   }
 
   await getDynamoDB().send(new PutItemCommand({
-    TableName: process.env.TABLE,
+    TableName: process.env.TABLE || process.env.PROFILE_TABLE || 'mawps-user-profiles',
     Item: item
   }));
 
@@ -554,7 +554,7 @@ async function saveUserProfile(userId, profileData) {
 async function getUserProgress(userId) {
   try {
     const result = await getDynamoDB().send(new GetItemCommand({
-      TableName: process.env.TABLE,
+      TableName: process.env.TABLE || process.env.PROFILE_TABLE || 'mawps-user-profiles',
       Key: {
         pk: { S: `user#${userId}` },
         sk: { S: 'progress' }
@@ -596,7 +596,7 @@ async function updateUserProgress(userId, progressData) {
   };
 
   await getDynamoDB().send(new PutItemCommand({
-    TableName: process.env.TABLE,
+    TableName: process.env.TABLE || process.env.PROFILE_TABLE || 'mawps-user-profiles',
     Item: {
       pk: { S: `user#${userId}` },
       sk: { S: 'progress' },
@@ -623,7 +623,7 @@ async function getAllProfiles() {
     const docClient = DynamoDBDocumentClient.from(client);
     
     const result = await docClient.send(new ScanCommand({
-      TableName: process.env.TABLE || 'mawps-user-profiles',
+      TableName: process.env.TABLE || process.env.PROFILE_TABLE || 'mawps-user-profiles' || 'mawps-user-profiles',
       // Nur bestimmte Attribute zurückgeben (Übersicht)
       ProjectionExpression: 'userId, #name, email, firstName, lastName, profession, company, profileImageUrl, createdAt, updatedAt',
       ExpressionAttributeNames: {
@@ -686,7 +686,7 @@ async function getUserProfileByUuid(uuid) {
     const docClient = DynamoDBDocumentClient.from(client);
     
     const result = await docClient.send(new GetCommand({
-      TableName: process.env.TABLE || 'mawps-user-profiles',
+      TableName: process.env.TABLE || process.env.PROFILE_TABLE || 'mawps-user-profiles' || 'mawps-user-profiles',
       Key: { userId: uuid }
     }));
     
@@ -745,7 +745,7 @@ async function getAllResumes() {
     
     // Scanne alle Profile - lade auch resume-Daten direkt
     const result = await docClient.send(new ScanCommand({
-      TableName: process.env.TABLE || 'mawps-user-profiles'
+      TableName: process.env.TABLE || process.env.PROFILE_TABLE || 'mawps-user-profiles' || 'mawps-user-profiles'
     }));
     
     const resumes = [];
