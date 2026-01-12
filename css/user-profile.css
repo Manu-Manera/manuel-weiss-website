@@ -2230,6 +2230,108 @@ input:checked + .toggle-slider:before {
     text-align: center;
 }
 
+/* Sleep Fields */
+.sleep-fields {
+    padding: 1rem;
+    background: linear-gradient(135deg, rgba(79, 70, 229, 0.1), rgba(139, 92, 246, 0.1));
+    border-radius: var(--radius-lg);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.quality-selector {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.quality-btn {
+    flex: 1;
+    min-width: 80px;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--border-color);
+    background: var(--bg-primary);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.quality-btn:hover {
+    border-color: var(--primary-color);
+    background: rgba(99, 102, 241, 0.05);
+}
+
+.quality-btn.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+/* Meal Fields */
+.meal-fields {
+    padding: 1rem;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(245, 158, 11, 0.1));
+    border-radius: var(--radius-lg);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.satisfaction-selector {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.satisfaction-btn {
+    flex: 1;
+    padding: 0.75rem;
+    border: 2px solid var(--border-color);
+    background: var(--bg-primary);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 1.5rem;
+}
+
+.satisfaction-btn:hover {
+    border-color: var(--success-color);
+    transform: scale(1.1);
+}
+
+.satisfaction-btn.active {
+    background: var(--success-color);
+    border-color: var(--success-color);
+    transform: scale(1.1);
+}
+
+/* Checkbox Label für Ernährungssync */
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    padding: 0.75rem;
+    background: rgba(16, 185, 129, 0.08);
+    border-radius: var(--radius-md);
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--success-color);
+    cursor: pointer;
+}
+
 /* Recent Entries */
 .journal-recent-section {
     background: var(--bg-primary);

@@ -7,7 +7,7 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>Mein Profil | Manuel Weiss</title>
-    <link rel="stylesheet" href="css/user-profile.css?v=20260112">
+    <link rel="stylesheet" href="css/user-profile.css?v=20260112i">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
@@ -990,6 +990,14 @@
                                     <i class="fas fa-dumbbell"></i>
                                     <span>Training</span>
                                 </button>
+                                <button class="entry-type-btn" data-type="sleep" onclick="window.userProfile.setJournalEntryType('sleep')">
+                                    <i class="fas fa-bed"></i>
+                                    <span>Schlaf</span>
+                                </button>
+                                <button class="entry-type-btn" data-type="meal" onclick="window.userProfile.setJournalEntryType('meal')">
+                                    <i class="fas fa-utensils"></i>
+                                    <span>Ernährung</span>
+                                </button>
                                 <button class="entry-type-btn" data-type="mood" onclick="window.userProfile.setJournalEntryType('mood')">
                                     <i class="fas fa-smile"></i>
                                     <span>Stimmung</span>
@@ -1049,6 +1057,95 @@
                                             <span id="intensityValue">5/10</span>
                                         </div>
                                     </div>
+                                </div>
+
+                                <!-- Sleep Fields (für Schlaf Typ) -->
+                                <div id="sleepFields" class="sleep-fields" style="display: none;">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="sleepBedtime">Bettzeit</label>
+                                            <input type="time" id="sleepBedtime" value="22:30">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="sleepWakeup">Aufstehzeit</label>
+                                            <input type="time" id="sleepWakeup" value="06:30">
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="sleepLastScreen">Letztes Bildschirm/Handy</label>
+                                            <input type="time" id="sleepLastScreen" value="22:00">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="sleepLastLight">Letztes Licht aus</label>
+                                            <input type="time" id="sleepLastLight" value="22:30">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="sleepQuality">Schlafqualität</label>
+                                        <div class="quality-selector">
+                                            <button type="button" class="quality-btn" data-quality="1" onclick="window.userProfile.selectSleepQuality(1)">😴 Schlecht</button>
+                                            <button type="button" class="quality-btn" data-quality="2" onclick="window.userProfile.selectSleepQuality(2)">😐 Okay</button>
+                                            <button type="button" class="quality-btn" data-quality="3" onclick="window.userProfile.selectSleepQuality(3)">😊 Gut</button>
+                                            <button type="button" class="quality-btn" data-quality="4" onclick="window.userProfile.selectSleepQuality(4)">🌟 Sehr gut</button>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="sleepInterruptions">Unterbrechungen</label>
+                                        <select id="sleepInterruptions">
+                                            <option value="0">Keine</option>
+                                            <option value="1">1x aufgewacht</option>
+                                            <option value="2">2x aufgewacht</option>
+                                            <option value="3">3+ mal aufgewacht</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Meal Fields (für Ernährung Typ) -->
+                                <div id="mealFields" class="meal-fields" style="display: none;">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="mealType">Mahlzeit</label>
+                                            <select id="mealType">
+                                                <option value="breakfast">Frühstück</option>
+                                                <option value="lunch">Mittagessen</option>
+                                                <option value="dinner">Abendessen</option>
+                                                <option value="snack">Snack</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="mealTime">Uhrzeit</label>
+                                            <input type="time" id="mealTime" value="12:00">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="mealDescription">Was hast du gegessen?</label>
+                                        <textarea id="mealDescription" rows="2" placeholder="z.B. Haferflocken mit Obst und Nüssen"></textarea>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="mealCalories">Geschätzte Kalorien</label>
+                                            <input type="number" id="mealCalories" placeholder="500" min="0">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="mealProtein">Protein (g)</label>
+                                            <input type="number" id="mealProtein" placeholder="30" min="0">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Zufriedenheit mit der Mahlzeit</label>
+                                        <div class="satisfaction-selector">
+                                            <button type="button" class="satisfaction-btn" data-satisfaction="1" onclick="window.userProfile.selectMealSatisfaction(1)">👎</button>
+                                            <button type="button" class="satisfaction-btn" data-satisfaction="2" onclick="window.userProfile.selectMealSatisfaction(2)">😐</button>
+                                            <button type="button" class="satisfaction-btn" data-satisfaction="3" onclick="window.userProfile.selectMealSatisfaction(3)">👍</button>
+                                            <button type="button" class="satisfaction-btn" data-satisfaction="4" onclick="window.userProfile.selectMealSatisfaction(4)">🤩</button>
+                                        </div>
+                                    </div>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="mealSyncToNutrition" checked>
+                                        <span class="checkmark"></span>
+                                        Automatisch zum Ernährungs-Tab hinzufügen
+                                    </label>
                                 </div>
 
                                 <div class="form-group">
@@ -1115,7 +1212,7 @@
     <script src="js/aws-applications-api.js"></script>
     <script src="js/aws-journal-api.js?v=20260112"></script>
     <script src="js/success-checkmark.js?v=20260112"></script>
-    <script src="js/user-profile.js?v=20260112i"></script>
+    <script src="js/user-profile.js?v=20260112j"></script>
     <script>
         // Tab Data Loading Functions
         async function loadTrainingTabData() {

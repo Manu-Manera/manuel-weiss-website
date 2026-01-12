@@ -224,30 +224,28 @@ class UserProfile {
     }
 
     showLoginPrompt() {
-        // Show login modal instead of redirecting
-        console.log('🔐 Showing login modal...');
-        if (window.authModals && window.authModals.showLogin) {
-            window.authModals.showLogin();
-        } else if (window.awsAuth && window.awsAuth.showLoginModal) {
-            window.awsAuth.showLoginModal();
-        } else {
-            // Fallback: Redirect to current page origin with login intent
-            const currentPath = window.location.pathname;
-            console.log('⚠️ No auth modal available, staying on page');
+        // DON'T auto-show login modal - only show when user explicitly clicks "Anmelden"
+        // This prevents the modal from appearing when navigating from other pages
+        console.log('ℹ️ User not logged in - login available via Anmelden button');
+        // Update the auth button to show "Anmelden" state
+        this.updateAuthButtonState();
+    }
+    
+    updateAuthButtonState() {
+        const authButton = document.getElementById('profileAuthButton');
+        const authText = document.getElementById('profileAuthText');
+        
+        if (authButton && authText) {
+            authButton.classList.remove('logged-in');
+            authText.textContent = 'Anmelden';
         }
     }
 
     redirectToLogin() {
-        // Show login modal instead of redirecting away
-        console.log('🔐 Showing login modal...');
-        if (window.authModals && window.authModals.showLogin) {
-            window.authModals.showLogin();
-        } else if (window.awsAuth && window.awsAuth.showLoginModal) {
-            window.awsAuth.showLoginModal();
-        } else {
-            // Fallback: Stay on current page
-            console.log('⚠️ No auth modal available');
-        }
+        // DON'T auto-redirect or auto-show modal
+        // Just update the UI to show user is not logged in
+        console.log('ℹ️ User not authenticated - login available via button');
+        this.updateAuthButtonState();
     }
 
     setupEventListeners() {
@@ -1808,9 +1806,11 @@ class UserProfile {
             }
         });
         
-        // Show/hide fields
+        // Show/hide fields based on type
         const moodSelector = document.getElementById('moodSelector');
         const trainingFields = document.getElementById('trainingFields');
+        const sleepFields = document.getElementById('sleepFields');
+        const mealFields = document.getElementById('mealFields');
         
         if (moodSelector) {
             moodSelector.style.display = (type === 'journal' || type === 'mood') ? 'block' : 'none';
@@ -1818,6 +1818,14 @@ class UserProfile {
         
         if (trainingFields) {
             trainingFields.style.display = type === 'training' ? 'block' : 'none';
+        }
+        
+        if (sleepFields) {
+            sleepFields.style.display = type === 'sleep' ? 'block' : 'none';
+        }
+        
+        if (mealFields) {
+            mealFields.style.display = type === 'meal' ? 'block' : 'none';
         }
         
         // Update placeholder
@@ -1828,7 +1836,9 @@ class UserProfile {
             journal: { title: 'Was beschäftigt dich heute?', content: 'Schreibe deine Gedanken...' },
             training: { title: 'Workout-Name', content: 'Notizen zum Training...' },
             mood: { title: 'Wie geht es dir?', content: 'Optional: Beschreibe deine Stimmung...' },
-            note: { title: 'Kurze Notiz', content: 'Schnelle Notiz...' }
+            note: { title: 'Kurze Notiz', content: 'Schnelle Notiz...' },
+            sleep: { title: 'Schlafnotiz (optional)', content: 'Wie hast du geschlafen? Träume?' },
+            meal: { title: 'Mahlzeit', content: 'Details zur Mahlzeit...' }
         };
         
         if (titleInput) titleInput.placeholder = placeholders[type]?.title || '';
@@ -1846,13 +1856,71 @@ class UserProfile {
         });
     }
 
+    selectSleepQuality(quality) {
+        this.selectedSleepQuality = quality;
+        
+        document.querySelectorAll('.quality-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if (parseInt(btn.dataset.quality) === quality) {
+                btn.classList.add('active');
+            }
+        });
+    }
+
+    selectMealSatisfaction(satisfaction) {
+        this.selectedMealSatisfaction = satisfaction;
+        
+        document.querySelectorAll('.satisfaction-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if (parseInt(btn.dataset.satisfaction) === satisfaction) {
+                btn.classList.add('active');
+            }
+        });
+    }
+
+    calculateSleepDuration(bedtime, wakeup) {
+        if (!bedtime || !wakeup) return null;
+        
+        const [bedH, bedM] = bedtime.split(':').map(Number);
+        const [wakeH, wakeM] = wakeup.split(':').map(Number);
+        
+        let bedMinutes = bedH * 60 + bedM;
+        let wakeMinutes = wakeH * 60 + wakeM;
+        
+        // If wakeup is earlier than bedtime, assume next day
+        if (wakeMinutes < bedMinutes) {
+            wakeMinutes += 24 * 60;
+        }
+        
+        const durationMinutes = wakeMinutes - bedMinutes;
+        const hours = Math.floor(durationMinutes / 60);
+        const minutes = durationMinutes % 60;
+        
+        return { hours, minutes, totalMinutes: durationMinutes };
+    }
+
     async saveJournalEntry() {
         const title = document.getElementById('journalTitle')?.value?.trim();
         const content = document.getElementById('journalContent')?.value?.trim();
         const tagsStr = document.getElementById('journalTags')?.value?.trim();
         const tags = tagsStr ? tagsStr.split(',').map(t => t.trim()).filter(t => t) : [];
         
-        if (!title && !content) {
+        // Validate based on type
+        const type = this.journalEntryType;
+        if (type === 'sleep') {
+            const bedtime = document.getElementById('sleepBedtime')?.value;
+            const wakeup = document.getElementById('sleepWakeup')?.value;
+            if (!bedtime || !wakeup) {
+                this.showNotification('Bitte gib Bettzeit und Aufstehzeit ein', 'error');
+                return;
+            }
+        } else if (type === 'meal') {
+            const mealDescription = document.getElementById('mealDescription')?.value?.trim();
+            if (!mealDescription) {
+                this.showNotification('Bitte beschreibe was du gegessen hast', 'error');
+                return;
+            }
+        } else if (!title && !content) {
             this.showNotification('Bitte gib einen Titel oder Inhalt ein', 'error');
             return;
         }
@@ -1875,6 +1943,81 @@ class UserProfile {
             };
         }
         
+        // Add sleep data if applicable
+        if (this.journalEntryType === 'sleep') {
+            const bedtime = document.getElementById('sleepBedtime')?.value;
+            const wakeup = document.getElementById('sleepWakeup')?.value;
+            const lastScreen = document.getElementById('sleepLastScreen')?.value;
+            const lastLight = document.getElementById('sleepLastLight')?.value;
+            const interruptions = parseInt(document.getElementById('sleepInterruptions')?.value) || 0;
+            
+            const duration = this.calculateSleepDuration(bedtime, wakeup);
+            
+            entry.sleepData = {
+                bedtime,
+                wakeup,
+                lastScreen,
+                lastLight,
+                quality: this.selectedSleepQuality || 3,
+                interruptions,
+                durationHours: duration?.hours || 0,
+                durationMinutes: duration?.minutes || 0,
+                totalMinutes: duration?.totalMinutes || 0
+            };
+            
+            // Auto-generate title if not provided
+            if (!entry.title) {
+                entry.title = `Schlaf: ${duration?.hours || 0}h ${duration?.minutes || 0}min`;
+            }
+        }
+        
+        // Add meal data if applicable
+        if (this.journalEntryType === 'meal') {
+            const mealType = document.getElementById('mealType')?.value || 'snack';
+            const mealTime = document.getElementById('mealTime')?.value;
+            const mealDescription = document.getElementById('mealDescription')?.value?.trim();
+            const calories = parseInt(document.getElementById('mealCalories')?.value) || 0;
+            const protein = parseInt(document.getElementById('mealProtein')?.value) || 0;
+            const syncToNutrition = document.getElementById('mealSyncToNutrition')?.checked ?? true;
+            
+            entry.mealData = {
+                mealType,
+                mealTime,
+                description: mealDescription,
+                calories,
+                protein,
+                satisfaction: this.selectedMealSatisfaction || 3
+            };
+            
+            // Auto-generate title if not provided
+            if (!entry.title) {
+                const mealLabels = {
+                    breakfast: 'Frühstück',
+                    lunch: 'Mittagessen',
+                    dinner: 'Abendessen',
+                    snack: 'Snack'
+                };
+                entry.title = mealLabels[mealType] || 'Mahlzeit';
+            }
+            
+            // Sync to nutrition tab if enabled
+            if (syncToNutrition && window.awsNutritionAPI) {
+                try {
+                    await window.awsNutritionAPI.logMeal({
+                        type: mealType,
+                        time: mealTime,
+                        description: mealDescription,
+                        calories,
+                        protein,
+                        date: new Date().toISOString().split('T')[0]
+                    });
+                    console.log('✅ Mahlzeit auch zum Ernährungsplan hinzugefügt');
+                } catch (syncError) {
+                    console.warn('⚠️ Konnte nicht zum Ernährungsplan synchronisieren:', syncError);
+                }
+            }
+        }
+        
         try {
             if (!window.awsJournalAPI) {
                 throw new Error('Journal API nicht verfügbar');
@@ -1883,11 +2026,7 @@ class UserProfile {
             const result = await window.awsJournalAPI.createEntry(entry);
             
             // Clear form
-            document.getElementById('journalTitle').value = '';
-            document.getElementById('journalContent').value = '';
-            document.getElementById('journalTags').value = '';
-            this.selectedMood = null;
-            document.querySelectorAll('.mood-btn').forEach(btn => btn.classList.remove('selected'));
+            this.clearJournalForm();
             
             // Reload data
             await this.loadJournalData();
@@ -1899,6 +2038,39 @@ class UserProfile {
         } catch (error) {
             console.error('❌ Fehler beim Speichern:', error);
             this.showNotification('Fehler beim Speichern: ' + error.message, 'error');
+        }
+    }
+
+    clearJournalForm() {
+        // Clear text inputs
+        const inputs = ['journalTitle', 'journalContent', 'journalTags', 'mealDescription'];
+        inputs.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.value = '';
+        });
+        
+        // Clear number inputs
+        const numberInputs = ['trainingDuration', 'mealCalories', 'mealProtein'];
+        numberInputs.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.value = '';
+        });
+        
+        // Reset selections
+        this.selectedMood = null;
+        this.selectedSleepQuality = null;
+        this.selectedMealSatisfaction = null;
+        
+        document.querySelectorAll('.mood-btn').forEach(btn => btn.classList.remove('selected'));
+        document.querySelectorAll('.quality-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.satisfaction-btn').forEach(btn => btn.classList.remove('active'));
+        
+        // Reset range input
+        const intensityInput = document.getElementById('trainingIntensity');
+        if (intensityInput) {
+            intensityInput.value = 5;
+            const intensityValue = document.getElementById('intensityValue');
+            if (intensityValue) intensityValue.textContent = '5/10';
         }
     }
 }
