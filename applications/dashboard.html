@@ -676,148 +676,30 @@ Ihre Aufgaben:
             </div>
 
             <!-- ═══════════════════════════════════════════════════════════ -->
-            <!-- TAB 3: LEBENSLAUF -->
+            <!-- TAB 3: LEBENSLAUF (Vereinfacht wie Anschreiben) -->
             <!-- ═══════════════════════════════════════════════════════════ -->
             <div id="tab-resume" class="tab-content">
-                <div class="resume-container">
-                    <div class="resume-header">
-                        <h2><i class="fas fa-id-card"></i> Lebenslauf-Manager</h2>
-                        <div class="resume-actions">
-                            <button class="btn-secondary" onclick="uploadResumePdf()">
-                                <i class="fas fa-file-upload"></i> PDF hochladen
-                            </button>
-                            <button class="btn-secondary" onclick="importFromLinkedIn()">
-                                <i class="fab fa-linkedin"></i> LinkedIn Import
-                            </button>
-                            <a href="resume-editor.html" class="btn-primary">
-                                <i class="fas fa-edit"></i> Vollständiger Editor
-                            </a>
-                        </div>
+                <div class="resumes-container">
+                    <div class="resumes-header">
+                        <h2><i class="fas fa-file-alt"></i> Meine Lebensläufe</h2>
+                        <a href="resume-editor.html" class="btn-primary">
+                            <i class="fas fa-plus"></i> Neuen Lebenslauf erstellen
+                        </a>
                     </div>
-
-                    <!-- Quick Resume Form -->
-                    <div class="resume-quick-form">
-                        <div class="resume-section">
-                            <h3><i class="fas fa-user"></i> Persönliche Daten</h3>
-                            <div class="form-grid">
-                                <div class="form-group">
-                                    <label>Vorname</label>
-                                    <input type="text" id="resumeFirstName" placeholder="Max">
-                                </div>
-                                <div class="form-group">
-                                    <label>Nachname</label>
-                                    <input type="text" id="resumeLastName" placeholder="Mustermann">
-                                </div>
-                                <div class="form-group">
-                                    <label>Berufsbezeichnung</label>
-                                    <input type="text" id="resumeTitle" placeholder="z.B. Senior Software Engineer">
-                                </div>
-                                <div class="form-group">
-                                    <label>E-Mail</label>
-                                    <input type="email" id="resumeEmail" placeholder="max@example.de">
-                                </div>
-                                <div class="form-group">
-                                    <label>Telefon</label>
-                                    <input type="tel" id="resumePhone" placeholder="+49 123 456789">
-                                </div>
-                                <div class="form-group">
-                                    <label>Standort</label>
-                                    <input type="text" id="resumeLocation" placeholder="München, Deutschland">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="resume-section">
-                            <h3><i class="fas fa-align-left"></i> Kurzprofil</h3>
-                            <div class="form-group full-width">
-                                <textarea id="resumeSummary" rows="4" placeholder="2-3 Sätze über Sie: Ihre aktuelle Rolle, Jahre Erfahrung, und wichtigste Stärken..."></textarea>
-                                <small>Wichtig für ATS-Systeme! Nennen Sie Ihren Jobtitel und 3-5 zentrale Skills.</small>
-                            </div>
-                        </div>
-
-                        <div class="resume-section">
-                            <h3><i class="fas fa-briefcase"></i> Berufserfahrung</h3>
-                            <div id="experienceList" class="experience-list">
-                                <!-- Wird dynamisch gefüllt -->
-                            </div>
-                            <button class="btn-add" onclick="addExperienceEntry()">
-                                <i class="fas fa-plus"></i> Position hinzufügen
-                            </button>
-                        </div>
-
-                        <div class="resume-section">
-                            <h3><i class="fas fa-graduation-cap"></i> Ausbildung</h3>
-                            <div id="educationList" class="education-list">
-                                <!-- Wird dynamisch gefüllt -->
-                            </div>
-                            <button class="btn-add" onclick="addEducationEntry()">
-                                <i class="fas fa-plus"></i> Ausbildung hinzufügen
-                            </button>
-                        </div>
-
-                        <div class="resume-section">
-                            <h3><i class="fas fa-tools"></i> Skills</h3>
-                            <div class="form-group full-width">
-                                <input type="text" id="resumeSkills" placeholder="JavaScript, React, Python, Projektmanagement, Agile...">
-                                <small>Kommagetrennt eingeben</small>
-                            </div>
-                            <div class="skills-preview" id="skillsPreview">
-                                <!-- Skill-Tags werden hier angezeigt -->
-                            </div>
-                        </div>
-
-                        <div class="resume-section">
-                            <h3><i class="fas fa-globe"></i> Sprachen</h3>
-                            <div class="form-grid">
-                                <div class="form-group">
-                                    <label>Sprache</label>
-                                    <input type="text" id="resumeLang1" placeholder="Deutsch" value="Deutsch">
-                                </div>
-                                <div class="form-group">
-                                    <label>Niveau</label>
-                                    <select id="resumeLang1Level">
-                                        <option value="Muttersprache">Muttersprache</option>
-                                        <option value="C2">C2 - Verhandlungssicher</option>
-                                        <option value="C1">C1 - Fließend</option>
-                                        <option value="B2">B2 - Gut</option>
-                                        <option value="B1">B1 - Grundlagen</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Sprache</label>
-                                    <input type="text" id="resumeLang2" placeholder="Englisch" value="Englisch">
-                                </div>
-                                <div class="form-group">
-                                    <label>Niveau</label>
-                                    <select id="resumeLang2Level">
-                                        <option value="Muttersprache">Muttersprache</option>
-                                        <option value="C2">C2 - Verhandlungssicher</option>
-                                        <option value="C1" selected>C1 - Fließend</option>
-                                        <option value="B2">B2 - Gut</option>
-                                        <option value="B1">B1 - Grundlagen</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="resume-footer">
-                            <button class="btn-secondary" onclick="clearResumeForm()">
-                                <i class="fas fa-undo"></i> Zurücksetzen
-                            </button>
-                            <button class="btn-primary" onclick="saveResume()">
-                                <i class="fas fa-save"></i> Lebenslauf speichern
-                            </button>
-                        </div>
+                    
+                    <!-- Gespeicherte Lebensläufe Liste -->
+                    <div id="resumesList" class="resumes-list">
+                        <!-- Wird dynamisch gefüllt -->
                     </div>
-
-                    <!-- LinkedIn Import Modal Hint -->
-                    <div class="linkedin-hint" id="linkedinHint">
-                        <i class="fab fa-linkedin"></i>
-                        <div>
-                            <strong>LinkedIn-Import</strong>
-                            <p>Exportieren Sie Ihr LinkedIn-Profil als PDF und laden Sie es hier hoch.</p>
-                            <a href="https://www.linkedin.com/help/linkedin/answer/50191" target="_blank">Anleitung →</a>
-                        </div>
+                    
+                    <!-- Empty State -->
+                    <div id="resumesEmpty" class="empty-state" style="display: none;">
+                        <i class="fas fa-id-card"></i>
+                        <h3>Noch keine Lebensläufe</h3>
+                        <p>Erstellen Sie Ihren ersten professionellen Lebenslauf!</p>
+                        <a href="resume-editor.html" class="btn-primary">
+                            <i class="fas fa-plus"></i> Lebenslauf erstellen
+                        </a>
                     </div>
                 </div>
             </div>
@@ -1622,9 +1504,111 @@ Ihre Aufgaben:
             // Initialize documents tab
             initDocumentsTab();
             
+            // Load resumes
+            loadResumes();
+            
             // Update stats
             updateDashboardStats();
         });
+        
+        // ═══════════════════════════════════════════════════════════════════════════
+        // LEBENSLÄUFE FUNKTIONEN
+        // ═══════════════════════════════════════════════════════════════════════════
+        
+        function loadResumes() {
+            try {
+                const resumes = JSON.parse(localStorage.getItem('user_resumes') || '[]');
+                const container = document.getElementById('resumesList');
+                const emptyState = document.getElementById('resumesEmpty');
+                
+                if (!container) return;
+                
+                if (resumes.length === 0) {
+                    container.innerHTML = '';
+                    if (emptyState) emptyState.style.display = 'flex';
+                    return;
+                }
+                
+                if (emptyState) emptyState.style.display = 'none';
+                
+                container.innerHTML = resumes.map((resume, index) => {
+                    const date = new Date(resume.updatedAt || resume.createdAt).toLocaleDateString('de-DE', {
+                        day: '2-digit', month: '2-digit', year: 'numeric'
+                    });
+                    const name = `${resume.firstName || ''} ${resume.lastName || ''}`.trim() || 'Lebenslauf';
+                    const title = resume.title || 'Berufsbezeichnung';
+                    const summary = resume.summary?.substring(0, 120) + (resume.summary?.length > 120 ? '...' : '') || '';
+                    
+                    return `
+                        <div class="resume-item" data-id="${resume.id}">
+                            <div class="resume-item-info">
+                                <h4>${name}</h4>
+                                <p class="resume-title">${title}</p>
+                                <p class="resume-date">Aktualisiert: ${date}</p>
+                                <p class="resume-preview">${summary}</p>
+                            </div>
+                            <div class="resume-item-actions">
+                                <a href="resume-editor.html?id=${resume.id}" class="btn-icon" title="Bearbeiten">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button onclick="viewResumePDF('${resume.id}')" class="btn-icon" title="PDF anzeigen">
+                                    <i class="fas fa-file-pdf"></i>
+                                </button>
+                                <button onclick="duplicateResume('${resume.id}')" class="btn-icon" title="Duplizieren">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                                <button onclick="deleteResume('${resume.id}')" class="btn-icon btn-danger" title="Löschen">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+                // Update Statistik
+                const statResumes = document.getElementById('statResumes');
+                if (statResumes) statResumes.textContent = resumes.length;
+                
+            } catch (error) {
+                console.error('Error loading resumes:', error);
+            }
+        }
+        
+        window.viewResumePDF = function(id) {
+            // Öffne resume-editor mit PDF-Export-Modus
+            window.location.href = `resume-editor.html?id=${id}&action=pdf`;
+        };
+        
+        window.duplicateResume = function(id) {
+            const resumes = JSON.parse(localStorage.getItem('user_resumes') || '[]');
+            const resume = resumes.find(r => r.id === id);
+            if (!resume) return;
+            
+            const newResume = {
+                ...resume,
+                id: Date.now().toString(36),
+                firstName: resume.firstName + ' (Kopie)',
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            };
+            
+            resumes.unshift(newResume);
+            localStorage.setItem('user_resumes', JSON.stringify(resumes));
+            
+            loadResumes();
+            showToast('Lebenslauf dupliziert', 'success');
+        };
+        
+        window.deleteResume = function(id) {
+            if (!confirm('Lebenslauf wirklich löschen?')) return;
+            
+            const resumes = JSON.parse(localStorage.getItem('user_resumes') || '[]');
+            const filtered = resumes.filter(r => r.id !== id);
+            localStorage.setItem('user_resumes', JSON.stringify(filtered));
+            
+            loadResumes();
+            showToast('Lebenslauf gelöscht', 'success');
+        };
         
         // ═══════════════════════════════════════════════════════════════════════════
         // DOKUMENTE / ZEUGNISSE FUNKTIONEN
@@ -1851,6 +1835,11 @@ Ihre Aufgaben:
             const coverLetters = JSON.parse(localStorage.getItem('cover_letter_drafts') || '[]');
             const statCoverLetters = document.getElementById('statCoverLetters');
             if (statCoverLetters) statCoverLetters.textContent = coverLetters.length;
+            
+            // Lebensläufe zählen
+            const resumes = JSON.parse(localStorage.getItem('user_resumes') || '[]');
+            const statResumes = document.getElementById('statResumes');
+            if (statResumes) statResumes.textContent = resumes.length || 0;
             
             // Bewerbungen aus DashboardState
             const apps = JSON.parse(localStorage.getItem('bewerbungsmanager_applications') || '[]');
