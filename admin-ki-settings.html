@@ -430,23 +430,35 @@
                 localStorage.setItem('openai_api_key', apiKey);
             }
             
-            // In Cloud speichern wenn eingeloggt und Cloud-Modus aktiv
-            if (storageMode === 'cloud' && window.awsAPISettings && window.awsAPISettings.isUserLoggedIn()) {
-                try {
-                    showStatus('save-status', '☁️ Speichere in AWS...', 'info');
-                    
-                    await window.awsAPISettings.saveOpenAIKey(apiKey, {
-                        model: settings.model,
-                        maxTokens: settings.maxTokens,
-                        temperature: settings.temperature
-                    });
-            
-                    showStatus('save-status', '✅ In AWS gespeichert! Ihre Einstellungen sind jetzt auf allen Geräten verfügbar.', 'success');
-                } catch (error) {
-                    showStatus('save-status', `⚠️ Lokal gespeichert, aber AWS-Speicherung fehlgeschlagen: ${error.message}`, 'error');
+            // In Cloud speichern wenn eingeloggt (immer versuchen, auch wenn Cloud-Modus nicht aktiv)
+            if (window.awsAPISettings) {
+                const isLoggedIn = window.awsAPISettings.isUserLoggedIn();
+                console.log('🔐 Login-Status:', isLoggedIn);
+                
+                if (isLoggedIn) {
+                    try {
+                        showStatus('save-status', '☁️ Speichere in AWS...', 'info');
+                        console.log('💾 Speichere API Key in AWS...');
+                        
+                        await window.awsAPISettings.saveOpenAIKey(apiKey, {
+                            model: settings.model,
+                            maxTokens: settings.maxTokens,
+                            temperature: settings.temperature
+                        });
+                
+                        showStatus('save-status', '✅ In AWS gespeichert! Ihre Einstellungen sind jetzt auf allen Geräten verfügbar.', 'success');
+                        console.log('✅ API Key erfolgreich in AWS gespeichert');
+                    } catch (error) {
+                        console.error('❌ AWS-Speicherung fehlgeschlagen:', error);
+                        showStatus('save-status', `⚠️ Lokal gespeichert, aber AWS-Speicherung fehlgeschlagen: ${error.message}. Bitte prüfe die Browser-Konsole für Details.`, 'error');
+                    }
+                } else {
+                    console.log('⚠️ User nicht eingeloggt - nur lokal gespeichert');
+                    showStatus('save-status', '✅ Lokal gespeichert! (Nicht in AWS - bitte anmelden für Cloud-Sync)', 'success');
                 }
             } else {
-                showStatus('save-status', '✅ Lokal gespeichert!', 'success');
+                console.warn('⚠️ awsAPISettings nicht verfügbar');
+                showStatus('save-status', '✅ Lokal gespeichert! (AWS-Service nicht verfügbar)', 'success');
             }
         }
         

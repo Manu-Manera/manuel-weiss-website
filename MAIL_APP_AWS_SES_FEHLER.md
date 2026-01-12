@@ -5,7 +5,7 @@
 Sie haben versucht, AWS SES direkt als IMAP-Server in Mail.app zu konfigurieren:
 - **IMAP Server:** `imap.eu-central-1.amazonaws.com`
 - **SMTP Server:** `email-smtp.eu-central-1.amazonaws.com`
-- **Benutzername:** `AKIAQR3HB4M3JM24NYXH`
+- **Benutzername:** `[IHR_AWS_ACCESS_KEY_ID]` (aus Netlify Environment Variables)
 
 **Das funktioniert NICHT!** ❌
 
