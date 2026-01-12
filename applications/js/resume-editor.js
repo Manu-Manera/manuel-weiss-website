@@ -839,7 +839,10 @@ function addExperience(experienceData = {}) {
     const experienceId = 'experience-' + Date.now();
     
     const experienceHtml = `
-        <div class="experience-item" data-experience-id="${experienceId}" style="background: #f9fafb; padding: 1.5rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid #e5e7eb;">
+        <div class="experience-item draggable-item" data-experience-id="${experienceId}" draggable="true" style="background: #f9fafb; padding: 1.5rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid #e5e7eb;">
+            <div class="drag-handle" title="Ziehen zum Verschieben">
+                <i class="fas fa-grip-vertical"></i>
+            </div>
             <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
                 <h4 style="margin: 0; color: #1f2937;">Berufserfahrung</h4>
                 <button type="button" class="btn-remove" onclick="removeExperience('${experienceId}')">
@@ -876,9 +879,9 @@ function addExperience(experienceData = {}) {
                 </div>
                 <div class="form-group">
                     <label>Bis</label>
-                    <div style="display: flex; align-items: center; gap: 0.75rem;">
-                        <input type="month" data-field="endDate" value="${experienceData.endDate || ''}" ${experienceData.currentJob ? 'disabled' : ''} style="flex: 1;">
-                        <label style="display: flex; align-items: center; gap: 0.5rem; font-weight: normal; cursor: pointer; white-space: nowrap; margin: 0;">
+                    <div class="current-job-wrapper">
+                        <input type="month" data-field="endDate" value="${experienceData.endDate || ''}" ${experienceData.currentJob ? 'disabled' : ''}>
+                        <label>
                             <input type="checkbox" data-field="currentJob" ${experienceData.currentJob ? 'checked' : ''} onchange="toggleEndDate('${experienceId}', this.checked)">
                             Aktuell
                         </label>
@@ -925,6 +928,9 @@ function addExperience(experienceData = {}) {
     `;
     
     container.insertAdjacentHTML('beforeend', experienceHtml);
+    
+    // Drag & Drop initialisieren
+    initDragAndDrop(container);
 }
 
 function removeExperience(experienceId) {
@@ -950,7 +956,10 @@ function addEducation(educationData = {}) {
     const educationId = 'education-' + Date.now();
     
     const educationHtml = `
-        <div class="education-item" data-education-id="${educationId}" style="background: #f9fafb; padding: 1.5rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid #e5e7eb;">
+        <div class="education-item draggable-item" data-education-id="${educationId}" draggable="true" style="background: #f9fafb; padding: 1.5rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid #e5e7eb;">
+            <div class="drag-handle" title="Ziehen zum Verschieben">
+                <i class="fas fa-grip-vertical"></i>
+            </div>
             <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
                 <h4 style="margin: 0; color: #1f2937;">Ausbildung</h4>
                 <button type="button" class="btn-remove" onclick="removeEducation('${educationId}')">
@@ -999,6 +1008,9 @@ function addEducation(educationData = {}) {
     `;
     
     container.insertAdjacentHTML('beforeend', educationHtml);
+    
+    // Drag & Drop initialisieren
+    initDragAndDrop(container);
 }
 
 function removeEducation(educationId) {

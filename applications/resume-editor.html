@@ -226,7 +226,10 @@
                     <button type="submit" class="btn-primary">
                         <i class="fas fa-save"></i> Speichern
                     </button>
-                    <button type="button" class="btn-secondary" onclick="exportResume('pdf')">
+                    <button type="button" class="btn-style-editor" onclick="openStyleEditor()">
+                        <i class="fas fa-palette"></i> Style Editor
+                    </button>
+                    <button type="button" class="btn-secondary btn-export" onclick="exportToPDF()">
                         <i class="fas fa-file-pdf"></i> Als PDF exportieren
                     </button>
                 </div>
@@ -279,6 +282,73 @@
             </div>
         </div>
     </main>
+
+    <!-- Style Editor Modal -->
+    <div id="styleEditorModal" class="style-editor-modal">
+        <div class="style-editor-content">
+            <div class="style-editor-header">
+                <h2><i class="fas fa-palette"></i> Lebenslauf-Design anpassen</h2>
+                <button class="style-editor-close" onclick="closeStyleEditor()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="style-editor-body">
+                <div class="style-option-group">
+                    <h3>Template wählen</h3>
+                    <div class="style-templates">
+                        <div class="style-template active" data-template="modern" onclick="selectTemplate(this)">
+                            <div class="style-template-preview">📄</div>
+                            <div class="style-template-name">Modern</div>
+                        </div>
+                        <div class="style-template" data-template="classic" onclick="selectTemplate(this)">
+                            <div class="style-template-preview">📋</div>
+                            <div class="style-template-name">Klassisch</div>
+                        </div>
+                        <div class="style-template" data-template="creative" onclick="selectTemplate(this)">
+                            <div class="style-template-preview">🎨</div>
+                            <div class="style-template-name">Kreativ</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="style-option-group">
+                    <h3>Farben</h3>
+                    <div class="color-picker-row">
+                        <div class="color-picker-item">
+                            <label>Primärfarbe</label>
+                            <input type="color" id="primaryColor" value="#2563eb">
+                        </div>
+                        <div class="color-picker-item">
+                            <label>Sekundärfarbe</label>
+                            <input type="color" id="secondaryColor" value="#64748b">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="style-option-group">
+                    <h3>Schriftart</h3>
+                    <select id="fontSelect" class="font-select">
+                        <option value="Inter, sans-serif">Inter (Modern)</option>
+                        <option value="Georgia, serif">Georgia (Klassisch)</option>
+                        <option value="'Roboto', sans-serif">Roboto (Clean)</option>
+                        <option value="'Open Sans', sans-serif">Open Sans</option>
+                        <option value="'Lato', sans-serif">Lato</option>
+                        <option value="'Montserrat', sans-serif">Montserrat</option>
+                        <option value="Arial, sans-serif">Arial (Standard)</option>
+                        <option value="'Times New Roman', serif">Times New Roman</option>
+                    </select>
+                </div>
+            </div>
+            <div class="style-editor-footer">
+                <button class="btn-secondary" onclick="previewStyle()">
+                    <i class="fas fa-eye"></i> Vorschau
+                </button>
+                <button class="btn-primary" onclick="saveStyleSettings()">
+                    <i class="fas fa-save"></i> Speichern
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- PDF.js für clientseitige PDF-Textextraktion -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -375,7 +445,11 @@
                 const prompt = `Analysiere den folgenden Lebenslauf-Text und extrahiere ALLE strukturierten Daten im JSON-Format.
 Antworte NUR mit einem gültigen JSON-Objekt ohne zusätzlichen Text oder Erklärungen.
 
-WICHTIG: Extrahiere ALLE Berufserfahrungen, ALLE Ausbildungen und ALLE Skills vollständig!
+KRITISCH WICHTIG:
+1. Extrahiere ALLE Berufserfahrungen - auch kurze Jobs, Ausbildungsberufe (z.B. "Seiler", "Monteur"), Zivildienst
+2. Extrahiere ALLE Ausbildungen - Studium, Weiterbildungen, Berufsausbildungen, Schulabschlüsse
+3. Extrahiere ALLE Skills aus dem Kompetenzen-Bereich mit ihren Bewertungen/Levels
+4. Sprachen separat extrahieren (Deutsch, Englisch, Spanisch etc.)
 
 Gewünschtes Format:
 {
@@ -386,37 +460,38 @@ Gewünschtes Format:
     "website": "Website/Portfolio URL falls vorhanden",
     "linkedin": "LinkedIn URL falls vorhanden",
     "title": "Aktuelle oder letzte Berufsbezeichnung",
-    "summary": "Erstelle ein kurzes Profil (2-3 Sätze) basierend auf dem Lebenslauf",
+    "summary": "Erstelle ein Profil (2-3 Sätze) mit Kernkompetenzen",
     "experience": [
         {
-            "position": "Position/Jobtitel",
+            "position": "Position/Jobtitel (z.B. 'HR Consultant', 'Seiler', 'Zivildienstleistender')",
             "company": "Firmenname",
-            "location": "Standort der Firma",
+            "location": "Standort",
             "startDate": "YYYY-MM",
             "endDate": "YYYY-MM oder 'heute'",
-            "description": "Aufgabenbeschreibung als Fliesstext"
+            "description": "Aufgabenbeschreibung"
         }
     ],
     "education": [
         {
-            "degree": "Abschluss/Titel",
-            "fieldOfStudy": "Studienfach/Fachrichtung",
-            "institution": "Name der Institution",
+            "degree": "Abschluss (z.B. 'Bachelor', 'Ausbildung als Seiler', 'Betriebswirt')",
+            "fieldOfStudy": "Fachrichtung",
+            "institution": "Institution (z.B. Universität, Handwerkskammer, Berufsschule)",
             "startDate": "YYYY-MM",
-            "endDate": "YYYY-MM"
+            "endDate": "YYYY-MM",
+            "description": "Details zur Ausbildung falls vorhanden"
         }
     ],
     "technicalSkills": [
         {
-            "category": "Kategorie (z.B. Projektmanagement, Software, Sprachen)",
-            "skills": ["Skill1", "Skill2"]
+            "category": "Kategorie (z.B. 'Projektmanagement', 'Software', 'Methoden')",
+            "skills": ["PRINCE2", "SCRUM", "etc."]
         }
     ],
-    "softSkills": ["Kommunikation", "Teamarbeit", "etc."],
+    "softSkills": ["Präsentationen", "Workshops", "Teamführung", "etc."],
     "languages": [
         {
             "language": "Sprache",
-            "level": "Niveau (Muttersprache/C2/C1/B2/B1/A2)"
+            "level": "Niveau (z.B. 'Muttersprache', 'C1', 'B2', 'A2')"
         }
     ]
 }

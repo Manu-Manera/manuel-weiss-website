@@ -481,6 +481,292 @@
     justify-content: flex-end;
 }
 
+/* Aktuell Checkbox - näher am Eingabefeld */
+.current-job-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.current-job-wrapper input[type="month"] {
+    flex: 1;
+}
+
+.current-job-wrapper label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-weight: normal;
+    cursor: pointer;
+    white-space: nowrap;
+    margin: 0;
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.current-job-wrapper input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: #3b82f6;
+}
+
+/* Drag & Drop für Blöcke */
+.draggable-item {
+    cursor: grab;
+    position: relative;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.draggable-item:active {
+    cursor: grabbing;
+}
+
+.draggable-item.dragging {
+    opacity: 0.5;
+    transform: scale(1.02);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    z-index: 100;
+}
+
+.drag-handle {
+    position: absolute;
+    left: -30px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 24px;
+    background: #e5e7eb;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: grab;
+    opacity: 0;
+    transition: opacity 0.2s;
+    color: #6b7280;
+}
+
+.draggable-item:hover .drag-handle {
+    opacity: 1;
+}
+
+.drag-handle:hover {
+    background: #d1d5db;
+}
+
+.drag-placeholder {
+    border: 2px dashed #3b82f6;
+    background: rgba(59, 130, 246, 0.05);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+/* Container für Drag & Drop */
+#experienceContainer,
+#educationContainer,
+#languagesContainer,
+#projectsContainer,
+#technicalSkillsContainer,
+#softSkillsContainer {
+    padding-left: 35px;
+    margin-left: -35px;
+}
+
+/* Style Editor Button */
+.btn-style-editor {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s;
+}
+
+.btn-style-editor:hover {
+    background: linear-gradient(135deg, #7c3aed, #6d28d9);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+/* Style Editor Modal */
+.style-editor-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+}
+
+.style-editor-modal.active {
+    display: flex;
+}
+
+.style-editor-content {
+    background: white;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+}
+
+.style-editor-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.style-editor-header h2 {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #1f2937;
+}
+
+.style-editor-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #6b7280;
+    padding: 0.5rem;
+    border-radius: 6px;
+    transition: background 0.2s;
+}
+
+.style-editor-close:hover {
+    background: #f3f4f6;
+}
+
+.style-editor-body {
+    padding: 1.5rem;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.style-option-group {
+    margin-bottom: 1.5rem;
+}
+
+.style-option-group h3 {
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    color: #6b7280;
+    margin-bottom: 1rem;
+    letter-spacing: 0.05em;
+}
+
+.style-templates {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+.style-template {
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+}
+
+.style-template:hover {
+    border-color: #3b82f6;
+}
+
+.style-template.active {
+    border-color: #3b82f6;
+    background: #eff6ff;
+}
+
+.style-template-preview {
+    height: 80px;
+    background: #f3f4f6;
+    border-radius: 4px;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+}
+
+.style-template-name {
+    font-weight: 600;
+    color: #1f2937;
+    font-size: 0.9rem;
+}
+
+.color-picker-row {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.color-picker-item {
+    flex: 1;
+}
+
+.color-picker-item label {
+    display: block;
+    font-size: 0.875rem;
+    color: #374151;
+    margin-bottom: 0.5rem;
+}
+
+.color-picker-item input[type="color"] {
+    width: 100%;
+    height: 40px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    cursor: pointer;
+    padding: 2px;
+}
+
+.font-select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+.style-editor-footer {
+    padding: 1.5rem;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+}
+
+/* PDF Export Button */
+.btn-export {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+}
+
+.btn-export:hover {
+    background: linear-gradient(135deg, #059669, #047857);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .form-grid {
@@ -497,6 +783,28 @@
     
     .resume-actions button {
         width: 100%;
+    }
+    
+    .style-templates {
+        grid-template-columns: 1fr;
+    }
+    
+    .color-picker-row {
+        flex-direction: column;
+    }
+    
+    #experienceContainer,
+    #educationContainer,
+    #languagesContainer,
+    #projectsContainer,
+    #technicalSkillsContainer,
+    #softSkillsContainer {
+        padding-left: 0;
+        margin-left: 0;
+    }
+    
+    .drag-handle {
+        display: none;
     }
 }
 
