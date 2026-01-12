@@ -58,18 +58,32 @@ class ApiKeysSection {
                 const awsSettings = await window.awsAPISettings.getSettings(true); // Force refresh
                 
                 if (awsSettings && awsSettings.hasSettings && awsSettings.settings) {
-                    console.log('✅ API Keys aus AWS Cloud geladen');
+                    console.log('✅ API Keys aus AWS Cloud geladen:', awsSettings.settings);
                     const settings = awsSettings.settings;
+                    
+                    // Initialisiere Cache für vollständige Keys
+                    if (!this.cachedApiKeys) {
+                        this.cachedApiKeys = {};
+                    }
                     
                     // Fülle Formulare und GlobalAPIManager
                     const services = ['openai', 'anthropic', 'google'];
                     services.forEach(service => {
                         const serviceData = settings[service];
-                        if (serviceData && serviceData.apiKey) {
-                            // Formular füllen
+                        if (serviceData && (serviceData.apiKey || serviceData.configured)) {
+                            // Speichere vollständigen Key im Cache (für späteren Gebrauch)
+                            if (serviceData.apiKey) {
+                                this.cachedApiKeys[service] = serviceData.apiKey;
+                            }
+                            
+                            // Formular mit MASKIERTEM Key füllen (Sicherheit!)
                             const keyInput = document.getElementById(`${service}-key`);
                             if (keyInput) {
-                                keyInput.value = serviceData.apiKey;
+                                // Zeige maskierten Key an, oder den vollständigen wenn kein maskierter vorhanden
+                                const displayKey = serviceData.keyMasked || this.maskKey(serviceData.apiKey) || '••••••••';
+                                keyInput.value = displayKey;
+                                keyInput.dataset.hasKey = 'true'; // Markiere dass ein Key vorhanden ist
+                                keyInput.dataset.originalMasked = displayKey; // Speichere maskierten Wert
                             }
                             
                             const modelSelect = document.getElementById(`${service}-model`);
@@ -89,8 +103,8 @@ class ApiKeysSection {
                                 if (tempValue) tempValue.textContent = serviceData.temperature;
                             }
                             
-                            // Auch in GlobalAPIManager synchronisieren
-                            if (window.GlobalAPIManager) {
+                            // Auch in GlobalAPIManager synchronisieren (mit vollständigem Key)
+                            if (window.GlobalAPIManager && serviceData.apiKey) {
                                 window.GlobalAPIManager.setAPIKey(service, serviceData.apiKey, {
                                     model: serviceData.model,
                                     maxTokens: serviceData.maxTokens,
@@ -98,8 +112,8 @@ class ApiKeysSection {
                                 });
                             }
                             
-                            // Status aktualisieren
-                            this.updateServiceStatus(service);
+                            // Status aktualisieren - Force auf Aktiv wenn Key vorhanden
+                            this.updateServiceStatus(service, true);
                         }
                     });
                     
@@ -123,7 +137,10 @@ class ApiKeysSection {
                     console.log('ℹ️ Keine API Keys in AWS Cloud gespeichert');
                 }
             } else {
-                console.log('ℹ️ Nicht eingeloggt oder awsAPISettings nicht verfügbar');
+                console.log('ℹ️ Nicht eingeloggt oder awsAPISettings nicht verfügbar', {
+                    hasAwsAPISettings: !!window.awsAPISettings,
+                    isLoggedIn: window.awsAPISettings ? window.awsAPISettings.isUserLoggedIn() : false
+                });
             }
         } catch (error) {
             console.warn('⚠️ Fehler beim Laden der API Keys aus AWS:', error);
@@ -281,16 +298,28 @@ class ApiKeysSection {
     }
     
     /**
+     * API Key maskieren für sichere Anzeige
+     */
+    maskKey(key) {
+        if (!key || key.length < 8) return '••••••••';
+        return key.substring(0, 7) + '...' + key.substring(key.length - 4);
+    }
+    
+    /**
      * Service Status aktualisieren
      */
-    updateServiceStatus(service) {
+    updateServiceStatus(service, forceActive = false) {
         const keyInput = document.getElementById(`${service}-key`);
         const statusElement = document.getElementById(`${service}-status`);
         const cardElement = document.getElementById(`${service}-card`);
         
         if (!keyInput || !statusElement || !cardElement) return;
         
-        const hasKey = keyInput.value.trim() !== '';
+        // Prüfe ob Key vorhanden: entweder im Input, im Cache oder als data-Attribut markiert
+        const inputValue = keyInput.value.trim();
+        const hasKeyInCache = this.cachedApiKeys && this.cachedApiKeys[service];
+        const hasKeyMarked = keyInput.dataset.hasKey === 'true';
+        const hasKey = forceActive || inputValue !== '' || hasKeyInCache || hasKeyMarked;
         
         if (hasKey) {
             statusElement.textContent = 'Aktiv';
@@ -309,12 +338,32 @@ class ApiKeysSection {
      * Service speichern
      */
     async saveService(service) {
+        const keyInput = document.getElementById(`${service}-key`);
+        let apiKey = keyInput.value;
+        
+        // Wenn der Wert maskiert ist (unverändert), verwende den gecacheten vollständigen Key
+        const isMasked = apiKey.includes('...') || apiKey.includes('••••');
+        if (isMasked && this.cachedApiKeys && this.cachedApiKeys[service]) {
+            apiKey = this.cachedApiKeys[service];
+            console.log(`📦 Verwende gecacheten Key für ${service}`);
+        }
+        
+        // Validierung: Key muss vorhanden sein
+        if (!apiKey || apiKey.includes('••••')) {
+            this.showMessage(service, 'Bitte geben Sie einen gültigen API Key ein', 'error');
+            return;
+        }
+        
         const serviceData = {
-            apiKey: document.getElementById(`${service}-key`).value,
+            apiKey: apiKey,
             model: document.getElementById(`${service}-model`).value,
             maxTokens: parseInt(document.getElementById(`${service}-tokens`).value),
             temperature: parseFloat(document.getElementById(`${service}-temperature`).value)
         };
+        
+        // Aktualisiere Cache mit neuem Key
+        if (!this.cachedApiKeys) this.cachedApiKeys = {};
+        this.cachedApiKeys[service] = apiKey;
         
         // State Manager aktualisieren (localStorage)
         if (this.stateManager) {
