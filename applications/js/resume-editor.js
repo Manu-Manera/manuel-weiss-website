@@ -226,121 +226,269 @@ document.getElementById('pdfFileInput').addEventListener('change', async (e) => 
     await uploadAndProcessPDF(file);
 });
 
-// Upload and process PDF
+// Upload and process PDF - Lokale Verarbeitung mit PDF.js und OpenAI
 async function uploadAndProcessPDF(file) {
     try {
-        const token = await getAuthToken();
-        if (!token) {
-            showNotification('Bitte melden Sie sich an, um PDFs hochzuladen.', 'error');
-            if (window.realUserAuth && typeof window.realUserAuth.showLoginModal === 'function') {
-                window.realUserAuth.showLoginModal();
-            }
-            return;
-        }
-        
-        // 1. Get upload URL
-        const uploadUrlResponse = await fetch('https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod/resume/upload-url', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({
-                fileName: file.name,
-                contentType: file.type
-            })
-        });
-        
-        if (uploadUrlResponse.status === 401) {
-            showNotification('Sitzung abgelaufen. Bitte erneut anmelden.', 'error');
-            if (window.realUserAuth && typeof window.realUserAuth.showLoginModal === 'function') {
-                window.realUserAuth.showLoginModal();
-            }
-            return;
-        }
-        
-        if (!uploadUrlResponse.ok) {
-            const errorData = await uploadUrlResponse.json().catch(() => ({}));
-            throw new Error(errorData.message || 'Fehler beim Erstellen der Upload-URL');
-        }
-        
-        const uploadData = await uploadUrlResponse.json();
-        
-        // Prüfe ob Upload-URL verfügbar ist
-        if (!uploadData.uploadUrl) {
-            showNotification('S3-Bucket nicht konfiguriert. Bitte kontaktieren Sie den Administrator.', 'error');
-            return;
-        }
-        
-        const { uploadUrl, s3Key } = uploadData;
-        
-        // 2. Upload to S3
         document.getElementById('uploadProgress').style.display = 'block';
-        updateProgress(0, 'Upload läuft...');
+        updateProgress(0, 'PDF wird gelesen...');
         
-        const uploadResponse = await fetch(uploadUrl, {
-            method: 'PUT',
-            body: file,
-            headers: {
-                'Content-Type': file.type
-            }
-        });
+        // 1. Text aus PDF extrahieren mit PDF.js
+        const pdfText = await extractTextFromPDF(file);
         
-        if (!uploadResponse.ok) {
-            throw new Error('Upload fehlgeschlagen');
+        if (!pdfText || pdfText.trim().length < 50) {
+            throw new Error('Konnte keinen Text aus der PDF extrahieren. Bitte prüfen Sie, ob die PDF Textinhalt enthält.');
         }
         
-        updateProgress(50, 'OCR-Verarbeitung läuft...');
+        console.log('📄 Extrahierter Text:', pdfText.substring(0, 500) + '...');
+        updateProgress(30, 'Text extrahiert, analysiere mit KI...');
         
-        // 3. Start OCR processing
-        updateProgress(50, 'OCR-Verarbeitung läuft...');
+        // 2. OpenAI API-Key abrufen
+        const apiKey = await getOpenAIApiKey();
         
-        const ocrResponse = await fetch('https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod/resume/ocr', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({ s3Key })
-        });
-        
-        if (ocrResponse.status === 401) {
-            showNotification('Sitzung abgelaufen. Bitte erneut anmelden.', 'error');
+        if (!apiKey) {
+            showNotification('OpenAI API-Key nicht gefunden. Bitte im Admin-Panel konfigurieren.', 'error');
             document.getElementById('uploadProgress').style.display = 'none';
             return;
         }
         
-        if (!ocrResponse.ok) {
-            const errorData = await ocrResponse.json().catch(() => ({ message: 'Unknown error' }));
-            console.error('❌ OCR error:', errorData);
-            throw new Error(errorData.error || errorData.message || 'OCR processing failed');
+        updateProgress(50, 'KI-Analyse läuft...');
+        
+        // 3. Mit OpenAI GPT-4o strukturieren
+        const structuredData = await processTextWithGPT(pdfText, apiKey);
+        
+        if (!structuredData) {
+            throw new Error('KI-Analyse fehlgeschlagen');
         }
         
-        const ocrResult = await ocrResponse.json();
-        console.log('📄 OCR result:', ocrResult);
-        
-        // Prüfe ob OCR erfolgreich war
-        if (!ocrResult.success) {
-            if (ocrResult.status === 'IN_PROGRESS') {
-                showNotification('OCR-Verarbeitung läuft noch. Bitte später erneut versuchen.', 'info');
-                updateProgress(75, 'OCR läuft im Hintergrund...');
-                return;
-            } else {
-                const errorMsg = ocrResult.error || ocrResult.message || 'OCR processing failed';
-                console.error('❌ OCR failed:', errorMsg);
-                throw new Error(errorMsg);
-            }
-        }
-        
+        console.log('✅ Strukturierte Daten:', structuredData);
         updateProgress(100, 'Fertig!');
         
-        // 4. Show OCR results
-        showOCRResults(ocrResult, s3Key);
+        // 4. Ergebnisse anzeigen
+        showOCRResults({
+            success: true,
+            rawText: pdfText,
+            parsedData: structuredData
+        }, 'local-pdf');
         
     } catch (error) {
         console.error('Error processing PDF:', error);
-        showNotification('Fehler bei der PDF-Verarbeitung', 'error');
+        showNotification(`Fehler: ${error.message}`, 'error');
         document.getElementById('uploadProgress').style.display = 'none';
+    }
+}
+
+// Text aus PDF extrahieren mit PDF.js
+async function extractTextFromPDF(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        
+        reader.onload = async function(event) {
+            try {
+                const typedArray = new Uint8Array(event.target.result);
+                
+                // PDF.js laden
+                if (!window.pdfjsLib) {
+                    throw new Error('PDF.js nicht geladen');
+                }
+                
+                const pdf = await pdfjsLib.getDocument(typedArray).promise;
+                let fullText = '';
+                
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const textContent = await page.getTextContent();
+                    const pageText = textContent.items.map(item => item.str).join(' ');
+                    fullText += pageText + '\n\n';
+                }
+                
+                resolve(fullText);
+            } catch (error) {
+                reject(error);
+            }
+        };
+        
+        reader.onerror = () => reject(new Error('Fehler beim Lesen der Datei'));
+        reader.readAsArrayBuffer(file);
+    });
+}
+
+// OpenAI API-Key abrufen
+async function getOpenAIApiKey() {
+    try {
+        // 1. Versuche über aws-api-settings
+        if (window.awsApiSettings) {
+            const key = await window.awsApiSettings.getFullApiKey('openai');
+            if (key) {
+                console.log('✅ API-Key über awsApiSettings geladen');
+                return key;
+            }
+        }
+        
+        // 2. Versuche über globalApiManager
+        if (window.globalApiManager) {
+            const key = await window.globalApiManager.getApiKey('openai');
+            if (key) {
+                console.log('✅ API-Key über globalApiManager geladen');
+                return key;
+            }
+        }
+        
+        // 3. Versuche über Netlify Function
+        try {
+            const response = await fetch('/.netlify/functions/api-settings/key?provider=openai', {
+                headers: {
+                    'X-User-Id': getUserId()
+                }
+            });
+            if (response.ok) {
+                const data = await response.json();
+                if (data.apiKey) {
+                    console.log('✅ API-Key über Netlify Function geladen');
+                    return data.apiKey;
+                }
+            }
+        } catch (e) {
+            console.warn('Netlify Function nicht erreichbar:', e);
+        }
+        
+        // 4. Fallback: localStorage
+        const localKeys = ['openai_api_key', 'admin_openai_api_key', 'ki_api_settings'];
+        for (const key of localKeys) {
+            const value = localStorage.getItem(key);
+            if (value) {
+                try {
+                    const parsed = JSON.parse(value);
+                    if (parsed.openai) {
+                        console.log('✅ API-Key aus localStorage geladen');
+                        return parsed.openai;
+                    }
+                } catch {
+                    if (value.startsWith('sk-')) {
+                        console.log('✅ API-Key direkt aus localStorage geladen');
+                        return value;
+                    }
+                }
+            }
+        }
+        
+        return null;
+    } catch (error) {
+        console.error('Fehler beim Abrufen des API-Keys:', error);
+        return null;
+    }
+}
+
+function getUserId() {
+    try {
+        const session = localStorage.getItem('aws_auth_session');
+        if (session) {
+            const parsed = JSON.parse(session);
+            return parsed.userId || parsed.sub || 'anonymous';
+        }
+    } catch (e) {}
+    return 'anonymous';
+}
+
+// Text mit GPT strukturieren
+async function processTextWithGPT(text, apiKey) {
+    const prompt = `Analysiere den folgenden Lebenslauf-Text und extrahiere die Daten in strukturierter Form.
+
+WICHTIG: Extrahiere ALLE Informationen, besonders:
+- Vollständiger Name
+- E-Mail, Telefon, Adresse
+- Berufsbezeichnung/Titel
+- ALLE Berufserfahrungen (Position, Firma, Zeitraum, Beschreibung)
+- ALLE Ausbildungen (auch Berufsausbildungen wie "Seiler", "Schreiner" etc.)
+- ALLE Fähigkeiten (technische und soziale)
+- Sprachen mit Niveau
+
+Antworte NUR mit einem JSON-Objekt im folgenden Format:
+{
+    "name": "Vollständiger Name",
+    "email": "email@example.com",
+    "phone": "+49 123 456789",
+    "address": "Straße, PLZ Ort",
+    "title": "Aktuelle Berufsbezeichnung",
+    "summary": "Kurze Zusammenfassung der Person",
+    "experience": [
+        {
+            "position": "Position",
+            "company": "Firma",
+            "startDate": "MM/YYYY",
+            "endDate": "MM/YYYY oder heute",
+            "description": "Beschreibung der Tätigkeiten"
+        }
+    ],
+    "education": [
+        {
+            "degree": "Abschluss oder Ausbildung",
+            "institution": "Schule/Universität/Betrieb",
+            "startDate": "MM/YYYY",
+            "endDate": "MM/YYYY",
+            "description": "Details"
+        }
+    ],
+    "skills": {
+        "technical": ["Skill1", "Skill2"],
+        "soft": ["Soft Skill1", "Soft Skill2"]
+    },
+    "languages": [
+        {"language": "Deutsch", "level": "Muttersprache"},
+        {"language": "Englisch", "level": "B2"}
+    ]
+}
+
+Lebenslauf-Text:
+${text}`;
+
+    try {
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKey}`
+            },
+            body: JSON.stringify({
+                model: 'gpt-4o-mini',
+                messages: [
+                    {
+                        role: 'system',
+                        content: 'Du bist ein Experte für die Analyse von Lebensläufen. Extrahiere alle relevanten Informationen präzise und strukturiert.'
+                    },
+                    {
+                        role: 'user',
+                        content: prompt
+                    }
+                ],
+                temperature: 0.1,
+                max_tokens: 4000
+            })
+        });
+        
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            console.error('OpenAI API Error:', errorData);
+            throw new Error(errorData.error?.message || 'OpenAI API Fehler');
+        }
+        
+        const data = await response.json();
+        const content = data.choices[0]?.message?.content;
+        
+        if (!content) {
+            throw new Error('Keine Antwort von OpenAI');
+        }
+        
+        // JSON aus der Antwort extrahieren
+        const jsonMatch = content.match(/\{[\s\S]*\}/);
+        if (!jsonMatch) {
+            throw new Error('Konnte JSON nicht parsen');
+        }
+        
+        return JSON.parse(jsonMatch[0]);
+        
+    } catch (error) {
+        console.error('GPT Processing Error:', error);
+        throw error;
     }
 }
 
