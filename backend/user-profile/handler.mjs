@@ -2202,12 +2202,15 @@ async function getApiSettings(userId) {
       if (result.Item[provider]) {
         const providerData = JSON.parse(result.Item[provider].S || '{}');
         settings[provider] = {
-          apiKey: providerData.apiKey || '',
+          // SICHERHEIT: Vollständiger Key wird NICHT mehr zurückgegeben, nur maskiert
+          apiKey: providerData.apiKey ? maskApiKey(providerData.apiKey) : '',
           keyMasked: providerData.apiKey ? maskApiKey(providerData.apiKey) : '',
           model: providerData.model || '',
           maxTokens: providerData.maxTokens || 1000,
           temperature: providerData.temperature ?? 0.7,
-          configured: !!providerData.apiKey
+          configured: !!providerData.apiKey,
+          // Markierung dass ein vollständiger Key in AWS gespeichert ist
+          hasFullKey: !!providerData.apiKey
         };
       }
     });
