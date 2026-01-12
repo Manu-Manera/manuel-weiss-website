@@ -1086,6 +1086,14 @@ Ihre Aufgaben:
     <div class="toast-container" id="toastContainer"></div>
 
     <!-- Scripts -->
+    <!-- PDF.js für OCR im Dashboard -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        if (typeof pdfjsLib !== 'undefined') {
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        }
+    </script>
+    
     <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
     <script src="../js/success-checkmark.js?v=20260112"></script>
     <script src="../js/unified-aws-auth.js?v=20260112"></script>
@@ -1093,7 +1101,7 @@ Ihre Aufgaben:
     <script src="../js/global-api-manager.js?v=20260112i"></script>
     <script src="../js/aws-api-settings.js?v=20260112i"></script>
     <script src="js/utils.js?v=20260112i"></script>
-    <script src="js/dashboard-core.js?v=20260112i"></script>
+    <script src="js/dashboard-core.js?v=20260112ocr"></script>
     <script src="js/quick-apply.js?v=20260112i"></script>
     
     <script>
@@ -1247,61 +1255,82 @@ Ihre Aufgaben:
                 }
             }
             
-            // Prevent dropdown from opening on hover or accidental clicks
+            // ROBUST: Dropdown nur bei echtem Benutzerklick öffnen
+            let lastUserInteraction = 0;
             let dropdownClickEnabled = true;
             
-            // Auth button click handler - only open on real user click
+            // Funktion zum Schließen des Dropdowns
+            function closeDropdown() {
+                if (userDropdown) {
+                    userDropdown.style.display = 'none';
+                }
+            }
+            
+            // WICHTIG: Bei Fensterwechsel, Blur, Visibility-Change immer schließen
+            window.addEventListener('blur', closeDropdown);
+            window.addEventListener('visibilitychange', () => {
+                if (document.hidden) closeDropdown();
+            });
+            document.addEventListener('visibilitychange', closeDropdown);
+            
+            // Auth button click handler - NUR bei echtem Mausklick
             authButton.addEventListener('click', (e) => {
+                // Sicherheitscheck: War es ein echter Benutzerklick?
+                const now = Date.now();
+                const timeSinceLastInteraction = now - lastUserInteraction;
+                
+                // Wenn keine kürzliche Benutzerinteraktion, ignorieren
+                if (timeSinceLastInteraction > 1000) {
+                    console.log('⚠️ Ignoriere Klick - keine kürzliche Benutzerinteraktion');
+                    return;
+                }
+                
                 e.preventDefault();
                 e.stopPropagation();
                 
-                // Prevent double clicks
+                // Debounce für Doppelklicks
                 if (!dropdownClickEnabled) return;
                 dropdownClickEnabled = false;
                 setTimeout(() => { dropdownClickEnabled = true; }, 300);
                 
-                console.log('🔘 Auth button clicked');
                 const isLoggedIn = window.awsAuth && window.awsAuth.isLoggedIn();
-                console.log('🔐 Is logged in:', isLoggedIn);
                 
                 if (isLoggedIn) {
-                    // Toggle dropdown only on explicit click
                     if (userDropdown) {
                         const isHidden = userDropdown.style.display === 'none' || !userDropdown.style.display;
                         userDropdown.style.display = isHidden ? 'block' : 'none';
-                        console.log('📋 Dropdown toggled to:', userDropdown.style.display);
                     }
                 } else {
-                    // Show login modal
                     if (window.authModals) {
                         window.authModals.showLogin();
                     } else if (window.unifiedAuthModals) {
                         window.unifiedAuthModals.showLogin();
                     } else {
-                        console.error('Auth modals not available');
                         showToast('Auth-System wird geladen...', 'info');
                     }
                 }
             });
             
-            // Close dropdown when clicking outside - improved version
+            // Tracke echte Benutzerinteraktionen
+            ['mousedown', 'touchstart', 'keydown'].forEach(eventType => {
+                document.addEventListener(eventType, () => {
+                    lastUserInteraction = Date.now();
+                }, { passive: true });
+            });
+            
+            // Close dropdown when clicking outside
             document.addEventListener('click', (e) => {
                 if (!userDropdown) return;
-                
-                // Check if click is outside both button and dropdown
                 const clickedAuthButton = authButton.contains(e.target);
                 const clickedDropdown = userDropdown.contains(e.target);
-                
                 if (!clickedAuthButton && !clickedDropdown) {
-                    userDropdown.style.display = 'none';
+                    closeDropdown();
                 }
             });
             
-            // Close dropdown on escape key
+            // Close on escape
             document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape' && userDropdown) {
-                    userDropdown.style.display = 'none';
-                }
+                if (e.key === 'Escape') closeDropdown();
             });
             
             // Listen for auth state changes
