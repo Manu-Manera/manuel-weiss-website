@@ -436,34 +436,62 @@ export const handler = async (event) => {
     // API SETTINGS ENDPOINTS - Für globale API-Key Speicherung
     // ============================================================================
 
-    // GET /api-settings - API-Einstellungen laden
+    // GET /api-settings - GLOBALE API-Einstellungen laden (für alle User)
     if (httpMethod === 'GET' && route.includes('/api-settings')) {
-      const user = authUser(event);
-      const settings = await getApiSettings(user.userId);
+      const user = authUser(event); // Nur zur Authentifizierung
+      const settings = await getApiSettings('global'); // Immer global laden
       return json(200, settings, hdr);
     }
 
-    // PUT /api-settings - API-Einstellungen speichern
+    // PUT /api-settings - GLOBALE API-Einstellungen speichern (nur durch eingeloggte User)
     if (httpMethod === 'PUT' && route.includes('/api-settings')) {
       const user = authUser(event);
       const body = JSON.parse(event.body || '{}');
-      const result = await saveApiSettings(user.userId, body);
+      const result = await saveApiSettings('global', body, user.userId); // Global speichern, User für Audit
       return json(200, result, hdr);
     }
 
-    // DELETE /api-settings - API-Einstellungen löschen
+    // DELETE /api-settings - GLOBALE API-Einstellungen löschen
     if (httpMethod === 'DELETE' && route.includes('/api-settings')) {
       const user = authUser(event);
-      await deleteApiSettings(user.userId);
+      await deleteApiSettings('global');
       return json(200, { message: 'API settings deleted successfully' }, hdr);
     }
 
-    // POST /api-settings/test - API-Key testen
+    // POST /api-settings/test - API-Key testen (verwendet globale Settings)
     if (httpMethod === 'POST' && route.includes('/api-settings/test')) {
       const user = authUser(event);
       const body = JSON.parse(event.body || '{}');
-      const result = await testApiKey(user.userId, body.provider);
+      const result = await testApiKey('global', body.provider); // Global testen
       return json(200, result, hdr);
+    }
+
+    // GET /api-settings/key - Vollständigen API-Key für KI-Generierung laden
+    // ACHTUNG: Dieser Endpoint gibt den echten Key zurück! Nur für eingeloggte User.
+    if (httpMethod === 'GET' && route.includes('/api-settings/key')) {
+      const user = authUser(event); // Authentifizierung erforderlich
+      const queryParams = event.queryStringParameters || {};
+      const provider = queryParams.provider || 'openai';
+      
+      const keyData = await getFullApiKey(provider);
+      
+      if (!keyData) {
+        return json(404, { 
+          error: 'API Key not configured', 
+          message: `Kein ${provider} API-Key konfiguriert. Bitte im Admin Panel einrichten.`,
+          isGlobal: true 
+        }, hdr);
+      }
+      
+      // Vollständigen Key zurückgeben (NUR für eingeloggte User!)
+      return json(200, {
+        provider,
+        apiKey: keyData.apiKey,
+        model: keyData.model,
+        maxTokens: keyData.maxTokens,
+        temperature: keyData.temperature,
+        isGlobal: true
+      }, hdr);
     }
 
     return json(404, { message: 'not found', route, method: httpMethod }, hdr);
@@ -2175,23 +2203,25 @@ function calculateJournalStats(entries) {
 // ============================================================================
 
 /**
- * API-Einstellungen laden
- * Verwendet userId als Primary Key (ohne pk/sk Schema)
+ * GLOBALE API-Einstellungen laden
+ * Diese Settings sind für ALLE eingeloggten User verfügbar
+ * @param {string} settingsId - Sollte immer 'global' sein für globale Settings
  */
-async function getApiSettings(userId) {
+async function getApiSettings(settingsId = 'global') {
   try {
-    // API Settings werden unter einer speziellen userId gespeichert: api-settings#{userId}
-    const apiSettingsId = `api-settings#${userId}`;
+    // GLOBAL: Alle API Settings werden unter api-settings#global gespeichert
+    const apiSettingsKey = `api-settings#${settingsId}`;
     
     const result = await getDynamoDB().send(new GetItemCommand({
       TableName: process.env.TABLE || process.env.PROFILE_TABLE || 'mawps-user-profiles',
       Key: {
-        userId: { S: apiSettingsId }
+        userId: { S: apiSettingsKey }
       }
     }));
     
     if (!result.Item) {
-      return { hasSettings: false, settings: {} };
+      console.log('ℹ️ Keine globalen API-Settings gefunden');
+      return { hasSettings: false, settings: {}, isGlobal: true };
     }
     
     // API-Keys zurückgeben (maskiert für Anzeige, vollständig für Speicherung)
@@ -2215,15 +2245,19 @@ async function getApiSettings(userId) {
       }
     });
     
+    console.log('✅ Globale API-Settings geladen, Provider:', Object.keys(settings));
+    
     return {
       hasSettings: Object.keys(settings).length > 0,
       settings,
       preferredProvider: result.Item.preferredProvider?.S || 'openai',
-      updatedAt: result.Item.updatedAt?.S || null
+      updatedAt: result.Item.updatedAt?.S || null,
+      isGlobal: true,
+      lastModifiedBy: result.Item.lastModifiedBy?.S || null
     };
   } catch (error) {
     console.error('Error loading API settings:', error);
-    return { hasSettings: false, settings: {}, error: error.message };
+    return { hasSettings: false, settings: {}, error: error.message, isGlobal: true };
   }
 }
 
@@ -2236,20 +2270,28 @@ function maskApiKey(key) {
 }
 
 /**
- * API-Einstellungen speichern
- * Verwendet userId als Primary Key (ohne pk/sk Schema)
+ * GLOBALE API-Einstellungen speichern
+ * Diese Settings sind für ALLE eingeloggten User verfügbar
+ * @param {string} settingsId - Sollte immer 'global' sein für globale Settings
+ * @param {object} settings - Die zu speichernden Einstellungen
+ * @param {string} modifiedByUserId - Optional: User der die Änderung vornimmt (für Audit)
  */
-async function saveApiSettings(userId, settings) {
+async function saveApiSettings(settingsId = 'global', settings, modifiedByUserId = null) {
   try {
-    // API Settings werden unter einer speziellen userId gespeichert: api-settings#{userId}
-    const apiSettingsId = `api-settings#${userId}`;
+    // GLOBAL: Alle API Settings werden unter api-settings#global gespeichert
+    const apiSettingsKey = `api-settings#${settingsId}`;
     
     const item = {
-      userId: { S: apiSettingsId },
-      originalUserId: { S: userId },
+      userId: { S: apiSettingsKey },
       updatedAt: { S: new Date().toISOString() },
-      type: { S: 'api-settings' }
+      type: { S: 'api-settings' },
+      isGlobal: { BOOL: true }
     };
+    
+    // Audit: Wer hat die Einstellungen zuletzt geändert?
+    if (modifiedByUserId) {
+      item.lastModifiedBy = { S: modifiedByUserId };
+    }
     
     // Provider-spezifische Einstellungen speichern
     const providers = ['openai', 'anthropic', 'google'];
@@ -2274,8 +2316,8 @@ async function saveApiSettings(userId, settings) {
       Item: item
     }));
     
-    console.log('✅ API settings saved for user:', userId);
-    return { success: true, message: 'API settings saved successfully' };
+    console.log('✅ Globale API-Settings gespeichert von User:', modifiedByUserId || 'unknown');
+    return { success: true, message: 'Globale API-Einstellungen gespeichert', isGlobal: true };
   } catch (error) {
     console.error('Error saving API settings:', error);
     throw error;
@@ -2283,22 +2325,23 @@ async function saveApiSettings(userId, settings) {
 }
 
 /**
- * API-Einstellungen löschen
+ * GLOBALE API-Einstellungen löschen
+ * @param {string} settingsId - Sollte immer 'global' sein für globale Settings
  */
-async function deleteApiSettings(userId) {
+async function deleteApiSettings(settingsId = 'global') {
   try {
-    // API Settings werden unter einer speziellen userId gespeichert: api-settings#{userId}
-    const apiSettingsId = `api-settings#${userId}`;
+    // GLOBAL: Alle API Settings werden unter api-settings#global gespeichert
+    const apiSettingsKey = `api-settings#${settingsId}`;
     
     await getDynamoDB().send(new DeleteItemCommand({
       TableName: process.env.TABLE || process.env.PROFILE_TABLE || 'mawps-user-profiles',
       Key: {
-        userId: { S: apiSettingsId }
+        userId: { S: apiSettingsKey }
       }
     }));
     
-    console.log('✅ API settings deleted for user:', userId);
-    return { success: true };
+    console.log('✅ Globale API-Settings gelöscht');
+    return { success: true, isGlobal: true };
   } catch (error) {
     console.error('Error deleting API settings:', error);
     throw error;
@@ -2306,16 +2349,60 @@ async function deleteApiSettings(userId) {
 }
 
 /**
- * API-Key testen (einfacher Format-Test)
+ * VOLLSTÄNDIGEN API-Key aus DynamoDB laden (INTERN - nur für Server-seitige Operationen)
+ * WICHTIG: Diese Funktion gibt den echten, unverschlüsselten Key zurück!
+ * @param {string} provider - 'openai', 'anthropic', oder 'google'
+ * @returns {object} - { apiKey, model, maxTokens, temperature } oder null
  */
-async function testApiKey(userId, provider = 'openai') {
-  const settings = await getApiSettings(userId);
+async function getFullApiKey(provider = 'openai') {
+  try {
+    const apiSettingsKey = 'api-settings#global';
+    
+    const result = await getDynamoDB().send(new GetItemCommand({
+      TableName: process.env.TABLE || process.env.PROFILE_TABLE || 'mawps-user-profiles',
+      Key: {
+        userId: { S: apiSettingsKey }
+      }
+    }));
+    
+    if (!result.Item || !result.Item[provider]) {
+      console.log(`ℹ️ Kein API-Key für ${provider} konfiguriert`);
+      return null;
+    }
+    
+    const providerData = JSON.parse(result.Item[provider].S || '{}');
+    
+    if (!providerData.apiKey) {
+      return null;
+    }
+    
+    console.log(`✅ Vollständiger ${provider} API-Key aus globalen Settings geladen`);
+    
+    return {
+      apiKey: providerData.apiKey, // VOLLSTÄNDIGER KEY!
+      model: providerData.model || 'gpt-4o-mini',
+      maxTokens: providerData.maxTokens || 1000,
+      temperature: providerData.temperature ?? 0.7
+    };
+  } catch (error) {
+    console.error(`Error loading full API key for ${provider}:`, error);
+    return null;
+  }
+}
+
+/**
+ * API-Key testen (einfacher Format-Test)
+ * Verwendet jetzt globale Settings
+ */
+async function testApiKey(settingsId = 'global', provider = 'openai') {
+  // Lade den vollständigen Key für den Test
+  const keyData = await getFullApiKey(provider);
   
-  if (!settings.hasSettings || !settings.settings[provider]?.apiKey) {
+  if (!keyData || !keyData.apiKey) {
     return { success: false, error: `Kein API-Key für ${provider} konfiguriert` };
   }
   
-  const apiKey = settings.settings[provider].apiKey;
+  const apiKey = keyData.apiKey;
   
   // Format-Validierung
   const patterns = {
@@ -2329,5 +2416,5 @@ async function testApiKey(userId, provider = 'openai') {
     return { success: false, error: 'Ungültiges API-Key Format' };
   }
   
-  return { success: true, message: `${provider} API-Key Format ist gültig` };
+  return { success: true, message: `${provider} API-Key Format ist gültig`, isGlobal: true };
 }
