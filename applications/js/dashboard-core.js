@@ -293,12 +293,11 @@ function showTab(tabId) {
         // Sync vom Profil zum Lebenslauf bei Tab-Wechsel
         if (typeof syncResumeToProfile === 'function') syncResumeToProfile();
     } else if (tabId === 'cover') {
-        // Anschreiben-Liste neu laden
-        if (typeof loadCoverLetters === 'function') {
-            loadCoverLetters();
-        } else if (window.loadCoverLetters) {
-            window.loadCoverLetters();
-        }
+        // Anschreiben-Liste laden
+        loadCoverLetters();
+    } else if (tabId === 'certificates') {
+        // Zeugnisse laden
+        loadCertificates();
     }
 }
 
@@ -850,7 +849,10 @@ const ResumeState = {
 };
 
 function initResumeTab() {
-    // Load saved resume data
+    // Load resumes list from cloud or localStorage
+    loadResumes();
+    
+    // Load saved resume data for quick form (falls noch vorhanden)
     loadResumeData();
     
     // Setup skills input
@@ -1605,6 +1607,362 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ═══════════════════════════════════════════════════════════════════════════
+// CLOUD DATA FUNCTIONS - Anschreiben, Lebensläufe, Zeugnisse
+// ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * Lädt Anschreiben aus Cloud oder localStorage
+ */
+async function loadCoverLetters() {
+    console.log('📄 Lade Anschreiben...');
+    const container = document.getElementById('coverLettersList');
+    const emptyState = document.getElementById('coverLettersEmpty');
+    
+    if (!container) {
+        console.warn('Cover letters container not found');
+        return;
+    }
+    
+    try {
+        let coverLetters = [];
+        
+        // Versuche Cloud-Service zu nutzen
+        if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
+            coverLetters = await window.cloudDataService.getCoverLetters();
+        } else {
+            // Fallback: localStorage
+            const local = localStorage.getItem('cover_letter_drafts');
+            coverLetters = local ? JSON.parse(local) : [];
+        }
+        
+        if (coverLetters.length === 0) {
+            container.innerHTML = '';
+            if (emptyState) emptyState.style.display = 'flex';
+            return;
+        }
+        
+        if (emptyState) emptyState.style.display = 'none';
+        
+        container.innerHTML = coverLetters.map((cl, index) => {
+            const date = new Date(cl.createdAt).toLocaleDateString('de-DE');
+            const company = cl.jobData?.company || 'Unbekanntes Unternehmen';
+            const position = cl.jobData?.title || cl.jobData?.position || 'Position';
+            const preview = cl.content?.substring(0, 150) + '...' || '';
+            
+            return `
+                <div class="cover-letter-item" data-id="${cl.id}">
+                    <div class="cover-letter-info">
+                        <h4>${position}</h4>
+                        <p class="company">${company}</p>
+                        <p class="date">${date}</p>
+                        <p class="preview">${preview}</p>
+                    </div>
+                    <div class="cover-letter-actions">
+                        <button onclick="viewCoverLetter('${cl.id}')" class="btn-icon" title="Ansehen">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button onclick="copyCoverLetter('${cl.id}')" class="btn-icon" title="Kopieren">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                        <button onclick="downloadCoverLetter('${cl.id}')" class="btn-icon" title="Herunterladen">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        <button onclick="deleteCoverLetter('${cl.id}')" class="btn-icon btn-danger" title="Löschen">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+        
+        console.log(`✅ ${coverLetters.length} Anschreiben geladen`);
+        
+    } catch (error) {
+        console.error('Fehler beim Laden der Anschreiben:', error);
+    }
+}
+
+/**
+ * Lädt Lebensläufe aus Cloud oder localStorage
+ */
+async function loadResumes() {
+    console.log('📄 Lade Lebensläufe...');
+    const container = document.getElementById('resumeList');
+    const emptyState = document.getElementById('resumeEmpty');
+    
+    if (!container) {
+        console.warn('Resume list container not found');
+        return;
+    }
+    
+    try {
+        let resumes = [];
+        
+        // Versuche Cloud-Service zu nutzen
+        if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
+            resumes = await window.cloudDataService.getResumes();
+        } else {
+            // Fallback: localStorage
+            const local = localStorage.getItem('user_resumes');
+            resumes = local ? JSON.parse(local) : [];
+        }
+        
+        if (resumes.length === 0) {
+            container.innerHTML = '';
+            if (emptyState) emptyState.style.display = 'flex';
+            return;
+        }
+        
+        if (emptyState) emptyState.style.display = 'none';
+        
+        container.innerHTML = resumes.map((resume) => {
+            const date = new Date(resume.createdAt || resume.updatedAt || Date.now()).toLocaleDateString('de-DE');
+            const name = resume.personalInfo?.firstName && resume.personalInfo?.lastName 
+                ? `${resume.personalInfo.firstName} ${resume.personalInfo.lastName}` 
+                : resume.name || 'Unbenannter Lebenslauf';
+            const title = resume.personalInfo?.title || resume.title || '';
+            
+            return `
+                <div class="resume-item" data-id="${resume.id}">
+                    <div class="resume-info">
+                        <h4>${name}</h4>
+                        <p class="title">${title}</p>
+                        <p class="date">Erstellt: ${date}</p>
+                    </div>
+                    <div class="resume-actions">
+                        <button onclick="viewResume('${resume.id}')" class="btn-icon" title="Ansehen">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <a href="resume-editor.html?id=${resume.id}" class="btn-icon" title="Bearbeiten">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <button onclick="downloadResumePDF('${resume.id}')" class="btn-icon" title="PDF Herunterladen">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        <button onclick="deleteResume('${resume.id}')" class="btn-icon btn-danger" title="Löschen">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+        
+        console.log(`✅ ${resumes.length} Lebensläufe geladen`);
+        
+    } catch (error) {
+        console.error('Fehler beim Laden der Lebensläufe:', error);
+    }
+}
+
+/**
+ * Lädt Zeugnisse/Dokumente aus Cloud oder localStorage
+ */
+async function loadCertificates() {
+    console.log('📄 Lade Zeugnisse...');
+    const container = document.getElementById('certificatesList');
+    const emptyState = document.getElementById('certificatesEmpty');
+    
+    if (!container) {
+        console.warn('Certificates container not found');
+        return;
+    }
+    
+    try {
+        let documents = [];
+        
+        // Versuche Cloud-Service zu nutzen
+        if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
+            documents = await window.cloudDataService.getDocuments();
+        } else {
+            // Fallback: localStorage
+            const local = localStorage.getItem('user_certificates');
+            documents = local ? JSON.parse(local) : [];
+        }
+        
+        if (documents.length === 0) {
+            container.innerHTML = '';
+            if (emptyState) emptyState.style.display = 'flex';
+            return;
+        }
+        
+        if (emptyState) emptyState.style.display = 'none';
+        
+        container.innerHTML = documents.map((doc) => {
+            const date = new Date(doc.createdAt || doc.uploadedAt || Date.now()).toLocaleDateString('de-DE');
+            const icon = doc.type === 'certificate' ? 'fa-certificate' 
+                : doc.type === 'cv' ? 'fa-file-alt' 
+                : 'fa-file-pdf';
+            
+            return `
+                <div class="certificate-item" data-id="${doc.id}">
+                    <div class="certificate-icon">
+                        <i class="fas ${icon}"></i>
+                    </div>
+                    <div class="certificate-info">
+                        <h4>${doc.name || doc.fileName || 'Dokument'}</h4>
+                        <p class="type">${doc.category || doc.type || 'Sonstiges'}</p>
+                        <p class="date">${date}</p>
+                    </div>
+                    <div class="certificate-actions">
+                        <button onclick="viewDocument('${doc.id}')" class="btn-icon" title="Ansehen">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button onclick="downloadDocument('${doc.id}')" class="btn-icon" title="Herunterladen">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        <button onclick="deleteDocument('${doc.id}')" class="btn-icon btn-danger" title="Löschen">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+        
+        console.log(`✅ ${documents.length} Dokumente geladen`);
+        
+    } catch (error) {
+        console.error('Fehler beim Laden der Dokumente:', error);
+    }
+}
+
+// Cover Letter Actions
+async function viewCoverLetter(id) {
+    let coverLetters = [];
+    if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
+        coverLetters = await window.cloudDataService.getCoverLetters();
+    } else {
+        coverLetters = JSON.parse(localStorage.getItem('cover_letter_drafts') || '[]');
+    }
+    
+    const cl = coverLetters.find(c => c.id === id);
+    if (cl) {
+        const modal = document.getElementById('viewCoverLetterModal');
+        if (modal) {
+            document.getElementById('viewCoverLetterContent').textContent = cl.content;
+            modal.style.display = 'flex';
+        } else {
+            alert(cl.content);
+        }
+    }
+}
+
+async function copyCoverLetter(id) {
+    let coverLetters = [];
+    if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
+        coverLetters = await window.cloudDataService.getCoverLetters();
+    } else {
+        coverLetters = JSON.parse(localStorage.getItem('cover_letter_drafts') || '[]');
+    }
+    
+    const cl = coverLetters.find(c => c.id === id);
+    if (cl) {
+        await navigator.clipboard.writeText(cl.content);
+        showToast('Anschreiben in Zwischenablage kopiert', 'success');
+    }
+}
+
+function downloadCoverLetter(id) {
+    let coverLetters = JSON.parse(localStorage.getItem('cover_letter_drafts') || '[]');
+    const cl = coverLetters.find(c => c.id === id);
+    if (cl) {
+        const blob = new Blob([cl.content], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `anschreiben_${cl.jobData?.company || 'bewerbung'}.txt`;
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+}
+
+async function deleteCoverLetter(id) {
+    if (!confirm('Anschreiben wirklich löschen?')) return;
+    
+    if (window.cloudDataService) {
+        await window.cloudDataService.deleteCoverLetter(id);
+    } else {
+        let coverLetters = JSON.parse(localStorage.getItem('cover_letter_drafts') || '[]');
+        coverLetters = coverLetters.filter(c => c.id !== id);
+        localStorage.setItem('cover_letter_drafts', JSON.stringify(coverLetters));
+    }
+    
+    loadCoverLetters();
+    showToast('Anschreiben gelöscht', 'success');
+}
+
+// Resume Actions
+async function viewResume(id) {
+    window.location.href = `resume-editor.html?id=${id}&view=true`;
+}
+
+async function deleteResume(id) {
+    if (!confirm('Lebenslauf wirklich löschen?')) return;
+    
+    if (window.cloudDataService) {
+        await window.cloudDataService.deleteResume(id);
+    } else {
+        let resumes = JSON.parse(localStorage.getItem('user_resumes') || '[]');
+        resumes = resumes.filter(r => r.id !== id);
+        localStorage.setItem('user_resumes', JSON.stringify(resumes));
+    }
+    
+    loadResumes();
+    showToast('Lebenslauf gelöscht', 'success');
+}
+
+async function downloadResumePDF(id) {
+    // Redirect to editor with export action
+    window.location.href = `resume-editor.html?id=${id}&action=export`;
+}
+
+// Document Actions
+async function viewDocument(id) {
+    let documents = [];
+    if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
+        documents = await window.cloudDataService.getDocuments();
+    } else {
+        documents = JSON.parse(localStorage.getItem('user_certificates') || '[]');
+    }
+    
+    const doc = documents.find(d => d.id === id);
+    if (doc && doc.url) {
+        window.open(doc.url, '_blank');
+    }
+}
+
+async function downloadDocument(id) {
+    let documents = [];
+    if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
+        documents = await window.cloudDataService.getDocuments();
+    } else {
+        documents = JSON.parse(localStorage.getItem('user_certificates') || '[]');
+    }
+    
+    const doc = documents.find(d => d.id === id);
+    if (doc && doc.url) {
+        const a = document.createElement('a');
+        a.href = doc.url;
+        a.download = doc.name || 'dokument.pdf';
+        a.click();
+    }
+}
+
+async function deleteDocument(id) {
+    if (!confirm('Dokument wirklich löschen?')) return;
+    
+    if (window.cloudDataService) {
+        await window.cloudDataService.deleteDocument(id);
+    } else {
+        let documents = JSON.parse(localStorage.getItem('user_certificates') || '[]');
+        documents = documents.filter(d => d.id !== id);
+        localStorage.setItem('user_certificates', JSON.stringify(documents));
+    }
+    
+    loadCertificates();
+    showToast('Dokument gelöscht', 'success');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
 
 window.DashboardState = DashboardState;
 window.ResumeState = ResumeState;
@@ -1628,6 +1986,19 @@ window.importFromLinkedIn = importFromLinkedIn;
 window.initResumeTab = initResumeTab;
 window.syncResumeToProfile = syncResumeToProfile;
 window.syncProfileToResume = syncProfileToResume;
+window.loadCoverLetters = loadCoverLetters;
+window.loadResumes = loadResumes;
+window.loadCertificates = loadCertificates;
+window.viewCoverLetter = viewCoverLetter;
+window.copyCoverLetter = copyCoverLetter;
+window.downloadCoverLetter = downloadCoverLetter;
+window.deleteCoverLetter = deleteCoverLetter;
+window.viewResume = viewResume;
+window.deleteResume = deleteResume;
+window.downloadResumePDF = downloadResumePDF;
+window.viewDocument = viewDocument;
+window.downloadDocument = downloadDocument;
+window.deleteDocument = deleteDocument;
 
 // Export DashboardCore for external access
 window.DashboardCore = {
