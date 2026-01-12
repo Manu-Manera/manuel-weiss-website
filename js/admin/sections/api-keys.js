@@ -585,7 +585,7 @@ class ApiKeysSection {
      * Service testen
      */
     async testService(service) {
-        const apiKey = document.getElementById(`${service}-key`).value;
+        let apiKey = document.getElementById(`${service}-key`).value;
         if (!apiKey) {
             this.showMessage(service, 'Bitte API Key eingeben', 'error');
             return;
@@ -594,6 +594,32 @@ class ApiKeysSection {
         this.showMessage(service, 'Teste Verbindung...', 'info');
         
         try {
+            // Wenn der Key maskiert ist (enthält "..."), hole den echten Key aus AWS
+            if (apiKey.includes('...')) {
+                console.log(`🔑 Key ist maskiert, hole echten Key aus AWS für ${service}...`);
+                
+                // Versuche den echten Key vom Backend zu holen
+                if (window.awsAPISettings && window.awsAPISettings.isUserLoggedIn()) {
+                    try {
+                        const fullKeyResponse = await window.awsAPISettings.getFullApiKey(service);
+                        if (fullKeyResponse && fullKeyResponse.apiKey) {
+                            apiKey = fullKeyResponse.apiKey;
+                            console.log(`✅ Echter Key aus AWS geladen für ${service}`);
+                        } else {
+                            this.showMessage(service, 'Fehler: Konnte echten API Key nicht laden', 'error');
+                            return;
+                        }
+                    } catch (err) {
+                        console.error('Fehler beim Laden des echten Keys:', err);
+                        this.showMessage(service, 'Fehler: Konnte echten API Key nicht laden', 'error');
+                        return;
+                    }
+                } else {
+                    this.showMessage(service, 'Bitte neu einloggen um den Key zu testen', 'error');
+                    return;
+                }
+            }
+            
             let result;
             
             if (this.globalApiManager) {
