@@ -12,7 +12,8 @@ class CloudDataService {
             resumes: null,
             documents: null,
             coverLetters: null,
-            applications: null
+            applications: null,
+            photos: null
         };
         this.cacheExpiry = {};
         this.CACHE_DURATION = 5 * 60 * 1000; // 5 Minuten
@@ -444,6 +445,93 @@ class CloudDataService {
     }
 
     // ========================================
+    // BEWERBUNGSFOTOS
+    // ========================================
+    
+    /**
+     * Alle Fotos laden
+     */
+    async getPhotos(forceRefresh = false) {
+        if (!forceRefresh && this.cache.photos && this.cacheExpiry.photos > Date.now()) {
+            return this.cache.photos;
+        }
+
+        try {
+            const photos = await this.apiRequest('/photos');
+            if (photos) {
+                this.cache.photos = photos;
+                this.cacheExpiry.photos = Date.now() + this.CACHE_DURATION;
+                // Auch lokal speichern für Offline-Zugriff
+                localStorage.setItem('user_photos', JSON.stringify(photos));
+                console.log('✅ Fotos aus Cloud geladen:', photos.length);
+                return photos;
+            }
+        } catch (error) {
+            console.warn('Cloud-Laden fehlgeschlagen, verwende localStorage');
+        }
+        
+        const local = localStorage.getItem('user_photos');
+        return local ? JSON.parse(local) : [];
+    }
+
+    /**
+     * Foto speichern
+     */
+    async savePhoto(photoData) {
+        // Lokal speichern
+        let photos = JSON.parse(localStorage.getItem('user_photos') || '[]');
+        const existingIndex = photos.findIndex(p => p.id === photoData.id);
+        if (existingIndex >= 0) {
+            photos[existingIndex] = photoData;
+        } else {
+            photos.push(photoData);
+        }
+        localStorage.setItem('user_photos', JSON.stringify(photos));
+        
+        try {
+            const result = await this.apiRequest('/photos', 'POST', photoData);
+            if (result?.success) {
+                this.cache.photos = result.photos;
+                this.cacheExpiry.photos = Date.now() + this.CACHE_DURATION;
+                console.log('✅ Foto in Cloud gespeichert');
+                return result;
+            }
+        } catch (error) {
+            console.warn('Cloud-Speichern fehlgeschlagen:', error);
+        }
+        
+        return { success: true, local: true, photo: photoData };
+    }
+
+    /**
+     * Foto löschen
+     */
+    async deletePhoto(photoId) {
+        // Lokal löschen
+        let photos = JSON.parse(localStorage.getItem('user_photos') || '[]');
+        photos = photos.filter(p => p.id !== photoId);
+        localStorage.setItem('user_photos', JSON.stringify(photos));
+        
+        // Selection entfernen wenn das gelöschte Foto ausgewählt war
+        if (localStorage.getItem('selected_photo_id') === photoId) {
+            localStorage.removeItem('selected_photo_id');
+        }
+        
+        try {
+            const result = await this.apiRequest(`/photos?id=${photoId}`, 'DELETE');
+            if (result?.success) {
+                this.cache.photos = photos;
+                console.log('✅ Foto aus Cloud gelöscht');
+                return result;
+            }
+        } catch (error) {
+            console.warn('Cloud-Löschen fehlgeschlagen:', error);
+        }
+        
+        return { success: true, local: true };
+    }
+
+    // ========================================
     // SYNCHRONISATION
     // ========================================
     
@@ -504,6 +592,15 @@ class CloudDataService {
                 const apps = JSON.parse(localApps);
                 for (const app of apps) {
                     await this.saveApplication(app);
+                }
+            }
+            
+            // Fotos
+            const localPhotos = localStorage.getItem('user_photos');
+            if (localPhotos) {
+                const photos = JSON.parse(localPhotos);
+                for (const photo of photos) {
+                    await this.savePhoto(photo);
                 }
             }
             
@@ -589,7 +686,8 @@ class CloudDataService {
             resumes: null,
             documents: null,
             coverLetters: null,
-            applications: null
+            applications: null,
+            photos: null
         };
         this.cacheExpiry = {};
         console.log('🗑️ Cache geleert');

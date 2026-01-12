@@ -135,6 +135,11 @@ exports.handler = async (event) => {
             return await handleApplications(userId, httpMethod, event);
         }
         
+        // Route: /user-data/photos - Bewerbungsfotos
+        if (path.includes('/photos')) {
+            return await handlePhotos(userId, httpMethod, event);
+        }
+        
         // Route: /user-data - Alle Daten
         if (httpMethod === 'GET') {
             return await getAllUserData(userId);
@@ -621,6 +626,103 @@ async function handleApplications(userId, method, event) {
             sk: 'DATA',
             ...existingData,
             applications: filteredApps,
+            updatedAt: new Date().toISOString()
+        };
+        
+        await dynamoDB.send(new PutItemCommand({
+            TableName: TABLE_NAME,
+            Item: marshall(updatedData, { removeUndefinedValues: true })
+        }));
+        
+        return {
+            statusCode: 200,
+            headers: CORS_HEADERS,
+            body: JSON.stringify({ success: true })
+        };
+    }
+    
+    return { statusCode: 405, headers: CORS_HEADERS, body: JSON.stringify({ error: 'Method not allowed' }) };
+}
+
+/**
+ * Handle photos (application photos / Bewerbungsfotos)
+ */
+async function handlePhotos(userId, method, event) {
+    const existingResult = await dynamoDB.send(new GetItemCommand({
+        TableName: TABLE_NAME,
+        Key: marshall({ pk: `USER#${userId}`, sk: 'DATA' })
+    }));
+    
+    const existingData = existingResult.Item ? unmarshall(existingResult.Item) : {};
+    const photos = existingData.photos || [];
+    
+    if (method === 'GET') {
+        return {
+            statusCode: 200,
+            headers: CORS_HEADERS,
+            body: JSON.stringify(photos)
+        };
+    }
+    
+    if (method === 'POST') {
+        const body = JSON.parse(event.body || '{}');
+        const now = new Date().toISOString();
+        
+        const newPhoto = {
+            id: body.id || `photo_${Date.now()}`,
+            name: body.name,
+            type: body.type,
+            size: body.size,
+            dataUrl: body.dataUrl, // Base64 encoded image
+            createdAt: body.createdAt || now,
+            updatedAt: now
+        };
+        
+        // Check if updating existing photo
+        const existingIndex = photos.findIndex(p => p.id === newPhoto.id);
+        if (existingIndex >= 0) {
+            photos[existingIndex] = newPhoto;
+        } else {
+            photos.push(newPhoto);
+        }
+        
+        const updatedData = {
+            pk: `USER#${userId}`,
+            sk: 'DATA',
+            ...existingData,
+            photos,
+            updatedAt: now
+        };
+        
+        await dynamoDB.send(new PutItemCommand({
+            TableName: TABLE_NAME,
+            Item: marshall(updatedData, { removeUndefinedValues: true })
+        }));
+        
+        console.log('✅ Photo saved to AWS');
+        
+        return {
+            statusCode: 200,
+            headers: CORS_HEADERS,
+            body: JSON.stringify({ success: true, photo: newPhoto, photos })
+        };
+    }
+    
+    if (method === 'DELETE') {
+        const params = event.queryStringParameters || {};
+        const photoId = params.id;
+        
+        if (!photoId) {
+            return { statusCode: 400, headers: CORS_HEADERS, body: JSON.stringify({ error: 'Photo ID required' }) };
+        }
+        
+        const filteredPhotos = photos.filter(p => p.id !== photoId);
+        
+        const updatedData = {
+            pk: `USER#${userId}`,
+            sk: 'DATA',
+            ...existingData,
+            photos: filteredPhotos,
             updatedAt: new Date().toISOString()
         };
         
