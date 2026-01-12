@@ -295,9 +295,15 @@ function showTab(tabId) {
     } else if (tabId === 'cover') {
         // Anschreiben-Liste laden
         loadCoverLetters();
-    } else if (tabId === 'certificates') {
+    } else if (tabId === 'certificates' || tabId === 'documents') {
         // Zeugnisse laden
         loadCertificates();
+    } else if (tabId === 'photos') {
+        // Fotos-Tab initialisieren
+        initPhotosTab();
+    } else if (tabId === 'portfolio') {
+        // Bewerbungsmappe-Tab initialisieren
+        initPortfolioTab();
     }
 }
 
@@ -1999,6 +2005,592 @@ window.downloadResumePDF = downloadResumePDF;
 window.viewDocument = viewDocument;
 window.downloadDocument = downloadDocument;
 window.deleteDocument = deleteDocument;
+
+// ═══════════════════════════════════════════════════════════════════════════
+// BEWERBUNGSFOTOS - Photo Upload & Gallery
+// ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * Initialisiert den Fotos-Tab
+ */
+function initPhotosTab() {
+    console.log('📷 Initialisiere Fotos-Tab...');
+    
+    const dropzone = document.getElementById('photoDropzone');
+    const fileInput = document.getElementById('photoFileInput');
+    
+    if (dropzone) {
+        // Click to upload
+        dropzone.addEventListener('click', () => fileInput?.click());
+        
+        // Drag & Drop
+        dropzone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropzone.classList.add('dragover');
+        });
+        
+        dropzone.addEventListener('dragleave', () => {
+            dropzone.classList.remove('dragover');
+        });
+        
+        dropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropzone.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) handlePhotoUpload(files[0]);
+        });
+    }
+    
+    if (fileInput) {
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handlePhotoUpload(e.target.files[0]);
+            }
+        });
+    }
+    
+    loadPhotos();
+}
+
+/**
+ * Lädt Bewerbungsfotos aus Cloud oder localStorage
+ */
+async function loadPhotos() {
+    console.log('📷 Lade Bewerbungsfotos...');
+    const grid = document.getElementById('galleryGrid');
+    const emptyState = document.getElementById('galleryEmpty');
+    
+    if (!grid) return;
+    
+    try {
+        let photos = [];
+        
+        // Aus localStorage laden (später auch Cloud)
+        const local = localStorage.getItem('user_photos');
+        photos = local ? JSON.parse(local) : [];
+        
+        if (photos.length === 0) {
+            grid.innerHTML = '';
+            if (emptyState) emptyState.style.display = 'flex';
+            return;
+        }
+        
+        if (emptyState) emptyState.style.display = 'none';
+        
+        grid.innerHTML = photos.map((photo, index) => `
+            <div class="gallery-item" data-id="${photo.id}" onclick="selectPhoto('${photo.id}')">
+                <img src="${photo.dataUrl || photo.url}" alt="Bewerbungsfoto ${index + 1}">
+                <div class="photo-overlay">
+                    <button onclick="event.stopPropagation(); viewPhoto('${photo.id}')" title="Vergrößern">
+                        <i class="fas fa-search-plus"></i>
+                    </button>
+                    <button onclick="event.stopPropagation(); deletePhoto('${photo.id}')" class="btn-danger" title="Löschen">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        `).join('');
+        
+        // Markiere das ausgewählte Foto
+        const selectedId = localStorage.getItem('selected_photo_id');
+        if (selectedId) {
+            document.querySelector(`.gallery-item[data-id="${selectedId}"]`)?.classList.add('selected');
+        }
+        
+        console.log(`✅ ${photos.length} Fotos geladen`);
+        
+    } catch (error) {
+        console.error('Fehler beim Laden der Fotos:', error);
+    }
+}
+
+/**
+ * Verarbeitet den Foto-Upload
+ */
+async function handlePhotoUpload(file) {
+    if (!file) return;
+    
+    // Validierung
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+        showToast('Nur JPG, PNG oder WebP erlaubt', 'error');
+        return;
+    }
+    
+    if (file.size > 5 * 1024 * 1024) { // 5MB
+        showToast('Datei zu groß (max. 5MB)', 'error');
+        return;
+    }
+    
+    try {
+        showToast('Foto wird hochgeladen...', 'info');
+        
+        // Bild in Base64 konvertieren
+        const dataUrl = await readFileAsDataURL(file);
+        
+        // Foto speichern
+        const photo = {
+            id: `photo_${Date.now()}`,
+            name: file.name,
+            type: file.type,
+            size: file.size,
+            dataUrl: dataUrl,
+            createdAt: new Date().toISOString()
+        };
+        
+        // In localStorage speichern
+        let photos = JSON.parse(localStorage.getItem('user_photos') || '[]');
+        photos.unshift(photo);
+        localStorage.setItem('user_photos', JSON.stringify(photos));
+        
+        // Cloud-Sync (wenn verfügbar)
+        if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
+            // TODO: S3-Upload für Fotos implementieren
+        }
+        
+        showToast('Foto erfolgreich hochgeladen!', 'success');
+        loadPhotos();
+        
+    } catch (error) {
+        console.error('Fehler beim Foto-Upload:', error);
+        showToast('Fehler beim Hochladen', 'error');
+    }
+}
+
+function readFileAsDataURL(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+
+function selectPhoto(id) {
+    // Entferne alle Selections
+    document.querySelectorAll('.gallery-item').forEach(item => {
+        item.classList.remove('selected');
+    });
+    
+    // Markiere ausgewähltes Foto
+    document.querySelector(`.gallery-item[data-id="${id}"]`)?.classList.add('selected');
+    localStorage.setItem('selected_photo_id', id);
+    
+    showToast('Foto ausgewählt für Bewerbungsmappe', 'success');
+}
+
+function viewPhoto(id) {
+    const photos = JSON.parse(localStorage.getItem('user_photos') || '[]');
+    const photo = photos.find(p => p.id === id);
+    if (photo) {
+        window.open(photo.dataUrl || photo.url, '_blank');
+    }
+}
+
+function deletePhoto(id) {
+    if (!confirm('Foto wirklich löschen?')) return;
+    
+    let photos = JSON.parse(localStorage.getItem('user_photos') || '[]');
+    photos = photos.filter(p => p.id !== id);
+    localStorage.setItem('user_photos', JSON.stringify(photos));
+    
+    // Selection entfernen wenn das gelöschte Foto ausgewählt war
+    if (localStorage.getItem('selected_photo_id') === id) {
+        localStorage.removeItem('selected_photo_id');
+    }
+    
+    loadPhotos();
+    showToast('Foto gelöscht', 'success');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// BEWERBUNGSMAPPE - Portfolio Builder
+// ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * Initialisiert den Bewerbungsmappe-Tab
+ */
+function initPortfolioTab() {
+    console.log('📁 Initialisiere Bewerbungsmappe-Tab...');
+    
+    // Lade verfügbare Dokumente in die Dropdowns
+    loadPortfolioOptions();
+    
+    // Template-Auswahl
+    document.querySelectorAll('.template-card').forEach(card => {
+        card.addEventListener('click', () => {
+            document.querySelectorAll('.template-card').forEach(c => c.classList.remove('active'));
+            card.classList.add('active');
+            localStorage.setItem('portfolio_template', card.dataset.template);
+        });
+    });
+    
+    // Toggle-Checkboxen
+    document.querySelectorAll('.selector-toggle input').forEach(toggle => {
+        toggle.addEventListener('change', (e) => {
+            const selector = e.target.closest('.document-selector');
+            const dropdown = selector.querySelector('.document-dropdown, .multi-select');
+            if (dropdown) {
+                dropdown.style.opacity = e.target.checked ? '1' : '0.5';
+                dropdown.style.pointerEvents = e.target.checked ? 'auto' : 'none';
+            }
+        });
+    });
+}
+
+/**
+ * Lädt verfügbare Dokumente für die Auswahlmenüs
+ */
+async function loadPortfolioOptions() {
+    // Anschreiben laden
+    let coverLetters = [];
+    if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
+        coverLetters = await window.cloudDataService.getCoverLetters();
+    } else {
+        coverLetters = JSON.parse(localStorage.getItem('cover_letter_drafts') || '[]');
+    }
+    
+    const coverSelect = document.getElementById('selectCoverLetter');
+    if (coverSelect) {
+        coverSelect.innerHTML = '<option value="">-- Anschreiben wählen --</option>' +
+            coverLetters.map(cl => `<option value="${cl.id}">${cl.jobData?.title || cl.jobData?.company || 'Anschreiben'} (${new Date(cl.createdAt).toLocaleDateString('de-DE')})</option>`).join('');
+    }
+    
+    // Lebensläufe laden
+    let resumes = [];
+    if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
+        resumes = await window.cloudDataService.getResumes();
+    } else {
+        resumes = JSON.parse(localStorage.getItem('user_resumes') || '[]');
+    }
+    
+    const resumeSelect = document.getElementById('selectResume');
+    if (resumeSelect) {
+        resumeSelect.innerHTML = '<option value="">-- Lebenslauf wählen --</option>' +
+            resumes.map(r => `<option value="${r.id}">${r.personalInfo?.firstName || ''} ${r.personalInfo?.lastName || 'Lebenslauf'}</option>`).join('');
+    }
+    
+    // Fotos laden
+    const photos = JSON.parse(localStorage.getItem('user_photos') || '[]');
+    const photoSelect = document.getElementById('selectPhoto');
+    if (photoSelect) {
+        photoSelect.innerHTML = '<option value="">-- Foto wählen --</option>' +
+            photos.map((p, i) => `<option value="${p.id}">Foto ${i + 1} (${new Date(p.createdAt).toLocaleDateString('de-DE')})</option>`).join('');
+        
+        // Automatisch das ausgewählte Foto vorauswählen
+        const selectedId = localStorage.getItem('selected_photo_id');
+        if (selectedId) {
+            photoSelect.value = selectedId;
+        }
+    }
+    
+    // Zeugnisse laden
+    let documents = [];
+    if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
+        documents = await window.cloudDataService.getDocuments();
+    } else {
+        documents = JSON.parse(localStorage.getItem('user_certificates') || '[]');
+    }
+    
+    const certList = document.getElementById('certificatesList');
+    if (certList) {
+        if (documents.length === 0) {
+            certList.innerHTML = '<p style="color: var(--text-muted); font-size: 0.9rem;">Keine Zeugnisse vorhanden</p>';
+        } else {
+            certList.innerHTML = documents.map(doc => `
+                <label class="multi-select-item">
+                    <input type="checkbox" value="${doc.id}" name="certificate">
+                    ${doc.name || doc.fileName || 'Dokument'}
+                </label>
+            `).join('');
+        }
+    }
+}
+
+/**
+ * Zeigt Vorschau der Bewerbungsmappe
+ */
+async function previewPortfolio() {
+    const previewContainer = document.getElementById('portfolioPreview');
+    if (!previewContainer) return;
+    
+    showToast('Erstelle Vorschau...', 'info');
+    
+    const settings = getPortfolioSettings();
+    
+    // Sammle alle Daten
+    const data = await collectPortfolioData(settings);
+    
+    // Template und Farbe
+    const template = localStorage.getItem('portfolio_template') || 'classic';
+    const accentColor = document.getElementById('accentColor')?.value || '#2563eb';
+    const fontFamily = document.getElementById('fontFamily')?.value || 'Inter';
+    
+    // Generiere HTML-Vorschau
+    const html = generatePortfolioHTML(data, template, accentColor, fontFamily);
+    
+    previewContainer.innerHTML = `
+        <div class="preview-document" style="font-family: ${fontFamily}, sans-serif;">
+            ${html}
+        </div>
+    `;
+    
+    showToast('Vorschau erstellt', 'success');
+}
+
+function getPortfolioSettings() {
+    return {
+        includeCoverLetter: document.getElementById('includeCoverLetter')?.checked,
+        includeResume: document.getElementById('includeResume')?.checked,
+        includePhoto: document.getElementById('includePhoto')?.checked,
+        includeCertificates: document.getElementById('includeCertificates')?.checked,
+        coverLetterId: document.getElementById('selectCoverLetter')?.value,
+        resumeId: document.getElementById('selectResume')?.value,
+        photoId: document.getElementById('selectPhoto')?.value,
+        certificateIds: Array.from(document.querySelectorAll('input[name="certificate"]:checked')).map(cb => cb.value)
+    };
+}
+
+async function collectPortfolioData(settings) {
+    const data = {
+        coverLetter: null,
+        resume: null,
+        photo: null,
+        certificates: []
+    };
+    
+    // Anschreiben
+    if (settings.includeCoverLetter && settings.coverLetterId) {
+        const coverLetters = JSON.parse(localStorage.getItem('cover_letter_drafts') || '[]');
+        data.coverLetter = coverLetters.find(cl => cl.id === settings.coverLetterId);
+    }
+    
+    // Lebenslauf
+    if (settings.includeResume && settings.resumeId) {
+        const resumes = JSON.parse(localStorage.getItem('user_resumes') || '[]');
+        data.resume = resumes.find(r => r.id === settings.resumeId);
+    }
+    
+    // Foto
+    if (settings.includePhoto && settings.photoId) {
+        const photos = JSON.parse(localStorage.getItem('user_photos') || '[]');
+        data.photo = photos.find(p => p.id === settings.photoId);
+    }
+    
+    // Zeugnisse
+    if (settings.includeCertificates && settings.certificateIds.length > 0) {
+        const documents = JSON.parse(localStorage.getItem('user_certificates') || '[]');
+        data.certificates = documents.filter(d => settings.certificateIds.includes(d.id));
+    }
+    
+    return data;
+}
+
+function generatePortfolioHTML(data, template, accentColor, fontFamily) {
+    let html = '';
+    
+    // Anschreiben-Seite
+    if (data.coverLetter) {
+        html += `
+            <div class="preview-page" style="border-bottom: 1px dashed #ccc;">
+                <h3 style="color: ${accentColor}; margin-bottom: 1rem;">Anschreiben</h3>
+                <div style="white-space: pre-wrap; font-size: 0.9rem; line-height: 1.6;">
+                    ${data.coverLetter.content || ''}
+                </div>
+            </div>
+        `;
+    }
+    
+    // Lebenslauf-Seite
+    if (data.resume) {
+        const resumeHTML = generateResumePreview(data.resume, data.photo, template, accentColor);
+        html += `
+            <div class="preview-page" style="border-bottom: 1px dashed #ccc;">
+                ${resumeHTML}
+            </div>
+        `;
+    }
+    
+    // Zeugnisse-Info
+    if (data.certificates.length > 0) {
+        html += `
+            <div class="preview-page">
+                <h3 style="color: ${accentColor}; margin-bottom: 1rem;">Anlagen</h3>
+                <ul style="padding-left: 1.5rem;">
+                    ${data.certificates.map(c => `<li>${c.name || c.fileName || 'Dokument'}</li>`).join('')}
+                </ul>
+                <p style="color: #666; font-size: 0.85rem; margin-top: 1rem;">
+                    Die Zeugnisse werden dem PDF angehängt.
+                </p>
+            </div>
+        `;
+    }
+    
+    if (!html) {
+        html = '<div class="preview-page" style="text-align: center; padding: 3rem;"><p>Bitte wählen Sie mindestens ein Dokument aus.</p></div>';
+    }
+    
+    return html;
+}
+
+function generateResumePreview(resume, photo, template, accentColor) {
+    const personal = resume.personalInfo || {};
+    const name = `${personal.firstName || ''} ${personal.lastName || ''}`.trim() || 'Ihr Name';
+    
+    let photoHTML = '';
+    if (photo) {
+        const photoStyle = template === 'creative' ? 'border-radius: 50%;' : 'border-radius: 8px;';
+        photoHTML = `<img src="${photo.dataUrl || photo.url}" alt="Bewerbungsfoto" style="width: 100px; height: 130px; object-fit: cover; ${photoStyle}">`;
+    }
+    
+    return `
+        <div style="display: flex; gap: 1.5rem; margin-bottom: 1.5rem;">
+            ${photoHTML}
+            <div>
+                <h2 style="color: ${accentColor}; margin-bottom: 0.5rem;">${name}</h2>
+                <p style="color: #666;">${personal.title || ''}</p>
+                <p style="color: #888; font-size: 0.85rem;">${personal.email || ''}</p>
+                <p style="color: #888; font-size: 0.85rem;">${personal.phone || ''}</p>
+            </div>
+        </div>
+        ${personal.summary ? `<div style="margin-bottom: 1rem;"><strong style="color: ${accentColor};">Profil</strong><p style="font-size: 0.9rem;">${personal.summary}</p></div>` : ''}
+        <p style="color: #999; font-size: 0.8rem; text-align: center; margin-top: 2rem;">
+            Vollständiger Lebenslauf wird im PDF generiert...
+        </p>
+    `;
+}
+
+/**
+ * Generiert das komplette Bewerbungsmappe-PDF
+ */
+async function generatePortfolioPDF() {
+    showToast('PDF wird erstellt...', 'info');
+    
+    const settings = getPortfolioSettings();
+    const data = await collectPortfolioData(settings);
+    
+    // Template und Farbe
+    const accentColor = document.getElementById('accentColor')?.value || '#2563eb';
+    const fontFamily = document.getElementById('fontFamily')?.value || 'Inter';
+    
+    // Prüfe ob html2pdf verfügbar ist
+    if (typeof html2pdf === 'undefined') {
+        // Lade html2pdf dynamisch
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+        script.onload = () => createPortfolioPDF(data, accentColor, fontFamily);
+        document.head.appendChild(script);
+    } else {
+        createPortfolioPDF(data, accentColor, fontFamily);
+    }
+}
+
+function createPortfolioPDF(data, accentColor, fontFamily) {
+    // Erstelle HTML-Dokument für PDF
+    const container = document.createElement('div');
+    container.style.fontFamily = `${fontFamily}, sans-serif`;
+    container.style.padding = '20px';
+    container.style.background = 'white';
+    
+    // Anschreiben
+    if (data.coverLetter) {
+        const page = document.createElement('div');
+        page.style.pageBreakAfter = 'always';
+        page.innerHTML = `
+            <div style="white-space: pre-wrap; font-size: 12pt; line-height: 1.6;">
+                ${data.coverLetter.content || ''}
+            </div>
+        `;
+        container.appendChild(page);
+    }
+    
+    // Lebenslauf
+    if (data.resume) {
+        const page = document.createElement('div');
+        page.style.pageBreakAfter = 'always';
+        
+        const personal = data.resume.personalInfo || {};
+        const name = `${personal.firstName || ''} ${personal.lastName || ''}`.trim();
+        
+        let photoHTML = '';
+        if (data.photo) {
+            photoHTML = `<img src="${data.photo.dataUrl || data.photo.url}" style="width: 100px; height: 130px; object-fit: cover; border-radius: 8px; float: right; margin-left: 20px;">`;
+        }
+        
+        page.innerHTML = `
+            ${photoHTML}
+            <h1 style="color: ${accentColor}; margin-bottom: 5px;">${name}</h1>
+            <p style="color: #666; margin-bottom: 20px;">${personal.title || ''}</p>
+            
+            <table style="margin-bottom: 20px;">
+                <tr><td style="color: #888; padding-right: 20px;">E-Mail:</td><td>${personal.email || ''}</td></tr>
+                <tr><td style="color: #888; padding-right: 20px;">Telefon:</td><td>${personal.phone || ''}</td></tr>
+                <tr><td style="color: #888; padding-right: 20px;">Adresse:</td><td>${personal.address || personal.location || ''}</td></tr>
+            </table>
+            
+            ${personal.summary ? `<div style="margin-bottom: 20px; clear: both;"><h3 style="color: ${accentColor};">Profil</h3><p>${personal.summary}</p></div>` : ''}
+            
+            ${data.resume.experience?.length ? `
+                <h3 style="color: ${accentColor};">Berufserfahrung</h3>
+                ${data.resume.experience.map(exp => `
+                    <div style="margin-bottom: 15px;">
+                        <strong>${exp.position || ''}</strong> bei ${exp.company || ''}<br>
+                        <span style="color: #888; font-size: 0.9em;">${exp.startDate || ''} - ${exp.endDate || 'heute'}</span>
+                        ${exp.description ? `<p style="margin-top: 5px;">${exp.description}</p>` : ''}
+                    </div>
+                `).join('')}
+            ` : ''}
+            
+            ${data.resume.education?.length ? `
+                <h3 style="color: ${accentColor};">Ausbildung</h3>
+                ${data.resume.education.map(edu => `
+                    <div style="margin-bottom: 10px;">
+                        <strong>${edu.degree || ''}</strong> - ${edu.institution || ''}<br>
+                        <span style="color: #888; font-size: 0.9em;">${edu.startDate || ''} - ${edu.endDate || ''}</span>
+                    </div>
+                `).join('')}
+            ` : ''}
+        `;
+        container.appendChild(page);
+    }
+    
+    // Anlagen-Seite
+    if (data.certificates.length > 0) {
+        const page = document.createElement('div');
+        page.innerHTML = `
+            <h2 style="color: ${accentColor};">Anlagen</h2>
+            <p>Folgende Dokumente sind dieser Bewerbung beigefügt:</p>
+            <ul>
+                ${data.certificates.map(c => `<li>${c.name || c.fileName || 'Dokument'}</li>`).join('')}
+            </ul>
+        `;
+        container.appendChild(page);
+    }
+    
+    // PDF generieren
+    const opt = {
+        margin: 10,
+        filename: 'Bewerbungsmappe.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+    
+    html2pdf().set(opt).from(container).save().then(() => {
+        showToast('Bewerbungsmappe als PDF heruntergeladen!', 'success');
+    });
+}
+
+// Export neue Funktionen
+window.initPhotosTab = initPhotosTab;
+window.loadPhotos = loadPhotos;
+window.selectPhoto = selectPhoto;
+window.viewPhoto = viewPhoto;
+window.deletePhoto = deletePhoto;
+window.initPortfolioTab = initPortfolioTab;
+window.loadPortfolioOptions = loadPortfolioOptions;
+window.previewPortfolio = previewPortfolio;
+window.generatePortfolioPDF = generatePortfolioPDF;
 
 // Export DashboardCore for external access
 window.DashboardCore = {
