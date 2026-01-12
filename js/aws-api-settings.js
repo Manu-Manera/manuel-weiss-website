@@ -182,6 +182,41 @@ class AWSAPISettingsService {
     }
 
     /**
+     * Vollständigen (unverschlüsselten) API Key für einen Provider holen
+     * ACHTUNG: Nur für Server-seitige Operationen verwenden!
+     */
+    async getFullApiKey(provider) {
+        if (!this.isUserLoggedIn()) {
+            console.log('⚠️ User nicht eingeloggt - keine API Keys verfügbar');
+            return null;
+        }
+
+        try {
+            const token = await this.getAuthToken();
+            
+            const response = await fetch(`${this.apiEndpoint}/api-settings/key?provider=${provider}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message || 'Fehler beim Laden des API Keys');
+            }
+
+            const data = await response.json();
+            console.log(`✅ Vollständiger API Key für ${provider} geladen`);
+            return data;
+        } catch (error) {
+            console.error(`❌ Fehler beim Laden des vollständigen API Keys für ${provider}:`, error);
+            throw error;
+        }
+    }
+
+    /**
      * API-Einstellungen löschen
      */
     async deleteSettings() {
