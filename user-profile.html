@@ -20,6 +20,10 @@
                 <h1>Mein Profil</h1>
             </div>
             <div class="nav-actions">
+                <button id="profileAuthButton" class="btn-auth" onclick="showLoginModal()">
+                    <i class="fas fa-user"></i>
+                    <span id="profileAuthText">Anmelden</span>
+                </button>
                 <button class="btn-save" onclick="saveProfile()">
                     <i class="fas fa-save"></i>
                     Speichern
@@ -918,6 +922,8 @@
         }
     </script>
     <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="js/unified-aws-auth.js?v=20260112"></script>
+    <script src="js/unified-auth-modals.js?v=20260112"></script>
     <script src="js/real-user-auth-system.js?v=20250116"></script>
     <script src="js/aws-profile-api.js"></script>
     <script src="js/aws-training-api.js"></script>
@@ -1153,6 +1159,78 @@
                     if (tab === 'coach') loadCoachTabData();
                 });
             });
+        });
+        
+        // Auth-Button Funktionen
+        function showLoginModal() {
+            if (window.authModals) {
+                window.authModals.showLogin();
+            } else if (window.realUserAuth && window.realUserAuth.showLoginModal) {
+                window.realUserAuth.showLoginModal();
+            } else {
+                console.error('Kein Auth-Modal System verfügbar');
+                alert('Bitte nutzen Sie die Anmeldeseite unter Persönlichkeitsentwicklung');
+            }
+        }
+        
+        function updateProfileAuthUI() {
+            const authButton = document.getElementById('profileAuthButton');
+            const authText = document.getElementById('profileAuthText');
+            
+            if (!authButton || !authText) return;
+            
+            let isLoggedIn = false;
+            let userName = '';
+            
+            // Check unified auth first, then real user auth
+            if (window.unifiedAuth && window.unifiedAuth.isLoggedIn()) {
+                isLoggedIn = true;
+                const user = window.unifiedAuth.getCurrentUser();
+                userName = user?.name || user?.firstName || user?.email?.split('@')[0] || 'Profil';
+            } else if (window.realUserAuth && window.realUserAuth.isLoggedIn()) {
+                isLoggedIn = true;
+                const user = window.realUserAuth.getCurrentUser();
+                userName = user?.name || user?.firstName || user?.email?.split('@')[0] || 'Profil';
+            }
+            
+            if (isLoggedIn) {
+                authButton.classList.add('logged-in');
+                authText.textContent = userName.length > 12 ? userName.substring(0, 12) + '...' : userName;
+                authButton.onclick = handleLogout;
+            } else {
+                authButton.classList.remove('logged-in');
+                authText.textContent = 'Anmelden';
+                authButton.onclick = showLoginModal;
+            }
+        }
+        
+        function handleLogout() {
+            if (confirm('Möchten Sie sich wirklich abmelden?')) {
+                if (window.unifiedAuth) {
+                    window.unifiedAuth.logout();
+                } else if (window.realUserAuth) {
+                    window.realUserAuth.logout();
+                }
+                updateProfileAuthUI();
+                window.location.reload();
+            }
+        }
+        
+        // Update auth UI on page load and after auth events
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(updateProfileAuthUI, 500);
+        });
+        
+        // Listen for auth changes
+        window.addEventListener('auth-state-changed', updateProfileAuthUI);
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'aws_auth_session') {
+                updateProfileAuthUI();
+                // Reload profile data after login
+                if (window.userProfile) {
+                    window.userProfile.loadProfileDataFromAWS();
+                }
+            }
         });
         
         // Intelligente Zurück-Navigation
