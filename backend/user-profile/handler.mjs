@@ -498,16 +498,23 @@ async function saveUserProfile(userId, profileData) {
   }
 
   // Also store complete profileData as JSON for easy retrieval
-  // Ensure all fields including resume are included
-  // Clean profile object to remove any undefined values that could cause issues
+  // WICHTIG: Entferne große Daten um DynamoDB 400KB Limit einzuhalten
   const cleanProfile = {};
+  const EXCLUDED_LARGE_FIELDS = ['resume', 'profileImage', 'documents', 'attachments', 'base64Image'];
+  
   for (const [key, value] of Object.entries(profile)) {
+    // Überspringe große Felder
+    if (EXCLUDED_LARGE_FIELDS.includes(key)) {
+      continue;
+    }
+    
     if (value !== undefined) {
       // Deep clean nested objects
       if (typeof value === 'object' && value !== null && !Array.isArray(value) && !(value instanceof Date)) {
         const cleaned = {};
         for (const [nestedKey, nestedValue] of Object.entries(value)) {
-          if (nestedValue !== undefined) {
+          // Überspringe auch große nested Felder
+          if (nestedValue !== undefined && !EXCLUDED_LARGE_FIELDS.includes(nestedKey)) {
             cleaned[nestedKey] = nestedValue;
           }
         }
@@ -518,29 +525,26 @@ async function saveUserProfile(userId, profileData) {
     }
   }
   
+  // Prüfe Größe und reduziere wenn nötig
+  let profileDataString = JSON.stringify(cleanProfile);
+  const MAX_SIZE = 350000; // ~350KB (Puffer für andere Felder)
+  
+  if (profileDataString.length > MAX_SIZE) {
+    console.warn(`Profile data too large (${profileDataString.length} bytes), reducing...`);
+    // Entferne weitere große Felder
+    delete cleanProfile.personal;
+    delete cleanProfile.preferences;
+    delete cleanProfile.settings;
+    profileDataString = JSON.stringify(cleanProfile);
+    console.log(`Reduced to ${profileDataString.length} bytes`);
+  }
+  
   try {
-    item.profileData = { S: JSON.stringify(cleanProfile) };
+    item.profileData = { S: profileDataString };
   } catch (jsonError) {
     console.error('Error serializing profileData:', jsonError);
-    console.error('Profile data:', JSON.stringify(cleanProfile, null, 2));
-    // Fallback: serialize without resume if it causes issues
-    const profileWithoutResume = { ...cleanProfile };
-    delete profileWithoutResume.resume;
-    try {
-      item.profileData = { S: JSON.stringify(profileWithoutResume) };
-    } catch (fallbackError) {
-      console.error('Error in fallback serialization:', fallbackError);
-      // Last resort: minimal profile
-      item.profileData = { S: JSON.stringify({ userId: safeUserId, name: safeName, email: safeEmail }) };
-    }
-    // Still try to save resume separately
-    if (profile.resume !== undefined) {
-      try {
-        item.resume = { S: JSON.stringify(profile.resume) };
-      } catch (resumeError) {
-        console.error('Error serializing resume in fallback:', resumeError);
-      }
-    }
+    // Last resort: minimal profile
+    item.profileData = { S: JSON.stringify({ userId: safeUserId, name: safeName, email: safeEmail }) };
   }
 
   await getDynamoDB().send(new PutItemCommand({
