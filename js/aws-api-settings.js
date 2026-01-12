@@ -17,19 +17,15 @@ class AWSAPISettingsService {
      */
     _getApiEndpoint() {
         // Prüfe verschiedene Konfigurationsquellen
+        if (window.AWS_CONFIG?.apiBaseUrl) {
+            return window.AWS_CONFIG.apiBaseUrl;
+        }
         if (window.AWS_CONFIG?.apiEndpoint) {
             return window.AWS_CONFIG.apiEndpoint;
         }
         
         // Fallback auf bekannte Endpoints
-        const hostname = window.location.hostname;
-        
-        if (hostname.includes('manuel-weiss.ch') || hostname.includes('mawps.netlify.app')) {
-            return 'https://vcpm0m8jhf.execute-api.eu-central-1.amazonaws.com/prod';
-        }
-        
-        // Development
-        return 'https://vcpm0m8jhf.execute-api.eu-central-1.amazonaws.com/prod';
+        return 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod';
     }
 
     /**
