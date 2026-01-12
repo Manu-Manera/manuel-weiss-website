@@ -112,6 +112,14 @@ export const handler = async (event) => {
       return json(200, resumes, hdr);
     }
     
+    // POST /profile/upload-url - Generiere Presigned URL für Profilbild-Upload
+    if (httpMethod === 'POST' && route.includes('/profile/upload-url')) {
+      const user = authUser(event);
+      const body = JSON.parse(event.body || '{}');
+      const uploadUrl = await generateProfileImageUploadUrl(user.userId, body.fileName, body.contentType);
+      return json(200, uploadUrl, hdr);
+    }
+    
     // POST /resume/upload-url - Generiere Presigned URL für PDF-Upload (MUSS VOR /resume kommen!)
     if (httpMethod === 'POST' && route.includes('/resume/upload-url')) {
       const user = authUser(event);
@@ -1098,6 +1106,57 @@ async function generateResumeUploadUrl(userId, fileName, contentType = 'applicat
       bucket: process.env.RESUME_BUCKET || 'mawps-resumes',
       expiresIn: 3600,
       error: 'S3 bucket not configured. Please set RESUME_BUCKET environment variable.'
+    };
+  }
+}
+
+/**
+ * Generiert Presigned URL für Profilbild-Upload
+ */
+async function generateProfileImageUploadUrl(userId, fileName, contentType = 'image/jpeg') {
+  try {
+    const { S3Client, PutObjectCommand } = await import('@aws-sdk/client-s3');
+    const { getSignedUrl } = await import('@aws-sdk/s3-request-presigner');
+    
+    const bucketName = process.env.PROFILE_IMAGES_BUCKET || 'mawps-profile-images';
+    const s3Client = new S3Client({ region: process.env.AWS_REGION || 'eu-central-1' });
+    
+    // Dateiendung aus contentType ableiten
+    const extension = contentType.split('/')[1] || 'jpg';
+    const s3Key = `profile-images/${userId}/avatar-${Date.now()}.${extension}`;
+    
+    const command = new PutObjectCommand({
+      Bucket: bucketName,
+      Key: s3Key,
+      ContentType: contentType,
+      ACL: 'public-read', // Profilbilder sind öffentlich lesbar
+      Metadata: {
+        userId: userId,
+        uploadedAt: new Date().toISOString()
+      }
+    });
+    
+    const uploadUrl = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
+    
+    // Generiere die öffentliche URL für das Bild
+    const imageUrl = `https://${bucketName}.s3.${process.env.AWS_REGION || 'eu-central-1'}.amazonaws.com/${s3Key}`;
+    
+    return {
+      uploadUrl,
+      imageUrl,
+      s3Key,
+      bucket: bucketName,
+      expiresIn: 3600
+    };
+  } catch (error) {
+    console.error('Error generating profile image upload URL:', error);
+    return {
+      uploadUrl: null,
+      imageUrl: null,
+      s3Key: `profile-images/${userId}/avatar-${Date.now()}.jpg`,
+      bucket: process.env.PROFILE_IMAGES_BUCKET || 'mawps-profile-images',
+      expiresIn: 3600,
+      error: 'S3 bucket not configured. Please set PROFILE_IMAGES_BUCKET environment variable.'
     };
   }
 }
