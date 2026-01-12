@@ -2065,9 +2065,14 @@ async function loadPhotos() {
     try {
         let photos = [];
         
-        // Aus localStorage laden (später auch Cloud)
-        const local = localStorage.getItem('user_photos');
-        photos = local ? JSON.parse(local) : [];
+        // Aus Cloud laden (wenn verfügbar)
+        if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
+            photos = await window.cloudDataService.getPhotos();
+        } else {
+            // Fallback: localStorage
+            const local = localStorage.getItem('user_photos');
+            photos = local ? JSON.parse(local) : [];
+        }
         
         if (photos.length === 0) {
             grid.innerHTML = '';
@@ -2138,14 +2143,17 @@ async function handlePhotoUpload(file) {
             createdAt: new Date().toISOString()
         };
         
-        // In localStorage speichern
-        let photos = JSON.parse(localStorage.getItem('user_photos') || '[]');
-        photos.unshift(photo);
-        localStorage.setItem('user_photos', JSON.stringify(photos));
-        
-        // Cloud-Sync (wenn verfügbar)
+        // Cloud-Speicherung (wenn verfügbar und eingeloggt)
         if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
-            // TODO: S3-Upload für Fotos implementieren
+            const result = await window.cloudDataService.savePhoto(photo);
+            if (result?.success) {
+                console.log('✅ Foto in Cloud gespeichert');
+            }
+        } else {
+            // Fallback: In localStorage speichern
+            let photos = JSON.parse(localStorage.getItem('user_photos') || '[]');
+            photos.unshift(photo);
+            localStorage.setItem('user_photos', JSON.stringify(photos));
         }
         
         showToast('Foto erfolgreich hochgeladen!', 'success');
@@ -2187,16 +2195,22 @@ function viewPhoto(id) {
     }
 }
 
-function deletePhoto(id) {
+async function deletePhoto(id) {
     if (!confirm('Foto wirklich löschen?')) return;
     
-    let photos = JSON.parse(localStorage.getItem('user_photos') || '[]');
-    photos = photos.filter(p => p.id !== id);
-    localStorage.setItem('user_photos', JSON.stringify(photos));
-    
-    // Selection entfernen wenn das gelöschte Foto ausgewählt war
-    if (localStorage.getItem('selected_photo_id') === id) {
-        localStorage.removeItem('selected_photo_id');
+    // Cloud-Löschung (wenn verfügbar)
+    if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
+        await window.cloudDataService.deletePhoto(id);
+    } else {
+        // Fallback: localStorage
+        let photos = JSON.parse(localStorage.getItem('user_photos') || '[]');
+        photos = photos.filter(p => p.id !== id);
+        localStorage.setItem('user_photos', JSON.stringify(photos));
+        
+        // Selection entfernen wenn das gelöschte Foto ausgewählt war
+        if (localStorage.getItem('selected_photo_id') === id) {
+            localStorage.removeItem('selected_photo_id');
+        }
     }
     
     loadPhotos();
