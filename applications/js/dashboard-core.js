@@ -53,11 +53,11 @@ const DashboardState = {
 // INITIALIZATION
 // ═══════════════════════════════════════════════════════════════════════════
 
-function initDashboard() {
+async function initDashboard() {
     console.log('🚀 Initializing Bewerbungsmanager Dashboard...');
     
-    // Load saved data
-    loadSavedState();
+    // Load saved data (inkl. AWS-Profil - asynchron)
+    await loadSavedState();
     
     // Setup mobile menu
     setupMobileMenu();
@@ -76,10 +76,13 @@ function initDashboard() {
         showTab(hash);
     }
     
-    // Initialize Quick Apply
+    // Initialize Quick Apply (nachdem Profil geladen wurde)
     if (typeof initQuickApply === 'function') {
-        initQuickApply();
+        await initQuickApply();
     }
+    
+    // Nochmals Quick-Apply-Felder füllen (falls initQuickApply sie zurückgesetzt hat)
+    setTimeout(() => prefillQuickApplyFromProfile(), 500);
     
     DashboardState.initialized = true;
     console.log('✅ Dashboard initialized');
@@ -89,27 +92,149 @@ function initDashboard() {
 // LOCAL STORAGE
 // ═══════════════════════════════════════════════════════════════════════════
 
-function loadSavedState() {
+async function loadSavedState() {
     try {
-        // Load profile
+        // Zuerst: Lade lokale Daten als Fallback
         const savedProfile = localStorage.getItem('bewerbungsmanager_profile');
         if (savedProfile) {
             DashboardState.profile = JSON.parse(savedProfile);
         }
         
-        // Load applications
         const savedApplications = localStorage.getItem('bewerbungsmanager_applications');
         if (savedApplications) {
             DashboardState.applications = JSON.parse(savedApplications);
         }
         
+        // Dann: Versuche AWS-Profil zu laden (überschreibt lokale Daten)
+        await loadAWSProfile();
+        
         // Calculate stats
         calculateStats();
         
-        console.log('📂 State loaded from localStorage');
+        console.log('📂 State loaded');
     } catch (error) {
         console.error('Error loading state:', error);
     }
+}
+
+/**
+ * Lädt das Benutzerprofil aus AWS und synchronisiert es mit DashboardState
+ */
+async function loadAWSProfile() {
+    try {
+        // Prüfe ob User angemeldet ist
+        const auth = window.awsAuth || window.realUserAuth;
+        if (!auth || typeof auth.isLoggedIn !== 'function' || !auth.isLoggedIn()) {
+            console.log('ℹ️ Kein angemeldeter User - überspringe AWS-Profil');
+            return;
+        }
+        
+        // Warte auf awsProfileAPI
+        if (!window.awsProfileAPI) {
+            console.log('⏳ Warte auf awsProfileAPI...');
+            await new Promise((resolve) => {
+                let attempts = 0;
+                const check = setInterval(() => {
+                    attempts++;
+                    if (window.awsProfileAPI || attempts > 30) {
+                        clearInterval(check);
+                        resolve();
+                    }
+                }, 100);
+            });
+        }
+        
+        if (!window.awsProfileAPI?.isInitialized) {
+            console.log('⏳ Warte auf awsProfileAPI Initialisierung...');
+            await new Promise((resolve) => {
+                let attempts = 0;
+                const check = setInterval(() => {
+                    attempts++;
+                    if (window.awsProfileAPI?.isInitialized || attempts > 30) {
+                        clearInterval(check);
+                        resolve();
+                    }
+                }, 100);
+            });
+        }
+        
+        if (!window.awsProfileAPI?.isInitialized) {
+            console.warn('⚠️ awsProfileAPI nicht verfügbar');
+            return;
+        }
+        
+        console.log('📡 Lade Profil aus AWS...');
+        const awsProfile = await window.awsProfileAPI.loadProfile();
+        
+        if (awsProfile) {
+            console.log('✅ AWS-Profil geladen:', awsProfile);
+            
+            // Konvertiere AWS-Profil-Format zu DashboardState-Format
+            DashboardState.profile = {
+                firstName: awsProfile.firstName || awsProfile.personal?.firstName || '',
+                lastName: awsProfile.lastName || awsProfile.personal?.lastName || '',
+                email: awsProfile.email || awsProfile.personal?.email || '',
+                phone: awsProfile.phone || awsProfile.personal?.phone || '',
+                location: awsProfile.location || awsProfile.personal?.location || '',
+                currentJob: awsProfile.currentPosition || awsProfile.professional?.currentPosition || '',
+                experience: awsProfile.experience || awsProfile.professional?.experience || '',
+                summary: awsProfile.summary || awsProfile.professional?.summary || '',
+                skills: awsProfile.skills || awsProfile.professional?.skills || []
+            };
+            
+            // Speichere auch lokal für Offline-Zugriff
+            localStorage.setItem('bewerbungsmanager_profile', JSON.stringify(DashboardState.profile));
+            
+            // Aktualisiere Quick-Apply-Felder
+            prefillQuickApplyFromProfile();
+            
+            console.log('✅ DashboardState.profile aktualisiert:', DashboardState.profile);
+        }
+    } catch (error) {
+        console.error('❌ Fehler beim Laden des AWS-Profils:', error);
+    }
+}
+
+/**
+ * Füllt die Quick-Apply-Felder mit Profildaten vor
+ */
+function prefillQuickApplyFromProfile() {
+    const profile = DashboardState.profile;
+    if (!profile) return;
+    
+    // Name
+    const nameField = document.getElementById('quickName') || document.getElementById('quickUserName');
+    if (nameField && !nameField.value) {
+        const fullName = [profile.firstName, profile.lastName].filter(Boolean).join(' ');
+        nameField.value = fullName || '';
+    }
+    
+    // Position
+    const positionField = document.getElementById('quickPosition') || document.getElementById('quickUserPosition');
+    if (positionField && !positionField.value) {
+        positionField.value = profile.currentJob || '';
+    }
+    
+    // Erfahrung
+    const experienceField = document.getElementById('quickExperience');
+    if (experienceField && !experienceField.value) {
+        experienceField.value = profile.experience || '';
+    }
+    
+    // Standort
+    const locationField = document.getElementById('quickLocation') || document.getElementById('quickUserLocation');
+    if (locationField && !locationField.value) {
+        locationField.value = profile.location || '';
+    }
+    
+    // Skills
+    const skillsField = document.getElementById('quickSkills') || document.getElementById('quickUserSkills');
+    if (skillsField && !skillsField.value) {
+        const skills = Array.isArray(profile.skills) ? profile.skills.join(', ') : profile.skills;
+        skillsField.value = skills || '';
+    }
+    
+    console.log('📝 Quick-Apply-Felder mit Profildaten vorausgefüllt');
 }
 
 function saveState() {
