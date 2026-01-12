@@ -1936,3 +1936,203 @@ function json(code, body, headers) {
   return { statusCode: code, headers, body: body === null ? '' : JSON.stringify(body) };
 }
 
+// === JOURNAL/TAGEBUCH FUNKTIONEN ===
+
+async function getJournalEntries(userId, queryParams = {}) {
+  try {
+    const result = await getDynamoDB().send(new GetItemCommand({
+      TableName: process.env.TABLE || process.env.PROFILE_TABLE || 'mawps-user-profiles',
+      Key: {
+        pk: { S: `user#${userId}` },
+        sk: { S: 'journal' }
+      }
+    }));
+    
+    if (!result.Item) {
+      return { entries: [], stats: { totalEntries: 0, streakDays: 0, thisMonth: 0 } };
+    }
+    
+    let entries = JSON.parse(result.Item.entries?.S || '[]');
+    
+    // Optional filtering
+    if (queryParams.from) {
+      entries = entries.filter(e => new Date(e.date) >= new Date(queryParams.from));
+    }
+    if (queryParams.to) {
+      entries = entries.filter(e => new Date(e.date) <= new Date(queryParams.to));
+    }
+    if (queryParams.type) {
+      entries = entries.filter(e => e.type === queryParams.type);
+    }
+    
+    // Sort by date descending (newest first)
+    entries.sort((a, b) => new Date(b.date) - new Date(a.date));
+    
+    const stats = calculateJournalStats(entries);
+    
+    return { entries, stats };
+  } catch (error) {
+    console.error('Error loading journal entries:', error);
+    return { entries: [], stats: { totalEntries: 0, streakDays: 0, thisMonth: 0 } };
+  }
+}
+
+async function getJournalEntriesByDate(userId, date) {
+  const all = await getJournalEntries(userId);
+  const targetDate = date.split('T')[0]; // Get just YYYY-MM-DD
+  const entries = all.entries.filter(e => e.date.split('T')[0] === targetDate);
+  return { entries, date: targetDate };
+}
+
+async function createJournalEntry(userId, entryData) {
+  const existing = await getJournalEntries(userId);
+  
+  const entry = {
+    id: `journal_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+    type: entryData.type || 'note', // 'note', 'training', 'journal', 'activity', 'mood'
+    title: entryData.title || '',
+    content: entryData.content || '',
+    date: entryData.date || new Date().toISOString(),
+    tags: entryData.tags || [],
+    mood: entryData.mood || null, // 1-5 scale
+    energy: entryData.energy || null, // 1-5 scale
+    trainingData: entryData.trainingData || null, // { type, duration, intensity, exercises }
+    metadata: entryData.metadata || {},
+    isAutomatic: entryData.isAutomatic || false,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+  
+  const entries = [entry, ...existing.entries];
+  await saveJournalEntries(userId, entries);
+  
+  const stats = calculateJournalStats(entries);
+  return { entry, stats };
+}
+
+async function updateJournalEntry(userId, entryId, updateData) {
+  const existing = await getJournalEntries(userId);
+  
+  const entryIndex = existing.entries.findIndex(e => e.id === entryId);
+  if (entryIndex === -1) {
+    throw new Error('Journal entry not found');
+  }
+  
+  const oldEntry = existing.entries[entryIndex];
+  const updatedEntry = {
+    ...oldEntry,
+    ...updateData,
+    id: entryId,
+    updatedAt: new Date().toISOString()
+  };
+  
+  existing.entries[entryIndex] = updatedEntry;
+  await saveJournalEntries(userId, existing.entries);
+  
+  const stats = calculateJournalStats(existing.entries);
+  return { entry: updatedEntry, stats };
+}
+
+async function deleteJournalEntry(userId, entryId) {
+  const existing = await getJournalEntries(userId);
+  const entries = existing.entries.filter(e => e.id !== entryId);
+  await saveJournalEntries(userId, entries);
+}
+
+async function trackActivity(userId, activityData) {
+  // Automatisches Tracking von Website-Aktivitäten
+  const entry = await createJournalEntry(userId, {
+    type: 'activity',
+    title: activityData.title || 'Aktivität',
+    content: activityData.description || '',
+    date: new Date().toISOString(),
+    tags: activityData.tags || ['auto-tracked'],
+    metadata: {
+      activityType: activityData.activityType, // 'method_completed', 'login', 'profile_updated', etc.
+      source: activityData.source || 'website',
+      ...activityData.metadata
+    },
+    isAutomatic: true
+  });
+  
+  return entry;
+}
+
+async function saveJournalEntries(userId, entries) {
+  const timestamp = new Date().toISOString();
+  const stats = calculateJournalStats(entries);
+  
+  // Limit to last 1000 entries to prevent exceeding DynamoDB limits
+  const limitedEntries = entries.slice(0, 1000);
+  
+  await getDynamoDB().send(new PutItemCommand({
+    TableName: process.env.TABLE || process.env.PROFILE_TABLE || 'mawps-user-profiles',
+    Item: {
+      pk: { S: `user#${userId}` },
+      sk: { S: 'journal' },
+      userId: { S: userId },
+      entries: { S: JSON.stringify(limitedEntries) },
+      stats: { S: JSON.stringify(stats) },
+      updatedAt: { S: timestamp }
+    }
+  }));
+}
+
+function calculateJournalStats(entries) {
+  const now = new Date();
+  const thisMonth = now.getMonth();
+  const thisYear = now.getFullYear();
+  
+  // Entries this month
+  const thisMonthEntries = entries.filter(e => {
+    const entryDate = new Date(e.date);
+    return entryDate.getMonth() === thisMonth && entryDate.getFullYear() === thisYear;
+  });
+  
+  // Calculate streak
+  let streakDays = 0;
+  const sortedDates = [...new Set(entries.map(e => e.date.split('T')[0]))].sort().reverse();
+  
+  if (sortedDates.length > 0) {
+    const today = now.toISOString().split('T')[0];
+    const yesterday = new Date(now.setDate(now.getDate() - 1)).toISOString().split('T')[0];
+    
+    // Check if there's an entry today or yesterday
+    if (sortedDates[0] === today || sortedDates[0] === yesterday) {
+      streakDays = 1;
+      for (let i = 1; i < sortedDates.length; i++) {
+        const currentDate = new Date(sortedDates[i - 1]);
+        const prevDate = new Date(sortedDates[i]);
+        const diffDays = Math.floor((currentDate - prevDate) / (1000 * 60 * 60 * 24));
+        
+        if (diffDays === 1) {
+          streakDays++;
+        } else {
+          break;
+        }
+      }
+    }
+  }
+  
+  // Count by type
+  const byType = {};
+  entries.forEach(e => {
+    byType[e.type] = (byType[e.type] || 0) + 1;
+  });
+  
+  // Average mood (if tracked)
+  const moodEntries = entries.filter(e => e.mood != null);
+  const avgMood = moodEntries.length > 0 
+    ? Math.round(moodEntries.reduce((sum, e) => sum + e.mood, 0) / moodEntries.length * 10) / 10
+    : null;
+  
+  return {
+    totalEntries: entries.length,
+    thisMonth: thisMonthEntries.length,
+    streakDays,
+    byType,
+    avgMood,
+    lastEntryDate: entries[0]?.date || null
+  };
+}
+
