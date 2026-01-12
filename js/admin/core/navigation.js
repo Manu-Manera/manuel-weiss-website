@@ -283,6 +283,31 @@ class AdminNavigation {
                     }
                 }
                 
+                // API Keys Section spezifische Initialisierung
+                if (sectionId === 'api-keys') {
+                    console.log('🔑 Initializing API Keys Section...');
+                    if (window.apiKeysSection && typeof window.apiKeysSection.onNavigate === 'function') {
+                        console.log('🔑 Calling apiKeysSection.onNavigate()');
+                        window.apiKeysSection.onNavigate().catch(err => {
+                            console.error('❌ Error in apiKeysSection.onNavigate:', err);
+                        });
+                    } else if (window.ApiKeysSection) {
+                        console.log('🔑 Creating new ApiKeysSection instance');
+                        const section = new window.ApiKeysSection();
+                        window.apiKeysSection = section;
+                        if (window.AdminApp) {
+                            window.AdminApp.sections.apiKeys = section;
+                        }
+                        section.init().then(() => {
+                            section.onNavigate().catch(err => {
+                                console.error('❌ Error in apiKeysSection.onNavigate:', err);
+                            });
+                        });
+                    } else {
+                        console.warn('⚠️ ApiKeysSection not available');
+                    }
+                }
+                
                 // Rentals Section spezifische Initialisierung
                 if (sectionId === 'rentals') {
                     if (window.RentalsSection) {
