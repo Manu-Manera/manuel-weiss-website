@@ -25,34 +25,61 @@ document.querySelectorAll('.resume-tab').forEach(tab => {
 // Load existing resume and profile data
 async function loadResume() {
     try {
+        // Prüfe URL-Parameter für Bearbeitungsmodus
+        const urlParams = new URLSearchParams(window.location.search);
+        const resumeId = urlParams.get('id');
+        const action = urlParams.get('action');
+        
+        if (resumeId) {
+            // Lade bestehenden Lebenslauf aus localStorage
+            const resumes = JSON.parse(localStorage.getItem('user_resumes') || '[]');
+            const resume = resumes.find(r => r.id === resumeId);
+            
+            if (resume) {
+                resumeData = resume;
+                populateForm(resume);
+                showNotification('Lebenslauf geladen', 'success');
+                
+                // PDF-Export-Modus?
+                if (action === 'pdf') {
+                    setTimeout(() => {
+                        exportToPDF();
+                    }, 500);
+                }
+                return;
+            }
+        }
+        
+        // Kein ID oder nicht gefunden - versuche AWS oder Profildaten
         const token = await getAuthToken();
         if (!token) {
-            // Lade Profildaten auch ohne Login (für Vorausfüllung)
             await loadProfileData();
             return;
         }
 
-        // Lade Lebenslauf
-        const resumeResponse = await fetch('https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod/resume', {
-            headers: {
-                'Authorization': `Bearer ${token}`
+        // Versuche von AWS zu laden
+        try {
+            const resumeResponse = await fetch('https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod/resume', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            
+            if (resumeResponse.ok) {
+                const data = await resumeResponse.json();
+                resumeData = data;
+                populateForm(data);
+                showNotification('Lebenslauf geladen', 'success');
+            } else {
+                // Kein Lebenslauf - lade Profildaten für Vorausfüllung
+                await loadProfileData();
             }
-        });
-        
-        if (resumeResponse.ok) {
-            const data = await resumeResponse.json();
-            resumeData = data;
-            populateForm(data);
-            showNotification('Lebenslauf geladen', 'success');
-        } else if (resumeResponse.status === 404) {
-            // Kein Lebenslauf vorhanden - lade Profildaten für Vorausfüllung
+        } catch (awsError) {
+            console.warn('AWS load failed, using profile data:', awsError);
             await loadProfileData();
-        } else {
-            throw new Error('Fehler beim Laden');
         }
     } catch (error) {
         console.error('Error loading resume:', error);
-        // Versuche trotzdem Profildaten zu laden
         await loadProfileData();
     }
 }
@@ -136,44 +163,69 @@ document.getElementById('resumeForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     
     try {
-        const token = await getAuthToken();
-        if (!token) {
-            showNotification('Bitte melden Sie sich an, um zu speichern.', 'error');
-            // Redirect to login
-            if (window.realUserAuth && typeof window.realUserAuth.showLoginModal === 'function') {
-                window.realUserAuth.showLoginModal();
-            }
-            return;
-        }
-        
         const formData = collectFormData();
         
-        const response = await fetch('https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod/resume', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify(formData)
-        });
+        // URL-Parameter prüfen für Bearbeitungsmodus
+        const urlParams = new URLSearchParams(window.location.search);
+        let resumeId = urlParams.get('id');
         
-        if (response.status === 401) {
-            showNotification('Sitzung abgelaufen. Bitte erneut anmelden.', 'error');
-            if (window.realUserAuth && typeof window.realUserAuth.showLoginModal === 'function') {
-                window.realUserAuth.showLoginModal();
+        // Lade bestehende Lebensläufe
+        let resumes = JSON.parse(localStorage.getItem('user_resumes') || '[]');
+        
+        if (resumeId) {
+            // Bestehenden Lebenslauf aktualisieren
+            const index = resumes.findIndex(r => r.id === resumeId);
+            if (index !== -1) {
+                resumes[index] = {
+                    ...resumes[index],
+                    ...formData,
+                    updatedAt: new Date().toISOString()
+                };
             }
-            return;
+        } else {
+            // Neuen Lebenslauf erstellen
+            resumeId = Date.now().toString(36);
+            const newResume = {
+                id: resumeId,
+                ...formData,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            };
+            resumes.unshift(newResume);
         }
         
-        if (response.ok) {
-            const result = await response.json();
-            showNotification('Lebenslauf gespeichert', 'success');
-            console.log('✅ Resume saved:', result);
-        } else {
-            const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));
-            console.error('❌ Save error:', errorData);
-            throw new Error(errorData.message || errorData.error || 'Fehler beim Speichern');
+        // In localStorage speichern
+        localStorage.setItem('user_resumes', JSON.stringify(resumes));
+        console.log('✅ Lebenslauf in localStorage gespeichert:', resumeId);
+        
+        // Auch in AWS speichern, falls angemeldet
+        const token = await getAuthToken();
+        if (token) {
+            try {
+                const response = await fetch('https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod/resume', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                if (response.ok) {
+                    console.log('✅ Lebenslauf auch in AWS gespeichert');
+                }
+            } catch (awsError) {
+                console.warn('⚠️ AWS-Speicherung fehlgeschlagen, aber localStorage OK:', awsError);
+            }
         }
+        
+        showNotification('✅ Lebenslauf gespeichert!', 'success');
+        
+        // Zurück zum Dashboard nach kurzem Delay
+        setTimeout(() => {
+            window.location.href = 'dashboard.html#resume';
+        }, 1500);
+        
     } catch (error) {
         console.error('Error saving resume:', error);
         showNotification(`Fehler beim Speichern: ${error.message}`, 'error');
@@ -357,21 +409,38 @@ function applyOCRData() {
 
 // Helper functions
 function collectFormData() {
+    // Flache Struktur für einfachere Anzeige im Dashboard
     return {
+        // Persönliche Daten (flach für Dashboard-Anzeige)
+        firstName: document.getElementById('firstName')?.value || '',
+        lastName: document.getElementById('lastName')?.value || '',
+        title: document.getElementById('title')?.value || '',
+        summary: document.getElementById('summary')?.value || '',
+        email: document.getElementById('email')?.value || '',
+        phone: document.getElementById('phone')?.value || '',
+        location: document.getElementById('location')?.value || '',
+        address: document.getElementById('address')?.value || '',
+        linkedin: document.getElementById('linkedin')?.value || '',
+        github: document.getElementById('github')?.value || '',
+        website: document.getElementById('website')?.value || '',
+        availability: document.getElementById('availability')?.value || '',
+        workModel: document.getElementById('workModel')?.value || '',
+        
+        // Strukturierte Daten (für vollständigen Export)
         personalInfo: {
-            firstName: document.getElementById('firstName').value,
-            lastName: document.getElementById('lastName').value,
-            title: document.getElementById('title').value,
-            summary: document.getElementById('summary').value,
-            email: document.getElementById('email').value,
-            phone: document.getElementById('phone').value,
-            location: document.getElementById('location').value,
-            address: document.getElementById('address').value,
-            linkedin: document.getElementById('linkedin').value,
-            github: document.getElementById('github').value,
-            website: document.getElementById('website').value,
-            availability: document.getElementById('availability').value,
-            workModel: document.getElementById('workModel').value
+            firstName: document.getElementById('firstName')?.value || '',
+            lastName: document.getElementById('lastName')?.value || '',
+            title: document.getElementById('title')?.value || '',
+            summary: document.getElementById('summary')?.value || '',
+            email: document.getElementById('email')?.value || '',
+            phone: document.getElementById('phone')?.value || '',
+            location: document.getElementById('location')?.value || '',
+            address: document.getElementById('address')?.value || '',
+            linkedin: document.getElementById('linkedin')?.value || '',
+            github: document.getElementById('github')?.value || '',
+            website: document.getElementById('website')?.value || '',
+            availability: document.getElementById('availability')?.value || '',
+            workModel: document.getElementById('workModel')?.value || ''
         },
         sections: collectSections(),
         skills: collectSkills(),
@@ -533,21 +602,27 @@ function collectLanguages() {
 }
 
 function populateForm(data) {
-    if (data.personalInfo) {
-        document.getElementById('firstName').value = data.personalInfo.firstName || '';
-        document.getElementById('lastName').value = data.personalInfo.lastName || '';
-        document.getElementById('title').value = data.personalInfo.title || '';
-        document.getElementById('summary').value = data.personalInfo.summary || '';
-        document.getElementById('email').value = data.personalInfo.email || '';
-        document.getElementById('phone').value = data.personalInfo.phone || '';
-        document.getElementById('location').value = data.personalInfo.location || '';
-        document.getElementById('address').value = data.personalInfo.address || '';
-        document.getElementById('linkedin').value = data.personalInfo.linkedin || '';
-        document.getElementById('github').value = data.personalInfo.github || '';
-        document.getElementById('website').value = data.personalInfo.website || '';
-        document.getElementById('availability').value = data.personalInfo.availability || '';
-        document.getElementById('workModel').value = data.personalInfo.workModel || '';
-    }
+    // Unterstütze sowohl verschachtelte (personalInfo) als auch flache Struktur
+    const personal = data.personalInfo || data;
+    
+    const setField = (id, value) => {
+        const el = document.getElementById(id);
+        if (el && value) el.value = value;
+    };
+    
+    setField('firstName', personal.firstName);
+    setField('lastName', personal.lastName);
+    setField('title', personal.title);
+    setField('summary', personal.summary);
+    setField('email', personal.email);
+    setField('phone', personal.phone);
+    setField('location', personal.location);
+    setField('address', personal.address);
+    setField('linkedin', personal.linkedin);
+    setField('github', personal.github);
+    setField('website', personal.website);
+    setField('availability', personal.availability);
+    setField('workModel', personal.workModel);
     
     // Populate Experience
     if (data.sections) {
