@@ -467,6 +467,11 @@ class UnifiedAWSAuth {
             
             this.showNotification('✅ Erfolgreich angemeldet!', 'success');
             
+            // Dispatch custom event for other parts of the app
+            window.dispatchEvent(new CustomEvent('userLoggedIn', { 
+                detail: { user: this.currentUser }
+            }));
+            
             console.log('✅ Login completed, staying on current page');
             return { success: true, user: this.currentUser };
             
