@@ -29,27 +29,58 @@ class AWSAPISettingsService {
     }
 
     /**
-     * Prüft ob der User eingeloggt ist
+     * Prüft ob der User eingeloggt ist (entweder via awsAuth oder Admin Auth)
      */
     isUserLoggedIn() {
-        return window.awsAuth && window.awsAuth.isLoggedIn();
+        // Prüfe awsAuth
+        if (window.awsAuth && window.awsAuth.isLoggedIn()) {
+            return true;
+        }
+        
+        // Prüfe Admin Auth Session
+        const adminSession = localStorage.getItem('admin_auth_session');
+        if (adminSession) {
+            try {
+                const session = JSON.parse(adminSession);
+                if (session.user?.accessToken || session.user?.idToken) {
+                    return true;
+                }
+            } catch (e) {}
+        }
+        
+        return false;
     }
 
     /**
      * Holt das Auth Token für API Requests
      */
     async getAuthToken() {
-        if (!this.isUserLoggedIn()) {
-            throw new Error('Nicht angemeldet');
+        // 1. Versuche awsAuth
+        if (window.awsAuth && window.awsAuth.isLoggedIn()) {
+            const currentUser = window.awsAuth.getCurrentUser();
+            if (currentUser?.idToken) {
+                return currentUser.idToken;
+            }
         }
         
-        // Token direkt aus currentUser holen
-        const currentUser = window.awsAuth.getCurrentUser();
-        if (currentUser?.idToken) {
-            return currentUser.idToken;
+        // 2. Versuche Admin Auth Session
+        const adminSession = localStorage.getItem('admin_auth_session');
+        if (adminSession) {
+            try {
+                const session = JSON.parse(adminSession);
+                // Admin Session hat das Token in session.user.idToken oder session.user.accessToken
+                if (session.user?.idToken) {
+                    return session.user.idToken;
+                }
+                if (session.user?.accessToken) {
+                    return session.user.accessToken;
+                }
+            } catch (e) {
+                console.error('❌ Fehler beim Parsen der Admin Session:', e);
+            }
         }
         
-        // Fallback: aus localStorage
+        // 3. Fallback: aws_auth_session
         const storageKey = window.AWS_AUTH_CONFIG?.token?.storageKey || 'aws_auth_session';
         const session = localStorage.getItem(storageKey);
         if (session) {
