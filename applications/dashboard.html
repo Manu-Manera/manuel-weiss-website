@@ -9,7 +9,7 @@
     <!-- CSS -->
     <link rel="stylesheet" href="../styles.css">
     <link rel="stylesheet" href="css/applications-main.css">
-    <link rel="stylesheet" href="css/dashboard.css?v=glass20260111">
+    <link rel="stylesheet" href="css/dashboard.css?v=20260112ocr">
     <link rel="stylesheet" href="css/landing.css?v=20260110">
     
     <!-- Critical Mobile Navbar Override - Wie Hauptseite -->
@@ -643,17 +643,31 @@ Ihre Aufgaben:
             </div>
 
             <!-- ═══════════════════════════════════════════════════════════ -->
-            <!-- TAB 2: ANSCHREIBEN (Voller Editor) -->
+            <!-- TAB 2: ANSCHREIBEN (Meine Anschreiben) -->
             <!-- ═══════════════════════════════════════════════════════════ -->
             <div id="tab-cover" class="tab-content">
-                <div class="tab-placeholder">
-                    <i class="fas fa-file-alt"></i>
-                    <h2>Anschreiben-Generator</h2>
-                    <p>Nutzen Sie den Quick Apply Tab für die schnelle Anschreiben-Generierung!</p>
-                    <button onclick="showTab('quick')" class="btn-primary">
-                        <i class="fas fa-rocket"></i> Zum Quick Apply
-                    </button>
-                    <span class="migration-hint">Alle Funktionen sind jetzt im Quick Apply Tab vereint</span>
+                <div class="cover-letters-container">
+                    <div class="cover-letters-header">
+                        <h2><i class="fas fa-file-alt"></i> Meine Anschreiben</h2>
+                        <button onclick="showTab('quick')" class="btn-primary">
+                            <i class="fas fa-plus"></i> Neues Anschreiben erstellen
+                        </button>
+                    </div>
+                    
+                    <!-- Gespeicherte Anschreiben Liste -->
+                    <div id="coverLettersList" class="cover-letters-list">
+                        <!-- Wird dynamisch gefüllt -->
+                    </div>
+                    
+                    <!-- Empty State -->
+                    <div id="coverLettersEmpty" class="empty-state" style="display: none;">
+                        <i class="fas fa-envelope-open"></i>
+                        <h3>Noch keine Anschreiben</h3>
+                        <p>Erstellen Sie Ihr erstes Anschreiben mit dem Quick Apply!</p>
+                        <button onclick="showTab('quick')" class="btn-primary">
+                            <i class="fas fa-rocket"></i> Quick Apply starten
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -1228,25 +1242,29 @@ Ihre Aufgaben:
                 }
             }
             
-            // Auth button click handler
+            // Prevent dropdown from opening on hover or accidental clicks
+            let dropdownClickEnabled = true;
+            
+            // Auth button click handler - only open on real user click
             authButton.addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
+                
+                // Prevent double clicks
+                if (!dropdownClickEnabled) return;
+                dropdownClickEnabled = false;
+                setTimeout(() => { dropdownClickEnabled = true; }, 300);
                 
                 console.log('🔘 Auth button clicked');
                 const isLoggedIn = window.awsAuth && window.awsAuth.isLoggedIn();
                 console.log('🔐 Is logged in:', isLoggedIn);
                 
                 if (isLoggedIn) {
-                    // Toggle dropdown
+                    // Toggle dropdown only on explicit click
                     if (userDropdown) {
-                        const currentDisplay = getComputedStyle(userDropdown).display;
-                        console.log('📋 Current dropdown display:', currentDisplay);
-                        const newDisplay = currentDisplay === 'none' ? 'block' : 'none';
-                        userDropdown.style.display = newDisplay;
-                        console.log('📋 New dropdown display:', newDisplay);
-                    } else {
-                        console.error('❌ userDropdown element not found');
+                        const isHidden = userDropdown.style.display === 'none' || !userDropdown.style.display;
+                        userDropdown.style.display = isHidden ? 'block' : 'none';
+                        console.log('📋 Dropdown toggled to:', userDropdown.style.display);
                     }
                 } else {
                     // Show login modal
@@ -1261,9 +1279,22 @@ Ihre Aufgaben:
                 }
             });
             
-            // Close dropdown when clicking outside
+            // Close dropdown when clicking outside - improved version
             document.addEventListener('click', (e) => {
-                if (userDropdown && !authButton.contains(e.target) && !userDropdown.contains(e.target)) {
+                if (!userDropdown) return;
+                
+                // Check if click is outside both button and dropdown
+                const clickedAuthButton = authButton.contains(e.target);
+                const clickedDropdown = userDropdown.contains(e.target);
+                
+                if (!clickedAuthButton && !clickedDropdown) {
+                    userDropdown.style.display = 'none';
+                }
+            });
+            
+            // Close dropdown on escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && userDropdown) {
                     userDropdown.style.display = 'none';
                 }
             });
@@ -1341,6 +1372,146 @@ Ihre Aufgaben:
             });
         }
         
+        // Load saved cover letters
+        function loadCoverLetters() {
+            try {
+                const drafts = JSON.parse(localStorage.getItem('cover_letter_drafts') || '[]');
+                const container = document.getElementById('coverLettersList');
+                const emptyState = document.getElementById('coverLettersEmpty');
+                
+                if (!container) return;
+                
+                if (drafts.length === 0) {
+                    container.innerHTML = '';
+                    if (emptyState) emptyState.style.display = 'flex';
+                    return;
+                }
+                
+                if (emptyState) emptyState.style.display = 'none';
+                
+                container.innerHTML = drafts.map((draft, index) => {
+                    const date = new Date(draft.createdAt).toLocaleDateString('de-DE', {
+                        day: '2-digit', month: '2-digit', year: 'numeric'
+                    });
+                    const company = draft.jobData?.company || 'Unbekanntes Unternehmen';
+                    const position = draft.jobData?.position || 'Position';
+                    const preview = draft.content?.substring(0, 150) + '...' || '';
+                    
+                    return `
+                        <div class="cover-letter-item" data-id="${draft.id}">
+                            <div class="cover-letter-info">
+                                <h4>${position}</h4>
+                                <p class="company">${company}</p>
+                                <p class="date">${date}</p>
+                                <p class="preview">${preview}</p>
+                            </div>
+                            <div class="cover-letter-actions">
+                                <button onclick="viewCoverLetter('${draft.id}')" class="btn-icon" title="Ansehen">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button onclick="copyCoverLetter('${draft.id}')" class="btn-icon" title="Kopieren">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                                <button onclick="downloadCoverLetter('${draft.id}')" class="btn-icon" title="Herunterladen">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                                <button onclick="deleteCoverLetter('${draft.id}')" class="btn-icon btn-danger" title="Löschen">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error('Error loading cover letters:', error);
+            }
+        }
+        
+        // View cover letter in modal
+        window.viewCoverLetter = function(id) {
+            const drafts = JSON.parse(localStorage.getItem('cover_letter_drafts') || '[]');
+            const draft = drafts.find(d => d.id === id);
+            if (!draft) return;
+            
+            const modal = document.createElement('div');
+            modal.className = 'cover-letter-modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>${draft.jobData?.position || 'Anschreiben'} - ${draft.jobData?.company || ''}</h3>
+                        <button onclick="this.closest('.cover-letter-modal').remove()" class="btn-close">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <pre style="white-space: pre-wrap; font-family: inherit;">${draft.content}</pre>
+                    </div>
+                    <div class="modal-footer">
+                        <button onclick="copyCoverLetter('${id}'); this.closest('.cover-letter-modal').remove();" class="btn-secondary">
+                            <i class="fas fa-copy"></i> Kopieren
+                        </button>
+                        <button onclick="downloadCoverLetter('${id}'); this.closest('.cover-letter-modal').remove();" class="btn-primary">
+                            <i class="fas fa-download"></i> Herunterladen
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        };
+        
+        // Copy cover letter
+        window.copyCoverLetter = function(id) {
+            const drafts = JSON.parse(localStorage.getItem('cover_letter_drafts') || '[]');
+            const draft = drafts.find(d => d.id === id);
+            if (!draft) return;
+            
+            navigator.clipboard.writeText(draft.content).then(() => {
+                showToast('Anschreiben kopiert!', 'success');
+            });
+        };
+        
+        // Download cover letter
+        window.downloadCoverLetter = function(id) {
+            const drafts = JSON.parse(localStorage.getItem('cover_letter_drafts') || '[]');
+            const draft = drafts.find(d => d.id === id);
+            if (!draft) return;
+            
+            const blob = new Blob([draft.content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Anschreiben_${draft.jobData?.company || 'Bewerbung'}_${new Date(draft.createdAt).toISOString().split('T')[0]}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('Anschreiben heruntergeladen', 'success');
+        };
+        
+        // Delete cover letter
+        window.deleteCoverLetter = function(id) {
+            if (!confirm('Anschreiben wirklich löschen?')) return;
+            
+            const drafts = JSON.parse(localStorage.getItem('cover_letter_drafts') || '[]');
+            const filtered = drafts.filter(d => d.id !== id);
+            localStorage.setItem('cover_letter_drafts', JSON.stringify(filtered));
+            loadCoverLetters();
+            showToast('Anschreiben gelöscht', 'success');
+        };
+        
+        // Simple toast notification
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.textContent = message;
+            toast.style.cssText = `
+                position: fixed; top: 20px; right: 20px; z-index: 10000;
+                padding: 1rem 1.5rem; border-radius: 8px; color: white;
+                background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            `;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+        
         // Initialize on load
         document.addEventListener('DOMContentLoaded', async () => {
             // Setup mobile menu
@@ -1359,6 +1530,9 @@ Ihre Aufgaben:
             
             // Initialize dashboard
             initDashboard();
+            
+            // Load cover letters when switching to that tab
+            loadCoverLetters();
         });
     </script>
 </body>

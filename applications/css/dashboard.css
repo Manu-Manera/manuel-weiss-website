@@ -3343,3 +3343,245 @@
         transition: all 0.3s ease !important;
     }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   COVER LETTERS TAB - Meine Anschreiben
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.cover-letters-container {
+    padding: 2rem;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.cover-letters-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.cover-letters-header h2 {
+    color: var(--text-primary);
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.cover-letters-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.cover-letter-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 1.5rem;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s ease;
+}
+
+.cover-letter-item:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--primary-light);
+}
+
+.cover-letter-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.cover-letter-info h4 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 0.25rem 0;
+}
+
+.cover-letter-info .company {
+    font-size: 0.95rem;
+    color: var(--primary);
+    font-weight: 500;
+    margin: 0 0 0.25rem 0;
+}
+
+.cover-letter-info .date {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin: 0 0 0.5rem 0;
+}
+
+.cover-letter-info .preview {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.cover-letter-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-shrink: 0;
+    margin-left: 1rem;
+}
+
+.cover-letter-actions .btn-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: 1px solid var(--border-light);
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.cover-letter-actions .btn-icon:hover {
+    background: var(--primary-light);
+    color: white;
+    border-color: var(--primary-light);
+}
+
+.cover-letter-actions .btn-danger:hover {
+    background: var(--accent-red);
+    border-color: var(--accent-red);
+}
+
+/* Cover Letter Modal */
+.cover-letter-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    padding: 1rem;
+}
+
+.cover-letter-modal .modal-content {
+    background: white;
+    border-radius: 16px;
+    max-width: 700px;
+    width: 100%;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--shadow-xl);
+}
+
+.cover-letter-modal .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.cover-letter-modal .modal-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: var(--text-primary);
+}
+
+.cover-letter-modal .btn-close {
+    background: none;
+    border: none;
+    font-size: 1.25rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0.5rem;
+}
+
+.cover-letter-modal .modal-body {
+    padding: 1.5rem;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.cover-letter-modal .modal-body pre {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--text-primary);
+}
+
+.cover-letter-modal .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-top: 1px solid var(--border-light);
+}
+
+/* Empty State */
+#coverLettersEmpty {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    text-align: center;
+}
+
+#coverLettersEmpty i {
+    font-size: 4rem;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+}
+
+#coverLettersEmpty h3 {
+    color: var(--text-primary);
+    margin: 0 0 0.5rem 0;
+}
+
+#coverLettersEmpty p {
+    color: var(--text-secondary);
+    margin: 0 0 1.5rem 0;
+}
+
+/* Resume Actions - PDF/LinkedIn Buttons Text Color Fix */
+.resume-actions .btn-secondary {
+    color: #1f2937 !important;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid var(--border-medium);
+}
+
+.resume-actions .btn-secondary:hover {
+    background: white;
+    color: var(--primary) !important;
+}
+
+@media (max-width: 640px) {
+    .cover-letter-item {
+        flex-direction: column;
+    }
+    
+    .cover-letter-actions {
+        margin-left: 0;
+        margin-top: 1rem;
+        width: 100%;
+        justify-content: flex-end;
+    }
+    
+    .cover-letters-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
