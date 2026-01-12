@@ -100,6 +100,10 @@
                         <i class="fas fa-user-tie"></i>
                         Coach
                     </button>
+                    <button class="tab-btn" data-tab="journal">
+                        <i class="fas fa-book"></i>
+                        Tagebuch
+                    </button>
                 </div>
             </section>
 
@@ -893,6 +897,182 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Journal/Tagebuch Tab -->
+                <div class="tab-panel" id="journal">
+                    <div class="journal-dashboard">
+                        <div class="dashboard-header">
+                            <h3><i class="fas fa-book"></i> Dein Tagebuch</h3>
+                            <p>Tracke deine Aktivitäten, Trainings und Gedanken</p>
+                        </div>
+
+                        <!-- Journal Stats -->
+                        <div class="journal-stats-bar">
+                            <div class="stat-item">
+                                <i class="fas fa-calendar-check"></i>
+                                <div class="stat-content">
+                                    <h3 id="journalTotalEntries">0</h3>
+                                    <p>Einträge gesamt</p>
+                                </div>
+                            </div>
+                            <div class="stat-item">
+                                <i class="fas fa-fire"></i>
+                                <div class="stat-content">
+                                    <h3 id="journalStreak">0</h3>
+                                    <p>Tage Streak</p>
+                                </div>
+                            </div>
+                            <div class="stat-item">
+                                <i class="fas fa-calendar-day"></i>
+                                <div class="stat-content">
+                                    <h3 id="journalThisMonth">0</h3>
+                                    <p>Diesen Monat</p>
+                                </div>
+                            </div>
+                            <div class="stat-item">
+                                <i class="fas fa-smile"></i>
+                                <div class="stat-content">
+                                    <h3 id="journalAvgMood">-</h3>
+                                    <p>Ø Stimmung</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Activity Heatmap -->
+                        <div class="journal-heatmap-section">
+                            <div class="section-header">
+                                <h4><i class="fas fa-th"></i> Aktivitäts-Heatmap</h4>
+                                <div class="heatmap-legend">
+                                    <span class="legend-label">Weniger</span>
+                                    <div class="legend-colors">
+                                        <span class="heat-0"></span>
+                                        <span class="heat-1"></span>
+                                        <span class="heat-2"></span>
+                                        <span class="heat-3"></span>
+                                        <span class="heat-4"></span>
+                                    </div>
+                                    <span class="legend-label">Mehr</span>
+                                </div>
+                            </div>
+                            <div id="journalHeatmap" class="heatmap-container">
+                                <!-- Wird dynamisch generiert -->
+                            </div>
+                        </div>
+
+                        <!-- Selected Day View -->
+                        <div class="journal-day-view">
+                            <div class="day-header">
+                                <button id="journalPrevDay" class="day-nav-btn"><i class="fas fa-chevron-left"></i></button>
+                                <h4 id="journalSelectedDate">Heute</h4>
+                                <button id="journalNextDay" class="day-nav-btn"><i class="fas fa-chevron-right"></i></button>
+                            </div>
+                            <div id="journalDayEntries" class="day-entries">
+                                <div class="empty-state small">
+                                    <i class="fas fa-calendar-times"></i>
+                                    <p>Keine Einträge für diesen Tag</p>
+                                    <span>Füge einen neuen Eintrag hinzu!</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Entry Section -->
+                        <div class="journal-quick-entry">
+                            <h4><i class="fas fa-plus-circle"></i> Schnelleintrag</h4>
+                            <div class="quick-entry-types">
+                                <button class="entry-type-btn active" data-type="journal" onclick="window.userProfile.setJournalEntryType('journal')">
+                                    <i class="fas fa-pen"></i>
+                                    <span>Journal</span>
+                                </button>
+                                <button class="entry-type-btn" data-type="training" onclick="window.userProfile.setJournalEntryType('training')">
+                                    <i class="fas fa-dumbbell"></i>
+                                    <span>Training</span>
+                                </button>
+                                <button class="entry-type-btn" data-type="mood" onclick="window.userProfile.setJournalEntryType('mood')">
+                                    <i class="fas fa-smile"></i>
+                                    <span>Stimmung</span>
+                                </button>
+                                <button class="entry-type-btn" data-type="note" onclick="window.userProfile.setJournalEntryType('note')">
+                                    <i class="fas fa-sticky-note"></i>
+                                    <span>Notiz</span>
+                                </button>
+                            </div>
+
+                            <!-- Journal Entry Form -->
+                            <div id="journalEntryForm" class="entry-form" data-type="journal">
+                                <div class="form-group">
+                                    <label for="journalTitle">Titel</label>
+                                    <input type="text" id="journalTitle" placeholder="Was beschäftigt dich heute?">
+                                </div>
+                                <div class="form-group">
+                                    <label for="journalContent">Inhalt</label>
+                                    <textarea id="journalContent" rows="4" placeholder="Schreibe deine Gedanken..."></textarea>
+                                </div>
+                                
+                                <!-- Mood Selector (für Journal & Mood Typ) -->
+                                <div id="moodSelector" class="mood-selector">
+                                    <label>Wie fühlst du dich?</label>
+                                    <div class="mood-options">
+                                        <button type="button" class="mood-btn" data-mood="1" onclick="window.userProfile.selectMood(1)">😞</button>
+                                        <button type="button" class="mood-btn" data-mood="2" onclick="window.userProfile.selectMood(2)">😕</button>
+                                        <button type="button" class="mood-btn" data-mood="3" onclick="window.userProfile.selectMood(3)">😐</button>
+                                        <button type="button" class="mood-btn" data-mood="4" onclick="window.userProfile.selectMood(4)">🙂</button>
+                                        <button type="button" class="mood-btn" data-mood="5" onclick="window.userProfile.selectMood(5)">😄</button>
+                                    </div>
+                                </div>
+
+                                <!-- Training Fields (für Training Typ) -->
+                                <div id="trainingFields" class="training-fields" style="display: none;">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="trainingType">Art des Trainings</label>
+                                            <select id="trainingType">
+                                                <option value="strength">Krafttraining</option>
+                                                <option value="cardio">Cardio</option>
+                                                <option value="flexibility">Mobility/Yoga</option>
+                                                <option value="hiit">HIIT</option>
+                                                <option value="sport">Sport</option>
+                                                <option value="other">Sonstiges</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="trainingDuration">Dauer (Min)</label>
+                                            <input type="number" id="trainingDuration" placeholder="30" min="1">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="trainingIntensity">Intensität</label>
+                                        <div class="intensity-slider">
+                                            <input type="range" id="trainingIntensity" min="1" max="10" value="5">
+                                            <span id="intensityValue">5/10</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="journalTags">Tags (kommagetrennt)</label>
+                                    <input type="text" id="journalTags" placeholder="meditation, morgenroutine">
+                                </div>
+
+                                <button type="button" class="btn-primary" onclick="window.userProfile.saveJournalEntry()">
+                                    <i class="fas fa-save"></i>
+                                    Eintrag speichern
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Recent Entries -->
+                        <div class="journal-recent-section">
+                            <h4><i class="fas fa-history"></i> Letzte Einträge</h4>
+                            <div id="journalRecentEntries" class="recent-entries-list">
+                                <div class="empty-state small">
+                                    <i class="fas fa-book-open"></i>
+                                    <p>Noch keine Einträge</p>
+                                    <span>Starte mit deinem ersten Tagebucheintrag!</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </main>
@@ -930,8 +1110,9 @@
     <script src="js/aws-nutrition-api.js"></script>
     <script src="js/aws-achievements-api.js"></script>
     <script src="js/aws-applications-api.js"></script>
+    <script src="js/aws-journal-api.js?v=20260112"></script>
     <script src="js/success-checkmark.js?v=20260112"></script>
-    <script src="js/user-profile.js?v=20260112g"></script>
+    <script src="js/user-profile.js?v=20260112h"></script>
     <script>
         // Tab Data Loading Functions
         async function loadTrainingTabData() {

@@ -42,7 +42,7 @@ class UserProfile {
         const performHashNavigation = () => {
             // Prüfe sofort, ob Hash vorhanden ist
             const hash = window.location.hash.slice(1);
-            if (hash && ['personal', 'applications', 'settings', 'progress', 'achievements'].includes(hash)) {
+            if (hash && ['personal', 'applications', 'settings', 'progress', 'achievements', 'training', 'nutrition', 'coach', 'journal'].includes(hash)) {
                 // Hash vorhanden - führe Navigation mit Polling aus
                 this.handleHashNavigation();
             } else {
@@ -65,7 +65,7 @@ class UserProfile {
         // Dies stellt sicher, dass auch bei sehr langsamen Verbindungen die Navigation funktioniert
         setTimeout(() => {
             const hash = window.location.hash.slice(1);
-            if (hash && ['personal', 'applications', 'settings', 'progress', 'achievements'].includes(hash)) {
+            if (hash && ['personal', 'applications', 'settings', 'progress', 'achievements', 'training', 'nutrition', 'coach', 'journal'].includes(hash)) {
                 // Prüfe ob Tab bereits aktiv ist
                 const activeTab = document.querySelector('.tab-btn.active');
                 const expectedTab = document.querySelector(`[data-tab="${hash}"]`);
@@ -83,7 +83,7 @@ class UserProfile {
         const tabPanels = document.querySelectorAll('.tab-panel');
         
         // Prüfe auf spezifische Elemente für alle möglichen Tabs
-        const requiredTabs = ['personal', 'applications', 'settings', 'progress', 'achievements'];
+        const requiredTabs = ['personal', 'applications', 'settings', 'progress', 'achievements', 'training', 'nutrition', 'coach', 'journal'];
         const allTabsExist = requiredTabs.every(tabName => {
             const button = document.querySelector(`[data-tab="${tabName}"]`);
             const panel = document.getElementById(tabName);
@@ -99,7 +99,7 @@ class UserProfile {
                 console.error('❌ Tab-Elemente nach', maxAttempts, 'Versuchen nicht gefunden. Verwende Standard-Tab.');
                 // Fallback: Standard-Tab aktivieren
                 const hash = window.location.hash.slice(1);
-                if (!hash || !['personal', 'applications', 'settings', 'progress', 'achievements'].includes(hash)) {
+                if (!hash || !['personal', 'applications', 'settings', 'progress', 'achievements', 'training', 'nutrition', 'coach', 'journal'].includes(hash)) {
                     this.switchTab('personal');
                 }
                 return;
@@ -107,7 +107,7 @@ class UserProfile {
         }
         
         const hash = window.location.hash.slice(1); // Remove the #
-        if (hash && ['personal', 'applications', 'settings', 'progress', 'achievements'].includes(hash)) {
+        if (hash && ['personal', 'applications', 'settings', 'progress', 'achievements', 'training', 'nutrition', 'coach', 'journal'].includes(hash)) {
             console.log('📍 Navigating to tab:', hash);
             this.switchTab(hash);
         } else if (!hash) {
@@ -313,6 +313,11 @@ class UserProfile {
             // Update progress display if switching to progress tab
             if (tabName === 'progress') {
                 this.updateProgressDisplay();
+            }
+            
+            // Initialize journal if switching to journal tab
+            if (tabName === 'journal') {
+                this.initJournalTab();
             }
         } catch (error) {
             console.error(`❌ Fehler beim Wechseln zum Tab "${tabName}":`, error);
@@ -1508,6 +1513,396 @@ class UserProfile {
         } catch (error) {
             console.error('❌ Failed to delete application:', error);
             this.showNotification('Fehler beim Löschen der Bewerbung', 'error');
+        }
+    }
+
+    // ========================================
+    // JOURNAL/TAGEBUCH FUNKTIONEN
+    // ========================================
+
+    async initJournalTab() {
+        if (this.journalInitialized) return;
+        
+        console.log('📓 Initialisiere Journal-Tab...');
+        
+        this.selectedJournalDate = new Date();
+        this.selectedMood = null;
+        this.journalEntryType = 'journal';
+        
+        // Event Listeners für Training Intensität
+        const intensitySlider = document.getElementById('trainingIntensity');
+        if (intensitySlider) {
+            intensitySlider.addEventListener('input', (e) => {
+                document.getElementById('intensityValue').textContent = `${e.target.value}/10`;
+            });
+        }
+        
+        // Tag-Navigation
+        document.getElementById('journalPrevDay')?.addEventListener('click', () => this.navigateJournalDay(-1));
+        document.getElementById('journalNextDay')?.addEventListener('click', () => this.navigateJournalDay(1));
+        
+        // Lade Daten
+        await this.loadJournalData();
+        this.generateHeatmap();
+        this.updateJournalDayView();
+        
+        this.journalInitialized = true;
+        console.log('✅ Journal-Tab initialisiert');
+    }
+
+    async loadJournalData() {
+        try {
+            if (!window.awsJournalAPI) {
+                console.warn('⚠️ Journal API nicht verfügbar');
+                return;
+            }
+            
+            const data = await window.awsJournalAPI.getEntries();
+            this.journalEntries = data.entries || [];
+            this.journalStats = data.stats || {};
+            
+            // Update Stats Display
+            this.updateJournalStats();
+            this.updateRecentEntries();
+            
+            console.log('✅ Journal-Daten geladen:', this.journalEntries.length, 'Einträge');
+        } catch (error) {
+            console.error('❌ Fehler beim Laden der Journal-Daten:', error);
+            this.journalEntries = [];
+            this.journalStats = {};
+        }
+    }
+
+    updateJournalStats() {
+        const stats = this.journalStats;
+        
+        document.getElementById('journalTotalEntries').textContent = stats.totalEntries || 0;
+        document.getElementById('journalStreak').textContent = stats.streakDays || 0;
+        document.getElementById('journalThisMonth').textContent = stats.thisMonth || 0;
+        document.getElementById('journalAvgMood').textContent = stats.avgMood ? stats.avgMood.toFixed(1) : '-';
+    }
+
+    generateHeatmap() {
+        const container = document.getElementById('journalHeatmap');
+        if (!container) return;
+        
+        container.innerHTML = '';
+        
+        const today = new Date();
+        const startDate = new Date(today);
+        startDate.setDate(startDate.getDate() - 364); // ~1 Jahr zurück
+        startDate.setDate(startDate.getDate() - startDate.getDay()); // Start am Sonntag
+        
+        // Erzeuge Heatmap-Daten
+        const heatmapData = {};
+        this.journalEntries?.forEach(entry => {
+            const date = entry.date.split('T')[0];
+            heatmapData[date] = (heatmapData[date] || 0) + 1;
+        });
+        
+        // Generiere Wochen
+        let currentDate = new Date(startDate);
+        const weeks = [];
+        
+        while (currentDate <= today) {
+            const week = [];
+            for (let i = 0; i < 7; i++) {
+                if (currentDate <= today) {
+                    const dateStr = currentDate.toISOString().split('T')[0];
+                    const count = heatmapData[dateStr] || 0;
+                    let level = 0;
+                    if (count >= 4) level = 4;
+                    else if (count >= 3) level = 3;
+                    else if (count >= 2) level = 2;
+                    else if (count >= 1) level = 1;
+                    
+                    week.push({
+                        date: dateStr,
+                        count,
+                        level,
+                        display: this.formatDateDisplay(currentDate)
+                    });
+                }
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+            weeks.push(week);
+        }
+        
+        // Render
+        weeks.forEach(week => {
+            const weekDiv = document.createElement('div');
+            weekDiv.className = 'heatmap-week';
+            
+            week.forEach(day => {
+                const dayDiv = document.createElement('div');
+                dayDiv.className = `heatmap-day level-${day.level}`;
+                dayDiv.dataset.date = day.date;
+                
+                const tooltip = document.createElement('span');
+                tooltip.className = 'tooltip';
+                tooltip.textContent = `${day.display}: ${day.count} Einträge`;
+                dayDiv.appendChild(tooltip);
+                
+                dayDiv.addEventListener('click', () => this.selectJournalDate(day.date));
+                
+                if (day.date === this.selectedJournalDate?.toISOString().split('T')[0]) {
+                    dayDiv.classList.add('selected');
+                }
+                
+                weekDiv.appendChild(dayDiv);
+            });
+            
+            container.appendChild(weekDiv);
+        });
+    }
+
+    formatDateDisplay(date) {
+        return date.toLocaleDateString('de-DE', { 
+            weekday: 'short', 
+            day: 'numeric', 
+            month: 'short' 
+        });
+    }
+
+    selectJournalDate(dateStr) {
+        this.selectedJournalDate = new Date(dateStr);
+        
+        // Update Heatmap Selection
+        document.querySelectorAll('.heatmap-day').forEach(day => {
+            day.classList.remove('selected');
+            if (day.dataset.date === dateStr) {
+                day.classList.add('selected');
+            }
+        });
+        
+        this.updateJournalDayView();
+    }
+
+    navigateJournalDay(offset) {
+        this.selectedJournalDate.setDate(this.selectedJournalDate.getDate() + offset);
+        this.updateJournalDayView();
+        
+        // Update Heatmap Selection
+        const dateStr = this.selectedJournalDate.toISOString().split('T')[0];
+        document.querySelectorAll('.heatmap-day').forEach(day => {
+            day.classList.remove('selected');
+            if (day.dataset.date === dateStr) {
+                day.classList.add('selected');
+            }
+        });
+    }
+
+    updateJournalDayView() {
+        const dateStr = this.selectedJournalDate.toISOString().split('T')[0];
+        const today = new Date().toISOString().split('T')[0];
+        
+        // Update Header
+        const headerText = dateStr === today ? 'Heute' : this.formatDateDisplay(this.selectedJournalDate);
+        document.getElementById('journalSelectedDate').textContent = headerText;
+        
+        // Filter entries for this date
+        const dayEntries = this.journalEntries?.filter(entry => 
+            entry.date.split('T')[0] === dateStr
+        ) || [];
+        
+        // Render entries
+        const container = document.getElementById('journalDayEntries');
+        if (!container) return;
+        
+        if (dayEntries.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state small">
+                    <i class="fas fa-calendar-times"></i>
+                    <p>Keine Einträge für diesen Tag</p>
+                    <span>Füge einen neuen Eintrag hinzu!</span>
+                </div>
+            `;
+            return;
+        }
+        
+        container.innerHTML = dayEntries.map(entry => this.renderDayEntry(entry)).join('');
+    }
+
+    renderDayEntry(entry) {
+        const time = new Date(entry.date).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+        const typeIcons = {
+            journal: '📝',
+            training: '💪',
+            mood: '😊',
+            activity: '⚡',
+            note: '📌'
+        };
+        
+        const moodEmojis = ['', '😞', '😕', '😐', '🙂', '😄'];
+        
+        return `
+            <div class="day-entry" data-id="${entry.id}">
+                <div class="entry-time">
+                    <span class="time">${time}</span>
+                </div>
+                <div class="entry-icon ${entry.type}">
+                    ${typeIcons[entry.type] || '📝'}
+                </div>
+                <div class="entry-content">
+                    <h5>${entry.title || 'Eintrag'}</h5>
+                    <p>${entry.content || ''}</p>
+                    ${entry.tags?.length ? `
+                        <div class="entry-tags">
+                            ${entry.tags.map(tag => `<span class="entry-tag">${tag}</span>`).join('')}
+                        </div>
+                    ` : ''}
+                </div>
+                ${entry.mood ? `<div class="entry-mood">${moodEmojis[entry.mood]}</div>` : ''}
+            </div>
+        `;
+    }
+
+    updateRecentEntries() {
+        const container = document.getElementById('journalRecentEntries');
+        if (!container) return;
+        
+        const recentEntries = (this.journalEntries || []).slice(0, 5);
+        
+        if (recentEntries.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state small">
+                    <i class="fas fa-book-open"></i>
+                    <p>Noch keine Einträge</p>
+                    <span>Starte mit deinem ersten Tagebucheintrag!</span>
+                </div>
+            `;
+            return;
+        }
+        
+        const typeIcons = {
+            journal: '📝',
+            training: '💪',
+            mood: '😊',
+            activity: '⚡',
+            note: '📌'
+        };
+        
+        container.innerHTML = recentEntries.map(entry => {
+            const date = new Date(entry.date);
+            const dateStr = date.toLocaleDateString('de-DE', { day: 'numeric', month: 'short' });
+            
+            return `
+                <div class="recent-entry" onclick="window.userProfile.selectJournalDate('${entry.date.split('T')[0]}')">
+                    <div class="recent-entry-icon entry-icon ${entry.type}">
+                        ${typeIcons[entry.type] || '📝'}
+                    </div>
+                    <div class="recent-entry-content">
+                        <h5>${entry.title || 'Eintrag'}</h5>
+                        <p>${(entry.content || '').substring(0, 50)}${(entry.content || '').length > 50 ? '...' : ''}</p>
+                    </div>
+                    <div class="recent-entry-date">${dateStr}</div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    setJournalEntryType(type) {
+        this.journalEntryType = type;
+        
+        // Update active button
+        document.querySelectorAll('.entry-type-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.dataset.type === type) {
+                btn.classList.add('active');
+            }
+        });
+        
+        // Show/hide fields
+        const moodSelector = document.getElementById('moodSelector');
+        const trainingFields = document.getElementById('trainingFields');
+        
+        if (moodSelector) {
+            moodSelector.style.display = (type === 'journal' || type === 'mood') ? 'block' : 'none';
+        }
+        
+        if (trainingFields) {
+            trainingFields.style.display = type === 'training' ? 'block' : 'none';
+        }
+        
+        // Update placeholder
+        const titleInput = document.getElementById('journalTitle');
+        const contentInput = document.getElementById('journalContent');
+        
+        const placeholders = {
+            journal: { title: 'Was beschäftigt dich heute?', content: 'Schreibe deine Gedanken...' },
+            training: { title: 'Workout-Name', content: 'Notizen zum Training...' },
+            mood: { title: 'Wie geht es dir?', content: 'Optional: Beschreibe deine Stimmung...' },
+            note: { title: 'Kurze Notiz', content: 'Schnelle Notiz...' }
+        };
+        
+        if (titleInput) titleInput.placeholder = placeholders[type]?.title || '';
+        if (contentInput) contentInput.placeholder = placeholders[type]?.content || '';
+    }
+
+    selectMood(mood) {
+        this.selectedMood = mood;
+        
+        document.querySelectorAll('.mood-btn').forEach(btn => {
+            btn.classList.remove('selected');
+            if (parseInt(btn.dataset.mood) === mood) {
+                btn.classList.add('selected');
+            }
+        });
+    }
+
+    async saveJournalEntry() {
+        const title = document.getElementById('journalTitle')?.value?.trim();
+        const content = document.getElementById('journalContent')?.value?.trim();
+        const tagsStr = document.getElementById('journalTags')?.value?.trim();
+        const tags = tagsStr ? tagsStr.split(',').map(t => t.trim()).filter(t => t) : [];
+        
+        if (!title && !content) {
+            this.showNotification('Bitte gib einen Titel oder Inhalt ein', 'error');
+            return;
+        }
+        
+        const entry = {
+            type: this.journalEntryType,
+            title,
+            content,
+            tags,
+            mood: this.selectedMood,
+            date: new Date().toISOString()
+        };
+        
+        // Add training data if applicable
+        if (this.journalEntryType === 'training') {
+            entry.trainingData = {
+                type: document.getElementById('trainingType')?.value || 'other',
+                duration: parseInt(document.getElementById('trainingDuration')?.value) || 0,
+                intensity: parseInt(document.getElementById('trainingIntensity')?.value) || 5
+            };
+        }
+        
+        try {
+            if (!window.awsJournalAPI) {
+                throw new Error('Journal API nicht verfügbar');
+            }
+            
+            const result = await window.awsJournalAPI.createEntry(entry);
+            
+            // Clear form
+            document.getElementById('journalTitle').value = '';
+            document.getElementById('journalContent').value = '';
+            document.getElementById('journalTags').value = '';
+            this.selectedMood = null;
+            document.querySelectorAll('.mood-btn').forEach(btn => btn.classList.remove('selected'));
+            
+            // Reload data
+            await this.loadJournalData();
+            this.generateHeatmap();
+            this.updateJournalDayView();
+            
+            this.showNotification('Eintrag gespeichert!', 'success');
+            
+        } catch (error) {
+            console.error('❌ Fehler beim Speichern:', error);
+            this.showNotification('Fehler beim Speichern: ' + error.message, 'error');
         }
     }
 }
