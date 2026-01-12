@@ -430,18 +430,38 @@ class UnifiedAWSAuth {
             
             console.log('✅ Login successful:', result);
             
-            // Session mit korrekten Daten speichern
+            // Extrahiere userId (sub) aus dem idToken
+            let userId = null;
+            let firstName = '';
+            let lastName = '';
+            try {
+                const tokenPayload = this.decodeJWT(result.AuthenticationResult.IdToken);
+                if (tokenPayload) {
+                    userId = tokenPayload.sub;
+                    firstName = tokenPayload.given_name || tokenPayload.name?.split(' ')[0] || '';
+                    lastName = tokenPayload.family_name || tokenPayload.name?.split(' ').slice(1).join(' ') || '';
+                    console.log('🔑 Extracted userId from token:', userId);
+                }
+            } catch (e) {
+                console.warn('⚠️ Could not extract userId from token:', e);
+            }
+            
+            // Session mit korrekten Daten speichern (inkl. userId!)
             this.currentUser = {
+                id: userId, // WICHTIG: userId für AWS Profile API
                 email: email.trim(),
+                firstName: firstName,
+                lastName: lastName,
                 accessToken: result.AuthenticationResult.AccessToken,
                 idToken: result.AuthenticationResult.IdToken,
                 refreshToken: result.AuthenticationResult.RefreshToken,
                 expiresIn: result.AuthenticationResult.ExpiresIn,
                 tokenType: result.AuthenticationResult.TokenType,
-                loginTime: Date.now()
+                loginTime: Date.now(),
+                expiresAt: new Date(Date.now() + result.AuthenticationResult.ExpiresIn * 1000).toISOString()
             };
             
-            console.log('💾 Storing user session:', this.currentUser);
+            console.log('💾 Storing user session with userId:', this.currentUser.id);
             localStorage.setItem(window.AWS_AUTH_CONFIG.token.storageKey, JSON.stringify(this.currentUser));
             this.updateUI(true);
             
@@ -614,14 +634,39 @@ class UnifiedAWSAuth {
                     return false;
                 }
                 
-                // Wenn email fehlt, versuche sie aus dem idToken zu extrahieren
-                if (!this.currentUser.email && this.currentUser.idToken) {
+                // Wenn id oder email fehlt, versuche sie aus dem idToken zu extrahieren
+                if (this.currentUser.idToken && (!this.currentUser.id || !this.currentUser.email)) {
                     const tokenData = this.decodeJWT(this.currentUser.idToken);
-                    if (tokenData && tokenData.email) {
-                        this.currentUser.email = tokenData.email;
-                        console.log('📧 Email aus Token extrahiert:', this.currentUser.email);
-                        // Session mit email aktualisieren
-                        localStorage.setItem(window.AWS_AUTH_CONFIG.token.storageKey, JSON.stringify(this.currentUser));
+                    if (tokenData) {
+                        let updated = false;
+                        
+                        if (!this.currentUser.id && tokenData.sub) {
+                            this.currentUser.id = tokenData.sub;
+                            console.log('🔑 userId aus Token extrahiert:', this.currentUser.id);
+                            updated = true;
+                        }
+                        
+                        if (!this.currentUser.email && tokenData.email) {
+                            this.currentUser.email = tokenData.email;
+                            console.log('📧 Email aus Token extrahiert:', this.currentUser.email);
+                            updated = true;
+                        }
+                        
+                        if (!this.currentUser.firstName && (tokenData.given_name || tokenData.name)) {
+                            this.currentUser.firstName = tokenData.given_name || tokenData.name?.split(' ')[0] || '';
+                            updated = true;
+                        }
+                        
+                        if (!this.currentUser.lastName && (tokenData.family_name || tokenData.name)) {
+                            this.currentUser.lastName = tokenData.family_name || tokenData.name?.split(' ').slice(1).join(' ') || '';
+                            updated = true;
+                        }
+                        
+                        // Session aktualisieren
+                        if (updated) {
+                            localStorage.setItem(window.AWS_AUTH_CONFIG.token.storageKey, JSON.stringify(this.currentUser));
+                            console.log('💾 Session aktualisiert mit extrahierten Daten');
+                        }
                     }
                 }
                 
@@ -735,11 +780,16 @@ class UnifiedAWSAuth {
             // Auch expiresAt aktualisieren für Kompatibilität mit real-user-auth-system.js
             this.currentUser.expiresAt = new Date(Date.now() + result.AuthenticationResult.ExpiresIn * 1000).toISOString();
             
-            // Email aus Token extrahieren falls fehlend
-            if (!this.currentUser.email && result.AuthenticationResult.IdToken) {
+            // userId und Email aus Token extrahieren falls fehlend
+            if (result.AuthenticationResult.IdToken) {
                 const tokenData = this.decodeJWT(result.AuthenticationResult.IdToken);
-                if (tokenData && tokenData.email) {
-                    this.currentUser.email = tokenData.email;
+                if (tokenData) {
+                    if (!this.currentUser.id && tokenData.sub) {
+                        this.currentUser.id = tokenData.sub;
+                    }
+                    if (!this.currentUser.email && tokenData.email) {
+                        this.currentUser.email = tokenData.email;
+                    }
                 }
             }
             
