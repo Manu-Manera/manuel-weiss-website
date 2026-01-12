@@ -1214,6 +1214,11 @@ Ihre Aufgaben:
                     if (mobileProfileLink) {
                         mobileProfileLink.style.display = 'block';
                     }
+                    
+                    // WICHTIG: Dropdown nach Login NICHT automatisch öffnen
+                    if (userDropdown) {
+                        userDropdown.style.display = 'none';
+                    }
                 } else {
                     // Not logged in
                     authButton.innerHTML = `<i class="fas fa-user"></i><span>Anmelden</span>`;
