@@ -1087,41 +1087,241 @@ class UserProfile {
     }
 
     /**
-     * Lade Anschreiben
+     * Lade Anschreiben aus localStorage (cover_letter_drafts)
      */
     async loadCoverLetters() {
         try {
-            // TODO: API-Call für Anschreiben
-            const coverLetters = []; // Placeholder
+            // Lade aus localStorage (von quick-apply gespeichert)
+            const draftsJson = localStorage.getItem('cover_letter_drafts');
+            const coverLetters = draftsJson ? JSON.parse(draftsJson) : [];
             
             const coverLettersList = document.getElementById('coverLettersList');
+            const emptyState = document.getElementById('coverLettersEmpty');
+            
             if (!coverLettersList) return;
 
             if (coverLetters.length === 0) {
-                // Empty state bleibt sichtbar
+                // Empty state anzeigen
+                if (emptyState) emptyState.style.display = 'block';
+                coverLettersList.innerHTML = '';
                 return;
             }
 
+            // Empty state ausblenden
+            if (emptyState) emptyState.style.display = 'none';
+
             // Render cover letters
-            coverLettersList.innerHTML = coverLetters.map(letter => `
-                <div class="application-item">
-                    <div class="application-info">
-                        <h4>${letter.title || 'Anschreiben'}</h4>
-                        <p>${letter.company || ''} - ${letter.date || ''}</p>
+            coverLettersList.innerHTML = coverLetters.map((letter, index) => {
+                const company = letter.jobData?.company || 'Unbekanntes Unternehmen';
+                const position = letter.jobData?.position || letter.jobData?.title || 'Allgemeines Anschreiben';
+                const date = letter.createdAt ? new Date(letter.createdAt).toLocaleDateString('de-DE') : '';
+                const preview = letter.content ? letter.content.substring(0, 100) + '...' : '';
+                
+                return `
+                    <div class="application-item cover-letter-item" data-id="${letter.id}">
+                        <div class="application-info">
+                            <h4><i class="fas fa-file-alt"></i> ${this.escapeHtml(position)}</h4>
+                            <p><strong>${this.escapeHtml(company)}</strong> - ${date}</p>
+                            <p class="preview-text" style="font-size: 0.85em; color: #666; margin-top: 4px;">${this.escapeHtml(preview)}</p>
+                        </div>
+                        <div class="application-actions">
+                            <button class="btn-icon" onclick="window.userProfile.viewCoverLetter('${letter.id}')" title="Anzeigen">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="btn-icon" onclick="window.userProfile.copyCoverLetter('${letter.id}')" title="Kopieren">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                            <button class="btn-icon" onclick="window.userProfile.downloadCoverLetter('${letter.id}')" title="Herunterladen">
+                                <i class="fas fa-download"></i>
+                            </button>
+                            <button class="btn-icon btn-danger" onclick="window.userProfile.deleteCoverLetter('${letter.id}')" title="Löschen">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
                     </div>
-                    <div class="application-actions">
-                        <button class="btn-icon" onclick="window.userProfile.editCoverLetter('${letter.id}')">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn-icon" onclick="window.userProfile.deleteCoverLetter('${letter.id}')">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         } catch (error) {
             console.error('Error loading cover letters:', error);
         }
+    }
+    
+    /**
+     * Anschreiben anzeigen
+     */
+    viewCoverLetter(id) {
+        const drafts = JSON.parse(localStorage.getItem('cover_letter_drafts') || '[]');
+        const letter = drafts.find(d => d.id === id);
+        
+        if (letter) {
+            // Erstelle Modal für Vollansicht
+            const modal = document.createElement('div');
+            modal.className = 'cover-letter-modal';
+            modal.innerHTML = `
+                <div class="modal-overlay" onclick="this.parentElement.remove()"></div>
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-file-alt"></i> ${this.escapeHtml(letter.jobData?.position || 'Anschreiben')}</h3>
+                        <button class="modal-close" onclick="this.closest('.cover-letter-modal').remove()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="letter-meta">
+                            <span><strong>Unternehmen:</strong> ${this.escapeHtml(letter.jobData?.company || 'N/A')}</span>
+                            <span><strong>Datum:</strong> ${new Date(letter.createdAt).toLocaleDateString('de-DE')}</span>
+                        </div>
+                        <pre class="letter-content">${this.escapeHtml(letter.content)}</pre>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn-secondary" onclick="window.userProfile.copyCoverLetter('${id}'); this.closest('.cover-letter-modal').remove();">
+                            <i class="fas fa-copy"></i> Kopieren
+                        </button>
+                        <button class="btn-primary" onclick="window.userProfile.downloadCoverLetter('${id}'); this.closest('.cover-letter-modal').remove();">
+                            <i class="fas fa-download"></i> Herunterladen
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            // Add styles if not already present
+            if (!document.getElementById('cover-letter-modal-styles')) {
+                const style = document.createElement('style');
+                style.id = 'cover-letter-modal-styles';
+                style.textContent = `
+                    .cover-letter-modal {
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        z-index: 10000;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    }
+                    .cover-letter-modal .modal-overlay {
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        background: rgba(0,0,0,0.6);
+                        cursor: pointer;
+                    }
+                    .cover-letter-modal .modal-content {
+                        position: relative;
+                        background: white;
+                        border-radius: 12px;
+                        width: 90%;
+                        max-width: 700px;
+                        max-height: 85vh;
+                        display: flex;
+                        flex-direction: column;
+                        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+                    }
+                    .cover-letter-modal .modal-header {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        padding: 16px 20px;
+                        border-bottom: 1px solid #eee;
+                    }
+                    .cover-letter-modal .modal-header h3 {
+                        margin: 0;
+                        font-size: 1.2em;
+                    }
+                    .cover-letter-modal .modal-close {
+                        background: none;
+                        border: none;
+                        font-size: 1.2em;
+                        cursor: pointer;
+                        padding: 4px 8px;
+                        color: #666;
+                    }
+                    .cover-letter-modal .modal-body {
+                        padding: 20px;
+                        overflow-y: auto;
+                        flex: 1;
+                    }
+                    .cover-letter-modal .letter-meta {
+                        display: flex;
+                        gap: 20px;
+                        margin-bottom: 16px;
+                        font-size: 0.9em;
+                        color: #666;
+                    }
+                    .cover-letter-modal .letter-content {
+                        white-space: pre-wrap;
+                        font-family: inherit;
+                        font-size: 0.95em;
+                        line-height: 1.6;
+                        background: #f8f9fa;
+                        padding: 16px;
+                        border-radius: 8px;
+                        margin: 0;
+                    }
+                    .cover-letter-modal .modal-footer {
+                        display: flex;
+                        justify-content: flex-end;
+                        gap: 12px;
+                        padding: 16px 20px;
+                        border-top: 1px solid #eee;
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+    }
+    
+    /**
+     * Anschreiben kopieren
+     */
+    copyCoverLetter(id) {
+        const drafts = JSON.parse(localStorage.getItem('cover_letter_drafts') || '[]');
+        const letter = drafts.find(d => d.id === id);
+        
+        if (letter && letter.content) {
+            navigator.clipboard.writeText(letter.content).then(() => {
+                this.showNotification('Anschreiben in Zwischenablage kopiert!', 'success');
+            }).catch(() => {
+                this.showNotification('Fehler beim Kopieren', 'error');
+            });
+        }
+    }
+    
+    /**
+     * Anschreiben herunterladen
+     */
+    downloadCoverLetter(id) {
+        const drafts = JSON.parse(localStorage.getItem('cover_letter_drafts') || '[]');
+        const letter = drafts.find(d => d.id === id);
+        
+        if (letter && letter.content) {
+            const company = letter.jobData?.company || 'Bewerbung';
+            const date = new Date(letter.createdAt).toISOString().split('T')[0];
+            
+            const blob = new Blob([letter.content], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Anschreiben_${company}_${date}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            this.showNotification('Anschreiben heruntergeladen', 'success');
+        }
+    }
+    
+    /**
+     * HTML escapen
+     */
+    escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
     }
 
     /**
@@ -1255,13 +1455,20 @@ class UserProfile {
     }
 
     /**
-     * Lösche Anschreiben
+     * Lösche Anschreiben aus localStorage
      */
     deleteCoverLetter(id) {
         if (confirm('Möchten Sie dieses Anschreiben wirklich löschen?')) {
-            // TODO: API-Call zum Löschen
-            console.log('Delete cover letter:', id);
-            this.loadCoverLetters();
+            try {
+                const drafts = JSON.parse(localStorage.getItem('cover_letter_drafts') || '[]');
+                const filtered = drafts.filter(d => d.id !== id);
+                localStorage.setItem('cover_letter_drafts', JSON.stringify(filtered));
+                this.loadCoverLetters();
+                this.showNotification('Anschreiben gelöscht', 'success');
+            } catch (error) {
+                console.error('Error deleting cover letter:', error);
+                this.showNotification('Fehler beim Löschen', 'error');
+            }
         }
     }
 

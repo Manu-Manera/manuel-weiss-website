@@ -281,7 +281,7 @@
                             </div>
                             <div id="coverLettersList" class="applications-list">
                                 <!-- Wird dynamisch gefüllt -->
-                                <div class="empty-state">
+                                <div id="coverLettersEmpty" class="empty-state">
                                     <i class="fas fa-envelope"></i>
                                     <h4>Noch keine Anschreiben</h4>
                                     <p>Erstelle dein erstes Anschreiben mit KI-Unterstützung</p>
@@ -1212,7 +1212,7 @@
     <script src="js/aws-applications-api.js"></script>
     <script src="js/aws-journal-api.js?v=20260112"></script>
     <script src="js/success-checkmark.js?v=20260112"></script>
-    <script src="js/user-profile.js?v=20260112l"></script>
+    <script src="js/user-profile.js?v=20260112m"></script>
     <script>
         // Tab Data Loading Functions
         async function loadTrainingTabData() {
@@ -1464,8 +1464,12 @@
             let isLoggedIn = false;
             let userName = '';
             
-            // Check unified auth first, then real user auth
-            if (window.unifiedAuth && window.unifiedAuth.isLoggedIn()) {
+            // Check awsAuth first (main auth system), then fallbacks
+            if (window.awsAuth && window.awsAuth.isLoggedIn()) {
+                isLoggedIn = true;
+                const user = window.awsAuth.getCurrentUser();
+                userName = user?.name || user?.firstName || user?.email?.split('@')[0] || 'Profil';
+            } else if (window.unifiedAuth && window.unifiedAuth.isLoggedIn()) {
                 isLoggedIn = true;
                 const user = window.unifiedAuth.getCurrentUser();
                 userName = user?.name || user?.firstName || user?.email?.split('@')[0] || 'Profil';
@@ -1478,17 +1482,22 @@
             if (isLoggedIn) {
                 authButton.classList.add('logged-in');
                 authText.textContent = userName.length > 12 ? userName.substring(0, 12) + '...' : userName;
-                authButton.onclick = handleLogout;
+                // Entferne onclick, damit kein Modal erscheint - im Profil ist man bereits
+                authButton.onclick = null;
+                authButton.style.cursor = 'default';
             } else {
                 authButton.classList.remove('logged-in');
                 authText.textContent = 'Anmelden';
                 authButton.onclick = showLoginModal;
+                authButton.style.cursor = 'pointer';
             }
         }
         
         function handleLogout() {
             if (confirm('Möchten Sie sich wirklich abmelden?')) {
-                if (window.unifiedAuth) {
+                if (window.awsAuth) {
+                    window.awsAuth.logout();
+                } else if (window.unifiedAuth) {
                     window.unifiedAuth.logout();
                 } else if (window.realUserAuth) {
                     window.realUserAuth.logout();
