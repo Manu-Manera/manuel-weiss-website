@@ -63,6 +63,26 @@ exports.handler = async (event, context) => {
 
         // GET: Lade aktuelle Video-URL
         if (event.httpMethod === 'GET') {
+            // Prüfe AWS Credentials auch für GET
+            const accessKeyId = process.env.NETLIFY_AWS_ACCESS_KEY_ID || process.env.AWS_ACCESS_KEY_ID;
+            const secretAccessKey = process.env.NETLIFY_AWS_SECRET_ACCESS_KEY || process.env.AWS_SECRET_ACCESS_KEY;
+            
+            if (!accessKeyId || !secretAccessKey) {
+                console.error('❌ AWS Credentials missing for GET request!');
+                console.error('NETLIFY_AWS_ACCESS_KEY_ID:', accessKeyId ? 'SET' : 'MISSING');
+                console.error('NETLIFY_AWS_SECRET_ACCESS_KEY:', secretAccessKey ? 'SET' : 'MISSING');
+                return {
+                    statusCode: 500,
+                    headers,
+                    body: JSON.stringify({ 
+                        error: 'Server configuration error',
+                        message: 'AWS credentials not configured. Please set NETLIFY_AWS_ACCESS_KEY_ID and NETLIFY_AWS_SECRET_ACCESS_KEY in Netlify environment variables.',
+                        videoUrl: null,
+                        updatedAt: null
+                    })
+                };
+            }
+            
             const params = {
                 TableName: TABLE_NAME,
                 Key: marshall({
@@ -71,10 +91,22 @@ exports.handler = async (event, context) => {
             };
 
             try {
+                console.log('🔍 Attempting to load hero video from DynamoDB:', {
+                    table: TABLE_NAME,
+                    key: SETTINGS_KEY,
+                    region: awsRegion
+                });
+                
                 const result = await dynamoDB.send(new GetItemCommand(params));
+                
+                console.log('📥 DynamoDB result:', {
+                    hasItem: !!result.Item,
+                    itemKeys: result.Item ? Object.keys(unmarshall(result.Item)) : []
+                });
                 
                 if (result.Item) {
                     const item = unmarshall(result.Item);
+                    console.log('✅ Hero video URL loaded:', item.settingValue);
                     return {
                         statusCode: 200,
                         headers,
@@ -85,6 +117,7 @@ exports.handler = async (event, context) => {
                     };
                 } else {
                     // Keine Einstellung vorhanden
+                    console.log('ℹ️ No hero video setting found in DynamoDB');
                     return {
                         statusCode: 200,
                         headers,
@@ -95,12 +128,21 @@ exports.handler = async (event, context) => {
                     };
                 }
             } catch (dbError) {
-                // Falls Tabelle nicht existiert, gib null zurück
-                console.warn('Settings table not found or error:', dbError);
+                // Logge den Fehler detailliert
+                console.error('❌ DynamoDB error:', {
+                    message: dbError.message,
+                    code: dbError.code,
+                    name: dbError.name,
+                    stack: dbError.stack
+                });
+                
                 return {
-                    statusCode: 200,
+                    statusCode: 500,
                     headers,
                     body: JSON.stringify({
+                        error: 'Database error',
+                        message: dbError.message,
+                        code: dbError.code,
                         videoUrl: null,
                         updatedAt: null
                     })
