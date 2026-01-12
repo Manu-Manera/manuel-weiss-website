@@ -286,8 +286,19 @@ function showTab(tabId) {
         updateApplicationsList();
     } else if (tabId === 'profile') {
         updateProfileForm();
+        // Sync vom Lebenslauf zum Profil bei Tab-Wechsel
+        if (typeof syncProfileToResume === 'function') syncProfileToResume();
     } else if (tabId === 'resume') {
         initResumeTab();
+        // Sync vom Profil zum Lebenslauf bei Tab-Wechsel
+        if (typeof syncResumeToProfile === 'function') syncResumeToProfile();
+    } else if (tabId === 'cover') {
+        // Anschreiben-Liste neu laden
+        if (typeof loadCoverLetters === 'function') {
+            loadCoverLetters();
+        } else if (window.loadCoverLetters) {
+            window.loadCoverLetters();
+        }
     }
 }
 
@@ -1129,7 +1140,7 @@ function updateSkillsPreview() {
     ).join('');
 }
 
-function uploadResumePdf() {
+async function uploadResumePdf() {
     // Create hidden file input
     const input = document.createElement('input');
     input.type = 'file';
@@ -1140,18 +1151,122 @@ function uploadResumePdf() {
         const file = e.target.files[0];
         if (!file) return;
         
-        showToast('PDF-Upload wird verarbeitet...', 'info');
+        if (file.size > 10 * 1024 * 1024) {
+            showToast('Datei zu groß (max. 10MB)', 'error');
+            return;
+        }
         
-        // In a real implementation, this would send to a backend for OCR
-        // For now, redirect to the full editor with the file
-        const formData = new FormData();
-        formData.append('file', file);
+        showToast('PDF wird analysiert mit KI...', 'info');
         
-        // Store file reference for the editor
-        sessionStorage.setItem('pendingResumeUpload', file.name);
-        
-        showToast('Bitte nutze den vollständigen Editor für PDF-Upload', 'info');
-        window.location.href = 'resume-editor.html';
+        try {
+            // 1. PDF Text mit PDF.js extrahieren
+            if (typeof pdfjsLib === 'undefined') {
+                showToast('PDF.js wird geladen, bitte erneut versuchen...', 'info');
+                return;
+            }
+            
+            const arrayBuffer = await file.arrayBuffer();
+            const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+            
+            let fullText = '';
+            const totalPages = pdf.numPages;
+            
+            for (let i = 1; i <= totalPages; i++) {
+                const page = await pdf.getPage(i);
+                const textContent = await page.getTextContent();
+                const pageText = textContent.items.map(item => item.str).join(' ');
+                fullText += pageText + '\n\n';
+            }
+            
+            if (!fullText.trim()) {
+                showToast('Kein Text in der PDF gefunden', 'error');
+                return;
+            }
+            
+            // 2. API-Key holen
+            let apiKey = null;
+            try {
+                const globalKeys = JSON.parse(localStorage.getItem('global_api_keys') || '{}');
+                if (globalKeys.openai?.key && !globalKeys.openai.key.includes('...')) {
+                    apiKey = globalKeys.openai.key;
+                }
+            } catch (e) {}
+            
+            if (!apiKey && window.awsAPISettings) {
+                try {
+                    if (window.awsAPISettings.isUserLoggedIn && window.awsAPISettings.isUserLoggedIn()) {
+                        apiKey = await window.awsAPISettings.getFullApiKey('openai');
+                    }
+                } catch (e) {}
+            }
+            
+            if (!apiKey) {
+                showToast('Kein API-Key gefunden. Nutze den vollständigen Editor.', 'info');
+                window.location.href = 'resume-editor.html';
+                return;
+            }
+            
+            // 3. GPT-3.5 für Strukturierung
+            showToast('KI analysiert Lebenslauf...', 'info');
+            
+            const prompt = `Analysiere den folgenden Lebenslauf-Text und extrahiere alle Daten im JSON-Format.
+            
+{
+    "firstName": "Vorname",
+    "lastName": "Nachname",
+    "title": "Berufsbezeichnung",
+    "email": "Email",
+    "phone": "Telefon",
+    "location": "Standort",
+    "summary": "Kurzes Profil (2-3 Sätze)",
+    "experience": [{"position": "", "company": "", "startDate": "YYYY-MM", "endDate": "YYYY-MM", "description": ""}],
+    "education": [{"degree": "", "institution": "", "startDate": "YYYY-MM", "endDate": "YYYY-MM"}],
+    "skills": ["Skill1", "Skill2"],
+    "languages": [{"language": "", "level": ""}]
+}
+
+TEXT:
+${fullText.substring(0, 12000)}`;
+            
+            const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${apiKey}`
+                },
+                body: JSON.stringify({
+                    model: 'gpt-3.5-turbo',
+                    messages: [
+                        { role: 'system', content: 'Extrahiere strukturierte Daten aus Lebensläufen. Antworte NUR mit validem JSON.' },
+                        { role: 'user', content: prompt }
+                    ],
+                    max_tokens: 2000,
+                    temperature: 0.1
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error('KI-Analyse fehlgeschlagen');
+            }
+            
+            const data = await response.json();
+            const aiResponse = data.choices[0]?.message?.content || '';
+            
+            // JSON parsen
+            const jsonMatch = aiResponse.match(/\{[\s\S]*\}/);
+            if (jsonMatch) {
+                const parsedData = JSON.parse(jsonMatch[0]);
+                fillResumeFromData(parsedData);
+                syncResumeToProfile(); // Synchronisiere auch zum Profil
+                showToast('✅ Lebenslauf erfolgreich importiert!', 'success');
+            } else {
+                throw new Error('Keine gültigen Daten erkannt');
+            }
+            
+        } catch (error) {
+            console.error('PDF OCR Error:', error);
+            showToast('Fehler: ' + error.message + '. Nutze den vollständigen Editor.', 'error');
+        }
     };
     
     document.body.appendChild(input);
@@ -1308,21 +1423,187 @@ function parseLinkedInPDF(text) {
  * Füllt das Lebenslauf-Formular mit importierten Daten
  */
 function fillResumeFromData(data) {
-    if (data.firstName) document.getElementById('resumeFirstName').value = data.firstName;
-    if (data.lastName) document.getElementById('resumeLastName').value = data.lastName;
-    if (data.title) document.getElementById('resumeTitle').value = data.title;
-    if (data.email) document.getElementById('resumeEmail').value = data.email;
-    if (data.phone) document.getElementById('resumePhone').value = data.phone;
-    if (data.location) document.getElementById('resumeLocation').value = data.location;
-    if (data.summary) document.getElementById('resumeSummary').value = data.summary;
-    if (data.skills) document.getElementById('resumeSkills').value = data.skills;
+    const setField = (id, value) => {
+        const el = document.getElementById(id);
+        if (el && value) el.value = value;
+    };
+    
+    setField('resumeFirstName', data.firstName);
+    setField('resumeLastName', data.lastName);
+    setField('resumeTitle', data.title);
+    setField('resumeEmail', data.email);
+    setField('resumePhone', data.phone);
+    setField('resumeLocation', data.location);
+    setField('resumeSummary', data.summary);
+    
+    // Skills können Array oder String sein
+    const skills = Array.isArray(data.skills) ? data.skills.join(', ') : data.skills;
+    setField('resumeSkills', skills);
+    
+    // Experience hinzufügen
+    if (data.experience && Array.isArray(data.experience)) {
+        const container = document.getElementById('experienceContainer');
+        if (container) {
+            container.innerHTML = ''; // Clear existing
+            data.experience.forEach(exp => {
+                addExperienceEntry({
+                    position: exp.position,
+                    company: exp.company,
+                    startDate: exp.startDate,
+                    endDate: exp.endDate,
+                    description: exp.description,
+                    current: exp.endDate === 'heute' || exp.endDate === 'present'
+                });
+            });
+        }
+    }
+    
+    // Education hinzufügen
+    if (data.education && Array.isArray(data.education)) {
+        const container = document.getElementById('educationContainer');
+        if (container) {
+            container.innerHTML = ''; // Clear existing
+            data.education.forEach(edu => {
+                addEducationEntry({
+                    degree: edu.degree,
+                    institution: edu.institution,
+                    startDate: edu.startDate,
+                    endDate: edu.endDate
+                });
+            });
+        }
+    }
+    
+    // Languages hinzufügen
+    if (data.languages && Array.isArray(data.languages)) {
+        // Sprache 1
+        if (data.languages[0]) {
+            setField('resumeLanguage1', data.languages[0].language);
+            const level1 = document.getElementById('resumeLanguageLevel1');
+            if (level1 && data.languages[0].level) {
+                const levelMap = { 'muttersprache': 'native', 'c2': 'c2', 'c1': 'c1', 'b2': 'b2', 'b1': 'b1' };
+                level1.value = levelMap[data.languages[0].level.toLowerCase()] || '';
+            }
+        }
+        // Sprache 2
+        if (data.languages[1]) {
+            setField('resumeLanguage2', data.languages[1].language);
+            const level2 = document.getElementById('resumeLanguageLevel2');
+            if (level2 && data.languages[1].level) {
+                const levelMap = { 'muttersprache': 'native', 'c2': 'c2', 'c1': 'c1', 'b2': 'b2', 'b1': 'b1' };
+                level2.value = levelMap[data.languages[1].level.toLowerCase()] || '';
+            }
+        }
+    }
     
     // Save the resume after import
     saveResume();
+    
+    // Auch zum Profil synchronisieren
+    syncResumeToProfile();
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
 // EXPORT FOR OTHER MODULES
+// ═══════════════════════════════════════════════════════════════════════════
+// SYNCHRONISATION ZWISCHEN LEBENSLAUF UND PROFIL
+// ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * Synchronisiert Daten vom Lebenslauf-Manager zum Profil
+ */
+function syncResumeToProfile() {
+    const fieldMappings = [
+        ['resumeFirstName', 'profileFirstName'],
+        ['resumeLastName', 'profileLastName'],
+        ['resumeEmail', 'profileEmail'],
+        ['resumePhone', 'profilePhone'],
+        ['resumeLocation', 'profileLocation'],
+        ['resumeTitle', 'profilePosition'],
+        ['resumeSummary', 'profileSummary'],
+        ['resumeSkills', 'profileSkills']
+    ];
+    
+    fieldMappings.forEach(([resumeId, profileId]) => {
+        const resumeField = document.getElementById(resumeId);
+        const profileField = document.getElementById(profileId);
+        if (resumeField && profileField && resumeField.value) {
+            profileField.value = resumeField.value;
+        }
+    });
+    
+    // Berufserfahrung Jahre abgleichen (wenn vorhanden)
+    const experienceCount = document.querySelectorAll('.experience-entry').length;
+    const yearsSelect = document.getElementById('profileExperience');
+    if (yearsSelect && experienceCount > 0) {
+        // Grobe Schätzung basierend auf Anzahl der Einträge
+        if (experienceCount >= 4) yearsSelect.value = 'expert';
+        else if (experienceCount >= 3) yearsSelect.value = 'senior';
+        else if (experienceCount >= 2) yearsSelect.value = 'mid';
+        else yearsSelect.value = 'junior';
+    }
+    
+    console.log('✅ Lebenslauf → Profil synchronisiert');
+}
+
+/**
+ * Synchronisiert Daten vom Profil zum Lebenslauf-Manager
+ */
+function syncProfileToResume() {
+    const fieldMappings = [
+        ['profileFirstName', 'resumeFirstName'],
+        ['profileLastName', 'resumeLastName'],
+        ['profileEmail', 'resumeEmail'],
+        ['profilePhone', 'resumePhone'],
+        ['profileLocation', 'resumeLocation'],
+        ['profilePosition', 'resumeTitle'],
+        ['profileSummary', 'resumeSummary'],
+        ['profileSkills', 'resumeSkills']
+    ];
+    
+    fieldMappings.forEach(([profileId, resumeId]) => {
+        const profileField = document.getElementById(profileId);
+        const resumeField = document.getElementById(resumeId);
+        if (profileField && resumeField && profileField.value) {
+            resumeField.value = profileField.value;
+        }
+    });
+    
+    console.log('✅ Profil → Lebenslauf synchronisiert');
+}
+
+/**
+ * Automatische Synchronisation bei Feldänderungen
+ */
+function setupFieldSync() {
+    // Resume-Felder -> Profil
+    const resumeFields = ['resumeFirstName', 'resumeLastName', 'resumeEmail', 'resumePhone', 'resumeLocation', 'resumeTitle', 'resumeSummary', 'resumeSkills'];
+    resumeFields.forEach(id => {
+        const field = document.getElementById(id);
+        if (field) {
+            field.addEventListener('blur', () => {
+                syncResumeToProfile();
+            });
+        }
+    });
+    
+    // Profil-Felder -> Resume
+    const profileFields = ['profileFirstName', 'profileLastName', 'profileEmail', 'profilePhone', 'profileLocation', 'profilePosition', 'profileSummary', 'profileSkills'];
+    profileFields.forEach(id => {
+        const field = document.getElementById(id);
+        if (field) {
+            field.addEventListener('blur', () => {
+                syncProfileToResume();
+            });
+        }
+    });
+}
+
+// Setup Sync nach DOM ready
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(setupFieldSync, 500);
+});
+
 // ═══════════════════════════════════════════════════════════════════════════
 
 window.DashboardState = DashboardState;
@@ -1345,6 +1626,8 @@ window.updateEducation = updateEducation;
 window.uploadResumePdf = uploadResumePdf;
 window.importFromLinkedIn = importFromLinkedIn;
 window.initResumeTab = initResumeTab;
+window.syncResumeToProfile = syncResumeToProfile;
+window.syncProfileToResume = syncProfileToResume;
 
 // Export DashboardCore for external access
 window.DashboardCore = {

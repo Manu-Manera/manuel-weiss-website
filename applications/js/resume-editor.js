@@ -1128,5 +1128,477 @@ function showNotification(message, type = 'info') {
 // Load resume on page load
 document.addEventListener('DOMContentLoaded', () => {
     loadResume();
+    initAllDragAndDrop();
 });
 
+// =============================================
+// DRAG & DROP FUNKTIONALITÄT
+// =============================================
+
+let draggedElement = null;
+
+function initAllDragAndDrop() {
+    const containers = [
+        'experienceContainer',
+        'educationContainer',
+        'languagesContainer',
+        'projectsContainer',
+        'technicalSkillsContainer',
+        'softSkillsContainer'
+    ];
+    
+    containers.forEach(containerId => {
+        const container = document.getElementById(containerId);
+        if (container) {
+            initDragAndDrop(container);
+        }
+    });
+}
+
+function initDragAndDrop(container) {
+    const items = container.querySelectorAll('.draggable-item');
+    
+    items.forEach(item => {
+        // Entferne alte Event Listener
+        item.removeEventListener('dragstart', handleDragStart);
+        item.removeEventListener('dragend', handleDragEnd);
+        item.removeEventListener('dragover', handleDragOver);
+        item.removeEventListener('drop', handleDrop);
+        
+        // Füge neue Event Listener hinzu
+        item.addEventListener('dragstart', handleDragStart);
+        item.addEventListener('dragend', handleDragEnd);
+        item.addEventListener('dragover', handleDragOver);
+        item.addEventListener('drop', handleDrop);
+    });
+    
+    container.addEventListener('dragover', (e) => {
+        e.preventDefault();
+    });
+}
+
+function handleDragStart(e) {
+    draggedElement = e.target.closest('.draggable-item');
+    draggedElement.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+}
+
+function handleDragEnd(e) {
+    if (draggedElement) {
+        draggedElement.classList.remove('dragging');
+    }
+    draggedElement = null;
+    
+    // Entferne alle Platzhalter
+    document.querySelectorAll('.drag-placeholder').forEach(p => p.remove());
+}
+
+function handleDragOver(e) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    
+    const target = e.target.closest('.draggable-item');
+    if (target && target !== draggedElement) {
+        const container = target.parentNode;
+        const rect = target.getBoundingClientRect();
+        const midY = rect.top + rect.height / 2;
+        
+        if (e.clientY < midY) {
+            container.insertBefore(draggedElement, target);
+        } else {
+            container.insertBefore(draggedElement, target.nextSibling);
+        }
+    }
+}
+
+function handleDrop(e) {
+    e.preventDefault();
+    showNotification('Element verschoben', 'success');
+}
+
+// =============================================
+// PDF EXPORT FUNKTIONALITÄT
+// =============================================
+
+async function exportToPDF() {
+    try {
+        showNotification('PDF wird generiert...', 'info');
+        
+        // Sammle alle Daten
+        const resumeData = collectFormData();
+        const styleSettings = JSON.parse(localStorage.getItem('resume_style') || '{}');
+        
+        // Generiere HTML für den Lebenslauf
+        const resumeHtml = generateResumeHTML(resumeData, styleSettings);
+        
+        // Öffne Druckdialog
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(resumeHtml);
+        printWindow.document.close();
+        
+        // Warte bis geladen und drucke
+        printWindow.onload = function() {
+            setTimeout(() => {
+                printWindow.print();
+            }, 500);
+        };
+        
+    } catch (error) {
+        console.error('PDF Export Error:', error);
+        showNotification('Fehler beim PDF-Export', 'error');
+    }
+}
+
+function generateResumeHTML(data, style = {}) {
+    const primaryColor = style.primaryColor || '#2563eb';
+    const secondaryColor = style.secondaryColor || '#64748b';
+    const fontFamily = style.fontFamily || 'Inter, sans-serif';
+    const template = style.template || 'modern';
+    
+    const personalInfo = data.personalInfo || {};
+    const experience = data.sections?.find(s => s.type === 'experience')?.entries || [];
+    const education = data.sections?.find(s => s.type === 'education')?.entries || [];
+    const skills = data.skills || {};
+    const languages = data.languages || [];
+    
+    return `<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Lebenslauf - ${personalInfo.firstName || ''} ${personalInfo.lastName || ''}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: ${fontFamily};
+            font-size: 11pt;
+            line-height: 1.5;
+            color: #1f2937;
+            padding: 20mm;
+            max-width: 210mm;
+            margin: 0 auto;
+            background: white;
+        }
+        @media print {
+            body { padding: 15mm; }
+            .page-break { page-break-before: always; }
+        }
+        
+        /* Header */
+        .resume-header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid ${primaryColor};
+        }
+        .resume-header h1 {
+            font-size: 24pt;
+            color: ${primaryColor};
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+        .resume-header .title {
+            font-size: 13pt;
+            color: ${secondaryColor};
+            margin-bottom: 10px;
+        }
+        .contact-info {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            font-size: 10pt;
+            color: #4b5563;
+        }
+        .contact-info span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        /* Summary */
+        .summary {
+            margin-bottom: 20px;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 6px;
+            font-style: italic;
+            color: #475569;
+        }
+        
+        /* Section */
+        .section {
+            margin-bottom: 20px;
+        }
+        .section-title {
+            font-size: 13pt;
+            font-weight: 700;
+            color: ${primaryColor};
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 5px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Experience */
+        .experience-entry, .education-entry {
+            margin-bottom: 15px;
+        }
+        .entry-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 3px;
+        }
+        .entry-title {
+            font-weight: 600;
+            font-size: 11pt;
+            color: #1f2937;
+        }
+        .entry-date {
+            font-size: 10pt;
+            color: ${secondaryColor};
+        }
+        .entry-company {
+            font-size: 10pt;
+            color: #4b5563;
+            margin-bottom: 5px;
+        }
+        .entry-description {
+            font-size: 10pt;
+            color: #374151;
+        }
+        
+        /* Skills */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        .skill-category {
+            margin-bottom: 8px;
+        }
+        .skill-category-name {
+            font-weight: 600;
+            font-size: 10pt;
+            color: #1f2937;
+            margin-bottom: 3px;
+        }
+        .skill-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        .skill-tag {
+            background: #eff6ff;
+            color: ${primaryColor};
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 9pt;
+        }
+        
+        /* Languages */
+        .languages-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .language-item {
+            font-size: 10pt;
+        }
+        .language-name {
+            font-weight: 600;
+        }
+        .language-level {
+            color: ${secondaryColor};
+        }
+    </style>
+</head>
+<body>
+    <div class="resume-header">
+        <h1>${personalInfo.firstName || ''} ${personalInfo.lastName || ''}</h1>
+        ${personalInfo.title ? `<div class="title">${personalInfo.title}</div>` : ''}
+        <div class="contact-info">
+            ${personalInfo.email ? `<span>✉ ${personalInfo.email}</span>` : ''}
+            ${personalInfo.phone ? `<span>☎ ${personalInfo.phone}</span>` : ''}
+            ${personalInfo.address || personalInfo.location ? `<span>📍 ${personalInfo.address || personalInfo.location}</span>` : ''}
+            ${personalInfo.linkedin ? `<span>🔗 ${personalInfo.linkedin}</span>` : ''}
+            ${personalInfo.website ? `<span>🌐 ${personalInfo.website}</span>` : ''}
+        </div>
+    </div>
+    
+    ${personalInfo.summary ? `<div class="summary">${personalInfo.summary}</div>` : ''}
+    
+    ${experience.length > 0 ? `
+    <div class="section">
+        <div class="section-title">Berufserfahrung</div>
+        ${experience.map(exp => `
+        <div class="experience-entry">
+            <div class="entry-header">
+                <span class="entry-title">${exp.position || ''}</span>
+                <span class="entry-date">${formatDate(exp.startDate)} - ${exp.currentJob ? 'heute' : formatDate(exp.endDate)}</span>
+            </div>
+            <div class="entry-company">${exp.company || ''}${exp.location ? `, ${exp.location}` : ''}</div>
+            ${exp.description ? `<div class="entry-description">${exp.description}</div>` : ''}
+        </div>
+        `).join('')}
+    </div>
+    ` : ''}
+    
+    ${education.length > 0 ? `
+    <div class="section">
+        <div class="section-title">Ausbildung</div>
+        ${education.map(edu => `
+        <div class="education-entry">
+            <div class="entry-header">
+                <span class="entry-title">${edu.degree || ''}</span>
+                <span class="entry-date">${formatDate(edu.startDate)} - ${formatDate(edu.endDate)}</span>
+            </div>
+            <div class="entry-company">${edu.institution || ''}${edu.location ? `, ${edu.location}` : ''}</div>
+            ${edu.fieldOfStudy ? `<div class="entry-description">Fachrichtung: ${edu.fieldOfStudy}</div>` : ''}
+        </div>
+        `).join('')}
+    </div>
+    ` : ''}
+    
+    ${(skills.technicalSkills && skills.technicalSkills.length > 0) || (skills.softSkills && skills.softSkills.length > 0) ? `
+    <div class="section">
+        <div class="section-title">Fähigkeiten</div>
+        <div class="skills-grid">
+            ${skills.technicalSkills ? skills.technicalSkills.map(cat => `
+            <div class="skill-category">
+                <div class="skill-category-name">${cat.category}</div>
+                <div class="skill-tags">
+                    ${cat.skills.map(skill => `<span class="skill-tag">${skill}</span>`).join('')}
+                </div>
+            </div>
+            `).join('') : ''}
+        </div>
+    </div>
+    ` : ''}
+    
+    ${languages.length > 0 ? `
+    <div class="section">
+        <div class="section-title">Sprachen</div>
+        <div class="languages-list">
+            ${languages.map(lang => `
+            <div class="language-item">
+                <span class="language-name">${lang.language}</span>
+                <span class="language-level">(${formatProficiency(lang.proficiency)})</span>
+            </div>
+            `).join('')}
+        </div>
+    </div>
+    ` : ''}
+</body>
+</html>`;
+}
+
+function formatDate(dateStr) {
+    if (!dateStr) return '';
+    const [year, month] = dateStr.split('-');
+    const months = ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
+    return `${months[parseInt(month) - 1] || ''} ${year}`;
+}
+
+function formatProficiency(prof) {
+    const map = {
+        'muttersprache': 'Muttersprache',
+        'verhandlungssicher': 'C2',
+        'fließend': 'C1',
+        'gut': 'B2',
+        'grundkenntnisse': 'A2-B1'
+    };
+    return map[prof] || prof;
+}
+
+// =============================================
+// STYLE EDITOR FUNKTIONALITÄT
+// =============================================
+
+function openStyleEditor() {
+    const modal = document.getElementById('styleEditorModal');
+    if (modal) {
+        modal.classList.add('active');
+        loadStyleSettings();
+    }
+}
+
+function closeStyleEditor() {
+    const modal = document.getElementById('styleEditorModal');
+    if (modal) {
+        modal.classList.remove('active');
+    }
+}
+
+function loadStyleSettings() {
+    const settings = JSON.parse(localStorage.getItem('resume_style') || '{}');
+    
+    // Template auswählen
+    const templates = document.querySelectorAll('.style-template');
+    templates.forEach(t => {
+        t.classList.toggle('active', t.dataset.template === (settings.template || 'modern'));
+    });
+    
+    // Farben setzen
+    const primaryColor = document.getElementById('primaryColor');
+    const secondaryColor = document.getElementById('secondaryColor');
+    const fontSelect = document.getElementById('fontSelect');
+    
+    if (primaryColor) primaryColor.value = settings.primaryColor || '#2563eb';
+    if (secondaryColor) secondaryColor.value = settings.secondaryColor || '#64748b';
+    if (fontSelect) fontSelect.value = settings.fontFamily || 'Inter, sans-serif';
+}
+
+function selectTemplate(element) {
+    document.querySelectorAll('.style-template').forEach(t => t.classList.remove('active'));
+    element.classList.add('active');
+}
+
+function saveStyleSettings() {
+    const activeTemplate = document.querySelector('.style-template.active');
+    const primaryColor = document.getElementById('primaryColor');
+    const secondaryColor = document.getElementById('secondaryColor');
+    const fontSelect = document.getElementById('fontSelect');
+    
+    const settings = {
+        template: activeTemplate?.dataset.template || 'modern',
+        primaryColor: primaryColor?.value || '#2563eb',
+        secondaryColor: secondaryColor?.value || '#64748b',
+        fontFamily: fontSelect?.value || 'Inter, sans-serif'
+    };
+    
+    localStorage.setItem('resume_style', JSON.stringify(settings));
+    closeStyleEditor();
+    showNotification('Style-Einstellungen gespeichert', 'success');
+}
+
+function previewStyle() {
+    const activeTemplate = document.querySelector('.style-template.active');
+    const primaryColor = document.getElementById('primaryColor');
+    const secondaryColor = document.getElementById('secondaryColor');
+    const fontSelect = document.getElementById('fontSelect');
+    
+    const settings = {
+        template: activeTemplate?.dataset.template || 'modern',
+        primaryColor: primaryColor?.value || '#2563eb',
+        secondaryColor: secondaryColor?.value || '#64748b',
+        fontFamily: fontSelect?.value || 'Inter, sans-serif'
+    };
+    
+    const resumeData = collectFormData();
+    const resumeHtml = generateResumeHTML(resumeData, settings);
+    
+    const previewWindow = window.open('', '_blank');
+    previewWindow.document.write(resumeHtml);
+    previewWindow.document.close();
+}
+
+// Global Funktionen für HTML onclick
+window.exportToPDF = exportToPDF;
+window.openStyleEditor = openStyleEditor;
+window.closeStyleEditor = closeStyleEditor;
+window.selectTemplate = selectTemplate;
+window.saveStyleSettings = saveStyleSettings;
+window.previewStyle = previewStyle;
