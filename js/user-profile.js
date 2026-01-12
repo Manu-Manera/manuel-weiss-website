@@ -275,6 +275,19 @@ class UserProfile {
 
         // Note: Auto-save wird in setupAutoSave() eingerichtet
         // Das wird separat aufgerufen, nachdem die Felder geladen wurden
+        
+        // Listen for login events to reload profile data
+        window.addEventListener('userLoggedIn', async (e) => {
+            console.log('🔄 User logged in event received, reloading profile data...');
+            const user = e.detail?.user;
+            if (user) {
+                console.log('👤 Logged in user:', user.email);
+                this.updateUserInfoFromAuth(user);
+                await this.loadProfileData();
+                this.checkAuthStatus();
+                this.setupAutoSave();
+            }
+        });
     }
 
     switchTab(tabName) {
