@@ -1012,12 +1012,18 @@ class UserProfile {
     }
 
     showNotification(message, type = 'info') {
-        // Create notification element
+        // Bei Erfolg: Zeige nur den animierten Haken
+        if (type === 'success' && window.showSuccessCheck) {
+            window.showSuccessCheck({ duration: 1500 });
+            return;
+        }
+        
+        // Für andere Typen (error, info, warning): Zeige normale Benachrichtigung
         const notification = document.createElement('div');
         notification.className = `notification notification-${type}`;
         notification.innerHTML = `
             <div class="notification-content">
-                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                <i class="fas fa-${type === 'error' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
                 <span>${message}</span>
             </div>
         `;
@@ -1027,7 +1033,7 @@ class UserProfile {
             position: fixed;
             top: 20px;
             right: 20px;
-            background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : 'var(--primary-color)'};
+            background: ${type === 'error' ? '#ef4444' : type === 'warning' ? '#f59e0b' : 'var(--primary-color)'};
             color: white;
             padding: 1rem 1.5rem;
             border-radius: var(--radius-md);
@@ -1041,8 +1047,10 @@ class UserProfile {
         // Remove after 3 seconds
         setTimeout(() => {
             notification.style.animation = 'slideOut 0.3s ease';
-        setTimeout(() => {
-                document.body.removeChild(notification);
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
             }, 300);
         }, 3000);
     }

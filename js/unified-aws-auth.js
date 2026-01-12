@@ -948,6 +948,12 @@ class UnifiedAWSAuth {
      * Benachrichtigung anzeigen
      */
     showNotification(message, type = 'info') {
+        // Bei Erfolg: Zeige nur den animierten Haken
+        if (type === 'success' && window.showSuccessCheck) {
+            window.showSuccessCheck({ duration: 1500 });
+            return;
+        }
+        
         // Entferne bestehende Notifications um Überlappungen zu vermeiden
         const existingNotifications = document.querySelectorAll('.aws-auth-notification');
         existingNotifications.forEach(notification => {
@@ -961,7 +967,7 @@ class UnifiedAWSAuth {
         notification.className = `aws-auth-notification aws-auth-notification-${type}`;
         notification.innerHTML = `
             <div class="notification-content">
-                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                <i class="fas fa-${type === 'error' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
                 <span>${message}</span>
             </div>
         `;
@@ -971,7 +977,7 @@ class UnifiedAWSAuth {
             position: fixed;
             top: 20px;
             right: 20px;
-            background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
+            background: ${type === 'error' ? '#ef4444' : type === 'warning' ? '#f59e0b' : '#3b82f6'};
             color: white;
             padding: 12px 20px;
             border-radius: 8px;
