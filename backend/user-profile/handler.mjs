@@ -2170,3 +2170,152 @@ function calculateJournalStats(entries) {
   };
 }
 
+// ============================================================================
+// API SETTINGS FUNCTIONS
+// ============================================================================
+
+/**
+ * API-Einstellungen laden
+ */
+async function getApiSettings(userId) {
+  try {
+    const result = await getDynamoDB().send(new GetItemCommand({
+      TableName: process.env.TABLE || process.env.PROFILE_TABLE || 'mawps-user-profiles',
+      Key: {
+        pk: { S: `user#${userId}` },
+        sk: { S: 'api-settings' }
+      }
+    }));
+    
+    if (!result.Item) {
+      return { hasSettings: false, settings: {} };
+    }
+    
+    // API-Keys zurückgeben (maskiert für Anzeige, vollständig für Speicherung)
+    const settings = {};
+    const providers = ['openai', 'anthropic', 'google'];
+    
+    providers.forEach(provider => {
+      if (result.Item[provider]) {
+        const providerData = JSON.parse(result.Item[provider].S || '{}');
+        settings[provider] = {
+          apiKey: providerData.apiKey || '',
+          keyMasked: providerData.apiKey ? maskApiKey(providerData.apiKey) : '',
+          model: providerData.model || '',
+          maxTokens: providerData.maxTokens || 1000,
+          temperature: providerData.temperature ?? 0.7,
+          configured: !!providerData.apiKey
+        };
+      }
+    });
+    
+    return {
+      hasSettings: Object.keys(settings).length > 0,
+      settings,
+      preferredProvider: result.Item.preferredProvider?.S || 'openai',
+      updatedAt: result.Item.updatedAt?.S || null
+    };
+  } catch (error) {
+    console.error('Error loading API settings:', error);
+    return { hasSettings: false, settings: {}, error: error.message };
+  }
+}
+
+/**
+ * API-Key maskieren für sichere Anzeige
+ */
+function maskApiKey(key) {
+  if (!key || key.length < 8) return '***';
+  return key.substring(0, 4) + '...' + key.substring(key.length - 4);
+}
+
+/**
+ * API-Einstellungen speichern
+ */
+async function saveApiSettings(userId, settings) {
+  try {
+    const item = {
+      pk: { S: `user#${userId}` },
+      sk: { S: 'api-settings' },
+      userId: { S: userId },
+      updatedAt: { S: new Date().toISOString() }
+    };
+    
+    // Provider-spezifische Einstellungen speichern
+    const providers = ['openai', 'anthropic', 'google'];
+    providers.forEach(provider => {
+      if (settings[provider]) {
+        item[provider] = { S: JSON.stringify({
+          apiKey: settings[provider].apiKey,
+          model: settings[provider].model,
+          maxTokens: settings[provider].maxTokens,
+          temperature: settings[provider].temperature
+        })};
+      }
+    });
+    
+    // Bevorzugten Provider speichern
+    if (settings.preferredProvider) {
+      item.preferredProvider = { S: settings.preferredProvider };
+    }
+    
+    await getDynamoDB().send(new PutItemCommand({
+      TableName: process.env.TABLE || process.env.PROFILE_TABLE || 'mawps-user-profiles',
+      Item: item
+    }));
+    
+    console.log('✅ API settings saved for user:', userId);
+    return { success: true, message: 'API settings saved successfully' };
+  } catch (error) {
+    console.error('Error saving API settings:', error);
+    throw error;
+  }
+}
+
+/**
+ * API-Einstellungen löschen
+ */
+async function deleteApiSettings(userId) {
+  try {
+    await getDynamoDB().send(new DeleteItemCommand({
+      TableName: process.env.TABLE || process.env.PROFILE_TABLE || 'mawps-user-profiles',
+      Key: {
+        pk: { S: `user#${userId}` },
+        sk: { S: 'api-settings' }
+      }
+    }));
+    
+    console.log('✅ API settings deleted for user:', userId);
+    return { success: true };
+  } catch (error) {
+    console.error('Error deleting API settings:', error);
+    throw error;
+  }
+}
+
+/**
+ * API-Key testen (einfacher Format-Test)
+ */
+async function testApiKey(userId, provider = 'openai') {
+  const settings = await getApiSettings(userId);
+  
+  if (!settings.hasSettings || !settings.settings[provider]?.apiKey) {
+    return { success: false, error: `Kein API-Key für ${provider} konfiguriert` };
+  }
+  
+  const apiKey = settings.settings[provider].apiKey;
+  
+  // Format-Validierung
+  const patterns = {
+    openai: /^sk-[A-Za-z0-9_\-]{20,}$/,
+    anthropic: /^sk-ant-[A-Za-z0-9_\-]{20,}$/,
+    google: /^AIza[0-9A-Za-z_\-]{20,}$/
+  };
+  
+  const pattern = patterns[provider];
+  if (pattern && !pattern.test(apiKey)) {
+    return { success: false, error: 'Ungültiges API-Key Format' };
+  }
+  
+  return { success: true, message: `${provider} API-Key Format ist gültig` };
+}
