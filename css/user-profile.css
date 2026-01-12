@@ -211,12 +211,21 @@ body {
 .tab-nav {
     display: flex;
     padding: 0 2rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    gap: 0.25rem;
+}
+
+.tab-nav::-webkit-scrollbar {
+    display: none;
 }
 
 .tab-btn {
     background: none;
     border: none;
-    padding: 1rem 1.5rem;
+    padding: 1rem 1.25rem;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -226,6 +235,8 @@ body {
     transition: all 0.3s ease;
     border-bottom: 3px solid transparent;
     position: relative;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .tab-btn:hover {
@@ -1053,5 +1064,714 @@ input:checked + .toggle-slider:before {
     .application-actions {
         width: 100%;
         justify-content: flex-end;
+    }
+}
+
+/* ========================================
+   TRAINING TAB STYLES
+   ======================================== */
+
+.training-dashboard,
+.nutrition-dashboard,
+.coach-dashboard {
+    padding: 1rem 0;
+}
+
+.training-stats-grid,
+.nutrition-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.training-stat,
+.nutrition-stat {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
+    border-radius: var(--radius-xl);
+    padding: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-light);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.training-stat:hover,
+.nutrition-stat:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    color: white;
+}
+
+.stat-content h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.stat-content p {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.current-plan-section,
+.recent-workouts-section,
+.recent-achievements-section,
+.recommendations-section {
+    background: var(--bg-primary);
+    border-radius: var(--radius-xl);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-light);
+}
+
+.current-plan-section h4,
+.recent-workouts-section h4,
+.recent-achievements-section h4,
+.recommendations-section h4 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.plan-container {
+    min-height: 100px;
+}
+
+.plan-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1.5rem;
+    border-radius: var(--radius-lg);
+}
+
+.plan-card h5 {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+.plan-card p {
+    opacity: 0.9;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.btn-link {
+    color: white;
+    text-decoration: underline;
+    font-weight: 600;
+}
+
+.workouts-list,
+.achievements-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.workout-item,
+.achievement-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    transition: background 0.3s ease;
+}
+
+.workout-item:hover,
+.achievement-item:hover {
+    background: var(--bg-tertiary);
+}
+
+.workout-icon,
+.achievement-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-md);
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1rem;
+}
+
+.achievement-icon {
+    font-size: 1.5rem;
+    background: transparent;
+}
+
+.workout-info,
+.achievement-info {
+    flex: 1;
+}
+
+.workout-info h5,
+.achievement-info h5 {
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.workout-info span,
+.achievement-info span {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.workout-date {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.achievement-points {
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.training-actions,
+.nutrition-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.875rem 1.5rem;
+    border-radius: var(--radius-lg);
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.action-btn.primary {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+}
+
+.action-btn.primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+}
+
+.action-btn.secondary {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
+
+.action-btn.secondary:hover {
+    background: var(--bg-tertiary);
+}
+
+/* ========================================
+   NUTRITION TAB STYLES
+   ======================================== */
+
+.today-summary {
+    background: var(--bg-primary);
+    border-radius: var(--radius-xl);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-light);
+}
+
+.today-summary h4 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+}
+
+.calories-overview {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.calories-ring {
+    position: relative;
+    width: 150px;
+    height: 150px;
+}
+
+.calories-ring-svg {
+    transform: rotate(-90deg);
+}
+
+.calories-ring-svg circle {
+    transition: stroke-dashoffset 0.5s ease;
+}
+
+.calories-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.calories-number {
+    display: block;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.calories-label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.macros-breakdown {
+    flex: 1;
+    min-width: 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.macro-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.macro-bar {
+    flex: 1;
+    height: 8px;
+    background: var(--bg-tertiary);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.macro-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.5s ease;
+}
+
+.macro-bar.protein .macro-fill {
+    background: linear-gradient(90deg, #ef4444, #f87171);
+}
+
+.macro-bar.carbs .macro-fill {
+    background: linear-gradient(90deg, #f59e0b, #fbbf24);
+}
+
+.macro-bar.fat .macro-fill {
+    background: linear-gradient(90deg, #3b82f6, #60a5fa);
+}
+
+.macro-label {
+    width: 100px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.macro-value {
+    font-weight: 600;
+    color: var(--text-primary);
+    min-width: 50px;
+}
+
+/* ========================================
+   COACH TAB STYLES
+   ======================================== */
+
+.level-section {
+    margin-bottom: 2rem;
+}
+
+.level-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 2rem;
+    border-radius: var(--radius-xl);
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    box-shadow: var(--shadow-lg);
+}
+
+.level-badge {
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    font-weight: 800;
+    backdrop-filter: blur(10px);
+}
+
+.level-info {
+    flex: 1;
+    min-width: 200px;
+}
+
+.level-info h4 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.level-progress {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.level-bar {
+    height: 10px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.level-fill {
+    height: 100%;
+    background: #fbbf24;
+    border-radius: 5px;
+    transition: width 0.5s ease;
+}
+
+.level-text {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.total-points {
+    text-align: center;
+    padding: 1rem 2rem;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: var(--radius-lg);
+    backdrop-filter: blur(10px);
+}
+
+.total-points span:first-child {
+    display: block;
+    font-size: 2rem;
+    font-weight: 800;
+}
+
+.points-label {
+    font-size: 0.85rem;
+    opacity: 0.9;
+}
+
+.success-categories {
+    background: var(--bg-primary);
+    border-radius: var(--radius-xl);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-light);
+}
+
+.success-categories h4 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+}
+
+.success-categories .categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1rem;
+}
+
+.success-category {
+    background: var(--bg-secondary);
+    padding: 1.25rem;
+    border-radius: var(--radius-lg);
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+.success-category:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+}
+
+.category-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.category-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+}
+
+.category-stats {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.recommendations-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.recommendation-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    transition: background 0.3s ease;
+}
+
+.recommendation-card:hover {
+    background: var(--bg-tertiary);
+}
+
+.rec-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+    border-radius: var(--radius-md);
+}
+
+.rec-content {
+    flex: 1;
+}
+
+.rec-content h5 {
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    margin: 0 0 0.25rem 0;
+}
+
+.rec-content p {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.rec-action {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    border-radius: 50%;
+    text-decoration: none;
+    transition: transform 0.3s ease;
+}
+
+.rec-action:hover {
+    transform: scale(1.1);
+}
+
+/* ========================================
+   MODAL STYLES
+   ======================================== */
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 1rem;
+    backdrop-filter: blur(4px);
+}
+
+.modal-content {
+    background: var(--bg-primary);
+    border-radius: var(--radius-xl);
+    padding: 2rem;
+    max-width: 400px;
+    width: 100%;
+    box-shadow: var(--shadow-xl);
+    animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal-content h3 {
+    font-size: 1.25rem;
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    justify-content: flex-end;
+}
+
+/* ========================================
+   NOTIFICATION STYLES
+   ======================================== */
+
+.notification {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 1rem 1.5rem;
+    border-radius: var(--radius-lg);
+    color: white;
+    font-weight: 500;
+    z-index: 10000;
+    animation: notificationSlideIn 0.3s ease, notificationSlideOut 0.3s ease 2.7s;
+    box-shadow: var(--shadow-lg);
+}
+
+.notification.success {
+    background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.notification.error {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+@keyframes notificationSlideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes notificationSlideOut {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100%); opacity: 0; }
+}
+
+/* Empty state improvements */
+.empty-state {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: var(--text-secondary);
+}
+
+.empty-state.small {
+    padding: 1.5rem;
+}
+
+.empty-state-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.empty-state h4 {
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+
+/* ========================================
+   RESPONSIVE ADJUSTMENTS
+   ======================================== */
+
+@media (max-width: 768px) {
+    .training-stats-grid,
+    .nutrition-stats-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .calories-overview {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .level-card {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .total-points {
+        width: 100%;
+    }
+    
+    .success-categories .categories-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .training-actions,
+    .nutrition-actions {
+        flex-direction: column;
+    }
+    
+    .action-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .training-stats-grid,
+    .nutrition-stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .success-categories .categories-grid {
+        grid-template-columns: 1fr;
     }
 }
