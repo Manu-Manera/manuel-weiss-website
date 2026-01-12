@@ -1523,8 +1523,8 @@ function uploadAvatar() {
 }
 
 // Add CSS animations
-const style = document.createElement('style');
-style.textContent = `
+const userProfileAnimationStyle = document.createElement('style');
+userProfileAnimationStyle.textContent = `
     @keyframes slideIn {
         from {
             transform: translateX(100%);
@@ -1552,4 +1552,4 @@ style.textContent = `
         100% { transform: rotate(360deg); }
     }
 `;
-document.head.appendChild(style);
+document.head.appendChild(userProfileAnimationStyle);
