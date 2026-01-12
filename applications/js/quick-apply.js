@@ -475,19 +475,42 @@ async function loadAPIKeyFromAWS() {
     try {
         console.log('🔑 Versuche API-Key zu laden...');
         
-        // Methode 1: Aus AWS Cloud laden (awsAPISettings)
+        // Methode 1: Aus AWS Cloud laden - ECHTEN (unverschlüsselten) Key holen!
         if (window.awsAPISettings && window.awsAPISettings.isUserLoggedIn()) {
             try {
-                console.log('☁️ Versuche API-Key aus AWS Cloud zu laden...');
+                console.log('☁️ Versuche ECHTEN API-Key aus AWS Cloud zu laden...');
+                
+                // Verwende getFullApiKey um den echten, nicht maskierten Key zu holen
+                if (typeof window.awsAPISettings.getFullApiKey === 'function') {
+                    const fullKeyResponse = await window.awsAPISettings.getFullApiKey('openai');
+                    if (fullKeyResponse?.apiKey && fullKeyResponse.apiKey.startsWith('sk-') && !fullKeyResponse.apiKey.includes('...')) {
+                        QuickApplyState.apiKey = fullKeyResponse.apiKey;
+                        console.log('✅ ECHTER API-Key aus AWS Cloud geladen (Länge: ' + fullKeyResponse.apiKey.length + ')');
+                        
+                        // Auch Model-Settings laden
+                        const awsSettings = await window.awsAPISettings.getSettings();
+                        if (awsSettings?.settings?.openai && window.GlobalAPIManager) {
+                            window.GlobalAPIManager.setAPIKey('openai', fullKeyResponse.apiKey, {
+                                model: awsSettings.settings.openai.model,
+                                maxTokens: awsSettings.settings.openai.maxTokens,
+                                temperature: awsSettings.settings.openai.temperature
+                            });
+                        }
+                        return fullKeyResponse.apiKey;
+                    }
+                }
+                
+                // Fallback: Alte Methode (gibt maskierten Key zurück - nicht für API nutzbar!)
+                console.log('⚠️ getFullApiKey nicht verfügbar, versuche Settings...');
                 const awsSettings = await window.awsAPISettings.getSettings();
                 
                 if (awsSettings?.hasSettings && awsSettings.settings?.openai?.apiKey) {
                     const key = awsSettings.settings.openai.apiKey;
-                    if (key && key.startsWith('sk-')) {
+                    // Prüfe ob es ein echter Key ist (nicht maskiert)
+                    if (key && key.startsWith('sk-') && !key.includes('...') && key.length > 20) {
                         QuickApplyState.apiKey = key;
                         console.log('✅ API-Key aus AWS Cloud geladen');
                         
-                        // Auch in GlobalAPIManager synchronisieren
                         if (window.GlobalAPIManager) {
                             window.GlobalAPIManager.setAPIKey('openai', key, {
                                 model: awsSettings.settings.openai.model,
@@ -496,6 +519,8 @@ async function loadAPIKeyFromAWS() {
                             });
                         }
                         return key;
+                    } else {
+                        console.log('⚠️ Key aus AWS ist maskiert, kann nicht für API verwendet werden');
                     }
                 }
             } catch (e) {
