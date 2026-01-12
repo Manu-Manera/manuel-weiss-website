@@ -1637,11 +1637,7 @@ class UserProfile {
                 const dayDiv = document.createElement('div');
                 dayDiv.className = `heatmap-day level-${day.level}`;
                 dayDiv.dataset.date = day.date;
-                
-                const tooltip = document.createElement('span');
-                tooltip.className = 'tooltip';
-                tooltip.textContent = `${day.display}: ${day.count} Einträge`;
-                dayDiv.appendChild(tooltip);
+                dayDiv.title = `${day.display}: ${day.count} Einträge`;
                 
                 dayDiv.addEventListener('click', () => this.selectJournalDate(day.date));
                 
