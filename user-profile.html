@@ -12,9 +12,9 @@
     <!-- Modern Navigation -->
     <nav class="profile-nav">
         <div class="nav-container">
-            <a href="persoenlichkeitsentwicklung-uebersicht.html" class="nav-back">
+            <a href="javascript:void(0)" class="nav-back" onclick="goBack()">
                 <i class="fas fa-arrow-left"></i>
-                <span>Zurück zur Übersicht</span>
+                <span>Zurück</span>
             </a>
             <div class="nav-title">
                 <h1>Mein Profil</h1>
@@ -609,5 +609,38 @@
     <script src="js/real-user-auth-system.js?v=20250116"></script>
     <script src="js/aws-profile-api.js"></script>
     <script src="js/user-profile.js"></script>
+    <script>
+        // Intelligente Zurück-Navigation
+        function goBack() {
+            // Prüfe ob es einen sinnvollen Referrer gibt
+            const referrer = document.referrer;
+            
+            if (referrer) {
+                // Wenn von einer internen Seite gekommen
+                const isInternal = referrer.includes(window.location.hostname) || 
+                                   referrer.includes('manuel-weiss.ch') ||
+                                   referrer.includes('localhost');
+                
+                if (isInternal) {
+                    // Zurück zur vorherigen Seite
+                    history.back();
+                    return;
+                }
+            }
+            
+            // Fallback: Prüfe ob von Bewerbungsmanager oder Persönlichkeitsentwicklung
+            const urlParams = new URLSearchParams(window.location.search);
+            const source = urlParams.get('source');
+            
+            if (source === 'dashboard' || source === 'bewerbungsmanager') {
+                window.location.href = 'applications/dashboard.html';
+            } else if (source === 'coaching') {
+                window.location.href = 'applications/coaching.html';
+            } else {
+                // Standard-Fallback: Persönlichkeitsentwicklung
+                window.location.href = 'persoenlichkeitsentwicklung-uebersicht.html';
+            }
+        }
+    </script>
 </body>
 </html>
