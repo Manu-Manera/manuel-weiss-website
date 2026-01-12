@@ -415,20 +415,19 @@ async function initQuickApply() {
 }
 
 /**
- * Prüft Login-Status und lädt API-Key aus AWS wenn angemeldet
+ * Prüft Login-Status und lädt API-Key aus GlobalAPIManager
  */
 async function checkLoginStatus() {
-    console.log('🔍 Prüfe Login-Status...');
+    console.log('🔍 Prüfe Status...');
     
-    // Warte kurz auf Auth-System Initialisierung
-    await new Promise(resolve => setTimeout(resolve, 500));
+    // Warte kurz auf Initialisierung
+    await new Promise(resolve => setTimeout(resolve, 300));
     
-    // Prüfe ob Nutzer angemeldet ist - Unterstütze beide Auth-Systeme
+    // Prüfe ob Nutzer angemeldet ist
     const auth = window.awsAuth || window.realUserAuth;
     
     if (auth) {
         try {
-            // Prüfe verschiedene isLoggedIn Methoden
             if (typeof auth.isLoggedIn === 'function') {
                 QuickApplyState.isLoggedIn = auth.isLoggedIn();
             } else if (typeof auth.isAuthenticated === 'function') {
@@ -436,84 +435,79 @@ async function checkLoginStatus() {
             } else if (auth.currentUser || auth.user) {
                 QuickApplyState.isLoggedIn = !!(auth.currentUser || auth.user);
             }
-            
             console.log('📊 Auth Status:', QuickApplyState.isLoggedIn ? 'angemeldet' : 'nicht angemeldet');
-            
-            if (QuickApplyState.isLoggedIn) {
-                console.log('✅ Nutzer ist angemeldet, lade API-Key aus AWS...');
-                await loadAPIKeyFromAWS();
-                console.log('🔑 API-Key Status:', QuickApplyState.apiKey ? 'vorhanden' : 'nicht vorhanden');
-            }
         } catch (error) {
             console.warn('⚠️ Auth-Check fehlgeschlagen:', error);
             QuickApplyState.isLoggedIn = false;
         }
-    } else {
-        console.log('ℹ️ Kein Auth-System verfügbar - warte...');
-        QuickApplyState.isLoggedIn = false;
-        
-        // Versuche nochmals nach 1 Sekunde
-        setTimeout(async () => {
-            const authDelayed = window.awsAuth || window.realUserAuth;
-            if (authDelayed && typeof authDelayed.isLoggedIn === 'function') {
-                QuickApplyState.isLoggedIn = authDelayed.isLoggedIn();
-                if (QuickApplyState.isLoggedIn) {
-                    console.log('✅ Verzögerter Auth-Check: Nutzer ist angemeldet');
-                    await loadAPIKeyFromAWS();
-                    updateAPIStatusDisplay();
-                }
-            }
-        }, 1000);
     }
+    
+    // API-Key IMMER laden (unabhängig vom Login-Status, da im Admin Panel gespeichert)
+    console.log('🔑 Lade API-Key aus Admin Panel (API Keys)...');
+    await loadAPIKeyFromAWS();
+    console.log('🔑 API-Key Status:', QuickApplyState.apiKey ? 'vorhanden' : 'nicht vorhanden');
 }
 
 /**
- * Erneut Login-Status prüfen (für nach dem Einloggen)
+ * Erneut Status prüfen (für nach dem Einloggen oder API-Key Änderung)
  */
 async function recheckLoginStatus() {
-    console.log('🔄 Erneute Login-Prüfung...');
+    console.log('🔄 Erneute Prüfung...');
     await checkLoginStatus();
     updateAPIStatusDisplay();
+    updateGenerateButtonState();
 }
 
-// Auf Auth-State-Changes hören
+// Auf Auth-State-Changes und API-Key Änderungen hören
 window.addEventListener('authStateChanged', recheckLoginStatus);
 window.addEventListener('userLoggedIn', recheckLoginStatus);
+window.addEventListener('storage', (e) => {
+    if (e.key === 'global_api_keys') {
+        console.log('🔄 API Keys geändert, lade neu...');
+        recheckLoginStatus();
+    }
+});
 
 /**
- * Lädt den API-Key aus AWS oder localStorage
+ * Lädt den API-Key aus dem GlobalAPIManager (Admin Panel API Keys)
  */
 async function loadAPIKeyFromAWS() {
     try {
         console.log('🔑 Versuche API-Key zu laden...');
         
-        // Methode 1: Aus AWS API Settings laden
-        if (window.awsAPISettings && window.awsAPISettings.isUserLoggedIn()) {
-            try {
-                const settings = await window.awsAPISettings.getSettings();
-                console.log('📊 AWS API Settings:', settings);
-                
-                if (settings?.hasSettings && settings.settings?.openai?.apiKey) {
-                    const key = settings.settings.openai.apiKey;
-                    if (key && key.startsWith('sk-')) {
-                        QuickApplyState.apiKey = key;
-                        console.log('✅ API-Key aus AWS geladen');
-                        return key;
-                    }
-                }
-            } catch (e) {
-                console.log('ℹ️ AWS API Settings nicht verfügbar:', e.message);
+        // Methode 1: Aus GlobalAPIManager laden (Admin Panel API Keys)
+        if (window.GlobalAPIManager) {
+            const openaiKey = window.GlobalAPIManager.getAPIKey('openai');
+            if (openaiKey && openaiKey.startsWith('sk-')) {
+                QuickApplyState.apiKey = openaiKey;
+                console.log('✅ API-Key aus GlobalAPIManager geladen');
+                return openaiKey;
             }
         }
         
-        // Methode 2: Aus localStorage laden (ki_settings)
+        // Methode 2: Direkt aus global_api_keys localStorage
+        const globalKeys = localStorage.getItem('global_api_keys');
+        if (globalKeys) {
+            try {
+                const parsed = JSON.parse(globalKeys);
+                if (parsed.openai?.key && parsed.openai.key.startsWith('sk-')) {
+                    QuickApplyState.apiKey = parsed.openai.key;
+                    console.log('✅ API-Key aus global_api_keys geladen');
+                    return parsed.openai.key;
+                }
+            } catch (e) {
+                console.log('ℹ️ global_api_keys nicht parsebar:', e.message);
+            }
+        }
+        
+        // Methode 3: Fallback auf ki_settings
         const kiSettings = localStorage.getItem('ki_settings');
         if (kiSettings) {
             try {
                 const parsed = JSON.parse(kiSettings);
                 if (parsed.apiKey && parsed.apiKey.startsWith('sk-')) {
                     QuickApplyState.apiKey = parsed.apiKey;
-                    console.log('✅ API-Key aus localStorage (ki_settings) geladen');
+                    console.log('✅ API-Key aus ki_settings geladen');
                     return parsed.apiKey;
                 }
             } catch (e) {
@@ -521,15 +515,7 @@ async function loadAPIKeyFromAWS() {
             }
         }
         
-        // Methode 3: Direkt aus localStorage
-        const directKey = localStorage.getItem('openai_api_key');
-        if (directKey && directKey.startsWith('sk-')) {
-            QuickApplyState.apiKey = directKey;
-            console.log('✅ API-Key aus localStorage (openai_api_key) geladen');
-            return directKey;
-        }
-        
-        console.log('ℹ️ Kein API-Key gefunden');
+        console.log('ℹ️ Kein API-Key gefunden - bitte im Admin Panel unter "API Keys" konfigurieren');
         return null;
     } catch (error) {
         console.warn('⚠️ Fehler beim Laden des API-Keys:', error);
@@ -547,14 +533,14 @@ function updateAPIStatusDisplay() {
     
     if (!statusText || !generationInfo) return;
 
-    if (QuickApplyState.isLoggedIn && QuickApplyState.apiKey) {
-        // Angemeldet MIT API-Key - ChatGPT aktiv
+    if (QuickApplyState.apiKey) {
+        // API-Key vorhanden - ChatGPT aktiv
         statusText.innerHTML = '<i class="fas fa-robot"></i> ChatGPT • KI-generierte Anschreiben';
         generationInfo.classList.add('has-api');
         generationInfo.classList.remove('no-api');
         if (apiHint) apiHint.classList.add('hidden');
-    } else if (QuickApplyState.isLoggedIn) {
-        // Angemeldet OHNE API-Key - muss konfiguriert werden
+    } else {
+        // Kein API-Key - muss im Admin Panel konfiguriert werden
         statusText.innerHTML = '<i class="fas fa-exclamation-triangle"></i> API-Key fehlt';
         generationInfo.classList.add('no-api');
         generationInfo.classList.remove('has-api');
@@ -564,22 +550,7 @@ function updateAPIStatusDisplay() {
                 <i class="fas fa-key"></i>
                 <div>
                     <strong>OpenAI API-Key benötigt</strong> - 
-                    <a href="/admin-ki-settings.html" target="_blank">Jetzt im Admin Panel konfigurieren</a>
-                </div>
-            `;
-        }
-    } else {
-        // Nicht angemeldet
-        statusText.innerHTML = '<i class="fas fa-sign-in-alt"></i> Anmeldung erforderlich';
-        generationInfo.classList.add('no-api');
-        generationInfo.classList.remove('has-api');
-        if (apiHint) {
-            apiHint.classList.remove('hidden');
-            apiHint.innerHTML = `
-                <i class="fas fa-user-plus"></i>
-                <div>
-                    <strong>Anmelden für KI-Anschreiben</strong> - 
-                    <a href="#" onclick="showLoginModal(); return false;">Jetzt registrieren oder anmelden</a>
+                    <a href="/admin.html#api-keys" target="_blank">Jetzt im Admin Panel unter "API Keys" konfigurieren</a>
                 </div>
             `;
         }
@@ -720,17 +691,17 @@ function updateGenerateButtonState() {
     const hasSkills = skillsInput?.value.trim().length > 0;
     const hasAPIKey = !!QuickApplyState.apiKey;
     
-    // Button nur aktivieren wenn alle Pflichtfelder ausgefüllt UND API-Key vorhanden
-    const isReady = hasName && hasExperience && hasSkills && hasAPIKey;
+    // Button aktivieren wenn Pflichtfelder ausgefüllt - API-Key kann auch später hinzugefügt werden
+    const hasRequiredFields = hasName && hasExperience && hasSkills;
     
-    generateBtn.disabled = !isReady;
+    generateBtn.disabled = !hasRequiredFields;
     
     // Button-Text anpassen
     const btnText = generateBtn.querySelector('.btn-text') || generateBtn.querySelector('span');
     if (btnText) {
-        if (!hasAPIKey) {
-            btnText.textContent = 'API-Key konfigurieren';
-        } else if (!isReady) {
+        if (!hasAPIKey && hasRequiredFields) {
+            btnText.textContent = 'Generieren (API-Key prüfen)';
+        } else if (!hasRequiredFields) {
             btnText.textContent = 'Felder ausfüllen';
         } else {
             btnText.textContent = 'Anschreiben generieren';
@@ -877,12 +848,9 @@ async function generateCoverLetter() {
         await loadAPIKeyFromAWS();
         
         if (!QuickApplyState.apiKey) {
-            quickApplyShowToast('Bitte konfigurieren Sie zuerst Ihren OpenAI API-Key im Admin Panel.', 'error');
+            quickApplyShowToast('Bitte konfigurieren Sie zuerst Ihren OpenAI API-Key im Admin Panel unter "API Keys".', 'error');
             // Link zum Admin Panel
-            const link = document.createElement('a');
-            link.href = '/admin-ki-settings.html';
-            link.target = '_blank';
-            link.click();
+            window.open('/admin.html#api-keys', '_blank');
             return;
         }
     }
@@ -919,21 +887,33 @@ async function generateCoverLetter() {
 async function generateWithGPT(userData) {
     const prompt = buildGPTPrompt(userData);
     
-    // Lade Modell-Konfiguration aus Admin-Einstellungen
-    let model = 'gpt-4o-mini'; // Standard-Modell
+    // Lade Modell-Konfiguration aus GlobalAPIManager (Admin Panel API Keys)
+    let model = 'gpt-4o-mini';
     let temperature = 0.7;
     let maxTokens = 1500;
     
-    // Versuche Admin-Einstellungen zu laden
-    const kiSettings = localStorage.getItem('ki_settings');
-    if (kiSettings) {
-        try {
-            const settings = JSON.parse(kiSettings);
-            model = settings.model || model;
-            temperature = settings.temperature ?? temperature;
-            maxTokens = settings.maxTokens || maxTokens;
-        } catch (e) {
-            console.log('ℹ️ Verwende Standard-Einstellungen');
+    // Versuche Einstellungen aus GlobalAPIManager zu laden
+    if (window.GlobalAPIManager) {
+        const config = window.GlobalAPIManager.getServiceConfig('openai');
+        if (config) {
+            model = config.model || model;
+            temperature = config.temperature ?? temperature;
+            maxTokens = config.maxTokens || maxTokens;
+        }
+    } else {
+        // Fallback: Direkt aus localStorage
+        const globalKeys = localStorage.getItem('global_api_keys');
+        if (globalKeys) {
+            try {
+                const parsed = JSON.parse(globalKeys);
+                if (parsed.openai) {
+                    model = parsed.openai.model || model;
+                    temperature = parsed.openai.temperature ?? temperature;
+                    maxTokens = parsed.openai.maxTokens || maxTokens;
+                }
+            } catch (e) {
+                console.log('ℹ️ Verwende Standard-Einstellungen');
+            }
         }
     }
     
