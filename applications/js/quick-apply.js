@@ -481,51 +481,64 @@ window.addEventListener('authStateChanged', recheckLoginStatus);
 window.addEventListener('userLoggedIn', recheckLoginStatus);
 
 /**
- * Lädt den Admin-API-Key aus AWS DynamoDB
+ * Lädt den API-Key aus AWS oder localStorage
  */
 async function loadAPIKeyFromAWS() {
     try {
-        if (!window.awsProfileAPI) {
-            console.warn('⚠️ awsProfileAPI nicht verfügbar');
-            return null;
-        }
-
-        // Warte auf Initialisierung
-        if (!window.awsProfileAPI.isInitialized) {
-            await new Promise((resolve, reject) => {
-                const timeout = setTimeout(() => reject(new Error('Timeout')), 5000);
-                const check = setInterval(() => {
-                    if (window.awsProfileAPI.isInitialized) {
-                        clearInterval(check);
-                        clearTimeout(timeout);
-                        resolve();
-                    }
-                }, 100);
-            });
-        }
-
-        // Lade Admin-Konfiguration
-        const adminProfile = await window.awsProfileAPI.loadProfile('admin').catch(() => null);
+        console.log('🔑 Versuche API-Key zu laden...');
         
-        if (adminProfile?.apiKeys?.openai?.apiKey) {
-            const key = adminProfile.apiKeys.openai.apiKey;
-            if (key && key.startsWith('sk-')) {
-                QuickApplyState.apiKey = key;
-                console.log('✅ API-Key aus AWS geladen');
-                return key;
+        // Methode 1: Aus AWS API Settings laden
+        if (window.awsAPISettings && window.awsAPISettings.isUserLoggedIn()) {
+            try {
+                const settings = await window.awsAPISettings.getSettings();
+                console.log('📊 AWS API Settings:', settings);
+                
+                if (settings?.hasSettings && settings.settings?.openai?.apiKey) {
+                    const key = settings.settings.openai.apiKey;
+                    if (key && key.startsWith('sk-')) {
+                        QuickApplyState.apiKey = key;
+                        console.log('✅ API-Key aus AWS geladen');
+                        return key;
+                    }
+                }
+            } catch (e) {
+                console.log('ℹ️ AWS API Settings nicht verfügbar:', e.message);
             }
         }
         
-        console.log('ℹ️ Kein API-Key in AWS gefunden');
+        // Methode 2: Aus localStorage laden (ki_settings)
+        const kiSettings = localStorage.getItem('ki_settings');
+        if (kiSettings) {
+            try {
+                const parsed = JSON.parse(kiSettings);
+                if (parsed.apiKey && parsed.apiKey.startsWith('sk-')) {
+                    QuickApplyState.apiKey = parsed.apiKey;
+                    console.log('✅ API-Key aus localStorage (ki_settings) geladen');
+                    return parsed.apiKey;
+                }
+            } catch (e) {
+                console.log('ℹ️ ki_settings nicht parsebar:', e.message);
+            }
+        }
+        
+        // Methode 3: Direkt aus localStorage
+        const directKey = localStorage.getItem('openai_api_key');
+        if (directKey && directKey.startsWith('sk-')) {
+            QuickApplyState.apiKey = directKey;
+            console.log('✅ API-Key aus localStorage (openai_api_key) geladen');
+            return directKey;
+        }
+        
+        console.log('ℹ️ Kein API-Key gefunden');
         return null;
     } catch (error) {
-        console.warn('⚠️ Fehler beim Laden des API-Keys aus AWS:', error);
+        console.warn('⚠️ Fehler beim Laden des API-Keys:', error);
         return null;
     }
 }
 
 /**
- * Zeigt den Status an (Template-Modus vs GPT-3.5-Turbo)
+ * Zeigt den Status an (API-Modus vs Konfiguration nötig)
  */
 function updateAPIStatusDisplay() {
     const statusText = document.getElementById('apiStatusText');
@@ -535,29 +548,29 @@ function updateAPIStatusDisplay() {
     if (!statusText || !generationInfo) return;
 
     if (QuickApplyState.isLoggedIn && QuickApplyState.apiKey) {
-        // Angemeldet MIT API-Key
-        statusText.innerHTML = '<i class="fas fa-robot"></i> GPT-3.5-Turbo • KI-generierte Anschreiben';
+        // Angemeldet MIT API-Key - ChatGPT aktiv
+        statusText.innerHTML = '<i class="fas fa-robot"></i> ChatGPT • KI-generierte Anschreiben';
         generationInfo.classList.add('has-api');
         generationInfo.classList.remove('no-api');
         if (apiHint) apiHint.classList.add('hidden');
     } else if (QuickApplyState.isLoggedIn) {
-        // Angemeldet OHNE API-Key
-        statusText.innerHTML = '<i class="fas fa-file-alt"></i> Template-Modus • Melden Sie sich ab und wieder an';
+        // Angemeldet OHNE API-Key - muss konfiguriert werden
+        statusText.innerHTML = '<i class="fas fa-exclamation-triangle"></i> API-Key fehlt';
         generationInfo.classList.add('no-api');
         generationInfo.classList.remove('has-api');
         if (apiHint) {
             apiHint.classList.remove('hidden');
             apiHint.innerHTML = `
-                <i class="fas fa-info-circle"></i>
+                <i class="fas fa-key"></i>
                 <div>
-                    <strong>API-Key nicht gefunden</strong> - 
-                    <a href="/admin.html#api-keys" target="_blank">Im Admin Panel konfigurieren</a>
+                    <strong>OpenAI API-Key benötigt</strong> - 
+                    <a href="/admin-ki-settings.html" target="_blank">Jetzt im Admin Panel konfigurieren</a>
                 </div>
             `;
         }
     } else {
-        // Nicht angemeldet - Template-Modus
-        statusText.innerHTML = '<i class="fas fa-magic"></i> Smart-Template • Anmelden für KI-Generierung';
+        // Nicht angemeldet
+        statusText.innerHTML = '<i class="fas fa-sign-in-alt"></i> Anmeldung erforderlich';
         generationInfo.classList.add('no-api');
         generationInfo.classList.remove('has-api');
         if (apiHint) {
@@ -565,8 +578,8 @@ function updateAPIStatusDisplay() {
             apiHint.innerHTML = `
                 <i class="fas fa-user-plus"></i>
                 <div>
-                    <strong>Kostenlos testen!</strong> - 
-                    <a href="#" onclick="showLoginModal(); return false;">Anmelden für GPT-3.5-Turbo</a>
+                    <strong>Anmelden für KI-Anschreiben</strong> - 
+                    <a href="#" onclick="showLoginModal(); return false;">Jetzt registrieren oder anmelden</a>
                 </div>
             `;
         }
@@ -705,10 +718,24 @@ function updateGenerateButtonState() {
     const hasName = nameInput?.value.trim().length > 0;
     const hasExperience = experienceSelect?.value !== '';
     const hasSkills = skillsInput?.value.trim().length > 0;
-    const hasJobData = QuickApplyState.jobData !== null || 
-                       document.getElementById('jobText')?.value.trim().length > 100;
+    const hasAPIKey = !!QuickApplyState.apiKey;
     
-    generateBtn.disabled = !(hasName && hasExperience && hasSkills);
+    // Button nur aktivieren wenn alle Pflichtfelder ausgefüllt UND API-Key vorhanden
+    const isReady = hasName && hasExperience && hasSkills && hasAPIKey;
+    
+    generateBtn.disabled = !isReady;
+    
+    // Button-Text anpassen
+    const btnText = generateBtn.querySelector('.btn-text') || generateBtn.querySelector('span');
+    if (btnText) {
+        if (!hasAPIKey) {
+            btnText.textContent = 'API-Key konfigurieren';
+        } else if (!isReady) {
+            btnText.textContent = 'Felder ausfüllen';
+        } else {
+            btnText.textContent = 'Anschreiben generieren';
+        }
+    }
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -844,20 +871,28 @@ async function generateCoverLetter() {
     const userData = collectUserData();
     if (!validateUserData(userData)) return;
     
+    // Prüfe ob API-Key vorhanden ist
+    if (!QuickApplyState.apiKey) {
+        // Versuche nochmal den Key zu laden
+        await loadAPIKeyFromAWS();
+        
+        if (!QuickApplyState.apiKey) {
+            quickApplyShowToast('Bitte konfigurieren Sie zuerst Ihren OpenAI API-Key im Admin Panel.', 'error');
+            // Link zum Admin Panel
+            const link = document.createElement('a');
+            link.href = '/admin-ki-settings.html';
+            link.target = '_blank';
+            link.click();
+            return;
+        }
+    }
+    
     QuickApplyState.isGenerating = true;
     showGeneratingState();
     
     try {
-        let coverLetter;
-        
-        // Entscheidung: KI oder Template
-        if (QuickApplyState.isLoggedIn && QuickApplyState.apiKey) {
-            // GPT-3.5-Turbo für angemeldete Nutzer
-            coverLetter = await generateWithGPT(userData);
-        } else {
-            // Template-Modus für nicht-angemeldete Nutzer
-            coverLetter = generateFromTemplates(userData);
-        }
+        // ChatGPT für Anschreiben-Generierung
+        const coverLetter = await generateWithGPT(userData);
         
         QuickApplyState.generatedText = coverLetter;
         displayGeneratedLetter(coverLetter);
@@ -867,19 +902,11 @@ async function generateCoverLetter() {
             saveToTracking(userData);
         }
         
-        quickApplyShowToast('Anschreiben erstellt!', 'success');
+        quickApplyShowToast('Anschreiben mit ChatGPT erstellt!', 'success');
         
     } catch (error) {
         console.error('Generation failed:', error);
         quickApplyShowToast('Fehler bei der Generierung: ' + error.message, 'error');
-        
-        // Fallback auf Templates bei Fehler
-        if (QuickApplyState.isLoggedIn) {
-            quickApplyShowToast('Verwende Template als Fallback...', 'info');
-            const coverLetter = generateFromTemplates(collectUserData());
-            QuickApplyState.generatedText = coverLetter;
-            displayGeneratedLetter(coverLetter);
-        }
     } finally {
         QuickApplyState.isGenerating = false;
         hideGeneratingState();
@@ -887,10 +914,30 @@ async function generateCoverLetter() {
 }
 
 /**
- * Generiert Anschreiben mit GPT-3.5-Turbo
+ * Generiert Anschreiben mit ChatGPT
  */
 async function generateWithGPT(userData) {
     const prompt = buildGPTPrompt(userData);
+    
+    // Lade Modell-Konfiguration aus Admin-Einstellungen
+    let model = 'gpt-4o-mini'; // Standard-Modell
+    let temperature = 0.7;
+    let maxTokens = 1500;
+    
+    // Versuche Admin-Einstellungen zu laden
+    const kiSettings = localStorage.getItem('ki_settings');
+    if (kiSettings) {
+        try {
+            const settings = JSON.parse(kiSettings);
+            model = settings.model || model;
+            temperature = settings.temperature ?? temperature;
+            maxTokens = settings.maxTokens || maxTokens;
+        } catch (e) {
+            console.log('ℹ️ Verwende Standard-Einstellungen');
+        }
+    }
+    
+    console.log(`🤖 Generiere mit ${model}, Temperatur: ${temperature}`);
     
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
@@ -899,7 +946,7 @@ async function generateWithGPT(userData) {
             'Authorization': `Bearer ${QuickApplyState.apiKey}`
         },
         body: JSON.stringify({
-            model: 'gpt-3.5-turbo',
+            model: model,
             messages: [
                 {
                     role: 'system',
@@ -908,15 +955,17 @@ Erstelle professionelle, authentische Bewerbungsanschreiben auf Deutsch.
 - Verwende einen ${userData.tone === 'formal' ? 'professionellen und sachlichen' : userData.tone === 'modern' ? 'modernen und dynamischen' : 'kreativen und einzigartigen'} Ton.
 - Das Anschreiben soll ${userData.length === 'short' ? 'kurz (ca. 150 Wörter)' : userData.length === 'long' ? 'ausführlich (ca. 350 Wörter)' : 'mittellang (ca. 250 Wörter)'} sein.
 - Integriere die Stärken und Erfahrung des Bewerbers natürlich.
-- Vermeide Floskeln und generische Phrasen.`
+- Vermeide Floskeln und generische Phrasen.
+- Formatiere das Anschreiben professionell mit Absätzen.
+- Beginne NICHT mit "Sehr geehrte Damen und Herren" wenn ein Ansprechpartner genannt ist.`
                 },
                 {
                     role: 'user',
                     content: prompt
                 }
             ],
-            temperature: 0.7,
-            max_tokens: 1000
+            temperature: temperature,
+            max_tokens: maxTokens
         })
     });
     
@@ -926,6 +975,7 @@ Erstelle professionelle, authentische Bewerbungsanschreiben auf Deutsch.
     }
     
     const data = await response.json();
+    console.log('✅ ChatGPT Response erhalten');
     return data.choices[0].message.content;
 }
 

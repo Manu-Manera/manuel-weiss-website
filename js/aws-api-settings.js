@@ -47,8 +47,27 @@ class AWSAPISettingsService {
             throw new Error('Nicht angemeldet');
         }
         
-        const session = await window.awsAuth.getCurrentSession();
-        return session.getIdToken().getJwtToken();
+        // Token direkt aus currentUser holen
+        const currentUser = window.awsAuth.getCurrentUser();
+        if (currentUser?.idToken) {
+            return currentUser.idToken;
+        }
+        
+        // Fallback: aus localStorage
+        const storageKey = window.AWS_AUTH_CONFIG?.token?.storageKey || 'aws_auth_session';
+        const session = localStorage.getItem(storageKey);
+        if (session) {
+            try {
+                const parsed = JSON.parse(session);
+                if (parsed.idToken) {
+                    return parsed.idToken;
+                }
+            } catch (e) {
+                console.error('❌ Fehler beim Parsen der Session:', e);
+            }
+        }
+        
+        throw new Error('Kein gültiges Token gefunden');
     }
 
     /**
