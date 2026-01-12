@@ -120,6 +120,8 @@ exports.handler = async (event) => {
 // Handle website-images DynamoDB operations
 async function handleWebsiteImages(event, method, path) {
   try {
+    console.log('📸 handleWebsiteImages called:', { method, path, table: PROFILE_TABLE });
+    
     if (method === 'POST' && path.includes('/website-images')) {
       // Save website images
       const body = parseBody(event);
@@ -135,11 +137,14 @@ async function handleWebsiteImages(event, method, path) {
         updatedAt: new Date().toISOString()
       };
       
+      console.log('💾 Saving website images to DynamoDB:', { userId: item.userId, table: PROFILE_TABLE });
+      
       await dynamoDB.put({
         TableName: PROFILE_TABLE,
         Item: item
       }).promise();
       
+      console.log('✅ Website images saved successfully');
       return json(200, { success: true, item });
       
     } else if (method === 'GET' && path.includes('/website-images/')) {
@@ -149,15 +154,25 @@ async function handleWebsiteImages(event, method, path) {
         return json(400, { error: 'Missing userId in path' });
       }
       
+      console.log('📥 Loading website images from DynamoDB:', { userId, table: PROFILE_TABLE });
+      
       const result = await dynamoDB.get({
         TableName: PROFILE_TABLE,
         Key: { userId }
       }).promise();
       
+      console.log('📥 DynamoDB result:', { 
+        hasItem: !!result.Item, 
+        itemType: result.Item?.type,
+        userId: result.Item?.userId 
+      });
+      
       if (!result.Item || result.Item.type !== 'website-images') {
+        console.log('⚠️ Website images not found for userId:', userId);
         return json(404, { error: 'Website images not found' });
       }
       
+      console.log('✅ Website images loaded successfully');
       return json(200, {
         userId: result.Item.userId,
         profileImageDefault: result.Item.profileImageDefault || null,
@@ -165,11 +180,21 @@ async function handleWebsiteImages(event, method, path) {
         updatedAt: result.Item.updatedAt
       });
     } else {
+      console.log('⚠️ Method not allowed:', { method, path });
       return json(405, { error: 'Method not allowed' });
     }
   } catch (error) {
-    console.error('Website images error:', error);
-    return json(500, { error: error.message });
+    console.error('❌ Website images error:', {
+      message: error.message,
+      code: error.code,
+      name: error.name,
+      stack: error.stack
+    });
+    return json(500, { 
+      error: 'Internal server error',
+      message: error.message,
+      code: error.code
+    });
   }
 }
 
