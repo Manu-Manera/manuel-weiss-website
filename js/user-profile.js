@@ -1269,16 +1269,32 @@ class UserProfile {
             // Lade Bewerbungsdaten (kann aus verschiedenen Quellen kommen)
             let applications = [];
             
-            // Versuche von Applications Core zu laden
-            if (window.applicationsCore && window.applicationsCore.getApplicationData) {
-                applications = await window.applicationsCore.getApplicationData();
-            } else if (this.awsProfileAPI) {
-                // Fallback: Lade aus Profil
+            // Prüfe ob User angemeldet ist und nutze AWS Applications API
+            if (window.realUserAuth?.isLoggedIn() && window.awsApplicationsAPI) {
+                try {
+                    console.log('📡 Using AWS Applications API...');
+                    const response = await window.awsApplicationsAPI.getApplications();
+                    applications = response?.applications || response?.list || [];
+                } catch (apiError) {
+                    console.warn('⚠️ AWS Applications API nicht verfügbar:', apiError);
+                }
+            }
+            
+            // Fallback 1: Applications Core (falls vorhanden)
+            if (applications.length === 0 && window.applicationsCore?.getApplicationData) {
+                applications = await window.applicationsCore.getApplicationData() || [];
+            }
+            
+            // Fallback 2: Profil-Daten
+            if (applications.length === 0 && this.awsProfileAPI) {
                 const profile = await this.awsProfileAPI.loadProfile();
                 applications = profile?.applications || [];
             }
             
-            console.log('✅ Applications loaded:', applications);
+            console.log('✅ Applications loaded:', applications.length, 'items');
+            
+            // Speichere lokal für schnelleren Zugriff
+            this.applications = applications;
             
             // Update Statistics
             this.updateApplicationsStats(applications);
