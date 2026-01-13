@@ -32,6 +32,14 @@ class UserProfile {
             // Reset Auto-Save Flag beim Login, damit es neu initialisiert werden kann
             this._autoSaveInitialized = false;
             this.setupAutoSave();
+            // Auth-Status erneut prüfen nach Login
+            this.checkAuthStatus();
+        });
+        
+        // Höre auf Auth-Ready Event
+        document.addEventListener('awsAuthReady', () => {
+            console.log('🔐 AWS Auth Ready Event empfangen');
+            this.checkAuthStatus();
         });
         
         // Initialisiere Applications Tab
@@ -116,8 +124,19 @@ class UserProfile {
         }
     }
 
-    checkAuthStatus() {
-        console.log('🔍 Checking auth status...');
+    checkAuthStatus(retryCount = 0) {
+        console.log('🔍 Checking auth status (Versuch', retryCount + 1, ')...');
+        
+        // Warte bis Auth-System initialisiert ist
+        const authReady = window.realUserAuth || window.awsAuth;
+        
+        if (!authReady && retryCount < 10) {
+            // Auth noch nicht bereit - warte und versuche erneut
+            console.log('⏳ Auth-System noch nicht bereit, warte...');
+            setTimeout(() => this.checkAuthStatus(retryCount + 1), 200);
+            return;
+        }
+        
         console.log('🔍 Real User Auth available:', !!window.realUserAuth);
         console.log('🔍 Is logged in:', window.realUserAuth ? window.realUserAuth.isLoggedIn() : false);
         
@@ -134,6 +153,12 @@ class UserProfile {
                 this.showLoginPrompt();
             }
         } else {
+            // Noch ein letzter Check - vielleicht lädt die Session noch
+            if (retryCount < 5) {
+                console.log('⏳ Session möglicherweise noch nicht geladen, warte...');
+                setTimeout(() => this.checkAuthStatus(retryCount + 1), 300);
+                return;
+            }
             console.log('❌ Not authenticated, showing login prompt');
             this.showLoginPrompt();
         }
