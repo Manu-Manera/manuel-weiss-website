@@ -183,8 +183,8 @@ class UserProfile {
     updateUserInfoFromAuth(user) {
         console.log('🔄 Updating user info from auth:', user);
         
-        // Get user data from Real User Auth
-        let userData = window.realUserAuth ? window.realUserAuth.getUserData() : null;
+        // Get user data from Real User Auth (Methode heißt getUserDataFromToken)
+        let userData = window.realUserAuth?.getUserDataFromToken?.() || null;
         if (userData) {
             console.log('👤 User data from auth:', userData);
         }
@@ -447,7 +447,7 @@ class UserProfile {
             
             // Get auth user data first
             const currentUser = window.realUserAuth.getCurrentUser();
-            const userData = window.realUserAuth.getUserData();
+            const userData = window.realUserAuth.getUserDataFromToken?.() || null;
             console.log('👤 Auth user data:', currentUser, userData);
             
             // Load from AWS
