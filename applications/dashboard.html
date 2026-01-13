@@ -234,20 +234,20 @@
         
         <!-- Desktop Navigation -->
         <div class="desktop-nav">
-            <div class="nav-container">
-                <div class="nav-menu" id="navMenu">
-                    <a href="../index.html" class="nav-link">Start</a>
-                    <a href="../persoenlichkeitsentwicklung-uebersicht.html" class="nav-link">Persönlichkeitsentwicklung</a>
-                    <a href="index.html" class="nav-link">Bewerbungsmanager</a>
-                    <a href="coaching.html" class="nav-link">Coaching</a>
-                    <div class="nav-divider"></div>
-                    <button class="lang-link-compact" data-lang="de" title="Deutsch">🇩🇪</button>
-                    <button class="lang-link-compact" data-lang="en" title="English">🇬🇧</button>
+        <div class="nav-container">
+            <div class="nav-menu" id="navMenu">
+                <a href="../index.html" class="nav-link">Start</a>
+                <a href="../persoenlichkeitsentwicklung-uebersicht.html" class="nav-link">Persönlichkeitsentwicklung</a>
+                <a href="index.html" class="nav-link">Bewerbungsmanager</a>
+                <a href="coaching.html" class="nav-link">Coaching</a>
+                <div class="nav-divider"></div>
+                <button class="lang-link-compact" data-lang="de" title="Deutsch">🇩🇪</button>
+                <button class="lang-link-compact" data-lang="en" title="English">🇬🇧</button>
                     <div class="auth-container">
                         <button id="authButton" class="nav-login-btn">
-                            <i class="fas fa-user"></i>
-                            <span id="authButtonText">Anmelden</span>
-                        </button>
+                    <i class="fas fa-user"></i>
+                    <span id="authButtonText">Anmelden</span>
+                </button>
                         <!-- User Dropdown -->
                         <div id="userDropdown" class="user-dropdown" style="display: none;">
                             <div class="dropdown-header">
@@ -255,8 +255,8 @@
                                 <div class="dropdown-user-info">
                                     <span id="userName" class="dropdown-name">Benutzer</span>
                                     <span id="userEmail" class="dropdown-email">email@example.com</span>
-                                </div>
-                            </div>
+                </div>
+            </div>
                             <div class="dropdown-divider"></div>
                             <a href="../user-profile.html" class="dropdown-item">
                                 <i class="fas fa-user-edit"></i>
@@ -270,7 +270,7 @@
                             <button onclick="logout()" class="dropdown-item dropdown-logout">
                                 <i class="fas fa-sign-out-alt"></i>
                                 Abmelden
-                            </button>
+            </button>
                         </div>
                     </div>
                 </div>
@@ -662,9 +662,9 @@ Ihre Aufgaben:
                 <div class="cover-letters-container">
                     <div class="cover-letters-header">
                         <h2><i class="fas fa-file-alt"></i> Meine Anschreiben</h2>
-                        <button onclick="showTab('quick')" class="btn-primary">
+                    <button onclick="showTab('quick')" class="btn-primary">
                             <i class="fas fa-plus"></i> Neues Anschreiben erstellen
-                        </button>
+                    </button>
                     </div>
                     
                     <!-- Gespeicherte Anschreiben Liste -->
@@ -691,16 +691,16 @@ Ihre Aufgaben:
                 <div class="resumes-container">
                     <div class="resumes-header">
                         <h2><i class="fas fa-file-alt"></i> Meine Lebensläufe</h2>
-                        <a href="resume-editor.html" class="btn-primary">
+                            <a href="resume-editor.html" class="btn-primary">
                             <i class="fas fa-plus"></i> Neuen Lebenslauf erstellen
-                        </a>
-                    </div>
+                            </a>
+                        </div>
                     
                     <!-- Gespeicherte Lebensläufe Liste -->
                     <div id="resumesList" class="resumes-list">
                         <!-- Wird dynamisch gefüllt -->
                     </div>
-                    
+
                     <!-- Empty State -->
                     <div id="resumesEmpty" class="empty-state" style="display: none;">
                         <i class="fas fa-id-card"></i>
@@ -709,9 +709,9 @@ Ihre Aufgaben:
                         <a href="resume-editor.html" class="btn-primary">
                             <i class="fas fa-plus"></i> Lebenslauf erstellen
                         </a>
-                    </div>
-                </div>
-            </div>
+                                </div>
+                                </div>
+                                </div>
 
             <!-- ═══════════════════════════════════════════════════════════ -->
             <!-- TAB: ZEUGNISSE & ZERTIFIKATE -->
@@ -721,7 +721,7 @@ Ihre Aufgaben:
                     <div class="documents-header">
                         <h2><i class="fas fa-certificate"></i> Zeugnisse & Zertifikate</h2>
                         <p>Laden Sie Ihre Zeugnisse und Zertifikate hoch, um sie bei Bewerbungen schnell anhängen zu können.</p>
-                    </div>
+                                </div>
                     
                     <!-- Upload Area -->
                     <div class="documents-upload-area">
@@ -731,7 +731,7 @@ Ihre Aufgaben:
                             <h3>Dokumente hochladen</h3>
                             <p>PDF-Dateien hier ablegen oder klicken</p>
                             <span class="upload-hint">Max. 10MB pro Datei</span>
-                        </div>
+                                </div>
                     </div>
                     
                     <!-- Document Categories -->
@@ -745,7 +745,7 @@ Ihre Aufgaben:
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="category-section">
                             <h3><i class="fas fa-award"></i> Zertifikate & Weiterbildungen</h3>
                             <div id="documentsAwards" class="documents-list">
@@ -755,19 +755,19 @@ Ihre Aufgaben:
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="category-section">
                             <h3><i class="fas fa-briefcase"></i> Arbeitszeugnisse</h3>
                             <div id="documentsWork" class="documents-list">
                                 <div class="empty-state-small" id="noWorkDocs">
                                     <i class="fas fa-file-pdf"></i>
                                     <p>Noch keine Arbeitszeugnisse hochgeladen</p>
-                                </div>
+                            </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+                        </div>
 
             <!-- ═══════════════════════════════════════════════════════════ -->
             <!-- TAB: BEWERBUNGSFOTOS -->
@@ -777,7 +777,7 @@ Ihre Aufgaben:
                     <div class="photos-header">
                         <h2><i class="fas fa-camera"></i> Bewerbungsfotos</h2>
                         <p>Laden Sie Ihre professionellen Bewerbungsfotos hoch</p>
-                    </div>
+                            </div>
 
                     <!-- Upload Area -->
                     <div class="photo-upload-area" id="photoUploadArea">
@@ -803,7 +803,7 @@ Ihre Aufgaben:
                                 <i class="fas fa-upload"></i> Erstes Foto hochladen
                             </button>
                         </div>
-                    </div>
+                        </div>
 
                     <!-- Photo Tips -->
                     <div class="photo-tips">
@@ -815,9 +815,9 @@ Ihre Aufgaben:
                             <li><i class="fas fa-check"></i> Freundlicher, natürlicher Gesichtsausdruck</li>
                             <li><i class="fas fa-check"></i> Hochformat, Kopf und Schultern sichtbar</li>
                         </ul>
-                    </div>
-                </div>
-            </div>
+                            </div>
+                            </div>
+                        </div>
 
             <!-- ═══════════════════════════════════════════════════════════ -->
             <!-- TAB: BEWERBUNGSMAPPE - Der komplette Bewerbungs-Builder -->
@@ -827,7 +827,7 @@ Ihre Aufgaben:
                     <div class="portfolio-header">
                         <h2><i class="fas fa-folder-open"></i> Bewerbungsmappe erstellen</h2>
                         <p>Fügen Sie alle Dokumente zusammen und erstellen Sie eine professionelle Bewerbungsmappe</p>
-                    </div>
+                                </div>
 
                     <div class="portfolio-builder">
                         <!-- Step 1: Dokumente auswählen -->
@@ -862,7 +862,7 @@ Ihre Aufgaben:
                                         </label>
                                         <i class="fas fa-id-card"></i>
                                         <span>Lebenslauf</span>
-                                    </div>
+                                </div>
                                     <select id="selectResume" class="document-dropdown">
                                         <option value="">-- Lebenslauf wählen --</option>
                                     </select>
@@ -877,12 +877,12 @@ Ihre Aufgaben:
                                         </label>
                                         <i class="fas fa-camera"></i>
                                         <span>Bewerbungsfoto</span>
-                                    </div>
+                            </div>
                                     <select id="selectPhoto" class="document-dropdown">
                                         <option value="">-- Foto wählen --</option>
                                     </select>
                                     <small class="selector-hint">Wird auf dem Lebenslauf platziert</small>
-                                </div>
+                        </div>
 
                                 <!-- Zeugnisse -->
                                 <div class="document-selector">
@@ -1011,11 +1011,11 @@ Ihre Aufgaben:
                             <div class="preview-actions">
                                 <button class="btn-secondary" onclick="previewPortfolio()">
                                     <i class="fas fa-eye"></i> Vorschau anzeigen
-                                </button>
+                            </button>
                                 <button class="btn-primary" onclick="generatePortfolioPDF()">
                                     <i class="fas fa-download"></i> Als PDF herunterladen
-                                </button>
-                            </div>
+                            </button>
+                    </div>
 
                             <!-- Live Preview -->
                             <div class="portfolio-preview" id="portfolioPreview">
@@ -1314,7 +1314,7 @@ Ihre Aufgaben:
     <script src="../js/cloud-data-service.js?v=20260112"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="js/utils.js?v=20260112i"></script>
-    <script src="js/dashboard-core.js?v=20260112portfolio"></script>
+    <script src="js/dashboard-core.js?v=20260113fix"></script>
     <script src="js/quick-apply.js?v=20260112i"></script>
     
     <script>
