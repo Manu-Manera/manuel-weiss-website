@@ -1938,7 +1938,9 @@ class RealUserAuthSystem {
             console.log('✅ RealUserAuthSystem instance created:', window.realUserAuth);
         } else {
             console.log('ℹ️ RealUserAuthSystem already exists, re-attaching listeners...');
-            window.realUserAuth.setupButtonListeners();
+            if (typeof window.realUserAuth.setupButtonListeners === 'function') {
+                window.realUserAuth.setupButtonListeners();
+            }
         }
     }
     
@@ -1956,7 +1958,9 @@ class RealUserAuthSystem {
             initAuthSystem();
         } else {
             // Re-attach listeners in case button was added later
-            window.realUserAuth.setupButtonListeners();
+            if (typeof window.realUserAuth.setupButtonListeners === 'function') {
+                window.realUserAuth.setupButtonListeners();
+            }
         }
     }, 1000);
 })();
