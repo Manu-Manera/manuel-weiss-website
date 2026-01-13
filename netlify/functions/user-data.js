@@ -212,27 +212,91 @@ async function getAllUserData(userId) {
 
 /**
  * Handle profile data
- * WICHTIG: Verwendet das GLEICHE Key-Schema wie das Backend!
- * Key: { userId: string } - NICHT pk/sk!
+ * WICHTIG: Prüft mehrere Key-Schemata für Abwärtskompatibilität
  */
 async function handleProfile(userId, userEmail, method, event) {
     if (method === 'GET') {
         console.log('📥 Loading profile for userId:', userId);
         
-        // Lade Profil mit dem GLEICHEN Key-Schema wie das Backend
-        const result = await dynamoDB.send(new GetItemCommand({
+        // 1. Versuche: Neues Schema { userId: string }
+        let result = await dynamoDB.send(new GetItemCommand({
             TableName: TABLE_NAME,
             Key: marshall({ userId: userId })
         }));
         
         if (result.Item) {
             const data = unmarshall(result.Item);
-            console.log('✅ Profil gefunden:', Object.keys(data));
+            console.log('✅ Profil gefunden (userId-Schema):', Object.keys(data));
             return {
                 statusCode: 200,
                 headers: CORS_HEADERS,
                 body: JSON.stringify(data)
             };
+        }
+        
+        // 2. Fallback: Altes pk/sk Schema in mawps-user-profiles
+        console.log('📥 Versuche altes pk/sk Schema...');
+        try {
+            result = await dynamoDB.send(new GetItemCommand({
+                TableName: TABLE_NAME,
+                Key: marshall({ pk: `USER#${userId}`, sk: 'DATA' })
+            }));
+            
+            if (result.Item) {
+                const data = unmarshall(result.Item);
+                console.log('✅ Profil gefunden (pk/sk Schema):', Object.keys(data));
+                // Migriere Daten zum neuen Schema
+                const migratedData = {
+                    ...data,
+                    ...data.profile, // Falls profile ein Unterfeld ist
+                    userId: userId,
+                    email: data.email || data.profile?.email || userEmail,
+                    migratedAt: new Date().toISOString()
+                };
+                delete migratedData.pk;
+                delete migratedData.sk;
+                delete migratedData.profile;
+                return {
+                    statusCode: 200,
+                    headers: CORS_HEADERS,
+                    body: JSON.stringify(migratedData)
+                };
+            }
+        } catch (err) {
+            console.log('ℹ️ pk/sk Schema nicht gefunden:', err.message);
+        }
+        
+        // 3. Fallback: Prüfe mawps-user-data Tabelle (falls dort gespeichert)
+        console.log('📥 Versuche mawps-user-data Tabelle...');
+        try {
+            result = await dynamoDB.send(new GetItemCommand({
+                TableName: 'mawps-user-data',
+                Key: marshall({ pk: `USER#${userId}`, sk: 'DATA' })
+            }));
+            
+            if (result.Item) {
+                const data = unmarshall(result.Item);
+                console.log('✅ Profil gefunden in mawps-user-data:', Object.keys(data));
+                // Migriere Daten zum neuen Schema
+                const migratedData = {
+                    ...data,
+                    ...data.profile,
+                    userId: userId,
+                    email: data.email || data.profile?.email || userEmail,
+                    migratedFrom: 'mawps-user-data',
+                    migratedAt: new Date().toISOString()
+                };
+                delete migratedData.pk;
+                delete migratedData.sk;
+                delete migratedData.profile;
+                return {
+                    statusCode: 200,
+                    headers: CORS_HEADERS,
+                    body: JSON.stringify(migratedData)
+                };
+            }
+        } catch (err) {
+            console.log('ℹ️ mawps-user-data nicht gefunden:', err.message);
         }
         
         // Kein Profil gefunden - gebe Standard-Profil zurück
