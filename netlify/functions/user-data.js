@@ -26,6 +26,7 @@ const dynamoDB = new DynamoDBClient({
 
 // EINZIGE Tabelle für alle Benutzerdaten - konsistent mit allen anderen Stellen
 const TABLE_NAME = process.env.USER_DATA_TABLE || 'mawps-user-profiles';
+const LEGACY_TABLE = 'mawps-user-data'; // Fallback für alte Daten
 
 // CORS Headers
 const CORS_HEADERS = {
@@ -34,6 +35,83 @@ const CORS_HEADERS = {
     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
     'Content-Type': 'application/json'
 };
+
+/**
+ * UNIVERSELLE FUNKTION: Lädt alle Benutzerdaten mit Fallbacks für alte Schemata
+ * Prüft: 1. Neues Schema (userId), 2. Altes pk/sk Schema, 3. mawps-user-data Tabelle
+ */
+async function loadUserDataWithFallback(userId) {
+    console.log('📥 Lade Benutzerdaten für userId:', userId);
+    
+    // 1. Versuche neues Schema { userId: string }
+    let result = await dynamoDB.send(new GetItemCommand({
+        TableName: TABLE_NAME,
+        Key: marshall({ userId: userId })
+    }));
+    
+    if (result.Item) {
+        const data = unmarshall(result.Item);
+        // Prüfe ob es echte Daten sind (nicht nur userId)
+        if (data.resumes || data.documents || data.coverLetters || data.applications || data.firstName || data.profession) {
+            console.log('✅ Daten gefunden (userId-Schema):', Object.keys(data));
+            return { data, source: 'userId-schema' };
+        }
+    }
+    
+    // 2. Fallback: Altes pk/sk Schema in mawps-user-profiles
+    console.log('📥 Versuche altes pk/sk Schema in mawps-user-profiles...');
+    try {
+        result = await dynamoDB.send(new GetItemCommand({
+            TableName: TABLE_NAME,
+            Key: marshall({ pk: `USER#${userId}`, sk: 'DATA' })
+        }));
+        
+        if (result.Item) {
+            const data = unmarshall(result.Item);
+            console.log('✅ Daten gefunden (pk/sk Schema in mawps-user-profiles):', Object.keys(data));
+            return { data, source: 'pk-sk-profiles' };
+        }
+    } catch (err) {
+        console.log('ℹ️ pk/sk Schema nicht gefunden in mawps-user-profiles');
+    }
+    
+    // 3. Fallback: mawps-user-data Tabelle mit pk/sk Schema
+    console.log('📥 Versuche mawps-user-data Tabelle...');
+    try {
+        result = await dynamoDB.send(new GetItemCommand({
+            TableName: LEGACY_TABLE,
+            Key: marshall({ pk: `USER#${userId}`, sk: 'DATA' })
+        }));
+        
+        if (result.Item) {
+            const data = unmarshall(result.Item);
+            console.log('✅ Daten gefunden in mawps-user-data:', Object.keys(data));
+            return { data, source: 'mawps-user-data' };
+        }
+    } catch (err) {
+        console.log('ℹ️ mawps-user-data Tabelle nicht gefunden oder leer');
+    }
+    
+    // 4. Fallback: mawps-user-data Tabelle mit userId Schema
+    console.log('📥 Versuche mawps-user-data mit userId Schema...');
+    try {
+        result = await dynamoDB.send(new GetItemCommand({
+            TableName: LEGACY_TABLE,
+            Key: marshall({ userId: userId })
+        }));
+        
+        if (result.Item) {
+            const data = unmarshall(result.Item);
+            console.log('✅ Daten gefunden in mawps-user-data (userId):', Object.keys(data));
+            return { data, source: 'mawps-user-data-userId' };
+        }
+    } catch (err) {
+        console.log('ℹ️ mawps-user-data userId Schema nicht gefunden');
+    }
+    
+    console.log('ℹ️ Keine Daten gefunden für userId:', userId);
+    return { data: {}, source: 'none' };
+}
 
 /**
  * Extract user ID from JWT token
@@ -163,16 +241,15 @@ exports.handler = async (event) => {
 };
 
 /**
- * Get all user data
+ * Get all user data - Mit Fallback für alte Schemata
  */
 async function getAllUserData(userId) {
     try {
-        const result = await dynamoDB.send(new GetItemCommand({
-            TableName: TABLE_NAME,
-            Key: marshall({ userId: userId })
-        }));
+        // Verwende die universelle Fallback-Funktion
+        const { data, source } = await loadUserDataWithFallback(userId);
+        console.log('📥 Alle Benutzerdaten geladen von:', source);
         
-        if (!result.Item) {
+        if (!data || Object.keys(data).length === 0) {
             return {
                 statusCode: 200,
                 headers: CORS_HEADERS,
@@ -181,15 +258,15 @@ async function getAllUserData(userId) {
                     resumes: [],
                     documents: [],
                     coverLetters: [],
-                    applications: []
+                    applications: [],
+                    photos: [],
+                    _source: 'none'
                 })
             };
         }
         
-        const data = unmarshall(result.Item);
-        
         // Profildaten sind direkt im Hauptobjekt, nicht in einem 'profile' Unterfeld
-        const { resumes, documents, coverLetters, applications, photos, ...profileData } = data;
+        const { resumes, documents, coverLetters, applications, photos, pk, sk, ...profileData } = data;
         
         return {
             statusCode: 200,
@@ -201,7 +278,8 @@ async function getAllUserData(userId) {
                 coverLetters: coverLetters || [],
                 applications: applications || [],
                 photos: photos || [],
-                updatedAt: data.updatedAt
+                updatedAt: data.updatedAt,
+                _source: source
             })
         };
     } catch (error) {
@@ -359,15 +437,13 @@ async function handleProfile(userId, userEmail, method, event) {
 
 /**
  * Handle resumes
- * WICHTIG: Verwendet das GLEICHE Key-Schema wie das Backend: { userId: string }
+ * WICHTIG: Verwendet loadUserDataWithFallback für Abwärtskompatibilität
  */
 async function handleResumes(userId, method, event) {
-    const existingResult = await dynamoDB.send(new GetItemCommand({
-        TableName: TABLE_NAME,
-        Key: marshall({ userId: userId })
-    }));
+    // Lade alle Daten mit Fallback für alte Schemata
+    const { data: existingData, source } = await loadUserDataWithFallback(userId);
+    console.log('📥 Resumes geladen von:', source);
     
-    const existingData = existingResult.Item ? unmarshall(existingResult.Item) : {};
     const resumes = existingData.resumes || [];
     
     if (method === 'GET') {
@@ -456,12 +532,10 @@ async function handleResumes(userId, method, event) {
  * Handle documents (certificates, etc.)
  */
 async function handleDocuments(userId, method, event) {
-    const existingResult = await dynamoDB.send(new GetItemCommand({
-        TableName: TABLE_NAME,
-        Key: marshall({ userId: userId })
-    }));
+    // Lade alle Daten mit Fallback für alte Schemata
+    const { data: existingData, source } = await loadUserDataWithFallback(userId);
+    console.log('📥 Documents geladen von:', source);
     
-    const existingData = existingResult.Item ? unmarshall(existingResult.Item) : {};
     const documents = existingData.documents || [];
     
     if (method === 'GET') {
@@ -548,12 +622,10 @@ async function handleDocuments(userId, method, event) {
  * Handle cover letters
  */
 async function handleCoverLetters(userId, method, event) {
-    const existingResult = await dynamoDB.send(new GetItemCommand({
-        TableName: TABLE_NAME,
-        Key: marshall({ userId: userId })
-    }));
+    // Lade alle Daten mit Fallback für alte Schemata
+    const { data: existingData, source } = await loadUserDataWithFallback(userId);
+    console.log('📥 CoverLetters geladen von:', source);
     
-    const existingData = existingResult.Item ? unmarshall(existingResult.Item) : {};
     const coverLetters = existingData.coverLetters || [];
     
     if (method === 'GET') {
@@ -640,12 +712,10 @@ async function handleCoverLetters(userId, method, event) {
  * Handle applications (job applications tracking)
  */
 async function handleApplications(userId, method, event) {
-    const existingResult = await dynamoDB.send(new GetItemCommand({
-        TableName: TABLE_NAME,
-        Key: marshall({ userId: userId })
-    }));
+    // Lade alle Daten mit Fallback für alte Schemata
+    const { data: existingData, source } = await loadUserDataWithFallback(userId);
+    console.log('📥 Applications geladen von:', source);
     
-    const existingData = existingResult.Item ? unmarshall(existingResult.Item) : {};
     const applications = existingData.applications || [];
     
     if (method === 'GET') {
@@ -731,12 +801,9 @@ async function handleApplications(userId, method, event) {
  * Handle photos (application photos / Bewerbungsfotos)
  */
 async function handlePhotos(userId, method, event) {
-    const existingResult = await dynamoDB.send(new GetItemCommand({
-        TableName: TABLE_NAME,
-        Key: marshall({ userId: userId })
-    }));
-    
-    const existingData = existingResult.Item ? unmarshall(existingResult.Item) : {};
+    // Lade alle Daten mit Fallback für alte Schemata
+    const { data: existingData, source } = await loadUserDataWithFallback(userId);
+    console.log('📥 Photos geladen von:', source);
     const photos = existingData.photos || [];
     
     if (method === 'GET') {
