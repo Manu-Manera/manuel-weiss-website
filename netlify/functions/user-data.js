@@ -24,8 +24,8 @@ const dynamoDB = new DynamoDBClient({
     } : undefined
 });
 
-const TABLE_NAME = process.env.USER_DATA_TABLE || 'mawps-user-data';
-const LEGACY_TABLE_NAME = 'mawps-user-profiles'; // Alte Tabelle für Fallback
+// EINZIGE Tabelle für alle Benutzerdaten - konsistent mit allen anderen Stellen
+const TABLE_NAME = process.env.USER_DATA_TABLE || 'mawps-user-profiles';
 
 // CORS Headers
 const CORS_HEADERS = {
@@ -169,7 +169,7 @@ async function getAllUserData(userId) {
     try {
         const result = await dynamoDB.send(new GetItemCommand({
             TableName: TABLE_NAME,
-            Key: marshall({ pk: `USER#${userId}`, sk: 'DATA' })
+            Key: marshall({ userId: userId })
         }));
         
         if (!result.Item) {
@@ -188,15 +188,19 @@ async function getAllUserData(userId) {
         
         const data = unmarshall(result.Item);
         
+        // Profildaten sind direkt im Hauptobjekt, nicht in einem 'profile' Unterfeld
+        const { resumes, documents, coverLetters, applications, photos, ...profileData } = data;
+        
         return {
             statusCode: 200,
             headers: CORS_HEADERS,
             body: JSON.stringify({
-                profile: data.profile || null,
-                resumes: data.resumes || [],
-                documents: data.documents || [],
-                coverLetters: data.coverLetters || [],
-                applications: data.applications || [],
+                profile: profileData,
+                resumes: resumes || [],
+                documents: documents || [],
+                coverLetters: coverLetters || [],
+                applications: applications || [],
+                photos: photos || [],
                 updatedAt: data.updatedAt
             })
         };
@@ -208,45 +212,39 @@ async function getAllUserData(userId) {
 
 /**
  * Handle profile data
+ * WICHTIG: Verwendet das GLEICHE Key-Schema wie das Backend!
+ * Key: { userId: string } - NICHT pk/sk!
  */
 async function handleProfile(userId, userEmail, method, event) {
     if (method === 'GET') {
-        // Versuche zuerst aus neuer Tabelle zu laden
-        let result = await dynamoDB.send(new GetItemCommand({
+        console.log('📥 Loading profile for userId:', userId);
+        
+        // Lade Profil mit dem GLEICHEN Key-Schema wie das Backend
+        const result = await dynamoDB.send(new GetItemCommand({
             TableName: TABLE_NAME,
-            Key: marshall({ pk: `USER#${userId}`, sk: 'DATA' })
+            Key: marshall({ userId: userId })
         }));
         
-        let data = result.Item ? unmarshall(result.Item) : {};
-        
-        // Fallback: Wenn keine Profildaten in neuer Tabelle, versuche Legacy-Tabelle
-        if (!data.profile || Object.keys(data.profile).length === 0) {
-            console.log('📥 Keine Daten in neuer Tabelle, prüfe Legacy-Tabelle...');
-            try {
-                const legacyResult = await dynamoDB.send(new GetItemCommand({
-                    TableName: LEGACY_TABLE_NAME,
-                    Key: marshall({ userId: userId })
-                }));
-                
-                if (legacyResult.Item) {
-                    const legacyData = unmarshall(legacyResult.Item);
-                    console.log('✅ Legacy-Daten gefunden:', Object.keys(legacyData));
-                    // Legacy-Daten direkt als Profil zurückgeben
-                    return {
-                        statusCode: 200,
-                        headers: CORS_HEADERS,
-                        body: JSON.stringify(legacyData)
-                    };
-                }
-            } catch (legacyError) {
-                console.log('ℹ️ Legacy-Tabelle nicht verfügbar oder leer:', legacyError.message);
-            }
+        if (result.Item) {
+            const data = unmarshall(result.Item);
+            console.log('✅ Profil gefunden:', Object.keys(data));
+            return {
+                statusCode: 200,
+                headers: CORS_HEADERS,
+                body: JSON.stringify(data)
+            };
         }
         
+        // Kein Profil gefunden - gebe Standard-Profil zurück
+        console.log('ℹ️ Kein Profil gefunden, erstelle Standard-Profil');
         return {
             statusCode: 200,
             headers: CORS_HEADERS,
-            body: JSON.stringify(data.profile || { email: userEmail })
+            body: JSON.stringify({ 
+                userId: userId,
+                email: userEmail,
+                createdAt: new Date().toISOString()
+            })
         };
     }
     
@@ -254,39 +252,41 @@ async function handleProfile(userId, userEmail, method, event) {
         const body = JSON.parse(event.body || '{}');
         const now = new Date().toISOString();
         
-        // Get existing data
+        // Get existing data mit dem GLEICHEN Key-Schema
         const existingResult = await dynamoDB.send(new GetItemCommand({
             TableName: TABLE_NAME,
-            Key: marshall({ pk: `USER#${userId}`, sk: 'DATA' })
+            Key: marshall({ userId: userId })
         }));
         
         const existingData = existingResult.Item ? unmarshall(existingResult.Item) : {};
         
-        // Update profile
+        // Merge und speichere - behalte bestehendes Datenformat bei
         const updatedData = {
-            pk: `USER#${userId}`,
-            sk: 'DATA',
             ...existingData,
-            profile: {
-                ...existingData.profile,
-                ...body,
-                email: body.email || userEmail,
-                updatedAt: now
-            },
+            ...body,
+            userId: userId, // Immer beibehalten
+            email: body.email || existingData.email || userEmail,
             updatedAt: now
         };
+        
+        // Entferne undefined Werte
+        Object.keys(updatedData).forEach(key => {
+            if (updatedData[key] === undefined) {
+                delete updatedData[key];
+            }
+        });
         
         await dynamoDB.send(new PutItemCommand({
             TableName: TABLE_NAME,
             Item: marshall(updatedData, { removeUndefinedValues: true })
         }));
         
-        console.log('✅ Profile saved to AWS');
+        console.log('✅ Profil gespeichert für userId:', userId);
         
         return {
             statusCode: 200,
             headers: CORS_HEADERS,
-            body: JSON.stringify({ success: true, profile: updatedData.profile })
+            body: JSON.stringify({ success: true, ...updatedData })
         };
     }
     
@@ -295,11 +295,12 @@ async function handleProfile(userId, userEmail, method, event) {
 
 /**
  * Handle resumes
+ * WICHTIG: Verwendet das GLEICHE Key-Schema wie das Backend: { userId: string }
  */
 async function handleResumes(userId, method, event) {
     const existingResult = await dynamoDB.send(new GetItemCommand({
         TableName: TABLE_NAME,
-        Key: marshall({ pk: `USER#${userId}`, sk: 'DATA' })
+        Key: marshall({ userId: userId })
     }));
     
     const existingData = existingResult.Item ? unmarshall(existingResult.Item) : {};
@@ -333,11 +334,10 @@ async function handleResumes(userId, method, event) {
             resumes.push(newResume);
         }
         
-        // Save
+        // Save mit gleichem Key-Schema wie Backend
         const updatedData = {
-            pk: `USER#${userId}`,
-            sk: 'DATA',
             ...existingData,
+            userId: userId,
             resumes,
             updatedAt: now
         };
@@ -367,9 +367,8 @@ async function handleResumes(userId, method, event) {
         const filteredResumes = resumes.filter(r => r.id !== resumeId);
         
         const updatedData = {
-            pk: `USER#${userId}`,
-            sk: 'DATA',
             ...existingData,
+            userId: userId,
             resumes: filteredResumes,
             updatedAt: new Date().toISOString()
         };
@@ -395,7 +394,7 @@ async function handleResumes(userId, method, event) {
 async function handleDocuments(userId, method, event) {
     const existingResult = await dynamoDB.send(new GetItemCommand({
         TableName: TABLE_NAME,
-        Key: marshall({ pk: `USER#${userId}`, sk: 'DATA' })
+        Key: marshall({ userId: userId })
     }));
     
     const existingData = existingResult.Item ? unmarshall(existingResult.Item) : {};
@@ -429,9 +428,8 @@ async function handleDocuments(userId, method, event) {
         }
         
         const updatedData = {
-            pk: `USER#${userId}`,
-            sk: 'DATA',
             ...existingData,
+            userId: userId,
             documents,
             updatedAt: now
         };
@@ -461,9 +459,8 @@ async function handleDocuments(userId, method, event) {
         const filteredDocs = documents.filter(d => d.id !== docId);
         
         const updatedData = {
-            pk: `USER#${userId}`,
-            sk: 'DATA',
             ...existingData,
+            userId: userId,
             documents: filteredDocs,
             updatedAt: new Date().toISOString()
         };
@@ -489,7 +486,7 @@ async function handleDocuments(userId, method, event) {
 async function handleCoverLetters(userId, method, event) {
     const existingResult = await dynamoDB.send(new GetItemCommand({
         TableName: TABLE_NAME,
-        Key: marshall({ pk: `USER#${userId}`, sk: 'DATA' })
+        Key: marshall({ userId: userId })
     }));
     
     const existingData = existingResult.Item ? unmarshall(existingResult.Item) : {};
@@ -523,9 +520,8 @@ async function handleCoverLetters(userId, method, event) {
         }
         
         const updatedData = {
-            pk: `USER#${userId}`,
-            sk: 'DATA',
             ...existingData,
+            userId: userId,
             coverLetters,
             updatedAt: now
         };
@@ -555,9 +551,8 @@ async function handleCoverLetters(userId, method, event) {
         const filteredCL = coverLetters.filter(cl => cl.id !== clId);
         
         const updatedData = {
-            pk: `USER#${userId}`,
-            sk: 'DATA',
             ...existingData,
+            userId: userId,
             coverLetters: filteredCL,
             updatedAt: new Date().toISOString()
         };
@@ -583,7 +578,7 @@ async function handleCoverLetters(userId, method, event) {
 async function handleApplications(userId, method, event) {
     const existingResult = await dynamoDB.send(new GetItemCommand({
         TableName: TABLE_NAME,
-        Key: marshall({ pk: `USER#${userId}`, sk: 'DATA' })
+        Key: marshall({ userId: userId })
     }));
     
     const existingData = existingResult.Item ? unmarshall(existingResult.Item) : {};
@@ -616,9 +611,8 @@ async function handleApplications(userId, method, event) {
         }
         
         const updatedData = {
-            pk: `USER#${userId}`,
-            sk: 'DATA',
             ...existingData,
+            userId: userId,
             applications,
             updatedAt: now
         };
@@ -648,9 +642,8 @@ async function handleApplications(userId, method, event) {
         const filteredApps = applications.filter(a => a.id !== appId);
         
         const updatedData = {
-            pk: `USER#${userId}`,
-            sk: 'DATA',
             ...existingData,
+            userId: userId,
             applications: filteredApps,
             updatedAt: new Date().toISOString()
         };
@@ -676,7 +669,7 @@ async function handleApplications(userId, method, event) {
 async function handlePhotos(userId, method, event) {
     const existingResult = await dynamoDB.send(new GetItemCommand({
         TableName: TABLE_NAME,
-        Key: marshall({ pk: `USER#${userId}`, sk: 'DATA' })
+        Key: marshall({ userId: userId })
     }));
     
     const existingData = existingResult.Item ? unmarshall(existingResult.Item) : {};
@@ -713,9 +706,8 @@ async function handlePhotos(userId, method, event) {
         }
         
         const updatedData = {
-            pk: `USER#${userId}`,
-            sk: 'DATA',
             ...existingData,
+            userId: userId,
             photos,
             updatedAt: now
         };
@@ -745,9 +737,8 @@ async function handlePhotos(userId, method, event) {
         const filteredPhotos = photos.filter(p => p.id !== photoId);
         
         const updatedData = {
-            pk: `USER#${userId}`,
-            sk: 'DATA',
             ...existingData,
+            userId: userId,
             photos: filteredPhotos,
             updatedAt: new Date().toISOString()
         };
