@@ -1,0 +1,809 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   DESIGN EDITOR - Professional Resume Designer
+   Phase 1-5: Complete Styling
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* CSS Variables for Design Editor */
+:root {
+    --design-sidebar-width: 320px;
+    --design-preview-bg: #f1f5f9;
+    --design-panel-bg: #ffffff;
+    --design-border: #e2e8f0;
+    --design-accent: #6366f1;
+    --design-accent-hover: #4f46e5;
+    --design-text: #1e293b;
+    --design-text-muted: #64748b;
+    --design-success: #10b981;
+    --design-warning: #f59e0b;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MAIN LAYOUT - Split View
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.design-editor-container {
+    display: flex;
+    min-height: calc(100vh - 70px);
+    background: var(--design-preview-bg);
+}
+
+/* Design Sidebar (Left) */
+.design-sidebar {
+    width: var(--design-sidebar-width);
+    background: var(--design-panel-bg);
+    border-right: 1px solid var(--design-border);
+    overflow-y: auto;
+    flex-shrink: 0;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+}
+
+.design-sidebar-header {
+    padding: 1.25rem;
+    background: linear-gradient(135deg, var(--design-accent), #8b5cf6);
+    color: white;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.design-sidebar-header h2 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.design-sidebar-header p {
+    font-size: 0.8rem;
+    opacity: 0.9;
+    margin: 0.25rem 0 0 0;
+}
+
+/* Sidebar Tabs */
+.design-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--design-border);
+    background: #f8fafc;
+}
+
+.design-tab {
+    flex: 1;
+    padding: 0.75rem;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 0.75rem;
+    color: var(--design-text-muted);
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.design-tab i {
+    font-size: 1rem;
+}
+
+.design-tab:hover {
+    background: #fff;
+    color: var(--design-accent);
+}
+
+.design-tab.active {
+    background: #fff;
+    color: var(--design-accent);
+    border-bottom: 2px solid var(--design-accent);
+    margin-bottom: -1px;
+}
+
+/* Sidebar Content Panels */
+.design-panel {
+    display: none;
+    padding: 1rem;
+}
+
+.design-panel.active {
+    display: block;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DESIGN PANEL SECTIONS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.design-section {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--design-border);
+}
+
+.design-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.design-section-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--design-text-muted);
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.design-section-title i {
+    color: var(--design-accent);
+}
+
+/* Form Groups */
+.design-form-group {
+    margin-bottom: 1rem;
+}
+
+.design-form-group:last-child {
+    margin-bottom: 0;
+}
+
+.design-form-group label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--design-text);
+    margin-bottom: 0.375rem;
+}
+
+.design-form-group small {
+    display: block;
+    font-size: 0.7rem;
+    color: var(--design-text-muted);
+    margin-top: 0.25rem;
+}
+
+/* Select Inputs */
+.design-select {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--design-border);
+    border-radius: 6px;
+    font-size: 0.85rem;
+    background: white;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.design-select:hover {
+    border-color: var(--design-accent);
+}
+
+.design-select:focus {
+    outline: none;
+    border-color: var(--design-accent);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+/* Number Inputs */
+.design-number {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--design-border);
+    border-radius: 6px;
+    font-size: 0.85rem;
+}
+
+.design-number:focus {
+    outline: none;
+    border-color: var(--design-accent);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+/* Range Sliders */
+.design-slider-group {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.design-slider {
+    flex: 1;
+    -webkit-appearance: none;
+    height: 6px;
+    background: #e2e8f0;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.design-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    background: var(--design-accent);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.design-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+}
+
+.design-slider-value {
+    min-width: 45px;
+    text-align: right;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--design-text);
+    background: #f1f5f9;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+}
+
+/* Color Pickers */
+.design-color-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+}
+
+.design-color-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+}
+
+.design-color-item label {
+    font-size: 0.75rem;
+    color: var(--design-text-muted);
+}
+
+.design-color-picker {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.design-color-picker input[type="color"] {
+    width: 36px;
+    height: 36px;
+    border: 2px solid var(--design-border);
+    border-radius: 6px;
+    cursor: pointer;
+    padding: 2px;
+}
+
+.design-color-picker input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+.design-color-picker input[type="color"]::-webkit-color-swatch {
+    border-radius: 4px;
+    border: none;
+}
+
+.design-color-hex {
+    flex: 1;
+    padding: 0.375rem 0.5rem;
+    border: 1px solid var(--design-border);
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-family: monospace;
+    text-transform: uppercase;
+}
+
+/* Color Presets */
+.design-color-presets {
+    display: flex;
+    gap: 0.375rem;
+    margin-top: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.design-color-preset {
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.design-color-preset:hover {
+    transform: scale(1.1);
+}
+
+.design-color-preset.active {
+    border-color: var(--design-text);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TEMPLATE GALLERY
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.design-templates-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+}
+
+.design-template-card {
+    border: 2px solid var(--design-border);
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: white;
+}
+
+.design-template-card:hover {
+    border-color: var(--design-accent);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+}
+
+.design-template-card.active {
+    border-color: var(--design-accent);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+.design-template-preview {
+    height: 120px;
+    background: #f8fafc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: var(--design-text-muted);
+}
+
+.design-template-info {
+    padding: 0.625rem;
+    border-top: 1px solid var(--design-border);
+}
+
+.design-template-name {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--design-text);
+}
+
+.design-template-desc {
+    font-size: 0.7rem;
+    color: var(--design-text-muted);
+    margin-top: 0.125rem;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SECTIONS MANAGER (Drag & Drop)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.design-sections-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.design-section-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.625rem 0.75rem;
+    background: #f8fafc;
+    border: 1px solid var(--design-border);
+    border-radius: 6px;
+    cursor: grab;
+    transition: all 0.2s;
+}
+
+.design-section-item:hover {
+    background: white;
+    border-color: var(--design-accent);
+}
+
+.design-section-item.dragging {
+    opacity: 0.5;
+    transform: scale(0.98);
+}
+
+.design-section-item.drag-over {
+    border-color: var(--design-accent);
+    background: rgba(99, 102, 241, 0.05);
+}
+
+.design-section-drag {
+    color: var(--design-text-muted);
+    cursor: grab;
+}
+
+.design-section-icon {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--design-accent);
+    color: white;
+    border-radius: 6px;
+    font-size: 0.75rem;
+}
+
+.design-section-name {
+    flex: 1;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--design-text);
+}
+
+.design-section-actions {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.design-section-btn {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    border-radius: 4px;
+    color: var(--design-text-muted);
+    transition: all 0.2s;
+}
+
+.design-section-btn:hover {
+    background: #e2e8f0;
+    color: var(--design-text);
+}
+
+.design-section-btn.hidden {
+    color: #cbd5e1;
+}
+
+.design-section-btn.visible {
+    color: var(--design-success);
+}
+
+/* Add Section Button */
+.design-add-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    border: 2px dashed var(--design-border);
+    border-radius: 6px;
+    background: transparent;
+    cursor: pointer;
+    font-size: 0.8rem;
+    color: var(--design-text-muted);
+    transition: all 0.2s;
+    margin-top: 0.5rem;
+}
+
+.design-add-section:hover {
+    border-color: var(--design-accent);
+    color: var(--design-accent);
+    background: rgba(99, 102, 241, 0.05);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LIVE PREVIEW AREA
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.design-preview-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Preview Toolbar */
+.design-preview-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1.25rem;
+    background: white;
+    border-bottom: 1px solid var(--design-border);
+}
+
+.design-preview-zoom {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.design-zoom-btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--design-border);
+    border-radius: 6px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.design-zoom-btn:hover {
+    background: #f1f5f9;
+    border-color: var(--design-accent);
+}
+
+.design-zoom-value {
+    font-size: 0.8rem;
+    font-weight: 500;
+    min-width: 50px;
+    text-align: center;
+}
+
+.design-preview-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.design-action-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--design-border);
+    border-radius: 6px;
+    background: white;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.design-action-btn:hover {
+    background: #f1f5f9;
+}
+
+.design-action-btn.primary {
+    background: var(--design-accent);
+    color: white;
+    border-color: var(--design-accent);
+}
+
+.design-action-btn.primary:hover {
+    background: var(--design-accent-hover);
+}
+
+/* Preview Container */
+.design-preview-container {
+    flex: 1;
+    overflow: auto;
+    padding: 2rem;
+    display: flex;
+    justify-content: center;
+}
+
+.design-preview-wrapper {
+    transition: transform 0.2s;
+    transform-origin: top center;
+}
+
+/* A4 Page Preview */
+.design-resume-preview {
+    width: 210mm;
+    min-height: 297mm;
+    background: white;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    padding: var(--resume-margin, 20mm);
+    font-family: var(--resume-font, 'Inter', sans-serif);
+    font-size: var(--resume-font-size, 11pt);
+    line-height: var(--resume-line-height, 1.5);
+    color: var(--resume-text-color, #1e293b);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESUME PREVIEW STYLES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.resume-preview-header {
+    text-align: center;
+    margin-bottom: var(--resume-section-gap, 1.5rem);
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--resume-accent-color, #6366f1);
+}
+
+.resume-preview-name {
+    font-size: calc(var(--resume-heading-size, 18pt) * 1.5);
+    font-weight: 700;
+    color: var(--resume-accent-color, #6366f1);
+    margin: 0;
+}
+
+.resume-preview-title {
+    font-size: var(--resume-heading-size, 18pt);
+    font-weight: 500;
+    color: var(--resume-text-color, #1e293b);
+    margin: 0.5rem 0;
+}
+
+.resume-preview-contact {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+    font-size: calc(var(--resume-font-size, 11pt) * 0.9);
+    color: var(--resume-muted-color, #64748b);
+}
+
+.resume-preview-contact span {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.resume-preview-section {
+    margin-bottom: var(--resume-section-gap, 1.5rem);
+}
+
+.resume-preview-section-title {
+    font-size: var(--resume-heading-size, 18pt);
+    font-weight: 600;
+    color: var(--resume-accent-color, #6366f1);
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.25rem;
+    border-bottom: 1px solid var(--resume-border-color, #e2e8f0);
+}
+
+.resume-preview-item {
+    margin-bottom: 1rem;
+}
+
+.resume-preview-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 0.25rem;
+}
+
+.resume-preview-item-title {
+    font-weight: 600;
+    color: var(--resume-text-color, #1e293b);
+}
+
+.resume-preview-item-date {
+    font-size: calc(var(--resume-font-size, 11pt) * 0.85);
+    color: var(--resume-muted-color, #64748b);
+}
+
+.resume-preview-item-subtitle {
+    font-size: calc(var(--resume-font-size, 11pt) * 0.95);
+    color: var(--resume-muted-color, #64748b);
+    margin-bottom: 0.375rem;
+}
+
+.resume-preview-item-description {
+    font-size: var(--resume-font-size, 11pt);
+    color: var(--resume-text-color, #1e293b);
+    line-height: var(--resume-line-height, 1.5);
+}
+
+.resume-preview-skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.resume-preview-skill {
+    padding: 0.25rem 0.75rem;
+    background: rgba(99, 102, 241, 0.1);
+    color: var(--resume-accent-color, #6366f1);
+    border-radius: 4px;
+    font-size: calc(var(--resume-font-size, 11pt) * 0.85);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE DESIGN
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 1200px) {
+    .design-sidebar {
+        width: 280px;
+    }
+}
+
+@media (max-width: 992px) {
+    .design-editor-container {
+        flex-direction: column;
+    }
+    
+    .design-sidebar {
+        width: 100%;
+        max-height: 50vh;
+    }
+    
+    .design-preview-container {
+        padding: 1rem;
+    }
+    
+    .design-resume-preview {
+        width: 100%;
+        min-height: auto;
+        transform: scale(0.8);
+        transform-origin: top center;
+    }
+}
+
+@media (max-width: 768px) {
+    .design-tabs {
+        overflow-x: auto;
+    }
+    
+    .design-tab {
+        min-width: 60px;
+    }
+    
+    .design-templates-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .design-preview-toolbar {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ANIMATIONS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@keyframes slideInLeft {
+    from {
+        transform: translateX(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.design-panel.active {
+    animation: fadeIn 0.2s ease-out;
+}
+
+.design-section-item {
+    animation: slideInLeft 0.3s ease-out;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PRINT STYLES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media print {
+    .design-sidebar,
+    .design-preview-toolbar {
+        display: none !important;
+    }
+    
+    .design-preview-area {
+        width: 100%;
+    }
+    
+    .design-preview-container {
+        padding: 0;
+    }
+    
+    .design-resume-preview {
+        box-shadow: none;
+        width: 100%;
+        min-height: auto;
+    }
+}

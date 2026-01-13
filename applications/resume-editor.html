@@ -7,7 +7,8 @@
     <link rel="stylesheet" href="../styles.css">
     <link rel="stylesheet" href="css/applications-main.css">
     <link rel="stylesheet" href="css/resume-editor.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/design-editor.css?v=20260113">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@300;400;500;600;700&family=Lato:wght@300;400;700&family=Montserrat:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700&family=Nunito:wght@300;400;500;600;700&family=Source+Sans+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -226,8 +227,8 @@
                     <button type="submit" class="btn-primary">
                         <i class="fas fa-save"></i> Speichern
                     </button>
-                    <button type="button" class="btn-style-editor" onclick="openStyleEditor()">
-                        <i class="fas fa-palette"></i> Style Editor
+                    <button type="button" class="btn-style-editor" onclick="openDesignEditor()">
+                        <i class="fas fa-palette"></i> Design Editor
                     </button>
                     <button type="button" class="btn-secondary btn-export" onclick="exportToPDF()">
                         <i class="fas fa-file-pdf"></i> Als PDF exportieren
@@ -283,72 +284,274 @@
         </div>
     </main>
 
-    <!-- Style Editor Modal -->
-    <div id="styleEditorModal" class="style-editor-modal">
-        <div class="style-editor-content">
-            <div class="style-editor-header">
-                <h2><i class="fas fa-palette"></i> Lebenslauf-Design anpassen</h2>
-                <button class="style-editor-close" onclick="closeStyleEditor()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="style-editor-body">
-                <div class="style-option-group">
-                    <h3>Template wählen</h3>
-                    <div class="style-templates">
-                        <div class="style-template active" data-template="modern" onclick="selectTemplate(this)">
-                            <div class="style-template-preview">📄</div>
-                            <div class="style-template-name">Modern</div>
+    <!-- Design Editor Modal (Full-Screen) -->
+    <div id="designEditorModal" class="design-editor-modal">
+        <div class="design-editor-container">
+            <!-- Sidebar -->
+            <aside class="design-sidebar">
+                <div class="design-sidebar-header">
+                    <h2><i class="fas fa-palette"></i> Design Editor</h2>
+                    <p>Lebenslauf professionell gestalten</p>
+                </div>
+                
+                <!-- Tabs -->
+                <div class="design-tabs">
+                    <button class="design-tab active" data-panel="typography">
+                        <i class="fas fa-font"></i>
+                        <span>Schrift</span>
+                    </button>
+                    <button class="design-tab" data-panel="colors">
+                        <i class="fas fa-palette"></i>
+                        <span>Farben</span>
+                    </button>
+                    <button class="design-tab" data-panel="spacing">
+                        <i class="fas fa-arrows-alt"></i>
+                        <span>Abstände</span>
+                    </button>
+                    <button class="design-tab" data-panel="sections">
+                        <i class="fas fa-list"></i>
+                        <span>Bereiche</span>
+                    </button>
+                    <button class="design-tab" data-panel="templates">
+                        <i class="fas fa-th-large"></i>
+                        <span>Vorlagen</span>
+                    </button>
+                </div>
+                
+                <!-- Typography Panel -->
+                <div id="panel-typography" class="design-panel active">
+                    <div class="design-section">
+                        <div class="design-section-title"><i class="fas fa-font"></i> Schriftart</div>
+                        <div class="design-form-group">
+                            <label>Font Family</label>
+                            <select id="designFontFamily" class="design-select">
+                                <option value="'Inter', sans-serif">Inter (Modern)</option>
+                                <option value="'Roboto', sans-serif">Roboto</option>
+                                <option value="'Open Sans', sans-serif">Open Sans</option>
+                                <option value="'Lato', sans-serif">Lato</option>
+                                <option value="'Montserrat', sans-serif">Montserrat</option>
+                                <option value="'Source Sans Pro', sans-serif">Source Sans Pro</option>
+                                <option value="'Nunito', sans-serif">Nunito</option>
+                                <option value="Georgia, serif">Georgia (Klassisch)</option>
+                                <option value="'Times New Roman', serif">Times New Roman</option>
+                                <option value="'Merriweather', serif">Merriweather</option>
+                                <option value="Arial, sans-serif">Arial</option>
+                                <option value="'Helvetica Neue', sans-serif">Helvetica Neue</option>
+                            </select>
                         </div>
-                        <div class="style-template" data-template="classic" onclick="selectTemplate(this)">
-                            <div class="style-template-preview">📋</div>
-                            <div class="style-template-name">Klassisch</div>
+                    </div>
+                    
+                    <div class="design-section">
+                        <div class="design-section-title"><i class="fas fa-text-height"></i> Größen</div>
+                        <div class="design-form-group">
+                            <label>Fließtext</label>
+                            <div class="design-slider-group">
+                                <input type="range" id="designFontSize" class="design-slider">
+                                <span id="designFontSizeValue" class="design-slider-value">11pt</span>
+                            </div>
                         </div>
-                        <div class="style-template" data-template="creative" onclick="selectTemplate(this)">
-                            <div class="style-template-preview">🎨</div>
-                            <div class="style-template-name">Kreativ</div>
+                        <div class="design-form-group">
+                            <label>Überschriften</label>
+                            <div class="design-slider-group">
+                                <input type="range" id="designHeadingSize" class="design-slider">
+                                <span id="designHeadingSizeValue" class="design-slider-value">14pt</span>
+                            </div>
+                        </div>
+                        <div class="design-form-group">
+                            <label>Zeilenabstand</label>
+                            <div class="design-slider-group">
+                                <input type="range" id="designLineHeight" class="design-slider">
+                                <span id="designLineHeightValue" class="design-slider-value">1.5</span>
+                            </div>
                         </div>
                     </div>
                 </div>
                 
-                <div class="style-option-group">
-                    <h3>Farben</h3>
-                    <div class="color-picker-row">
-                        <div class="color-picker-item">
-                            <label>Primärfarbe</label>
-                            <input type="color" id="primaryColor" value="#2563eb">
-                        </div>
-                        <div class="color-picker-item">
-                            <label>Sekundärfarbe</label>
-                            <input type="color" id="secondaryColor" value="#64748b">
+                <!-- Colors Panel -->
+                <div id="panel-colors" class="design-panel">
+                    <div class="design-section">
+                        <div class="design-section-title"><i class="fas fa-swatchbook"></i> Farbschema</div>
+                        <div id="colorPresets" class="design-color-presets"></div>
+                    </div>
+                    
+                    <div class="design-section">
+                        <div class="design-section-title"><i class="fas fa-eyedropper"></i> Individuelle Farben</div>
+                        <div class="design-color-group">
+                            <div class="design-color-item">
+                                <label>Akzentfarbe</label>
+                                <div class="design-color-picker">
+                                    <input type="color" id="designAccentColor" value="#6366f1">
+                                    <input type="text" id="designAccentColorHex" class="design-color-hex" value="#6366f1">
+                                </div>
+                            </div>
+                            <div class="design-color-item">
+                                <label>Textfarbe</label>
+                                <div class="design-color-picker">
+                                    <input type="color" id="designTextColor" value="#1e293b">
+                                    <input type="text" id="designTextColorHex" class="design-color-hex" value="#1e293b">
+                                </div>
+                            </div>
+                            <div class="design-color-item">
+                                <label>Sekundärtext</label>
+                                <div class="design-color-picker">
+                                    <input type="color" id="designMutedColor" value="#64748b">
+                                    <input type="text" id="designMutedColorHex" class="design-color-hex" value="#64748b">
+                                </div>
+                            </div>
+                            <div class="design-color-item">
+                                <label>Hintergrund</label>
+                                <div class="design-color-picker">
+                                    <input type="color" id="designBgColor" value="#ffffff">
+                                    <input type="text" id="designBgColorHex" class="design-color-hex" value="#ffffff">
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
                 
-                <div class="style-option-group">
-                    <h3>Schriftart</h3>
-                    <select id="fontSelect" class="font-select">
-                        <option value="Inter, sans-serif">Inter (Modern)</option>
-                        <option value="Georgia, serif">Georgia (Klassisch)</option>
-                        <option value="'Roboto', sans-serif">Roboto (Clean)</option>
-                        <option value="'Open Sans', sans-serif">Open Sans</option>
-                        <option value="'Lato', sans-serif">Lato</option>
-                        <option value="'Montserrat', sans-serif">Montserrat</option>
-                        <option value="Arial, sans-serif">Arial (Standard)</option>
-                        <option value="'Times New Roman', serif">Times New Roman</option>
-                    </select>
+                <!-- Spacing Panel -->
+                <div id="panel-spacing" class="design-panel">
+                    <div class="design-section">
+                        <div class="design-section-title"><i class="fas fa-border-style"></i> Seitenränder</div>
+                        <div class="design-form-group">
+                            <label>
+                                <input type="checkbox" id="uniformMargins"> Gleichmäßige Ränder
+                            </label>
+                        </div>
+                        <div class="design-form-group">
+                            <label>Oben</label>
+                            <div class="design-slider-group">
+                                <input type="range" id="designMarginTop" class="design-slider">
+                                <span id="designMarginTopValue" class="design-slider-value">20mm</span>
+                            </div>
+                        </div>
+                        <div class="design-form-group">
+                            <label>Rechts</label>
+                            <div class="design-slider-group">
+                                <input type="range" id="designMarginRight" class="design-slider">
+                                <span id="designMarginRightValue" class="design-slider-value">20mm</span>
+                            </div>
+                        </div>
+                        <div class="design-form-group">
+                            <label>Unten</label>
+                            <div class="design-slider-group">
+                                <input type="range" id="designMarginBottom" class="design-slider">
+                                <span id="designMarginBottomValue" class="design-slider-value">20mm</span>
+                            </div>
+                        </div>
+                        <div class="design-form-group">
+                            <label>Links</label>
+                            <div class="design-slider-group">
+                                <input type="range" id="designMarginLeft" class="design-slider">
+                                <span id="designMarginLeftValue" class="design-slider-value">20mm</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="design-section">
+                        <div class="design-section-title"><i class="fas fa-grip-lines"></i> Abstände</div>
+                        <div class="design-form-group">
+                            <label>Abschnitt-Abstand</label>
+                            <div class="design-slider-group">
+                                <input type="range" id="designSectionGap" class="design-slider">
+                                <span id="designSectionGapValue" class="design-slider-value">24px</span>
+                            </div>
+                        </div>
+                        <div class="design-form-group">
+                            <label>Element-Abstand</label>
+                            <div class="design-slider-group">
+                                <input type="range" id="designItemGap" class="design-slider">
+                                <span id="designItemGapValue" class="design-slider-value">12px</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="style-editor-footer">
-                <button class="btn-secondary" onclick="previewStyle()">
-                    <i class="fas fa-eye"></i> Vorschau
-                </button>
-                <button class="btn-primary" onclick="saveStyleSettings()">
-                    <i class="fas fa-save"></i> Speichern
-                </button>
+                
+                <!-- Sections Panel (Drag & Drop) -->
+                <div id="panel-sections" class="design-panel">
+                    <div class="design-section">
+                        <div class="design-section-title"><i class="fas fa-sort"></i> Reihenfolge (Drag & Drop)</div>
+                        <p style="font-size: 0.75rem; color: var(--design-text-muted); margin-bottom: 0.75rem;">
+                            Ziehen Sie Bereiche, um die Reihenfolge zu ändern
+                        </p>
+                        <div id="sectionsList" class="design-sections-list">
+                            <!-- Wird dynamisch gefüllt -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Templates Panel -->
+                <div id="panel-templates" class="design-panel">
+                    <div class="design-section">
+                        <div class="design-section-title"><i class="fas fa-th-large"></i> Vorlagen</div>
+                        <div id="templatesGrid" class="design-templates-grid">
+                            <!-- Wird dynamisch gefüllt -->
+                        </div>
+                    </div>
+                </div>
+            </aside>
+            
+            <!-- Preview Area -->
+            <div class="design-preview-area">
+                <!-- Toolbar -->
+                <div class="design-preview-toolbar">
+                    <div class="design-preview-zoom">
+                        <button id="zoomOut" class="design-zoom-btn" title="Verkleinern">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <span id="zoomValue" class="design-zoom-value">100%</span>
+                        <button id="zoomIn" class="design-zoom-btn" title="Vergrößern">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                        <button id="zoomReset" class="design-zoom-btn" title="Zurücksetzen" style="margin-left: 0.25rem;">
+                            <i class="fas fa-expand"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="design-preview-actions">
+                        <button class="design-action-btn" onclick="resetDesignSettings()">
+                            <i class="fas fa-undo"></i> Zurücksetzen
+                        </button>
+                        <button class="design-action-btn" onclick="saveDesignSettings()">
+                            <i class="fas fa-save"></i> Speichern
+                        </button>
+                        <button class="design-action-btn primary" onclick="closeDesignEditor()">
+                            <i class="fas fa-check"></i> Übernehmen
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Preview Container -->
+                <div class="design-preview-container">
+                    <div class="design-preview-wrapper">
+                        <div class="design-resume-preview">
+                            <!-- Wird dynamisch gefüllt -->
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+    
+    <!-- Design Editor Modal Styles (inline for now) -->
+    <style>
+        .design-editor-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+        }
+        .design-editor-modal.active {
+            display: block;
+        }
+        .design-editor-modal .design-editor-container {
+            height: 100%;
+        }
+    </style>
 
     <!-- PDF.js für clientseitige PDF-Textextraktion -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -361,7 +564,8 @@
     <script src="../js/aws-api-settings.js?v=20260113fix"></script>
     <script src="../js/global-api-manager.js?v=20260112cloud"></script>
     <script src="../js/cloud-data-service.js?v=20260112"></script>
-    <script src="js/resume-editor.js?v=20260112cloud"></script>
+    <script src="js/resume-editor.js?v=20260113"></script>
+    <script src="js/design-editor.js?v=20260113"></script>
     
     <!-- GPT-3.5 basierte OCR-Analyse -->
     <script>
