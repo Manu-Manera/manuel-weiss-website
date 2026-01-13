@@ -127,12 +127,20 @@ class UserProfile {
     checkAuthStatus(retryCount = 0) {
         console.log('🔍 Checking auth status (Versuch', retryCount + 1, ')...');
         
-        // Warte bis Auth-System initialisiert ist
-        const authReady = window.realUserAuth || window.awsAuth;
+        // Prüfe direkt localStorage auf bestehende Session
+        const hasStoredSession = localStorage.getItem('aws_auth_session') !== null;
+        console.log('🔍 Has stored session:', hasStoredSession);
         
-        if (!authReady && retryCount < 10) {
-            // Auth noch nicht bereit - warte und versuche erneut
-            console.log('⏳ Auth-System noch nicht bereit, warte...');
+        // Prüfe ob Auth-System initialisiert ist
+        const authSystem = window.realUserAuth || window.awsAuth;
+        const isAuthInitialized = authSystem?.isInitialized;
+        
+        // Wenn Session im Storage existiert, warte länger auf Auth-System
+        const maxRetries = hasStoredSession ? 20 : 10;
+        
+        // Warte bis Auth-System vollständig initialisiert ist
+        if (!isAuthInitialized && retryCount < maxRetries) {
+            console.log('⏳ Auth-System noch nicht vollständig initialisiert, warte...');
             setTimeout(() => this.checkAuthStatus(retryCount + 1), 200);
             return;
         }
@@ -153,9 +161,10 @@ class UserProfile {
                 this.showLoginPrompt();
             }
         } else {
-            // Noch ein letzter Check - vielleicht lädt die Session noch
-            if (retryCount < 5) {
-                console.log('⏳ Session möglicherweise noch nicht geladen, warte...');
+            // Extra Check: Wenn Session existiert aber Auth sagt nicht eingeloggt
+            // Dann warte noch etwas länger
+            if (hasStoredSession && retryCount < 25) {
+                console.log('⏳ Session existiert aber Auth noch nicht bereit, warte...');
                 setTimeout(() => this.checkAuthStatus(retryCount + 1), 300);
                 return;
             }
