@@ -650,11 +650,11 @@ function updateSkillsTags() {
     ).join('');
 }
 
-function saveProfile(event) {
+async function saveProfile(event) {
     event.preventDefault();
     
-    // Collect form data
-    DashboardState.profile = {
+    // Collect form data from Bewerbungsmanager form
+    const formData = {
         firstName: document.getElementById('profileFirstName').value.trim(),
         lastName: document.getElementById('profileLastName').value.trim(),
         email: document.getElementById('profileEmail').value.trim(),
@@ -669,9 +669,44 @@ function saveProfile(event) {
             .filter(s => s.length > 0)
     };
     
+    // Update DashboardState
+    DashboardState.profile = formData;
+    
+    // Save locally
     saveState();
     updateSkillsTags();
-    showToast('Profil gespeichert!', 'success');
+    
+    // WICHTIG: Auch in AWS speichern (nur geänderte Felder - Merge!)
+    try {
+        const auth = window.awsAuth || window.realUserAuth;
+        if (auth?.isLoggedIn() && window.cloudDataService) {
+            console.log('☁️ Speichere Bewerbungsmanager-Profil in AWS...');
+            
+            // Nur die relevanten Felder senden - die Netlify Function merged automatisch
+            const awsProfileData = {
+                firstName: formData.firstName,
+                lastName: formData.lastName,
+                email: formData.email,
+                phone: formData.phone,
+                location: formData.location,
+                // Bewerbungsmanager-spezifische Felder mit eigenem Präfix/Namen
+                profession: formData.currentJob, // Kompatibel mit user-profile.js
+                currentJob: formData.currentJob,
+                experience: formData.experience,
+                summary: formData.summary,
+                skills: formData.skills
+            };
+            
+            await window.cloudDataService.saveProfile(awsProfileData);
+            console.log('✅ Bewerbungsmanager-Profil in AWS gespeichert');
+            showToast('Profil gespeichert & synchronisiert!', 'success');
+        } else {
+            showToast('Profil lokal gespeichert!', 'success');
+        }
+    } catch (error) {
+        console.error('❌ Fehler beim Speichern in AWS:', error);
+        showToast('Profil lokal gespeichert (Cloud-Sync fehlgeschlagen)', 'warning');
+    }
 }
 
 function resetProfile() {
