@@ -622,15 +622,33 @@ class DesignEditor {
     }
 
     getResumeData() {
-        // Try to get data from the resume form
+        // Try multiple sources: Form fields > DashboardState > CloudData > Fallbacks
+        const formData = {
+            firstName: document.getElementById('firstName')?.value || '',
+            lastName: document.getElementById('lastName')?.value || '',
+            title: document.getElementById('title')?.value || '',
+            email: document.getElementById('email')?.value || '',
+            phone: document.getElementById('phone')?.value || '',
+            location: document.getElementById('location')?.value || '',
+            summary: document.getElementById('summary')?.value || ''
+        };
+        
+        // Get saved profile data as fallback (from localStorage or DashboardState)
+        let savedProfile = {};
+        try {
+            const stored = localStorage.getItem('bewerbungsmanager_profile');
+            if (stored) savedProfile = JSON.parse(stored);
+        } catch (e) {}
+        
+        // Merge: Use form data if available, otherwise saved profile
         return {
-            firstName: document.getElementById('firstName')?.value || 'Max',
-            lastName: document.getElementById('lastName')?.value || 'Mustermann',
-            title: document.getElementById('title')?.value || 'Software Engineer',
-            email: document.getElementById('email')?.value || 'max@example.com',
-            phone: document.getElementById('phone')?.value || '+49 123 456789',
-            location: document.getElementById('location')?.value || 'Berlin, Deutschland',
-            summary: document.getElementById('summary')?.value || 'Erfahrener Entwickler mit Expertise in modernen Web-Technologien.',
+            firstName: formData.firstName || savedProfile.firstName || 'Ihr Vorname',
+            lastName: formData.lastName || savedProfile.lastName || 'Ihr Nachname',
+            title: formData.title || savedProfile.currentJob || 'Berufsbezeichnung',
+            email: formData.email || savedProfile.email || 'email@example.com',
+            phone: formData.phone || savedProfile.phone || '+49 123 456789',
+            location: formData.location || savedProfile.location || 'Stadt, Land',
+            summary: formData.summary || savedProfile.summary || 'Ihr Profil...',
             experience: this.getExperienceData(),
             education: this.getEducationData(),
             skills: this.getSkillsData(),
@@ -653,9 +671,8 @@ class DesignEditor {
             });
         });
         
-        return items.length > 0 ? items : [
-            { position: 'Senior Developer', company: 'Tech Company', startDate: '2020-01', endDate: 'heute', description: 'Entwicklung von Web-Anwendungen' }
-        ];
+        // Return actual items or empty array (no fake test data)
+        return items;
     }
 
     getEducationData() {
@@ -672,9 +689,8 @@ class DesignEditor {
             });
         });
         
-        return items.length > 0 ? items : [
-            { degree: 'Bachelor Informatik', institution: 'Technische Universität', startDate: '2015', endDate: '2019' }
-        ];
+        // Return actual items or empty array (no fake test data)
+        return items;
     }
 
     getSkillsData() {
@@ -685,7 +701,8 @@ class DesignEditor {
             }
         });
         
-        return skills.length > 0 ? skills : ['JavaScript', 'React', 'Node.js', 'Python', 'SQL'];
+        // Return actual skills or empty array (no fake test data)
+        return skills;
     }
 
     getLanguagesData() {
@@ -700,10 +717,8 @@ class DesignEditor {
             });
         });
         
-        return items.length > 0 ? items : [
-            { language: 'Deutsch', level: 'Muttersprache' },
-            { language: 'Englisch', level: 'Fließend' }
-        ];
+        // Return actual items or empty array (no fake test data)
+        return items;
     }
 
     // ═══════════════════════════════════════════════════════════════════════════

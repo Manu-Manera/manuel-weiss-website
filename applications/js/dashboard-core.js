@@ -779,12 +779,26 @@ function checkAuthStatus() {
     if (isLoggedIn) {
         const userData = window.awsAuth.getUserDataFromToken();
         if (userData) {
-            // Pre-fill profile from auth
-            if (!DashboardState.profile.email) {
-                DashboardState.profile.email = userData.email || '';
-                DashboardState.profile.firstName = userData.name?.split(' ')[0] || '';
-                DashboardState.profile.lastName = userData.name?.split(' ').slice(1).join(' ') || '';
+            // Pre-fill ONLY empty profile fields from auth - NEVER overwrite existing data!
+            let hasChanges = false;
+            
+            // Nur E-Mail übernehmen wenn leer
+            if (!DashboardState.profile.email && userData.email) {
+                DashboardState.profile.email = userData.email;
+                hasChanges = true;
+            }
+            
+            // Nur Namen übernehmen wenn BEIDE leer sind UND userData.name vorhanden ist
+            // WICHTIG: Nicht überschreiben wenn bereits Daten vorhanden!
+            if (!DashboardState.profile.firstName && !DashboardState.profile.lastName && userData.name) {
+                DashboardState.profile.firstName = userData.name.split(' ')[0] || '';
+                DashboardState.profile.lastName = userData.name.split(' ').slice(1).join(' ') || '';
+                hasChanges = true;
+            }
+            
+            if (hasChanges) {
                 saveState();
+                console.log('📝 Auth-Daten in leere Profilfelder übernommen');
             }
         }
     }
