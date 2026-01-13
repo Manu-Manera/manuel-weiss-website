@@ -224,11 +224,23 @@ class UserProfile {
     }
 
     showLoginPrompt() {
-        // DON'T auto-show login modal - only show when user explicitly clicks "Anmelden"
-        // This prevents the modal from appearing when navigating from other pages
-        console.log('ℹ️ User not logged in - login available via Anmelden button');
+        // Zeige Login-Modal automatisch - Profilseite erfordert Anmeldung
+        console.log('🔒 Profilseite erfordert Anmeldung - zeige Login-Modal');
+        
         // Update the auth button to show "Anmelden" state
         this.updateAuthButtonState();
+        
+        // Zeige eine Info-Nachricht
+        this.showNotification('Bitte anmelden um dein Profil zu sehen', 'info');
+        
+        // Öffne Login-Modal automatisch nach kurzer Verzögerung
+        setTimeout(() => {
+            if (window.authModals?.showLogin) {
+                window.authModals.showLogin();
+            } else if (window.showLoginModal) {
+                window.showLoginModal();
+            }
+        }, 500);
     }
     
     updateAuthButtonState() {
