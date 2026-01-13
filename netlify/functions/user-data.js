@@ -25,6 +25,7 @@ const dynamoDB = new DynamoDBClient({
 });
 
 const TABLE_NAME = process.env.USER_DATA_TABLE || 'mawps-user-data';
+const LEGACY_TABLE_NAME = 'mawps-user-profiles'; // Alte Tabelle für Fallback
 
 // CORS Headers
 const CORS_HEADERS = {
@@ -210,12 +211,37 @@ async function getAllUserData(userId) {
  */
 async function handleProfile(userId, userEmail, method, event) {
     if (method === 'GET') {
-        const result = await dynamoDB.send(new GetItemCommand({
+        // Versuche zuerst aus neuer Tabelle zu laden
+        let result = await dynamoDB.send(new GetItemCommand({
             TableName: TABLE_NAME,
             Key: marshall({ pk: `USER#${userId}`, sk: 'DATA' })
         }));
         
-        const data = result.Item ? unmarshall(result.Item) : {};
+        let data = result.Item ? unmarshall(result.Item) : {};
+        
+        // Fallback: Wenn keine Profildaten in neuer Tabelle, versuche Legacy-Tabelle
+        if (!data.profile || Object.keys(data.profile).length === 0) {
+            console.log('📥 Keine Daten in neuer Tabelle, prüfe Legacy-Tabelle...');
+            try {
+                const legacyResult = await dynamoDB.send(new GetItemCommand({
+                    TableName: LEGACY_TABLE_NAME,
+                    Key: marshall({ userId: userId })
+                }));
+                
+                if (legacyResult.Item) {
+                    const legacyData = unmarshall(legacyResult.Item);
+                    console.log('✅ Legacy-Daten gefunden:', Object.keys(legacyData));
+                    // Legacy-Daten direkt als Profil zurückgeben
+                    return {
+                        statusCode: 200,
+                        headers: CORS_HEADERS,
+                        body: JSON.stringify(legacyData)
+                    };
+                }
+            } catch (legacyError) {
+                console.log('ℹ️ Legacy-Tabelle nicht verfügbar oder leer:', legacyError.message);
+            }
+        }
         
         return {
             statusCode: 200,
