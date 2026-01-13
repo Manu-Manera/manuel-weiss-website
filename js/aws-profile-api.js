@@ -12,27 +12,27 @@ class AWSProfileAPI {
         this.dynamoDB = null;
         this.s3 = null;
         
+        // Netlify Function als primäre Datenquelle (AWS API Gateway ist eingeschränkt)
+        this.netlifyFunctionUrl = '/.netlify/functions/user-data';
+        
         this.init();
     }
 
     async init() {
         try {
-            // API Gateway-basierte Initialisierung (keine direkten AWS Credentials nötig)
-            // Prüfe ob AWS_CONFIG verfügbar ist
-            if (!window.AWS_CONFIG?.apiBaseUrl) {
-                console.log('⏳ Waiting for AWS_CONFIG...');
-                setTimeout(() => this.init(), 100);
-                return;
-            }
-
-            // WICHTIG: Wir verwenden AUSSCHLIESSLICH das API Gateway
-            // Direkte DynamoDB/S3 Verbindungen sind im Browser nicht möglich
-            // ohne komplexe Cognito Identity Pool Konfiguration
-            this.apiBaseUrl = window.AWS_CONFIG.apiBaseUrl;
+            // WICHTIG: Wir verwenden PRIMÄR die Netlify Function
+            // AWS API Gateway ist wegen Sicherheitseinschränkungen nicht verfügbar
             
+            // Netlify Function ist immer verfügbar
             this.isInitialized = true;
-            console.log('✅ AWS Profile API initialized (API Gateway mode)');
-            console.log('🌐 API Base URL:', this.apiBaseUrl);
+            console.log('✅ AWS Profile API initialized (Netlify Function mode)');
+            console.log('🌐 Using Netlify Function:', this.netlifyFunctionUrl);
+            
+            // AWS API Gateway als Fallback (falls AWS die Einschränkungen aufhebt)
+            if (window.AWS_CONFIG?.apiBaseUrl) {
+                this.apiBaseUrl = window.AWS_CONFIG.apiBaseUrl;
+                console.log('ℹ️ AWS API Gateway available as fallback:', this.apiBaseUrl);
+            }
         } catch (error) {
             console.error('❌ AWS Profile API initialization failed:', error);
         }
@@ -62,7 +62,7 @@ class AWSProfileAPI {
     }
 
     /**
-     * Save user profile data to DynamoDB
+     * Save user profile data to DynamoDB via Netlify Function
      */
     async saveProfile(profileData) {
         if (!this.isInitialized) {
@@ -70,26 +70,14 @@ class AWSProfileAPI {
         }
 
         try {
-            console.log('💾 Saving profile to AWS DynamoDB...');
+            console.log('💾 Saving profile via Netlify Function...');
             
-            // Wenn userId explizit in profileData angegeben ist (z.B. 'admin'), verwende diesen
-            // Ansonsten hole userId aus Auth-Credentials
-            let userId, idToken;
-            if (profileData.userId && (profileData.userId === 'admin' || profileData.userId === 'owner')) {
-                // Admin-Konfiguration - verwende explizite userId
-                userId = profileData.userId;
-                // Für Admin-Konfigurationen brauchen wir möglicherweise keinen Token
-                idToken = null;
-            } else {
-                // Normale User-Profile - hole aus Auth
-                const credentials = await this.getAuthCredentials();
-                userId = credentials.userId;
-                idToken = credentials.idToken;
-            }
+            // Hole Auth-Credentials
+            const credentials = await this.getAuthCredentials();
+            const { idToken } = credentials;
             
-            // Prepare item for DynamoDB
+            // Prepare profile data
             const item = {
-                userId: userId,
                 ...profileData,
                 updatedAt: new Date().toISOString()
             };
@@ -100,25 +88,16 @@ class AWSProfileAPI {
                     delete item[key];
                 }
             });
-
-            // Verwende AUSSCHLIESSLICH API Gateway
-            if (!this.apiBaseUrl) {
-                throw new Error('API Gateway nicht konfiguriert. Bitte Seite neu laden.');
-            }
             
             const headers = {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${idToken}`
             };
             
-            // Authorization Header hinzufügen, wenn idToken vorhanden ist
-            if (idToken) {
-                headers['Authorization'] = `Bearer ${idToken}`;
-            }
+            console.log('📤 Sending profile to Netlify Function:', this.netlifyFunctionUrl + '/profile');
             
-            console.log('📤 Sending profile to API Gateway:', this.apiBaseUrl + '/profile');
-            
-            // Use PUT for updates
-            const response = await fetch(`${this.apiBaseUrl}/profile`, {
+            // Use PUT for updates - Netlify Function
+            const response = await fetch(`${this.netlifyFunctionUrl}/profile`, {
                 method: 'PUT',
                 headers: headers,
                 body: JSON.stringify(item)
@@ -136,7 +115,7 @@ class AWSProfileAPI {
             }
 
             const result = await response.json();
-            console.log('✅ Profile saved successfully via API Gateway');
+            console.log('✅ Profile saved successfully via Netlify Function');
             return result;
 
         } catch (error) {
@@ -153,7 +132,7 @@ class AWSProfileAPI {
     }
 
     /**
-     * Load user profile data from DynamoDB
+     * Load user profile data from DynamoDB via Netlify Function
      */
     async loadProfile(userIdOverride = null) {
         if (!this.isInitialized) {
@@ -161,39 +140,19 @@ class AWSProfileAPI {
         }
 
         try {
-            console.log('📥 Loading profile from AWS DynamoDB...');
+            console.log('📥 Loading profile via Netlify Function...');
             
-            // Wenn userIdOverride angegeben ist (z.B. 'admin'), verwende diesen
-            // Ansonsten hole userId aus Auth-Credentials
-            let userId, idToken;
-            if (userIdOverride && (userIdOverride === 'admin' || userIdOverride === 'owner')) {
-                userId = userIdOverride;
-                idToken = null; // Für Admin-Konfigurationen brauchen wir möglicherweise keinen Token
-            } else {
-                const credentials = await this.getAuthCredentials();
-                userId = credentials.userId;
-                idToken = credentials.idToken;
-            }
-
-            // Verwende AUSSCHLIESSLICH API Gateway
-            if (!this.apiBaseUrl) {
-                console.warn('⚠️ API Gateway nicht konfiguriert');
-                return null;
-            }
+            // Hole Auth-Credentials
+            const credentials = await this.getAuthCredentials();
+            const { idToken } = credentials;
             
-            const headers = {};
+            const headers = {
+                'Authorization': `Bearer ${idToken}`
+            };
             
-            // Authorization Header hinzufügen, wenn idToken vorhanden ist
-            if (idToken) {
-                headers['Authorization'] = `Bearer ${idToken}`;
-            }
+            const url = `${this.netlifyFunctionUrl}/profile`;
             
-            // Wenn userIdOverride angegeben ist, als Query-Parameter hinzufügen
-            const url = userIdOverride 
-                ? `${this.apiBaseUrl}/profile?userId=${userIdOverride}`
-                : `${this.apiBaseUrl}/profile`;
-            
-            console.log('📥 Loading profile from API Gateway:', url);
+            console.log('📥 Loading profile from Netlify Function:', url);
             
             const response = await fetch(url, {
                 method: 'GET',
@@ -209,7 +168,7 @@ class AWSProfileAPI {
             }
 
             const result = await response.json();
-            console.log('✅ Profile loaded successfully from API Gateway');
+            console.log('✅ Profile loaded successfully via Netlify Function');
             return result;
 
         } catch (error) {
