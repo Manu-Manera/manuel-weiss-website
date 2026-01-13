@@ -119,6 +119,7 @@ async function loadSavedState() {
 
 /**
  * Lädt das Benutzerprofil aus AWS und synchronisiert es mit DashboardState
+ * WICHTIG: Nutzt primär cloudDataService, mit awsProfileAPI als Fallback
  */
 async function loadAWSProfile() {
     try {
@@ -129,42 +130,59 @@ async function loadAWSProfile() {
             return;
         }
         
-        // Warte auf awsProfileAPI
-        if (!window.awsProfileAPI) {
-            console.log('⏳ Warte auf awsProfileAPI...');
-            await new Promise((resolve) => {
-                let attempts = 0;
-                const check = setInterval(() => {
-                    attempts++;
-                    if (window.awsProfileAPI || attempts > 30) {
-                        clearInterval(check);
-                        resolve();
-                    }
-                }, 100);
-            });
+        let awsProfile = null;
+        
+        // PRIORITÄT 1: cloudDataService (Netlify Function)
+        if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
+            console.log('📡 Lade Profil aus cloudDataService...');
+            try {
+                awsProfile = await window.cloudDataService.getProfile(true); // forceRefresh
+                if (awsProfile) {
+                    console.log('✅ Profil aus cloudDataService geladen:', Object.keys(awsProfile));
+                }
+            } catch (e) {
+                console.warn('⚠️ cloudDataService Fehler:', e.message);
+            }
         }
         
-        if (!window.awsProfileAPI?.isInitialized) {
-            console.log('⏳ Warte auf awsProfileAPI Initialisierung...');
-            await new Promise((resolve) => {
-                let attempts = 0;
-                const check = setInterval(() => {
-                    attempts++;
-                    if (window.awsProfileAPI?.isInitialized || attempts > 30) {
-                        clearInterval(check);
-                        resolve();
-                    }
-                }, 100);
-            });
+        // PRIORITÄT 2: awsProfileAPI als Fallback
+        if (!awsProfile) {
+            // Warte auf awsProfileAPI
+            if (!window.awsProfileAPI) {
+                console.log('⏳ Warte auf awsProfileAPI...');
+                await new Promise((resolve) => {
+                    let attempts = 0;
+                    const check = setInterval(() => {
+                        attempts++;
+                        if (window.awsProfileAPI || attempts > 30) {
+                            clearInterval(check);
+                            resolve();
+                        }
+                    }, 100);
+                });
+            }
+            
+            if (!window.awsProfileAPI?.isInitialized) {
+                console.log('⏳ Warte auf awsProfileAPI Initialisierung...');
+                await new Promise((resolve) => {
+                    let attempts = 0;
+                    const check = setInterval(() => {
+                        attempts++;
+                        if (window.awsProfileAPI?.isInitialized || attempts > 30) {
+                            clearInterval(check);
+                            resolve();
+                        }
+                    }, 100);
+                });
+            }
+            
+            if (window.awsProfileAPI?.isInitialized) {
+                console.log('📡 Lade Profil aus awsProfileAPI...');
+                awsProfile = await window.awsProfileAPI.loadProfile();
+            } else {
+                console.warn('⚠️ awsProfileAPI nicht verfügbar');
+            }
         }
-        
-        if (!window.awsProfileAPI?.isInitialized) {
-            console.warn('⚠️ awsProfileAPI nicht verfügbar');
-            return;
-        }
-        
-        console.log('📡 Lade Profil aus AWS...');
-        const awsProfile = await window.awsProfileAPI.loadProfile();
         
         if (awsProfile) {
             console.log('✅ AWS-Profil geladen:', awsProfile);
@@ -176,7 +194,7 @@ async function loadAWSProfile() {
                 email: awsProfile.email || awsProfile.personal?.email || '',
                 phone: awsProfile.phone || awsProfile.personal?.phone || '',
                 location: awsProfile.location || awsProfile.personal?.location || '',
-                currentJob: awsProfile.currentPosition || awsProfile.professional?.currentPosition || '',
+                currentJob: awsProfile.currentPosition || awsProfile.profession || awsProfile.professional?.currentPosition || '',
                 experience: awsProfile.experience || awsProfile.professional?.experience || '',
                 summary: awsProfile.summary || awsProfile.professional?.summary || '',
                 skills: awsProfile.skills || awsProfile.professional?.skills || []
@@ -187,6 +205,9 @@ async function loadAWSProfile() {
             
             // Aktualisiere Quick-Apply-Felder
             prefillQuickApplyFromProfile();
+            
+            // Aktualisiere Profil-Formular
+            updateProfileForm();
             
             console.log('✅ DashboardState.profile aktualisiert:', DashboardState.profile);
         }
