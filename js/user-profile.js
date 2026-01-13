@@ -28,18 +28,25 @@ class UserProfile {
         this.setupAutoSave();
         
         // Aktiviere Auto-Save auch nach Login
-        document.addEventListener('userLoggedIn', () => {
+        document.addEventListener('userLoggedIn', async () => {
+            console.log('🔐 User logged in Event empfangen - lade Profildaten');
             // Reset Auto-Save Flag beim Login, damit es neu initialisiert werden kann
             this._autoSaveInitialized = false;
             this.setupAutoSave();
             // Auth-Status erneut prüfen nach Login
             this.checkAuthStatus();
+            // Profildaten aus AWS laden
+            await this.loadProfileDataFromAWS();
         });
         
         // Höre auf Auth-Ready Event
-        document.addEventListener('awsAuthReady', () => {
-            console.log('🔐 AWS Auth Ready Event empfangen');
+        document.addEventListener('awsAuthReady', async () => {
+            console.log('🔐 AWS Auth Ready Event empfangen - lade Profildaten');
             this.checkAuthStatus();
+            // Profildaten nochmal laden wenn Auth bereit
+            if (window.realUserAuth?.isLoggedIn()) {
+                await this.loadProfileDataFromAWS();
+            }
         });
         
         // Initialisiere Applications Tab
@@ -418,9 +425,19 @@ class UserProfile {
         return defaultData;
     }
     
-    async loadProfileDataFromAWS() {
+    async loadProfileDataFromAWS(retryCount = 0) {
         try {
-            console.log('📥 Loading profile from AWS...');
+            console.log('📥 Loading profile from AWS (Versuch', retryCount + 1, ')...');
+            
+            // Prüfe ob Session im localStorage existiert
+            const hasStoredSession = localStorage.getItem('aws_auth_session') !== null;
+            
+            // Warte auf Auth-Initialisierung wenn Session existiert
+            if (hasStoredSession && (!window.realUserAuth || !window.realUserAuth.isLoggedIn()) && retryCount < 15) {
+                console.log('⏳ Session existiert, warte auf Auth-Initialisierung...');
+                await new Promise(resolve => setTimeout(resolve, 300));
+                return this.loadProfileDataFromAWS(retryCount + 1);
+            }
             
             if (!window.realUserAuth || !window.realUserAuth.isLoggedIn()) {
                 console.log('⚠️ User not authenticated, loading from local storage');
