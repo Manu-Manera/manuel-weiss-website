@@ -1693,8 +1693,8 @@ async function loadCoverLetters() {
  */
 async function loadResumes() {
     console.log('📄 Lade Lebensläufe...');
-    const container = document.getElementById('resumeList');
-    const emptyState = document.getElementById('resumeEmpty');
+    const container = document.getElementById('resumesList');
+    const emptyState = document.getElementById('resumesEmpty');
     
     if (!container) {
         console.warn('Resume list container not found');
