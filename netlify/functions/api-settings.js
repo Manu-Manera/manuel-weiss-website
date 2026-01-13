@@ -158,10 +158,12 @@ exports.handler = async (event) => {
         
         const path = event.path || '';
         const { httpMethod } = event;
+        const action = event.queryStringParameters?.action;
         
-        // Route: /api-settings/key?provider=openai - Get full (decrypted) key
-        if (httpMethod === 'GET' && path.includes('/key')) {
+        // Route: /api-settings?action=key&provider=openai - Get full (decrypted) key
+        if (httpMethod === 'GET' && (path.includes('/key') || action === 'key')) {
             const provider = event.queryStringParameters?.provider || 'openai';
+            console.log(`🔑 Getting full API key for provider: ${provider}, userId: ${userId}`);
             return await getFullApiKey(userId, provider);
         }
         
