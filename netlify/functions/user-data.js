@@ -266,14 +266,36 @@ async function getAllUserData(userId) {
         }
         
         // Profildaten sind direkt im Hauptobjekt, nicht in einem 'profile' Unterfeld
-        const { resumes, documents, coverLetters, applications, photos, pk, sk, ...profileData } = data;
+        const { resumes, documents, coverLetters, applications, photos, pk, sk, resume, ...profileData } = data;
+        
+        // WICHTIG: Konvertiere altes 'resume' (Singular) Feld zu 'resumes' Array
+        let finalResumes = resumes || [];
+        if (resume && finalResumes.length === 0) {
+            console.log('📥 Konvertiere altes resume Feld zu resumes Array');
+            try {
+                // resume kann ein JSON-String oder ein Objekt sein
+                const resumeData = typeof resume === 'string' ? JSON.parse(resume) : resume;
+                if (resumeData) {
+                    finalResumes = [{
+                        id: 'migrated_resume_1',
+                        name: resumeData.personalInfo?.title || 'Migrierter Lebenslauf',
+                        ...resumeData,
+                        createdAt: data.createdAt || new Date().toISOString(),
+                        updatedAt: data.updatedAt || new Date().toISOString(),
+                        isMigrated: true
+                    }];
+                }
+            } catch (e) {
+                console.error('Fehler beim Parsen des resume Feldes:', e);
+            }
+        }
         
         return {
             statusCode: 200,
             headers: CORS_HEADERS,
             body: JSON.stringify({
                 profile: profileData,
-                resumes: resumes || [],
+                resumes: finalResumes,
                 documents: documents || [],
                 coverLetters: coverLetters || [],
                 applications: applications || [],
@@ -444,7 +466,28 @@ async function handleResumes(userId, method, event) {
     const { data: existingData, source } = await loadUserDataWithFallback(userId);
     console.log('📥 Resumes geladen von:', source);
     
-    const resumes = existingData.resumes || [];
+    // WICHTIG: Konvertiere altes 'resume' (Singular) Feld zu 'resumes' Array
+    let resumes = existingData.resumes || [];
+    if (existingData.resume && resumes.length === 0) {
+        console.log('📥 Konvertiere altes resume Feld zu resumes Array');
+        try {
+            const resumeData = typeof existingData.resume === 'string' 
+                ? JSON.parse(existingData.resume) 
+                : existingData.resume;
+            if (resumeData) {
+                resumes = [{
+                    id: 'migrated_resume_1',
+                    name: resumeData.personalInfo?.title || 'Migrierter Lebenslauf',
+                    ...resumeData,
+                    createdAt: existingData.createdAt || new Date().toISOString(),
+                    updatedAt: existingData.updatedAt || new Date().toISOString(),
+                    isMigrated: true
+                }];
+            }
+        } catch (e) {
+            console.error('Fehler beim Parsen des resume Feldes:', e);
+        }
+    }
     
     if (method === 'GET') {
         return {
