@@ -788,9 +788,15 @@ class UserProfile {
         
         // Prüfe ob User angemeldet ist
         if (!window.realUserAuth?.isLoggedIn()) {
-            const error = new Error('Benutzer nicht angemeldet');
-            console.error('❌', error.message);
-            throw error;
+            console.log('ℹ️ Benutzer nicht angemeldet - zeige Login-Modal');
+            this.showNotification('Bitte anmelden oder registrieren zum Speichern', 'info');
+            // Login-Modal öffnen
+            if (window.authModals?.showLogin) {
+                window.authModals.showLogin();
+            } else if (window.showLoginModal) {
+                window.showLoginModal();
+            }
+            return null; // Kein Fehler werfen, nur abbrechen
         }
         
         if (!this.awsProfileAPI) {
@@ -861,8 +867,14 @@ class UserProfile {
     async saveProfile() {
         try {
             this.showLoading('Profil wird gespeichert...');
-            await this.saveProfileData();
+            const result = await this.saveProfileData();
             this.hideLoading();
+            
+            // Wenn null zurückgegeben wurde, wurde Login-Modal gezeigt
+            if (result === null) {
+                return;
+            }
+            
             this.showNotification('Profil erfolgreich gespeichert!', 'success');
         } catch (error) {
             this.hideLoading();
@@ -2155,6 +2167,18 @@ class UserProfile {
     }
 
     async saveJournalEntry() {
+        // Prüfe ob Benutzer eingeloggt ist
+        if (!window.realUserAuth?.isLoggedIn()) {
+            this.showNotification('Bitte anmelden zum Speichern', 'info');
+            // Login-Modal öffnen
+            if (window.authModals?.showLogin) {
+                window.authModals.showLogin();
+            } else if (window.showLoginModal) {
+                window.showLoginModal();
+            }
+            return;
+        }
+        
         const title = document.getElementById('journalTitle')?.value?.trim();
         const content = document.getElementById('journalContent')?.value?.trim();
         const tagsStr = document.getElementById('journalTags')?.value?.trim();
