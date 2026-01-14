@@ -117,6 +117,7 @@
         </div>
     </main>
 
+    <script src="/js/workflow-api.js"></script>
     <script src="js/fachliche-entwicklung-workflow.js"></script>
     <script src="js/skill-gap-analyzer.js"></script>
     <script>
@@ -159,7 +160,7 @@
             resultsDiv.style.display = 'block';
         }
         
-        function saveAndContinue() {
+        async function saveAndContinue() {
             const formData = {
                 requiredSkills: document.getElementById('requiredSkills').value,
                 missingSkills: document.getElementById('missingSkills').value,
@@ -168,16 +169,21 @@
                 step: 2,
                 timestamp: new Date().toISOString()
             };
-            
-            localStorage.setItem('fachlicheEntwicklungStep2', JSON.stringify(formData));
+            if (window.workflowAPI) {
+                await window.workflowAPI.saveWorkflowStep('fachlicheEntwicklung', 'step2', formData);
+            } else {
+                localStorage.setItem('fachlicheEntwicklungStep2', JSON.stringify(formData));
+            }
             window.location.href = 'step3-fachliche-entwicklung.html';
         }
         
-        window.addEventListener('load', function() {
-            const savedData = localStorage.getItem('fachlicheEntwicklungStep2');
+        window.addEventListener('load', async function() {
+            const savedData = window.workflowAPI
+                ? await window.workflowAPI.loadSavedProgress('fachlicheEntwicklung', 'step2')
+                : JSON.parse(localStorage.getItem('fachlicheEntwicklungStep2') || 'null');
             if (savedData) {
                 try {
-                    const data = JSON.parse(savedData);
+                    const data = savedData;
                     if (data.requiredSkills) document.getElementById('requiredSkills').value = data.requiredSkills;
                     if (data.missingSkills) document.getElementById('missingSkills').value = data.missingSkills;
                     if (data.criticalSkills) document.getElementById('criticalSkills').value = data.criticalSkills;

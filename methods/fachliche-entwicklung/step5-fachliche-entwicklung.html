@@ -50,9 +50,10 @@
             </div>
         </div>
     </main>
+    <script src="/js/workflow-api.js"></script>
     <script src="js/fachliche-entwicklung-workflow.js"></script>
     <script>
-        function saveAndContinue() {
+        async function saveAndContinue() {
             const formData = {
                 plannedCertifications: document.getElementById('plannedCertifications').value,
                 certificationPriorities: document.getElementById('certificationPriorities').value,
@@ -60,13 +61,19 @@
                 step: 5,
                 timestamp: new Date().toISOString()
             };
-            localStorage.setItem('fachlicheEntwicklungStep5', JSON.stringify(formData));
+            if (window.workflowAPI) {
+                await window.workflowAPI.saveWorkflowStep('fachlicheEntwicklung', 'step5', formData);
+            } else {
+                localStorage.setItem('fachlicheEntwicklungStep5', JSON.stringify(formData));
+            }
             window.location.href = 'step6-fachliche-entwicklung.html';
         }
-        window.addEventListener('load', function() {
-            const saved = localStorage.getItem('fachlicheEntwicklungStep5');
+        window.addEventListener('load', async function() {
+            const saved = window.workflowAPI
+                ? await window.workflowAPI.loadSavedProgress('fachlicheEntwicklung', 'step5')
+                : JSON.parse(localStorage.getItem('fachlicheEntwicklungStep5') || 'null');
             if (saved) {
-                const data = JSON.parse(saved);
+                const data = saved;
                 if (data.plannedCertifications) document.getElementById('plannedCertifications').value = data.plannedCertifications;
                 if (data.certificationPriorities) document.getElementById('certificationPriorities').value = data.certificationPriorities;
                 if (data.certificationTimeline) document.getElementById('certificationTimeline').value = data.certificationTimeline;

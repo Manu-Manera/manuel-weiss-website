@@ -54,9 +54,10 @@
             </div>
         </div>
     </main>
+    <script src="/js/workflow-api.js"></script>
     <script src="js/fachliche-entwicklung-workflow.js"></script>
     <script>
-        function saveAndContinue() {
+        async function saveAndContinue() {
             const formData = {
                 priorities: document.getElementById('priorities').value,
                 dependencies: document.getElementById('dependencies').value,
@@ -65,13 +66,19 @@
                 step: 6,
                 timestamp: new Date().toISOString()
             };
-            localStorage.setItem('fachlicheEntwicklungStep6', JSON.stringify(formData));
+            if (window.workflowAPI) {
+                await window.workflowAPI.saveWorkflowStep('fachlicheEntwicklung', 'step6', formData);
+            } else {
+                localStorage.setItem('fachlicheEntwicklungStep6', JSON.stringify(formData));
+            }
             window.location.href = 'step7-fachliche-entwicklung.html';
         }
-        window.addEventListener('load', function() {
-            const saved = localStorage.getItem('fachlicheEntwicklungStep6');
+        window.addEventListener('load', async function() {
+            const saved = window.workflowAPI
+                ? await window.workflowAPI.loadSavedProgress('fachlicheEntwicklung', 'step6')
+                : JSON.parse(localStorage.getItem('fachlicheEntwicklungStep6') || 'null');
             if (saved) {
-                const data = JSON.parse(saved);
+                const data = saved;
                 if (data.priorities) document.getElementById('priorities').value = data.priorities;
                 if (data.dependencies) document.getElementById('dependencies').value = data.dependencies;
                 if (data.challenges) document.getElementById('challenges').value = data.challenges;
