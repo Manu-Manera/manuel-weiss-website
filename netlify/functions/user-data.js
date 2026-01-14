@@ -219,6 +219,11 @@ exports.handler = async (event) => {
             return await handlePhotos(userId, httpMethod, event);
         }
         
+        // Route: /user-data/workflows - Workflow-Daten (Fachliche Entwicklung, etc.)
+        if (path.includes('/workflows')) {
+            return await handleWorkflows(userId, httpMethod, event, path);
+        }
+        
         // Route: /user-data - Alle Daten
         if (httpMethod === 'GET') {
             return await getAllUserData(userId);
@@ -838,6 +843,174 @@ async function handleApplications(userId, method, event) {
     }
     
     return { statusCode: 405, headers: CORS_HEADERS, body: JSON.stringify({ error: 'Method not allowed' }) };
+}
+
+/**
+ * Handle workflows (Fachliche Entwicklung, Coaching, etc.)
+ */
+async function handleWorkflows(userId, method, event, path) {
+    const { data: existingData, source } = await loadUserDataWithFallback(userId);
+    console.log('📥 Workflows geladen von:', source);
+    
+    const workflows = existingData.workflows || {};
+    
+    // Parse path to get workflow name and step
+    // Formats: /workflows/fachlicheEntwicklung/steps/step1
+    //          /workflows/fachlicheEntwicklung/results
+    //          /workflows/fachlicheEntwicklung/progress
+    const pathParts = path.split('/').filter(p => p && p !== 'user-data' && p !== 'workflows');
+    const workflowName = pathParts[0];
+    const action = pathParts[1]; // 'steps', 'results', 'progress'
+    const stepName = pathParts[2]; // 'step1', 'step2', etc.
+    
+    console.log('📥 Workflow request:', { workflowName, action, stepName, method });
+    
+    if (!workflowName) {
+        // Return all workflows
+        if (method === 'GET') {
+            return {
+                statusCode: 200,
+                headers: CORS_HEADERS,
+                body: JSON.stringify(workflows)
+            };
+        }
+    }
+    
+    // Initialize workflow if not exists
+    if (!workflows[workflowName]) {
+        workflows[workflowName] = { steps: {}, results: null, progress: { currentStep: 0, completedAt: null } };
+    }
+    
+    if (action === 'steps') {
+        if (method === 'GET') {
+            const stepData = stepName ? workflows[workflowName].steps?.[stepName] : workflows[workflowName].steps;
+            return {
+                statusCode: 200,
+                headers: CORS_HEADERS,
+                body: JSON.stringify(stepData || (stepName ? null : {}))
+            };
+        }
+        
+        if (method === 'POST' || method === 'PUT') {
+            const body = JSON.parse(event.body || '{}');
+            const now = new Date().toISOString();
+            
+            if (stepName) {
+                workflows[workflowName].steps[stepName] = {
+                    ...body,
+                    updatedAt: now
+                };
+            } else {
+                workflows[workflowName].steps = {
+                    ...workflows[workflowName].steps,
+                    ...body
+                };
+            }
+            
+            const updatedData = {
+                ...existingData,
+                userId: userId,
+                workflows,
+                updatedAt: now
+            };
+            
+            await dynamoDB.send(new PutItemCommand({
+                TableName: TABLE_NAME,
+                Item: marshall(updatedData, { removeUndefinedValues: true })
+            }));
+            
+            console.log('✅ Workflow step saved:', workflowName, stepName);
+            
+            return {
+                statusCode: 200,
+                headers: CORS_HEADERS,
+                body: JSON.stringify({ success: true, data: workflows[workflowName].steps[stepName] })
+            };
+        }
+    }
+    
+    if (action === 'results') {
+        if (method === 'GET') {
+            return {
+                statusCode: 200,
+                headers: CORS_HEADERS,
+                body: JSON.stringify(workflows[workflowName].results || null)
+            };
+        }
+        
+        if (method === 'POST' || method === 'PUT') {
+            const body = JSON.parse(event.body || '{}');
+            const now = new Date().toISOString();
+            
+            workflows[workflowName].results = {
+                ...body,
+                updatedAt: now
+            };
+            
+            const updatedData = {
+                ...existingData,
+                userId: userId,
+                workflows,
+                updatedAt: now
+            };
+            
+            await dynamoDB.send(new PutItemCommand({
+                TableName: TABLE_NAME,
+                Item: marshall(updatedData, { removeUndefinedValues: true })
+            }));
+            
+            console.log('✅ Workflow results saved:', workflowName);
+            
+            return {
+                statusCode: 200,
+                headers: CORS_HEADERS,
+                body: JSON.stringify({ success: true, data: workflows[workflowName].results })
+            };
+        }
+    }
+    
+    if (action === 'progress') {
+        if (method === 'GET') {
+            return {
+                statusCode: 200,
+                headers: CORS_HEADERS,
+                body: JSON.stringify(workflows[workflowName].progress || { currentStep: 0 })
+            };
+        }
+        
+        if (method === 'POST' || method === 'PUT') {
+            const body = JSON.parse(event.body || '{}');
+            const now = new Date().toISOString();
+            
+            workflows[workflowName].progress = {
+                ...workflows[workflowName].progress,
+                ...body,
+                updatedAt: now
+            };
+            
+            const updatedData = {
+                ...existingData,
+                userId: userId,
+                workflows,
+                updatedAt: now
+            };
+            
+            await dynamoDB.send(new PutItemCommand({
+                TableName: TABLE_NAME,
+                Item: marshall(updatedData, { removeUndefinedValues: true })
+            }));
+            
+            console.log('✅ Workflow progress saved:', workflowName);
+            
+            return {
+                statusCode: 200,
+                headers: CORS_HEADERS,
+                body: JSON.stringify({ success: true, data: workflows[workflowName].progress })
+            };
+        }
+    }
+    
+    return { statusCode: 404, headers: CORS_HEADERS, body: JSON.stringify({ error: 'Workflow action not found' }) };
 }
 
 /**
