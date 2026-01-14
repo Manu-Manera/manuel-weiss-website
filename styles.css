@@ -593,6 +593,24 @@ a:hover {
     }
 }
 
+/* Instagram/FB In-App Browser Fixes */
+.is-inapp body,
+.is-inapp html {
+    height: auto !important;
+    min-height: 100% !important;
+    overflow-y: auto !important;
+}
+
+.is-inapp .hero {
+    min-height: auto !important;
+}
+
+.is-inapp .hero-container {
+    min-height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+}
+
 @media (max-width: 640px) {
     .nav-menu {
         flex-direction: column;

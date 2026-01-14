@@ -866,7 +866,9 @@ async function handlePhotos(userId, method, event) {
             name: body.name,
             type: body.type,
             size: body.size,
-            dataUrl: body.dataUrl, // Base64 encoded image
+            dataUrl: body.dataUrl, // Base64 encoded image (optional)
+            url: body.url, // S3/public URL (preferred)
+            storage: body.storage || (body.url ? 's3' : 'inline'),
             createdAt: body.createdAt || now,
             updatedAt: now
         };

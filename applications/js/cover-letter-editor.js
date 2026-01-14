@@ -45,6 +45,7 @@ class CoverLetterEditor {
         this.setupPlaceholderButtons();
         this.setupBlocksEditor();
         this.setupVersions();
+        this.setupCoverLetterSelection();
         
         // Load user profile
         await this.loadUserProfile();
@@ -254,6 +255,134 @@ class CoverLetterEditor {
         if (saveBtn) saveBtn.addEventListener('click', () => this.saveCoverLetterVersion());
     }
 
+    setupCoverLetterSelection() {
+        const select = document.getElementById('coverLetterSelect');
+        const loadBtn = document.getElementById('loadCoverLetterBtn');
+        if (!select) return;
+        
+        select.addEventListener('change', () => {
+            if (select.value) {
+                this.loadCoverLetterById(select.value);
+            }
+        });
+        
+        if (loadBtn) {
+            loadBtn.addEventListener('click', () => {
+                if (select.value) {
+                    this.loadCoverLetterById(select.value);
+                }
+            });
+        }
+        
+        this.loadCoverLetterOptions();
+    }
+
+    async loadCoverLetterOptions() {
+        try {
+            let coverLetters = [];
+            if (window.cloudDataService) {
+                coverLetters = await window.cloudDataService.getCoverLetters(true);
+            }
+            
+            if (!coverLetters || coverLetters.length === 0) {
+                const stored = localStorage.getItem('cover_letter_drafts') || localStorage.getItem('cover_letters');
+                coverLetters = stored ? JSON.parse(stored) : [];
+            }
+            
+            this.coverLetters = (coverLetters || []).map((letter) => ({
+                ...letter,
+                id: letter.id || `cl_${(letter.createdAt || Date.now()).toString().replace(/[^0-9]/g, '')}`
+            }));
+            
+            const select = document.getElementById('coverLetterSelect');
+            if (!select) return;
+            
+            const options = ['<option value="">Bitte auswählen</option>'];
+            this.coverLetters.forEach((letter) => {
+                const company = letter.jobData?.companyName || 'Unbekannt';
+                const position = letter.jobData?.jobTitle || 'Anschreiben';
+                const date = new Date(letter.createdAt || Date.now()).toLocaleDateString('de-DE');
+                options.push(`<option value="${letter.id}">${company} • ${position} (${date})</option>`);
+            });
+            
+            select.innerHTML = options.join('');
+        } catch (error) {
+            console.warn('Konnte Anschreiben-Liste nicht laden:', error);
+        }
+    }
+
+    loadCoverLetterById(id) {
+        const letter = (this.coverLetters || []).find(item => item.id === id);
+        if (!letter) {
+            this.showToast('Anschreiben nicht gefunden', 'error');
+            return;
+        }
+        
+        const jobData = letter.jobData || {};
+        const jobFields = {
+            jobTitle: jobData.jobTitle || '',
+            companyName: jobData.companyName || '',
+            industry: jobData.industry || '',
+            contactPerson: jobData.contactPerson || '',
+            jobDescription: jobData.jobDescription || ''
+        };
+        
+        Object.entries(jobFields).forEach(([id, value]) => {
+            const field = document.getElementById(id);
+            if (field) field.value = value;
+        });
+        
+        if (letter.options) {
+            this.options = { ...this.options, ...letter.options };
+            this.syncOptionButtons();
+        }
+        
+        if (letter.design) {
+            this.design = { ...this.design, ...letter.design };
+            this.syncDesignControls();
+        }
+        
+        this.displayGeneratedLetter(letter.content || '', jobData);
+        this.showToast('Anschreiben geladen', 'success');
+    }
+
+    syncOptionButtons() {
+        ['tone', 'length', 'focus'].forEach((option) => {
+            const value = this.options[option];
+            document.querySelectorAll(`.option-btn[data-option="${option}"]`).forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.value === value);
+            });
+        });
+    }
+
+    syncDesignControls() {
+        const fontSelect = document.getElementById('fontSelect');
+        if (fontSelect) fontSelect.value = this.design.font;
+        
+        const setSliderValue = (sliderId, value, unit) => {
+            const slider = document.getElementById(sliderId);
+            const valueEl = document.getElementById(sliderId.replace('Slider', 'Value'));
+            if (slider) slider.value = value;
+            if (valueEl) valueEl.textContent = `${value}${unit}`;
+        };
+        
+        setSliderValue('fontSizeSlider', this.design.fontSize, 'pt');
+        setSliderValue('lineHeightSlider', this.design.lineHeight, '');
+        setSliderValue('marginSlider', this.design.margin, 'mm');
+        setSliderValue('paragraphSpacingSlider', this.design.paragraphSpacing, 'px');
+        setSliderValue('signatureSpacingSlider', this.design.signatureGap, 'px');
+        
+        document.querySelectorAll('.style-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.style === this.design.style);
+        });
+        
+        document.querySelectorAll('.color-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.color === this.design.color);
+        });
+        
+        this.applyDesign();
+    }
+
     // ═══════════════════════════════════════════════════════════════════════════
     // USER PROFILE
     // ═══════════════════════════════════════════════════════════════════════════
@@ -262,14 +391,26 @@ class CoverLetterEditor {
         try {
             // Try cloud data service first
             if (window.cloudDataService) {
-                this.profileData = await window.cloudDataService.loadProfile();
+                this.profileData = await window.cloudDataService.getProfile();
             }
             
             // Fallback to localStorage
             if (!this.profileData || Object.keys(this.profileData).length === 0) {
-                const stored = localStorage.getItem('userProfile') || localStorage.getItem('profile_data');
+                const stored = localStorage.getItem('bewerbungsmanager_profile') || localStorage.getItem('userProfile') || localStorage.getItem('profile_data');
                 if (stored) {
                     this.profileData = JSON.parse(stored);
+                }
+            }
+            
+            // Merge coaching data from localStorage if missing
+            if (this.profileData && !this.profileData.coaching) {
+                try {
+                    const coachingRaw = localStorage.getItem('coaching_workflow_data');
+                    if (coachingRaw) {
+                        this.profileData.coaching = JSON.parse(coachingRaw);
+                    }
+                } catch (error) {
+                    console.warn('Could not parse coaching data:', error);
                 }
             }
             
@@ -441,6 +582,13 @@ class CoverLetterEditor {
         };
         
         const profile = this.profileData || {};
+        const coaching = profile.coaching || {};
+        const coachingStrengths = [
+            coaching.naturalTalents,
+            coaching.acquiredSkills,
+            coaching.uniqueStrengths
+        ].filter(Boolean).join(', ');
+        const coachingMotivation = coaching.motivators || coaching.shortTermGoals || coaching.dreamJob || '';
         
         return `
 Erstelle ein Bewerbungsanschreiben für:
@@ -454,7 +602,8 @@ ${jobData.jobDescription}
 
 BEWERBER:
 - Name: ${profile.firstName || ''} ${profile.lastName || ''}
-- Skills: ${profile.skills?.join(', ') || 'Nicht angegeben'}
+- Skills: ${profile.skills?.join(', ') || coachingStrengths || 'Nicht angegeben'}
+- Motivation/Ziele: ${coachingMotivation || profile.summary || 'Nicht angegeben'}
 
 ANFORDERUNGEN:
 - Tonalität: ${toneMap[this.options.tone]}
@@ -651,6 +800,7 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
         const jobData = this.collectJobData();
         const content = this.getFinalLetterContent();
         const data = {
+            id: `cl_${Date.now().toString(36)}`,
             content: content,
             jobData: jobData,
             options: this.options,
@@ -665,9 +815,9 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
             }
             
             // Also save to localStorage
-            const stored = JSON.parse(localStorage.getItem('cover_letters') || '[]');
+            const stored = JSON.parse(localStorage.getItem('cover_letter_drafts') || '[]');
             stored.push(data);
-            localStorage.setItem('cover_letters', JSON.stringify(stored));
+            localStorage.setItem('cover_letter_drafts', JSON.stringify(stored));
             
             this.showToast('Anschreiben gespeichert!', 'success');
         } catch (error) {
