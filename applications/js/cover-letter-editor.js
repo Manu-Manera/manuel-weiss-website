@@ -19,7 +19,10 @@ class CoverLetterEditor {
             color: '#6366f1',
             fontSize: 11,
             lineHeight: 1.6,
-            margin: 25
+            margin: 25,
+            paragraphSpacing: 10,
+            signatureGap: 32,
+            signatureImage: ''
         };
         
         this.isGenerating = false;
@@ -39,6 +42,9 @@ class CoverLetterEditor {
         this.setupGenerateButton();
         this.setupSaveExport();
         this.setupTextEditor();
+        this.setupPlaceholderButtons();
+        this.setupBlocksEditor();
+        this.setupVersions();
         
         // Load user profile
         await this.loadUserProfile();
@@ -110,6 +116,39 @@ class CoverLetterEditor {
         this.setupSlider('fontSizeSlider', 'fontSize', 'pt');
         this.setupSlider('lineHeightSlider', 'lineHeight', '');
         this.setupSlider('marginSlider', 'margin', 'mm');
+        this.setupSlider('paragraphSpacingSlider', 'paragraphSpacing', 'px');
+        this.setupSlider('signatureSpacingSlider', 'signatureGap', 'px');
+
+        // Signature upload
+        const signatureUpload = document.getElementById('signatureUpload');
+        const removeSignatureBtn = document.getElementById('removeSignatureBtn');
+        if (signatureUpload) {
+            signatureUpload.addEventListener('change', (e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = () => {
+                    this.design.signatureImage = reader.result;
+                    this.applyDesign();
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+        if (removeSignatureBtn) {
+            removeSignatureBtn.addEventListener('click', () => {
+                this.design.signatureImage = '';
+                if (signatureUpload) signatureUpload.value = '';
+                this.applyDesign();
+            });
+        }
+
+        // Sync CV design
+        const syncCvBtn = document.getElementById('syncCvDesignBtn');
+        if (syncCvBtn) {
+            syncCvBtn.addEventListener('click', () => {
+                this.syncFromResumeDesign();
+            });
+        }
     }
 
     setupSlider(sliderId, designKey, unit) {
@@ -133,6 +172,7 @@ class CoverLetterEditor {
         if (form) {
             form.addEventListener('input', () => {
                 this.validateForm();
+                this.updateQualityChecks();
             });
         }
     }
@@ -149,6 +189,8 @@ class CoverLetterEditor {
     setupSaveExport() {
         const saveBtn = document.getElementById('saveBtn');
         const exportBtn = document.getElementById('exportPdfBtn');
+        const exportTxtBtn = document.getElementById('exportTxtBtn');
+        const versionsBtn = document.getElementById('versionsBtn');
         
         if (saveBtn) {
             saveBtn.addEventListener('click', () => this.saveCoverLetter());
@@ -156,6 +198,14 @@ class CoverLetterEditor {
         
         if (exportBtn) {
             exportBtn.addEventListener('click', () => this.exportToPDF());
+        }
+
+        if (exportTxtBtn) {
+            exportTxtBtn.addEventListener('click', () => this.exportToText());
+        }
+
+        if (versionsBtn) {
+            versionsBtn.addEventListener('click', () => this.openVersionsModal());
         }
     }
 
@@ -165,8 +215,43 @@ class CoverLetterEditor {
             textarea.addEventListener('input', () => {
                 this.updateStats();
                 this.generatedContent = textarea.value;
+                this.updateQualityChecks();
             });
         }
+    }
+
+    setupPlaceholderButtons() {
+        document.querySelectorAll('.placeholder-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const token = btn.dataset.placeholder;
+                const textarea = document.getElementById('letterText');
+                if (!textarea) return;
+                this.insertAtCursor(textarea, token);
+                textarea.focus();
+                this.updateStats();
+            });
+        });
+    }
+
+    setupBlocksEditor() {
+        const openBtn = document.getElementById('openBlocksEditor');
+        const closeBtn = document.getElementById('closeBlocksEditor');
+        const cancelBtn = document.getElementById('cancelBlocksBtn');
+        const saveBtn = document.getElementById('saveBlocksBtn');
+        const addBtn = document.getElementById('addBlockBtn');
+
+        if (openBtn) openBtn.addEventListener('click', () => this.openBlocksEditor());
+        if (closeBtn) closeBtn.addEventListener('click', () => this.closeBlocksEditor());
+        if (cancelBtn) cancelBtn.addEventListener('click', () => this.closeBlocksEditor());
+        if (saveBtn) saveBtn.addEventListener('click', () => this.saveBlocks());
+        if (addBtn) addBtn.addEventListener('click', () => this.addBlock(''));
+    }
+
+    setupVersions() {
+        const closeBtn = document.getElementById('closeVersionsModal');
+        const saveBtn = document.getElementById('saveCoverLetterVersion');
+        if (closeBtn) closeBtn.addEventListener('click', () => this.closeVersionsModal());
+        if (saveBtn) saveBtn.addEventListener('click', () => this.saveCoverLetterVersion());
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -434,8 +519,9 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
         // Update letter content
         const letterText = document.getElementById('letterText');
         if (letterText) {
-            letterText.value = content;
-            this.generatedContent = content;
+            const withPlaceholders = this.applyPlaceholders(content, jobData);
+            letterText.value = withPlaceholders;
+            this.generatedContent = withPlaceholders;
         }
         
         // Update company info
@@ -460,6 +546,7 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
         
         // Apply design
         this.applyDesign();
+        this.updateQualityChecks();
     }
 
     applyDesign() {
@@ -471,11 +558,24 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
         letter.style.setProperty('--letter-line-height', this.design.lineHeight);
         letter.style.setProperty('--letter-margin', `${this.design.margin}mm`);
         letter.style.setProperty('--letter-accent', this.design.color);
+        letter.style.setProperty('--letter-paragraph-gap', `${this.design.paragraphSpacing}px`);
+        letter.style.setProperty('--letter-signature-gap', `${this.design.signatureGap}px`);
         
         letter.style.fontFamily = `'${this.design.font}', sans-serif`;
         letter.style.fontSize = `${this.design.fontSize}pt`;
         letter.style.lineHeight = this.design.lineHeight;
         letter.style.padding = `${this.design.margin}mm`;
+
+        const signatureImg = document.getElementById('signatureImage');
+        if (signatureImg) {
+            if (this.design.signatureImage) {
+                signatureImg.src = this.design.signatureImage;
+                signatureImg.style.display = 'block';
+            } else {
+                signatureImg.removeAttribute('src');
+                signatureImg.style.display = 'none';
+            }
+        }
     }
 
     updateStats() {
@@ -549,8 +649,9 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
         }
         
         const jobData = this.collectJobData();
+        const content = this.getFinalLetterContent();
         const data = {
-            content: this.generatedContent,
+            content: content,
             jobData: jobData,
             options: this.options,
             design: this.design,
@@ -580,11 +681,27 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
             this.showToast('Kein Anschreiben zum Exportieren', 'error');
             return;
         }
-        
-        // Use browser print functionality
-        window.print();
+        this.replaceLetterContentForExport(() => window.print());
         
         this.showToast('PDF-Export gestartet', 'success');
+    }
+
+    exportToText() {
+        if (!this.generatedContent) {
+            this.showToast('Kein Anschreiben zum Exportieren', 'error');
+            return;
+        }
+        const content = this.getFinalLetterContent();
+        const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Anschreiben_${(this.collectJobData().companyName || 'bewerbung').replace(/\s+/g, '_')}.txt`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+        this.showToast('Text-Export gestartet', 'success');
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -615,6 +732,331 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
             toast.style.animation = 'slideIn 0.3s ease-out reverse';
             setTimeout(() => toast.remove(), 300);
         }, 4000);
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // PLACEHOLDERS & EXPORT HELPERS
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    applyPlaceholders(text, jobData) {
+        const profile = this.profileData || {};
+        const replacements = {
+            '{{companyName}}': jobData.companyName || '',
+            '{{jobTitle}}': jobData.jobTitle || '',
+            '{{contactPerson}}': jobData.contactPerson || '',
+            '{{firstName}}': profile.firstName || '',
+            '{{lastName}}': profile.lastName || '',
+            '{{location}}': profile.location || profile.address || ''
+        };
+        let result = text;
+        Object.entries(replacements).forEach(([token, value]) => {
+            result = result.split(token).join(value);
+        });
+        return result;
+    }
+
+    getFinalLetterContent() {
+        const jobData = this.collectJobData();
+        const content = document.getElementById('letterText')?.value || this.generatedContent || '';
+        return this.applyPlaceholders(content, jobData).trim();
+    }
+
+    replaceLetterContentForExport(action) {
+        const textarea = document.getElementById('letterText');
+        if (!textarea) {
+            action();
+            return;
+        }
+        const original = textarea.value;
+        textarea.value = this.getFinalLetterContent();
+        setTimeout(() => {
+            action();
+            textarea.value = original;
+        }, 50);
+    }
+
+    insertAtCursor(textarea, text) {
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        textarea.value = textarea.value.substring(0, start) + text + textarea.value.substring(end);
+        textarea.selectionStart = textarea.selectionEnd = start + text.length;
+        this.generatedContent = textarea.value;
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // BLOCKS EDITOR
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    openBlocksEditor() {
+        const modal = document.getElementById('blocksEditorModal');
+        if (modal) {
+            modal.classList.add('active');
+            this.renderBlocks();
+        }
+    }
+
+    closeBlocksEditor() {
+        const modal = document.getElementById('blocksEditorModal');
+        if (modal) modal.classList.remove('active');
+    }
+
+    renderBlocks(blocksOverride) {
+        const container = document.getElementById('blocksContainer');
+        if (!container) return;
+        const blocks = blocksOverride || this.getBlocksFromText();
+        if (!blocks.length) {
+            blocks.push('Einleitung...', 'Motivation...', 'Passung...', 'Abschluss...');
+        }
+        container.innerHTML = blocks.map((block, idx) => `
+            <div class="block-item" data-index="${idx}">
+                <div class="block-item-header">
+                    <strong>Absatz ${idx + 1}</strong>
+                    <div class="block-item-actions">
+                        <button type="button" data-action="up">↑</button>
+                        <button type="button" data-action="down">↓</button>
+                        <button type="button" data-action="delete">✕</button>
+                    </div>
+                </div>
+                <textarea>${block}</textarea>
+            </div>
+        `).join('');
+
+        container.querySelectorAll('.block-item-actions button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const action = btn.dataset.action;
+                const item = btn.closest('.block-item');
+                if (!item) return;
+                if (action === 'delete') {
+                    item.remove();
+                } else if (action === 'up') {
+                    const prev = item.previousElementSibling;
+                    if (prev) item.parentNode.insertBefore(item, prev);
+                } else if (action === 'down') {
+                    const next = item.nextElementSibling;
+                    if (next) item.parentNode.insertBefore(next, item);
+                }
+                this.updateBlockIndices();
+            });
+        });
+    }
+
+    updateBlockIndices() {
+        document.querySelectorAll('#blocksContainer .block-item').forEach((item, idx) => {
+            const label = item.querySelector('strong');
+            if (label) label.textContent = `Absatz ${idx + 1}`;
+        });
+    }
+
+    addBlock(text) {
+        const container = document.getElementById('blocksContainer');
+        if (!container) return;
+        const blocks = Array.from(container.querySelectorAll('textarea'))
+            .map(t => t.value.trim())
+            .filter(Boolean);
+        blocks.push(text);
+        container.innerHTML = blocks.map((block, idx) => `
+            <div class="block-item" data-index="${idx}">
+                <div class="block-item-header">
+                    <strong>Absatz ${idx + 1}</strong>
+                    <div class="block-item-actions">
+                        <button type="button" data-action="up">↑</button>
+                        <button type="button" data-action="down">↓</button>
+                        <button type="button" data-action="delete">✕</button>
+                    </div>
+                </div>
+                <textarea>${block}</textarea>
+            </div>
+        `).join('');
+        this.renderBlocks(blocks);
+    }
+
+    getBlocksFromText() {
+        const text = document.getElementById('letterText')?.value || '';
+        return text.split(/\n\s*\n/).map(t => t.trim()).filter(Boolean);
+    }
+
+    saveBlocks() {
+        const container = document.getElementById('blocksContainer');
+        const textarea = document.getElementById('letterText');
+        if (!container || !textarea) return;
+        const blocks = Array.from(container.querySelectorAll('textarea'))
+            .map(t => t.value.trim())
+            .filter(Boolean);
+        textarea.value = blocks.join(this.getParagraphSeparator());
+        this.generatedContent = textarea.value;
+        this.updateStats();
+        this.closeBlocksEditor();
+        this.showToast('Absätze übernommen', 'success');
+    }
+
+    getParagraphSeparator() {
+        if (this.design.paragraphSpacing >= 14) return '\n\n\n';
+        if (this.design.paragraphSpacing >= 8) return '\n\n';
+        return '\n';
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // QUALITY CHECKS
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    updateQualityChecks() {
+        const list = document.getElementById('qualityCheckList');
+        if (!list) return;
+        const text = (document.getElementById('letterText')?.value || '').trim();
+        const words = text.split(/\s+/).filter(Boolean);
+        const wordCount = words.length;
+
+        const checks = [];
+        const lengthOk = wordCount >= 150 && wordCount <= 400;
+        checks.push({ ok: lengthOk, text: `Länge ${wordCount} Wörter (ideal 150–400)` });
+
+        const duplicates = this.findDuplicateSentences(text);
+        checks.push({ ok: duplicates.length === 0, text: duplicates.length ? `Doppelte Sätze gefunden (${duplicates.length})` : 'Keine doppelten Sätze' });
+
+        const keywordScore = this.getKeywordMatchScore(text);
+        checks.push({ ok: keywordScore >= 40, text: `Keyword-Match: ${keywordScore}%` });
+
+        list.innerHTML = checks.map(check => `
+            <div class="quality-check-item ${check.ok ? 'ok' : 'warn'}">
+                <i class="fas ${check.ok ? 'fa-check-circle' : 'fa-exclamation-triangle'}"></i>
+                <span>${check.text}</span>
+            </div>
+        `).join('');
+    }
+
+    findDuplicateSentences(text) {
+        const sentences = text.split(/[.!?]\s+/).map(s => s.trim().toLowerCase()).filter(Boolean);
+        const seen = new Set();
+        const duplicates = [];
+        sentences.forEach(sentence => {
+            if (seen.has(sentence)) duplicates.push(sentence);
+            else seen.add(sentence);
+        });
+        return duplicates;
+    }
+
+    getKeywordMatchScore(text) {
+        const jobDescription = document.getElementById('jobDescription')?.value || '';
+        const tokens = jobDescription
+            .toLowerCase()
+            .replace(/[^a-zäöüß0-9\s]/g, ' ')
+            .split(/\s+/)
+            .filter(word => word.length >= 4);
+        const unique = Array.from(new Set(tokens)).slice(0, 12);
+        if (!unique.length) return 0;
+        const lower = text.toLowerCase();
+        const hits = unique.filter(word => lower.includes(word)).length;
+        return Math.round((hits / unique.length) * 100);
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // VERSIONS
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    openVersionsModal() {
+        const modal = document.getElementById('coverLetterVersionsModal');
+        if (modal) {
+            modal.classList.add('active');
+            this.renderVersions();
+        }
+    }
+
+    closeVersionsModal() {
+        const modal = document.getElementById('coverLetterVersionsModal');
+        if (modal) modal.classList.remove('active');
+    }
+
+    saveCoverLetterVersion() {
+        const nameInput = document.getElementById('coverLetterVersionName');
+        const name = nameInput?.value.trim() || `Version ${new Date().toLocaleDateString('de-DE')}`;
+        const data = {
+            content: this.getFinalLetterContent(),
+            jobData: this.collectJobData(),
+            options: this.options,
+            design: this.design,
+            createdAt: new Date().toISOString()
+        };
+        const versions = JSON.parse(localStorage.getItem('cover_letter_versions') || '[]');
+        versions.unshift({ id: Date.now().toString(36), name, data });
+        localStorage.setItem('cover_letter_versions', JSON.stringify(versions));
+        if (nameInput) nameInput.value = '';
+        this.renderVersions();
+        this.showToast('Version gespeichert', 'success');
+    }
+
+    renderVersions() {
+        const list = document.getElementById('coverLetterVersionsList');
+        if (!list) return;
+        const versions = JSON.parse(localStorage.getItem('cover_letter_versions') || '[]');
+        if (!versions.length) {
+            list.innerHTML = '<p style="color:#6b7280;">Noch keine Versionen gespeichert.</p>';
+            return;
+        }
+        list.innerHTML = versions.map(version => `
+            <div class="resume-version-item">
+                <div class="resume-version-meta">
+                    <div class="resume-version-title">${version.name}</div>
+                    <div class="resume-version-date">${new Date(version.data.createdAt).toLocaleString('de-DE')}</div>
+                </div>
+                <div class="resume-version-actions">
+                    <button type="button" onclick="window.coverLetterEditor.loadCoverLetterVersion('${version.id}')">Laden</button>
+                    <button type="button" onclick="window.coverLetterEditor.deleteCoverLetterVersion('${version.id}')">Löschen</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    loadCoverLetterVersion(versionId) {
+        const versions = JSON.parse(localStorage.getItem('cover_letter_versions') || '[]');
+        const version = versions.find(v => v.id === versionId);
+        if (!version) return;
+        const { content, jobData = {}, options = {}, design = {} } = version.data || {};
+        document.getElementById('jobTitle').value = jobData.jobTitle || '';
+        document.getElementById('companyName').value = jobData.companyName || '';
+        document.getElementById('industry').value = jobData.industry || '';
+        document.getElementById('contactPerson').value = jobData.contactPerson || '';
+        document.getElementById('jobDescription').value = jobData.jobDescription || '';
+        document.getElementById('letterText').value = content || '';
+        this.generatedContent = content || '';
+        this.options = { ...this.options, ...options };
+        this.design = { ...this.design, ...design };
+        this.applyDesign();
+        this.updateStats();
+        this.updateQualityChecks();
+        this.closeVersionsModal();
+        this.showToast('Version geladen', 'success');
+    }
+
+    deleteCoverLetterVersion(versionId) {
+        const versions = JSON.parse(localStorage.getItem('cover_letter_versions') || '[]');
+        const filtered = versions.filter(v => v.id !== versionId);
+        localStorage.setItem('cover_letter_versions', JSON.stringify(filtered));
+        this.renderVersions();
+        this.showToast('Version gelöscht', 'info');
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // SYNC FROM RESUME DESIGN
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    syncFromResumeDesign() {
+        try {
+            const resumeDesign = JSON.parse(localStorage.getItem('resume_design_settings') || '{}');
+            if (!resumeDesign || Object.keys(resumeDesign).length === 0) {
+                this.showToast('Kein CV-Design gefunden', 'warning');
+                return;
+            }
+            this.design.font = (resumeDesign.fontFamily || '').replace(/['"]/g, '') || this.design.font;
+            this.design.fontSize = resumeDesign.fontSize || this.design.fontSize;
+            this.design.lineHeight = resumeDesign.lineHeight || this.design.lineHeight;
+            this.design.color = resumeDesign.accentColor || this.design.color;
+            this.design.margin = resumeDesign.marginTop || this.design.margin;
+            this.applyDesign();
+            this.showToast('CV-Design übernommen', 'success');
+        } catch (error) {
+            console.warn('CV Design sync failed:', error);
+            this.showToast('CV-Design konnte nicht übernommen werden', 'error');
+        }
     }
 }
 

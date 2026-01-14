@@ -442,6 +442,41 @@
     gap: 0.25rem;
 }
 
+.design-section-settings {
+    display: none;
+    grid-column: 1 / -1;
+    padding: 0.75rem;
+    margin-top: 0.5rem;
+    background: white;
+    border: 1px solid var(--design-border);
+    border-radius: 6px;
+    gap: 0.75rem;
+}
+
+.design-section-settings.active {
+    display: grid;
+}
+
+.design-section-settings label {
+    font-size: 0.75rem;
+    color: var(--design-text-muted);
+}
+
+.design-section-settings input,
+.design-section-settings select {
+    width: 100%;
+    padding: 0.4rem 0.5rem;
+    border: 1px solid var(--design-border);
+    border-radius: 4px;
+    font-size: 0.8rem;
+}
+
+.design-section-settings .design-settings-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+}
+
 .design-section-btn {
     width: 28px;
     height: 28px;
@@ -604,6 +639,22 @@
     color: var(--resume-text-color, #1e293b);
 }
 
+.resume-preview-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+.resume-preview-column {
+    display: flex;
+    flex-direction: column;
+    gap: var(--resume-section-gap, 1.5rem);
+}
+
+.resume-preview-section.compact {
+    margin-bottom: calc(var(--resume-section-gap, 1.5rem) * 0.6);
+}
+
 /* ═══════════════════════════════════════════════════════════════════════════
    RESUME PREVIEW STYLES
    ═══════════════════════════════════════════════════════════════════════════ */
@@ -613,6 +664,10 @@
     margin-bottom: var(--resume-section-gap, 1.5rem);
     padding-bottom: 1rem;
     border-bottom: 2px solid var(--resume-accent-color, #6366f1);
+}
+
+.resume-preview-header.align-left {
+    text-align: left;
 }
 
 .resume-preview-name {
@@ -644,6 +699,11 @@
     gap: 0.25rem;
 }
 
+.design-resume-preview.no-icons .resume-preview-section-title i,
+.design-resume-preview.no-icons .resume-preview-contact i {
+    display: none;
+}
+
 .resume-preview-section {
     margin-bottom: var(--resume-section-gap, 1.5rem);
 }
@@ -655,6 +715,10 @@
     margin-bottom: 0.75rem;
     padding-bottom: 0.25rem;
     border-bottom: 1px solid var(--resume-border-color, #e2e8f0);
+}
+
+.resume-preview-section-title.no-icon i {
+    display: none;
 }
 
 .resume-preview-item {
@@ -690,6 +754,10 @@
     line-height: var(--resume-line-height, 1.5);
 }
 
+.resume-preview-item-description + .resume-preview-item-description {
+    margin-top: var(--resume-paragraph-gap, 0.5rem);
+}
+
 .resume-preview-skills {
     display: flex;
     flex-wrap: wrap;
@@ -702,6 +770,49 @@
     color: var(--resume-accent-color, #6366f1);
     border-radius: 4px;
     font-size: calc(var(--resume-font-size, 11pt) * 0.85);
+}
+
+/* ATS Panel */
+.design-ats-score {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--design-text);
+    margin-bottom: 0.75rem;
+}
+
+.design-ats-score strong {
+    color: var(--design-accent);
+}
+
+.design-ats-list {
+    display: grid;
+    gap: 0.5rem;
+}
+
+.design-ats-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+}
+
+.design-ats-item.ok {
+    background: rgba(16, 185, 129, 0.1);
+    color: #047857;
+}
+
+.design-ats-item.warn {
+    background: rgba(245, 158, 11, 0.1);
+    color: #92400e;
+}
+
+.design-ats-item.bad {
+    background: rgba(239, 68, 68, 0.1);
+    color: #991b1b;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
