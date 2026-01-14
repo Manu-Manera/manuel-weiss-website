@@ -500,11 +500,9 @@ class UserProfile {
                     console.warn('⚠️ Could not load from AWS, using defaults:', error);
                 }
             }
-            try {
-                awsData = await this.awsProfileAPI.loadProfile();
-                console.log('✅ Profile loaded from AWS:', awsData);
-            } catch (error) {
-                console.warn('⚠️ Could not load from AWS, using defaults:', error);
+
+            if (awsData && Object.keys(awsData).length === 0) {
+                awsData = null;
             }
             
             const normalizedAwsData = this.normalizeProfileData(awsData);
