@@ -161,7 +161,7 @@ class UserProfile {
             console.log('👤 Current user from auth:', currentUser);
             
             if (currentUser) {
-                this.updateUserInfoFromAuth(currentUser);
+                this.updateUserInfoFromAuth(currentUser, { allowOverwrite: false });
                 console.log('✅ User authenticated, profile loaded');
             } else {
                 console.log('❌ No current user found, showing login prompt');
@@ -180,8 +180,9 @@ class UserProfile {
         }
     }
 
-    updateUserInfoFromAuth(user) {
+    updateUserInfoFromAuth(user, options = {}) {
         console.log('🔄 Updating user info from auth:', user);
+        const allowOverwrite = options.allowOverwrite === true;
         
         // Get user data from Real User Auth (Methode heißt getUserDataFromToken)
         let userData = window.realUserAuth?.getUserDataFromToken?.() || null;
@@ -194,17 +195,30 @@ class UserProfile {
         const displayEmail = authUser.email || user?.email || '';
         const firstName = authUser.firstName || user?.firstName || '';
         const lastName = authUser.lastName || user?.lastName || '';
-        const displayName = firstName && lastName ? 
-            `${firstName} ${lastName}` : 
-            (firstName || lastName || displayEmail?.split('@')[0] || 'Benutzer');
+        const currentProfile = this.profileData || {};
+        const resolvedFirstName = currentProfile.firstName || firstName || '';
+        const resolvedLastName = currentProfile.lastName || lastName || '';
+        const resolvedEmail = currentProfile.email || displayEmail || '';
+        const displayName = resolvedFirstName && resolvedLastName ? 
+            `${resolvedFirstName} ${resolvedLastName}` : 
+            (resolvedFirstName || resolvedLastName || resolvedEmail?.split('@')[0] || 'Benutzer');
         
         console.log('📧 Display email:', displayEmail);
         console.log('👤 Display name:', displayName);
         console.log('👤 First name:', firstName);
         console.log('👤 Last name:', lastName);
         
-        // Update form fields - always update if we have data from auth
-        if (firstName) {
+        const shouldUpdateField = (fieldId, value, profileKey) => {
+            if (!value) return false;
+            if (allowOverwrite) return true;
+            const input = document.getElementById(fieldId);
+            const currentValue = input?.value?.trim() || '';
+            const profileValue = (currentProfile?.[profileKey] || '').toString().trim();
+            return !currentValue && !profileValue;
+        };
+        
+        // Update form fields - only if empty or overwrite allowed
+        if (shouldUpdateField('firstName', firstName, 'firstName')) {
             const firstNameInput = document.getElementById('firstName');
             if (firstNameInput) {
                 firstNameInput.value = firstName;
@@ -212,7 +226,7 @@ class UserProfile {
             }
         }
         
-        if (lastName) {
+        if (shouldUpdateField('lastName', lastName, 'lastName')) {
             const lastNameInput = document.getElementById('lastName');
             if (lastNameInput) {
                 lastNameInput.value = lastName;
@@ -220,7 +234,7 @@ class UserProfile {
             }
         }
         
-        if (displayEmail) {
+        if (shouldUpdateField('email', displayEmail, 'email')) {
             const emailInput = document.getElementById('email');
             if (emailInput) {
                 emailInput.value = displayEmail;
@@ -238,7 +252,7 @@ class UserProfile {
         // Update email display
         const userEmailEl = document.getElementById('userEmail');
         if (userEmailEl) {
-            userEmailEl.textContent = displayEmail;
+            userEmailEl.textContent = resolvedEmail;
             console.log('✅ Updated user email display:', displayEmail);
         }
         
@@ -250,16 +264,16 @@ class UserProfile {
         
         const profileHeaderEmail = document.querySelector('.profile-header .profile-email');
         if (profileHeaderEmail) {
-            profileHeaderEmail.textContent = displayEmail;
+            profileHeaderEmail.textContent = resolvedEmail;
         }
         
         // Also update profileData object
         if (firstName || lastName || displayEmail) {
             this.profileData = {
                 ...this.profileData,
-                firstName: firstName || this.profileData.firstName,
-                lastName: lastName || this.profileData.lastName,
-                email: displayEmail || this.profileData.email
+                firstName: allowOverwrite ? (firstName || this.profileData.firstName) : (this.profileData.firstName || firstName),
+                lastName: allowOverwrite ? (lastName || this.profileData.lastName) : (this.profileData.lastName || lastName),
+                email: allowOverwrite ? (displayEmail || this.profileData.email) : (this.profileData.email || displayEmail)
             };
         }
     }
@@ -335,7 +349,7 @@ class UserProfile {
             const user = e.detail?.user;
             if (user) {
                 console.log('👤 Logged in user:', user.email);
-                this.updateUserInfoFromAuth(user);
+                this.updateUserInfoFromAuth(user, { allowOverwrite: false });
                 await this.loadProfileData();
                 this.checkAuthStatus();
                 this.setupAutoSave();
@@ -395,6 +409,18 @@ class UserProfile {
         }
     }
 
+    getCoachingDataFromStorage() {
+        try {
+            const raw = localStorage.getItem('coaching_workflow_data');
+            if (!raw) return null;
+            const parsed = JSON.parse(raw);
+            return parsed && Object.keys(parsed).length > 0 ? parsed : null;
+        } catch (error) {
+            console.warn('⚠️ Konnte Coaching-Daten nicht lesen:', error);
+            return null;
+        }
+    }
+
     loadProfileData() {
         const defaultData = {
             firstName: '',
@@ -417,12 +443,17 @@ class UserProfile {
             dataSharing: false
         };
 
+        const coachingData = this.getCoachingDataFromStorage();
         const savedData = localStorage.getItem('userProfile');
         if (savedData) {
-            return { ...defaultData, ...JSON.parse(savedData) };
+            const parsed = { ...defaultData, ...JSON.parse(savedData) };
+            if (coachingData && !parsed.coaching) {
+                parsed.coaching = coachingData;
+            }
+            return parsed;
         }
 
-        return defaultData;
+        return coachingData ? { ...defaultData, coaching: coachingData } : defaultData;
     }
     
     async loadProfileDataFromAWS(retryCount = 0) {
@@ -470,6 +501,11 @@ class UserProfile {
                 email: awsData?.email || userData?.email || currentUser?.email || ''
             };
             
+            const coachingData = this.getCoachingDataFromStorage();
+            if (coachingData && !this.profileData.coaching) {
+                this.profileData.coaching = coachingData;
+            }
+            
             console.log('📋 Final profile data:', this.profileData);
             
             // Update form fields with merged data
@@ -485,7 +521,7 @@ class UserProfile {
             
             // Also update from auth to ensure display is correct
             if (currentUser || userData) {
-                this.updateUserInfoFromAuth(currentUser || userData);
+                this.updateUserInfoFromAuth(currentUser || userData, { allowOverwrite: false });
             }
             
             // Stelle sicher, dass Auto-Save nach dem Laden der Daten aktiviert ist
@@ -508,7 +544,7 @@ class UserProfile {
             if (window.realUserAuth && window.realUserAuth.isLoggedIn()) {
                 const currentUser = window.realUserAuth.getCurrentUser();
                 if (currentUser) {
-                    this.updateUserInfoFromAuth(currentUser);
+                    this.updateUserInfoFromAuth(currentUser, { allowOverwrite: false });
                 }
             }
         }
@@ -820,6 +856,7 @@ class UserProfile {
         }
 
         // Harmonisiertes Format: Speichere sowohl direkt als auch strukturiert
+        const coachingData = this.getCoachingDataFromStorage();
         const profileToSave = {
             // Direkte Felder (für Kompatibilität)
             ...formData,
@@ -838,6 +875,10 @@ class UserProfile {
             type: 'user-profile', // Einheitlicher Typ
             updatedAt: new Date().toISOString()
         };
+        
+        if (coachingData || this.profileData.coaching) {
+            profileToSave.coaching = coachingData || this.profileData.coaching;
+        }
 
         // Preserve profileImageUrl if it exists
         if (this.profileData.profileImageUrl !== undefined) {

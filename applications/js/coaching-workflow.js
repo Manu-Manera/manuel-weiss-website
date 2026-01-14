@@ -625,8 +625,31 @@ class CoachingWorkflow {
         }
         
         try {
-            // Hier könnte AWS-Integration folgen
-            console.log('☁️ Would save to server (not implemented)');
+            const coachingPayload = {
+                ...this.data,
+                updatedAt: new Date().toISOString()
+            };
+            
+            // Bevorzugt: CloudDataService (Netlify Functions)
+            if (window.cloudDataService) {
+                const profile = await window.cloudDataService.getProfile();
+                await window.cloudDataService.saveProfile({
+                    ...(profile || {}),
+                    coaching: coachingPayload
+                });
+                console.log('✅ Coaching-Daten im Profil (CloudDataService) gespeichert');
+                return;
+            }
+            
+            // Fallback: awsProfileAPI (direkt)
+            if (window.awsProfileAPI?.loadProfile && window.awsProfileAPI?.saveProfile) {
+                const profile = await window.awsProfileAPI.loadProfile();
+                await window.awsProfileAPI.saveProfile({
+                    ...(profile || {}),
+                    coaching: coachingPayload
+                });
+                console.log('✅ Coaching-Daten im Profil (awsProfileAPI) gespeichert');
+            }
         } catch (e) {
             console.error('Error saving to server:', e);
         }

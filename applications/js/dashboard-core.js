@@ -197,7 +197,8 @@ async function loadAWSProfile() {
                 currentJob: awsProfile.currentPosition || awsProfile.profession || awsProfile.professional?.currentPosition || '',
                 experience: awsProfile.experience || awsProfile.professional?.experience || '',
                 summary: awsProfile.summary || awsProfile.professional?.summary || '',
-                skills: awsProfile.skills || awsProfile.professional?.skills || []
+                skills: awsProfile.skills || awsProfile.professional?.skills || [],
+                coaching: awsProfile.coaching || null
             };
             
             // Speichere auch lokal für Offline-Zugriff
@@ -222,6 +223,13 @@ async function loadAWSProfile() {
 function prefillQuickApplyFromProfile() {
     const profile = DashboardState.profile;
     if (!profile) return;
+    const coaching = profile.coaching || {};
+    const coachingSkills = [
+        coaching.naturalTalents,
+        coaching.acquiredSkills,
+        coaching.uniqueStrengths
+    ].filter(Boolean).join(', ');
+    const coachingMotivation = coaching.motivators || coaching.shortTermGoals || coaching.dreamJob || '';
     
     // Name
     const nameField = document.getElementById('quickName') || document.getElementById('quickUserName');
@@ -233,7 +241,7 @@ function prefillQuickApplyFromProfile() {
     // Position
     const positionField = document.getElementById('quickPosition') || document.getElementById('quickUserPosition');
     if (positionField && !positionField.value) {
-        positionField.value = profile.currentJob || '';
+        positionField.value = profile.currentJob || coaching.dreamJob || '';
     }
     
     // Erfahrung
@@ -252,7 +260,12 @@ function prefillQuickApplyFromProfile() {
     const skillsField = document.getElementById('quickSkills') || document.getElementById('quickUserSkills');
     if (skillsField && !skillsField.value) {
         const skills = Array.isArray(profile.skills) ? profile.skills.join(', ') : profile.skills;
-        skillsField.value = skills || '';
+        skillsField.value = skills || coachingSkills || '';
+    }
+    
+    const motivationField = document.getElementById('quickMotivation');
+    if (motivationField && !motivationField.value) {
+        motivationField.value = coachingMotivation || profile.summary || '';
     }
     
     console.log('📝 Quick-Apply-Felder mit Profildaten vorausgefüllt');
@@ -2200,8 +2213,26 @@ async function handlePhotoUpload(file) {
     try {
         showToast('Foto wird hochgeladen...', 'info');
         
-        // Bild in Base64 konvertieren
-        const dataUrl = await readFileAsDataURL(file);
+        let dataUrl = '';
+        let publicUrl = '';
+        let storage = 'inline';
+        
+        // Bevorzugt: Upload zu S3 (kein Base64 in DynamoDB)
+        if (window.awsMedia?.uploadProfileImage) {
+            try {
+                const user = window.awsAuth?.getCurrentUser?.() || window.realUserAuth?.getCurrentUser?.();
+                const userId = user?.userId || user?.id || user?.email || 'anonymous';
+                const uploadResult = await window.awsMedia.uploadProfileImage(file, userId);
+                publicUrl = uploadResult.publicUrl;
+                storage = 's3';
+            } catch (uploadError) {
+                console.warn('S3 Upload fehlgeschlagen, fallback zu Base64:', uploadError);
+            }
+        }
+        
+        if (!publicUrl) {
+            dataUrl = await readFileAsDataURL(file);
+        }
         
         // Foto speichern
         const photo = {
@@ -2209,7 +2240,9 @@ async function handlePhotoUpload(file) {
             name: file.name,
             type: file.type,
             size: file.size,
-            dataUrl: dataUrl,
+            dataUrl: dataUrl || undefined,
+            url: publicUrl || undefined,
+            storage,
             createdAt: new Date().toISOString()
         };
         

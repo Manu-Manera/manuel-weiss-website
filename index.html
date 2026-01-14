@@ -2802,5 +2802,16 @@
         })();
     </script>
 
+    <script>
+        (function detectInAppBrowser() {
+            const ua = navigator.userAgent || '';
+            const isInApp = /Instagram|FBAN|FBAV|FB_IAB/i.test(ua);
+            if (isInApp) {
+                document.documentElement.classList.add('is-inapp');
+                document.body.classList.add('is-inapp');
+            }
+        })();
+    </script>
+
 </body>
 </html>

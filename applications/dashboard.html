@@ -1336,6 +1336,8 @@ Ihre Aufgaben:
     </script>
     
     <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="../js/aws-app-config.js?v=20260114a"></script>
+    <script src="../js/aws-media.js?v=20260114a"></script>
     <script src="../js/success-checkmark.js?v=20260112"></script>
     <script src="../js/unified-aws-auth.js?v=20260112"></script>
     <script src="../js/unified-auth-modals.js?v=20260112"></script>
@@ -2004,30 +2006,45 @@ Ihre Aufgaben:
             if (!file) return;
             
             try {
-                // In localStorage speichern (Base64)
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const documents = JSON.parse(localStorage.getItem('user_documents') || '{}');
-                    if (!documents[category]) documents[category] = [];
-                    
-                    documents[category].push({
-                        id: Date.now().toString(36),
-                        name: file.name,
-                        size: file.size,
-                        data: e.target.result,
-                        uploadedAt: new Date().toISOString()
-                    });
-                    
-                    localStorage.setItem('user_documents', JSON.stringify(documents));
-                    
-                    // Modal schließen
-                    element.closest('.document-category-modal').remove();
-                    
-                    // Liste aktualisieren
-                    loadSavedDocuments();
-                    showToast('Dokument gespeichert!', 'success');
+                const now = new Date().toISOString();
+                const docId = `doc_${Date.now().toString(36)}`;
+                const documentData = {
+                    id: docId,
+                    name: file.name,
+                    size: file.size,
+                    fileType: file.type,
+                    category,
+                    createdAt: now,
+                    updatedAt: now
                 };
-                reader.readAsDataURL(file);
+                
+                const user = window.awsAuth?.getCurrentUser?.() || window.realUserAuth?.getCurrentUser?.();
+                const userId = user?.userId || user?.id || user?.email || 'anonymous';
+                
+                // Upload to S3 if possible
+                if (window.awsMedia?.uploadDocument) {
+                    const fileType = category === 'work' ? 'document' : 'certificate';
+                    const uploadResult = await window.awsMedia.uploadDocument(file, userId, fileType);
+                    documentData.url = uploadResult.publicUrl;
+                    documentData.storage = 's3';
+                } else {
+                    const dataUrl = await readFileAsDataURL(file);
+                    documentData.dataUrl = dataUrl;
+                    documentData.storage = 'local';
+                }
+                
+                // Save metadata to cloud/local
+                if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
+                    await window.cloudDataService.saveDocument(documentData);
+                } else {
+                    const documents = JSON.parse(localStorage.getItem('user_certificates') || '[]');
+                    documents.push(documentData);
+                    localStorage.setItem('user_certificates', JSON.stringify(documents));
+                }
+                
+                element.closest('.document-category-modal').remove();
+                loadSavedDocuments();
+                showToast('Dokument gespeichert!', 'success');
                 
             } catch (error) {
                 console.error('Document save error:', error);
@@ -2035,8 +2052,21 @@ Ihre Aufgaben:
             }
         };
         
-        function loadSavedDocuments() {
-            const documents = JSON.parse(localStorage.getItem('user_documents') || '{}');
+        async function loadSavedDocuments() {
+            let documents = [];
+            try {
+                if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
+                    documents = await window.cloudDataService.getDocuments(true);
+                } else {
+                    documents = JSON.parse(localStorage.getItem('user_certificates') || '[]');
+                }
+            } catch (error) {
+                console.warn('Dokumente konnten nicht geladen werden:', error);
+                documents = JSON.parse(localStorage.getItem('user_certificates') || '[]');
+            }
+            
+            // Sync local cache for view/download actions
+            localStorage.setItem('user_certificates', JSON.stringify(documents || []));
             
             const categories = {
                 certificates: 'documentsCertificates',
@@ -2050,15 +2080,23 @@ Ihre Aufgaben:
                 work: 'noWorkDocs'
             };
             
+            const grouped = { certificates: [], awards: [], work: [] };
+            documents.forEach(doc => {
+                const cat = doc.category || doc.type || 'certificates';
+                if (!grouped[cat]) grouped[cat] = [];
+                grouped[cat].push(doc);
+            });
+            
             Object.entries(categories).forEach(([cat, containerId]) => {
                 const container = document.getElementById(containerId);
                 const emptyState = document.getElementById(emptyStates[cat]);
                 if (!container) return;
                 
-                const docs = documents[cat] || [];
+                const docs = grouped[cat] || [];
                 
                 if (docs.length === 0) {
                     if (emptyState) emptyState.style.display = 'block';
+                    container.innerHTML = '';
                     return;
                 }
                 
@@ -2070,7 +2108,7 @@ Ihre Aufgaben:
                             <i class="fas fa-file-pdf"></i>
                             <div class="document-details">
                                 <h4>${doc.name}</h4>
-                                <span>${formatFileSize(doc.size)} • ${new Date(doc.uploadedAt).toLocaleDateString('de-DE')}</span>
+                                <span>${formatFileSize(doc.size)} • ${new Date(doc.updatedAt || doc.createdAt).toLocaleDateString('de-DE')}</span>
                             </div>
                         </div>
                         <div class="document-actions">
@@ -2096,32 +2134,41 @@ Ihre Aufgaben:
         }
         
         window.viewDocument = function(category, id) {
-            const documents = JSON.parse(localStorage.getItem('user_documents') || '{}');
-            const doc = documents[category]?.find(d => d.id === id);
+            const documents = JSON.parse(localStorage.getItem('user_certificates') || '[]');
+            const doc = documents.find(d => d.id === id);
             if (!doc) return;
             
-            // PDF in neuem Tab öffnen
+            const url = doc.url || doc.dataUrl;
+            if (!url) return;
+            
             const win = window.open();
-            win.document.write(`<iframe src="${doc.data}" style="width:100%;height:100%;border:none;"></iframe>`);
+            win.document.write(`<iframe src="${url}" style="width:100%;height:100%;border:none;"></iframe>`);
         };
         
         window.downloadDocument = function(category, id) {
-            const documents = JSON.parse(localStorage.getItem('user_documents') || '{}');
-            const doc = documents[category]?.find(d => d.id === id);
+            const documents = JSON.parse(localStorage.getItem('user_certificates') || '[]');
+            const doc = documents.find(d => d.id === id);
             if (!doc) return;
             
+            const url = doc.url || doc.dataUrl;
+            if (!url) return;
+            
             const a = document.createElement('a');
-            a.href = doc.data;
+            a.href = url;
             a.download = doc.name;
             a.click();
         };
         
-        window.deleteDocument = function(category, id) {
+        window.deleteDocument = async function(category, id) {
             if (!confirm('Dokument wirklich löschen?')) return;
             
-            const documents = JSON.parse(localStorage.getItem('user_documents') || '{}');
-            documents[category] = documents[category]?.filter(d => d.id !== id) || [];
-            localStorage.setItem('user_documents', JSON.stringify(documents));
+            if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
+                await window.cloudDataService.deleteDocument(id);
+            }
+            
+            let documents = JSON.parse(localStorage.getItem('user_certificates') || '[]');
+            documents = documents.filter(d => d.id !== id);
+            localStorage.setItem('user_certificates', JSON.stringify(documents));
             
             loadSavedDocuments();
             showToast('Dokument gelöscht', 'success');
