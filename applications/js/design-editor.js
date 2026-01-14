@@ -22,10 +22,12 @@ class DesignEditor {
     init() {
         this.setupTabs();
         this.setupTypography();
+        this.setupLayout();
         this.setupColors();
         this.setupSpacing();
         this.setupTemplates();
         this.setupSections();
+        this.setupATS();
         this.setupZoom();
         this.setupAutoSave();
         this.applySettings();
@@ -45,6 +47,9 @@ class DesignEditor {
             fontSize: 11,
             headingSize: 14,
             lineHeight: 1.5,
+            paragraphGap: 6,
+            headerAlign: 'center',
+            showIcons: true,
             
             // Colors
             accentColor: '#6366f1',
@@ -67,15 +72,15 @@ class DesignEditor {
             
             // Sections Order & Visibility
             sections: [
-                { id: 'header', name: 'Kopfzeile', icon: 'fa-user', visible: true },
-                { id: 'summary', name: 'Kurzprofil', icon: 'fa-align-left', visible: true },
-                { id: 'experience', name: 'Berufserfahrung', icon: 'fa-briefcase', visible: true },
-                { id: 'education', name: 'Ausbildung', icon: 'fa-graduation-cap', visible: true },
-                { id: 'skills', name: 'Fähigkeiten', icon: 'fa-tools', visible: true },
-                { id: 'projects', name: 'Projekte', icon: 'fa-project-diagram', visible: false },
-                { id: 'languages', name: 'Sprachen', icon: 'fa-language', visible: true },
-                { id: 'certifications', name: 'Zertifikate', icon: 'fa-certificate', visible: false },
-                { id: 'hobbies', name: 'Hobbys', icon: 'fa-heart', visible: false }
+                { id: 'header', name: 'Kopfzeile', icon: 'fa-user', visible: true, column: 'full', customTitle: '' },
+                { id: 'summary', name: 'Kurzprofil', icon: 'fa-align-left', visible: true, column: 'full', customTitle: '' },
+                { id: 'experience', name: 'Berufserfahrung', icon: 'fa-briefcase', visible: true, column: 'right', customTitle: '' },
+                { id: 'education', name: 'Ausbildung', icon: 'fa-graduation-cap', visible: true, column: 'right', customTitle: '' },
+                { id: 'skills', name: 'Fähigkeiten', icon: 'fa-tools', visible: true, column: 'left', customTitle: '' },
+                { id: 'projects', name: 'Projekte', icon: 'fa-project-diagram', visible: false, column: 'right', customTitle: '' },
+                { id: 'languages', name: 'Sprachen', icon: 'fa-language', visible: true, column: 'left', customTitle: '' },
+                { id: 'certifications', name: 'Zertifikate', icon: 'fa-certificate', visible: false, column: 'left', customTitle: '' },
+                { id: 'hobbies', name: 'Hobbys', icon: 'fa-heart', visible: false, column: 'left', customTitle: '' }
             ]
         };
     }
@@ -84,12 +89,35 @@ class DesignEditor {
         try {
             const saved = localStorage.getItem('resume_design_settings');
             if (saved) {
-                return { ...this.getDefaultSettings(), ...JSON.parse(saved) };
+                const defaults = this.getDefaultSettings();
+                const parsed = JSON.parse(saved);
+                const merged = { ...defaults, ...parsed };
+                merged.sections = this.mergeSections(parsed.sections, defaults.sections);
+                return merged;
             }
         } catch (e) {
             console.warn('Could not load design settings:', e);
         }
         return this.getDefaultSettings();
+    }
+
+    mergeSections(savedSections, defaultSections) {
+        const byId = new Map(defaultSections.map(section => [section.id, section]));
+        const result = [];
+
+        if (Array.isArray(savedSections)) {
+            savedSections.forEach(section => {
+                const defaults = byId.get(section.id);
+                if (defaults) {
+                    result.push({ ...defaults, ...section });
+                    byId.delete(section.id);
+                }
+            });
+        }
+
+        // Append new defaults not in saved settings
+        byId.forEach(section => result.push(section));
+        return result;
     }
 
     saveSettings() {
@@ -150,6 +178,41 @@ class DesignEditor {
         
         // Line Height
         this.setupSlider('designLineHeight', 'lineHeight', 1.0, 2.0, '', 0.1);
+    }
+
+    setupLayout() {
+        const columnsSelect = document.getElementById('designColumns');
+        if (columnsSelect) {
+            columnsSelect.value = String(this.settings.columns || 1);
+            columnsSelect.addEventListener('change', (e) => {
+                this.settings.columns = parseInt(e.target.value, 10);
+                this.applySettings();
+                this.saveSettings();
+                this.updatePreview();
+            });
+        }
+
+        const showIconsToggle = document.getElementById('designShowIcons');
+        if (showIconsToggle) {
+            showIconsToggle.checked = !!this.settings.showIcons;
+            showIconsToggle.addEventListener('change', (e) => {
+                this.settings.showIcons = e.target.checked;
+                this.applySettings();
+                this.saveSettings();
+                this.updatePreview();
+            });
+        }
+
+        const headerAlignSelect = document.getElementById('designHeaderAlign');
+        if (headerAlignSelect) {
+            headerAlignSelect.value = this.settings.headerAlign || 'center';
+            headerAlignSelect.addEventListener('change', (e) => {
+                this.settings.headerAlign = e.target.value;
+                this.applySettings();
+                this.saveSettings();
+                this.updatePreview();
+            });
+        }
     }
 
     setupSlider(elementId, settingKey, min, max, unit = '', step = 1) {
@@ -290,6 +353,9 @@ class DesignEditor {
         
         // Item Gap
         this.setupSlider('designItemGap', 'itemGap', 6, 24, 'px');
+        
+        // Paragraph Gap
+        this.setupSlider('designParagraphGap', 'paragraphGap', 0, 16, 'px');
 
         // Uniform Margins Toggle
         const uniformToggle = document.getElementById('uniformMargins');
@@ -409,6 +475,22 @@ class DesignEditor {
                         <i class="fas fa-cog"></i>
                     </button>
                 </div>
+                <div class="design-section-settings" data-settings="${section.id}">
+                    <div class="design-settings-row">
+                        <div>
+                            <label>Titel</label>
+                            <input type="text" value="${section.customTitle || ''}" placeholder="${section.name}" data-setting="title">
+                        </div>
+                        <div>
+                            <label>Spalte</label>
+                            <select data-setting="column">
+                                <option value="full" ${section.column === 'full' ? 'selected' : ''}>Vollbreite</option>
+                                <option value="left" ${section.column === 'left' ? 'selected' : ''}>Links</option>
+                                <option value="right" ${section.column === 'right' ? 'selected' : ''}>Rechts</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
             </div>
         `).join('');
 
@@ -421,6 +503,41 @@ class DesignEditor {
                 this.toggleSection(sectionId);
             });
         });
+
+        // Settings buttons
+        container.querySelectorAll('.design-section-btn[data-action="settings"]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const item = btn.closest('.design-section-item');
+                const panel = item.querySelector('.design-section-settings');
+                if (panel) {
+                    panel.classList.toggle('active');
+                }
+            });
+        });
+
+        // Settings inputs
+        container.querySelectorAll('.design-section-settings').forEach(panel => {
+            panel.querySelectorAll('input, select').forEach(input => {
+                input.addEventListener('input', () => {
+                    const item = panel.closest('.design-section-item');
+                    const sectionId = item.dataset.id;
+                    this.updateSectionSettings(sectionId, panel);
+                });
+            });
+        });
+    }
+
+    updateSectionSettings(sectionId, panel) {
+        const section = this.sections.find(s => s.id === sectionId);
+        if (!section) return;
+        const titleInput = panel.querySelector('[data-setting="title"]');
+        const columnSelect = panel.querySelector('[data-setting="column"]');
+        section.customTitle = titleInput?.value || '';
+        section.column = columnSelect?.value || section.column;
+        this.settings.sections = this.sections;
+        this.saveSettings();
+        this.updatePreview();
     }
 
     setupDragAndDrop() {
@@ -568,6 +685,7 @@ class DesignEditor {
         preview.style.setProperty('--resume-margin', `${this.settings.marginTop}mm ${this.settings.marginRight}mm ${this.settings.marginBottom}mm ${this.settings.marginLeft}mm`);
         preview.style.setProperty('--resume-section-gap', this.settings.sectionGap + 'px');
         preview.style.setProperty('--resume-item-gap', this.settings.itemGap + 'px');
+        preview.style.setProperty('--resume-paragraph-gap', this.settings.paragraphGap + 'px');
 
         // Apply font family directly
         preview.style.fontFamily = this.settings.fontFamily;
@@ -576,6 +694,9 @@ class DesignEditor {
         preview.style.color = this.settings.textColor;
         preview.style.backgroundColor = this.settings.backgroundColor;
         preview.style.padding = `${this.settings.marginTop}mm ${this.settings.marginRight}mm ${this.settings.marginBottom}mm ${this.settings.marginLeft}mm`;
+
+        preview.classList.toggle('no-icons', !this.settings.showIcons);
+        this.updateATSCheck();
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -591,34 +712,56 @@ class DesignEditor {
         
         // Generate preview HTML
         let html = '';
-        
-        this.sections.filter(s => s.visible).forEach(section => {
-            switch (section.id) {
-                case 'header':
-                    html += this.renderHeaderSection(resumeData);
-                    break;
-                case 'summary':
-                    html += this.renderSummarySection(resumeData);
-                    break;
-                case 'experience':
-                    html += this.renderExperienceSection(resumeData);
-                    break;
-                case 'education':
-                    html += this.renderEducationSection(resumeData);
-                    break;
-                case 'skills':
-                    html += this.renderSkillsSection(resumeData);
-                    break;
-                case 'languages':
-                    html += this.renderLanguagesSection(resumeData);
-                    break;
-                case 'projects':
-                    html += this.renderProjectsSection(resumeData);
-                    break;
-            }
-        });
+
+        const visibleSections = this.sections.filter(s => s.visible);
+        if (this.settings.columns === 2) {
+            const full = visibleSections.filter(s => s.column === 'full');
+            const left = visibleSections.filter(s => s.column === 'left');
+            const right = visibleSections.filter(s => s.column === 'right');
+
+            full.forEach(section => {
+                html += this.renderSectionById(section, resumeData);
+            });
+
+            html += `
+                <div class="resume-preview-columns">
+                    <div class="resume-preview-column">
+                        ${left.map(section => this.renderSectionById(section, resumeData)).join('')}
+                    </div>
+                    <div class="resume-preview-column">
+                        ${right.map(section => this.renderSectionById(section, resumeData)).join('')}
+                    </div>
+                </div>
+            `;
+        } else {
+            visibleSections.forEach(section => {
+                html += this.renderSectionById(section, resumeData);
+            });
+        }
 
         preview.innerHTML = html || this.renderPlaceholderContent();
+        this.updateATSCheck();
+    }
+
+    renderSectionById(section, data) {
+        switch (section.id) {
+            case 'header':
+                return this.renderHeaderSection(data, section);
+            case 'summary':
+                return this.renderSummarySection(data, section);
+            case 'experience':
+                return this.renderExperienceSection(data, section);
+            case 'education':
+                return this.renderEducationSection(data, section);
+            case 'skills':
+                return this.renderSkillsSection(data, section);
+            case 'languages':
+                return this.renderLanguagesSection(data, section);
+            case 'projects':
+                return this.renderProjectsSection(data, section);
+            default:
+                return '';
+        }
     }
 
     getResumeData() {
@@ -652,7 +795,8 @@ class DesignEditor {
             experience: this.getExperienceData(),
             education: this.getEducationData(),
             skills: this.getSkillsData(),
-            languages: this.getLanguagesData()
+            languages: this.getLanguagesData(),
+            projects: this.getProjectsData()
         };
     }
 
@@ -663,11 +807,11 @@ class DesignEditor {
         const items = [];
         container.querySelectorAll('.experience-item, .entry-item').forEach(item => {
             items.push({
-                position: item.querySelector('[name*="position"], [name*="title"]')?.value || '',
-                company: item.querySelector('[name*="company"]')?.value || '',
-                startDate: item.querySelector('[name*="start"]')?.value || '',
-                endDate: item.querySelector('[name*="end"]')?.value || '',
-                description: item.querySelector('textarea')?.value || ''
+                position: item.querySelector('[data-field="position"]')?.value || '',
+                company: item.querySelector('[data-field="company"]')?.value || '',
+                startDate: item.querySelector('[data-field="startDate"]')?.value || '',
+                endDate: item.querySelector('[data-field="endDate"]')?.value || '',
+                description: item.querySelector('[data-field="description"]')?.value || ''
             });
         });
         
@@ -682,10 +826,10 @@ class DesignEditor {
         const items = [];
         container.querySelectorAll('.education-item, .entry-item').forEach(item => {
             items.push({
-                degree: item.querySelector('[name*="degree"]')?.value || '',
-                institution: item.querySelector('[name*="institution"], [name*="school"]')?.value || '',
-                startDate: item.querySelector('[name*="start"]')?.value || '',
-                endDate: item.querySelector('[name*="end"]')?.value || ''
+                degree: item.querySelector('[data-field="degree"]')?.value || '',
+                institution: item.querySelector('[data-field="institution"]')?.value || '',
+                startDate: item.querySelector('[data-field="startDate"]')?.value || '',
+                endDate: item.querySelector('[data-field="endDate"]')?.value || ''
             });
         });
         
@@ -694,15 +838,25 @@ class DesignEditor {
     }
 
     getSkillsData() {
-        const skills = [];
-        document.querySelectorAll('#technicalSkillsContainer .skill-tag, #softSkillsContainer .skill-tag').forEach(tag => {
-            if (tag.textContent.trim()) {
-                skills.push(tag.textContent.trim());
+        const technicalSkills = [];
+        const softSkills = [];
+
+        document.querySelectorAll('#technicalSkillsContainer .skill-category-item').forEach(item => {
+            const category = item.querySelector('.skill-category-name')?.value || '';
+            const skills = Array.from(item.querySelectorAll('.skill-tag input'))
+                .map(input => input.value.trim())
+                .filter(Boolean);
+            if (category || skills.length) {
+                technicalSkills.push({ category, skills });
             }
         });
-        
-        // Return actual skills or empty array (no fake test data)
-        return skills;
+
+        document.querySelectorAll('#softSkillsContainer .soft-skill-item').forEach(item => {
+            const skill = item.querySelector('input[type="text"]')?.value || '';
+            if (skill) softSkills.push(skill);
+        });
+
+        return { technicalSkills, softSkills };
     }
 
     getLanguagesData() {
@@ -712,8 +866,8 @@ class DesignEditor {
         const items = [];
         container.querySelectorAll('.language-item, .entry-item').forEach(item => {
             items.push({
-                language: item.querySelector('[name*="language"]')?.value || item.querySelector('input')?.value || '',
-                level: item.querySelector('select')?.value || ''
+                language: item.querySelector('[data-field="language"]')?.value || item.querySelector('input')?.value || '',
+                level: item.querySelector('[data-field="proficiency"]')?.value || item.querySelector('select')?.value || ''
             });
         });
         
@@ -721,13 +875,30 @@ class DesignEditor {
         return items;
     }
 
+    getProjectsData() {
+        const container = document.getElementById('projectsContainer');
+        if (!container) return [];
+        const items = [];
+        container.querySelectorAll('.project-item').forEach(item => {
+            items.push({
+                name: item.querySelector('[data-field="name"]')?.value || '',
+                role: item.querySelector('[data-field="role"]')?.value || '',
+                description: item.querySelector('[data-field="description"]')?.value || '',
+                startDate: item.querySelector('[data-field="startDate"]')?.value || '',
+                endDate: item.querySelector('[data-field="endDate"]')?.value || ''
+            });
+        });
+        return items;
+    }
+
     // ═══════════════════════════════════════════════════════════════════════════
     // SECTION RENDERERS
     // ═══════════════════════════════════════════════════════════════════════════
 
-    renderHeaderSection(data) {
+    renderHeaderSection(data, section) {
+        const alignClass = this.settings.headerAlign === 'left' ? 'align-left' : '';
         return `
-            <div class="resume-preview-header">
+            <div class="resume-preview-header ${alignClass}">
                 <h1 class="resume-preview-name">${data.firstName} ${data.lastName}</h1>
                 <p class="resume-preview-title">${data.title}</p>
                 <div class="resume-preview-contact">
@@ -739,21 +910,23 @@ class DesignEditor {
         `;
     }
 
-    renderSummarySection(data) {
+    renderSummarySection(data, section) {
         if (!data.summary) return '';
+        const title = section?.customTitle || 'Profil';
         return `
             <div class="resume-preview-section">
-                <h2 class="resume-preview-section-title"><i class="fas fa-user"></i> Profil</h2>
+                <h2 class="resume-preview-section-title"><i class="fas fa-user"></i> ${title}</h2>
                 <p class="resume-preview-item-description">${data.summary}</p>
             </div>
         `;
     }
 
-    renderExperienceSection(data) {
+    renderExperienceSection(data, section) {
         if (!data.experience?.length) return '';
+        const title = section?.customTitle || 'Berufserfahrung';
         return `
             <div class="resume-preview-section">
-                <h2 class="resume-preview-section-title"><i class="fas fa-briefcase"></i> Berufserfahrung</h2>
+                <h2 class="resume-preview-section-title"><i class="fas fa-briefcase"></i> ${title}</h2>
                 ${data.experience.map(exp => `
                     <div class="resume-preview-item">
                         <div class="resume-preview-item-header">
@@ -768,11 +941,12 @@ class DesignEditor {
         `;
     }
 
-    renderEducationSection(data) {
+    renderEducationSection(data, section) {
         if (!data.education?.length) return '';
+        const title = section?.customTitle || 'Ausbildung';
         return `
             <div class="resume-preview-section">
-                <h2 class="resume-preview-section-title"><i class="fas fa-graduation-cap"></i> Ausbildung</h2>
+                <h2 class="resume-preview-section-title"><i class="fas fa-graduation-cap"></i> ${title}</h2>
                 ${data.education.map(edu => `
                     <div class="resume-preview-item">
                         <div class="resume-preview-item-header">
@@ -786,23 +960,40 @@ class DesignEditor {
         `;
     }
 
-    renderSkillsSection(data) {
-        if (!data.skills?.length) return '';
+    renderSkillsSection(data, section) {
+        const hasTech = data.skills?.technicalSkills?.length;
+        const hasSoft = data.skills?.softSkills?.length;
+        if (!hasTech && !hasSoft) return '';
+        const title = section?.customTitle || 'Fähigkeiten';
         return `
             <div class="resume-preview-section">
-                <h2 class="resume-preview-section-title"><i class="fas fa-tools"></i> Fähigkeiten</h2>
-                <div class="resume-preview-skills">
-                    ${data.skills.map(skill => `<span class="resume-preview-skill">${skill}</span>`).join('')}
-                </div>
+                <h2 class="resume-preview-section-title"><i class="fas fa-tools"></i> ${title}</h2>
+                ${hasTech ? data.skills.technicalSkills.map(category => `
+                    <div class="resume-preview-item">
+                        ${category.category ? `<div class="resume-preview-item-title">${category.category}</div>` : ''}
+                        <div class="resume-preview-skills">
+                            ${(category.skills || []).map(skill => `<span class="resume-preview-skill">${skill}</span>`).join('')}
+                        </div>
+                    </div>
+                `).join('') : ''}
+                ${hasSoft ? `
+                    <div class="resume-preview-item">
+                        <div class="resume-preview-item-title">Soft Skills</div>
+                        <div class="resume-preview-skills">
+                            ${data.skills.softSkills.map(skill => `<span class="resume-preview-skill">${skill}</span>`).join('')}
+                        </div>
+                    </div>
+                ` : ''}
             </div>
         `;
     }
 
-    renderLanguagesSection(data) {
+    renderLanguagesSection(data, section) {
         if (!data.languages?.length) return '';
+        const title = section?.customTitle || 'Sprachen';
         return `
             <div class="resume-preview-section">
-                <h2 class="resume-preview-section-title"><i class="fas fa-language"></i> Sprachen</h2>
+                <h2 class="resume-preview-section-title"><i class="fas fa-language"></i> ${title}</h2>
                 ${data.languages.map(lang => `
                     <div class="resume-preview-item" style="display: flex; justify-content: space-between;">
                         <span>${lang.language}</span>
@@ -813,8 +1004,24 @@ class DesignEditor {
         `;
     }
 
-    renderProjectsSection(data) {
-        return '';  // To be implemented
+    renderProjectsSection(data, section) {
+        if (!data.projects?.length) return '';
+        const title = section?.customTitle || 'Projekte';
+        return `
+            <div class="resume-preview-section">
+                <h2 class="resume-preview-section-title"><i class="fas fa-project-diagram"></i> ${title}</h2>
+                ${data.projects.map(project => `
+                    <div class="resume-preview-item">
+                        <div class="resume-preview-item-header">
+                            <span class="resume-preview-item-title">${project.name}</span>
+                            <span class="resume-preview-item-date">${project.startDate} - ${project.endDate || 'heute'}</span>
+                        </div>
+                        ${project.role ? `<div class="resume-preview-item-subtitle">${project.role}</div>` : ''}
+                        ${project.description ? `<p class="resume-preview-item-description">${project.description}</p>` : ''}
+                    </div>
+                `).join('')}
+            </div>
+        `;
     }
 
     renderPlaceholderContent() {
@@ -848,6 +1055,49 @@ class DesignEditor {
                 this.previewTimeout = setTimeout(() => this.updatePreview(), 300);
             });
         }
+    }
+
+    setupATS() {
+        this.updateATSCheck();
+    }
+
+    updateATSCheck() {
+        const list = document.getElementById('atsChecksList');
+        const scoreEl = document.getElementById('atsScoreValue');
+        if (!list || !scoreEl) return;
+
+        const checks = [];
+        const issues = [];
+
+        const fontOk = this.settings.fontSize >= 10.5;
+        checks.push({ ok: fontOk, text: 'Schriftgröße mindestens 10.5pt' });
+        if (!fontOk) issues.push(1);
+
+        const lineOk = this.settings.lineHeight >= 1.2;
+        checks.push({ ok: lineOk, text: 'Zeilenabstand mindestens 1.2' });
+        if (!lineOk) issues.push(1);
+
+        const iconsOk = !this.settings.showIcons;
+        checks.push({ ok: iconsOk, text: 'Icons ausgeschaltet (ATS-freundlich)' });
+        if (!iconsOk) issues.push(1);
+
+        const columnsOk = this.settings.columns === 1;
+        checks.push({ ok: columnsOk, text: 'Einspaltiges Layout (ATS-freundlich)' });
+        if (!columnsOk) issues.push(1);
+
+        const contrastOk = this.settings.textColor.toLowerCase() !== '#ffffff';
+        checks.push({ ok: contrastOk, text: 'Textfarbe hat Kontrast' });
+        if (!contrastOk) issues.push(1);
+
+        const score = Math.max(0, 100 - issues.length * 15);
+        scoreEl.textContent = `${score}%`;
+
+        list.innerHTML = checks.map(check => `
+            <div class="design-ats-item ${check.ok ? 'ok' : 'warn'}">
+                <i class="fas ${check.ok ? 'fa-check-circle' : 'fa-exclamation-triangle'}"></i>
+                <span>${check.text}</span>
+            </div>
+        `).join('');
     }
 
     exportToPDF() {
