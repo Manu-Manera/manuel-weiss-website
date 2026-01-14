@@ -10,6 +10,10 @@ class UserProfile {
 
     async init() {
         this.setupEventListeners();
+        
+        // Warte auf Auth-System Initialisierung (inkl. Token-Refresh)
+        await this.waitForAuthReady();
+        
         await this.loadProfileDataFromAWS();
         
         // Initialisiere progressData, falls noch nicht gesetzt
@@ -129,6 +133,55 @@ class UserProfile {
             // Default to personal tab if no hash
             this.switchTab('personal');
         }
+    }
+
+    /**
+     * Wartet bis das Auth-System vollständig initialisiert ist (inkl. Token-Refresh)
+     */
+    async waitForAuthReady(maxWait = 8000) {
+        const startTime = Date.now();
+        const hasStoredSession = localStorage.getItem('aws_auth_session') !== null;
+        
+        if (!hasStoredSession) {
+            console.log('ℹ️ Keine Session vorhanden, überspringe Auth-Wartezeit');
+            return;
+        }
+        
+        console.log('⏳ Warte auf Auth-System Initialisierung...');
+        
+        while (Date.now() - startTime < maxWait) {
+            const authSystem = window.realUserAuth || window.awsAuth;
+            
+            // Auth-System muss initialisiert sein UND Token valide
+            if (authSystem?.isInitialized && authSystem?.isLoggedIn?.()) {
+                // Prüfe ob Token noch gültig ist (nicht abgelaufen)
+                const user = authSystem.getCurrentUser?.();
+                if (user?.accessToken) {
+                    try {
+                        // Versuche Token zu dekodieren und Ablaufzeit zu prüfen
+                        const tokenParts = user.accessToken.split('.');
+                        if (tokenParts.length === 3) {
+                            const payload = JSON.parse(atob(tokenParts[1]));
+                            const expiresAt = payload.exp * 1000;
+                            const now = Date.now();
+                            
+                            if (expiresAt > now + 30000) { // Token gültig für mind. 30 Sek
+                                console.log('✅ Auth-System bereit, Token gültig');
+                                return;
+                            } else {
+                                console.log('⏳ Token wird refreshed, warte...');
+                            }
+                        }
+                    } catch (e) {
+                        // Kann Token nicht parsen, warte weiter
+                    }
+                }
+            }
+            
+            await new Promise(resolve => setTimeout(resolve, 200));
+        }
+        
+        console.log('⚠️ Auth-Wartezeit abgelaufen, fahre fort...');
     }
 
     checkAuthStatus(retryCount = 0) {
