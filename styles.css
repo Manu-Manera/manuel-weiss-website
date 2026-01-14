@@ -653,6 +653,27 @@ a:hover {
     border-radius: var(--radius-full);
 }
 
+/* Instagram / In-App Browser Fixes */
+.inapp-browser .navbar {
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: none;
+    pointer-events: auto;
+}
+
+.inapp-browser .nav-link {
+    color: #f8fafc;
+    text-shadow: none;
+}
+
+.inapp-browser .nav-link:hover,
+.inapp-browser .nav-link.active {
+    color: #ffffff;
+}
+
+.inapp-browser .nav-link.active::after {
+    background: #ffffff;
+}
+
 .admin-link {
     display: flex;
     align-items: center;

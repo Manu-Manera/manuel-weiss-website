@@ -2021,20 +2021,34 @@ Ihre Aufgaben:
                 const user = window.awsAuth?.getCurrentUser?.() || window.realUserAuth?.getCurrentUser?.();
                 const userId = user?.userId || user?.id || user?.email || 'anonymous';
                 
+                let uploadError = null;
+                
                 // Upload to S3 if possible
                 if (window.awsMedia?.uploadDocument) {
-                    const fileType = category === 'work' ? 'document' : 'certificate';
-                    const uploadResult = await window.awsMedia.uploadDocument(file, userId, fileType);
-                    documentData.url = uploadResult.publicUrl;
-                    documentData.storage = 's3';
-                } else {
+                    try {
+                        const fileType = category === 'work' ? 'document' : 'certificate';
+                        const uploadResult = await window.awsMedia.uploadDocument(file, userId, fileType);
+                        documentData.url = uploadResult.publicUrl;
+                        documentData.storage = 's3';
+                    } catch (error) {
+                        uploadError = error;
+                        console.warn('S3 Upload fehlgeschlagen, fallback lokal:', error);
+                    }
+                }
+                
+                if (!documentData.url) {
+                    if (file.size > 1024 * 1024) {
+                        showToast('PDF zu groß für lokalen Speicher. Bitte erneut versuchen.', 'error');
+                        element.closest('.document-category-modal').remove();
+                        return;
+                    }
                     const dataUrl = await readFileAsDataURL(file);
                     documentData.dataUrl = dataUrl;
                     documentData.storage = 'local';
                 }
                 
                 // Save metadata to cloud/local
-                if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
+                if (window.cloudDataService && window.cloudDataService.isUserLoggedIn() && documentData.storage !== 'local') {
                     await window.cloudDataService.saveDocument(documentData);
                 } else {
                     const documents = JSON.parse(localStorage.getItem('user_certificates') || '[]');
@@ -2044,7 +2058,11 @@ Ihre Aufgaben:
                 
                 element.closest('.document-category-modal').remove();
                 loadSavedDocuments();
-                showToast('Dokument gespeichert!', 'success');
+                if (uploadError && documentData.storage === 'local') {
+                    showToast('Dokument lokal gespeichert (Cloud-Upload fehlgeschlagen)', 'warning');
+                } else {
+                    showToast('Dokument gespeichert!', 'success');
+                }
                 
             } catch (error) {
                 console.error('Document save error:', error);

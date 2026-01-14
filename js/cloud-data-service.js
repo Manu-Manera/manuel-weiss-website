@@ -121,6 +121,17 @@ class CloudDataService {
         try {
             const profile = await this.apiRequest('/profile');
             if (profile) {
+                // Ergänze Coaching-Daten aus localStorage falls nicht vorhanden
+                if (!profile.coaching) {
+                    try {
+                        const coachingRaw = localStorage.getItem('coaching_workflow_data');
+                        if (coachingRaw) {
+                            profile.coaching = JSON.parse(coachingRaw);
+                        }
+                    } catch (e) {
+                        console.warn('⚠️ Coaching-Daten konnten nicht gelesen werden:', e);
+                    }
+                }
                 this.cache.profile = profile;
                 this.cacheExpiry.profile = Date.now() + this.CACHE_DURATION;
                 console.log('✅ Profil aus Cloud geladen');

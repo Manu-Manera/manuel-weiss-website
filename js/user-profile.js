@@ -481,8 +481,25 @@ class UserProfile {
             const userData = window.realUserAuth.getUserDataFromToken?.() || null;
             console.log('👤 Auth user data:', currentUser, userData);
             
-            // Load from AWS
+            // Load from CloudDataService (primär) oder AWS API
             let awsData = null;
+            if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
+                try {
+                    awsData = await window.cloudDataService.getProfile(true);
+                    console.log('✅ Profile loaded from CloudDataService:', awsData);
+                } catch (error) {
+                    console.warn('⚠️ CloudDataService failed, fallback to awsProfileAPI:', error);
+                }
+            }
+            
+            if (!awsData) {
+                try {
+                    awsData = await this.awsProfileAPI.loadProfile();
+                    console.log('✅ Profile loaded from AWS:', awsData);
+                } catch (error) {
+                    console.warn('⚠️ Could not load from AWS, using defaults:', error);
+                }
+            }
             try {
                 awsData = await this.awsProfileAPI.loadProfile();
                 console.log('✅ Profile loaded from AWS:', awsData);
@@ -490,15 +507,18 @@ class UserProfile {
                 console.warn('⚠️ Could not load from AWS, using defaults:', error);
             }
             
+            const normalizedAwsData = this.normalizeProfileData(awsData);
+            const authFallback = this.getAuthFallbackData(userData || currentUser);
+            
             // Merge: AWS data + Auth data (AWS data has priority, auth only as fallback)
             // IMPORTANT: Saved profile data should not be overwritten by auth data
             this.profileData = {
                 ...this.loadProfileData(), // Start with defaults
-                ...awsData, // Override with AWS data (saved profile data has priority)
+                ...normalizedAwsData, // Override with normalized AWS data (saved profile data has priority)
                 // Use auth data ONLY if AWS data doesn't have these fields
-                firstName: awsData?.firstName || userData?.firstName || currentUser?.firstName || '',
-                lastName: awsData?.lastName || userData?.lastName || currentUser?.lastName || '',
-                email: awsData?.email || userData?.email || currentUser?.email || ''
+                firstName: normalizedAwsData.firstName || authFallback.firstName || '',
+                lastName: normalizedAwsData.lastName || authFallback.lastName || '',
+                email: normalizedAwsData.email || authFallback.email || ''
             };
             
             const coachingData = this.getCoachingDataFromStorage();
@@ -548,6 +568,52 @@ class UserProfile {
                 }
             }
         }
+    }
+
+    normalizeProfileData(rawData) {
+        if (!rawData) return {};
+        const personal = rawData.personal || rawData.profile?.personal || {};
+        const professional = rawData.professional || rawData.profile?.professional || {};
+        const preferences = rawData.preferences || rawData.profile?.preferences || {};
+        const name = rawData.name || rawData.profile?.name || '';
+        const nameParts = name.split(' ').filter(Boolean);
+        const nameFirst = nameParts[0] || '';
+        const nameLast = nameParts.slice(1).join(' ') || '';
+        
+        return {
+            ...rawData,
+            firstName: rawData.firstName || rawData.profile?.firstName || personal.firstName || nameFirst || '',
+            lastName: rawData.lastName || rawData.profile?.lastName || personal.lastName || nameLast || '',
+            email: rawData.email || rawData.profile?.email || personal.email || '',
+            phone: rawData.phone || rawData.profile?.phone || personal.phone || '',
+            location: rawData.location || rawData.profile?.location || personal.location || '',
+            birthDate: rawData.birthDate || personal.birthDate || '',
+            profession: rawData.profession || professional.profession || rawData.currentJob || '',
+            company: rawData.company || professional.company || '',
+            experience: rawData.experience || professional.experience || '',
+            industry: rawData.industry || professional.industry || '',
+            summary: rawData.summary || professional.summary || '',
+            skills: rawData.skills || professional.skills || [],
+            preferences: {
+                ...preferences
+            }
+        };
+    }
+
+    getAuthFallbackData(authUser = {}) {
+        const email = authUser.email || '';
+        const firstName = authUser.firstName || '';
+        const lastName = authUser.lastName || '';
+        if (firstName || lastName) {
+            return { firstName, lastName, email };
+        }
+        const name = authUser.name || '';
+        const parts = name.split(' ').filter(Boolean);
+        return {
+            firstName: parts[0] || '',
+            lastName: parts.slice(1).join(' ') || '',
+            email
+        };
     }
     
     populateFormFields(data) {

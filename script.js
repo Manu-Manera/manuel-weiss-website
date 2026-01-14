@@ -9,6 +9,8 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.style.width = '';
     document.documentElement.style.overflow = '';
     
+    applyInAppBrowserFixes();
+    
     initializeWebsite();
     fixMobileScroll();
     
@@ -23,6 +25,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }, 500);
 });
+
+function applyInAppBrowserFixes() {
+    const ua = navigator.userAgent || '';
+    const isInApp = /Instagram|FBAN|FBAV|FB_IAB|FB4A|FBSS|Line\\//i.test(ua);
+    if (isInApp) {
+        document.body.classList.add('inapp-browser');
+        document.documentElement.classList.add('inapp-browser');
+    }
+}
 
 // Mobile Scroll Fixes
 function fixMobileScroll() {
