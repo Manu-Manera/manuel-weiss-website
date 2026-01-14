@@ -10,7 +10,8 @@ class CoverLetterEditor {
         this.options = {
             tone: 'modern',
             length: 'medium',
-            focus: 'experience'
+            focus: 'experience',
+            goal: 'role-fit'
         };
         
         this.design = {
@@ -28,6 +29,7 @@ class CoverLetterEditor {
         this.isGenerating = false;
         this.generatedContent = '';
         this.profileData = null;
+        this.activeBlockIndex = null;
         
         this.init();
     }
@@ -176,6 +178,11 @@ class CoverLetterEditor {
                 this.updateQualityChecks();
             });
         }
+
+        const suggestContactBtn = document.getElementById('suggestContactBtn');
+        if (suggestContactBtn) {
+            suggestContactBtn.addEventListener('click', () => this.suggestContactPerson());
+        }
     }
 
     setupGenerateButton() {
@@ -240,12 +247,19 @@ class CoverLetterEditor {
         const cancelBtn = document.getElementById('cancelBlocksBtn');
         const saveBtn = document.getElementById('saveBlocksBtn');
         const addBtn = document.getElementById('addBlockBtn');
+        const aiActions = document.querySelectorAll('[data-block-action]');
 
         if (openBtn) openBtn.addEventListener('click', () => this.openBlocksEditor());
         if (closeBtn) closeBtn.addEventListener('click', () => this.closeBlocksEditor());
         if (cancelBtn) cancelBtn.addEventListener('click', () => this.closeBlocksEditor());
         if (saveBtn) saveBtn.addEventListener('click', () => this.saveBlocks());
         if (addBtn) addBtn.addEventListener('click', () => this.addBlock(''));
+        aiActions.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const action = btn.dataset.blockAction;
+                this.handleBlockAiAction(action);
+            });
+        });
     }
 
     setupVersions() {
@@ -348,7 +362,7 @@ class CoverLetterEditor {
     }
 
     syncOptionButtons() {
-        ['tone', 'length', 'focus'].forEach((option) => {
+        ['tone', 'length', 'focus', 'goal'].forEach((option) => {
             const value = this.options[option];
             document.querySelectorAll(`.option-btn[data-option="${option}"]`).forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.value === value);
@@ -582,6 +596,82 @@ class CoverLetterEditor {
         return data.choices[0].message.content;
     }
 
+    async callOpenAI(messages, apiKey, opts = {}) {
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKey}`
+            },
+            body: JSON.stringify({
+                model: opts.model || 'gpt-3.5-turbo',
+                messages,
+                temperature: opts.temperature ?? 0.6,
+                max_tokens: opts.maxTokens ?? 500
+            })
+        });
+        if (!response.ok) {
+            throw new Error(`API Error: ${response.status}`);
+        }
+        const data = await response.json();
+        return data.choices?.[0]?.message?.content || '';
+    }
+
+    async getAiAlternativesForText(text, action) {
+        const apiKey = await this.getAPIKey();
+        const fallback = [text];
+        if (!apiKey) return fallback;
+
+        const actionMap = {
+            alternatives: 'Erstelle 3 alternative Varianten mit gleicher Aussage.',
+            shorten: 'Kürze den Absatz auf 1-2 Sätze, gleiche Aussage.',
+            expand: 'Erweitere den Absatz um 2-3 Sätze mit konkreten Details.',
+            active: 'Formuliere aktiver mit starken Verben.',
+            concrete: 'Formuliere konkreter mit präzisen Details.',
+            proof: 'Füge einen messbaren Beleg/Ergebnis hinzu (Zahl, Prozent, Zeit, Umsatz).',
+            improve: 'Verbessere Stil, Klarheit und Wirkung, ohne Inhalt zu verlieren.'
+        };
+        const instruction = actionMap[action] || actionMap.alternatives;
+        const jobData = this.collectJobData();
+        const goalMap = {
+            'role-fit': 'Rollen-Fit',
+            impact: 'Impact',
+            leadership: 'Leadership',
+            'tech-depth': 'Tech-Depth'
+        };
+        const prompt = `
+Kontext:
+Position: ${jobData.jobTitle}
+Firma: ${jobData.companyName}
+Ziel-Modus: ${goalMap[this.options.goal] || 'Rollen-Fit'}
+Tonalität: ${this.options.tone}
+Schwerpunkt: ${this.options.focus}
+
+Aufgabe:
+${instruction}
+
+Text:
+"""${text}"""
+
+Gib ausschließlich ein JSON-Array mit Strings zurück.
+`;
+        const content = await this.callOpenAI([
+            { role: 'system', content: 'Du bist ein professioneller Bewerbungsberater. Antworte auf Deutsch.' },
+            { role: 'user', content: prompt }
+        ], apiKey, { maxTokens: 450 });
+
+        try {
+            const parsed = JSON.parse(content);
+            if (Array.isArray(parsed) && parsed.length) {
+                return parsed.map(s => String(s).trim()).filter(Boolean);
+            }
+        } catch (e) {
+            const lines = content.split('\n').map(l => l.replace(/^[-•\d.]+\s*/, '').trim()).filter(Boolean);
+            if (lines.length) return lines.slice(0, 3);
+        }
+        return fallback;
+    }
+
     buildPrompt(jobData) {
         const toneMap = {
             formal: 'professionell und sachlich',
@@ -599,6 +689,13 @@ class CoverLetterEditor {
             experience: 'Berufserfahrung und Erfolge',
             skills: 'technische Fähigkeiten',
             motivation: 'persönliche Motivation'
+        };
+
+        const goalMap = {
+            'role-fit': 'Rollen-Fit',
+            impact: 'Impact',
+            leadership: 'Leadership',
+            'tech-depth': 'Technische Tiefe'
         };
         
         const profile = this.profileData || {};
@@ -629,6 +726,7 @@ ANFORDERUNGEN:
 - Tonalität: ${toneMap[this.options.tone]}
 - Länge: ${lengthMap[this.options.length]}
 - Schwerpunkt: ${focusMap[this.options.focus]}
+        - Ziel-Modus: ${goalMap[this.options.goal]}
 
 Erstelle nur den Haupttext des Anschreibens (ohne Anrede und Grußformel).
 `;
@@ -989,6 +1087,15 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
                         <button type="button" data-action="delete">✕</button>
                     </div>
                 </div>
+                <div class="block-ai-actions">
+                    <button type="button" data-block-action="alternatives">Alternativen</button>
+                    <button type="button" data-block-action="shorten">Kürzen</button>
+                    <button type="button" data-block-action="expand">Erweitern</button>
+                    <button type="button" data-block-action="active">Aktiver</button>
+                    <button type="button" data-block-action="concrete">Konkreter</button>
+                    <button type="button" data-block-action="proof">Beleg</button>
+                </div>
+                <div class="block-ai-suggestions" id="block-suggestions-${idx}"></div>
                 <textarea>${block}</textarea>
             </div>
         `).join('');
@@ -1010,12 +1117,102 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
                 this.updateBlockIndices();
             });
         });
+
+        container.querySelectorAll('.block-item').forEach((item, idx) => {
+            item.addEventListener('click', (event) => {
+                if (event.target.closest('.block-item-actions')) return;
+                if (event.target.closest('[data-block-action]')) return;
+                this.setActiveBlockIndex(idx);
+            });
+
+            item.querySelectorAll('[data-block-action]').forEach(btn => {
+                btn.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    const action = btn.dataset.blockAction;
+                    this.setActiveBlockIndex(idx);
+                    this.handleBlockAiAction(action);
+                });
+            });
+        });
+
+        if (this.activeBlockIndex === null && blocks.length) {
+            this.setActiveBlockIndex(0);
+        }
+    }
+
+    setActiveBlockIndex(index) {
+        this.activeBlockIndex = index;
+        document.querySelectorAll('#blocksContainer .block-item').forEach(item => {
+            item.classList.toggle('active', Number(item.dataset.index) === index);
+        });
+    }
+
+    getActiveBlock() {
+        const container = document.getElementById('blocksContainer');
+        if (!container) return null;
+        const blocks = Array.from(container.querySelectorAll('.block-item'));
+        const index = this.activeBlockIndex ?? 0;
+        return blocks[index] || null;
+    }
+
+    getActiveBlockText() {
+        const block = this.getActiveBlock();
+        if (!block) return '';
+        return block.querySelector('textarea')?.value.trim() || '';
+    }
+
+    updateActiveBlockText(text) {
+        const block = this.getActiveBlock();
+        if (!block) return;
+        const textarea = block.querySelector('textarea');
+        if (!textarea) return;
+        textarea.value = text;
+    }
+
+    renderBlockSuggestions(targetId, suggestions) {
+        const container = document.getElementById(targetId) || document.getElementById('blockAiSuggestions');
+        if (!container) return;
+        if (!suggestions.length) {
+            container.innerHTML = '<p style="color:#6b7280; font-size:0.85rem;">Keine Alternativen gefunden.</p>';
+            return;
+        }
+        container.innerHTML = suggestions.map(text => `
+            <div class="block-ai-suggestion" data-suggestion="${encodeURIComponent(text)}">${text}</div>
+        `).join('');
+
+        container.querySelectorAll('.block-ai-suggestion').forEach(item => {
+            item.addEventListener('click', () => {
+                const decoded = decodeURIComponent(item.dataset.suggestion || '');
+                if (decoded) {
+                    this.updateActiveBlockText(decoded);
+                    this.showToast('Absatz ersetzt', 'success');
+                }
+            });
+        });
+    }
+
+    async handleBlockAiAction(action) {
+        const text = this.getActiveBlockText();
+        if (!text) {
+            this.showToast('Bitte zuerst einen Absatz auswählen.', 'warning');
+            return;
+        }
+        this.showToast('KI arbeitet...', 'info');
+        try {
+            const suggestions = await this.getAiAlternativesForText(text, action);
+            const targetId = `block-suggestions-${this.activeBlockIndex ?? 0}`;
+            this.renderBlockSuggestions(targetId, suggestions);
+        } catch (error) {
+            console.warn('Block AI error:', error);
+            this.showToast('KI konnte keine Vorschläge erzeugen.', 'error');
+        }
     }
 
     updateBlockIndices() {
         document.querySelectorAll('#blocksContainer .block-item').forEach((item, idx) => {
             const label = item.querySelector('strong');
             if (label) label.textContent = `Absatz ${idx + 1}`;
+            item.dataset.index = idx;
         });
     }
 
@@ -1088,6 +1285,14 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
         const keywordScore = this.getKeywordMatchScore(text);
         checks.push({ ok: keywordScore >= 40, text: `Keyword-Match: ${keywordScore}%` });
 
+        const hasNumbers = /\d/.test(text);
+        checks.push({ ok: hasNumbers, text: hasNumbers ? 'Messbare Ergebnisse enthalten' : 'Keine messbaren Belege gefunden' });
+
+        const missing = this.getMissingKeywords(text);
+        if (missing.length) {
+            checks.push({ ok: false, text: `Fehlende Keywords: ${missing.slice(0, 6).join(', ')}` });
+        }
+
         list.innerHTML = checks.map(check => `
             <div class="quality-check-item ${check.ok ? 'ok' : 'warn'}">
                 <i class="fas ${check.ok ? 'fa-check-circle' : 'fa-exclamation-triangle'}"></i>
@@ -1119,6 +1324,139 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
         const lower = text.toLowerCase();
         const hits = unique.filter(word => lower.includes(word)).length;
         return Math.round((hits / unique.length) * 100);
+    }
+
+    getMissingKeywords(text) {
+        const jobDescription = document.getElementById('jobDescription')?.value || '';
+        const tokens = jobDescription
+            .toLowerCase()
+            .replace(/[^a-zäöüß0-9\s]/g, ' ')
+            .split(/\s+/)
+            .filter(word => word.length >= 5);
+        const unique = Array.from(new Set(tokens)).slice(0, 15);
+        const lower = text.toLowerCase();
+        return unique.filter(word => !lower.includes(word));
+    }
+
+    async suggestContactPerson() {
+        const contactInput = document.getElementById('contactPerson');
+        if (!contactInput) return;
+        if (contactInput.value.trim()) {
+            this.showToast('Ansprechpartner ist bereits gesetzt.', 'info');
+            return;
+        }
+        const company = document.getElementById('companyName')?.value || '';
+        const fallback = company ? `Recruiting-Team ${company}` : 'Sehr geehrte Damen und Herren';
+        contactInput.value = fallback;
+        this.showToast('Ansprechpartner vorgeschlagen', 'success');
+    }
+
+    getParagraphAtCursor(text, cursor) {
+        const paragraphs = text.split(/\n\s*\n/);
+        let searchStart = 0;
+        for (let i = 0; i < paragraphs.length; i++) {
+            const para = paragraphs[i];
+            const idx = text.indexOf(para, searchStart);
+            if (idx === -1) continue;
+            const start = idx;
+            const end = idx + para.length;
+            if (cursor >= start && cursor <= end) {
+                return { index: i, start, end, text: para };
+            }
+            searchStart = end;
+        }
+        return { index: 0, start: 0, end: paragraphs[0]?.length || 0, text: paragraphs[0] || '' };
+    }
+
+    async regenerateParagraphAtCursor() {
+        const textarea = document.getElementById('letterText');
+        if (!textarea) return;
+        const text = textarea.value || '';
+        const cursor = textarea.selectionStart || 0;
+        const target = this.getParagraphAtCursor(text, cursor);
+        if (!target.text) return;
+        const suggestions = await this.getAiAlternativesForText(target.text, 'alternatives');
+        const replacement = suggestions[0] || target.text;
+        textarea.value = text.slice(0, target.start) + replacement + text.slice(target.end);
+        this.updateStats();
+        this.updateQualityChecks();
+        this.showToast('Absatz aktualisiert', 'success');
+    }
+
+    async improveSelectedText() {
+        const textarea = document.getElementById('letterText');
+        if (!textarea) return;
+        const start = textarea.selectionStart || 0;
+        const end = textarea.selectionEnd || 0;
+        const selected = textarea.value.substring(start, end).trim();
+        const text = selected || this.getParagraphAtCursor(textarea.value, start).text;
+        if (!text) return;
+        const suggestions = await this.getAiAlternativesForText(text, 'improve');
+        const replacement = suggestions[0] || text;
+        if (selected) {
+            textarea.value = textarea.value.substring(0, start) + replacement + textarea.value.substring(end);
+        } else {
+            const target = this.getParagraphAtCursor(textarea.value, start);
+            textarea.value = textarea.value.slice(0, target.start) + replacement + textarea.value.slice(target.end);
+        }
+        this.updateStats();
+        this.updateQualityChecks();
+        this.showToast('Text verbessert', 'success');
+    }
+
+    async regenerateSubjectLine() {
+        const apiKey = await this.getAPIKey();
+        const jobData = this.collectJobData();
+        const subjectLine = document.getElementById('subjectLine');
+        if (!subjectLine) return;
+        if (!apiKey) {
+            subjectLine.textContent = `Bewerbung als ${jobData.jobTitle || 'Position'}`;
+            return;
+        }
+        const prompt = `
+Erstelle 3 Betreffzeilen für ein Bewerbungsanschreiben.
+Position: ${jobData.jobTitle}
+Firma: ${jobData.companyName}
+Schreibe kurz, professionell, maximal 80 Zeichen.
+Gib ein JSON-Array zurück.`;
+        const content = await this.callOpenAI([
+            { role: 'system', content: 'Du bist ein professioneller Bewerbungsberater. Antworte auf Deutsch.' },
+            { role: 'user', content: prompt }
+        ], apiKey, { maxTokens: 120 });
+        try {
+            const parsed = JSON.parse(content);
+            subjectLine.textContent = parsed?.[0] || subjectLine.textContent;
+        } catch (e) {
+            const first = content.split('\n').find(Boolean);
+            subjectLine.textContent = first || subjectLine.textContent;
+        }
+    }
+
+    async regenerateIntroParagraph() {
+        const textarea = document.getElementById('letterText');
+        if (!textarea) return;
+        const apiKey = await this.getAPIKey();
+        const jobData = this.collectJobData();
+        if (!apiKey) return;
+        const prompt = `
+Schreibe eine kurze, starke Einleitung (2-3 Sätze) für ein Anschreiben.
+Position: ${jobData.jobTitle}
+Firma: ${jobData.companyName}
+Tonalität: ${this.options.tone}
+Schwerpunkt: ${this.options.focus}
+Ziel-Modus: ${this.options.goal}
+Gib nur den Einleitungsabsatz zurück.`;
+        const content = await this.callOpenAI([
+            { role: 'system', content: 'Du bist ein professioneller Bewerbungsberater. Antworte auf Deutsch.' },
+            { role: 'user', content: prompt }
+        ], apiKey, { maxTokens: 200 });
+        const text = textarea.value || '';
+        const target = this.getParagraphAtCursor(text, 0);
+        const replacement = content.trim() || target.text;
+        textarea.value = text.slice(0, target.start) + replacement + text.slice(target.end);
+        this.updateStats();
+        this.updateQualityChecks();
+        this.showToast('Einleitung aktualisiert', 'success');
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -1172,6 +1510,7 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
                 </div>
                 <div class="resume-version-actions">
                     <button type="button" onclick="window.coverLetterEditor.loadCoverLetterVersion('${version.id}')">Laden</button>
+                    <button type="button" onclick="window.coverLetterEditor.diffCoverLetterVersion('${version.id}')">Diff</button>
                     <button type="button" onclick="window.coverLetterEditor.deleteCoverLetterVersion('${version.id}')">Löschen</button>
                 </div>
             </div>
@@ -1205,6 +1544,27 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
         localStorage.setItem('cover_letter_versions', JSON.stringify(filtered));
         this.renderVersions();
         this.showToast('Version gelöscht', 'info');
+    }
+
+    diffCoverLetterVersion(versionId) {
+        const versions = JSON.parse(localStorage.getItem('cover_letter_versions') || '[]');
+        const version = versions.find(v => v.id === versionId);
+        if (!version) return;
+        const currentText = this.getFinalLetterContent();
+        const previousText = version.data?.content || '';
+        const diff = this.buildSimpleDiff(previousText, currentText);
+        const container = document.getElementById('coverLetterVersionDiff');
+        if (container) container.textContent = diff;
+    }
+
+    buildSimpleDiff(oldText, newText) {
+        const oldLines = oldText.split('\n').map(l => l.trim()).filter(Boolean);
+        const newLines = newText.split('\n').map(l => l.trim()).filter(Boolean);
+        const oldSet = new Set(oldLines);
+        const newSet = new Set(newLines);
+        const removed = oldLines.filter(l => !newSet.has(l)).map(l => `- ${l}`);
+        const added = newLines.filter(l => !oldSet.has(l)).map(l => `+ ${l}`);
+        return [...removed, ...added].slice(0, 200).join('\n') || 'Keine Unterschiede gefunden.';
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -1257,14 +1617,26 @@ function formatText(format) {
 async function regenerateParagraph() {
     if (window.coverLetterEditor) {
         window.coverLetterEditor.showToast('Absatz wird neu generiert...', 'info');
-        // Implementation would regenerate selected paragraph
+        await window.coverLetterEditor.regenerateParagraphAtCursor();
     }
 }
 
 async function improveSelected() {
     if (window.coverLetterEditor) {
         window.coverLetterEditor.showToast('Text wird verbessert...', 'info');
-        // Implementation would improve selected text
+        await window.coverLetterEditor.improveSelectedText();
+    }
+}
+
+async function regenerateSubject() {
+    if (window.coverLetterEditor) {
+        await window.coverLetterEditor.regenerateSubjectLine();
+    }
+}
+
+async function regenerateIntro() {
+    if (window.coverLetterEditor) {
+        await window.coverLetterEditor.regenerateIntroParagraph();
     }
 }
 

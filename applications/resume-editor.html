@@ -6,7 +6,7 @@
     <title>Lebenslauf-Editor - Bewerbungsmanager</title>
     <link rel="stylesheet" href="../styles.css">
     <link rel="stylesheet" href="css/applications-main.css">
-    <link rel="stylesheet" href="css/resume-editor.css?v=20260114designer">
+    <link rel="stylesheet" href="css/resume-editor.css?v=20260114ai">
     <link rel="stylesheet" href="css/design-editor.css?v=20260114designer">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@300;400;500;600;700&family=Lato:wght@300;400;700&family=Montserrat:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700&family=Nunito:wght@300;400;500;600;700&family=Source+Sans+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -143,6 +143,42 @@
                                 <option value="flexibel">Flexibel</option>
                             </select>
                         </div>
+                    </div>
+                </section>
+
+                <!-- KI & ATS Optimierung -->
+                <section class="resume-section resume-ai-section">
+                    <h2><i class="fas fa-brain"></i> KI & ATS Optimierung</h2>
+                    <p class="section-description">Erzeuge Alternativen, optimiere Formulierungen und prüfe ATS-Relevanz.</p>
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label>Stellenbeschreibung (für ATS-Matching)</label>
+                            <textarea id="atsJobDescription" rows="4" placeholder="Fügen Sie die Stellenbeschreibung ein..."></textarea>
+                        </div>
+                    </div>
+                    <div class="ai-actions">
+                        <button type="button" class="btn-secondary" id="runAtsCheckBtn"><i class="fas fa-chart-line"></i> ATS-Check</button>
+                        <button type="button" class="btn-secondary" id="generateSummaryBtn"><i class="fas fa-pen-nib"></i> Kurzprofil generieren</button>
+                        <button type="button" class="btn-secondary" id="improveSummaryBtn"><i class="fas fa-wand-magic-sparkles"></i> Kurzprofil verbessern</button>
+                        <button type="button" class="btn-secondary" id="optimizeExperienceBtn"><i class="fas fa-briefcase"></i> Erfahrungen optimieren</button>
+                        <button type="button" class="btn-secondary" id="optimizeProjectsBtn"><i class="fas fa-diagram-project"></i> Projekte optimieren</button>
+                        <button type="button" class="btn-secondary" id="quantifyAchievementsBtn"><i class="fas fa-hashtag"></i> Quantifizierung prüfen</button>
+                        <button type="button" class="btn-secondary" id="clusterSkillsBtn"><i class="fas fa-sitemap"></i> Skills clustern</button>
+                        <button type="button" class="btn-secondary" id="generateGapBtn"><i class="fas fa-person-walking-dashed-line-arrow-right"></i> Lücken-Erklärung</button>
+                        <button type="button" class="btn-secondary" id="translateResumeBtn"><i class="fas fa-language"></i> EN-Version</button>
+                    </div>
+                    <div class="ai-results">
+                        <div id="atsResult" class="ai-result-card"></div>
+                        <div id="aiSuggestions" class="ai-result-card"></div>
+                    </div>
+                </section>
+
+                <!-- Karrierepause (optional) -->
+                <section class="resume-section">
+                    <h2><i class="fas fa-circle-pause"></i> Karrierepause / Erklärung</h2>
+                    <div class="form-group">
+                        <label>Optionaler Absatz</label>
+                        <textarea id="gapExplanation" rows="3" placeholder="Optional: Kurzer, professioneller Hinweis auf Karrierepause"></textarea>
                     </div>
                 </section>
 
@@ -643,6 +679,7 @@
                     </button>
                 </div>
                 <div id="resumeVersionsList" class="resume-versions-list"></div>
+                <div id="resumeVersionDiff" class="resume-version-diff"></div>
             </div>
         </div>
     </div>
@@ -658,7 +695,7 @@
     <script src="../js/aws-api-settings.js?v=20260113fix"></script>
     <script src="../js/global-api-manager.js?v=20260112cloud"></script>
     <script src="../js/cloud-data-service.js?v=20260112"></script>
-    <script src="js/resume-editor.js?v=20260114designer"></script>
+    <script src="js/resume-editor.js?v=20260114ai"></script>
     <script src="js/design-editor.js?v=20260114designer"></script>
     
     <!-- GPT-3.5 basierte OCR-Analyse -->
