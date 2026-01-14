@@ -93,28 +93,17 @@ async function loadProfileData() {
         }
         
         if (profile) {
-            const resolvedProfile = {
-                firstName: profile.firstName || profile.personal?.firstName || '',
-                lastName: profile.lastName || profile.personal?.lastName || '',
-                email: profile.email || profile.personal?.email || '',
-                phone: profile.phone || profile.personal?.phone || '',
-                location: profile.location || profile.personal?.location || '',
-                address: profile.address || profile.personal?.address || '',
-                linkedin: profile.preferences?.linkedin || profile.linkedin || profile.personal?.linkedin || '',
-                website: profile.preferences?.website || profile.website || profile.personal?.website || ''
-            };
             
             // Fülle Formular mit Profildaten vor
-            if (resolvedProfile.firstName) document.getElementById('firstName').value = resolvedProfile.firstName;
-            if (resolvedProfile.lastName) document.getElementById('lastName').value = resolvedProfile.lastName;
-            if (resolvedProfile.email) document.getElementById('email').value = resolvedProfile.email;
-            if (resolvedProfile.phone) document.getElementById('phone').value = resolvedProfile.phone;
-            if (resolvedProfile.location) document.getElementById('location').value = resolvedProfile.location;
-            if (resolvedProfile.address) document.getElementById('address').value = resolvedProfile.address;
+            if (profile.firstName) document.getElementById('firstName').value = profile.firstName;
+            if (profile.lastName) document.getElementById('lastName').value = profile.lastName;
+            if (profile.email) document.getElementById('email').value = profile.email;
+            if (profile.phone) document.getElementById('phone').value = profile.phone;
+            if (profile.location) document.getElementById('address').value = profile.location;
             
             // LinkedIn und Website aus preferences oder settings
-            if (resolvedProfile.linkedin) document.getElementById('linkedin').value = resolvedProfile.linkedin;
-            if (resolvedProfile.website) document.getElementById('website').value = resolvedProfile.website;
+            if (profile.preferences?.linkedin) document.getElementById('linkedin').value = profile.preferences.linkedin;
+            if (profile.preferences?.website) document.getElementById('website').value = profile.preferences.website;
             
             console.log('✅ Profildaten für Vorausfüllung geladen');
         }
@@ -1335,6 +1324,184 @@ function showNotification(message, type = 'info') {
     }, 3000);
 }
 
+// =============================================
+// ATS / PLAIN TEXT EXPORT
+// =============================================
+
+function exportToPlainText() {
+    try {
+        const data = collectFormData();
+        const text = generatePlainTextResume(data);
+        const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Lebenslauf_${data.firstName || 'bewerbung'}_${data.lastName || ''}.txt`.replace(/\s+/g, '_');
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+        showNotification('ATS-Text exportiert', 'success');
+    } catch (error) {
+        console.error('Plain text export error:', error);
+        showNotification('Fehler beim Text-Export', 'error');
+    }
+}
+
+function generatePlainTextResume(data) {
+    const lines = [];
+    const nameLine = `${data.firstName || ''} ${data.lastName || ''}`.trim();
+    if (nameLine) lines.push(nameLine);
+    if (data.title) lines.push(data.title);
+    const contact = [data.email, data.phone, data.location || data.address].filter(Boolean).join(' | ');
+    if (contact) lines.push(contact);
+    lines.push('');
+
+    if (data.summary) {
+        lines.push('PROFIL');
+        lines.push(data.summary);
+        lines.push('');
+    }
+
+    const experience = data.sections?.find(s => s.type === 'experience')?.entries || [];
+    if (experience.length) {
+        lines.push('BERUFSERFAHRUNG');
+        experience.forEach(exp => {
+            lines.push(`${exp.position || ''} - ${exp.company || ''}`.trim());
+            const period = [exp.startDate, exp.currentJob ? 'heute' : exp.endDate].filter(Boolean).join(' - ');
+            if (period) lines.push(period);
+            if (exp.description) lines.push(exp.description);
+            if (exp.achievements?.length) {
+                exp.achievements.forEach(a => lines.push(`- ${a}`));
+            }
+            lines.push('');
+        });
+    }
+
+    const education = data.sections?.find(s => s.type === 'education')?.entries || [];
+    if (education.length) {
+        lines.push('AUSBILDUNG');
+        education.forEach(edu => {
+            lines.push(`${edu.degree || ''} - ${edu.institution || ''}`.trim());
+            const period = [edu.startDate, edu.endDate].filter(Boolean).join(' - ');
+            if (period) lines.push(period);
+            if (edu.fieldOfStudy) lines.push(`Fachrichtung: ${edu.fieldOfStudy}`);
+            lines.push('');
+        });
+    }
+
+    if (data.skills?.technicalSkills?.length || data.skills?.softSkills?.length) {
+        lines.push('FÄHIGKEITEN');
+        data.skills.technicalSkills?.forEach(category => {
+            if (category.category) lines.push(`${category.category}:`);
+            if (category.skills?.length) lines.push(category.skills.join(', '));
+        });
+        if (data.skills.softSkills?.length) {
+            lines.push(`Soft Skills: ${data.skills.softSkills.map(s => s.skill || s).join(', ')}`);
+        }
+        lines.push('');
+    }
+
+    if (data.languages?.length) {
+        lines.push('SPRACHEN');
+        data.languages.forEach(lang => {
+            lines.push(`${lang.language} (${lang.proficiency || lang.level || ''})`.trim());
+        });
+        lines.push('');
+    }
+
+    if (data.projects?.length) {
+        lines.push('PROJEKTE');
+        data.projects.forEach(project => {
+            lines.push(project.name || '');
+            if (project.role) lines.push(project.role);
+            if (project.description) lines.push(project.description);
+            lines.push('');
+        });
+    }
+
+    return lines.join('\n').replace(/\n{3,}/g, '\n\n').trim() + '\n';
+}
+
+// =============================================
+// RESUME VERSIONS
+// =============================================
+
+function openResumeVersions() {
+    const modal = document.getElementById('resumeVersionsModal');
+    if (modal) {
+        modal.classList.add('active');
+        renderResumeVersions();
+    }
+}
+
+function closeResumeVersions() {
+    const modal = document.getElementById('resumeVersionsModal');
+    if (modal) modal.classList.remove('active');
+}
+
+function saveResumeVersion() {
+    const nameInput = document.getElementById('resumeVersionName');
+    const name = nameInput?.value.trim() || `Version ${new Date().toLocaleDateString('de-DE')}`;
+    const data = collectFormData();
+    const design = JSON.parse(localStorage.getItem('resume_design_settings') || '{}');
+
+    const versions = JSON.parse(localStorage.getItem('resume_versions') || '[]');
+    versions.unshift({
+        id: Date.now().toString(36),
+        name,
+        data,
+        design,
+        createdAt: new Date().toISOString()
+    });
+    localStorage.setItem('resume_versions', JSON.stringify(versions));
+    if (nameInput) nameInput.value = '';
+    renderResumeVersions();
+    showNotification('Version gespeichert', 'success');
+}
+
+function renderResumeVersions() {
+    const list = document.getElementById('resumeVersionsList');
+    if (!list) return;
+    const versions = JSON.parse(localStorage.getItem('resume_versions') || '[]');
+    if (!versions.length) {
+        list.innerHTML = '<p style="color:#6b7280;">Noch keine Versionen gespeichert.</p>';
+        return;
+    }
+    list.innerHTML = versions.map(version => `
+        <div class="resume-version-item">
+            <div class="resume-version-meta">
+                <div class="resume-version-title">${version.name}</div>
+                <div class="resume-version-date">${new Date(version.createdAt).toLocaleString('de-DE')}</div>
+            </div>
+            <div class="resume-version-actions">
+                <button type="button" onclick="loadResumeVersion('${version.id}')">Laden</button>
+                <button type="button" onclick="deleteResumeVersion('${version.id}')">Löschen</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function loadResumeVersion(versionId) {
+    const versions = JSON.parse(localStorage.getItem('resume_versions') || '[]');
+    const version = versions.find(v => v.id === versionId);
+    if (!version) return;
+    populateForm(version.data || {});
+    if (version.design) {
+        localStorage.setItem('resume_design_settings', JSON.stringify(version.design));
+    }
+    closeResumeVersions();
+    showNotification('Version geladen', 'success');
+}
+
+function deleteResumeVersion(versionId) {
+    const versions = JSON.parse(localStorage.getItem('resume_versions') || '[]');
+    const filtered = versions.filter(v => v.id !== versionId);
+    localStorage.setItem('resume_versions', JSON.stringify(filtered));
+    renderResumeVersions();
+    showNotification('Version gelöscht', 'info');
+}
+
 // Load resume on page load
 document.addEventListener('DOMContentLoaded', () => {
     loadResume();
@@ -1807,8 +1974,14 @@ function previewStyle() {
 
 // Global Funktionen für HTML onclick
 window.exportToPDF = exportToPDF;
+window.exportToPlainText = exportToPlainText;
 window.openStyleEditor = openStyleEditor;
 window.closeStyleEditor = closeStyleEditor;
 window.selectTemplate = selectTemplate;
 window.saveStyleSettings = saveStyleSettings;
 window.previewStyle = previewStyle;
+window.openResumeVersions = openResumeVersions;
+window.closeResumeVersions = closeResumeVersions;
+window.saveResumeVersion = saveResumeVersion;
+window.loadResumeVersion = loadResumeVersion;
+window.deleteResumeVersion = deleteResumeVersion;
