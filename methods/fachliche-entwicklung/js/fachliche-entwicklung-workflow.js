@@ -90,6 +90,12 @@ class FachlicheEntwicklungWorkflow {
                 localStorage.setItem(`fachlicheEntwicklungStep${this.currentStep}`, JSON.stringify(currentStepData));
                 this.workflowData[this.getStepKey(this.currentStep)] = currentStepData;
                 this.updateAutoSaveStatus('Gespeichert');
+                if (window.workflowAPI) {
+                    window.workflowAPI.saveWorkflowStep('fachlicheEntwicklung', `step${this.currentStep}`, currentStepData)
+                        .catch((error) => {
+                            console.warn('⚠️ Cloud Auto-Save fehlgeschlagen:', error);
+                        });
+                }
             } catch (e) {
                 console.error('Autosave error', e);
                 this.updateAutoSaveStatus('Fehler beim Speichern', true);

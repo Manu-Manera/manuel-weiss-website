@@ -54,10 +54,11 @@
             </div>
         </div>
     </main>
+    <script src="/js/workflow-api.js"></script>
     <script src="js/fachliche-entwicklung-workflow.js"></script>
     <script src="js/progress-tracker.js"></script>
     <script>
-        function saveAndContinue() {
+        async function saveAndContinue() {
             const formData = {
                 metrics: document.getElementById('metrics').value,
                 milestones: document.getElementById('milestones').value,
@@ -66,13 +67,19 @@
                 step: 4,
                 timestamp: new Date().toISOString()
             };
-            localStorage.setItem('fachlicheEntwicklungStep4', JSON.stringify(formData));
+            if (window.workflowAPI) {
+                await window.workflowAPI.saveWorkflowStep('fachlicheEntwicklung', 'step4', formData);
+            } else {
+                localStorage.setItem('fachlicheEntwicklungStep4', JSON.stringify(formData));
+            }
             window.location.href = 'step5-fachliche-entwicklung.html';
         }
-        window.addEventListener('load', function() {
-            const saved = localStorage.getItem('fachlicheEntwicklungStep4');
+        window.addEventListener('load', async function() {
+            const saved = window.workflowAPI
+                ? await window.workflowAPI.loadSavedProgress('fachlicheEntwicklung', 'step4')
+                : JSON.parse(localStorage.getItem('fachlicheEntwicklungStep4') || 'null');
             if (saved) {
-                const data = JSON.parse(saved);
+                const data = saved;
                 if (data.metrics) document.getElementById('metrics').value = data.metrics;
                 if (data.milestones) document.getElementById('milestones').value = data.milestones;
                 if (data.reflection) document.getElementById('reflection').value = data.reflection;

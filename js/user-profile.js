@@ -445,6 +445,35 @@ class UserProfile {
         }
     }
 
+    async loadFachlicheEntwicklungFromCloud() {
+        if (!window.workflowAPI) return null;
+        try {
+            const steps = {};
+            for (let i = 1; i <= 7; i++) {
+                const response = await window.workflowAPI.loadWorkflowStep('fachlicheEntwicklung', `step${i}`);
+                if (response && response.stepData) {
+                    steps[`step${i}`] = response.stepData;
+                    localStorage.setItem(`fachlicheEntwicklungStep${i}`, JSON.stringify(response.stepData));
+                }
+            }
+            let finalAnalysis = null;
+            try {
+                const results = await window.workflowAPI.getWorkflowResults('fachlicheEntwicklung');
+                if (results && results.results) {
+                    finalAnalysis = results.results;
+                    localStorage.setItem('fachlicheEntwicklungFinalAnalysis', JSON.stringify(finalAnalysis));
+                }
+            } catch (error) {
+                console.warn('⚠️ Fachliche-Entwicklung-Results konnten nicht geladen werden:', error);
+            }
+            if (!Object.keys(steps).length && !finalAnalysis) return null;
+            return { steps, finalAnalysis };
+        } catch (error) {
+            console.warn('⚠️ Fachliche-Entwicklung-Clouddaten konnten nicht geladen werden:', error);
+            return null;
+        }
+    }
+
     loadProfileData() {
         const defaultData = {
             firstName: '',
@@ -468,8 +497,10 @@ class UserProfile {
         };
 
         const coachingData = this.getCoachingDataFromStorage();
-        const fachlicheData = this.getFachlicheEntwicklungFromStorage();
-        const fachlicheData = this.getFachlicheEntwicklungFromStorage();
+        let fachlicheData = this.getFachlicheEntwicklungFromStorage();
+        if (!fachlicheData) {
+            fachlicheData = await this.loadFachlicheEntwicklungFromCloud();
+        }
         const savedData = localStorage.getItem('userProfile');
         if (savedData) {
             const parsed = { ...defaultData, ...JSON.parse(savedData) };
@@ -560,7 +591,10 @@ class UserProfile {
                 this.profileData.coaching = coachingData;
             }
             
-            const fachlicheData = this.getFachlicheEntwicklungFromStorage();
+            let fachlicheData = this.getFachlicheEntwicklungFromStorage();
+            if (!fachlicheData) {
+                fachlicheData = await this.loadFachlicheEntwicklungFromCloud();
+            }
             if (fachlicheData && !this.profileData.fachlicheEntwicklung) {
                 this.profileData.fachlicheEntwicklung = fachlicheData;
             }

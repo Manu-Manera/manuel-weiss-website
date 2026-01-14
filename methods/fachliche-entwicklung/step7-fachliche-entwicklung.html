@@ -117,9 +117,10 @@
             </div>
         </div>
     </main>
+    <script src="/js/workflow-api.js"></script>
     <script src="js/fachliche-entwicklung-workflow.js"></script>
     <script>
-        function saveAndContinue() {
+        async function saveAndContinue() {
             const formData = {
                 goal1_title: document.getElementById('goal1_title').value,
                 goal1_metric: document.getElementById('goal1_metric').value,
@@ -138,16 +139,22 @@
                 step: 7,
                 timestamp: new Date().toISOString()
             };
-            localStorage.setItem('fachlicheEntwicklungStep7', JSON.stringify(formData));
+            if (window.workflowAPI) {
+                await window.workflowAPI.saveWorkflowStep('fachlicheEntwicklung', 'step7', formData);
+            } else {
+                localStorage.setItem('fachlicheEntwicklungStep7', JSON.stringify(formData));
+            }
             
             // Zeige Completion-Modal
             alert('🎉 Workflow abgeschlossen! Dein Entwicklungsplan wurde gespeichert.');
             window.location.href = 'index-fachliche-entwicklung.html';
         }
-        window.addEventListener('load', function() {
-            const saved = localStorage.getItem('fachlicheEntwicklungStep7');
+        window.addEventListener('load', async function() {
+            const saved = window.workflowAPI
+                ? await window.workflowAPI.loadSavedProgress('fachlicheEntwicklung', 'step7')
+                : JSON.parse(localStorage.getItem('fachlicheEntwicklungStep7') || 'null');
             if (saved) {
-                const data = JSON.parse(saved);
+                const data = saved;
                 if (data.goal1_title) document.getElementById('goal1_title').value = data.goal1_title;
                 if (data.goal1_metric) document.getElementById('goal1_metric').value = data.goal1_metric;
                 if (data.goal1_deadline) document.getElementById('goal1_deadline').value = data.goal1_deadline;

@@ -350,11 +350,12 @@
     </main>
 
     <!-- Scripts -->
+    <script src="/js/workflow-api.js"></script>
     <script src="js/fachliche-entwicklung-workflow.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <script>
-        function saveAndContinue() {
+        async function saveAndContinue() {
             // Save form data to localStorage
             const formData = {
                 technicalSkills: document.getElementById('technicalSkills').value,
@@ -368,18 +369,24 @@
                 timestamp: new Date().toISOString()
             };
             
-            await window.workflowAPI.saveWorkflowStep('fachlicheEntwicklung', 'step1', formData);
+            if (window.workflowAPI) {
+                await window.workflowAPI.saveWorkflowStep('fachlicheEntwicklung', 'step1', formData);
+            } else {
+                localStorage.setItem('fachlicheEntwicklungStep1', JSON.stringify(formData));
+            }
             
             // Redirect to step 2
             window.location.href = 'step2-fachliche-entwicklung.html';
         }
         
         // Load saved data if available
-        window.addEventListener('load', function() {
-            const savedData = await window.workflowAPI.loadSavedProgress('fachlicheEntwicklung', 'step1');
+        window.addEventListener('load', async function() {
+            const savedData = window.workflowAPI
+                ? await window.workflowAPI.loadSavedProgress('fachlicheEntwicklung', 'step1')
+                : JSON.parse(localStorage.getItem('fachlicheEntwicklungStep1') || 'null');
             if (savedData) {
                 try {
-                    const data = JSON.parse(savedData);
+                    const data = savedData;
                     if (data.technicalSkills) document.getElementById('technicalSkills').value = data.technicalSkills;
                     if (data.softSkills) document.getElementById('softSkills').value = data.softSkills;
                     if (data.experience) document.getElementById('experience').value = data.experience;

@@ -431,7 +431,10 @@ class CoverLetterEditor {
             }
 
             if (this.profileData && !this.profileData.fachlicheEntwicklung) {
-                const fachliche = this.getFachlicheEntwicklungFromStorage();
+                let fachliche = this.getFachlicheEntwicklungFromStorage();
+                if (!fachliche) {
+                    fachliche = await this.loadFachlicheEntwicklungFromCloud();
+                }
                 if (fachliche) {
                     this.profileData.fachlicheEntwicklung = fachliche;
                 }
@@ -461,6 +464,35 @@ class CoverLetterEditor {
             return { steps, finalAnalysis };
         } catch (error) {
             console.warn('Could not parse fachliche Entwicklung data:', error);
+            return null;
+        }
+    }
+
+    async loadFachlicheEntwicklungFromCloud() {
+        if (!window.workflowAPI) return null;
+        try {
+            const steps = {};
+            for (let i = 1; i <= 7; i++) {
+                const response = await window.workflowAPI.loadWorkflowStep('fachlicheEntwicklung', `step${i}`);
+                if (response && response.stepData) {
+                    steps[`step${i}`] = response.stepData;
+                    localStorage.setItem(`fachlicheEntwicklungStep${i}`, JSON.stringify(response.stepData));
+                }
+            }
+            let finalAnalysis = null;
+            try {
+                const results = await window.workflowAPI.getWorkflowResults('fachlicheEntwicklung');
+                if (results && results.results) {
+                    finalAnalysis = results.results;
+                    localStorage.setItem('fachlicheEntwicklungFinalAnalysis', JSON.stringify(finalAnalysis));
+                }
+            } catch (error) {
+                console.warn('Could not load fachliche Entwicklung results:', error);
+            }
+            if (!Object.keys(steps).length && !finalAnalysis) return null;
+            return { steps, finalAnalysis };
+        } catch (error) {
+            console.warn('Could not load fachliche Entwicklung from cloud:', error);
             return null;
         }
     }
