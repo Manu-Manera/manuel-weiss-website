@@ -855,10 +855,11 @@ async function handleWorkflows(userId, method, event, path) {
     const workflows = existingData.workflows || {};
     
     // Parse path to get workflow name and step
-    // Formats: /workflows/fachlicheEntwicklung/steps/step1
-    //          /workflows/fachlicheEntwicklung/results
-    //          /workflows/fachlicheEntwicklung/progress
-    const pathParts = path.split('/').filter(p => p && p !== 'user-data' && p !== 'workflows');
+    // Path format: /.netlify/functions/user-data/workflows/fachlicheEntwicklung/steps/step1
+    // Extract everything after /workflows/
+    const workflowsIndex = path.indexOf('/workflows/');
+    const workflowPath = workflowsIndex >= 0 ? path.substring(workflowsIndex + 11) : ''; // +11 = length of '/workflows/'
+    const pathParts = workflowPath.split('/').filter(Boolean);
     const workflowName = pathParts[0];
     const action = pathParts[1]; // 'steps', 'results', 'progress'
     const stepName = pathParts[2]; // 'step1', 'step2', etc.
