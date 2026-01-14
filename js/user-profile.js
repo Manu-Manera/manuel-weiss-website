@@ -673,10 +673,15 @@ class UserProfile {
         }
         
         // Priorität: Direkte Felder > personal > resume > name-parsing
+        // ABER: Wenn Name = Auth-Testdaten ("Test", "User"), dann Resume bevorzugen
+        const rawFirstName = rawData.firstName || rawData.profile?.firstName || personal.firstName || '';
+        const rawLastName = rawData.lastName || rawData.profile?.lastName || personal.lastName || '';
+        const isTestUser = (rawFirstName === 'Test' && rawLastName === 'User');
+        
         return {
             ...rawData,
-            firstName: rawData.firstName || rawData.profile?.firstName || personal.firstName || resumeData.firstName || nameFirst || '',
-            lastName: rawData.lastName || rawData.profile?.lastName || personal.lastName || resumeData.lastName || nameLast || '',
+            firstName: (isTestUser && resumeData.firstName) ? resumeData.firstName : (rawFirstName || resumeData.firstName || nameFirst || ''),
+            lastName: (isTestUser && resumeData.lastName) ? resumeData.lastName : (rawLastName || resumeData.lastName || nameLast || ''),
             email: rawData.email || rawData.profile?.email || personal.email || resumeData.email || '',
             phone: rawData.phone || rawData.profile?.phone || personal.phone || resumeData.phone || '',
             location: rawData.location || rawData.profile?.location || personal.location || resumeData.location || '',
@@ -695,13 +700,25 @@ class UserProfile {
 
     getAuthFallbackData(authUser = {}) {
         const email = authUser.email || '';
-        const firstName = authUser.firstName || '';
-        const lastName = authUser.lastName || '';
+        let firstName = authUser.firstName || '';
+        let lastName = authUser.lastName || '';
+        
+        // WICHTIG: "Test User" ist ein Standard-Cognito-Name, nicht echte Daten
+        if (firstName === 'Test' && lastName === 'User') {
+            console.log('⚠️ Auth-Daten sind Testdaten, ignoriere für Name');
+            firstName = '';
+            lastName = '';
+        }
+        
         if (firstName || lastName) {
             return { firstName, lastName, email };
         }
         const name = authUser.name || '';
         const parts = name.split(' ').filter(Boolean);
+        // Auch hier prüfen
+        if (parts[0] === 'Test' && parts[1] === 'User') {
+            return { firstName: '', lastName: '', email };
+        }
         return {
             firstName: parts[0] || '',
             lastName: parts.slice(1).join(' ') || '',
