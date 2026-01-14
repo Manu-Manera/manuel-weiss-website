@@ -549,6 +549,7 @@ function collectFormData() {
         website: document.getElementById('website')?.value || '',
         availability: document.getElementById('availability')?.value || '',
         workModel: document.getElementById('workModel')?.value || '',
+        gapExplanation: document.getElementById('gapExplanation')?.value || '',
         
         // Strukturierte Daten (für vollständigen Export)
         personalInfo: {
@@ -745,6 +746,7 @@ function populateForm(data) {
     setField('linkedin', personal.linkedin);
     setField('github', personal.github);
     setField('website', personal.website);
+    setField('gapExplanation', data.gapExplanation);
     setField('availability', personal.availability);
     setField('workModel', personal.workModel);
     
@@ -879,11 +881,19 @@ function addProject(projectData = {}) {
     
     const projectHtml = `
         <div class="project-item" data-project-id="${projectId}" style="background: #f9fafb; padding: 1.5rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid #e5e7eb;">
-            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem; gap: 0.5rem;">
                 <h4 style="margin: 0; color: #1f2937;">Projekt</h4>
-                <button type="button" class="btn-remove" onclick="removeProject('${projectId}')">
-                    <i class="fas fa-trash"></i>
-                </button>
+                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                    <button type="button" class="btn-secondary ai-inline-action" data-ai-action="optimize-project" data-item-id="${projectId}">
+                        <i class="fas fa-wand-magic-sparkles"></i> KI
+                    </button>
+                    <button type="button" class="btn-secondary ai-inline-action" data-ai-action="alternatives-project" data-item-id="${projectId}">
+                        <i class="fas fa-layer-group"></i> Alternativen
+                    </button>
+                    <button type="button" class="btn-remove" onclick="removeProject('${projectId}')">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
             </div>
             <div class="form-grid" style="grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
                 <div class="form-group full-width">
@@ -1042,11 +1052,19 @@ function addExperience(experienceData = {}) {
             <div class="drag-handle" title="Ziehen zum Verschieben">
                 <i class="fas fa-grip-vertical"></i>
             </div>
-            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem; gap: 0.5rem;">
                 <h4 style="margin: 0; color: #1f2937;">Berufserfahrung</h4>
-                <button type="button" class="btn-remove" onclick="removeExperience('${experienceId}')">
-                    <i class="fas fa-trash"></i>
-                </button>
+                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                    <button type="button" class="btn-secondary ai-inline-action" data-ai-action="optimize-experience" data-item-id="${experienceId}">
+                        <i class="fas fa-wand-magic-sparkles"></i> KI
+                    </button>
+                    <button type="button" class="btn-secondary ai-inline-action" data-ai-action="alternatives-experience" data-item-id="${experienceId}">
+                        <i class="fas fa-layer-group"></i> Alternativen
+                    </button>
+                    <button type="button" class="btn-remove" onclick="removeExperience('${experienceId}')">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
             </div>
             <div class="form-grid" style="grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
                 <div class="form-group">
@@ -1420,6 +1438,13 @@ function generatePlainTextResume(data) {
         });
     }
 
+    const gap = document.getElementById('gapExplanation')?.value || '';
+    if (gap) {
+        lines.push('KARRIEREPAUSE');
+        lines.push(gap);
+        lines.push('');
+    }
+
     return lines.join('\n').replace(/\n{3,}/g, '\n\n').trim() + '\n';
 }
 
@@ -1476,6 +1501,7 @@ function renderResumeVersions() {
             </div>
             <div class="resume-version-actions">
                 <button type="button" onclick="loadResumeVersion('${version.id}')">Laden</button>
+                    <button type="button" onclick="diffResumeVersion('${version.id}')">Diff</button>
                 <button type="button" onclick="deleteResumeVersion('${version.id}')">Löschen</button>
             </div>
         </div>
@@ -1502,10 +1528,532 @@ function deleteResumeVersion(versionId) {
     showNotification('Version gelöscht', 'info');
 }
 
+function diffResumeVersion(versionId) {
+    const versions = JSON.parse(localStorage.getItem('resume_versions') || '[]');
+    const version = versions.find(v => v.id === versionId);
+    if (!version) return;
+    const currentText = generatePlainTextResume(collectFormData());
+    const previousText = generatePlainTextResume(version.data || {});
+    const diff = buildSimpleDiff(previousText, currentText);
+    const container = document.getElementById('resumeVersionDiff');
+    if (container) container.textContent = diff;
+}
+
+function buildSimpleDiff(oldText, newText) {
+    const oldLines = oldText.split('\n').map(l => l.trim()).filter(Boolean);
+    const newLines = newText.split('\n').map(l => l.trim()).filter(Boolean);
+    const oldSet = new Set(oldLines);
+    const newSet = new Set(newLines);
+    const removed = oldLines.filter(l => !newSet.has(l)).map(l => `- ${l}`);
+    const added = newLines.filter(l => !oldSet.has(l)).map(l => `+ ${l}`);
+    return [...removed, ...added].slice(0, 200).join('\n') || 'Keine Unterschiede gefunden.';
+}
+
+// =============================================
+// KI & ATS OPTIMIERUNG
+// =============================================
+
+async function getOpenAIKey() {
+    if (window.awsAPISettings) {
+        try {
+            const key = await window.awsAPISettings.getFullApiKey('openai');
+            if (key && !key.includes('...')) return key;
+        } catch (e) {
+            console.warn('AWS API Settings error:', e);
+        }
+    }
+    try {
+        const globalKeys = JSON.parse(localStorage.getItem('global_api_keys') || '{}');
+        if (globalKeys.openai?.key && !globalKeys.openai.key.includes('...')) {
+            return globalKeys.openai.key;
+        }
+    } catch (e) {}
+    return null;
+}
+
+async function callOpenAI(messages, apiKey, opts = {}) {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`
+        },
+        body: JSON.stringify({
+            model: opts.model || 'gpt-3.5-turbo',
+            messages,
+            temperature: opts.temperature ?? 0.6,
+            max_tokens: opts.maxTokens ?? 500
+        })
+    });
+    if (!response.ok) {
+        throw new Error(`API Error: ${response.status}`);
+    }
+    const data = await response.json();
+    return data.choices?.[0]?.message?.content || '';
+}
+
+function getResumeTextForATS() {
+    const data = collectFormData();
+    const experienceText = data.sections?.find(s => s.type === 'experience')?.entries
+        ?.map(e => [e.position, e.company, e.description, ...(e.achievements || [])].join(' '))
+        .join(' ') || '';
+    const projectText = (data.projects || [])
+        .map(p => [p.name, p.description, ...(p.achievements || [])].join(' '))
+        .join(' ');
+    const skillText = [
+        ...(data.skills?.technicalSkills || []).flatMap(c => c.skills || []),
+        ...(data.skills?.softSkills || []).map(s => s.skill || '')
+    ].join(' ');
+    const gapText = document.getElementById('gapExplanation')?.value || '';
+    return [data.summary, experienceText, projectText, skillText, gapText].join(' ').trim();
+}
+
+function tokenize(text, minLen = 4) {
+    return text
+        .toLowerCase()
+        .replace(/[^a-zäöüß0-9\s]/g, ' ')
+        .split(/\s+/)
+        .filter(word => word.length >= minLen);
+}
+
+function findDuplicateSentences(text) {
+    const sentences = text.split(/[.!?]\s+/).map(s => s.trim().toLowerCase()).filter(Boolean);
+    const seen = new Set();
+    const duplicates = [];
+    sentences.forEach(sentence => {
+        if (seen.has(sentence)) duplicates.push(sentence);
+        else seen.add(sentence);
+    });
+    return duplicates;
+}
+
+function detectTenseMix(text) {
+    const present = /(verantworte|entwickle|betreue|steuere|baue|führe)/i.test(text);
+    const past = /(verantwortete|entwickelte|betreute|steuerte|baute|führte)/i.test(text);
+    return present && past;
+}
+
+function renderAiResult(containerId, html) {
+    const container = document.getElementById(containerId);
+    if (container) container.innerHTML = html;
+}
+
+function runAtsCheck() {
+    const jobDescription = document.getElementById('atsJobDescription')?.value || '';
+    const resumeText = getResumeTextForATS();
+    const keywords = Array.from(new Set(tokenize(jobDescription, 5))).slice(0, 20);
+    if (!keywords.length) {
+        renderAiResult('atsResult', '<p>Bitte zuerst eine Stellenbeschreibung einfügen.</p>');
+        return;
+    }
+    const lower = resumeText.toLowerCase();
+    const hits = keywords.filter(word => lower.includes(word));
+    const missing = keywords.filter(word => !lower.includes(word));
+    const score = Math.round((hits.length / keywords.length) * 100);
+    const duplicates = findDuplicateSentences(resumeText);
+    const tenseMix = detectTenseMix(resumeText);
+
+    renderAiResult('atsResult', `
+        <strong>ATS-Match: ${score}%</strong>
+        <div><strong>Treffer:</strong> ${hits.slice(0, 8).join(', ') || '—'}</div>
+        <div><strong>Fehlend:</strong> ${missing.slice(0, 8).join(', ') || '—'}</div>
+        <div><strong>Doppelte Sätze:</strong> ${duplicates.length}</div>
+        <div><strong>Zeitform-Mix:</strong> ${tenseMix ? 'Ja' : 'Nein'}</div>
+    `);
+}
+
+async function generateSummary() {
+    const apiKey = await getOpenAIKey();
+    if (!apiKey) {
+        renderAiResult('aiSuggestions', '<p>Kein API-Key gefunden.</p>');
+        return;
+    }
+    const data = collectFormData();
+    const skills = [
+        ...(data.skills?.technicalSkills || []).flatMap(c => c.skills || []),
+        ...(data.skills?.softSkills || []).map(s => s.skill || '')
+    ].filter(Boolean).slice(0, 10);
+    const prompt = `
+Schreibe ein Kurzprofil (2-3 Sätze) für einen Lebenslauf.
+Rolle: ${data.title}
+Skills: ${skills.join(', ')}
+Schreibe professionell, ATS-tauglich, auf Deutsch.
+`;
+    const content = await callOpenAI([
+        { role: 'system', content: 'Du bist ein professioneller Bewerbungsberater. Antworte auf Deutsch.' },
+        { role: 'user', content: prompt }
+    ], apiKey, { maxTokens: 200 });
+    const summary = content.trim();
+    document.getElementById('summary').value = summary;
+    renderAiResult('aiSuggestions', `<strong>Kurzprofil</strong><div>${summary}</div>`);
+}
+
+async function improveSummary() {
+    const apiKey = await getOpenAIKey();
+    const summary = document.getElementById('summary')?.value || '';
+    if (!summary) return;
+    if (!apiKey) {
+        renderAiResult('aiSuggestions', '<p>Kein API-Key gefunden.</p>');
+        return;
+    }
+    const prompt = `
+Verbessere dieses Kurzprofil für einen Lebenslauf (klarer, prägnanter, aktive Verben):
+"""${summary}"""
+Gib nur die verbesserte Version zurück.
+`;
+    const content = await callOpenAI([
+        { role: 'system', content: 'Du bist ein professioneller Bewerbungsberater. Antworte auf Deutsch.' },
+        { role: 'user', content: prompt }
+    ], apiKey, { maxTokens: 200 });
+    document.getElementById('summary').value = content.trim();
+    renderAiResult('aiSuggestions', '<strong>Kurzprofil verbessert</strong>');
+}
+
+async function optimizeExperienceItem(itemId) {
+    const item = document.querySelector(`[data-experience-id="${itemId}"]`);
+    if (!item) return;
+    const apiKey = await getOpenAIKey();
+    const position = item.querySelector('[data-field="position"]')?.value || '';
+    const company = item.querySelector('[data-field="company"]')?.value || '';
+    const description = item.querySelector('[data-field="description"]')?.value || '';
+    const achievements = Array.from(item.querySelectorAll('.achievement-item input')).map(i => i.value).filter(Boolean);
+    if (!apiKey) {
+        renderAiResult('aiSuggestions', '<p>Kein API-Key gefunden.</p>');
+        return;
+    }
+    const prompt = `
+Optimiere die Erfahrung für einen Lebenslauf.
+Position: ${position}
+Firma: ${company}
+Beschreibung: ${description}
+Erfolge: ${achievements.join(' | ')}
+Gib JSON zurück: {"description":"...","achievements":["...","..."]}.
+`;
+    const content = await callOpenAI([
+        { role: 'system', content: 'Du bist ein professioneller Bewerbungsberater. Antworte auf Deutsch.' },
+        { role: 'user', content: prompt }
+    ], apiKey, { maxTokens: 300 });
+    try {
+        const parsed = JSON.parse(content);
+        if (parsed.description) item.querySelector('[data-field="description"]').value = parsed.description;
+        if (Array.isArray(parsed.achievements)) {
+            const container = item.querySelector(`#achievements-exp-${itemId}`);
+            if (container) {
+                container.querySelectorAll('.achievement-item').forEach(el => el.remove());
+                parsed.achievements.forEach(text => {
+                    const html = `
+                        <div class="achievement-item">
+                            <input type="text" value="${text}">
+                            <button type="button" onclick="removeAchievement(this)" style="background: #ef4444; color: white; border: none; padding: 0.5rem; border-radius: 4px; cursor: pointer;">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    `;
+                    container.insertAdjacentHTML('afterbegin', html);
+                });
+                if (!container.querySelector('.btn-add')) {
+                    container.insertAdjacentHTML('beforeend', `<button type="button" onclick="addAchievement('exp-${itemId}')" class="btn-add" style="margin-top: 0.5rem;"><i class="fas fa-plus"></i> Achievement</button>`);
+                }
+            }
+        }
+        renderAiResult('aiSuggestions', '<strong>Erfahrung optimiert</strong>');
+    } catch (e) {
+        renderAiResult('aiSuggestions', '<p>KI-Antwort konnte nicht gelesen werden.</p>');
+    }
+}
+
+async function alternativesExperienceItem(itemId) {
+    const item = document.querySelector(`[data-experience-id="${itemId}"]`);
+    if (!item) return;
+    const apiKey = await getOpenAIKey();
+    const description = item.querySelector('[data-field="description"]')?.value || '';
+    if (!apiKey) {
+        renderAiResult('aiSuggestions', '<p>Kein API-Key gefunden.</p>');
+        return;
+    }
+    const prompt = `
+Erstelle 3 alternative Varianten für diesen Lebenslauf-Abschnitt:
+"""${description}"""
+Gib ein JSON-Array zurück.
+`;
+    const content = await callOpenAI([
+        { role: 'system', content: 'Du bist ein professioneller Bewerbungsberater. Antworte auf Deutsch.' },
+        { role: 'user', content: prompt }
+    ], apiKey, { maxTokens: 250 });
+    let suggestions = [];
+    try {
+        suggestions = JSON.parse(content);
+    } catch (e) {
+        suggestions = content.split('\n').filter(Boolean).slice(0, 3);
+    }
+    renderAiResult('aiSuggestions', suggestions.map((s, idx) => `
+        <div style="margin-bottom:0.5rem;">
+            <div>${s}</div>
+            <button type="button" class="btn-secondary" data-apply="exp-desc" data-item-id="${itemId}" data-idx="${idx}">Übernehmen</button>
+        </div>
+    `).join(''));
+    document.querySelectorAll('[data-apply="exp-desc"]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const idx = Number(btn.dataset.idx);
+            const text = suggestions[idx];
+            if (text) item.querySelector('[data-field="description"]').value = text;
+        });
+    });
+}
+
+async function optimizeProjectItem(itemId) {
+    const item = document.querySelector(`[data-project-id="${itemId}"]`);
+    if (!item) return;
+    const apiKey = await getOpenAIKey();
+    const name = item.querySelector('[data-field="name"]')?.value || '';
+    const description = item.querySelector('[data-field="description"]')?.value || '';
+    const achievements = Array.from(item.querySelectorAll('.achievement-item input')).map(i => i.value).filter(Boolean);
+    if (!apiKey) {
+        renderAiResult('aiSuggestions', '<p>Kein API-Key gefunden.</p>');
+        return;
+    }
+    const prompt = `
+Optimiere dieses Projekt für einen Lebenslauf.
+Projekt: ${name}
+Beschreibung: ${description}
+Erfolge: ${achievements.join(' | ')}
+Gib JSON zurück: {"description":"...","achievements":["...","..."]}.
+`;
+    const content = await callOpenAI([
+        { role: 'system', content: 'Du bist ein professioneller Bewerbungsberater. Antworte auf Deutsch.' },
+        { role: 'user', content: prompt }
+    ], apiKey, { maxTokens: 300 });
+    try {
+        const parsed = JSON.parse(content);
+        if (parsed.description) item.querySelector('[data-field="description"]').value = parsed.description;
+        if (Array.isArray(parsed.achievements)) {
+            const container = item.querySelector(`#achievements-${itemId}`);
+            if (container) {
+                container.querySelectorAll('.achievement-item').forEach(el => el.remove());
+                parsed.achievements.forEach(text => {
+                    const html = `
+                        <div class="achievement-item">
+                            <input type="text" value="${text}">
+                            <button type="button" onclick="removeAchievement(this)" style="background: #ef4444; color: white; border: none; padding: 0.5rem; border-radius: 4px; cursor: pointer;">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    `;
+                    container.insertAdjacentHTML('afterbegin', html);
+                });
+                if (!container.querySelector('.btn-add')) {
+                    container.insertAdjacentHTML('beforeend', `<button type="button" onclick="addAchievement('${itemId}')" class="btn-add" style="margin-top: 0.5rem;"><i class="fas fa-plus"></i> Achievement</button>`);
+                }
+            }
+        }
+        renderAiResult('aiSuggestions', '<strong>Projekt optimiert</strong>');
+    } catch (e) {
+        renderAiResult('aiSuggestions', '<p>KI-Antwort konnte nicht gelesen werden.</p>');
+    }
+}
+
+async function alternativesProjectItem(itemId) {
+    const item = document.querySelector(`[data-project-id="${itemId}"]`);
+    if (!item) return;
+    const apiKey = await getOpenAIKey();
+    const description = item.querySelector('[data-field="description"]')?.value || '';
+    if (!apiKey) {
+        renderAiResult('aiSuggestions', '<p>Kein API-Key gefunden.</p>');
+        return;
+    }
+    const prompt = `
+Erstelle 3 alternative Varianten für diesen Projekt-Abschnitt:
+"""${description}"""
+Gib ein JSON-Array zurück.
+`;
+    const content = await callOpenAI([
+        { role: 'system', content: 'Du bist ein professioneller Bewerbungsberater. Antworte auf Deutsch.' },
+        { role: 'user', content: prompt }
+    ], apiKey, { maxTokens: 250 });
+    let suggestions = [];
+    try {
+        suggestions = JSON.parse(content);
+    } catch (e) {
+        suggestions = content.split('\n').filter(Boolean).slice(0, 3);
+    }
+    renderAiResult('aiSuggestions', suggestions.map((s, idx) => `
+        <div style="margin-bottom:0.5rem;">
+            <div>${s}</div>
+            <button type="button" class="btn-secondary" data-apply="proj-desc" data-item-id="${itemId}" data-idx="${idx}">Übernehmen</button>
+        </div>
+    `).join(''));
+    document.querySelectorAll('[data-apply="proj-desc"]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const idx = Number(btn.dataset.idx);
+            const text = suggestions[idx];
+            if (text) item.querySelector('[data-field="description"]').value = text;
+        });
+    });
+}
+
+function quantifyCheck() {
+    const data = collectFormData();
+    const exp = data.sections?.find(s => s.type === 'experience')?.entries || [];
+    const proj = data.projects || [];
+    const hasNumbers = (exp.some(e => /\d/.test(e.description || '') || (e.achievements || []).some(a => /\d/.test(a))) ||
+        proj.some(p => /\d/.test(p.description || '') || (p.achievements || []).some(a => /\d/.test(a))));
+    renderAiResult('aiSuggestions', hasNumbers
+        ? '<strong>Quantifizierung vorhanden</strong>'
+        : '<strong>Keine Kennzahlen gefunden</strong><div>Füge Zahlen/Prozente/Zeiten hinzu.</div>');
+}
+
+function clusterSkills() {
+    const data = collectFormData();
+    const allSkills = [
+        ...(data.skills?.technicalSkills || []).flatMap(c => c.skills || []),
+        ...(data.skills?.softSkills || []).map(s => s.skill || '')
+    ].map(s => s.trim()).filter(Boolean);
+    if (!allSkills.length) {
+        renderAiResult('aiSuggestions', '<p>Keine Skills gefunden.</p>');
+        return;
+    }
+    const clusters = {
+        'Frontend': ['react', 'vue', 'angular', 'html', 'css', 'javascript', 'typescript'],
+        'Backend': ['node', 'java', 'python', 'go', 'c#', 'php', 'sql'],
+        'DevOps': ['docker', 'kubernetes', 'aws', 'gcp', 'azure', 'ci', 'cd'],
+        'Data': ['sql', 'pandas', 'spark', 'ml', 'ai', 'data'],
+        'Management': ['lead', 'management', 'projekt', 'scrum', 'agile']
+    };
+    const grouped = {};
+    allSkills.forEach(skill => {
+        const lower = skill.toLowerCase();
+        let matched = false;
+        Object.entries(clusters).forEach(([group, keywords]) => {
+            if (keywords.some(k => lower.includes(k))) {
+                grouped[group] = grouped[group] || [];
+                grouped[group].push(skill);
+                matched = true;
+            }
+        });
+        if (!matched) {
+            grouped['Weitere'] = grouped['Weitere'] || [];
+            grouped['Weitere'].push(skill);
+        }
+    });
+    const container = document.getElementById('technicalSkillsContainer');
+    if (container) container.innerHTML = '';
+    Object.entries(grouped).forEach(([group, skills]) => {
+        addTechnicalSkillCategory(group, Array.from(new Set(skills)));
+    });
+    renderAiResult('aiSuggestions', '<strong>Skills neu gruppiert</strong>');
+}
+
+async function generateGapExplanation() {
+    const apiKey = await getOpenAIKey();
+    if (!apiKey) {
+        renderAiResult('aiSuggestions', '<p>Kein API-Key gefunden.</p>');
+        return;
+    }
+    const prompt = `
+Schreibe einen kurzen, professionellen Absatz (1-2 Sätze), um eine Karrierepause neutral zu erklären.
+Betone Weiterbildung, persönliche Gründe oder Projekte ohne zu viele Details.
+`;
+    const content = await callOpenAI([
+        { role: 'system', content: 'Du bist ein professioneller Bewerbungsberater. Antworte auf Deutsch.' },
+        { role: 'user', content: prompt }
+    ], apiKey, { maxTokens: 150 });
+    document.getElementById('gapExplanation').value = content.trim();
+    renderAiResult('aiSuggestions', '<strong>Lücken-Erklärung eingefügt</strong>');
+}
+
+async function translateResumeToEnglish() {
+    const apiKey = await getOpenAIKey();
+    if (!apiKey) {
+        renderAiResult('aiSuggestions', '<p>Kein API-Key gefunden.</p>');
+        return;
+    }
+    const data = collectFormData();
+    const payload = {
+        summary: data.summary || '',
+        experience: (data.sections?.find(s => s.type === 'experience')?.entries || []).map(e => ({
+            description: e.description || '',
+            achievements: e.achievements || []
+        })),
+        projects: (data.projects || []).map(p => ({
+            description: p.description || '',
+            achievements: p.achievements || []
+        })),
+        gap: document.getElementById('gapExplanation')?.value || ''
+    };
+    const prompt = `
+Übersetze folgende Inhalte ins Englische. Gib JSON im gleichen Format zurück.
+${JSON.stringify(payload)}
+`;
+    const content = await callOpenAI([
+        { role: 'system', content: 'You are a professional resume editor. Return JSON only.' },
+        { role: 'user', content: prompt }
+    ], apiKey, { maxTokens: 700 });
+    try {
+        const parsed = JSON.parse(content);
+        if (parsed.summary) document.getElementById('summary').value = parsed.summary;
+        parsed.experience?.forEach((entry, idx) => {
+            const item = document.querySelectorAll('.experience-item')[idx];
+            if (!item) return;
+            if (entry.description) item.querySelector('[data-field="description"]').value = entry.description;
+            const achInputs = item.querySelectorAll('.achievement-item input');
+            entry.achievements?.forEach((a, i) => {
+                if (achInputs[i]) achInputs[i].value = a;
+            });
+        });
+        parsed.projects?.forEach((entry, idx) => {
+            const item = document.querySelectorAll('.project-item')[idx];
+            if (!item) return;
+            if (entry.description) item.querySelector('[data-field="description"]').value = entry.description;
+            const achInputs = item.querySelectorAll('.achievement-item input');
+            entry.achievements?.forEach((a, i) => {
+                if (achInputs[i]) achInputs[i].value = a;
+            });
+        });
+        if (parsed.gap) document.getElementById('gapExplanation').value = parsed.gap;
+        renderAiResult('aiSuggestions', '<strong>EN-Version erzeugt</strong>');
+    } catch (e) {
+        renderAiResult('aiSuggestions', '<p>Übersetzung fehlgeschlagen.</p>');
+    }
+}
+
+function setupResumeAiTools() {
+    document.getElementById('runAtsCheckBtn')?.addEventListener('click', runAtsCheck);
+    document.getElementById('generateSummaryBtn')?.addEventListener('click', generateSummary);
+    document.getElementById('improveSummaryBtn')?.addEventListener('click', improveSummary);
+    document.getElementById('optimizeExperienceBtn')?.addEventListener('click', async () => {
+        const items = document.querySelectorAll('.experience-item');
+        for (const item of items) {
+            await optimizeExperienceItem(item.dataset.experienceId);
+        }
+    });
+    document.getElementById('optimizeProjectsBtn')?.addEventListener('click', async () => {
+        const items = document.querySelectorAll('.project-item');
+        for (const item of items) {
+            await optimizeProjectItem(item.dataset.projectId);
+        }
+    });
+    document.getElementById('quantifyAchievementsBtn')?.addEventListener('click', quantifyCheck);
+    document.getElementById('clusterSkillsBtn')?.addEventListener('click', clusterSkills);
+    document.getElementById('generateGapBtn')?.addEventListener('click', generateGapExplanation);
+    document.getElementById('translateResumeBtn')?.addEventListener('click', translateResumeToEnglish);
+
+    document.addEventListener('click', async (event) => {
+        const button = event.target.closest('.ai-inline-action');
+        if (!button) return;
+        const action = button.dataset.aiAction;
+        const itemId = button.dataset.itemId;
+        if (action === 'optimize-experience') await optimizeExperienceItem(itemId);
+        if (action === 'alternatives-experience') await alternativesExperienceItem(itemId);
+        if (action === 'optimize-project') await optimizeProjectItem(itemId);
+        if (action === 'alternatives-project') await alternativesProjectItem(itemId);
+    });
+}
+
 // Load resume on page load
 document.addEventListener('DOMContentLoaded', () => {
     loadResume();
     initAllDragAndDrop();
+    setupResumeAiTools();
 });
 
 // =============================================

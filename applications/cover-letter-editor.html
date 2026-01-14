@@ -6,7 +6,7 @@
     <title>Anschreiben-Editor - Bewerbungsmanager</title>
     <link rel="stylesheet" href="../styles.css">
     <link rel="stylesheet" href="css/applications-main.css">
-    <link rel="stylesheet" href="css/cover-letter-editor.css?v=20260114designer">
+    <link rel="stylesheet" href="css/cover-letter-editor.css?v=20260114ai">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&family=Lato:wght@300;400;700&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -108,6 +108,9 @@
                         <div class="form-group">
                             <label>Ansprechpartner</label>
                             <input type="text" name="contactPerson" id="contactPerson" placeholder="z.B. Frau Müller">
+                    <button type="button" class="btn-secondary btn-inline" id="suggestContactBtn">
+                        <i class="fas fa-wand-magic-sparkles"></i> Ansprechperson vorschlagen
+                    </button>
                         </div>
                         <div class="form-group">
                             <label>Stellenbeschreibung *</label>
@@ -152,6 +155,16 @@
                             <button type="button" class="option-btn" data-option="focus" data-value="motivation">Motivation</button>
                         </div>
                     </div>
+
+                <div class="option-group">
+                    <label>Ziel-Modus</label>
+                    <div class="option-buttons">
+                        <button type="button" class="option-btn active" data-option="goal" data-value="role-fit">Rollen-Fit</button>
+                        <button type="button" class="option-btn" data-option="goal" data-value="impact">Impact</button>
+                        <button type="button" class="option-btn" data-option="goal" data-value="leadership">Leadership</button>
+                        <button type="button" class="option-btn" data-option="goal" data-value="tech-depth">Tech-Depth</button>
+                    </div>
+                </div>
                 </div>
 
                 <!-- Placeholder Helpers -->
@@ -262,6 +275,12 @@
                         </button>
                         <button class="toolbar-btn" onclick="improveSelected()" title="Auswahl verbessern">
                             <i class="fas fa-magic"></i>
+                        </button>
+                        <button class="toolbar-btn" onclick="regenerateSubject()" title="Betreff neu generieren">
+                            <i class="fas fa-heading"></i>
+                        </button>
+                        <button class="toolbar-btn" onclick="regenerateIntro()" title="Einleitung neu generieren">
+                            <i class="fas fa-paragraph"></i>
                         </button>
                     </div>
                     <div class="toolbar-right">
@@ -417,6 +436,21 @@
             </div>
             <div class="blocks-editor-body">
                 <div id="blocksContainer" class="blocks-container"></div>
+                <div class="blocks-ai-panel">
+                    <div class="blocks-ai-title">
+                        <i class="fas fa-brain"></i> KI-Absatztools
+                    </div>
+                    <div class="blocks-ai-hint">Wähle einen Absatz und erstelle Alternativen oder Verbesserungen.</div>
+                    <div class="blocks-ai-actions">
+                        <button type="button" class="btn-secondary" data-block-action="alternatives">Alternativen</button>
+                        <button type="button" class="btn-secondary" data-block-action="shorten">Kürzen</button>
+                        <button type="button" class="btn-secondary" data-block-action="expand">Erweitern</button>
+                        <button type="button" class="btn-secondary" data-block-action="active">Aktiver</button>
+                        <button type="button" class="btn-secondary" data-block-action="concrete">Konkreter</button>
+                        <button type="button" class="btn-secondary" data-block-action="proof">Beleg hinzufügen</button>
+                    </div>
+                    <div id="blockAiSuggestions" class="blocks-ai-suggestions"></div>
+                </div>
                 <button type="button" class="btn-secondary" id="addBlockBtn">
                     <i class="fas fa-plus"></i> Absatz hinzufügen
                 </button>
@@ -445,6 +479,7 @@
                     </button>
                 </div>
                 <div id="coverLetterVersionsList" class="resume-versions-list"></div>
+                <div id="coverLetterVersionDiff" class="resume-version-diff"></div>
             </div>
         </div>
     </div>
@@ -455,7 +490,7 @@
     <script src="../js/aws-api-settings.js?v=20260113"></script>
     <script src="../js/global-api-manager.js?v=20260113"></script>
     <script src="../js/cloud-data-service.js?v=20260113"></script>
-    <script src="js/cover-letter-editor.js?v=20260114designer"></script>
+    <script src="js/cover-letter-editor.js?v=20260114ai"></script>
     
     <!-- Mobile Menu Script -->
     <script>

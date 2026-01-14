@@ -119,6 +119,35 @@
     font-style: italic;
 }
 
+.resume-ai-section {
+    background: #f8fafc;
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+}
+
+.ai-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.ai-results {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.ai-result-card {
+    min-height: 60px;
+    padding: 0.75rem;
+    border: 1px dashed #d1d5db;
+    border-radius: 8px;
+    background: #ffffff;
+    font-size: 0.875rem;
+    color: #374151;
+}
+
 .form-hint {
     display: block;
     color: #6b7280;
@@ -746,6 +775,18 @@
 
 .resume-version-actions button:hover {
     background: #d1d5db;
+}
+
+.resume-version-diff {
+    margin-top: 1rem;
+    padding: 0.75rem;
+    border: 1px dashed #d1d5db;
+    border-radius: 8px;
+    background: #ffffff;
+    font-size: 0.85rem;
+    color: #374151;
+    max-height: 240px;
+    overflow: auto;
 }
 
 .style-editor-content {

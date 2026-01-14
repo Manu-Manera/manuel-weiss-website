@@ -194,6 +194,11 @@
     font-family: inherit;
 }
 
+.btn-inline {
+    margin-top: 0.5rem;
+    width: 100%;
+}
+
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
@@ -947,6 +952,79 @@
     background: #f8fafc;
 }
 
+.block-item.active {
+    border-color: var(--cl-primary);
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
+}
+
+.block-ai-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin: 0.5rem 0;
+}
+
+.block-ai-actions button {
+    border: 1px solid var(--cl-border);
+    background: white;
+    border-radius: 6px;
+    padding: 0.3rem 0.6rem;
+    cursor: pointer;
+    font-size: 0.75rem;
+}
+
+.block-ai-suggestions {
+    display: grid;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.block-ai-suggestion {
+    border: 1px dashed var(--cl-border);
+    border-radius: 6px;
+    padding: 0.5rem;
+    font-size: 0.85rem;
+    background: #fff;
+    cursor: pointer;
+}
+
+.blocks-ai-panel {
+    border: 1px solid var(--cl-border);
+    border-radius: 10px;
+    padding: 0.75rem;
+    background: #ffffff;
+}
+
+.blocks-ai-title {
+    font-weight: 600;
+    color: var(--cl-text);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.blocks-ai-hint {
+    font-size: 0.8rem;
+    color: var(--cl-text-muted);
+    margin: 0.35rem 0 0.75rem 0;
+}
+
+.blocks-ai-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.blocks-ai-suggestions {
+    display: grid;
+    gap: 0.5rem;
+}
+
+.blocks-ai-suggestions .block-ai-suggestion {
+    border-style: solid;
+}
+
 .block-item textarea {
     width: 100%;
     min-height: 80px;
@@ -1042,6 +1120,19 @@
 .resume-version-actions button:hover {
     border-color: var(--cl-primary);
     color: var(--cl-primary);
+}
+
+.resume-version-diff {
+    margin-top: 1rem;
+    padding: 0.75rem;
+    border: 1px dashed var(--cl-border);
+    border-radius: 8px;
+    background: #ffffff;
+    font-size: 0.85rem;
+    color: var(--cl-text);
+    max-height: 240px;
+    overflow: auto;
+    white-space: pre-wrap;
 }
 
 @media (max-width: 992px) {
