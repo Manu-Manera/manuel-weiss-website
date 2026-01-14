@@ -317,6 +317,7 @@ class CoverLetterEditor {
             this.showToast('Anschreiben nicht gefunden', 'error');
             return;
         }
+        this.currentCoverLetterId = letter.id;
         
         const jobData = letter.jobData || {};
         const jobFields = {
@@ -391,14 +392,15 @@ class CoverLetterEditor {
         try {
             // Try cloud data service first
             if (window.cloudDataService) {
-                this.profileData = await window.cloudDataService.getProfile();
+                const cloudProfile = await window.cloudDataService.getProfile(true);
+                this.profileData = this.normalizeProfileData(cloudProfile);
             }
             
             // Fallback to localStorage
             if (!this.profileData || Object.keys(this.profileData).length === 0) {
                 const stored = localStorage.getItem('bewerbungsmanager_profile') || localStorage.getItem('userProfile') || localStorage.getItem('profile_data');
                 if (stored) {
-                    this.profileData = JSON.parse(stored);
+                    this.profileData = this.normalizeProfileData(JSON.parse(stored));
                 }
             }
             
@@ -423,6 +425,24 @@ class CoverLetterEditor {
         } catch (error) {
             console.warn('Could not load profile:', error);
         }
+    }
+
+    normalizeProfileData(rawData) {
+        if (!rawData) return {};
+        const personal = rawData.personal || rawData.profile?.personal || {};
+        const professional = rawData.professional || rawData.profile?.professional || {};
+        const name = rawData.name || rawData.profile?.name || '';
+        const parts = name.split(' ').filter(Boolean);
+        return {
+            ...rawData,
+            firstName: rawData.firstName || rawData.profile?.firstName || personal.firstName || parts[0] || '',
+            lastName: rawData.lastName || rawData.profile?.lastName || personal.lastName || parts.slice(1).join(' ') || '',
+            email: rawData.email || rawData.profile?.email || personal.email || '',
+            phone: rawData.phone || rawData.profile?.phone || personal.phone || '',
+            location: rawData.location || rawData.profile?.location || personal.location || '',
+            summary: rawData.summary || professional.summary || '',
+            skills: rawData.skills || professional.skills || rawData.skills || []
+        };
     }
 
     updateSenderInfo() {
@@ -800,13 +820,14 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
         const jobData = this.collectJobData();
         const content = this.getFinalLetterContent();
         const data = {
-            id: `cl_${Date.now().toString(36)}`,
+            id: this.currentCoverLetterId || `cl_${Date.now().toString(36)}`,
             content: content,
             jobData: jobData,
             options: this.options,
             design: this.design,
             createdAt: new Date().toISOString()
         };
+        this.currentCoverLetterId = data.id;
         
         try {
             // Save to cloud if available
@@ -820,6 +841,7 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
             localStorage.setItem('cover_letter_drafts', JSON.stringify(stored));
             
             this.showToast('Anschreiben gespeichert!', 'success');
+            this.loadCoverLetterOptions();
         } catch (error) {
             console.error('Save error:', error);
             this.showToast('Fehler beim Speichern', 'error');

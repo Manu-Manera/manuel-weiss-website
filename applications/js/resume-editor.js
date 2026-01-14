@@ -93,17 +93,28 @@ async function loadProfileData() {
         }
         
         if (profile) {
+            const resolvedProfile = {
+                firstName: profile.firstName || profile.personal?.firstName || '',
+                lastName: profile.lastName || profile.personal?.lastName || '',
+                email: profile.email || profile.personal?.email || '',
+                phone: profile.phone || profile.personal?.phone || '',
+                location: profile.location || profile.personal?.location || '',
+                address: profile.address || profile.personal?.address || '',
+                linkedin: profile.preferences?.linkedin || profile.linkedin || profile.personal?.linkedin || '',
+                website: profile.preferences?.website || profile.website || profile.personal?.website || ''
+            };
             
             // Fülle Formular mit Profildaten vor
-            if (profile.firstName) document.getElementById('firstName').value = profile.firstName;
-            if (profile.lastName) document.getElementById('lastName').value = profile.lastName;
-            if (profile.email) document.getElementById('email').value = profile.email;
-            if (profile.phone) document.getElementById('phone').value = profile.phone;
-            if (profile.location) document.getElementById('address').value = profile.location;
+            if (resolvedProfile.firstName) document.getElementById('firstName').value = resolvedProfile.firstName;
+            if (resolvedProfile.lastName) document.getElementById('lastName').value = resolvedProfile.lastName;
+            if (resolvedProfile.email) document.getElementById('email').value = resolvedProfile.email;
+            if (resolvedProfile.phone) document.getElementById('phone').value = resolvedProfile.phone;
+            if (resolvedProfile.location) document.getElementById('location').value = resolvedProfile.location;
+            if (resolvedProfile.address) document.getElementById('address').value = resolvedProfile.address;
             
             // LinkedIn und Website aus preferences oder settings
-            if (profile.preferences?.linkedin) document.getElementById('linkedin').value = profile.preferences.linkedin;
-            if (profile.preferences?.website) document.getElementById('website').value = profile.preferences.website;
+            if (resolvedProfile.linkedin) document.getElementById('linkedin').value = resolvedProfile.linkedin;
+            if (resolvedProfile.website) document.getElementById('website').value = resolvedProfile.website;
             
             console.log('✅ Profildaten für Vorausfüllung geladen');
         }

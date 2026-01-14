@@ -187,6 +187,18 @@ async function loadAWSProfile() {
         if (awsProfile) {
             console.log('✅ AWS-Profil geladen:', awsProfile);
             
+            // Coaching-Daten lokal ergänzen falls in Cloud fehlt
+            if (!awsProfile.coaching) {
+                try {
+                    const coachingRaw = localStorage.getItem('coaching_workflow_data');
+                    if (coachingRaw) {
+                        awsProfile.coaching = JSON.parse(coachingRaw);
+                    }
+                } catch (e) {
+                    console.warn('⚠️ Coaching-Daten konnten nicht gelesen werden:', e);
+                }
+            }
+            
             // Konvertiere AWS-Profil-Format zu DashboardState-Format
             DashboardState.profile = {
                 firstName: awsProfile.firstName || awsProfile.personal?.firstName || '',
@@ -2231,7 +2243,10 @@ async function handlePhotoUpload(file) {
         }
         
         if (!publicUrl) {
-            dataUrl = await readFileAsDataURL(file);
+            dataUrl = await compressImageToDataUrl(file, 600, 800, 0.82);
+            if (!dataUrl) {
+                dataUrl = await readFileAsDataURL(file);
+            }
         }
         
         // Foto speichern
@@ -2242,12 +2257,15 @@ async function handlePhotoUpload(file) {
             size: file.size,
             dataUrl: dataUrl || undefined,
             url: publicUrl || undefined,
-            storage,
+            storage: publicUrl ? 's3' : 'local',
             createdAt: new Date().toISOString()
         };
         
-        // Cloud-Speicherung (wenn verfügbar und eingeloggt)
-        if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
+        const dataUrlTooLarge = dataUrl && dataUrl.length > 350000;
+        const canCloudSave = window.cloudDataService && window.cloudDataService.isUserLoggedIn() && !dataUrlTooLarge;
+        
+        // Cloud-Speicherung (wenn verfügbar und Daten klein genug)
+        if (canCloudSave) {
             const result = await window.cloudDataService.savePhoto(photo);
             if (result?.success) {
                 console.log('✅ Foto in Cloud gespeichert');
@@ -2257,6 +2275,9 @@ async function handlePhotoUpload(file) {
             let photos = JSON.parse(localStorage.getItem('user_photos') || '[]');
             photos.unshift(photo);
             localStorage.setItem('user_photos', JSON.stringify(photos));
+            if (dataUrlTooLarge) {
+                showToast('Foto zu groß für Cloud-Speicherung – lokal gespeichert', 'warning');
+            }
         }
         
         showToast('Foto erfolgreich hochgeladen!', 'success');
@@ -2273,6 +2294,36 @@ function readFileAsDataURL(file) {
         const reader = new FileReader();
         reader.onload = () => resolve(reader.result);
         reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+
+function compressImageToDataUrl(file, maxWidth, maxHeight, quality = 0.82) {
+    return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+            const img = new Image();
+            img.onload = () => {
+                const ratio = Math.min(maxWidth / img.width, maxHeight / img.height, 1);
+                const width = Math.round(img.width * ratio);
+                const height = Math.round(img.height * ratio);
+                const canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                try {
+                    const dataUrl = canvas.toDataURL('image/jpeg', quality);
+                    resolve(dataUrl);
+                } catch (e) {
+                    console.warn('Image compression failed:', e);
+                    resolve(null);
+                }
+            };
+            img.onerror = () => resolve(null);
+            img.src = reader.result;
+        };
+        reader.onerror = () => resolve(null);
         reader.readAsDataURL(file);
     });
 }
