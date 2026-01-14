@@ -612,6 +612,18 @@
         .design-editor-modal .design-editor-container {
             height: 100%;
         }
+        .resume-versions-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+        }
+        .resume-versions-modal.active {
+            display: flex;
+        }
     </style>
 
     <!-- Resume Versions Modal -->
