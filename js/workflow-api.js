@@ -13,12 +13,8 @@ class WorkflowAPI {
     }
 
     initApiBaseUrl() {
-        if (window.AWS_CONFIG && window.AWS_CONFIG.apiBaseUrl) {
-            this.apiBaseUrl = window.AWS_CONFIG.apiBaseUrl;
-        } else {
-            // Default API base URL
-            this.apiBaseUrl = 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod';
-        }
+        // Immer Netlify Functions verwenden (kein CORS-Problem)
+        this.apiBaseUrl = '/.netlify/functions/user-data';
     }
 
     /**
@@ -124,10 +120,10 @@ class WorkflowAPI {
 
     /**
      * Speichere Workflow-Schritt
-     * POST /api/v1/workflows/{methodId}/steps/{stepId}
+     * POST /workflows/{methodId}/steps/{stepId}
      */
     async saveWorkflowStep(methodId, stepId, stepData) {
-        const endpoint = `/api/v1/workflows/${methodId}/steps/${stepId}`;
+        const endpoint = `/workflows/${methodId}/steps/${stepId}`;
         const data = {
             methodId,
             stepId,
@@ -146,28 +142,28 @@ class WorkflowAPI {
 
     /**
      * Lade Workflow-Schritt
-     * GET /api/v1/workflows/{methodId}/steps/{stepId}
+     * GET /workflows/{methodId}/steps/{stepId}
      */
     async loadWorkflowStep(methodId, stepId) {
-        const endpoint = `/api/v1/workflows/${methodId}/steps/${stepId}`;
+        const endpoint = `/workflows/${methodId}/steps/${stepId}`;
         return await this.apiRequest(endpoint, 'GET');
     }
 
     /**
      * Lade alle Schritte eines Workflows
-     * GET /api/v1/workflows/{methodId}/steps
+     * GET /workflows/{methodId}/steps
      */
     async loadWorkflowSteps(methodId) {
-        const endpoint = `/api/v1/workflows/${methodId}/steps`;
+        const endpoint = `/workflows/${methodId}/steps`;
         return await this.apiRequest(endpoint, 'GET');
     }
 
     /**
      * Update Workflow Progress
-     * PUT /api/v1/workflows/{methodId}/progress
+     * PUT /workflows/{methodId}/progress
      */
     async updateWorkflowProgress(methodId, currentStep, totalSteps = null) {
-        const endpoint = `/api/v1/workflows/${methodId}/progress`;
+        const endpoint = `/workflows/${methodId}/progress`;
         const progressData = {
             methodId,
             currentStep,
@@ -182,19 +178,19 @@ class WorkflowAPI {
 
     /**
      * Lade Workflow Progress
-     * GET /api/v1/workflows/{methodId}/progress
+     * GET /workflows/{methodId}/progress
      */
     async getWorkflowProgress(methodId) {
-        const endpoint = `/api/v1/workflows/${methodId}/progress`;
+        const endpoint = `/workflows/${methodId}/progress`;
         return await this.apiRequest(endpoint, 'GET');
     }
 
     /**
      * Speichere Workflow-Ergebnisse
-     * POST /api/v1/workflows/{methodId}/results
+     * POST /workflows/{methodId}/results
      */
     async saveWorkflowResults(methodId, results) {
-        const endpoint = `/api/v1/workflows/${methodId}/results`;
+        const endpoint = `/workflows/${methodId}/results`;
         const data = {
             methodId,
             results,
@@ -207,10 +203,10 @@ class WorkflowAPI {
 
     /**
      * Lade Workflow-Ergebnisse
-     * GET /api/v1/workflows/{methodId}/results
+     * GET /workflows/{methodId}/results
      */
     async getWorkflowResults(methodId) {
-        const endpoint = `/api/v1/workflows/${methodId}/results`;
+        const endpoint = `/workflows/${methodId}/results`;
         return await this.apiRequest(endpoint, 'GET');
     }
 

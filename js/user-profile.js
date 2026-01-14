@@ -652,15 +652,36 @@ class UserProfile {
         const nameFirst = nameParts[0] || '';
         const nameLast = nameParts.slice(1).join(' ') || '';
         
+        // WICHTIG: Resume-Daten als Fallback nutzen (enthalten oft die echten Daten)
+        let resumeData = {};
+        if (rawData.resume) {
+            try {
+                const resume = typeof rawData.resume === 'string' ? JSON.parse(rawData.resume) : rawData.resume;
+                const pi = resume.personalInfo || {};
+                resumeData = {
+                    firstName: pi.firstName || '',
+                    lastName: pi.lastName || '',
+                    email: pi.email || '',
+                    phone: pi.phone || '',
+                    location: pi.location || pi.address || '',
+                    profession: pi.title || ''
+                };
+                console.log('📋 Resume-Daten als Fallback:', resumeData);
+            } catch (e) {
+                console.warn('⚠️ Konnte Resume nicht parsen:', e);
+            }
+        }
+        
+        // Priorität: Direkte Felder > personal > resume > name-parsing
         return {
             ...rawData,
-            firstName: rawData.firstName || rawData.profile?.firstName || personal.firstName || nameFirst || '',
-            lastName: rawData.lastName || rawData.profile?.lastName || personal.lastName || nameLast || '',
-            email: rawData.email || rawData.profile?.email || personal.email || '',
-            phone: rawData.phone || rawData.profile?.phone || personal.phone || '',
-            location: rawData.location || rawData.profile?.location || personal.location || '',
+            firstName: rawData.firstName || rawData.profile?.firstName || personal.firstName || resumeData.firstName || nameFirst || '',
+            lastName: rawData.lastName || rawData.profile?.lastName || personal.lastName || resumeData.lastName || nameLast || '',
+            email: rawData.email || rawData.profile?.email || personal.email || resumeData.email || '',
+            phone: rawData.phone || rawData.profile?.phone || personal.phone || resumeData.phone || '',
+            location: rawData.location || rawData.profile?.location || personal.location || resumeData.location || '',
             birthDate: rawData.birthDate || personal.birthDate || '',
-            profession: rawData.profession || professional.profession || rawData.currentJob || '',
+            profession: rawData.profession || professional.profession || rawData.currentJob || resumeData.profession || '',
             company: rawData.company || professional.company || '',
             experience: rawData.experience || professional.experience || '',
             industry: rawData.industry || professional.industry || '',
