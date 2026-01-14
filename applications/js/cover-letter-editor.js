@@ -429,6 +429,13 @@ class CoverLetterEditor {
                     console.warn('Could not parse coaching data:', error);
                 }
             }
+
+            if (this.profileData && !this.profileData.fachlicheEntwicklung) {
+                const fachliche = this.getFachlicheEntwicklungFromStorage();
+                if (fachliche) {
+                    this.profileData.fachlicheEntwicklung = fachliche;
+                }
+            }
             
             // Update sender info
             if (this.profileData) {
@@ -438,6 +445,23 @@ class CoverLetterEditor {
             console.log('👤 Profile loaded:', this.profileData ? 'Yes' : 'No');
         } catch (error) {
             console.warn('Could not load profile:', error);
+        }
+    }
+
+    getFachlicheEntwicklungFromStorage() {
+        try {
+            const steps = {};
+            for (let i = 1; i <= 7; i++) {
+                const raw = localStorage.getItem(`fachlicheEntwicklungStep${i}`);
+                if (raw) steps[`step${i}`] = JSON.parse(raw);
+            }
+            const finalRaw = localStorage.getItem('fachlicheEntwicklungFinalAnalysis');
+            const finalAnalysis = finalRaw ? JSON.parse(finalRaw) : null;
+            if (!Object.keys(steps).length && !finalAnalysis) return null;
+            return { steps, finalAnalysis };
+        } catch (error) {
+            console.warn('Could not parse fachliche Entwicklung data:', error);
+            return null;
         }
     }
 
@@ -700,6 +724,7 @@ Gib ausschließlich ein JSON-Array mit Strings zurück.
         
         const profile = this.profileData || {};
         const coaching = profile.coaching || {};
+        const fachlicheSummary = this.buildFachlicheSummary(profile.fachlicheEntwicklung);
         const coachingStrengths = [
             coaching.naturalTalents,
             coaching.acquiredSkills,
@@ -721,6 +746,7 @@ BEWERBER:
 - Name: ${profile.firstName || ''} ${profile.lastName || ''}
 - Skills: ${profile.skills?.join(', ') || coachingStrengths || 'Nicht angegeben'}
 - Motivation/Ziele: ${coachingMotivation || profile.summary || 'Nicht angegeben'}
+${fachlicheSummary ? `- Fachliche Entwicklung: ${fachlicheSummary}` : ''}
 
 ANFORDERUNGEN:
 - Tonalität: ${toneMap[this.options.tone]}
@@ -730,6 +756,25 @@ ANFORDERUNGEN:
 
 Erstelle nur den Haupttext des Anschreibens (ohne Anrede und Grußformel).
 `;
+    }
+
+    buildFachlicheSummary(fachliche) {
+        if (!fachliche || !fachliche.steps) return '';
+        const step1 = fachliche.steps.step1 || {};
+        const step2 = fachliche.steps.step2 || {};
+        const parts = [];
+        if (step1.currentPosition) parts.push(`Aktuelle Rolle: ${step1.currentPosition}`);
+        if (step1.futureVision) parts.push(`Zielrolle: ${step1.futureVision}`);
+        if (step1.technicalSkills) parts.push(`Technische Skills: ${step1.technicalSkills}`);
+        if (step1.softSkills) parts.push(`Soft Skills: ${step1.softSkills}`);
+        if (step1.tools) parts.push(`Tools/Technologien: ${step1.tools}`);
+        if (step1.projects) parts.push(`Projekte/Erfolge: ${step1.projects}`);
+        if (step1.overallSkillLevel) parts.push(`Skill-Level: ${step1.overallSkillLevel}/10`);
+        if (step2.criticalSkills) parts.push(`Kritische Skills: ${step2.criticalSkills}`);
+        if (step2.trends) parts.push(`Trends: ${step2.trends}`);
+        const summary = parts.join(' | ');
+        if (!summary) return '';
+        return summary.length > 800 ? `${summary.slice(0, 800)}...` : summary;
     }
 
     generateFromTemplate(jobData) {

@@ -421,6 +421,30 @@ class UserProfile {
         }
     }
 
+    getFachlicheEntwicklungFromStorage() {
+        try {
+            const steps = {};
+            for (let i = 1; i <= 7; i++) {
+                const raw = localStorage.getItem(`fachlicheEntwicklungStep${i}`);
+                if (raw) {
+                    steps[`step${i}`] = JSON.parse(raw);
+                }
+            }
+            const finalRaw = localStorage.getItem('fachlicheEntwicklungFinalAnalysis');
+            const finalAnalysis = finalRaw ? JSON.parse(finalRaw) : null;
+            if (!Object.keys(steps).length && !finalAnalysis) {
+                return null;
+            }
+            return {
+                steps,
+                finalAnalysis
+            };
+        } catch (error) {
+            console.warn('⚠️ Konnte Fachliche-Entwicklung-Daten nicht lesen:', error);
+            return null;
+        }
+    }
+
     loadProfileData() {
         const defaultData = {
             firstName: '',
@@ -444,16 +468,28 @@ class UserProfile {
         };
 
         const coachingData = this.getCoachingDataFromStorage();
+        const fachlicheData = this.getFachlicheEntwicklungFromStorage();
+        const fachlicheData = this.getFachlicheEntwicklungFromStorage();
         const savedData = localStorage.getItem('userProfile');
         if (savedData) {
             const parsed = { ...defaultData, ...JSON.parse(savedData) };
             if (coachingData && !parsed.coaching) {
                 parsed.coaching = coachingData;
             }
+            if (fachlicheData && !parsed.fachlicheEntwicklung) {
+                parsed.fachlicheEntwicklung = fachlicheData;
+            }
             return parsed;
         }
 
-        return coachingData ? { ...defaultData, coaching: coachingData } : defaultData;
+        if (coachingData || fachlicheData) {
+            return {
+                ...defaultData,
+                ...(coachingData ? { coaching: coachingData } : {}),
+                ...(fachlicheData ? { fachlicheEntwicklung: fachlicheData } : {})
+            };
+        }
+        return defaultData;
     }
     
     async loadProfileDataFromAWS(retryCount = 0) {
@@ -522,6 +558,11 @@ class UserProfile {
             const coachingData = this.getCoachingDataFromStorage();
             if (coachingData && !this.profileData.coaching) {
                 this.profileData.coaching = coachingData;
+            }
+            
+            const fachlicheData = this.getFachlicheEntwicklungFromStorage();
+            if (fachlicheData && !this.profileData.fachlicheEntwicklung) {
+                this.profileData.fachlicheEntwicklung = fachlicheData;
             }
             
             console.log('📋 Final profile data:', this.profileData);
@@ -942,6 +983,9 @@ class UserProfile {
         
         if (coachingData || this.profileData.coaching) {
             profileToSave.coaching = coachingData || this.profileData.coaching;
+        }
+        if (fachlicheData || this.profileData.fachlicheEntwicklung) {
+            profileToSave.fachlicheEntwicklung = fachlicheData || this.profileData.fachlicheEntwicklung;
         }
 
         // Preserve profileImageUrl if it exists

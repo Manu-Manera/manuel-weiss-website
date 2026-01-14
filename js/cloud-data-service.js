@@ -132,6 +132,24 @@ class CloudDataService {
                         console.warn('⚠️ Coaching-Daten konnten nicht gelesen werden:', e);
                     }
                 }
+
+                // Ergänze Fachliche-Entwicklung-Workflow aus localStorage falls nicht vorhanden
+                if (!profile.fachlicheEntwicklung) {
+                    try {
+                        const steps = {};
+                        for (let i = 1; i <= 7; i++) {
+                            const raw = localStorage.getItem(`fachlicheEntwicklungStep${i}`);
+                            if (raw) steps[`step${i}`] = JSON.parse(raw);
+                        }
+                        const finalRaw = localStorage.getItem('fachlicheEntwicklungFinalAnalysis');
+                        const finalAnalysis = finalRaw ? JSON.parse(finalRaw) : null;
+                        if (Object.keys(steps).length || finalAnalysis) {
+                            profile.fachlicheEntwicklung = { steps, finalAnalysis };
+                        }
+                    } catch (e) {
+                        console.warn('⚠️ Fachliche-Entwicklung-Daten konnten nicht gelesen werden:', e);
+                    }
+                }
                 this.cache.profile = profile;
                 this.cacheExpiry.profile = Date.now() + this.CACHE_DURATION;
                 console.log('✅ Profil aus Cloud geladen');
