@@ -1380,284 +1380,225 @@ Ihre Aufgaben:
             });
         }
         
-        // Setup Auth UI
+        // =============================================================================
+        // VEREINFACHTE AUTH UI - Eine einzige Quelle der Wahrheit
+        // =============================================================================
         function setupAuthUI() {
             const authButton = document.getElementById('authButton');
-            const authButtonText = document.getElementById('authButtonText');
             const mobileAuthButton = document.getElementById('mobileAuthButton');
             const userDropdown = document.getElementById('userDropdown');
             
             if (!authButton) return;
             
-            // Hilfsfunktion zum Aktualisieren der UI mit Profildaten
-            // Button zeigt nur Vorname, Dropdown zeigt vollen Namen + Email
-            function updateUIWithProfile(firstName, fullName, email, profileImage) {
-                const isLoggedIn = window.awsAuth && window.awsAuth.isLoggedIn();
-                if (!isLoggedIn) return;
-                
-                // Button: Nur Vorname
-                authButton.innerHTML = `
-                    <img src="${profileImage}" alt="User" class="nav-user-avatar">
-                    <span>${firstName}</span>
-                    <i class="fas fa-chevron-down"></i>
-                `;
-                authButton.classList.add('logged-in');
-                
-                // Dropdown: Voller Name + Email
-                if (document.getElementById('userName')) {
-                    document.getElementById('userName').textContent = fullName;
-                }
-                if (document.getElementById('userEmail')) {
-                    document.getElementById('userEmail').textContent = email;
-                }
-                if (document.getElementById('userAvatarImg')) {
-                    document.getElementById('userAvatarImg').src = profileImage;
+            // DROPDOWN STATE - Komplett isoliert
+            let dropdownIsOpen = false;
+            let lastUserInteraction = 0;
+            
+            function forceCloseDropdown() {
+                dropdownIsOpen = false;
+                if (userDropdown) {
+                    userDropdown.style.display = 'none';
+                    userDropdown.classList.remove('show');
                 }
             }
             
-            // UnifiedProfileService Listener registrieren - aktualisiert UI sobald Profil geladen
-            function tryUpdateFromUnifiedProfile() {
-                if (window.unifiedProfileService?.isInitialized) {
-                    const profile = window.unifiedProfileService.getProfile();
-                    if (profile && profile.firstName && profile.firstName !== 'Test') {
-                        const firstName = window.unifiedProfileService.getFirstName();
-                        const fullName = window.unifiedProfileService.getDisplayName();
-                        const email = window.unifiedProfileService.getEmail();
-                        const profileImage = window.unifiedProfileService.getProfileImage() || '../images/default-avatar.png';
-                        console.log('📊 UnifiedProfileService direkt - Vorname:', firstName, 'Voller Name:', fullName);
-                        updateUIWithProfile(firstName, fullName, email, profileImage);
-                        return true;
-                    }
-                }
-                return false;
-            }
-            
-            if (window.unifiedProfileService) {
-                // Listener für zukünftige Änderungen
-                window.unifiedProfileService.onProfileChange((profile) => {
-                    if (profile && profile.firstName && profile.firstName !== 'Test') {
-                        const firstName = window.unifiedProfileService.getFirstName();
-                        const fullName = window.unifiedProfileService.getDisplayName();
-                        const email = window.unifiedProfileService.getEmail();
-                        const profileImage = window.unifiedProfileService.getProfileImage() || '../images/default-avatar.png';
-                        console.log('📊 UnifiedProfileService Update - Vorname:', firstName);
-                        updateUIWithProfile(firstName, fullName, email, profileImage);
-                    }
-                });
-                
-                // Falls Service bereits initialisiert, sofort aktualisieren
-                tryUpdateFromUnifiedProfile();
-            }
-            
-            // Polling falls Service noch nicht bereit ist
-            let pollAttempts = 0;
-            const pollInterval = setInterval(() => {
-                pollAttempts++;
-                if (tryUpdateFromUnifiedProfile() || pollAttempts >= 20) {
-                    clearInterval(pollInterval);
-                }
-            }, 500);
-            
-            // Update UI based on login state
-            async function updateAuthState() {
-                const isLoggedIn = window.awsAuth && window.awsAuth.isLoggedIn();
-                const userData = isLoggedIn ? window.awsAuth.getUserDataFromToken() : null;
-                
-                if (isLoggedIn && userData) {
-                    let displayName = '';
-                    let profileImage = userData.picture || '../images/default-avatar.png';
-                    
-                    // PRIORITÄT 1: UnifiedProfileService (beste Datenquelle)
-                    if (window.unifiedProfileService?.isInitialized) {
-                        displayName = window.unifiedProfileService.getDisplayName();
-                        const profileImg = window.unifiedProfileService.getProfileImage();
-                        if (profileImg) profileImage = profileImg;
-                        console.log('✅ Name aus UnifiedProfileService:', displayName);
-                    }
-                    
-                    // PRIORITÄT 2: AWS-Profil
-                    if (!displayName || displayName === 'Profil') {
-                        try {
-                            if (window.awsProfileAPI?.isInitialized) {
-                                const profile = await window.awsProfileAPI.loadProfile();
-                                if (profile) {
-                                    const firstName = profile.firstName || profile.personal?.firstName || '';
-                                    const lastName = profile.lastName || profile.personal?.lastName || '';
-                                    
-                                    // "Test User" ignorieren!
-                                    if (firstName && !(firstName === 'Test' && lastName === 'User')) {
-                                        displayName = firstName + (lastName ? ' ' + lastName : '');
-                                        console.log('✅ Name aus AWS-Profil:', displayName);
-                                    }
-                                    if (profile.profileImageUrl) profileImage = profile.profileImageUrl;
-                                }
-                            }
-                        } catch (e) {
-                            console.log('ℹ️ AWS-Profil nicht verfügbar');
-                        }
-                    }
-                    
-                    // PRIORITÄT 3: Token-Name (aber NICHT "Test User"!)
-                    if (!displayName || displayName === 'Profil') {
-                        const tokenName = userData.name || '';
-                        if (tokenName && tokenName !== 'Test User' && tokenName !== 'Test') {
-                            displayName = tokenName;
-                            console.log('✅ Name aus Token:', displayName);
-                        }
-                    }
-                    
-                    // PRIORITÄT 4: Email-Fallback
-                    if (!displayName || displayName === 'Profil') {
-                        if (userData.email) {
-                            const emailName = userData.email.split('@')[0];
-                            displayName = emailName.length > 3 ? emailName : 'Profil';
-                            console.log('ℹ️ Verwende Email-Fallback:', displayName);
-                        }
-                    }
-                    
-                    // Logged in - Finaler Name (niemals "Test")
-                    displayName = displayName || 'Profil';
-                    
-                    // Extrahiere Vornamen für Button
-                    const firstName = displayName.split(' ')[0] || displayName;
-                    
-                    // Button: Nur Vorname
-                    authButton.innerHTML = `
-                        <img src="${profileImage}" alt="User" class="nav-user-avatar">
-                        <span>${firstName}</span>
-                        <i class="fas fa-chevron-down"></i>
-                    `;
-                    authButton.classList.add('logged-in');
-                    
-                    // Dropdown: Voller Name + Email
-                    if (document.getElementById('userName')) {
-                        document.getElementById('userName').textContent = displayName;
-                    }
-                    if (document.getElementById('userEmail')) {
-                        document.getElementById('userEmail').textContent = userData.email || '';
-                    }
-                    if (document.getElementById('userAvatarImg')) {
-                        document.getElementById('userAvatarImg').src = profileImage;
-                    }
-                    
-                    // Mobile
-                    if (mobileAuthButton) {
-                        mobileAuthButton.innerHTML = `<i class="fas fa-sign-out-alt"></i> Abmelden`;
-                        mobileAuthButton.onclick = () => window.awsAuth.logout();
-                    }
-                    
-                    // Mobile Profil-Link anzeigen
-                    const mobileProfileLink = document.getElementById('mobileProfileLink');
-                    if (mobileProfileLink) {
-                        mobileProfileLink.style.display = 'block';
-                    }
-                    
-                    // WICHTIG: Dropdown nach Login NICHT automatisch öffnen
-                    if (userDropdown) {
-                        userDropdown.style.display = 'none';
-                    }
-                } else {
-                    // Not logged in
-                    authButton.innerHTML = `<i class="fas fa-user"></i><span>Anmelden</span>`;
-                    authButton.classList.remove('logged-in');
-                    if (userDropdown) userDropdown.style.display = 'none';
-                    
-                    // Mobile
-                    if (mobileAuthButton) {
-                        mobileAuthButton.innerHTML = `<i class="fas fa-user"></i> Anmelden`;
-                        mobileAuthButton.onclick = () => {
-                            closeMobileMenu();
-                            if (window.authModals) window.authModals.showLogin();
-                        };
-                    }
-                    
-                    // Mobile Profil-Link ausblenden
-                    const mobileProfileLink = document.getElementById('mobileProfileLink');
-                    if (mobileProfileLink) {
-                        mobileProfileLink.style.display = 'none';
-                    }
+            function toggleDropdown() {
+                // Nur wenn letzte Interaktion kürzlich war (verhindert programmatisches Öffnen)
+                const now = Date.now();
+                if (now - lastUserInteraction > 100) {
+                    console.log('❌ Dropdown-Toggle blockiert (keine kürzliche User-Interaktion)');
+                    return;
                 }
                 
-                // Trigger dashboard update
-                if (window.DashboardCore && window.DashboardCore.checkAuthStatus) {
-                    window.DashboardCore.checkAuthStatus();
+                dropdownIsOpen = !dropdownIsOpen;
+                if (userDropdown) {
+                    userDropdown.style.display = dropdownIsOpen ? 'block' : 'none';
                 }
             }
             
-            // RADIKAL VEREINFACHT: Dropdown nur bei ECHTEM User-Klick
-            // e.isTrusted ist nur true bei echten Benutzer-Aktionen, nicht bei programmatischen
-            let dropdownOpen = false;
+            // Schließe Dropdown bei fast allem
+            forceCloseDropdown(); // Initial geschlossen
+            window.addEventListener('blur', forceCloseDropdown);
+            window.addEventListener('focus', forceCloseDropdown);
+            document.addEventListener('visibilitychange', forceCloseDropdown);
+            document.addEventListener('scroll', forceCloseDropdown, true);
             
-            function closeDropdown() {
-                dropdownOpen = false;
-                if (userDropdown) userDropdown.style.display = 'none';
-            }
-            
-            function openDropdown() {
-                dropdownOpen = true;
-                if (userDropdown) userDropdown.style.display = 'block';
-            }
-            
-            // Schließe bei JEDEM dieser Events
-            window.addEventListener('blur', closeDropdown);
-            window.addEventListener('focus', closeDropdown); // Auch bei focus schließen!
-            document.addEventListener('visibilitychange', closeDropdown);
-            
-            // Auth button - NUR bei e.isTrusted = true (echter Benutzerklick)
+            // Auth button click - STRIKTE Überprüfung
             authButton.addEventListener('click', (e) => {
-                // KRITISCH: Nur echte Benutzerklicks akzeptieren!
+                // MEHRFACHE Sicherheitsprüfungen
                 if (!e.isTrusted) {
-                    console.log('❌ Programmatischer Klick ignoriert');
+                    console.log('❌ Programmatischer Klick blockiert');
+                    forceCloseDropdown();
+                    return;
+                }
+                
+                // Muss ein echter Pointer-Event sein
+                if (e.detail === 0 && e.pointerType !== 'mouse' && e.pointerType !== 'touch') {
+                    console.log('❌ Kein echter Pointer-Event');
+                    forceCloseDropdown();
                     return;
                 }
                 
                 e.preventDefault();
                 e.stopPropagation();
                 
+                lastUserInteraction = Date.now();
+                
                 const isLoggedIn = window.awsAuth && window.awsAuth.isLoggedIn();
                 
                 if (isLoggedIn) {
-                    // Toggle dropdown
-                    if (dropdownOpen) {
-                        closeDropdown();
-                    } else {
-                        openDropdown();
-                    }
+                    toggleDropdown();
                 } else {
-                    closeDropdown();
+                    forceCloseDropdown();
                     if (window.authModals) {
                         window.authModals.showLogin();
                     } else if (window.unifiedAuthModals) {
                         window.unifiedAuthModals.showLogin();
                     }
                 }
-            });
+            }, { passive: false });
             
-            // Klick außerhalb schließt Dropdown
+            // Klick außerhalb schließt
             document.addEventListener('click', (e) => {
-                if (!e.isTrusted) return; // Nur echte Klicks
-                if (!userDropdown || !dropdownOpen) return;
+                if (!e.isTrusted) return;
+                if (!dropdownIsOpen) return;
                 
-                if (!authButton.contains(e.target) && !userDropdown.contains(e.target)) {
-                    closeDropdown();
+                if (!authButton.contains(e.target) && !userDropdown?.contains(e.target)) {
+                    forceCloseDropdown();
                 }
-            });
+            }, true);
             
             // Escape schließt
             document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') closeDropdown();
+                if (e.key === 'Escape') forceCloseDropdown();
             });
             
-            // Close on escape
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') closeDropdown();
+            // =============================================================================
+            // NAME UPDATE - Nur eine Funktion, keine konkurrierenden Updates
+            // =============================================================================
+            let currentDisplayName = null;
+            let updateInProgress = false;
+            
+            async function updateAuthUI() {
+                if (updateInProgress) return;
+                updateInProgress = true;
+                
+                try {
+                    const isLoggedIn = window.awsAuth && window.awsAuth.isLoggedIn();
+                    const userData = isLoggedIn ? window.awsAuth.getUserDataFromToken() : null;
+                    
+                    if (isLoggedIn && userData) {
+                        let firstName = '';
+                        let fullName = '';
+                        let email = userData.email || '';
+                        let profileImage = '../images/default-avatar.png';
+                        
+                        // EINZIGE QUELLE: UnifiedProfileService
+                        if (window.unifiedProfileService) {
+                            // Warte bis initialisiert (max 3 Sekunden)
+                            let attempts = 0;
+                            while (!window.unifiedProfileService.isInitialized && attempts < 30) {
+                                await new Promise(r => setTimeout(r, 100));
+                                attempts++;
+                            }
+                            
+                            if (window.unifiedProfileService.isInitialized) {
+                                firstName = window.unifiedProfileService.getFirstName() || '';
+                                fullName = window.unifiedProfileService.getDisplayName() || '';
+                                email = window.unifiedProfileService.getEmail() || email;
+                                const img = window.unifiedProfileService.getProfileImage();
+                                if (img) profileImage = img;
+                            }
+                        }
+                        
+                        // Fallbacks nur wenn UnifiedProfileService keine Daten hat
+                        if (!firstName || firstName === 'Test') {
+                            // Fallback: Email-Prefix
+                            if (email) {
+                                firstName = email.split('@')[0];
+                                if (firstName.length < 3) firstName = 'Profil';
+                            } else {
+                                firstName = 'Profil';
+                            }
+                            fullName = firstName;
+                        }
+                        
+                        // Nur updaten wenn sich was geändert hat
+                        if (currentDisplayName !== fullName) {
+                            currentDisplayName = fullName;
+                            console.log('✅ Auth UI Update - Vorname:', firstName, 'Voll:', fullName);
+                            
+                            // Button: Nur Vorname
+                            authButton.innerHTML = `
+                                <img src="${profileImage}" alt="User" class="nav-user-avatar" onerror="this.src='../images/default-avatar.png'">
+                                <span>${firstName}</span>
+                                <i class="fas fa-chevron-down"></i>
+                            `;
+                            authButton.classList.add('logged-in');
+                            
+                            // Dropdown-Inhalte
+                            const userName = document.getElementById('userName');
+                            const userEmail = document.getElementById('userEmail');
+                            const userAvatar = document.getElementById('userAvatarImg');
+                            
+                            if (userName) userName.textContent = fullName;
+                            if (userEmail) userEmail.textContent = email;
+                            if (userAvatar) userAvatar.src = profileImage;
+                        }
+                        
+                        // Mobile
+                        if (mobileAuthButton) {
+                            mobileAuthButton.innerHTML = `<i class="fas fa-sign-out-alt"></i> Abmelden`;
+                            mobileAuthButton.onclick = () => window.awsAuth.logout();
+                        }
+                        
+                        const mobileProfileLink = document.getElementById('mobileProfileLink');
+                        if (mobileProfileLink) mobileProfileLink.style.display = 'block';
+                        
+                    } else {
+                        // Nicht eingeloggt
+                        currentDisplayName = null;
+                        authButton.innerHTML = `<i class="fas fa-user"></i><span>Anmelden</span>`;
+                        authButton.classList.remove('logged-in');
+                        forceCloseDropdown();
+                        
+                        if (mobileAuthButton) {
+                            mobileAuthButton.innerHTML = `<i class="fas fa-user"></i> Anmelden`;
+                            mobileAuthButton.onclick = () => {
+                                closeMobileMenu();
+                                if (window.authModals) window.authModals.showLogin();
+                            };
+                        }
+                        
+                        const mobileProfileLink = document.getElementById('mobileProfileLink');
+                        if (mobileProfileLink) mobileProfileLink.style.display = 'none';
+                    }
+                    
+                    // Dashboard Update (nur einmal)
+                    if (window.DashboardCore?.checkAuthStatus) {
+                        window.DashboardCore.checkAuthStatus();
+                    }
+                    
+                } finally {
+                    updateInProgress = false;
+                }
+            }
+            
+            // UnifiedProfileService Listener - Einziger Weg für Profil-Updates
+            if (window.unifiedProfileService) {
+                window.unifiedProfileService.onProfileChange(() => {
+                    updateAuthUI();
+                });
+            }
+            
+            // Auth State Changes
+            window.addEventListener('authStateChanged', () => {
+                forceCloseDropdown(); // IMMER schließen bei Auth-Änderung
+                setTimeout(updateAuthUI, 100);
             });
             
-            // Listen for auth state changes
-            window.addEventListener('authStateChanged', updateAuthState);
-            
-            // Initial state
-            updateAuthState();
+            // Initial
+            updateAuthUI();
         }
         
         // Logout function for dropdown
@@ -1726,14 +1667,37 @@ Ihre Aufgaben:
             });
         }
         
-        // Load saved cover letters
-        function loadCoverLetters() {
+        // Load saved cover letters - CLOUD FIRST, dann localStorage Fallback
+        async function loadCoverLetters() {
             try {
-                const drafts = JSON.parse(localStorage.getItem('cover_letter_drafts') || '[]');
                 const container = document.getElementById('coverLettersList');
                 const emptyState = document.getElementById('coverLettersEmpty');
                 
                 if (!container) return;
+                
+                let drafts = [];
+                
+                // PRIORITÄT 1: Cloud-Daten über cloudDataService
+                if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
+                    try {
+                        console.log('📥 Lade Anschreiben aus Cloud...');
+                        const cloudDrafts = await window.cloudDataService.getCoverLetters(true); // forceRefresh
+                        if (cloudDrafts && cloudDrafts.length > 0) {
+                            drafts = cloudDrafts;
+                            console.log('✅ Anschreiben aus Cloud geladen:', drafts.length);
+                            // Synchronisiere mit localStorage
+                            localStorage.setItem('cover_letter_drafts', JSON.stringify(drafts));
+                        }
+                    } catch (cloudError) {
+                        console.warn('⚠️ Cloud-Laden fehlgeschlagen:', cloudError);
+                    }
+                }
+                
+                // FALLBACK: localStorage wenn Cloud leer oder nicht verfügbar
+                if (drafts.length === 0) {
+                    drafts = JSON.parse(localStorage.getItem('cover_letter_drafts') || '[]');
+                    console.log('📥 Anschreiben aus localStorage:', drafts.length);
+                }
                 
                 if (drafts.length === 0) {
                     container.innerHTML = '';
@@ -1902,13 +1866,37 @@ Ihre Aufgaben:
         // LEBENSLÄUFE FUNKTIONEN
         // ═══════════════════════════════════════════════════════════════════════════
         
-        function loadResumes() {
+        // Load resumes - CLOUD FIRST, dann localStorage Fallback
+        async function loadResumes() {
             try {
-                const resumes = JSON.parse(localStorage.getItem('user_resumes') || '[]');
                 const container = document.getElementById('resumesList');
                 const emptyState = document.getElementById('resumesEmpty');
                 
                 if (!container) return;
+                
+                let resumes = [];
+                
+                // PRIORITÄT 1: Cloud-Daten über cloudDataService
+                if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
+                    try {
+                        console.log('📥 Lade Lebensläufe aus Cloud...');
+                        const cloudResumes = await window.cloudDataService.getResumes(true); // forceRefresh
+                        if (cloudResumes && cloudResumes.length > 0) {
+                            resumes = cloudResumes;
+                            console.log('✅ Lebensläufe aus Cloud geladen:', resumes.length);
+                            // Synchronisiere mit localStorage
+                            localStorage.setItem('user_resumes', JSON.stringify(resumes));
+                        }
+                    } catch (cloudError) {
+                        console.warn('⚠️ Cloud-Laden fehlgeschlagen:', cloudError);
+                    }
+                }
+                
+                // FALLBACK: localStorage wenn Cloud leer oder nicht verfügbar
+                if (resumes.length === 0) {
+                    resumes = JSON.parse(localStorage.getItem('user_resumes') || '[]');
+                    console.log('📥 Lebensläufe aus localStorage:', resumes.length);
+                }
                 
                 if (resumes.length === 0) {
                     container.innerHTML = '';
