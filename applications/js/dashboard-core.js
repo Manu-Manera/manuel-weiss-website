@@ -235,22 +235,29 @@ async function loadAWSProfile() {
             }
             
             // Konvertiere AWS-Profil-Format zu DashboardState-Format
-            // WICHTIG: Ignoriere "Test User" Daten!
+            // WICHTIG: Ignoriere "Test User" Daten und behalte gültige UnifiedProfile-Daten!
             const rawFirstName = awsProfile.firstName || awsProfile.personal?.firstName || '';
             const rawLastName = awsProfile.lastName || awsProfile.personal?.lastName || '';
-            const isTestUser = rawFirstName === 'Test' && rawLastName === 'User';
+            const isTestUser = (rawFirstName === 'Test' && rawLastName === 'User') || 
+                               (rawFirstName === 'Test' && !rawLastName);
+            
+            // Behalte existierende gültige Namen aus UnifiedProfileService
+            const existingProfile = DashboardState.profile || {};
+            const keepExistingName = existingProfile.firstName && 
+                                     existingProfile.firstName !== 'Test' && 
+                                     existingProfile.firstName.length > 0;
             
             DashboardState.profile = {
-                firstName: isTestUser ? '' : rawFirstName,
-                lastName: isTestUser ? '' : rawLastName,
-                email: awsProfile.email || awsProfile.personal?.email || '',
-                phone: awsProfile.phone || awsProfile.personal?.phone || '',
-                location: awsProfile.location || awsProfile.personal?.location || '',
-                currentJob: awsProfile.currentPosition || awsProfile.profession || awsProfile.professional?.currentPosition || '',
-                experience: awsProfile.experience || awsProfile.professional?.experience || '',
-                summary: awsProfile.summary || awsProfile.professional?.summary || '',
-                skills: Array.isArray(awsProfile.skills) ? awsProfile.skills : (awsProfile.professional?.skills || []),
-                coaching: awsProfile.coaching || null
+                firstName: keepExistingName ? existingProfile.firstName : (isTestUser ? '' : rawFirstName),
+                lastName: keepExistingName ? existingProfile.lastName : (isTestUser ? '' : rawLastName),
+                email: awsProfile.email || awsProfile.personal?.email || existingProfile.email || '',
+                phone: awsProfile.phone || awsProfile.personal?.phone || existingProfile.phone || '',
+                location: awsProfile.location || awsProfile.personal?.location || existingProfile.location || '',
+                currentJob: awsProfile.currentPosition || awsProfile.profession || awsProfile.professional?.currentPosition || existingProfile.currentJob || '',
+                experience: awsProfile.experience || awsProfile.professional?.experience || existingProfile.experience || '',
+                summary: awsProfile.summary || awsProfile.professional?.summary || existingProfile.summary || '',
+                skills: Array.isArray(awsProfile.skills) ? awsProfile.skills : (awsProfile.professional?.skills || existingProfile.skills || []),
+                coaching: awsProfile.coaching || existingProfile.coaching || null
             };
             
             // Speichere auch lokal für Offline-Zugriff
