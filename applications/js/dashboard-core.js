@@ -56,6 +56,30 @@ const DashboardState = {
 async function initDashboard() {
     console.log('🚀 Initializing Bewerbungsmanager Dashboard...');
     
+    // UnifiedProfileService Listener für automatische Updates
+    if (window.unifiedProfileService) {
+        window.unifiedProfileService.onProfileChange((profile) => {
+            if (profile && profile.firstName && profile.firstName !== 'Test') {
+                console.log('📊 Dashboard: UnifiedProfileService Update erhalten');
+                // Update DashboardState mit den neuen Daten
+                DashboardState.profile = {
+                    ...DashboardState.profile,
+                    firstName: profile.firstName || DashboardState.profile.firstName,
+                    lastName: profile.lastName || DashboardState.profile.lastName,
+                    email: profile.email || DashboardState.profile.email,
+                    phone: profile.phone || DashboardState.profile.phone,
+                    location: profile.location || DashboardState.profile.location,
+                    currentJob: profile.profession || DashboardState.profile.currentJob,
+                    summary: profile.summary || DashboardState.profile.summary,
+                    skills: profile.skills?.length > 0 ? profile.skills : DashboardState.profile.skills
+                };
+                // Update UI
+                updateProfileForm();
+                prefillQuickApplyFromProfile();
+            }
+        });
+    }
+    
     // Load saved data (inkl. AWS-Profil - asynchron)
     await loadSavedState();
     
@@ -132,16 +156,27 @@ async function loadAWSProfile() {
         
         let awsProfile = null;
         
-        // PRIORITÄT 1: cloudDataService (Netlify Function)
-        if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
-            console.log('📡 Lade Profil aus cloudDataService...');
-            try {
-                awsProfile = await window.cloudDataService.getProfile(true); // forceRefresh
-                if (awsProfile) {
-                    console.log('✅ Profil aus cloudDataService geladen:', Object.keys(awsProfile));
+        // PRIORITÄT 0: UnifiedProfileService (beste Datenquelle)
+        if (window.unifiedProfileService?.isInitialized) {
+            const unifiedProfile = window.unifiedProfileService.getProfile();
+            if (unifiedProfile && unifiedProfile.firstName && unifiedProfile.firstName !== 'Test') {
+                console.log('✅ Nutze UnifiedProfileService für Dashboard');
+                awsProfile = unifiedProfile;
+            }
+        }
+        
+        // PRIORITÄT 1: cloudDataService (Netlify Function) - falls UnifiedProfile leer
+        if (!awsProfile || Object.keys(awsProfile).length === 0) {
+            if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
+                console.log('📡 Lade Profil aus cloudDataService...');
+                try {
+                    awsProfile = await window.cloudDataService.getProfile(true); // forceRefresh
+                    if (awsProfile) {
+                        console.log('✅ Profil aus cloudDataService geladen:', Object.keys(awsProfile));
+                    }
+                } catch (e) {
+                    console.warn('⚠️ cloudDataService Fehler:', e.message);
                 }
-            } catch (e) {
-                console.warn('⚠️ cloudDataService Fehler:', e.message);
             }
         }
         
@@ -200,16 +235,21 @@ async function loadAWSProfile() {
             }
             
             // Konvertiere AWS-Profil-Format zu DashboardState-Format
+            // WICHTIG: Ignoriere "Test User" Daten!
+            const rawFirstName = awsProfile.firstName || awsProfile.personal?.firstName || '';
+            const rawLastName = awsProfile.lastName || awsProfile.personal?.lastName || '';
+            const isTestUser = rawFirstName === 'Test' && rawLastName === 'User';
+            
             DashboardState.profile = {
-                firstName: awsProfile.firstName || awsProfile.personal?.firstName || '',
-                lastName: awsProfile.lastName || awsProfile.personal?.lastName || '',
+                firstName: isTestUser ? '' : rawFirstName,
+                lastName: isTestUser ? '' : rawLastName,
                 email: awsProfile.email || awsProfile.personal?.email || '',
                 phone: awsProfile.phone || awsProfile.personal?.phone || '',
                 location: awsProfile.location || awsProfile.personal?.location || '',
                 currentJob: awsProfile.currentPosition || awsProfile.profession || awsProfile.professional?.currentPosition || '',
                 experience: awsProfile.experience || awsProfile.professional?.experience || '',
                 summary: awsProfile.summary || awsProfile.professional?.summary || '',
-                skills: awsProfile.skills || awsProfile.professional?.skills || [],
+                skills: Array.isArray(awsProfile.skills) ? awsProfile.skills : (awsProfile.professional?.skills || []),
                 coaching: awsProfile.coaching || null
             };
             
