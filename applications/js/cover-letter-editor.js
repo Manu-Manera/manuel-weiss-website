@@ -709,7 +709,23 @@ ${description.substring(0, 2000)}`;
     }
 
     updateSenderInfo() {
-        if (!this.profileData) return;
+        // Versuche Profil zu laden, falls noch nicht vorhanden
+        if (!this.profileData) {
+            // Versuche UnifiedProfileService
+            if (window.unifiedProfileService?.isInitialized) {
+                window.unifiedProfileService.getProfileData().then(profile => {
+                    if (profile && profile.firstName && profile.firstName !== 'Test') {
+                        this.profileData = profile;
+                        this.updateSenderInfo(); // Rekursiv aufrufen mit neuem Profil
+                    }
+                }).catch(() => {});
+            }
+            // Wenn immer noch kein Profil, versuche es später nochmal
+            if (!this.profileData) {
+                setTimeout(() => this.updateSenderInfo(), 1000);
+                return;
+            }
+        }
         
         const nameEl = document.getElementById('senderName');
         const addressEl = document.getElementById('senderAddress');
@@ -720,9 +736,14 @@ ${description.substring(0, 2000)}`;
         const lastName = this.profileData.lastName || this.profileData.name?.split(' ').slice(1).join(' ') || '';
         const fullName = `${firstName} ${lastName}`.trim() || 'Ihr Name';
         
-        // Name - nur setzen wenn leer oder Platzhalter
-        if (nameEl && (!nameEl.textContent.trim() || nameEl.textContent.trim() === 'Max Mustermann' || nameEl.textContent.trim() === 'Ihr Name')) {
-            nameEl.textContent = fullName;
+        // Name - IMMER setzen wenn "Max Mustermann" oder leer
+        if (nameEl) {
+            const currentName = nameEl.textContent.trim();
+            if (!currentName || currentName === 'Max Mustermann' || currentName === 'Ihr Name' || currentName === 'Muster') {
+                if (fullName && fullName !== 'Ihr Name') {
+                    nameEl.textContent = fullName;
+                }
+            }
         }
         
         if (signatureEl) {
@@ -1091,6 +1112,9 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
             letterText.value = withPlaceholders;
             this.generatedContent = withPlaceholders;
         }
+        
+        // Update sender info IMMER (auch wenn Profil später geladen wird)
+        this.updateSenderInfo();
         
         // Update company info mit Best Practices
         this.updateCompanyInfo(jobData);
