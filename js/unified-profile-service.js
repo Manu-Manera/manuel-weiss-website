@@ -547,8 +547,17 @@ class UnifiedProfileService {
     sanitizeProfile() {
         if (!this.profile) return;
 
-        // Entferne "Test User" Namen
-        if (this.profile.firstName === 'Test' && this.profile.lastName === 'User') {
+        // Entferne "Test User" Namen - ERWEITERTE PRÜFUNG
+        const testNames = ['Test', 'Test User', 'TestUser', 'test', 'TEST'];
+        if (testNames.includes(this.profile.firstName) || 
+            (this.profile.firstName === 'Test' && this.profile.lastName === 'User')) {
+            console.log('⚠️ "Test User" erkannt und entfernt');
+            this.profile.firstName = '';
+            this.profile.lastName = '';
+        }
+        
+        // Entferne auch einzelnes "Test" als firstName ohne validen lastName
+        if (this.profile.firstName === 'Test' && (!this.profile.lastName || this.profile.lastName === 'User')) {
             this.profile.firstName = '';
             this.profile.lastName = '';
         }
@@ -612,6 +621,26 @@ class UnifiedProfileService {
      */
     getProfileImage() {
         return this.profile?.profileImageUrl || '';
+    }
+
+    /**
+     * Löscht den Cache und erzwingt Neu-Laden
+     */
+    clearCache() {
+        localStorage.removeItem(this.cacheKey);
+        this.profile = null;
+        this.isInitialized = false;
+        console.log('🗑️ UnifiedProfileService Cache gelöscht');
+    }
+
+    /**
+     * Erzwingt Neu-Laden des Profils
+     */
+    async refresh() {
+        this.clearCache();
+        await this.loadFullProfile();
+        this.isInitialized = true;
+        this.notifyListeners();
     }
 
     /**
