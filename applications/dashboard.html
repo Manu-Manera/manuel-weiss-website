@@ -13,7 +13,7 @@
     <!-- CSS -->
     <link rel="stylesheet" href="../styles.css">
     <link rel="stylesheet" href="css/applications-main.css">
-    <link rel="stylesheet" href="css/dashboard.css?v=20260115portfolio">
+    <link rel="stylesheet" href="css/dashboard.css?v=20260116fix">
     <link rel="stylesheet" href="css/landing.css?v=20260110">
     
     <!-- Critical Mobile Navbar Override - Wie Hauptseite -->
@@ -1432,7 +1432,7 @@ Ihre Aufgaben:
     <script src="../js/unified-profile-service.js?v=20260115fix2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="js/utils.js?v=20260112i"></script>
-    <script src="js/dashboard-core.js?v=20260115portfolio"></script>
+    <script src="js/dashboard-core.js?v=20260116fix"></script>
     <script src="js/quick-apply.js?v=20260112i"></script>
     
     <script>
@@ -2300,7 +2300,13 @@ Ihre Aufgaben:
                 }
                 
                 element.closest('.document-category-modal').remove();
-                loadSavedDocuments();
+                await loadSavedDocuments();
+                
+                // Stats aktualisieren
+                if (typeof updateDashboardStats === 'function') {
+                    await updateDashboardStats();
+                }
+                
                 if (uploadError && documentData.storage === 'local') {
                     showToast('Dokument lokal gespeichert (Cloud-Upload fehlgeschlagen)', 'warning');
                 } else {
