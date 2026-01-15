@@ -206,15 +206,33 @@ class UserProfile {
         // Use real user data - prioritize userData over user parameter
         const authUser = userData || user || {};
         const displayEmail = authUser.email || user?.email || '';
-        const firstName = authUser.firstName || user?.firstName || '';
-        const lastName = authUser.lastName || user?.lastName || '';
+        let firstName = authUser.firstName || user?.firstName || '';
+        let lastName = authUser.lastName || user?.lastName || '';
+        
+        // WICHTIG: "Test User" aus Auth-Daten ignorieren!
+        const isTestUser = (firstName === 'Test' && lastName === 'User') || 
+                          (firstName === 'Test' && !lastName) ||
+                          (firstName === 'TestUser');
+        if (isTestUser) {
+            console.log('⚠️ "Test User" erkannt in Auth-Daten, ignoriere Namen');
+            firstName = '';
+            lastName = '';
+        }
+        
         const currentProfile = this.profileData || {};
         const resolvedFirstName = currentProfile.firstName || firstName || '';
         const resolvedLastName = currentProfile.lastName || lastName || '';
         const resolvedEmail = currentProfile.email || displayEmail || '';
-        const displayName = resolvedFirstName && resolvedLastName ? 
+        
+        // WICHTIG: "Test" auch aus displayName entfernen
+        let displayName = resolvedFirstName && resolvedLastName ? 
             `${resolvedFirstName} ${resolvedLastName}` : 
             (resolvedFirstName || resolvedLastName || resolvedEmail?.split('@')[0] || 'Benutzer');
+        
+        // Filter "Test" aus displayName
+        if (displayName === 'Test' || displayName === 'Test User' || displayName === 'TestUser' || displayName.startsWith('Test ')) {
+            displayName = resolvedEmail?.split('@')[0] || 'Benutzer';
+        }
         
         console.log('📧 Display email:', displayEmail);
         console.log('👤 Display name:', displayName);
@@ -637,6 +655,9 @@ class UserProfile {
             // Update form fields with merged data
             this.populateFormFields(this.profileData);
             
+            // WICHTIG: UI aktualisieren (Name, Email, etc.) - NACH populateFormFields
+            this.updateUIWithProfile(this.profileData);
+            
             // Update profile image if available
             if (this.profileData.profileImageUrl) {
                 const profileImg = document.getElementById('profileImage');
@@ -645,7 +666,7 @@ class UserProfile {
                 }
             }
             
-            // Also update from auth to ensure display is correct
+            // Also update from auth to ensure display is correct (aber nur wenn nicht "Test User")
             if (currentUser || userData) {
                 this.updateUserInfoFromAuth(currentUser || userData, { allowOverwrite: false });
             }
@@ -805,6 +826,16 @@ class UserProfile {
     updateUIWithProfile(profile) {
         if (!profile) return;
         
+        // WICHTIG: "Test User" komplett ignorieren
+        const testNames = ['Test', 'Test User', 'TestUser', 'test', 'TEST'];
+        const isTestUser = testNames.includes(profile.firstName) || 
+                          (profile.firstName === 'Test' && (!profile.lastName || profile.lastName === 'User'));
+        
+        if (isTestUser) {
+            console.log('⚠️ "Test User" erkannt in updateUIWithProfile, ignoriere');
+            return; // Keine UI-Updates für Test-User
+        }
+        
         // Update Header-Bereich
         const userNameEl = document.getElementById('userName');
         const userEmailEl = document.getElementById('userEmail');
@@ -812,8 +843,21 @@ class UserProfile {
         
         if (userNameEl && profile.firstName) {
             const fullName = `${profile.firstName || ''} ${profile.lastName || ''}`.trim();
-            if (fullName && fullName !== 'Test User' && fullName !== 'Test') {
+            // Zusätzliche Filterung für "Test"
+            if (fullName && 
+                fullName !== 'Test User' && 
+                fullName !== 'Test' && 
+                fullName !== 'TestUser' &&
+                !fullName.startsWith('Test ')) {
                 userNameEl.textContent = fullName;
+                console.log('✅ Name aktualisiert:', fullName);
+            } else {
+                // Fallback: Email-Prefix verwenden
+                const emailPrefix = profile.email?.split('@')[0] || '';
+                if (emailPrefix && emailPrefix !== 'test') {
+                    userNameEl.textContent = emailPrefix.charAt(0).toUpperCase() + emailPrefix.slice(1);
+                    console.log('✅ Name aus Email generiert:', emailPrefix);
+                }
             }
         }
         
@@ -823,6 +867,12 @@ class UserProfile {
         
         if (profileImageEl && profile.profileImageUrl) {
             profileImageEl.src = profile.profileImageUrl;
+        }
+        
+        // Update auch Profile Header (falls vorhanden)
+        const profileHeaderName = document.querySelector('.profile-header h2');
+        if (profileHeaderName && userNameEl) {
+            profileHeaderName.textContent = userNameEl.textContent;
         }
         
         console.log('✅ UI mit Profildaten aktualisiert:', {
@@ -1099,6 +1149,7 @@ class UserProfile {
 
         // Harmonisiertes Format: Speichere sowohl direkt als auch strukturiert
         const coachingData = this.getCoachingDataFromStorage();
+        const fachlicheData = this.getFachlicheEntwicklungFromStorage(); // FEHLER BEHOBEN: Variable wurde nicht definiert
         const profileToSave = {
             // Direkte Felder (für Kompatibilität)
             ...formData,
@@ -1163,6 +1214,18 @@ class UserProfile {
             
             console.log('✅ Profil erfolgreich in AWS gespeichert:', result);
             
+            // WICHTIG: UnifiedProfileService aktualisieren, damit Dashboard auch die neuen Daten hat
+            if (window.unifiedProfileService) {
+                console.log('🔄 Aktualisiere UnifiedProfileService mit gespeicherten Daten...');
+                // Lade Profil neu, damit alle Daten synchronisiert sind
+                try {
+                    await window.unifiedProfileService.loadFullProfile();
+                    console.log('✅ UnifiedProfileService mit neuen Daten aktualisiert');
+                } catch (error) {
+                    console.warn('⚠️ Fehler beim Aktualisieren des UnifiedProfileService:', error);
+                }
+            }
+            
             // Validiere, dass die Daten wirklich gespeichert wurden
             // (Optional: Lade Profil nach kurzer Verzögerung erneut, um zu bestätigen)
             setTimeout(async () => {
@@ -1179,6 +1242,16 @@ class UserProfile {
                                 saved: { firstName: savedProfile.firstName, lastName: savedProfile.lastName },
                                 expected: { firstName: this.profileData.firstName, lastName: this.profileData.lastName }
                             });
+                        }
+                        
+                        // UnifiedProfileService erneut aktualisieren mit validierten Daten
+                        if (window.unifiedProfileService) {
+                            try {
+                                await window.unifiedProfileService.loadFullProfile();
+                                console.log('✅ UnifiedProfileService mit validierten Daten aktualisiert');
+                            } catch (error) {
+                                console.warn('⚠️ Fehler beim Aktualisieren des UnifiedProfileService:', error);
+                            }
                         }
                     }
                 } catch (validationError) {
