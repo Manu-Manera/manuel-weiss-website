@@ -2497,6 +2497,9 @@ function readFileAsDataURL(file) {
     });
 }
 
+// Export für Verwendung in dashboard.html
+window.readFileAsDataURL = readFileAsDataURL;
+
 function compressImageToDataUrl(file, maxWidth, maxHeight, quality = 0.82) {
     return new Promise((resolve) => {
         const reader = new FileReader();

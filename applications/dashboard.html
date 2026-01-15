@@ -2105,6 +2105,11 @@ Ihre Aufgaben:
                 const statResumes = document.getElementById('statResumes');
                 if (statResumes) statResumes.textContent = resumes.length;
                 
+                // Stats aktualisieren (auch andere Stats wie Anschreiben, etc.)
+                if (typeof updateDashboardStats === 'function') {
+                    await updateDashboardStats();
+                }
+                
             } catch (error) {
                 console.error('Error loading resumes:', error);
             }
@@ -2115,36 +2120,61 @@ Ihre Aufgaben:
             window.location.href = `resume-editor.html?id=${id}&action=pdf`;
         };
         
-        window.duplicateResume = function(id) {
-            const resumes = JSON.parse(localStorage.getItem('user_resumes') || '[]');
-            const resume = resumes.find(r => r.id === id);
-            if (!resume) return;
-            
-            const newResume = {
-                ...resume,
-                id: Date.now().toString(36),
-                firstName: resume.firstName + ' (Kopie)',
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString()
-            };
-            
-            resumes.unshift(newResume);
-            localStorage.setItem('user_resumes', JSON.stringify(resumes));
-            
-            loadResumes();
-            showToast('Lebenslauf dupliziert', 'success');
+        window.duplicateResume = async function(id) {
+            try {
+                // Lade Lebensläufe aus Cloud oder localStorage
+                let resumes = [];
+                if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
+                    resumes = await window.cloudDataService.getResumes(true);
+                } else {
+                    resumes = JSON.parse(localStorage.getItem('user_resumes') || '[]');
+                }
+                
+                const resume = resumes.find(r => r.id === id);
+                if (!resume) {
+                    showToast('Lebenslauf nicht gefunden', 'error');
+                    return;
+                }
+                
+                const newResume = {
+                    ...resume,
+                    id: `resume_${Date.now().toString(36)}`,
+                    name: (resume.name || resume.personalInfo?.firstName || 'Lebenslauf') + ' (Kopie)',
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                };
+                
+                // Speichere in Cloud wenn eingeloggt
+                if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
+                    try {
+                        await window.cloudDataService.saveResume(newResume);
+                    } catch (error) {
+                        console.warn('Cloud-Speichern fehlgeschlagen, speichere lokal:', error);
+                        resumes.unshift(newResume);
+                        localStorage.setItem('user_resumes', JSON.stringify(resumes));
+                    }
+                } else {
+                    resumes.unshift(newResume);
+                    localStorage.setItem('user_resumes', JSON.stringify(resumes));
+                }
+                
+                await loadResumes();
+                
+                // Stats aktualisieren
+                if (typeof updateDashboardStats === 'function') {
+                    await updateDashboardStats();
+                }
+                
+                showToast('Lebenslauf dupliziert', 'success');
+            } catch (error) {
+                console.error('Fehler beim Duplizieren:', error);
+                showToast('Fehler beim Duplizieren', 'error');
+            }
         };
         
-        window.deleteResume = function(id) {
-            if (!confirm('Lebenslauf wirklich löschen?')) return;
-            
-            const resumes = JSON.parse(localStorage.getItem('user_resumes') || '[]');
-            const filtered = resumes.filter(r => r.id !== id);
-            localStorage.setItem('user_resumes', JSON.stringify(filtered));
-            
-            loadResumes();
-            showToast('Lebenslauf gelöscht', 'success');
-        };
+        // HINWEIS: deleteResume ist jetzt in dashboard-core.js definiert
+        // und wird als window.deleteResume exportiert
+        // Die alte Funktion wurde entfernt, um Konflikte zu vermeiden
         
         // ═══════════════════════════════════════════════════════════════════════════
         // DOKUMENTE / ZEUGNISSE FUNKTIONEN
@@ -2275,6 +2305,16 @@ Ihre Aufgaben:
                         element.closest('.document-category-modal').remove();
                         return;
                     }
+                    // readFileAsDataURL ist in dashboard-core.js definiert
+                    // Falls nicht verfügbar, hier definieren
+                    const readFileAsDataURL = window.readFileAsDataURL || function(file) {
+                        return new Promise((resolve, reject) => {
+                            const reader = new FileReader();
+                            reader.onload = () => resolve(reader.result);
+                            reader.onerror = reject;
+                            reader.readAsDataURL(file);
+                        });
+                    };
                     const dataUrl = await readFileAsDataURL(file);
                     documentData.dataUrl = dataUrl;
                     documentData.storage = 'local';
