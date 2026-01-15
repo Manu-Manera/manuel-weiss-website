@@ -86,15 +86,58 @@
   }
 
   async function uploadWithPresignedUrl(file, presign) {
-    const put = await fetch(presign.url, {
-      method: 'PUT',
-      headers: { 'Content-Type': file.type },
-      body: file,
-    });
-    if (!put.ok) {
-      const errorText = await put.text();
-      console.error('❌ S3 PUT failed:', put.status, errorText);
-      throw new Error(`Upload failed: ${put.status} - ${errorText}`);
+    try {
+      console.log('📤 Uploading to S3:', {
+        url: presign.url?.substring(0, 100) + '...',
+        fileSize: file.size,
+        fileType: file.type,
+        fileName: file.name
+      });
+      
+      const put = await fetch(presign.url, {
+        method: 'PUT',
+        headers: { 'Content-Type': file.type },
+        body: file,
+      });
+      
+      if (!put.ok) {
+        const errorText = await put.text().catch(() => 'Keine Fehlermeldung verfügbar');
+        console.error('❌ S3 PUT failed:', {
+          status: put.status,
+          statusText: put.statusText,
+          errorText: errorText,
+          fileName: file.name,
+          fileSize: file.size
+        });
+        
+        // Spezifische Fehlermeldungen basierend auf Status
+        let errorMessage = 'Upload fehlgeschlagen';
+        if (put.status === 403) {
+          errorMessage = 'Zugriff verweigert. Die Presigned URL ist möglicherweise abgelaufen oder ungültig.';
+        } else if (put.status === 400) {
+          errorMessage = 'Ungültige Anfrage. Bitte überprüfen Sie die Datei und versuchen Sie es erneut.';
+        } else if (put.status === 413) {
+          errorMessage = 'Datei zu groß. Bitte verwenden Sie eine kleinere Datei.';
+        } else if (put.status === 0 || put.status === 504 || put.status === 502) {
+          errorMessage = 'Netzwerkfehler oder Timeout. Bitte überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.';
+        } else {
+          errorMessage = `Upload fehlgeschlagen (Status ${put.status}): ${errorText || put.statusText}`;
+        }
+        
+        throw new Error(errorMessage);
+      }
+      
+      console.log('✅ S3 PUT erfolgreich');
+    } catch (error) {
+      // Wenn es bereits eine benutzerfreundliche Fehlermeldung ist, weiterwerfen
+      if (error.message && !error.message.includes('Upload fehlgeschlagen') && !error.message.includes('Zugriff verweigert')) {
+        // Netzwerkfehler oder andere Fehler
+        if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+          throw new Error('Netzwerkfehler: Die Verbindung zu AWS S3 konnte nicht hergestellt werden. Bitte überprüfen Sie Ihre Internetverbindung.');
+        }
+        throw new Error(`Upload fehlgeschlagen: ${error.message}`);
+      }
+      throw error;
     }
     
     // WICHTIG: Entferne Query-Parameter von publicUrl (falls vorhanden) und füge Cache-Busting hinzu
