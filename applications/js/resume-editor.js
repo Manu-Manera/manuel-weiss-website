@@ -1275,8 +1275,11 @@ function addTechnicalSkillCategory(categoryName = '', skills = []) {
             </div>
             <div class="skill-tags" id="skills-${categoryId}">
                 ${skills.length > 0 ? skills.map(skill => `
-                    <span class="skill-tag">
+                    <span class="skill-tag" style="position: relative;">
                         <input type="text" value="${skill}" placeholder="Skill">
+                        <button type="button" onclick="convertSkillToRated(this)" style="background: rgba(99, 102, 241, 0.2); border: 1px dashed #6366f1; color: #6366f1; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer; font-size: 0.7rem; margin-left: 0.25rem;" title="Mit Bewertung">
+                            <i class="fas fa-star"></i>
+                        </button>
                         <button type="button" onclick="removeSkillTag(this)" style="background: none; border: none; color: white; cursor: pointer;">
                             <i class="fas fa-times"></i>
                         </button>
