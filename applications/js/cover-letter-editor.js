@@ -183,6 +183,128 @@ class CoverLetterEditor {
         if (suggestContactBtn) {
             suggestContactBtn.addEventListener('click', () => this.suggestContactPerson());
         }
+
+        // Country-Selector: Aktualisiere Datum und Grußformel bei Änderung
+        const countrySelect = document.getElementById('countrySelect');
+        if (countrySelect) {
+            countrySelect.addEventListener('change', () => {
+                this.setCurrentDate();
+                this.updateGreeting();
+                // Aktualisiere auch Company Info falls bereits geladen
+                const jobData = this.collectJobData();
+                if (jobData.companyName) {
+                    this.updateCompanyInfo(jobData);
+                }
+            });
+        }
+
+        // Extrahiere Position/Unternehmen/Ansprechpartner aus Stellenbeschreibung
+        const jobDescriptionField = document.getElementById('jobDescription');
+        if (jobDescriptionField) {
+            let extractTimeout;
+            jobDescriptionField.addEventListener('input', (e) => {
+                clearTimeout(extractTimeout);
+                extractTimeout = setTimeout(() => {
+                    this.extractJobInfoFromDescription(e.target.value);
+                }, 2000); // 2 Sekunden nach letztem Tippen
+            });
+        }
+    }
+
+    async extractJobInfoFromDescription(description) {
+        if (!description || description.length < 50) return;
+
+        const positionField = document.getElementById('jobTitle');
+        const companyField = document.getElementById('companyName');
+        const contactField = document.getElementById('contactPerson');
+
+        // Prüfe ob Felder bereits ausgefüllt sind
+        if (positionField?.value && companyField?.value) {
+            return; // Bereits ausgefüllt, keine Extraktion nötig
+        }
+
+        try {
+            const apiKey = await this.getAPIKey();
+            if (!apiKey) {
+                console.log('⚠️ Kein API-Key für Extraktion verfügbar');
+                return;
+            }
+
+            const prompt = `Analysiere die folgende Stellenbeschreibung und extrahiere:
+
+1. Position/Job-Titel (z.B. "Solution Consultant", "Software Engineer")
+2. Unternehmen/Firmenname (z.B. "DXC Technology", "SAP")
+3. Ansprechpartner (falls erwähnt, z.B. "Herr Müller", "Frau Schmidt", "Recruiting Team")
+
+Antworte NUR mit einem JSON-Objekt im Format:
+{
+    "position": "Position oder null",
+    "company": "Unternehmen oder null",
+    "contactPerson": "Ansprechpartner oder null"
+}
+
+Stellenbeschreibung:
+${description.substring(0, 2000)}`;
+
+            const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${apiKey}`
+                },
+                body: JSON.stringify({
+                    model: 'gpt-4o-mini',
+                    messages: [
+                        {
+                            role: 'system',
+                            content: 'Du bist ein Experte für die Analyse von Stellenausschreibungen. Extrahiere präzise die Position, das Unternehmen und den Ansprechpartner. Antworte NUR mit JSON.'
+                        },
+                        {
+                            role: 'user',
+                            content: prompt
+                        }
+                    ],
+                    temperature: 0.1,
+                    max_tokens: 200
+                })
+            });
+
+            if (!response.ok) {
+                console.warn('⚠️ Extraktion fehlgeschlagen');
+                return;
+            }
+
+            const data = await response.json();
+            const content = data.choices[0]?.message?.content || '';
+            
+            // JSON extrahieren
+            const jsonMatch = content.match(/\{[\s\S]*\}/);
+            if (!jsonMatch) return;
+
+            const extracted = JSON.parse(jsonMatch[0]);
+
+            // Felder ausfüllen, wenn leer
+            if (extracted.position && !positionField?.value) {
+                positionField.value = extracted.position;
+                console.log('✅ Position extrahiert:', extracted.position);
+            }
+            if (extracted.company && !companyField?.value) {
+                companyField.value = extracted.company;
+                console.log('✅ Unternehmen extrahiert:', extracted.company);
+            }
+            if (extracted.contactPerson && !contactField?.value) {
+                contactField.value = extracted.contactPerson;
+                console.log('✅ Ansprechpartner extrahiert:', extracted.contactPerson);
+            }
+
+            // Toast-Benachrichtigung
+            if (extracted.position || extracted.company || extracted.contactPerson) {
+                this.showToast('Informationen aus Stellenbeschreibung extrahiert', 'success');
+            }
+
+        } catch (error) {
+            console.warn('Fehler bei Extraktion:', error);
+        }
     }
 
     setupGenerateButton() {
@@ -405,27 +527,54 @@ class CoverLetterEditor {
     async loadUserProfile() {
         try {
             // PRIORITÄT 1: UnifiedProfileService (beste Datenquelle)
-            if (window.unifiedProfileService?.isInitialized) {
-                const unifiedProfile = window.unifiedProfileService.getProfile();
-                if (unifiedProfile && unifiedProfile.firstName && unifiedProfile.firstName !== 'Test') {
-                    this.profileData = unifiedProfile;
-                    console.log('✅ Nutze UnifiedProfileService für Profildaten');
+            if (window.unifiedProfileService) {
+                // Warte bis initialisiert
+                let attempts = 0;
+                while (!window.unifiedProfileService.isInitialized && attempts < 50) {
+                    await new Promise(r => setTimeout(r, 100));
+                    attempts++;
+                }
+                
+                if (window.unifiedProfileService.isInitialized) {
+                    const unifiedProfile = await window.unifiedProfileService.getProfileData();
+                    // Filter "Test User" Daten
+                    if (unifiedProfile && unifiedProfile.firstName && 
+                        unifiedProfile.firstName !== 'Test' && 
+                        unifiedProfile.firstName !== 'test' && 
+                        unifiedProfile.firstName !== 'TEST') {
+                        this.profileData = unifiedProfile;
+                        console.log('✅ Nutze UnifiedProfileService für Profildaten:', unifiedProfile.firstName, unifiedProfile.lastName);
+                    } else {
+                        console.log('⚠️ UnifiedProfileService enthält Test-Daten, überspringe...');
+                    }
                 }
             }
             
             // PRIORITÄT 2: Cloud data service
-            if (!this.profileData || Object.keys(this.profileData).length === 0) {
+            if (!this.profileData || Object.keys(this.profileData).length === 0 || 
+                this.profileData.firstName === 'Test' || this.profileData.firstName === 'test') {
                 if (window.cloudDataService) {
                     const cloudProfile = await window.cloudDataService.getProfile(true);
-                    this.profileData = this.normalizeProfileData(cloudProfile);
+                    const normalized = this.normalizeProfileData(cloudProfile);
+                    // Filter Test-Daten
+                    if (normalized.firstName && normalized.firstName !== 'Test' && normalized.firstName !== 'test') {
+                        this.profileData = normalized;
+                        console.log('✅ Nutze CloudDataService für Profildaten');
+                    }
                 }
             }
             
             // PRIORITÄT 3: localStorage
-            if (!this.profileData || Object.keys(this.profileData).length === 0) {
+            if (!this.profileData || Object.keys(this.profileData).length === 0 || 
+                this.profileData.firstName === 'Test' || this.profileData.firstName === 'test') {
                 const stored = localStorage.getItem('bewerbungsmanager_profile') || localStorage.getItem('userProfile') || localStorage.getItem('profile_data');
                 if (stored) {
-                    this.profileData = this.normalizeProfileData(JSON.parse(stored));
+                    const normalized = this.normalizeProfileData(JSON.parse(stored));
+                    // Filter Test-Daten
+                    if (normalized.firstName && normalized.firstName !== 'Test' && normalized.firstName !== 'test') {
+                        this.profileData = normalized;
+                        console.log('✅ Nutze localStorage für Profildaten');
+                    }
                 }
             }
             
@@ -456,7 +605,7 @@ class CoverLetterEditor {
                 this.updateSenderInfo();
             }
             
-            console.log('👤 Profile loaded:', this.profileData ? 'Yes' : 'No');
+            console.log('👤 Profile loaded:', this.profileData ? `${this.profileData.firstName} ${this.profileData.lastName}` : 'No');
         } catch (error) {
             console.warn('Could not load profile:', error);
         }
@@ -871,24 +1020,19 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
         const toolbar = document.getElementById('editorToolbar');
         if (toolbar) toolbar.style.display = 'flex';
         
+        // Entferne Grußformeln aus dem generierten Content (werden im Footer angezeigt)
+        const cleanedContent = this.removeGreetingFromContent(content);
+        
         // Update letter content
         const letterText = document.getElementById('letterText');
         if (letterText) {
-            const withPlaceholders = this.applyPlaceholders(content, jobData);
+            const withPlaceholders = this.applyPlaceholders(cleanedContent, jobData);
             letterText.value = withPlaceholders;
             this.generatedContent = withPlaceholders;
         }
         
-        // Update company info
-        const companyDisplay = document.getElementById('companyNameDisplay');
-        if (companyDisplay) companyDisplay.textContent = jobData.companyName;
-        
-        const contactDisplay = document.getElementById('contactPersonDisplay');
-        if (contactDisplay) {
-            contactDisplay.textContent = jobData.contactPerson 
-                ? `z.Hd. ${jobData.contactPerson}`
-                : 'Personalabteilung';
-        }
+        // Update company info mit Best Practices
+        this.updateCompanyInfo(jobData);
         
         // Update subject line
         const subjectLine = document.getElementById('subjectLine');
@@ -896,12 +1040,124 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
             subjectLine.textContent = `Bewerbung als ${jobData.jobTitle}`;
         }
         
+        // Update greeting based on country
+        this.updateGreeting();
+        
         // Update stats
         this.updateStats();
         
         // Apply design
         this.applyDesign();
         this.updateQualityChecks();
+    }
+
+    updateGreeting() {
+        const country = this.getSelectedCountry();
+        const greetingEl = document.querySelector('.letter-footer span:first-child');
+        
+        if (!greetingEl) return;
+        
+        const greetings = {
+            'CH': 'Freundliche Grüsse', // Schweiz: ohne ß
+            'DE': 'Mit freundlichen Grüßen', // Deutschland: mit ß
+            'AT': 'Mit freundlichen Grüßen', // Österreich: mit ß
+            'US': 'Sincerely,' // USA: Englisch
+        };
+        
+        greetingEl.textContent = greetings[country] || greetings['DE'];
+    }
+
+    removeGreetingFromContent(content) {
+        if (!content) return content;
+        
+        // Entferne alle Varianten der Grußformel
+        const greetingPatterns = [
+            /Mit\s+freundlichen\s+Gr[üu]ßen?[^\w]*$/i,
+            /Freundliche\s+Gr[üu]ße[^\w]*$/i,
+            /Mit\s+freundlichem\s+Gruß[^\w]*$/i,
+            /Hochachtungsvoll[^\w]*$/i,
+            /Sincerely[^\w]*$/i,
+            /Best\s+regards[^\w]*$/i,
+            /Kind\s+regards[^\w]*$/i,
+            /Yours\s+sincerely[^\w]*$/i,
+            /Mit\s+freundlichen\s+Gr[üu]ßen?[^\w]*\n/i,
+            /Freundliche\s+Gr[üu]ße[^\w]*\n/i
+        ];
+        
+        let cleaned = content;
+        greetingPatterns.forEach(pattern => {
+            cleaned = cleaned.replace(pattern, '').trim();
+        });
+        
+        return cleaned;
+    }
+
+    updateCompanyInfo(jobData) {
+        const country = this.getSelectedCountry(); // CH, DE, AT, US
+        
+        const companyDisplay = document.getElementById('companyNameDisplay');
+        if (companyDisplay) {
+            companyDisplay.textContent = jobData.companyName || '';
+        }
+        
+        const contactDisplay = document.getElementById('contactPersonDisplay');
+        if (contactDisplay) {
+            if (jobData.contactPerson) {
+                // Best Practices für verschiedene Länder
+                switch (country) {
+                    case 'CH':
+                    case 'DE':
+                    case 'AT':
+                        contactDisplay.textContent = `z.Hd. ${jobData.contactPerson}`;
+                        break;
+                    case 'US':
+                        contactDisplay.textContent = `Attention: ${jobData.contactPerson}`;
+                        break;
+                    default:
+                        contactDisplay.textContent = `z.Hd. ${jobData.contactPerson}`;
+                }
+            } else {
+                // Standard je nach Land
+                switch (country) {
+                    case 'CH':
+                    case 'DE':
+                    case 'AT':
+                        contactDisplay.textContent = 'Personalabteilung';
+                        break;
+                    case 'US':
+                        contactDisplay.textContent = 'Human Resources';
+                        break;
+                    default:
+                        contactDisplay.textContent = 'Personalabteilung';
+                }
+            }
+        }
+    }
+
+    getSelectedCountry() {
+        // PRIORITÄT 1: Country-Selector
+        const countrySelect = document.getElementById('countrySelect');
+        if (countrySelect && countrySelect.value) {
+            return countrySelect.value;
+        }
+        
+        // PRIORITÄT 2: Prüfe Profil-Location
+        const location = this.profileData?.location || '';
+        if (location.includes('Schweiz') || location.includes('CH') || location.includes('Zürich')) {
+            // Setze auch den Selector, falls vorhanden
+            if (countrySelect) countrySelect.value = 'CH';
+            return 'CH';
+        } else if (location.includes('Österreich') || location.includes('AT') || location.includes('Wien')) {
+            if (countrySelect) countrySelect.value = 'AT';
+            return 'AT';
+        } else if (location.includes('USA') || location.includes('US') || location.includes('United States')) {
+            if (countrySelect) countrySelect.value = 'US';
+            return 'US';
+        }
+        
+        // Standard: Deutschland
+        if (countrySelect) countrySelect.value = 'DE';
+        return 'DE';
     }
 
     applyDesign() {
@@ -951,12 +1207,56 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
     setCurrentDate() {
         const dateEl = document.getElementById('letterDate');
         if (dateEl) {
-            const today = new Date().toLocaleDateString('de-DE', {
-                day: 'numeric',
-                month: 'long',
-                year: 'numeric'
-            });
-            dateEl.textContent = today;
+            const country = this.getSelectedCountry();
+            let formattedDate = '';
+            
+            switch (country) {
+                case 'CH':
+                    // Schweiz: Datum rechts oben, Format: "Zürich, 15. Januar 2026"
+                    const location = this.profileData?.location || '';
+                    const city = location.split(',')[0] || 'Zürich';
+                    formattedDate = new Date().toLocaleDateString('de-CH', {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric'
+                    });
+                    dateEl.textContent = `${city}, ${formattedDate}`;
+                    break;
+                case 'DE':
+                    // Deutschland: Datum rechts oben, Format: "15. Januar 2026"
+                    formattedDate = new Date().toLocaleDateString('de-DE', {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric'
+                    });
+                    dateEl.textContent = formattedDate;
+                    break;
+                case 'AT':
+                    // Österreich: Datum rechts oben, Format: "15. Jänner 2026" (österreichisches Format)
+                    formattedDate = new Date().toLocaleDateString('de-AT', {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric'
+                    });
+                    dateEl.textContent = formattedDate;
+                    break;
+                case 'US':
+                    // USA: Datum links oben, Format: "January 15, 2026"
+                    formattedDate = new Date().toLocaleDateString('en-US', {
+                        month: 'long',
+                        day: 'numeric',
+                        year: 'numeric'
+                    });
+                    dateEl.textContent = formattedDate;
+                    break;
+                default:
+                    formattedDate = new Date().toLocaleDateString('de-DE', {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric'
+                    });
+                    dateEl.textContent = formattedDate;
+            }
         }
     }
 

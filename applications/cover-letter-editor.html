@@ -10,7 +10,7 @@
     <title>Anschreiben-Editor - Bewerbungsmanager</title>
     <link rel="stylesheet" href="../styles.css">
     <link rel="stylesheet" href="css/applications-main.css">
-    <link rel="stylesheet" href="css/cover-letter-editor.css?v=20260115coach">
+    <link rel="stylesheet" href="css/cover-letter-editor.css?v=20260115bestpractices">
     <link rel="stylesheet" href="css/inline-suggestions.css?v=20260115">
     <link rel="stylesheet" href="css/job-match.css?v=20260115">
     <link rel="stylesheet" href="css/split-view.css?v=20260115">
@@ -113,6 +113,18 @@
                                 <option value="Education">Bildung</option>
                                 <option value="Other">Sonstiges</option>
                             </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Land / Best Practices</label>
+                            <select name="country" id="countrySelect">
+                                <option value="DE" selected>🇩🇪 Deutschland</option>
+                                <option value="CH">🇨🇭 Schweiz</option>
+                                <option value="AT">🇦🇹 Österreich</option>
+                                <option value="US">🇺🇸 USA</option>
+                            </select>
+                            <small style="display: block; margin-top: 0.25rem; color: var(--cl-text-muted); font-size: 0.75rem;">
+                                Passt Datum, Grußformel und Formatierung automatisch an
+                            </small>
                         </div>
                         <div class="form-group">
                             <label>Ansprechpartner</label>
@@ -501,8 +513,8 @@
     <script src="../js/cloud-data-service.js?v=20260114c"></script>
     <script src="../js/workflow-api.js?v=20260114c"></script>
     <script src="../js/unified-profile-service.js?v=20260115"></script>
-    <script src="js/cover-letter-editor.js?v=20260115"></script>
-    <script src="js/inline-ai-coach.js?v=20260115"></script>
+    <script src="js/cover-letter-editor.js?v=20260115bestpractices"></script>
+    <script src="js/inline-ai-coach.js?v=20260115fix"></script>
     <!-- Job-Match-Analyzer entfernt wegen Absturz-Problemen -->
     <script src="js/industry-templates.js?v=20260115"></script>
     <script src="js/split-view-editor.js?v=20260115"></script>
