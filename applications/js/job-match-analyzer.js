@@ -620,8 +620,12 @@ class JobMatchAnalyzer {
 // Auto-initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
     // Only init on resume or cover letter editor pages
-    if (document.getElementById('resumeForm') || document.getElementById('atsJobDescription') || 
-        document.getElementById('jobDescription')) {
-        window.jobMatchAnalyzer = new JobMatchAnalyzer();
+    try {
+        if (document.getElementById('resumeForm') || document.getElementById('atsJobDescription') || 
+            document.getElementById('jobDescription')) {
+            window.jobMatchAnalyzer = new JobMatchAnalyzer();
+        }
+    } catch (error) {
+        console.error('❌ Job Match Analyzer Fehler:', error);
     }
 });

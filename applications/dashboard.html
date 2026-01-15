@@ -2,14 +2,18 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
     <title>Bewerbungsmanager - Dashboard</title>
     <meta name="description" content="Ihr persönliches Bewerbungs-Dashboard. KI-Anschreiben in 60 Sekunden, Lebenslauf-Editor, Tracking und Interview-Vorbereitung.">
     
     <!-- CSS -->
     <link rel="stylesheet" href="../styles.css">
     <link rel="stylesheet" href="css/applications-main.css">
-    <link rel="stylesheet" href="css/dashboard.css?v=20260112ocr">
+    <link rel="stylesheet" href="css/dashboard.css?v=20260115mobile">
     <link rel="stylesheet" href="css/landing.css?v=20260110">
     
     <!-- Critical Mobile Navbar Override - Wie Hauptseite -->
@@ -1386,19 +1390,25 @@ Ihre Aufgaben:
             if (!authButton) return;
             
             // Hilfsfunktion zum Aktualisieren der UI mit Profildaten
-            function updateUIWithProfile(displayName, profileImage) {
+            // Button zeigt nur Vorname, Dropdown zeigt vollen Namen + Email
+            function updateUIWithProfile(firstName, fullName, email, profileImage) {
                 const isLoggedIn = window.awsAuth && window.awsAuth.isLoggedIn();
                 if (!isLoggedIn) return;
                 
+                // Button: Nur Vorname
                 authButton.innerHTML = `
                     <img src="${profileImage}" alt="User" class="nav-user-avatar">
-                    <span>${displayName}</span>
+                    <span>${firstName}</span>
                     <i class="fas fa-chevron-down"></i>
                 `;
                 authButton.classList.add('logged-in');
                 
+                // Dropdown: Voller Name + Email
                 if (document.getElementById('userName')) {
-                    document.getElementById('userName').textContent = displayName;
+                    document.getElementById('userName').textContent = fullName;
+                }
+                if (document.getElementById('userEmail')) {
+                    document.getElementById('userEmail').textContent = email;
                 }
                 if (document.getElementById('userAvatarImg')) {
                     document.getElementById('userAvatarImg').src = profileImage;
@@ -1410,10 +1420,12 @@ Ihre Aufgaben:
                 if (window.unifiedProfileService?.isInitialized) {
                     const profile = window.unifiedProfileService.getProfile();
                     if (profile && profile.firstName && profile.firstName !== 'Test') {
-                        const displayName = window.unifiedProfileService.getDisplayName();
+                        const firstName = window.unifiedProfileService.getFirstName();
+                        const fullName = window.unifiedProfileService.getDisplayName();
+                        const email = window.unifiedProfileService.getEmail();
                         const profileImage = window.unifiedProfileService.getProfileImage() || '../images/default-avatar.png';
-                        console.log('📊 UnifiedProfileService direkt - Name:', displayName);
-                        updateUIWithProfile(displayName, profileImage);
+                        console.log('📊 UnifiedProfileService direkt - Vorname:', firstName, 'Voller Name:', fullName);
+                        updateUIWithProfile(firstName, fullName, email, profileImage);
                         return true;
                     }
                 }
@@ -1424,10 +1436,12 @@ Ihre Aufgaben:
                 // Listener für zukünftige Änderungen
                 window.unifiedProfileService.onProfileChange((profile) => {
                     if (profile && profile.firstName && profile.firstName !== 'Test') {
-                        const displayName = window.unifiedProfileService.getDisplayName();
+                        const firstName = window.unifiedProfileService.getFirstName();
+                        const fullName = window.unifiedProfileService.getDisplayName();
+                        const email = window.unifiedProfileService.getEmail();
                         const profileImage = window.unifiedProfileService.getProfileImage() || '../images/default-avatar.png';
-                        console.log('📊 UnifiedProfileService Update - Name:', displayName);
-                        updateUIWithProfile(displayName, profileImage);
+                        console.log('📊 UnifiedProfileService Update - Vorname:', firstName);
+                        updateUIWithProfile(firstName, fullName, email, profileImage);
                     }
                 });
                 
@@ -1504,14 +1518,18 @@ Ihre Aufgaben:
                     // Logged in - Finaler Name (niemals "Test")
                     displayName = displayName || 'Profil';
                     
+                    // Extrahiere Vornamen für Button
+                    const firstName = displayName.split(' ')[0] || displayName;
+                    
+                    // Button: Nur Vorname
                     authButton.innerHTML = `
                         <img src="${profileImage}" alt="User" class="nav-user-avatar">
-                        <span>${displayName}</span>
+                        <span>${firstName}</span>
                         <i class="fas fa-chevron-down"></i>
                     `;
                     authButton.classList.add('logged-in');
                     
-                    // Update dropdown
+                    // Dropdown: Voller Name + Email
                     if (document.getElementById('userName')) {
                         document.getElementById('userName').textContent = displayName;
                     }

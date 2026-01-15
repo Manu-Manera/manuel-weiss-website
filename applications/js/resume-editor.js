@@ -432,10 +432,17 @@ WICHTIG: Extrahiere ALLE Informationen, besonders:
 - Vollständiger Name
 - E-Mail, Telefon, Adresse
 - Berufsbezeichnung/Titel
-- ALLE Berufserfahrungen (Position, Firma, Zeitraum, Beschreibung)
+- ALLE Berufserfahrungen mit ALLEN Tätigkeiten als Stichpunkte
 - ALLE Ausbildungen (auch Berufsausbildungen wie "Seiler", "Schreiner" etc.)
 - ALLE Fähigkeiten (technische und soziale)
 - Sprachen mit Niveau
+
+SEHR WICHTIG für Berufserfahrung:
+- Extrahiere eine kurze "description" (1-2 Sätze allgemeine Beschreibung der Rolle)
+- Extrahiere ALLE einzelnen Tätigkeiten/Aufgaben/Verantwortlichkeiten als "bullets" Array
+- Jeder Stichpunkt sollte eine konkrete Tätigkeit beschreiben
+- Falls Aufzählungen im Text sind, übernimm diese als bullets
+- Technologien/Tools die genannt werden, extrahiere als "technologies" Array
 
 Antworte NUR mit einem JSON-Objekt im folgenden Format:
 {
@@ -449,15 +456,19 @@ Antworte NUR mit einem JSON-Objekt im folgenden Format:
         {
             "position": "Position",
             "company": "Firma",
+            "location": "Ort",
             "startDate": "MM/YYYY",
             "endDate": "MM/YYYY oder heute",
-            "description": "Beschreibung der Tätigkeiten"
+            "description": "Kurze Beschreibung der Rolle (1-2 Sätze)",
+            "bullets": ["Tätigkeit 1", "Tätigkeit 2", "Tätigkeit 3"],
+            "technologies": ["Technologie1", "Technologie2"]
         }
     ],
     "education": [
         {
             "degree": "Abschluss oder Ausbildung",
             "institution": "Schule/Universität/Betrieb",
+            "location": "Ort",
             "startDate": "MM/YYYY",
             "endDate": "MM/YYYY",
             "description": "Details"
@@ -550,6 +561,8 @@ function applyOCRData() {
     const ocrData = JSON.parse(document.getElementById('ocrResults').dataset.ocrData);
     const parsed = ocrData.parsedData;
     
+    console.log('📥 Applying OCR data:', parsed);
+    
     // Fill personal info
     if (parsed.name) {
         const nameParts = parsed.name.split(' ');
@@ -559,11 +572,111 @@ function applyOCRData() {
     if (parsed.email) document.getElementById('email').value = parsed.email;
     if (parsed.phone) document.getElementById('phone').value = parsed.phone;
     if (parsed.address) document.getElementById('address').value = parsed.address;
+    if (parsed.title) document.getElementById('title').value = parsed.title;
+    if (parsed.summary) document.getElementById('summary').value = parsed.summary;
+    
+    // Apply experience data with bullets
+    if (parsed.experience && Array.isArray(parsed.experience)) {
+        // Clear existing experience
+        const expContainer = document.getElementById('experienceContainer');
+        if (expContainer) {
+            expContainer.innerHTML = '';
+            
+            // Add each experience entry
+            parsed.experience.forEach((exp, index) => {
+                // Convert bullets array to string with line breaks
+                let bulletsText = '';
+                if (exp.bullets && Array.isArray(exp.bullets)) {
+                    bulletsText = exp.bullets.map(b => `- ${b}`).join('\n');
+                }
+                
+                const experienceData = {
+                    position: exp.position || '',
+                    company: exp.company || '',
+                    location: exp.location || '',
+                    startDate: exp.startDate || '',
+                    endDate: exp.endDate || '',
+                    currentJob: exp.endDate?.toLowerCase() === 'heute' || exp.endDate?.toLowerCase() === 'present',
+                    description: exp.description || '',
+                    bullets: bulletsText,
+                    technologies: exp.technologies || []
+                };
+                
+                addExperience(experienceData);
+                console.log(`✅ Experience ${index + 1} added:`, experienceData);
+            });
+        }
+    }
+    
+    // Apply education data
+    if (parsed.education && Array.isArray(parsed.education)) {
+        const eduContainer = document.getElementById('educationContainer');
+        if (eduContainer) {
+            eduContainer.innerHTML = '';
+            
+            parsed.education.forEach((edu, index) => {
+                const educationData = {
+                    degree: edu.degree || '',
+                    institution: edu.institution || '',
+                    location: edu.location || '',
+                    startDate: edu.startDate || '',
+                    endDate: edu.endDate || '',
+                    fieldOfStudy: edu.fieldOfStudy || '',
+                    description: edu.description || ''
+                };
+                
+                addEducation(educationData);
+                console.log(`✅ Education ${index + 1} added:`, educationData);
+            });
+        }
+    }
+    
+    // Apply skills
+    if (parsed.skills) {
+        // Technical skills
+        if (parsed.skills.technical && Array.isArray(parsed.skills.technical)) {
+            const techContainer = document.getElementById('technicalSkillsContainer');
+            if (techContainer && typeof addSkillCategory === 'function') {
+                techContainer.innerHTML = '';
+                addSkillCategory('Technische Fähigkeiten', parsed.skills.technical);
+            }
+        }
+        
+        // Soft skills
+        if (parsed.skills.soft && Array.isArray(parsed.skills.soft)) {
+            const softContainer = document.getElementById('softSkillsContainer');
+            if (softContainer) {
+                softContainer.innerHTML = '';
+                parsed.skills.soft.forEach(skill => {
+                    if (typeof addSoftSkill === 'function') {
+                        addSoftSkill(skill);
+                    }
+                });
+            }
+        }
+    }
+    
+    // Apply languages
+    if (parsed.languages && Array.isArray(parsed.languages)) {
+        const langContainer = document.getElementById('languagesContainer');
+        if (langContainer) {
+            langContainer.innerHTML = '';
+            parsed.languages.forEach(lang => {
+                if (typeof addLanguage === 'function') {
+                    addLanguage(lang.language, lang.level);
+                }
+            });
+        }
+    }
     
     // Switch to manual tab
-    document.querySelector('[data-tab="manual"]').click();
+    const manualTab = document.querySelector('[data-tab="manual"]');
+    if (manualTab) manualTab.click();
     
-    showNotification('OCR-Daten übernommen. Bitte prüfen und ergänzen Sie die Daten.', 'success');
+    showNotification('OCR-Daten vollständig übernommen! Bitte prüfen und ergänzen Sie die Daten.', 'success');
+    
+    // Hide OCR results
+    document.getElementById('ocrResults').style.display = 'none';
 }
 
 // Helper functions
