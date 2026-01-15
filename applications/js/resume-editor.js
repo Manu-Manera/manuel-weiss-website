@@ -1347,6 +1347,8 @@ function addTechnicalSkillWithRating(skillName = '', level = 5, category = '') {
     container.insertAdjacentHTML('beforeend', skillHtml);
 }
 
+// Funktionen werden am Ende der Datei global exportiert
+
 /**
  * Fügt eine Soft Skill mit Bewertung hinzu
  */
@@ -1376,6 +1378,8 @@ function addSoftSkillWithRating(skillName = '', level = 5, examples = '') {
     
     container.insertAdjacentHTML('beforeend', skillHtml);
 }
+
+// Funktionen werden am Ende der Datei global exportiert
 
 function removeSkillRated(skillId) {
     const el = document.querySelector(`[data-skill-id="${skillId}"]`);
@@ -3163,3 +3167,7 @@ window.closeResumeVersions = closeResumeVersions;
 window.saveResumeVersion = saveResumeVersion;
 window.loadResumeVersion = loadResumeVersion;
 window.deleteResumeVersion = deleteResumeVersion;
+
+// Exportiere Skill-Funktionen global für OCR-Verarbeitung
+window.addTechnicalSkillWithRating = addTechnicalSkillWithRating;
+window.addSoftSkillWithRating = addSoftSkillWithRating;
