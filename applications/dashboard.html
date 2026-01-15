@@ -2245,10 +2245,7 @@ Ihre Aufgaben:
                 }
                 
                 // 3. Fallback: Lokaler Speicher (NUR wenn User NICHT eingeloggt ist)
-                const isLoggedIn = window.cloudDataService?.isUserLoggedIn?.() || 
-                                   window.awsAuth?.isLoggedIn?.() || 
-                                   window.realUserAuth?.isLoggedIn?.() ||
-                                   false;
+                // isLoggedIn wurde bereits am Anfang der Funktion deklariert
                 
                 if (!uploadSuccess) {
                     // WICHTIG: Wenn User eingeloggt ist, KEIN lokaler Fallback!
@@ -2310,10 +2307,7 @@ Ihre Aufgaben:
                 }
                 
                 // Save metadata to cloud - IMMER wenn eingeloggt
-                const isLoggedIn = window.cloudDataService?.isUserLoggedIn?.() || 
-                                   window.awsAuth?.isLoggedIn?.() || 
-                                   window.realUserAuth?.isLoggedIn?.() ||
-                                   false;
+                // isLoggedIn wurde bereits am Anfang der Funktion deklariert
                 
                 if (isLoggedIn) {
                     // WICHTIG: Wenn User eingeloggt ist, MUSS Cloud-Speicherung funktionieren
