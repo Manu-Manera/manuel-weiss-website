@@ -8,11 +8,13 @@
 class InlineAICoach {
     constructor() {
         this.debounceTimeout = null;
-        this.debounceDelay = 800; // ms after typing stops
+        this.debounceDelay = 1500; // ms after typing stops (länger für weniger Störung)
         this.activeField = null;
         this.suggestionPopup = null;
         this.isAnalyzing = false;
         this.cache = new Map(); // Cache recent analyses
+        this.minTextLength = 30; // Mindestlänge für Analyse (weniger störend)
+        this.userDismissed = false; // User hat Popup geschlossen
         
         // German weak verbs and their stronger alternatives
         this.weakVerbs = {
@@ -118,6 +120,8 @@ class InlineAICoach {
         
         // Close button
         this.suggestionPopup.querySelector('.ai-coach-close').addEventListener('click', () => {
+            this.userDismissed = true;
+            this.lastDismissedText = this.activeField?.value?.substring(0, 50) || '';
             this.hidePopup();
         });
         
@@ -222,9 +226,19 @@ class InlineAICoach {
         const text = field.value.trim();
         
         // Skip if too short
-        if (text.length < 20) {
+        if (text.length < this.minTextLength) {
             this.hidePopup();
             return;
+        }
+        
+        // Skip if user dismissed and text hasn't changed significantly
+        if (this.userDismissed && this.lastDismissedText === text.substring(0, 50)) {
+            return;
+        }
+        
+        // Reset dismissed flag if text changed significantly
+        if (this.userDismissed && this.lastDismissedText !== text.substring(0, 50)) {
+            this.userDismissed = false;
         }
         
         // Check cache
@@ -240,15 +254,241 @@ class InlineAICoach {
         // Perform local analysis first (instant)
         const localSuggestions = this.performLocalAnalysis(text);
         
-        // If we have local suggestions, show them immediately
-        if (localSuggestions.length > 0) {
-            this.displaySuggestions(localSuggestions, field);
-            this.cache.set(cacheKey, localSuggestions);
+        // Get country for spelling check
+        const country = this.getSelectedCountry();
+        
+        // Perform spelling check based on country
+        const spellingSuggestions = await this.performSpellingCheck(text, country);
+        
+        // Combine local and spelling suggestions
+        let allSuggestions = [...localSuggestions, ...spellingSuggestions];
+        
+        // If we have suggestions, show them immediately
+        if (allSuggestions.length > 0) {
+            // Sort by priority and limit to 5
+            allSuggestions = allSuggestions
+                .sort((a, b) => (a.priority || 10) - (b.priority || 10))
+                .slice(0, 5);
+            
+            this.displaySuggestions(allSuggestions, field);
+            this.cache.set(cacheKey, allSuggestions);
         } else {
-            this.hidePopup();
+            // Try OpenAI for better suggestions if no local suggestions
+            try {
+                const aiSuggestions = await this.performAIAnalysis(text, country);
+                if (aiSuggestions.length > 0) {
+                    this.displaySuggestions(aiSuggestions, field);
+                    this.cache.set(cacheKey, aiSuggestions);
+                } else {
+                    this.hidePopup();
+                }
+            } catch (error) {
+                console.warn('AI analysis failed:', error);
+                this.hidePopup();
+            }
         }
         
         this.isAnalyzing = false;
+    }
+    
+    getSelectedCountry() {
+        // Try to get country from cover letter editor
+        if (window.coverLetterEditor) {
+            return window.coverLetterEditor.getSelectedCountry?.() || 'DE';
+        }
+        const countrySelect = document.getElementById('countrySelect');
+        return countrySelect?.value || 'DE';
+    }
+    
+    async performSpellingCheck(text, country) {
+        const suggestions = [];
+        
+        // Country-specific spelling rules
+        const spellingRules = {
+            'CH': {
+                // Schweiz: ß wird zu ss
+                patterns: [
+                    { pattern: /ß/g, replacement: 'ss', explanation: 'In der Schweiz wird "ß" zu "ss"' }
+                ],
+                // Typische CH-Schreibweisen
+                corrections: {
+                    'Grüsse': 'Grüße', // In CH: Grüße (aber viele verwenden Grüsse)
+                    'Gruss': 'Gruß' // In CH: Gruß (aber viele verwenden Gruss)
+                }
+            },
+            'DE': {
+                // Deutschland: Standard-Duden
+                patterns: [],
+                corrections: {}
+            },
+            'AT': {
+                // Österreich: ähnlich wie DE, aber manche Unterschiede
+                patterns: [],
+                corrections: {}
+            },
+            'US': {
+                // USA: Englisch
+                patterns: [],
+                corrections: {}
+            }
+        };
+        
+        const rules = spellingRules[country] || spellingRules['DE'];
+        
+        // Check for common spelling mistakes
+        const commonMistakes = {
+            'dass': 'dass (nicht "das" in diesem Kontext)',
+            'seit': 'seit (Zeit) vs. "seid" (Ihr seid)',
+            'seid': 'seid (Ihr seid) vs. "seit" (Zeit)',
+            'als': 'als (Vergleich) vs. "wie" (Gleichheit)',
+            'wie': 'wie (Gleichheit) vs. "als" (Vergleich)'
+        };
+        
+        // Check for ß/ss based on country
+        if (country === 'CH' && /ß/.test(text)) {
+            suggestions.push({
+                type: 'spelling',
+                icon: 'fa-spell-check',
+                title: 'Rechtschreibung (CH)',
+                message: 'In der Schweiz wird "ß" zu "ss" geschrieben',
+                alternatives: ['ss'],
+                priority: 1
+            });
+        }
+        
+        // Check for common mistakes
+        Object.entries(commonMistakes).forEach(([word, explanation]) => {
+            const regex = new RegExp(`\\b${word}\\b`, 'gi');
+            if (regex.test(text)) {
+                // Only suggest if context might be wrong (simplified check)
+                suggestions.push({
+                    type: 'spelling',
+                    icon: 'fa-spell-check',
+                    title: 'Rechtschreibung prüfen',
+                    message: explanation,
+                    priority: 2
+                });
+            }
+        });
+        
+        return suggestions;
+    }
+    
+    async performAIAnalysis(text, country) {
+        try {
+            // Get API key
+            const apiKey = await this.getAPIKey();
+            if (!apiKey) return [];
+            
+            // Get context from cover letter editor if available
+            let context = '';
+            if (window.coverLetterEditor) {
+                const jobData = window.coverLetterEditor.collectJobData?.() || {};
+                context = `Position: ${jobData.jobTitle || 'Nicht angegeben'}, Unternehmen: ${jobData.companyName || 'Nicht angegeben'}`;
+            }
+            
+            const countryNames = {
+                'DE': 'Deutschland (Duden)',
+                'CH': 'Schweiz (Schweizer Rechtschreibung)',
+                'AT': 'Österreich (Österreichische Rechtschreibung)',
+                'US': 'USA (Englisch)'
+            };
+            
+            const prompt = `Du bist ein professioneller Bewerbungsberater und Rechtschreibexperte.
+
+Kontext:
+${context}
+Land: ${countryNames[country] || 'Deutschland'}
+
+Aufgabe:
+Analysiere den folgenden Text aus einem Bewerbungsanschreiben und gib konkrete, hilfreiche Verbesserungsvorschläge.
+
+Text:
+"""${text}"""
+
+Gib ausschließlich ein JSON-Array zurück mit Objekten im Format:
+[
+  {
+    "type": "spelling|style|grammar|improvement",
+    "title": "Kurzer Titel",
+    "message": "Erklärung des Problems",
+    "alternatives": ["Vorschlag 1", "Vorschlag 2"],
+    "priority": 1-5 (1 = wichtig, 5 = optional)
+  }
+]
+
+Fokus:
+- Rechtschreibfehler korrigieren (basierend auf ${countryNames[country]})
+- Grammatikfehler finden
+- Stilistische Verbesserungen
+- Konkrete, umsetzbare Vorschläge
+- Maximal 3-5 Vorschläge
+
+Antworte NUR mit dem JSON-Array, keine zusätzlichen Erklärungen.`;
+            
+            const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${apiKey}`
+                },
+                body: JSON.stringify({
+                    model: 'gpt-4o-mini',
+                    messages: [
+                        { role: 'system', content: 'Du bist ein professioneller Bewerbungsberater. Antworte ausschließlich mit gültigem JSON.' },
+                        { role: 'user', content: prompt }
+                    ],
+                    max_tokens: 500,
+                    temperature: 0.3
+                })
+            });
+            
+            if (!response.ok) {
+                console.warn('OpenAI API error:', response.status);
+                return [];
+            }
+            
+            const data = await response.json();
+            const content = data.choices?.[0]?.message?.content || '';
+            
+            if (!content) return [];
+            
+            // Parse JSON response
+            try {
+                const suggestions = JSON.parse(content);
+                return Array.isArray(suggestions) ? suggestions : [];
+            } catch (parseError) {
+                console.warn('Failed to parse AI response:', parseError);
+                return [];
+            }
+        } catch (error) {
+            console.warn('AI analysis error:', error);
+            return [];
+        }
+    }
+    
+    async getAPIKey() {
+        // Try AWS API Settings
+        if (window.awsAPISettings) {
+            try {
+                const key = await window.awsAPISettings.getFullApiKey('openai');
+                if (key && !key.includes('...')) return key;
+            } catch (e) {
+                console.warn('AWS API Settings error:', e);
+            }
+        }
+        
+        // Try global_api_keys
+        try {
+            const globalKeys = JSON.parse(localStorage.getItem('global_api_keys') || '{}');
+            if (globalKeys.openai && globalKeys.openai.startsWith('sk-')) {
+                return globalKeys.openai;
+            }
+        } catch (e) {
+            // Ignore
+        }
+        
+        return null;
     }
     
     performLocalAnalysis(text) {
