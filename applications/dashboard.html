@@ -2127,15 +2127,56 @@ Ihre Aufgaben:
                 isLoggedIn: isLoggedIn
             });
             
-            // Warnung wenn User eingeloggt ist, aber Upload-Scripts fehlen
+            // WICHTIG: Lade Upload-Scripts manuell, falls sie nicht geladen sind
             if (isLoggedIn && !window.smartMediaUpload && !window.awsMedia?.uploadDocument) {
-                console.error('❌ User ist eingeloggt, aber Upload-Scripts fehlen!');
-                showToast('Upload-System nicht verfügbar. Bitte Seite neu laden.', 'error');
-                element.closest('.document-category-modal').remove();
-                return;
+                console.warn('⚠️ Upload-Scripts nicht geladen - versuche manuell zu laden...');
+                
+                try {
+                    // Lade Scripts dynamisch
+                    await Promise.all([
+                        loadScript('../js/aws-app-config.js?v=20260118'),
+                        loadScript('../js/aws-media.js?v=20260118'),
+                        loadScript('../js/smart-media-upload.js?v=20260118')
+                    ]);
+                    
+                    console.log('✅ Upload-Scripts manuell geladen');
+                } catch (scriptError) {
+                    console.error('❌ Fehler beim Laden der Upload-Scripts:', scriptError);
+                    showToast('Upload-System nicht verfügbar. Bitte Seite neu laden.', 'error');
+                    element.closest('.document-category-modal').remove();
+                    return;
+                }
+                
+                // Prüfe nochmal nach dem Laden
+                if (!window.smartMediaUpload && !window.awsMedia?.uploadDocument) {
+                    console.error('❌ Upload-Scripts konnten nicht geladen werden!');
+                    showToast('Upload-System nicht verfügbar. Bitte Seite neu laden.', 'error');
+                    element.closest('.document-category-modal').remove();
+                    return;
+                }
             }
             
             try {
+                // Hilfsfunktion zum Laden von Scripts (wird nur bei Bedarf verwendet)
+                async function loadScript(src) {
+                    return new Promise((resolve, reject) => {
+                        // Prüfe ob Script bereits geladen ist
+                        const existingScript = document.querySelector(`script[src*="${src.split('/').pop()}"]`);
+                        if (existingScript && (window.smartMediaUpload || window.awsMedia)) {
+                            resolve();
+                            return;
+                        }
+                        
+                        const script = document.createElement('script');
+                        script.src = src;
+                        script.onload = () => {
+                            // Warte kurz auf Initialisierung
+                            setTimeout(resolve, 200);
+                        };
+                        script.onerror = () => reject(new Error(`Failed to load script: ${src}`));
+                        document.head.appendChild(script);
+                    });
+                }
                 const now = new Date().toISOString();
                 const docId = `doc_${Date.now().toString(36)}`;
                 const documentData = {
