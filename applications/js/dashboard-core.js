@@ -2026,16 +2026,32 @@ function downloadCoverLetter(id) {
 async function deleteCoverLetter(id) {
     if (!confirm('Anschreiben wirklich löschen?')) return;
     
-    if (window.cloudDataService) {
-        await window.cloudDataService.deleteCoverLetter(id);
-    } else {
+    try {
+        if (window.cloudDataService) {
+            await window.cloudDataService.deleteCoverLetter(id);
+            // Cache invalidieren
+            if (window.cloudDataService.cache) {
+                window.cloudDataService.cache.coverLetters = null;
+                window.cloudDataService.cacheExpiry = window.cloudDataService.cacheExpiry || {};
+                window.cloudDataService.cacheExpiry.coverLetters = 0;
+            }
+        }
+        
+        // IMMER auch localStorage aktualisieren
         let coverLetters = JSON.parse(localStorage.getItem('cover_letter_drafts') || '[]');
         coverLetters = coverLetters.filter(c => c.id !== id);
         localStorage.setItem('cover_letter_drafts', JSON.stringify(coverLetters));
+        
+        // Sofort Element entfernen
+        const element = document.querySelector(`.cover-letter-item[data-id="${id}"]`);
+        if (element) element.remove();
+        
+        await loadCoverLetters();
+        showToast('Anschreiben gelöscht', 'success');
+    } catch (error) {
+        console.error('Fehler beim Löschen:', error);
+        showToast('Fehler beim Löschen', 'error');
     }
-    
-    loadCoverLetters();
-    showToast('Anschreiben gelöscht', 'success');
 }
 
 // Resume Actions
@@ -2046,16 +2062,35 @@ async function viewResume(id) {
 async function deleteResume(id) {
     if (!confirm('Lebenslauf wirklich löschen?')) return;
     
-    if (window.cloudDataService) {
-        await window.cloudDataService.deleteResume(id);
-    } else {
+    try {
+        if (window.cloudDataService) {
+            await window.cloudDataService.deleteResume(id);
+            // Cache invalidieren für sofortige Aktualisierung
+            if (window.cloudDataService.cache) {
+                window.cloudDataService.cache.resumes = null;
+                window.cloudDataService.cacheExpiry = window.cloudDataService.cacheExpiry || {};
+                window.cloudDataService.cacheExpiry.resumes = 0;
+            }
+        }
+        
+        // IMMER auch localStorage aktualisieren
         let resumes = JSON.parse(localStorage.getItem('user_resumes') || '[]');
         resumes = resumes.filter(r => r.id !== id);
         localStorage.setItem('user_resumes', JSON.stringify(resumes));
+        
+        // Sofort das Element aus dem DOM entfernen
+        const element = document.querySelector(`[data-id="${id}"]`);
+        if (element) {
+            element.remove();
+        }
+        
+        // Dann vollständig neu laden
+        await loadResumes();
+        showToast('Lebenslauf gelöscht', 'success');
+    } catch (error) {
+        console.error('Fehler beim Löschen:', error);
+        showToast('Fehler beim Löschen', 'error');
     }
-    
-    loadResumes();
-    showToast('Lebenslauf gelöscht', 'success');
 }
 
 async function downloadResumePDF(id) {
