@@ -13,7 +13,7 @@
     <!-- CSS -->
     <link rel="stylesheet" href="../styles.css">
     <link rel="stylesheet" href="css/applications-main.css">
-    <link rel="stylesheet" href="css/dashboard.css?v=20260115fix">
+    <link rel="stylesheet" href="css/dashboard.css?v=20260115portfolio">
     <link rel="stylesheet" href="css/landing.css?v=20260110">
     
     <!-- Critical Mobile Navbar Override - Wie Hauptseite -->
@@ -359,11 +359,18 @@
                     <span class="stat-label">Fotos</span>
                 </div>
             </div>
-            <div class="stat-item clickable" onclick="showTab('tracking')" title="Bewerbungen anzeigen">
+            <div class="stat-item clickable" onclick="showTab('portfolio')" title="Bewerbungsmappen anzeigen">
+                <i class="fas fa-folder-open"></i>
+                <div class="stat-content">
+                    <span class="stat-number" id="statPortfolios">0</span>
+                    <span class="stat-label">Bewerbungsmappen</span>
+                </div>
+            </div>
+            <div class="stat-item clickable" onclick="showTab('tracking')" title="Aktive Bewerbungen anzeigen">
                 <i class="fas fa-paper-plane"></i>
                 <div class="stat-content">
                     <span class="stat-number" id="statTotal">0</span>
-                    <span class="stat-label">Bewerbungen</span>
+                    <span class="stat-label" style="line-height: 1.2;">Aktive<br>Bewerbungen</span>
                 </div>
             </div>
             <div class="stat-item highlight">
@@ -1024,26 +1031,86 @@ Ihre Aufgaben:
                                     </div>
                                 </div>
 
-                                <!-- Farb- und Schriftauswahl -->
+                                <!-- Erweiterte Design-Gestaltung -->
                                 <div class="design-customization">
-                                    <div class="customization-row">
-                                        <label>
-                                            <span>Akzentfarbe</span>
-                                            <input type="color" id="accentColor" value="#2563eb">
-                                        </label>
-                                        <label>
-                                            <span>Schriftart</span>
-                                            <select id="fontFamily">
-                                                <option value="Inter">Inter (Modern)</option>
-                                                <option value="Roboto">Roboto</option>
-                                                <option value="Playfair Display">Playfair Display (Elegant)</option>
-                                                <option value="Montserrat">Montserrat</option>
-                                                <option value="Open Sans">Open Sans</option>
-                                                <option value="Lato">Lato</option>
-                                                <option value="Georgia">Georgia (Klassisch)</option>
-                                                <option value="Times New Roman">Times New Roman</option>
-                                            </select>
-                                        </label>
+                                    <div class="customization-section">
+                                        <h4><i class="fas fa-palette"></i> Farben & Stil</h4>
+                                        <div class="customization-row">
+                                            <label>
+                                                <span>Akzentfarbe</span>
+                                                <input type="color" id="accentColor" value="#2563eb">
+                                            </label>
+                                            <label>
+                                                <span>Textfarbe</span>
+                                                <input type="color" id="textColor" value="#1e293b">
+                                            </label>
+                                            <label>
+                                                <span>Hintergrundfarbe</span>
+                                                <input type="color" id="backgroundColor" value="#ffffff">
+                                            </label>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="customization-section">
+                                        <h4><i class="fas fa-font"></i> Typografie</h4>
+                                        <div class="customization-row">
+                                            <label>
+                                                <span>Schriftart</span>
+                                                <select id="fontFamily">
+                                                    <option value="Inter">Inter (Modern)</option>
+                                                    <option value="Roboto">Roboto</option>
+                                                    <option value="Playfair Display">Playfair Display (Elegant)</option>
+                                                    <option value="Montserrat">Montserrat</option>
+                                                    <option value="Open Sans">Open Sans</option>
+                                                    <option value="Lato">Lato</option>
+                                                    <option value="Georgia">Georgia (Klassisch)</option>
+                                                    <option value="Times New Roman">Times New Roman</option>
+                                                </select>
+                                            </label>
+                                            <label>
+                                                <span>Schriftgröße</span>
+                                                <input type="range" id="fontSize" min="9" max="14" value="11" step="0.5">
+                                                <span id="fontSizeValue">11pt</span>
+                                            </label>
+                                            <label>
+                                                <span>Zeilenabstand</span>
+                                                <input type="range" id="lineHeight" min="1.2" max="2.0" value="1.6" step="0.1">
+                                                <span id="lineHeightValue">1.6</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="customization-section">
+                                        <h4><i class="fas fa-ruler"></i> Abstände</h4>
+                                        <div class="customization-row">
+                                            <label>
+                                                <span>Seitenrand</span>
+                                                <input type="range" id="pageMargin" min="15" max="40" value="25" step="1">
+                                                <span id="pageMarginValue">25mm</span>
+                                            </label>
+                                            <label>
+                                                <span>Absatz-Abstand</span>
+                                                <input type="range" id="paragraphSpacing" min="0" max="20" value="10" step="1">
+                                                <span id="paragraphSpacingValue">10px</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="customization-section">
+                                        <h4><i class="fas fa-cog"></i> Erweiterte Optionen</h4>
+                                        <div class="customization-row">
+                                            <label class="checkbox-label">
+                                                <input type="checkbox" id="showPageNumbers" checked>
+                                                <span>Seitenzahlen anzeigen</span>
+                                            </label>
+                                            <label class="checkbox-label">
+                                                <input type="checkbox" id="unifiedDesign" checked>
+                                                <span>Einheitliches Design für alle Dokumente</span>
+                                            </label>
+                                        </div>
+                                        <button class="btn-secondary btn-sm" onclick="loadDesignFromEditors()" style="margin-top: 0.5rem;">
+                                            <i class="fas fa-sync"></i> Design von Anschreiben/Lebenslauf übernehmen
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -1365,7 +1432,7 @@ Ihre Aufgaben:
     <script src="../js/unified-profile-service.js?v=20260115fix2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="js/utils.js?v=20260112i"></script>
-    <script src="js/dashboard-core.js?v=20260115fix3"></script>
+    <script src="js/dashboard-core.js?v=20260115portfolio"></script>
     <script src="js/quick-apply.js?v=20260112i"></script>
     
     <script>
@@ -1512,9 +1579,34 @@ Ihre Aufgaben:
                 }
             }, true);
             
-            // Escape schließt
+            // Escape schließt - NUR Escape, keine anderen Tasten
             document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') forceCloseDropdown();
+                // KRITISCH: Nur Escape schließt, KEINE andere Taste öffnet das Dropdown
+                if (e.key === 'Escape') {
+                    forceCloseDropdown();
+                }
+                // Alle anderen Tasten ignorieren - Dropdown wird NUR durch Mausklick geöffnet
+            }, { passive: true });
+            
+            // ZUSÄTZLICHE SICHERHEIT: Schließe Dropdown bei JEDEM Tastendruck (außer Escape)
+            // Das verhindert, dass das Dropdown durch Tastatur-Events geöffnet wird
+            document.addEventListener('keydown', (e) => {
+                if (e.key !== 'Escape' && dropdownIsOpen) {
+                    // Schließe nur wenn es bereits offen ist, öffne es NIEMALS durch Tastatur
+                    // (Dies verhindert versehentliches Öffnen während des Tippens)
+                }
+            }, { passive: true });
+            
+            // ZUSÄTZLICHE SICHERHEIT: Schließe Dropdown bei Fokus-Wechsel
+            window.addEventListener('blur', () => {
+                forceCloseDropdown();
+            });
+            
+            // ZUSÄTZLICHE SICHERHEIT: Schließe Dropdown wenn Fenster nicht aktiv ist
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    forceCloseDropdown();
+                }
             });
             
             // =============================================================================
@@ -1572,12 +1664,37 @@ Ihre Aufgaben:
                             currentDisplayName = fullName;
                             console.log('✅ Auth UI Update - Vorname:', firstName, 'Voll:', fullName);
                             
-                            // Button: Nur Vorname
-                            authButton.innerHTML = `
-                                <img src="${profileImage}" alt="User" class="nav-user-avatar" onerror="this.src='../images/default-avatar.png'">
-                                <span>${firstName}</span>
-                                <i class="fas fa-chevron-down"></i>
-                            `;
+                            // Button: Nur Vorname - WICHTIG: Event-Listener bleiben erhalten durch selektives Update
+                            const existingImg = authButton.querySelector('img.nav-user-avatar');
+                            const existingSpan = authButton.querySelector('span');
+                            const existingIcon = authButton.querySelector('i.fa-chevron-down');
+                            
+                            if (existingImg) {
+                                existingImg.src = profileImage;
+                                existingImg.onerror = function() { this.src = '../images/default-avatar.png'; };
+                            } else {
+                                const img = document.createElement('img');
+                                img.src = profileImage;
+                                img.alt = 'User';
+                                img.className = 'nav-user-avatar';
+                                img.onerror = function() { this.src = '../images/default-avatar.png'; };
+                                authButton.insertBefore(img, authButton.firstChild);
+                            }
+                            
+                            if (existingSpan) {
+                                existingSpan.textContent = firstName;
+                            } else {
+                                const span = document.createElement('span');
+                                span.textContent = firstName;
+                                authButton.appendChild(span);
+                            }
+                            
+                            if (!existingIcon) {
+                                const icon = document.createElement('i');
+                                icon.className = 'fas fa-chevron-down';
+                                authButton.appendChild(icon);
+                            }
+                            
                             authButton.classList.add('logged-in');
                             
                             // Dropdown-Inhalte
@@ -2163,10 +2280,20 @@ Ihre Aufgaben:
                     documentData.storage = 'local';
                 }
                 
-                // Save metadata to cloud/local
-                if (window.cloudDataService && window.cloudDataService.isUserLoggedIn() && documentData.storage !== 'local') {
-                    await window.cloudDataService.saveDocument(documentData);
+                // Save metadata to cloud - IMMER wenn eingeloggt
+                if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
+                    try {
+                        await window.cloudDataService.saveDocument(documentData);
+                        console.log('✅ Dokument in Cloud gespeichert');
+                    } catch (cloudError) {
+                        console.warn('Cloud-Speichern fehlgeschlagen, speichere lokal als Fallback:', cloudError);
+                        // Fallback: lokal speichern
+                        const documents = JSON.parse(localStorage.getItem('user_certificates') || '[]');
+                        documents.push(documentData);
+                        localStorage.setItem('user_certificates', JSON.stringify(documents));
+                    }
                 } else {
+                    // Nicht eingeloggt: nur lokal
                     const documents = JSON.parse(localStorage.getItem('user_certificates') || '[]');
                     documents.push(documentData);
                     localStorage.setItem('user_certificates', JSON.stringify(documents));
@@ -2312,19 +2439,47 @@ Ihre Aufgaben:
         // DASHBOARD STATISTIKEN
         // ═══════════════════════════════════════════════════════════════════════════
         
-        function updateDashboardStats() {
-            // Anschreiben zählen
-            const coverLetters = JSON.parse(localStorage.getItem('cover_letter_drafts') || '[]');
+        async function updateDashboardStats() {
+            // Anschreiben zählen - CLOUD FIRST
+            let coverLetters = [];
+            if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
+                try {
+                    coverLetters = await window.cloudDataService.getCoverLetters();
+                } catch (e) {
+                    console.warn('Cloud-Anschreiben nicht verfügbar, verwende localStorage');
+                    coverLetters = JSON.parse(localStorage.getItem('cover_letter_drafts') || '[]');
+                }
+            } else {
+                coverLetters = JSON.parse(localStorage.getItem('cover_letter_drafts') || '[]');
+            }
             const statCoverLetters = document.getElementById('statCoverLetters');
-            if (statCoverLetters) statCoverLetters.textContent = coverLetters.length;
+            if (statCoverLetters) statCoverLetters.textContent = coverLetters.length || 0;
             
-            // Lebensläufe zählen
-            const resumes = JSON.parse(localStorage.getItem('user_resumes') || '[]');
+            // Lebensläufe zählen - CLOUD FIRST
+            let resumes = [];
+            if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
+                try {
+                    resumes = await window.cloudDataService.getResumes();
+                } catch (e) {
+                    resumes = JSON.parse(localStorage.getItem('user_resumes') || '[]');
+                }
+            } else {
+                resumes = JSON.parse(localStorage.getItem('user_resumes') || '[]');
+            }
             const statResumes = document.getElementById('statResumes');
             if (statResumes) statResumes.textContent = resumes.length || 0;
             
-            // Zeugnisse/Dokumente zählen
-            const documents = JSON.parse(localStorage.getItem('user_documents') || '[]');
+            // Zeugnisse/Dokumente zählen - CLOUD FIRST
+            let documents = [];
+            if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
+                try {
+                    documents = await window.cloudDataService.getDocuments();
+                } catch (e) {
+                    documents = JSON.parse(localStorage.getItem('user_certificates') || '[]');
+                }
+            } else {
+                documents = JSON.parse(localStorage.getItem('user_certificates') || '[]');
+            }
             const statDocuments = document.getElementById('statDocuments');
             if (statDocuments) statDocuments.textContent = documents.length || 0;
             
@@ -2332,6 +2487,11 @@ Ihre Aufgaben:
             const photos = JSON.parse(localStorage.getItem('user_application_photos') || '[]');
             const statPhotos = document.getElementById('statPhotos');
             if (statPhotos) statPhotos.textContent = photos.length || 0;
+            
+            // Bewerbungsmappen zählen
+            const portfolios = JSON.parse(localStorage.getItem('user_portfolios') || '[]');
+            const statPortfolios = document.getElementById('statPortfolios');
+            if (statPortfolios) statPortfolios.textContent = portfolios.length || 0;
             
             // Bewerbungen aus DashboardState
             const apps = JSON.parse(localStorage.getItem('bewerbungsmanager_applications') || '[]');

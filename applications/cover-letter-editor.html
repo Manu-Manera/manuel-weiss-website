@@ -10,7 +10,7 @@
     <title>Anschreiben-Editor - Bewerbungsmanager</title>
     <link rel="stylesheet" href="../styles.css">
     <link rel="stylesheet" href="css/applications-main.css">
-    <link rel="stylesheet" href="css/cover-letter-editor.css?v=20260115bestpractices">
+    <link rel="stylesheet" href="css/cover-letter-editor.css?v=20260115editable">
     <link rel="stylesheet" href="css/inline-suggestions.css?v=20260115">
     <link rel="stylesheet" href="css/job-match.css?v=20260115">
     <link rel="stylesheet" href="css/split-view.css?v=20260115">
@@ -258,13 +258,14 @@
 
                         <!-- Letter Recipient -->
                         <div class="letter-recipient">
+                            <input type="text" id="greetingSalutation" value="Sehr geehrte Damen und Herren," class="greeting-salutation-input" placeholder="Anrede (z.B. Sehr geehrte Damen und Herren,)">
                             <span id="companyNameDisplay"></span>
                             <span id="contactPersonDisplay"></span>
                         </div>
 
                         <!-- Letter Subject -->
                         <div class="letter-subject">
-                            <strong>Betreff:</strong> <span id="subjectLine"></span>
+                            <strong>Betreff:</strong> <input type="text" id="subjectLine" class="subject-input" placeholder="Betreff">
                         </div>
 
                         <!-- Letter Body -->
@@ -274,9 +275,9 @@
 
                         <!-- Letter Footer -->
                         <div class="letter-footer">
-                            <span>Mit freundlichen Grüßen</span>
+                            <input type="text" id="greetingText" value="Mit freundlichen Grüßen" class="greeting-input" placeholder="Grußformel">
                         <img id="signatureImage" alt="Unterschrift" style="display:none;">
-                            <span id="signatureName"></span>
+                            <input type="text" id="signatureName" class="signature-name-input" placeholder="Ihr Name">
                         </div>
                     </div>
                 </div>
@@ -513,7 +514,7 @@
     <script src="../js/cloud-data-service.js?v=20260114c"></script>
     <script src="../js/workflow-api.js?v=20260114c"></script>
     <script src="../js/unified-profile-service.js?v=20260115"></script>
-    <script src="js/cover-letter-editor.js?v=20260115bestpractices"></script>
+    <script src="js/cover-letter-editor.js?v=20260115editable"></script>
     <script src="js/inline-ai-coach.js?v=20260115fix"></script>
     <!-- Job-Match-Analyzer entfernt wegen Absturz-Problemen -->
     <script src="js/industry-templates.js?v=20260115"></script>

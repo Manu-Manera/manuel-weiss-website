@@ -190,11 +190,20 @@ class CoverLetterEditor {
             countrySelect.addEventListener('change', () => {
                 this.setCurrentDate();
                 this.updateGreeting();
+                this.updateSalutation();
                 // Aktualisiere auch Company Info falls bereits geladen
                 const jobData = this.collectJobData();
                 if (jobData.companyName) {
                     this.updateCompanyInfo(jobData);
                 }
+            });
+        }
+        
+        // Ansprechpartner-Änderung: Aktualisiere Anrede
+        const contactPersonField = document.getElementById('contactPerson');
+        if (contactPersonField) {
+            contactPersonField.addEventListener('input', () => {
+                this.updateSalutation();
             });
         }
 
@@ -688,7 +697,14 @@ ${description.substring(0, 2000)}`;
         const fullName = `${firstName} ${lastName}`.trim() || 'Ihr Name';
         
         if (nameEl) nameEl.textContent = fullName;
-        if (signatureEl) signatureEl.textContent = fullName;
+        if (signatureEl) {
+            // Prüfe ob es ein Input oder Span ist
+            if (signatureEl.tagName === 'INPUT') {
+                signatureEl.value = fullName;
+            } else {
+                signatureEl.textContent = fullName;
+            }
+        }
         
         if (addressEl) {
             const address = this.profileData.address || this.profileData.location || '';
@@ -1034,11 +1050,18 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
         // Update company info mit Best Practices
         this.updateCompanyInfo(jobData);
         
-        // Update subject line
+        // Update subject line - editierbar
         const subjectLine = document.getElementById('subjectLine');
         if (subjectLine) {
-            subjectLine.textContent = `Bewerbung als ${jobData.jobTitle}`;
+            if (subjectLine.tagName === 'INPUT') {
+                subjectLine.value = `Bewerbung als ${jobData.jobTitle}`;
+            } else {
+                subjectLine.textContent = `Bewerbung als ${jobData.jobTitle}`;
+            }
         }
+        
+        // Update Anrede basierend auf Land
+        this.updateSalutation();
         
         // Update greeting based on country
         this.updateGreeting();
@@ -1053,7 +1076,7 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
 
     updateGreeting() {
         const country = this.getSelectedCountry();
-        const greetingEl = document.querySelector('.letter-footer span:first-child');
+        const greetingEl = document.getElementById('greetingText');
         
         if (!greetingEl) return;
         
@@ -1064,7 +1087,42 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
             'US': 'Sincerely,' // USA: Englisch
         };
         
-        greetingEl.textContent = greetings[country] || greetings['DE'];
+        // Nur setzen wenn leer oder Standard-Wert
+        if (!greetingEl.value || greetingEl.value === 'Mit freundlichen Grüßen' || greetingEl.value === 'Freundliche Grüsse' || greetingEl.value === 'Sincerely,') {
+            greetingEl.value = greetings[country] || greetings['DE'];
+        }
+    }
+
+    updateSalutation() {
+        const country = this.getSelectedCountry();
+        const salutationEl = document.getElementById('greetingSalutation');
+        const contactPerson = document.getElementById('contactPerson')?.value || '';
+        
+        if (!salutationEl) return;
+        
+        // Nur setzen wenn leer
+        if (!salutationEl.value || salutationEl.value === 'Sehr geehrte Damen und Herren,') {
+            if (contactPerson) {
+                // Person bekannt
+                const isFemale = contactPerson.toLowerCase().includes('frau') || contactPerson.toLowerCase().includes('ms.') || contactPerson.toLowerCase().includes('miss');
+                const isMale = contactPerson.toLowerCase().includes('herr') || contactPerson.toLowerCase().includes('mr.');
+                
+                if (country === 'US') {
+                    salutationEl.value = isFemale ? 'Dear Ms. ' : isMale ? 'Dear Mr. ' : 'Dear ';
+                } else {
+                    salutationEl.value = isFemale ? 'Sehr geehrte Frau ' : isMale ? 'Sehr geehrter Herr ' : 'Sehr geehrte/r ';
+                }
+            } else {
+                // Keine Person bekannt
+                const salutations = {
+                    'CH': 'Sehr geehrte Damen und Herren,',
+                    'DE': 'Sehr geehrte Damen und Herren,',
+                    'AT': 'Sehr geehrte Damen und Herren,',
+                    'US': 'Dear Sir or Madam,'
+                };
+                salutationEl.value = salutations[country] || salutations['DE'];
+            }
+        }
     }
 
     removeGreetingFromContent(content) {
