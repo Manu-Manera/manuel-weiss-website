@@ -10,11 +10,11 @@
     <title>Lebenslauf-Editor - Bewerbungsmanager</title>
     <link rel="stylesheet" href="../styles.css">
     <link rel="stylesheet" href="css/applications-main.css">
-    <link rel="stylesheet" href="css/resume-editor.css?v=20260115coach">
+    <link rel="stylesheet" href="css/resume-editor.css?v=20260115b">
     <link rel="stylesheet" href="css/inline-suggestions.css?v=20260115">
     <link rel="stylesheet" href="css/job-match.css?v=20260115">
     <link rel="stylesheet" href="css/collaboration.css?v=20260115">
-    <link rel="stylesheet" href="css/design-editor.css?v=20260115extended">
+    <link rel="stylesheet" href="css/design-editor.css?v=20260115b">
     <link rel="manifest" href="../manifest.json">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@300;400;500;600;700&family=Lato:wght@300;400;700&family=Montserrat:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700&family=Nunito:wght@300;400;500;600;700&family=Source+Sans+Pro:wght@300;400;600;700&family=Source+Code+Pro:wght@400;500;600&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -223,9 +223,14 @@
                         <div id="technicalSkillsContainer">
                             <!-- Wird dynamisch gefüllt -->
                         </div>
-                        <button type="button" class="btn-add" onclick="addTechnicalSkillCategory()">
-                            <i class="fas fa-plus"></i> Kategorie hinzufügen
-                        </button>
+                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem;">
+                            <button type="button" class="btn-add" onclick="addTechnicalSkillWithRating()">
+                                <i class="fas fa-star"></i> Skill mit Bewertung
+                            </button>
+                            <button type="button" class="btn-add" onclick="addTechnicalSkillCategory()" style="background: #f3f4f6; color: #374151;">
+                                <i class="fas fa-folder-plus"></i> Kategorie
+                            </button>
+                        </div>
                     </div>
                     
                     <!-- Soft Skills -->
@@ -234,9 +239,14 @@
                         <div id="softSkillsContainer">
                             <!-- Wird dynamisch gefüllt -->
                         </div>
-                        <button type="button" class="btn-add" onclick="addSoftSkill()">
-                            <i class="fas fa-plus"></i> Soft Skill hinzufügen
-                        </button>
+                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem;">
+                            <button type="button" class="btn-add" onclick="addSoftSkillWithRating()">
+                                <i class="fas fa-star"></i> Soft Skill mit Bewertung
+                            </button>
+                            <button type="button" class="btn-add" onclick="addSoftSkill()" style="background: #f3f4f6; color: #374151;">
+                                <i class="fas fa-plus"></i> Einfacher Soft Skill
+                            </button>
+                        </div>
                     </div>
                 </section>
                 
@@ -745,11 +755,78 @@
                                     <option value="accent">Akzentfarbe</option>
                                 </select>
                             </div>
+                            <!-- Bildausschnitt -->
+                            <div class="design-form-group">
+                                <label><i class="fas fa-crop-alt"></i> Bildausschnitt</label>
+                                <div class="image-crop-controls">
+                                    <label style="font-size: 0.75rem;">Zoom:</label>
+                                    <input type="range" id="profileImageZoom" min="100" max="200" value="100" 
+                                           oninput="document.getElementById('zoomValue').textContent = this.value + '%'">
+                                    <span id="zoomValue" style="font-size: 0.75rem;">100%</span>
+                                </div>
+                                <div class="image-crop-controls" style="margin-top: 0.5rem;">
+                                    <label style="font-size: 0.75rem;">X-Versatz:</label>
+                                    <input type="range" id="profileImageOffsetX" min="-50" max="50" value="0" 
+                                           oninput="document.getElementById('offsetXValue').textContent = this.value + '%'">
+                                    <span id="offsetXValue" style="font-size: 0.75rem;">0%</span>
+                                </div>
+                                <div class="image-crop-controls" style="margin-top: 0.5rem;">
+                                    <label style="font-size: 0.75rem;">Y-Versatz:</label>
+                                    <input type="range" id="profileImageOffsetY" min="-50" max="50" value="0" 
+                                           oninput="document.getElementById('offsetYValue').textContent = this.value + '%'">
+                                    <span id="offsetYValue" style="font-size: 0.75rem;">0%</span>
+                                </div>
+                                <button type="button" id="resetImageCropBtn" class="design-action-btn" style="margin-top: 0.5rem; width: 100%;">
+                                    <i class="fas fa-undo"></i> Ausschnitt zurücksetzen
+                                </button>
+                            </div>
+                            <div id="profileImagePreview" class="design-image-preview" style="margin-top: 0.5rem;"></div>
                         </div>
                     </div>
                     
                     <div class="design-section">
-                        <div class="design-section-title"><i class="fas fa-building"></i> Firmenlogos</div>
+                        <div class="design-section-title"><i class="fas fa-building"></i> Bewerbungs-Firmenlogo</div>
+                        <p style="font-size: 0.75rem; color: var(--design-text-muted); margin-bottom: 0.75rem;">
+                            Logo der Firma bei der Sie sich bewerben (erscheint im Header).
+                        </p>
+                        <div class="design-form-group">
+                            <label class="design-toggle">
+                                <input type="checkbox" id="designShowCompanyLogo">
+                                <span class="design-toggle-label">Firmenlogo anzeigen</span>
+                            </label>
+                        </div>
+                        <div id="companyLogoOptions" class="design-options-container" style="display: none;">
+                            <div class="design-form-group">
+                                <label>Logo hochladen</label>
+                                <div class="design-file-upload">
+                                    <label class="design-file-upload-btn">
+                                        <i class="fas fa-building"></i> Logo wählen
+                                        <input type="file" id="companyLogoUpload" accept="image/*">
+                                    </label>
+                                </div>
+                                <div id="companyLogoPreview" class="design-image-preview" style="margin-top: 0.5rem;"></div>
+                            </div>
+                            <div class="design-form-group">
+                                <label>Position im Header</label>
+                                <select id="designCompanyLogoPosition" class="design-select">
+                                    <option value="top-left">Oben links</option>
+                                    <option value="top-right" selected>Oben rechts</option>
+                                    <option value="bottom-right">Unten rechts (Fußzeile)</option>
+                                </select>
+                            </div>
+                            <div class="design-form-group">
+                                <label>Größe</label>
+                                <select id="designCompanyLogoSize" class="design-select">
+                                    <option value="small">Klein (40px)</option>
+                                    <option value="medium" selected>Mittel (60px)</option>
+                                    <option value="large">Groß (80px)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="design-section">
+                        <div class="design-section-title"><i class="fas fa-building"></i> Firmenlogos bei Berufserfahrung</div>
                         <p style="font-size: 0.75rem; color: var(--design-text-muted); margin-bottom: 0.75rem;">
                             Firmenlogos können bei jeder Berufserfahrung im Formular hochgeladen werden.
                             Sie werden neben dem Firmennamen angezeigt.
@@ -757,8 +834,44 @@
                     </div>
                 </div>
                 
-                <!-- Extras Panel (Signature, Page Numbers) -->
+                <!-- Extras Panel (Signature, Page Numbers, Date Format) -->
                 <div id="panel-extras" class="design-panel">
+                    <!-- Datumsformat -->
+                    <div class="design-section">
+                        <div class="design-section-title"><i class="fas fa-calendar-alt"></i> Datumsformat</div>
+                        <div class="design-form-group">
+                            <label>Format für Zeiträume</label>
+                            <select id="designDateFormat" class="design-select">
+                                <option value="MM.YYYY">MM.YYYY (z.B. 01.2024)</option>
+                                <option value="MM/YYYY">MM/YYYY (z.B. 01/2024)</option>
+                                <option value="MMMM YYYY">Monat YYYY (z.B. Januar 2024)</option>
+                                <option value="MMM YYYY">Mon. YYYY (z.B. Jan. 2024)</option>
+                                <option value="YYYY">Nur Jahr (z.B. 2024)</option>
+                            </select>
+                        </div>
+                        <div class="design-form-group">
+                            <label>Trennzeichen</label>
+                            <select id="designDateSeparator" class="design-select">
+                                <option value=" - "> - (Bindestrich)</option>
+                                <option value=" – "> – (Gedankenstrich)</option>
+                                <option value=" bis "> bis </option>
+                                <option value=" → "> → (Pfeil)</option>
+                            </select>
+                        </div>
+                        <div class="design-form-group">
+                            <label>Text für "aktuell"</label>
+                            <select id="designDateCurrent" class="design-select">
+                                <option value="heute">heute</option>
+                                <option value="aktuell">aktuell</option>
+                                <option value="present">present</option>
+                                <option value="bis heute">bis heute</option>
+                            </select>
+                        </div>
+                        <div class="date-format-preview" style="margin-top: 0.5rem; padding: 0.5rem; background: rgba(59,130,246,0.1); border-radius: 4px; font-size: 0.8rem;">
+                            Vorschau: <span id="dateFormatPreview">01.2024 - heute</span>
+                        </div>
+                    </div>
+                    
                     <div class="design-section">
                         <div class="design-section-title"><i class="fas fa-signature"></i> Unterschrift</div>
                         <div class="design-form-group">
@@ -769,18 +882,65 @@
                         </div>
                         <div id="signatureOptions" class="design-options-container" style="display: none;">
                             <div class="design-form-group">
-                                <label>Unterschrift hochladen (PNG empfohlen)</label>
+                                <label>Unterschrift hochladen</label>
                                 <div class="design-file-upload">
                                     <label class="design-file-upload-btn">
                                         <i class="fas fa-signature"></i> Unterschrift wählen
                                         <input type="file" id="signatureUpload" accept="image/*">
                                     </label>
                                 </div>
-                                <div id="signaturePreview" class="design-image-preview" style="margin-top: 0.5rem;"></div>
+                                <p style="font-size: 0.65rem; color: var(--design-text-muted); margin-top: 0.25rem;">
+                                    <i class="fas fa-magic"></i> Die Unterschrift wird automatisch freigestellt (transparenter Hintergrund).
+                                </p>
+                                <div id="signaturePreview" class="design-image-preview signature-draggable" style="margin-top: 0.5rem; position: relative; border: 2px dashed rgba(59,130,246,0.3); padding: 1rem; min-height: 80px;">
+                                    <span class="drag-hint" style="font-size: 0.7rem; color: var(--design-text-muted);">Unterschrift hierher ziehen oder hochladen</span>
+                                </div>
                             </div>
+                            
+                            <!-- Unterschrift Position -->
+                            <div class="design-form-group">
+                                <label>Position im Dokument</label>
+                                <select id="designSignaturePosition" class="design-select">
+                                    <option value="bottom-right" selected>Unten rechts</option>
+                                    <option value="bottom-left">Unten links</option>
+                                    <option value="bottom-center">Unten mittig</option>
+                                    <option value="after-content">Nach dem Inhalt</option>
+                                    <option value="custom">Benutzerdefiniert (Drag & Drop)</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Unterschrift Größe -->
+                            <div class="design-form-group">
+                                <label>Größe</label>
+                                <div class="signature-size-controls">
+                                    <input type="range" id="signatureWidth" min="50" max="300" value="150" 
+                                           oninput="document.getElementById('signatureWidthValue').textContent = this.value + 'px'">
+                                    <span id="signatureWidthValue" style="font-size: 0.75rem; min-width: 50px;">150px</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Benutzerdefinierte Position (nur wenn "custom" gewählt) -->
+                            <div id="customSignaturePosition" class="design-options-container" style="display: none;">
+                                <div class="design-form-group">
+                                    <label>X-Position (von links)</label>
+                                    <input type="range" id="signatureCustomX" min="0" max="100" value="70" 
+                                           oninput="document.getElementById('signatureXValue').textContent = this.value + '%'">
+                                    <span id="signatureXValue" style="font-size: 0.75rem;">70%</span>
+                                </div>
+                                <div class="design-form-group">
+                                    <label>Y-Position (von oben)</label>
+                                    <input type="range" id="signatureCustomY" min="0" max="100" value="90" 
+                                           oninput="document.getElementById('signatureYValue').textContent = this.value + '%'">
+                                    <span id="signatureYValue" style="font-size: 0.75rem;">90%</span>
+                                </div>
+                                <p style="font-size: 0.65rem; color: var(--design-text-muted);">
+                                    <i class="fas fa-hand-pointer"></i> Tipp: Sie können die Unterschrift auch direkt in der Vorschau mit der Maus verschieben!
+                                </p>
+                            </div>
+                            
                             <div class="design-form-group">
                                 <label>Ort</label>
-                                <input type="text" id="designSignatureLocation" class="design-select" placeholder="z.B. München">
+                                <input type="text" id="designSignatureLocation" class="design-select" placeholder="z.B. München, Zürich">
                             </div>
                             <div class="design-form-group">
                                 <label>Datum</label>
@@ -961,8 +1121,8 @@
     <script src="../js/global-api-manager.js?v=20260112cloud"></script>
     <script src="../js/cloud-data-service.js?v=20260114c"></script>
     <script src="../js/unified-profile-service.js?v=20260115"></script>
-    <script src="js/resume-editor.js?v=20260115"></script>
-    <script src="js/design-editor.js?v=20260115extended"></script>
+    <script src="js/resume-editor.js?v=20260115b"></script>
+    <script src="js/design-editor.js?v=20260115b"></script>
     <script src="js/inline-ai-coach.js?v=20260115"></script>
     <!-- Job-Match-Analyzer entfernt wegen Absturz-Problemen -->
     <script src="js/industry-templates.js?v=20260115"></script>

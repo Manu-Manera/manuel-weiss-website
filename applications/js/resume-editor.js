@@ -426,23 +426,33 @@ function getUserId() {
 
 // Text mit GPT strukturieren
 async function processTextWithGPT(text, apiKey) {
-    const prompt = `Analysiere den folgenden Lebenslauf-Text und extrahiere die Daten in strukturierter Form.
+    const prompt = `Analysiere den folgenden Lebenslauf-Text und extrahiere die Daten VOLLSTÄNDIG in strukturierter Form.
 
-WICHTIG: Extrahiere ALLE Informationen, besonders:
+KRITISCH WICHTIG - VOLLSTÄNDIGE EXTRAKTION:
+- Extrahiere ALLE Informationen VOLLSTÄNDIG und UNGEKÜRZT
+- KÜRZE NIEMALS Beschreibungen oder Aufgaben ab!
+- Übernimm ALLE Stichpunkte/Aufzählungen aus dem Original
+- Jede einzelne Tätigkeit/Verantwortlichkeit muss erfasst werden
+
+PFLICHTFELDER:
 - Vollständiger Name
 - E-Mail, Telefon, Adresse
 - Berufsbezeichnung/Titel
-- ALLE Berufserfahrungen mit ALLEN Tätigkeiten als Stichpunkte
-- ALLE Ausbildungen (auch Berufsausbildungen wie "Seiler", "Schreiner" etc.)
-- ALLE Fähigkeiten (technische und soziale)
+- ALLE Berufserfahrungen mit KOMPLETTEN Beschreibungen
+- ALLE Ausbildungen (auch Berufsausbildungen)
+- ALLE Fähigkeiten mit geschätztem Niveau (1-10)
 - Sprachen mit Niveau
 
-SEHR WICHTIG für Berufserfahrung:
-- Extrahiere eine kurze "description" (1-2 Sätze allgemeine Beschreibung der Rolle)
-- Extrahiere ALLE einzelnen Tätigkeiten/Aufgaben/Verantwortlichkeiten als "bullets" Array
-- Jeder Stichpunkt sollte eine konkrete Tätigkeit beschreiben
-- Falls Aufzählungen im Text sind, übernimm diese als bullets
-- Technologien/Tools die genannt werden, extrahiere als "technologies" Array
+BERUFSERFAHRUNG - SEHR WICHTIG:
+- "description": Die VOLLSTÄNDIGE Beschreibung der Rolle, NICHT gekürzt!
+- "bullets": JEDER einzelne Stichpunkt aus dem Original als separates Array-Element
+- Wenn im Original 10 Stichpunkte stehen, müssen auch 10 im bullets-Array sein
+- NIEMALS zusammenfassen oder weglassen!
+- "technologies": Alle genannten Tools, Software, Systeme
+
+FÄHIGKEITEN MIT BEWERTUNG:
+- Schätze für jede Fähigkeit ein Level von 1-10 basierend auf dem Kontext
+- 10 = Experte, 7-9 = Fortgeschritten, 4-6 = Mittel, 1-3 = Grundkenntnisse
 
 Antworte NUR mit einem JSON-Objekt im folgenden Format:
 {
@@ -451,7 +461,7 @@ Antworte NUR mit einem JSON-Objekt im folgenden Format:
     "phone": "+49 123 456789",
     "address": "Straße, PLZ Ort",
     "title": "Aktuelle Berufsbezeichnung",
-    "summary": "Kurze Zusammenfassung der Person",
+    "summary": "Zusammenfassung der Person",
     "experience": [
         {
             "position": "Position",
@@ -459,9 +469,9 @@ Antworte NUR mit einem JSON-Objekt im folgenden Format:
             "location": "Ort",
             "startDate": "MM/YYYY",
             "endDate": "MM/YYYY oder heute",
-            "description": "Kurze Beschreibung der Rolle (1-2 Sätze)",
-            "bullets": ["Tätigkeit 1", "Tätigkeit 2", "Tätigkeit 3"],
-            "technologies": ["Technologie1", "Technologie2"]
+            "description": "VOLLSTÄNDIGE Beschreibung der Rolle - NICHT KÜRZEN!",
+            "bullets": ["Tätigkeit 1 - vollständig", "Tätigkeit 2 - vollständig", "...ALLE weiteren"],
+            "technologies": ["Tool1", "System2", "Software3"]
         }
     ],
     "education": [
@@ -471,12 +481,18 @@ Antworte NUR mit einem JSON-Objekt im folgenden Format:
             "location": "Ort",
             "startDate": "MM/YYYY",
             "endDate": "MM/YYYY",
-            "description": "Details"
+            "description": "Vollständige Details"
         }
     ],
     "skills": {
-        "technical": ["Skill1", "Skill2"],
-        "soft": ["Soft Skill1", "Soft Skill2"]
+        "technical": [
+            {"name": "Skill1", "level": 8},
+            {"name": "Skill2", "level": 6}
+        ],
+        "soft": [
+            {"name": "Soft Skill1", "level": 7},
+            {"name": "Soft Skill2", "level": 8}
+        ]
     },
     "languages": [
         {"language": "Deutsch", "level": "Muttersprache"},
@@ -499,7 +515,7 @@ ${text}`;
                 messages: [
                     {
                         role: 'system',
-                        content: 'Du bist ein Experte für die Analyse von Lebensläufen. Extrahiere alle relevanten Informationen präzise und strukturiert.'
+                        content: 'Du bist ein Experte für die Analyse von Lebensläufen. Extrahiere ALLE Informationen VOLLSTÄNDIG und UNGEKÜRZT. Kürze NIEMALS Beschreibungen ab. Jeder Stichpunkt muss einzeln erfasst werden.'
                     },
                     {
                         role: 'user',
@@ -507,7 +523,7 @@ ${text}`;
                     }
                 ],
                 temperature: 0.1,
-                max_tokens: 4000
+                max_tokens: 8000
             })
         });
         
@@ -686,19 +702,34 @@ function applyOCRData() {
         }
     }
     
-    // Apply skills
+    // Apply skills - MIT BEWERTUNG
     if (parsed.skills) {
         // Technical skills - verwende die korrekte Funktion addTechnicalSkillCategory
         if (parsed.skills.technical && Array.isArray(parsed.skills.technical)) {
             const techContainer = document.getElementById('technicalSkillsContainer');
             if (techContainer) {
                 techContainer.innerHTML = '';
-                // Gruppiere Skills in Kategorien wenn möglich
-                if (typeof addTechnicalSkillCategory === 'function') {
-                    // Alle technischen Skills als eine Kategorie
-                    addTechnicalSkillCategory('Technische Fähigkeiten', parsed.skills.technical);
-                    console.log('✅ Technische Skills hinzugefügt:', parsed.skills.technical);
+                
+                // Konvertiere Skills in das erwartete Format (mit Bewertung)
+                const skillsWithRating = parsed.skills.technical.map(skill => {
+                    // Neues Format: {name: "Skill", level: 8}
+                    if (typeof skill === 'object' && skill.name) {
+                        return { name: skill.name, level: skill.level || 5 };
+                    }
+                    // Altes Format: "Skill" als String
+                    return { name: skill, level: 5 };
+                });
+                
+                if (typeof addTechnicalSkillWithRating === 'function') {
+                    skillsWithRating.forEach(skill => {
+                        addTechnicalSkillWithRating(skill.name, skill.level);
+                    });
+                } else if (typeof addTechnicalSkillCategory === 'function') {
+                    // Fallback auf alte Funktion
+                    const skillNames = skillsWithRating.map(s => s.name);
+                    addTechnicalSkillCategory('Technische Fähigkeiten', skillNames);
                 }
+                console.log('✅ Technische Skills hinzugefügt:', skillsWithRating);
             }
         }
         
@@ -707,9 +738,16 @@ function applyOCRData() {
             const softContainer = document.getElementById('softSkillsContainer');
             if (softContainer) {
                 softContainer.innerHTML = '';
+                
                 parsed.skills.soft.forEach(skill => {
-                    if (typeof addSoftSkill === 'function') {
-                        addSoftSkill(skill);
+                    // Neues Format: {name: "Skill", level: 8}
+                    const skillName = typeof skill === 'object' ? skill.name : skill;
+                    const skillLevel = typeof skill === 'object' ? skill.level : 5;
+                    
+                    if (typeof addSoftSkillWithRating === 'function') {
+                        addSoftSkillWithRating(skillName, skillLevel);
+                    } else if (typeof addSoftSkill === 'function') {
+                        addSoftSkill(skillName);
                     }
                 });
                 console.log('✅ Soft Skills hinzugefügt:', parsed.skills.soft);
@@ -1057,6 +1095,75 @@ function removeSkillTag(button) {
 
 function removeTechnicalSkillCategory(categoryId) {
     document.querySelector(`[data-category-id="${categoryId}"]`).remove();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SKILLS MIT BEWERTUNG (1-10 Skala)
+// ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * Fügt eine technische Fähigkeit mit Bewertung hinzu
+ */
+function addTechnicalSkillWithRating(skillName = '', level = 5, category = '') {
+    const container = document.getElementById('technicalSkillsContainer');
+    if (!container) return;
+    
+    const skillId = 'tech-skill-rated-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+    
+    const skillHtml = `
+        <div class="skill-item-rated" data-skill-id="${skillId}">
+            <div class="skill-rated-header">
+                <input type="text" class="skill-name-input" placeholder="z.B. JavaScript, Excel, SAP" value="${skillName}" data-field="skillName">
+                <div class="skill-level-control">
+                    <label>Level:</label>
+                    <input type="range" min="1" max="10" value="${level}" data-field="skillLevel" 
+                           oninput="this.nextElementSibling.textContent = this.value + '/10'">
+                    <span class="skill-level-display">${level}/10</span>
+                </div>
+                <button type="button" class="btn-remove" onclick="removeSkillRated('${skillId}')">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+            <input type="text" class="skill-category-input" placeholder="Kategorie (z.B. Programmiersprachen, Microsoft Tools)" value="${category}" data-field="skillCategory">
+        </div>
+    `;
+    
+    container.insertAdjacentHTML('beforeend', skillHtml);
+}
+
+/**
+ * Fügt eine Soft Skill mit Bewertung hinzu
+ */
+function addSoftSkillWithRating(skillName = '', level = 5, examples = '') {
+    const container = document.getElementById('softSkillsContainer');
+    if (!container) return;
+    
+    const skillId = 'soft-skill-rated-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+    
+    const skillHtml = `
+        <div class="skill-item-rated soft" data-skill-id="${skillId}">
+            <div class="skill-rated-header">
+                <input type="text" class="skill-name-input" placeholder="z.B. Kommunikation, Teamführung" value="${skillName}" data-field="skillName">
+                <div class="skill-level-control">
+                    <label>Level:</label>
+                    <input type="range" min="1" max="10" value="${level}" data-field="skillLevel"
+                           oninput="this.nextElementSibling.textContent = this.value + '/10'">
+                    <span class="skill-level-display">${level}/10</span>
+                </div>
+                <button type="button" class="btn-remove" onclick="removeSkillRated('${skillId}')">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+            <textarea placeholder="Konkrete Beispiele/Projekte (optional)" rows="1" data-field="examples">${examples}</textarea>
+        </div>
+    `;
+    
+    container.insertAdjacentHTML('beforeend', skillHtml);
+}
+
+function removeSkillRated(skillId) {
+    const el = document.querySelector(`[data-skill-id="${skillId}"]`);
+    if (el) el.remove();
 }
 
 // Add Soft Skill
