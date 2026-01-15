@@ -224,16 +224,30 @@
         size: file.size
       };
     } catch (error) {
-      console.error('❌ Document upload error:', error);
+      console.error('❌ Document upload error:', {
+        error: error.message,
+        stack: error.stack,
+        endpoint: endpoint,
+        fileName: file.name,
+        fileSize: file.size,
+        userId: userId
+      });
       
       // Provide more helpful error messages
-      if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+      if (error.message && (error.message.includes('Failed to fetch') || error.message.includes('NetworkError') || error.message.includes('Load failed'))) {
         throw new Error(`Netzwerkfehler: Die Verbindung zum Server konnte nicht hergestellt werden. ` +
           `Bitte überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut. ` +
           `Endpoint: ${endpoint}`);
       }
       
-      throw error;
+      // Wenn die Fehlermeldung bereits eine benutzerfreundliche Nachricht enthält, diese verwenden
+      if (error.message && (error.message.includes('API Gateway') || error.message.includes('Upload-URL-Anfrage') || error.message.includes('Upload fehlgeschlagen') || error.message.includes('Zugriff verweigert'))) {
+        throw error;
+      }
+      
+      // Generische Fehlermeldung mit mehr Kontext
+      throw new Error(`Upload fehlgeschlagen: ${error.message || 'Unbekannter Fehler'}. ` +
+        `Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.`);
     }
   }
 
