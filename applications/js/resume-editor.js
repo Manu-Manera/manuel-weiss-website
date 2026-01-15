@@ -312,7 +312,7 @@ async function uploadAndProcessPDF(file) {
     }
 }
 
-// Text aus PDF extrahieren mit PDF.js
+// Text aus PDF extrahieren mit PDF.js - VERBESSERTE VERSION mit Strukturerhaltung
 async function extractTextFromPDF(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -329,13 +329,20 @@ async function extractTextFromPDF(file) {
                 const pdf = await pdfjsLib.getDocument(typedArray).promise;
                 let fullText = '';
                 
-                for (let i = 1; i <= pdf.numPages; i++) {
-                    const page = await pdf.getPage(i);
+                console.log(`📄 PDF hat ${pdf.numPages} Seiten`);
+                
+                for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+                    const page = await pdf.getPage(pageNum);
                     const textContent = await page.getTextContent();
-                    const pageText = textContent.items.map(item => item.str).join(' ');
-                    fullText += pageText + '\n\n';
+                    
+                    // Verbesserte Textextraktion mit Positionsanalyse
+                    const pageText = reconstructTextWithStructure(textContent.items);
+                    fullText += `\n--- SEITE ${pageNum} ---\n${pageText}\n`;
+                    
+                    console.log(`📖 Seite ${pageNum}: ${pageText.length} Zeichen extrahiert`);
                 }
                 
+                console.log(`📄 Gesamt extrahiert: ${fullText.length} Zeichen`);
                 resolve(fullText);
             } catch (error) {
                 reject(error);
@@ -345,6 +352,88 @@ async function extractTextFromPDF(file) {
         reader.onerror = () => reject(new Error('Fehler beim Lesen der Datei'));
         reader.readAsArrayBuffer(file);
     });
+}
+
+/**
+ * Rekonstruiert den Text mit Struktur basierend auf den Positionen der Text-Elemente
+ * Erkennt Zeilenumbrüche, Stichpunkte und Absätze
+ */
+function reconstructTextWithStructure(items) {
+    if (!items || items.length === 0) return '';
+    
+    // Sortiere Items nach Y-Position (oben nach unten) und dann X-Position (links nach rechts)
+    const sortedItems = items.slice().sort((a, b) => {
+        const yDiff = b.transform[5] - a.transform[5]; // Y-Position (invertiert, da PDF von unten zählt)
+        if (Math.abs(yDiff) > 3) return yDiff; // Unterschiedliche Zeilen
+        return a.transform[4] - b.transform[4]; // Gleiche Zeile: nach X sortieren
+    });
+    
+    let result = '';
+    let lastY = null;
+    let lastX = null;
+    let currentLine = '';
+    const lineThreshold = 12; // Pixel-Schwelle für neue Zeile
+    const bulletChars = ['•', '·', '●', '○', '▪', '▸', '►', '-', '–', '→', '*'];
+    
+    for (const item of sortedItems) {
+        const text = item.str;
+        if (!text || text.trim() === '') continue;
+        
+        const x = item.transform[4];
+        const y = item.transform[5];
+        
+        if (lastY !== null) {
+            const yDiff = Math.abs(lastY - y);
+            
+            // Neue Zeile erkannt
+            if (yDiff > lineThreshold) {
+                // Prüfe ob aktuelle Zeile ein Stichpunkt ist
+                const trimmedLine = currentLine.trim();
+                const isBullet = bulletChars.some(b => trimmedLine.startsWith(b));
+                
+                if (trimmedLine) {
+                    // Füge Zeilenumbruch hinzu
+                    if (isBullet) {
+                        result += '\n' + trimmedLine;
+                    } else if (yDiff > lineThreshold * 2) {
+                        // Großer Abstand = neuer Absatz
+                        result += '\n\n' + trimmedLine;
+                    } else {
+                        result += '\n' + trimmedLine;
+                    }
+                }
+                currentLine = text;
+            } else {
+                // Gleiche Zeile - mit Leerzeichen verbinden wenn nötig
+                const gap = x - lastX;
+                if (gap > 20 && currentLine && !currentLine.endsWith(' ')) {
+                    currentLine += '  '; // Größerer Abstand = Tab/Spalte
+                } else if (gap > 5 && currentLine && !currentLine.endsWith(' ')) {
+                    currentLine += ' ';
+                }
+                currentLine += text;
+            }
+        } else {
+            currentLine = text;
+        }
+        
+        lastY = y;
+        lastX = x + (item.width || text.length * 5);
+    }
+    
+    // Letzte Zeile hinzufügen
+    if (currentLine.trim()) {
+        result += '\n' + currentLine.trim();
+    }
+    
+    // Nachbearbeitung: Stichpunkte normalisieren
+    result = result
+        .replace(/\n\s*[•·●○▪▸►]\s*/g, '\n• ')  // Normalisiere Bullet-Zeichen
+        .replace(/\n\s*[-–]\s+/g, '\n- ')        // Normalisiere Bindestriche als Bullets
+        .replace(/\n{3,}/g, '\n\n')              // Max 2 Zeilenumbrüche
+        .trim();
+    
+    return result;
 }
 
 // OpenAI API-Key abrufen
@@ -424,86 +513,119 @@ function getUserId() {
     return 'anonymous';
 }
 
-// Text mit GPT strukturieren
+// Text mit GPT strukturieren - VERBESSERTE VERSION für vollständige Extraktion
 async function processTextWithGPT(text, apiKey) {
-    const prompt = `Analysiere den folgenden Lebenslauf-Text und extrahiere die Daten VOLLSTÄNDIG in strukturierter Form.
+    // Zeige die Textlänge für Debugging
+    console.log(`📝 Zu analysierender Text: ${text.length} Zeichen`);
+    
+    const prompt = `Du bist ein präziser Datenextraktions-Assistent. Deine Aufgabe ist es, ALLE Informationen aus dem folgenden Lebenslauf zu extrahieren.
 
-KRITISCH WICHTIG - VOLLSTÄNDIGE EXTRAKTION:
-- Extrahiere ALLE Informationen VOLLSTÄNDIG und UNGEKÜRZT
-- KÜRZE NIEMALS Beschreibungen oder Aufgaben ab!
-- Übernimm ALLE Stichpunkte/Aufzählungen aus dem Original
-- Jede einzelne Tätigkeit/Verantwortlichkeit muss erfasst werden
+═══════════════════════════════════════════════════════════════════════════════
+ABSOLUTE REGELN - VERSTOSS VERBOTEN:
+═══════════════════════════════════════════════════════════════════════════════
 
-PFLICHTFELDER:
-- Vollständiger Name
-- E-Mail, Telefon, Adresse
-- Berufsbezeichnung/Titel
-- ALLE Berufserfahrungen mit KOMPLETTEN Beschreibungen
-- ALLE Ausbildungen (auch Berufsausbildungen)
-- ALLE Fähigkeiten mit geschätztem Niveau (1-10)
-- Sprachen mit Niveau
+1. VOLLSTÄNDIGKEIT: Extrahiere JEDEN einzelnen Stichpunkt, JEDE Tätigkeit, JEDE Information
+2. KEINE KÜRZUNGEN: Kopiere Beschreibungen WORT FÜR WORT aus dem Original
+3. KEINE ZUSAMMENFASSUNGEN: Fasse NIEMALS mehrere Punkte zusammen
+4. KEINE AUSLASSUNGEN: Wenn 15 Stichpunkte im Original stehen, müssen 15 im Output sein
+5. VOLLSTÄNDIGE SÄTZE: Kürze keine Sätze ab, keine "usw.", "etc." hinzufügen
 
-BERUFSERFAHRUNG - SEHR WICHTIG:
-- "description": Die VOLLSTÄNDIGE Beschreibung der Rolle, NICHT gekürzt!
-- "bullets": JEDER einzelne Stichpunkt aus dem Original als separates Array-Element
-- Wenn im Original 10 Stichpunkte stehen, müssen auch 10 im bullets-Array sein
-- NIEMALS zusammenfassen oder weglassen!
-- "technologies": Alle genannten Tools, Software, Systeme
+═══════════════════════════════════════════════════════════════════════════════
+FÜR JEDE BERUFSERFAHRUNG EXTRAHIERE:
+═══════════════════════════════════════════════════════════════════════════════
 
-FÄHIGKEITEN MIT BEWERTUNG:
-- Schätze für jede Fähigkeit ein Level von 1-10 basierend auf dem Kontext
-- 10 = Experte, 7-9 = Fortgeschritten, 4-6 = Mittel, 1-3 = Grundkenntnisse
+- position: Exakte Jobbezeichnung
+- company: Firmenname + ggf. Website-URL wenn vorhanden
+- location: Stadt/Land
+- startDate: Format MM/YYYY (z.B. "05/2022")
+- endDate: Format MM/YYYY oder "heute"/"aktuell"
+- description: Der VOLLSTÄNDIGE Fließtext, der die Rolle beschreibt (NICHT kürzen!)
+- bullets: JEDER EINZELNE Stichpunkt als separates Array-Element
+  * Beispiel: Wenn du siehst:
+    "• Leitung von Implementierungsprojekten
+     • Konzeption und Konfiguration
+     • Beratung zu HR-Prozessen"
+    Dann muss bullets sein: ["Leitung von Implementierungsprojekten", "Konzeption und Konfiguration", "Beratung zu HR-Prozessen"]
+- technologies: Alle erwähnten Tools, Software, Systeme (z.B. SAP, UKG, ADONIS, etc.)
 
-Antworte NUR mit einem JSON-Objekt im folgenden Format:
+═══════════════════════════════════════════════════════════════════════════════
+FÜR SKILLS/KOMPETENZEN:
+═══════════════════════════════════════════════════════════════════════════════
+
+- Extrahiere ALLE genannten Fähigkeiten
+- Wenn eine Bewertung angegeben ist (z.B. Balken, Punkte, Zahlen), übernimm diese als level (1-10)
+- Gruppiere nach Kategorien wenn möglich (z.B. "Microsoft Tools", "Programmierung")
+- Soft Skills separat erfassen
+
+═══════════════════════════════════════════════════════════════════════════════
+OUTPUT FORMAT (NUR VALIDES JSON):
+═══════════════════════════════════════════════════════════════════════════════
+
 {
     "name": "Vollständiger Name",
-    "email": "email@example.com",
+    "email": "email@beispiel.de",
     "phone": "+49 123 456789",
-    "address": "Straße, PLZ Ort",
-    "title": "Aktuelle Berufsbezeichnung",
-    "summary": "Zusammenfassung der Person",
+    "address": "Straße, PLZ Stadt",
+    "birthDate": "TT.MM.JJJJ",
+    "birthPlace": "Geburtsort",
+    "title": "Aktuelle/Letzte Berufsbezeichnung",
+    "summary": "Profil-Zusammenfassung falls vorhanden",
     "experience": [
         {
-            "position": "Position",
-            "company": "Firma",
-            "location": "Ort",
+            "position": "Jobtitel",
+            "company": "Firmenname",
+            "companyUrl": "https://firma.de",
+            "location": "Stadt",
             "startDate": "MM/YYYY",
             "endDate": "MM/YYYY oder heute",
-            "description": "VOLLSTÄNDIGE Beschreibung der Rolle - NICHT KÜRZEN!",
-            "bullets": ["Tätigkeit 1 - vollständig", "Tätigkeit 2 - vollständig", "...ALLE weiteren"],
-            "technologies": ["Tool1", "System2", "Software3"]
+            "description": "VOLLSTÄNDIGER Beschreibungstext - NICHT KÜRZEN!",
+            "bullets": [
+                "Erster vollständiger Stichpunkt",
+                "Zweiter vollständiger Stichpunkt",
+                "ALLE weiteren Stichpunkte einzeln"
+            ],
+            "technologies": ["Tool1", "System2"]
         }
     ],
     "education": [
         {
-            "degree": "Abschluss oder Ausbildung",
-            "institution": "Schule/Universität/Betrieb",
+            "degree": "Abschluss/Ausbildung",
+            "institution": "Institution",
             "location": "Ort",
             "startDate": "MM/YYYY",
             "endDate": "MM/YYYY",
-            "description": "Vollständige Details"
+            "description": "Details, Schwerpunkte, Thesis etc.",
+            "grade": "Note falls angegeben"
         }
     ],
     "skills": {
         "technical": [
-            {"name": "Skill1", "level": 8},
-            {"name": "Skill2", "level": 6}
+            {"name": "Skillname", "level": 8, "category": "Kategorie", "description": "Details falls vorhanden"}
         ],
         "soft": [
-            {"name": "Soft Skill1", "level": 7},
-            {"name": "Soft Skill2", "level": 8}
+            {"name": "Soft Skill", "level": 7}
         ]
     },
     "languages": [
         {"language": "Deutsch", "level": "Muttersprache"},
-        {"language": "Englisch", "level": "B2"}
+        {"language": "Englisch", "level": "C1/Fließend"}
+    ],
+    "certifications": [
+        {"name": "Zertifikat", "issuer": "Aussteller", "date": "MM/YYYY"}
+    ],
+    "references": [
+        {"name": "Name", "position": "Position", "company": "Firma", "contact": "Kontakt"}
     ]
 }
 
-Lebenslauf-Text:
+═══════════════════════════════════════════════════════════════════════════════
+LEBENSLAUF-TEXT ZUM ANALYSIEREN:
+═══════════════════════════════════════════════════════════════════════════════
+
 ${text}`;
 
     try {
+        // Verwende gpt-4o für bessere Qualität bei komplexen Dokumenten
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
             headers: {
@@ -511,25 +633,42 @@ ${text}`;
                 'Authorization': `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-                model: 'gpt-4o-mini',
+                model: 'gpt-4o', // Besseres Modell für komplexe Extraktion
                 messages: [
                     {
                         role: 'system',
-                        content: 'Du bist ein Experte für die Analyse von Lebensläufen. Extrahiere ALLE Informationen VOLLSTÄNDIG und UNGEKÜRZT. Kürze NIEMALS Beschreibungen ab. Jeder Stichpunkt muss einzeln erfasst werden.'
+                        content: `Du bist ein präziser Datenextraktions-Assistent für Lebensläufe. 
+
+DEINE MISSION: Extrahiere ALLE Informationen VOLLSTÄNDIG.
+
+KRITISCHE REGELN:
+1. KÜRZE NIEMALS - Wenn ein Stichpunkt 50 Wörter hat, extrahiere alle 50 Wörter
+2. LASSE NICHTS AUS - Wenn 10 Tätigkeiten genannt werden, extrahiere alle 10
+3. FASSE NICHT ZUSAMMEN - Jeder Punkt bleibt einzeln
+4. KOPIERE WORTGETREU - Ändere keine Formulierungen
+
+Du antwortest NUR mit validem JSON, keine Erklärungen, kein Markdown.`
                     },
                     {
                         role: 'user',
                         content: prompt
                     }
                 ],
-                temperature: 0.1,
-                max_tokens: 8000
+                temperature: 0.05, // Noch niedrigere Temperatur für konsistente Extraktion
+                max_tokens: 16000  // Maximum für vollständige Antworten
             })
         });
         
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({}));
             console.error('OpenAI API Error:', errorData);
+            
+            // Fallback zu gpt-4o-mini wenn gpt-4o nicht verfügbar
+            if (errorData.error?.code === 'model_not_found' || errorData.error?.message?.includes('model')) {
+                console.log('⚠️ gpt-4o nicht verfügbar, verwende gpt-4o-mini als Fallback...');
+                return processTextWithGPTFallback(text, apiKey);
+            }
+            
             throw new Error(errorData.error?.message || 'OpenAI API Fehler');
         }
         
@@ -552,6 +691,58 @@ ${text}`;
         console.error('GPT Processing Error:', error);
         throw error;
     }
+}
+
+// Fallback-Funktion mit gpt-4o-mini
+async function processTextWithGPTFallback(text, apiKey) {
+    console.log('🔄 Verwende gpt-4o-mini Fallback...');
+    
+    const prompt = `Extrahiere ALLE Daten aus diesem Lebenslauf VOLLSTÄNDIG als JSON.
+    
+WICHTIG:
+- Extrahiere JEDEN Stichpunkt einzeln
+- Kürze KEINE Beschreibungen
+- Fasse NICHT zusammen
+
+Format:
+{
+    "name": "", "email": "", "phone": "", "address": "", "title": "", "summary": "",
+    "experience": [{"position": "", "company": "", "location": "", "startDate": "MM/YYYY", "endDate": "MM/YYYY", "description": "VOLLSTÄNDIG", "bullets": ["JEDER Stichpunkt einzeln"], "technologies": []}],
+    "education": [{"degree": "", "institution": "", "location": "", "startDate": "", "endDate": "", "description": ""}],
+    "skills": {"technical": [{"name": "", "level": 5}], "soft": [{"name": "", "level": 5}]},
+    "languages": [{"language": "", "level": ""}]
+}
+
+Text:
+${text}`;
+
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`
+        },
+        body: JSON.stringify({
+            model: 'gpt-4o-mini',
+            messages: [
+                { role: 'system', content: 'Extrahiere ALLE Daten vollständig. Antworte NUR mit JSON.' },
+                { role: 'user', content: prompt }
+            ],
+            temperature: 0.05,
+            max_tokens: 16000
+        })
+    });
+    
+    if (!response.ok) {
+        throw new Error('Auch gpt-4o-mini Fallback fehlgeschlagen');
+    }
+    
+    const data = await response.json();
+    const content = data.choices[0]?.message?.content;
+    const jsonMatch = content.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('Konnte JSON nicht parsen');
+    
+    return JSON.parse(jsonMatch[0]);
 }
 
 // Show OCR results
@@ -627,20 +818,29 @@ function applyOCRData() {
             };
             
             // Add each experience entry
+            console.log(`📋 Verarbeite ${parsed.experience.length} Berufserfahrungen...`);
+            
             parsed.experience.forEach((exp, index) => {
                 // Convert bullets array to string with line breaks
                 let bulletsText = '';
                 if (exp.bullets && Array.isArray(exp.bullets)) {
-                    bulletsText = exp.bullets.map(b => `- ${b}`).join('\n');
+                    // Stelle sicher, dass alle Bullets als Strings verarbeitet werden
+                    bulletsText = exp.bullets.map(b => {
+                        const text = typeof b === 'string' ? b : String(b);
+                        return text.startsWith('-') || text.startsWith('•') ? text : `- ${text}`;
+                    }).join('\n');
+                    console.log(`  ✓ ${exp.position}: ${exp.bullets.length} Stichpunkte extrahiert`);
                 }
                 
                 const isCurrentJob = exp.endDate?.toLowerCase() === 'heute' || 
                                     exp.endDate?.toLowerCase() === 'present' ||
-                                    exp.endDate?.toLowerCase() === 'aktuell';
+                                    exp.endDate?.toLowerCase() === 'aktuell' ||
+                                    !exp.endDate;
                 
                 const experienceData = {
                     position: exp.position || '',
                     company: exp.company || '',
+                    companyWebsite: exp.companyUrl || exp.companyWebsite || '', // Unterstütze beide Feldnamen
                     location: exp.location || '',
                     startDate: convertDateFormat(exp.startDate),
                     endDate: isCurrentJob ? '' : convertDateFormat(exp.endDate),
