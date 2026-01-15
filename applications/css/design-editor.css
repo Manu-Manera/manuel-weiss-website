@@ -665,6 +665,14 @@
     justify-content: flex-start;
 }
 
+.resume-preview-header.align-right {
+    text-align: right;
+}
+
+.resume-preview-header.align-right .resume-preview-contact {
+    justify-content: flex-end;
+}
+
 .resume-preview-name {
     font-size: calc(var(--resume-heading-size, 18pt) * 1.5);
     font-weight: 700;

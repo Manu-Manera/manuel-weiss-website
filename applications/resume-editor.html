@@ -466,6 +466,22 @@
                                 <option value="2">Zweispaltig (Sidebar)</option>
                             </select>
                         </div>
+                        <div class="design-form-group" id="columnWidthControls" style="display: none;">
+                            <label>Spaltenbreite anpassen</label>
+                            <div class="design-slider-group">
+                                <label style="font-size: 0.85rem; color: var(--design-text-muted);">Linke Spalte:</label>
+                                <input type="range" id="designLeftColumnWidth" class="design-slider" min="20" max="50" value="35" step="1">
+                                <span id="designLeftColumnWidthValue" class="design-slider-value">35%</span>
+                            </div>
+                            <div class="design-slider-group" style="margin-top: 0.5rem;">
+                                <label style="font-size: 0.85rem; color: var(--design-text-muted);">Rechte Spalte:</label>
+                                <input type="range" id="designRightColumnWidth" class="design-slider" min="50" max="80" value="65" step="1">
+                                <span id="designRightColumnWidthValue" class="design-slider-value">65%</span>
+                            </div>
+                            <small style="color: var(--design-text-muted); font-size: 0.75rem; display: block; margin-top: 0.5rem;">
+                                Die Summe sollte ca. 100% ergeben
+                            </small>
+                        </div>
                         <div class="design-form-group">
                             <label>
                                 <input type="checkbox" id="designShowIcons" checked> Icons anzeigen
@@ -477,6 +493,7 @@
                             <select id="designHeaderAlign" class="design-select">
                                 <option value="left">Links</option>
                                 <option value="center">Zentriert</option>
+                                <option value="right">Rechts</option>
                             </select>
                         </div>
                     </div>

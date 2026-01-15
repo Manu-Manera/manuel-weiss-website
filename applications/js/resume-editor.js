@@ -1295,8 +1295,11 @@ function addTechnicalSkillCategory(categoryName = '', skills = []) {
 function addSkillTag(categoryId) {
     const container = document.getElementById(`skills-${categoryId}`);
     const tagHtml = `
-        <span class="skill-tag">
+        <span class="skill-tag" style="position: relative;">
             <input type="text" placeholder="Skill">
+            <button type="button" onclick="convertSkillToRated(this)" style="background: rgba(99, 102, 241, 0.2); border: 1px dashed #6366f1; color: #6366f1; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer; font-size: 0.7rem; margin-left: 0.25rem;" title="Mit Bewertung">
+                <i class="fas fa-star"></i>
+            </button>
             <button type="button" onclick="removeSkillTag(this)" style="background: none; border: none; color: white; cursor: pointer;">
                 <i class="fas fa-times"></i>
             </button>
@@ -1665,7 +1668,7 @@ function addExperience(experienceData = {}) {
             </div>
             <div class="form-group" style="margin-bottom: 1rem;">
                 <label>Tätigkeiten als Stichpunkte</label>
-                <textarea data-field="bullets" rows="4" placeholder="- Entwicklung von Webanwendungen&#10;- Leitung eines 5-köpfigen Teams&#10;- Einführung agiler Methoden">${experienceData.bullets || ''}</textarea>
+                <textarea data-field="bullets" rows="4" placeholder="- Entwicklung von Webanwendungen&#10;- Leitung eines 5-köpfigen Teams&#10;- Einführung agiler Methoden">${(experienceData.bullets || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
                 <small style="color: #64748b; font-size: 0.75rem;">Jede Zeile wird als Stichpunkt dargestellt. Beginnen Sie mit - oder •</small>
             </div>
             <div class="form-group" style="margin-bottom: 1rem;">
