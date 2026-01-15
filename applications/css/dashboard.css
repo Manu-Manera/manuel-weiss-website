@@ -530,6 +530,8 @@
     padding-top: 90px; /* Space for navbar */
     position: relative;
     overflow-x: hidden;
+    /* Scrollbar nur in diesem Container */
+    overflow-y: auto;
 }
 
 /* Animated background blobs */
@@ -763,7 +765,10 @@
 .dashboard-content {
     max-width: 1200px;
     margin: 0 auto;
-    padding: var(--spacing-xl);
+    padding: var(--spacing-lg) var(--spacing-xl);
+    /* Verhindere horizontalen Overflow */
+    overflow-x: hidden;
+    box-sizing: border-box;
 }
 
 .tab-content {
@@ -4648,5 +4653,144 @@
     
     .preview-actions button {
         width: 100%;
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MOBILE OPTIMIERUNGEN - iOS & Android
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* iOS Safari Safe Areas */
+@supports (padding: max(0px)) {
+    .dashboard-main {
+        padding-top: max(90px, env(safe-area-inset-top) + 80px);
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+    
+    .dashboard-content {
+        padding-left: max(var(--spacing-lg), env(safe-area-inset-left));
+        padding-right: max(var(--spacing-lg), env(safe-area-inset-right));
+    }
+}
+
+/* Verhinderung des iOS Auto-Zoom bei Formular-Focus */
+@media screen and (max-width: 768px) {
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="url"],
+    input[type="password"],
+    input[type="search"],
+    input[type="number"],
+    textarea,
+    select {
+        font-size: 16px !important; /* iOS Zoom-Verhinderung */
+    }
+}
+
+/* Touch-freundliche Interaktionen */
+@media (pointer: coarse) {
+    /* Größere Touch-Targets (min 44x44px) */
+    .tab-btn,
+    .btn-primary,
+    .btn-secondary,
+    .btn-ghost,
+    button {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    /* Bessere Tap-Highlights */
+    .tab-btn,
+    button,
+    a {
+        -webkit-tap-highlight-color: rgba(99, 102, 241, 0.2);
+    }
+    
+    /* Scroll-Verhalten */
+    .dashboard-tabs,
+    .dashboard-content {
+        -webkit-overflow-scrolling: touch;
+        scroll-behavior: smooth;
+    }
+    
+    /* Keine Hover-Effekte auf Touch */
+    .tab-btn:hover,
+    .stat-item:hover {
+        transform: none;
+    }
+}
+
+/* Android Chrome spezifische Fixes */
+@media screen and (max-width: 768px) {
+    /* Pull-to-Refresh verhindern in bestimmten Bereichen */
+    .dashboard-content {
+        overscroll-behavior-y: contain;
+    }
+    
+    /* Glatteres Scrollen */
+    * {
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+/* Performance: Reduzierte Animationen */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+    
+    .dashboard-main::before {
+        animation: none;
+    }
+}
+
+/* Landscape Mobile Optimierung */
+@media screen and (max-height: 500px) and (orientation: landscape) {
+    .dashboard-stats-bar {
+        padding: var(--spacing-sm) var(--spacing-md);
+    }
+    
+    .stat-item {
+        padding: var(--spacing-sm) var(--spacing-md);
+    }
+    
+    .quick-apply-hero {
+        padding: var(--spacing-md);
+    }
+    
+    .quick-apply-hero .hero-icon {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .quick-apply-hero h1 {
+        font-size: 1.2rem;
+    }
+}
+
+/* Verbesserte Scrollbar für Desktop */
+@media (pointer: fine) {
+    .dashboard-content::-webkit-scrollbar {
+        width: 8px;
+    }
+    
+    .dashboard-content::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+    }
+    
+    .dashboard-content::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 4px;
+    }
+    
+    .dashboard-content::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.5);
     }
 }
