@@ -986,3 +986,139 @@
     }
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   SKILLS MIT BEWERTUNG - Form Inputs
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.skill-item-rated {
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    border: 1px solid #bae6fd;
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    transition: all 0.2s ease;
+}
+
+.skill-item-rated:hover {
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+    transform: translateY(-1px);
+}
+
+.skill-item-rated.soft {
+    background: linear-gradient(135deg, #fef3c7 0%, #fef9c3 100%);
+    border-color: #fcd34d;
+}
+
+.skill-rated-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.skill-name-input {
+    flex: 1;
+    min-width: 150px;
+    padding: 0.6rem 0.8rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    background: white;
+    transition: border-color 0.2s;
+}
+
+.skill-name-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.skill-level-control {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: white;
+    padding: 0.4rem 0.75rem;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+}
+
+.skill-level-control label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #6b7280;
+    white-space: nowrap;
+}
+
+.skill-level-control input[type="range"] {
+    width: 90px;
+    height: 6px;
+    -webkit-appearance: none;
+    background: linear-gradient(to right, #3b82f6, #8b5cf6);
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.skill-level-control input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    background: white;
+    border: 2px solid #3b82f6;
+    border-radius: 50%;
+    cursor: grab;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.skill-level-display {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #3b82f6;
+    min-width: 40px;
+    text-align: center;
+    background: linear-gradient(135deg, #eff6ff, #dbeafe);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+}
+
+.skill-category-input {
+    width: 100%;
+    margin-top: 0.5rem;
+    padding: 0.4rem 0.6rem;
+    border: 1px dashed #d1d5db;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    color: #6b7280;
+    background: rgba(255, 255, 255, 0.7);
+}
+
+.skill-category-input::placeholder {
+    color: #9ca3af;
+}
+
+.skill-item-rated .btn-remove {
+    padding: 0.4rem 0.6rem;
+    background: #fef2f2;
+    color: #ef4444;
+    border: 1px solid #fecaca;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.skill-item-rated .btn-remove:hover {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.skill-item-rated textarea {
+    width: 100%;
+    margin-top: 0.5rem;
+    padding: 0.4rem 0.6rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    resize: vertical;
+    min-height: 40px;
+}
+

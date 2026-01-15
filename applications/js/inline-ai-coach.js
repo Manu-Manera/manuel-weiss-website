@@ -138,8 +138,9 @@ class InlineAICoach {
         ];
         
         // Fields to monitor in cover letter editor
+        // WICHTIG: jobDescription wird NICHT überwacht, da dort nur Position/Unternehmen/Ansprechpartner extrahiert werden
         const coverLetterFields = [
-            'letterText', 'jobDescription'
+            'letterText' // Nur letterText, NICHT jobDescription
         ];
         
         // Attach to resume fields
