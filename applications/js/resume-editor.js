@@ -1076,6 +1076,24 @@ function addExperience(experienceData = {}) {
                     <input type="text" data-field="company" value="${experienceData.company || ''}" placeholder="z.B. Tech Corp GmbH" required>
                 </div>
                 <div class="form-group">
+                    <label>Firmen-Website <i class="fas fa-link" style="color: #6366f1;"></i></label>
+                    <input type="url" data-field="companyWebsite" value="${experienceData.companyWebsite || ''}" placeholder="https://www.firma.de">
+                    <small style="color: #64748b; font-size: 0.75rem;">Link wird im PDF anklickbar sein</small>
+                </div>
+                <div class="form-group">
+                    <label>Firmenlogo</label>
+                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                        <input type="hidden" data-field="companyLogo" value="${experienceData.companyLogo || ''}">
+                        <label class="btn-secondary" style="cursor: pointer; padding: 0.5rem 0.75rem; font-size: 0.8rem;">
+                            <i class="fas fa-image"></i> Logo
+                            <input type="file" accept="image/*" onchange="handleCompanyLogoUpload(this, '${experienceId}')" style="display: none;">
+                        </label>
+                        <span id="logo-preview-${experienceId}" style="font-size: 0.75rem; color: #64748b;">
+                            ${experienceData.companyLogo ? '<i class="fas fa-check-circle" style="color: #10b981;"></i> Logo vorhanden' : 'Kein Logo'}
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
                     <label>Standort</label>
                     <input type="text" data-field="location" value="${experienceData.location || ''}" placeholder="z.B. München, Deutschland">
                 </div>
@@ -1106,8 +1124,13 @@ function addExperience(experienceData = {}) {
                 </div>
             </div>
             <div class="form-group" style="margin-bottom: 1rem;">
-                <label>Beschreibung</label>
-                <textarea data-field="description" rows="3" placeholder="Beschreiben Sie Ihre Aufgaben und Erfolge...">${experienceData.description || ''}</textarea>
+                <label>Beschreibung (Fließtext)</label>
+                <textarea data-field="description" rows="3" placeholder="Kurze Beschreibung Ihrer Rolle und Hauptaufgaben...">${experienceData.description || ''}</textarea>
+            </div>
+            <div class="form-group" style="margin-bottom: 1rem;">
+                <label>Tätigkeiten als Stichpunkte</label>
+                <textarea data-field="bullets" rows="4" placeholder="- Entwicklung von Webanwendungen&#10;- Leitung eines 5-köpfigen Teams&#10;- Einführung agiler Methoden">${experienceData.bullets || ''}</textarea>
+                <small style="color: #64748b; font-size: 0.75rem;">Jede Zeile wird als Stichpunkt dargestellt. Beginnen Sie mit - oder •</small>
             </div>
             <div class="form-group" style="margin-bottom: 1rem;">
                 <label>Achievements (Erfolge)</label>
@@ -1152,6 +1175,44 @@ function addExperience(experienceData = {}) {
 
 function removeExperience(experienceId) {
     document.querySelector(`[data-experience-id="${experienceId}"]`).remove();
+}
+
+// Handle company logo upload
+function handleCompanyLogoUpload(input, experienceId) {
+    const file = input.files[0];
+    if (!file) return;
+    
+    if (!file.type.startsWith('image/')) {
+        showNotification('Bitte wählen Sie eine Bilddatei', 'error');
+        return;
+    }
+    
+    if (file.size > 2 * 1024 * 1024) {
+        showNotification('Logo zu groß (max. 2MB)', 'error');
+        return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const experienceItem = document.querySelector(`[data-experience-id="${experienceId}"]`);
+        if (experienceItem) {
+            const hiddenInput = experienceItem.querySelector('[data-field="companyLogo"]');
+            if (hiddenInput) {
+                hiddenInput.value = e.target.result;
+            }
+            const preview = document.getElementById(`logo-preview-${experienceId}`);
+            if (preview) {
+                preview.innerHTML = '<i class="fas fa-check-circle" style="color: #10b981;"></i> Logo hochgeladen';
+            }
+            showNotification('Firmenlogo hochgeladen', 'success');
+            
+            // Update design preview if available
+            if (window.designEditor) {
+                window.designEditor.updatePreview();
+            }
+        }
+    };
+    reader.readAsDataURL(file);
 }
 
 function toggleEndDate(experienceId, isCurrent) {
@@ -2290,6 +2351,16 @@ function generateResumeHTML(data, style = {}) {
             color: #4b5563;
             margin-bottom: 5px;
         }
+        .entry-company a {
+            color: ${primaryColor};
+            text-decoration: underline;
+        }
+        .entry-company-logo {
+            height: 18px;
+            width: auto;
+            vertical-align: middle;
+            margin-right: 6px;
+        }
         .entry-description {
             font-size: 10pt;
             color: #374151;
@@ -2358,16 +2429,43 @@ function generateResumeHTML(data, style = {}) {
     ${experience.length > 0 ? `
     <div class="section">
         <div class="section-title">Berufserfahrung</div>
-        ${experience.map(exp => `
+        ${experience.map(exp => {
+            // Build company name with optional logo and link
+            let companyHtml = exp.company || '';
+            if (exp.companyLogo) {
+                companyHtml = `<img src="${exp.companyLogo}" class="entry-company-logo" alt="">` + companyHtml;
+            }
+            if (exp.companyWebsite) {
+                companyHtml = `<a href="${exp.companyWebsite}" target="_blank">${companyHtml}</a>`;
+            }
+            if (exp.location) {
+                companyHtml += `, ${exp.location}`;
+            }
+            
+            // Build description with optional bullets
+            let descHtml = '';
+            if (exp.description) {
+                descHtml += `<div class="entry-description">${exp.description}</div>`;
+            }
+            if (exp.bullets) {
+                const bulletLines = exp.bullets.split('\\n').filter(b => b.trim());
+                if (bulletLines.length > 0) {
+                    descHtml += `<ul class="entry-bullets" style="margin: 5px 0 0 20px; padding: 0; font-size: 10pt; color: #374151;">
+                        ${bulletLines.map(b => `<li style="margin-bottom: 2px;">${b.replace(/^[-•*]\\s*/, '')}</li>`).join('')}
+                    </ul>`;
+                }
+            }
+            
+            return `
         <div class="experience-entry">
             <div class="entry-header">
                 <span class="entry-title">${exp.position || ''}</span>
                 <span class="entry-date">${formatDate(exp.startDate)} - ${exp.currentJob ? 'heute' : formatDate(exp.endDate)}</span>
             </div>
-            <div class="entry-company">${exp.company || ''}${exp.location ? `, ${exp.location}` : ''}</div>
-            ${exp.description ? `<div class="entry-description">${exp.description}</div>` : ''}
-        </div>
-        `).join('')}
+            <div class="entry-company">${companyHtml}</div>
+            ${descHtml}
+        </div>`;
+        }).join('')}
     </div>
     ` : ''}
     
