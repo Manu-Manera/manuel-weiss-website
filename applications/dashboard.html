@@ -2114,6 +2114,27 @@ Ihre Aufgaben:
             const file = window.pendingDocumentFile;
             if (!file) return;
             
+            // Prüfe ob User eingeloggt ist (am Anfang)
+            const isLoggedIn = window.cloudDataService?.isUserLoggedIn?.() || 
+                               window.awsAuth?.isLoggedIn?.() || 
+                               window.realUserAuth?.isLoggedIn?.() ||
+                               false;
+            
+            console.log('📋 Dokument-Upload gestartet:', {
+                fileName: file.name,
+                fileSize: file.size,
+                category: category,
+                isLoggedIn: isLoggedIn
+            });
+            
+            // Warnung wenn User eingeloggt ist, aber Upload-Scripts fehlen
+            if (isLoggedIn && !window.smartMediaUpload && !window.awsMedia?.uploadDocument) {
+                console.error('❌ User ist eingeloggt, aber Upload-Scripts fehlen!');
+                showToast('Upload-System nicht verfügbar. Bitte Seite neu laden.', 'error');
+                element.closest('.document-category-modal').remove();
+                return;
+            }
+            
             try {
                 const now = new Date().toISOString();
                 const docId = `doc_${Date.now().toString(36)}`;
