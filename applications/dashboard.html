@@ -2244,15 +2244,42 @@ Ihre Aufgaben:
                     console.warn('⚠️ awsMedia.uploadDocument nicht verfügbar');
                 }
                 
-                // 3. Fallback: Lokaler Speicher (nur für kleine Dateien)
+                // 3. Fallback: Lokaler Speicher (NUR wenn User NICHT eingeloggt ist)
+                const isLoggedIn = window.cloudDataService?.isUserLoggedIn?.() || 
+                                   window.awsAuth?.isLoggedIn?.() || 
+                                   window.realUserAuth?.isLoggedIn?.() ||
+                                   false;
+                
                 if (!uploadSuccess) {
+                    // WICHTIG: Wenn User eingeloggt ist, KEIN lokaler Fallback!
+                    if (isLoggedIn) {
+                        const errorMsg = uploadError 
+                            ? `Cloud-Upload fehlgeschlagen: ${uploadError.message || 'Unbekannter Fehler'}. Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.`
+                            : 'Cloud-Upload fehlgeschlagen. Bitte versuchen Sie es erneut.';
+                        console.error('❌ Upload fehlgeschlagen für angemeldeten User:', {
+                            error: uploadError,
+                            fileName: file.name,
+                            fileSize: file.size,
+                            userId: userId,
+                            smartMediaUploadAvailable: !!window.smartMediaUpload,
+                            awsMediaAvailable: !!window.awsMedia,
+                            apiBase: window.AWS_APP_CONFIG?.MEDIA_API_BASE || window.AWS_APP_CONFIG?.API_BASE || 'Nicht konfiguriert'
+                        });
+                        showToast(errorMsg, 'error');
+                        element.closest('.document-category-modal').remove();
+                        return; // ABBRUCH - kein lokaler Fallback für angemeldete User!
+                    }
+                    
+                    // Nur für NICHT eingeloggte User: Lokaler Fallback
+                    console.log('ℹ️ User nicht eingeloggt - verwende lokalen Speicher als Fallback');
+                    
                     // localStorage Limit ist ca. 5-10MB, aber wir nehmen 5MB als sicher
                     const maxLocalSize = 5 * 1024 * 1024; // 5MB
                     
                     if (file.size > maxLocalSize) {
                         const errorMsg = uploadError 
-                            ? `Upload fehlgeschlagen: ${uploadError.message || 'Unbekannter Fehler'}. Datei ist zu groß für lokalen Speicher (max. 5MB). Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.`
-                            : 'PDF zu groß für lokalen Speicher (max. 5MB). Bitte versuchen Sie es erneut.';
+                            ? `Upload fehlgeschlagen: ${uploadError.message || 'Unbekannter Fehler'}. Datei ist zu groß für lokalen Speicher (max. 5MB). Bitte melden Sie sich an für Cloud-Upload.`
+                            : 'PDF zu groß für lokalen Speicher (max. 5MB). Bitte melden Sie sich an für Cloud-Upload.';
                         showToast(errorMsg, 'error');
                         element.closest('.document-category-modal').remove();
                         return;
@@ -2273,7 +2300,7 @@ Ihre Aufgaben:
                         const dataUrl = await readFileAsDataURL(file);
                         documentData.dataUrl = dataUrl;
                         documentData.storage = 'local';
-                        console.log('✅ Dokument lokal gespeichert (Fallback)');
+                        console.log('✅ Dokument lokal gespeichert (User nicht eingeloggt)');
                     } catch (readError) {
                         console.error('Fehler beim Lesen der Datei:', readError);
                         showToast('Fehler beim Lesen der Datei. Bitte versuchen Sie es erneut.', 'error');
@@ -2283,19 +2310,37 @@ Ihre Aufgaben:
                 }
                 
                 // Save metadata to cloud - IMMER wenn eingeloggt
-                if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
+                const isLoggedIn = window.cloudDataService?.isUserLoggedIn?.() || 
+                                   window.awsAuth?.isLoggedIn?.() || 
+                                   window.realUserAuth?.isLoggedIn?.() ||
+                                   false;
+                
+                if (isLoggedIn) {
+                    // WICHTIG: Wenn User eingeloggt ist, MUSS Cloud-Speicherung funktionieren
+                    if (documentData.storage !== 's3' && !documentData.url) {
+                        const errorMsg = 'Cloud-Upload fehlgeschlagen. Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.';
+                        console.error('❌ Cloud-Upload fehlgeschlagen für angemeldeten User:', {
+                            documentData,
+                            fileName: file.name
+                        });
+                        showToast(errorMsg, 'error');
+                        element.closest('.document-category-modal').remove();
+                        return; // ABBRUCH - kein lokaler Fallback!
+                    }
+                    
                     try {
                         await window.cloudDataService.saveDocument(documentData);
-                        console.log('✅ Dokument in Cloud gespeichert');
+                        console.log('✅ Dokument-Metadaten in Cloud gespeichert');
                     } catch (cloudError) {
-                        console.warn('Cloud-Speichern fehlgeschlagen, speichere lokal als Fallback:', cloudError);
-                        // Fallback: lokal speichern
-                        const documents = JSON.parse(localStorage.getItem('user_certificates') || '[]');
-                        documents.push(documentData);
-                        localStorage.setItem('user_certificates', JSON.stringify(documents));
+                        console.error('❌ Cloud-Speichern der Metadaten fehlgeschlagen:', cloudError);
+                        // KEIN lokaler Fallback für Metadaten bei angemeldeten Usern!
+                        showToast('Fehler beim Speichern der Metadaten. Bitte versuchen Sie es erneut.', 'error');
+                        element.closest('.document-category-modal').remove();
+                        return;
                     }
                 } else {
                     // Nicht eingeloggt: nur lokal
+                    console.log('ℹ️ User nicht eingeloggt - speichere nur lokal');
                     const documents = JSON.parse(localStorage.getItem('user_certificates') || '[]');
                     documents.push(documentData);
                     localStorage.setItem('user_certificates', JSON.stringify(documents));
@@ -2310,12 +2355,17 @@ Ihre Aufgaben:
                 }
                 
                 // Erfolgsmeldung basierend auf Storage-Typ
-                if (uploadError && documentData.storage === 'local') {
-                    showToast('Dokument lokal gespeichert (Cloud-Upload fehlgeschlagen)', 'warning');
-                } else if (documentData.storage === 's3') {
+                if (isLoggedIn && documentData.storage === 's3') {
                     showToast('Dokument erfolgreich in Cloud gespeichert!', 'success');
+                } else if (!isLoggedIn && documentData.storage === 'local') {
+                    showToast('Dokument lokal gespeichert. Melden Sie sich an für Cloud-Speicherung.', 'info');
                 } else {
-                    showToast('Dokument gespeichert!', 'success');
+                    // Sollte nicht passieren bei angemeldeten Usern
+                    if (isLoggedIn) {
+                        showToast('Fehler: Dokument konnte nicht in Cloud gespeichert werden.', 'error');
+                    } else {
+                        showToast('Dokument gespeichert!', 'success');
+                    }
                 }
                 
             } catch (error) {
