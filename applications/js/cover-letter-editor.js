@@ -990,12 +990,12 @@ Gib ausschließlich ein JSON-Array mit Strings zurück.
         };
 
         const goalMap = {
-            'role-fit': 'Rollen-Fit',
-            impact: 'Impact',
-            leadership: 'Leadership',
-            'tech-depth': 'Technische Tiefe'
+            'role-fit': 'Rollen-Fit - zeige warum du perfekt für diese spezifische Rolle passt',
+            impact: 'Impact - betone messbare Ergebnisse und Wirkung',
+            leadership: 'Leadership - hebe Führungserfahrung und Teamführung hervor',
+            'tech-depth': 'Technische Tiefe - fokussiere auf technische Expertise und Details'
         };
-        
+
         const profile = this.profileData || {};
         const coaching = profile.coaching || {};
         const fachlicheSummary = this.buildFachlicheSummary(profile.fachlicheEntwicklung);
@@ -1006,30 +1006,96 @@ Gib ausschließlich ein JSON-Array mit Strings zurück.
         ].filter(Boolean).join(', ');
         const coachingMotivation = coaching.motivators || coaching.shortTermGoals || coaching.dreamJob || '';
         
-        return `
-Erstelle ein Bewerbungsanschreiben für:
+        // Erweiterte Profil-Informationen
+        const experience = profile.experience || [];
+        const education = profile.education || [];
+        const skills = profile.skills || [];
+        const achievements = profile.achievements || [];
+        
+        // Extrahiere relevante Keywords aus Stellenbeschreibung
+        const jobKeywords = this.extractKeywords(jobData.jobDescription);
+        
+        return `Du bist ein professioneller Bewerbungsberater und Experte für überzeugende Bewerbungsanschreiben.
 
-POSITION: ${jobData.jobTitle}
-UNTERNEHMEN: ${jobData.companyName}
-BRANCHE: ${jobData.industry || 'Nicht angegeben'}
+AUFGABE:
+Erstelle ein professionelles, personalisiertes und überzeugendes Bewerbungsanschreiben.
+
+STELLENINFORMATIONEN:
+- Position: ${jobData.jobTitle}
+- Unternehmen: ${jobData.companyName}
+- Branche: ${jobData.industry || 'Nicht angegeben'}
+- Ansprechpartner: ${jobData.contactPerson || 'Nicht angegeben'}
 
 STELLENBESCHREIBUNG:
 ${jobData.jobDescription}
 
-BEWERBER:
+RELEVANTE KEYWORDS AUS DER STELLENBESCHREIBUNG:
+${jobKeywords.length > 0 ? jobKeywords.join(', ') : 'Keine extrahiert'}
+
+BEWERBER-PROFIL:
 - Name: ${profile.firstName || ''} ${profile.lastName || ''}
-- Skills: ${profile.skills?.join(', ') || coachingStrengths || 'Nicht angegeben'}
-- Motivation/Ziele: ${coachingMotivation || profile.summary || 'Nicht angegeben'}
+- Berufserfahrung: ${experience.length > 0 ? experience.map(e => `${e.position || e.title} bei ${e.company || ''} (${e.duration || ''})`).join('; ') : 'Nicht angegeben'}
+- Ausbildung: ${education.length > 0 ? education.map(e => `${e.degree || e.title} - ${e.institution || ''}`).join('; ') : 'Nicht angegeben'}
+- Technische Skills: ${skills.length > 0 ? skills.join(', ') : coachingStrengths || 'Nicht angegeben'}
+- Soft Skills: ${profile.softSkills?.join(', ') || 'Nicht angegeben'}
+- Erfolge/Leistungen: ${achievements.length > 0 ? achievements.join('; ') : 'Nicht angegeben'}
+- Motivation/Ziele: ${coachingMotivation || profile.summary || profile.motivation || 'Nicht angegeben'}
 ${fachlicheSummary ? `- Fachliche Entwicklung: ${fachlicheSummary}` : ''}
+${coachingStrengths ? `- Stärken aus Coaching: ${coachingStrengths}` : ''}
 
-ANFORDERUNGEN:
-- Tonalität: ${toneMap[this.options.tone]}
-- Länge: ${lengthMap[this.options.length]}
-- Schwerpunkt: ${focusMap[this.options.focus]}
-        - Ziel-Modus: ${goalMap[this.options.goal]}
+ANFORDERUNGEN FÜR DAS ANSCHREIBEN:
+- Tonalität: ${toneMap[this.options.tone]} (${this.options.tone})
+- Länge: ${lengthMap[this.options.length]} (${this.options.length})
+- Schwerpunkt: ${focusMap[this.options.focus]} (${this.options.focus})
+- Ziel-Modus: ${goalMap[this.options.goal] || goalMap['role-fit']} (${this.options.goal})
+- Land: ${this.getSelectedCountry()} (${this.getSelectedCountry() === 'CH' ? 'Schweiz - verwende "ss" statt "ß"' : this.getSelectedCountry() === 'DE' ? 'Deutschland - Standard-Duden' : this.getSelectedCountry() === 'AT' ? 'Österreich' : 'USA - Englisch'})
 
-Erstelle nur den Haupttext des Anschreibens (ohne Anrede und Grußformel).
-`;
+WICHTIGE RICHTLINIEN:
+1. Das Anschreiben muss SPEZIFISCH auf die Stellenbeschreibung eingehen
+2. Verwende die relevanten Keywords aus der Stellenbeschreibung NATÜRLICH im Text
+3. Zeige KONKRETE Beispiele aus der Berufserfahrung, die zur Stelle passen
+4. Betone WARUM der Bewerber perfekt für diese spezifische Position ist
+5. Verwende MESSBARE ERGEBNISSE (Zahlen, Prozente, Zeiträume) wo möglich
+6. Sei AUTHENTISCH und nicht übertrieben
+7. Struktur: Einleitung (Interesse bekunden) → Hauptteil (Relevante Erfahrungen/Skills) → Schluss (Nächste Schritte)
+8. Vermeide Floskeln und generische Phrasen
+9. Zeige ENTHUSIASMUS, aber bleibe professionell
+10. Passe den Ton an den Ziel-Modus an: ${goalMap[this.options.goal] || goalMap['role-fit']}
+
+FORMAT:
+- Erstelle NUR den Haupttext des Anschreibens
+- KEINE Anrede (wird separat angezeigt)
+- KEINE Grußformel (wird separat angezeigt)
+- KEINE Betreffzeile (wird separat angezeigt)
+- KEINE Absenderdaten (werden separat angezeigt)
+- Beginne direkt mit dem ersten Satz des Haupttexts
+- Verwende Absätze für bessere Lesbarkeit
+- Ziel: ${lengthMap[this.options.length]}
+
+Erstelle jetzt das Anschreiben:`;
+    }
+    
+    extractKeywords(text) {
+        if (!text) return [];
+        
+        // Einfache Keyword-Extraktion: Wörter die häufig vorkommen und relevant sind
+        const words = text.toLowerCase()
+            .replace(/[^\w\s]/g, ' ')
+            .split(/\s+/)
+            .filter(w => w.length > 4); // Mindestens 5 Zeichen
+        
+        // Häufigste Wörter
+        const wordCount = {};
+        words.forEach(word => {
+            wordCount[word] = (wordCount[word] || 0) + 1;
+        });
+        
+        // Sortiere nach Häufigkeit und nimm Top 15
+        return Object.entries(wordCount)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 15)
+            .map(([word]) => word.charAt(0).toUpperCase() + word.slice(1))
+            .filter(word => !['dass', 'diese', 'diese', 'wobei', 'welche', 'welche', 'wenn', 'wenn', 'können', 'sollen', 'müssen', 'werden'].includes(word.toLowerCase()));
     }
 
     buildFachlicheSummary(fachliche) {
