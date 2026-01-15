@@ -1406,7 +1406,22 @@ Ihre Aufgaben:
             }
             
             // UnifiedProfileService Listener registrieren - aktualisiert UI sobald Profil geladen
+            function tryUpdateFromUnifiedProfile() {
+                if (window.unifiedProfileService?.isInitialized) {
+                    const profile = window.unifiedProfileService.getProfile();
+                    if (profile && profile.firstName && profile.firstName !== 'Test') {
+                        const displayName = window.unifiedProfileService.getDisplayName();
+                        const profileImage = window.unifiedProfileService.getProfileImage() || '../images/default-avatar.png';
+                        console.log('📊 UnifiedProfileService direkt - Name:', displayName);
+                        updateUIWithProfile(displayName, profileImage);
+                        return true;
+                    }
+                }
+                return false;
+            }
+            
             if (window.unifiedProfileService) {
+                // Listener für zukünftige Änderungen
                 window.unifiedProfileService.onProfileChange((profile) => {
                     if (profile && profile.firstName && profile.firstName !== 'Test') {
                         const displayName = window.unifiedProfileService.getDisplayName();
@@ -1415,7 +1430,19 @@ Ihre Aufgaben:
                         updateUIWithProfile(displayName, profileImage);
                     }
                 });
+                
+                // Falls Service bereits initialisiert, sofort aktualisieren
+                tryUpdateFromUnifiedProfile();
             }
+            
+            // Polling falls Service noch nicht bereit ist
+            let pollAttempts = 0;
+            const pollInterval = setInterval(() => {
+                pollAttempts++;
+                if (tryUpdateFromUnifiedProfile() || pollAttempts >= 20) {
+                    clearInterval(pollInterval);
+                }
+            }, 500);
             
             // Update UI based on login state
             async function updateAuthState() {
