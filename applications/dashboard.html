@@ -2309,15 +2309,44 @@ Ihre Aufgaben:
                     await updateDashboardStats();
                 }
                 
+                // Erfolgsmeldung basierend auf Storage-Typ
                 if (uploadError && documentData.storage === 'local') {
                     showToast('Dokument lokal gespeichert (Cloud-Upload fehlgeschlagen)', 'warning');
+                } else if (documentData.storage === 's3') {
+                    showToast('Dokument erfolgreich in Cloud gespeichert!', 'success');
                 } else {
                     showToast('Dokument gespeichert!', 'success');
                 }
                 
             } catch (error) {
-                console.error('Document save error:', error);
-                showToast('Fehler beim Speichern', 'error');
+                console.error('❌ Document save error:', {
+                    error: error.message,
+                    stack: error.stack,
+                    fileName: file?.name,
+                    fileSize: file?.size,
+                    userId: userId
+                });
+                
+                // Detaillierte Fehlermeldung
+                let errorMsg = 'Fehler beim Speichern';
+                if (error.message) {
+                    errorMsg += ': ' + error.message;
+                }
+                if (error.message && error.message.includes('zu groß')) {
+                    errorMsg += ' Bitte verwenden Sie eine kleinere Datei oder kontaktieren Sie den Support.';
+                } else if (error.message && (error.message.includes('NetworkError') || error.message.includes('Failed to fetch'))) {
+                    errorMsg += ' Netzwerkfehler. Bitte überprüfen Sie Ihre Internetverbindung.';
+                } else if (error.message && error.message.includes('API Endpoint')) {
+                    errorMsg += ' Server-Konfigurationsfehler. Bitte kontaktieren Sie den Support.';
+                }
+                
+                showToast(errorMsg, 'error');
+                
+                // Modal nicht schließen bei Fehler, damit User es erneut versuchen kann
+                // element.closest('.document-category-modal')?.remove();
+            } finally {
+                // Cleanup
+                window.pendingDocumentFile = null;
             }
         };
         
