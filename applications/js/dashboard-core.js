@@ -2551,23 +2551,33 @@ function viewPhoto(id) {
 async function deletePhoto(id) {
     if (!confirm('Foto wirklich löschen?')) return;
     
-    // Cloud-Löschung (wenn verfügbar)
-    if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
-        await window.cloudDataService.deletePhoto(id);
-    } else {
-        // Fallback: localStorage
-        let photos = JSON.parse(localStorage.getItem('user_photos') || '[]');
-        photos = photos.filter(p => p.id !== id);
-        localStorage.setItem('user_photos', JSON.stringify(photos));
+    try {
+        // Cloud-Löschung (wenn verfügbar)
+        if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
+            await window.cloudDataService.deletePhoto(id);
+        } else {
+            // Fallback: localStorage
+            let photos = JSON.parse(localStorage.getItem('user_photos') || '[]');
+            photos = photos.filter(p => p.id !== id);
+            localStorage.setItem('user_photos', JSON.stringify(photos));
+        }
         
         // Selection entfernen wenn das gelöschte Foto ausgewählt war
         if (localStorage.getItem('selected_photo_id') === id) {
             localStorage.removeItem('selected_photo_id');
         }
+        
+        // Liste neu laden
+        await loadPhotos();
+        
+        // Stats aktualisieren (wird auch von loadPhotos aufgerufen, aber sicherheitshalber nochmal)
+        await updateDashboardStats();
+        
+        showToast('Foto gelöscht', 'success');
+    } catch (error) {
+        console.error('Fehler beim Löschen des Fotos:', error);
+        showToast('Fehler beim Löschen', 'error');
     }
-    
-    loadPhotos();
-    showToast('Foto gelöscht', 'success');
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
