@@ -2300,14 +2300,15 @@
     <!-- Unified Auth System -->
     <script src="js/unified-aws-auth.js?v=20260112"></script>
     <script src="js/unified-auth-modals.js?v=20260112"></script>
+    <script src="js/unified-profile-service.js?v=20260115"></script>
     <!-- Legacy Auth - Fallback -->
     <script src="js/real-user-auth-system.js?v=20260110" 
             onerror="console.error('Fehler beim Laden von real-user-auth-system.js');"></script>
     
     <!-- Auth State Management -->
     <script>
-        // Update auth button state with dropdown support
-        function updateAuthState() {
+        // Update auth button state with dropdown support - VERWENDET UnifiedProfileService
+        async function updateAuthState() {
             const authButton = document.getElementById('authButton');
             const authButtonText = document.getElementById('authButtonText');
             const mobileAuthButton = document.getElementById('mobileAuthButton');
@@ -2321,7 +2322,35 @@
             if (isLoggedIn) {
                 const auth = window.awsAuth || window.realUserAuth;
                 const userData = auth.getUserDataFromToken?.() || auth.getCurrentUser?.() || {};
-                const displayName = userData?.name || userData?.email?.split('@')[0] || 'Profil';
+                
+                // PRIORITÄT 1: UnifiedProfileService (filtert "Test User" automatisch)
+                let displayName = '';
+                if (window.unifiedProfileService) {
+                    // Warte kurz bis Service initialisiert ist
+                    let attempts = 0;
+                    while (!window.unifiedProfileService.isInitialized && attempts < 20) {
+                        await new Promise(r => setTimeout(r, 100));
+                        attempts++;
+                    }
+                    
+                    if (window.unifiedProfileService.isInitialized) {
+                        displayName = window.unifiedProfileService.getDisplayName();
+                    }
+                }
+                
+                // Fallback: Filtere "Test User" manuell
+                if (!displayName || displayName === 'Test User' || displayName === 'Test') {
+                    const tokenName = userData?.name || '';
+                    if (tokenName && tokenName !== 'Test User' && tokenName !== 'Test') {
+                        displayName = tokenName;
+                    } else if (userData?.email) {
+                        displayName = userData.email.split('@')[0];
+                    } else {
+                        displayName = 'Profil';
+                    }
+                }
+                
+                console.log('✅ Persönlichkeitsentwicklung Auth - Name:', displayName);
                 
                 // Update desktop button
                 if (authButton && authButtonText) {
@@ -2338,9 +2367,10 @@
                     if (icon) icon.className = 'fas fa-user-check';
                 }
                 
-                // Show dropdown on click
+                // Show dropdown on click - nur bei echten Klicks
                 if (authButton) {
                     authButton.onclick = (e) => {
+                        if (!e.isTrusted) return;
                         e.stopPropagation();
                         if (userDropdown) {
                             userDropdown.style.display = userDropdown.style.display === 'none' ? 'block' : 'none';
@@ -2388,8 +2418,9 @@
             }
         }
         
-        // Close dropdown when clicking outside
+        // Close dropdown when clicking outside - nur bei echten Klicks
         document.addEventListener('click', (e) => {
+            if (!e.isTrusted) return;
             const userDropdown = document.getElementById('userDropdown');
             const authButton = document.getElementById('authButton');
             if (userDropdown && !authButton?.contains(e.target)) {
@@ -2397,10 +2428,17 @@
             }
         });
         
+        // UnifiedProfileService Listener für Updates
+        if (window.unifiedProfileService) {
+            window.unifiedProfileService.onProfileChange?.(() => {
+                updateAuthState();
+            });
+        }
+        
         // Check auth on load
         document.addEventListener('DOMContentLoaded', async () => {
             setTimeout(updateAuthState, 300);
-            setTimeout(updateAuthState, 1000);
+            setTimeout(updateAuthState, 1500);
         });
         
         // Listen for auth changes
