@@ -1,7 +1,7 @@
 /**
  * ═══════════════════════════════════════════════════════════════════════════
  * DESIGN EDITOR - Professional Resume Designer
- * Phases 1-5: Typography, Colors, Spacing, Drag & Drop, Templates
+ * Extended Version with Sidebar Colors, Skill Levels, Images, Signatures
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -30,14 +30,18 @@ class DesignEditor {
         this.setupATS();
         this.setupZoom();
         this.setupAutoSave();
+        this.setupSkillDisplay();
+        this.setupProfileImage();
+        this.setupSignature();
+        this.setupPageNumbers();
         this.applySettings();
         this.updatePreview();
         
-        console.log('🎨 Design Editor initialized');
+        console.log('🎨 Design Editor initialized (Extended)');
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
-    // DEFAULT SETTINGS
+    // DEFAULT SETTINGS (Extended)
     // ═══════════════════════════════════════════════════════════════════════════
 
     getDefaultSettings() {
@@ -58,6 +62,14 @@ class DesignEditor {
             backgroundColor: '#ffffff',
             borderColor: '#e2e8f0',
             
+            // NEW: Section Background Colors
+            sidebarBackground: 'transparent',
+            sidebarTextColor: '#1e293b',
+            headerBackground: 'transparent',
+            headerTextColor: '#1e293b',
+            leftColumnBg: 'transparent',
+            rightColumnBg: 'transparent',
+            
             // Spacing
             marginTop: 20,
             marginRight: 20,
@@ -70,6 +82,34 @@ class DesignEditor {
             template: 'modern',
             columns: 1,
             
+            // NEW: Experience Format
+            experienceFormat: 'mixed', // 'prose', 'bullets', 'mixed'
+            
+            // NEW: Skill Display
+            skillDisplay: 'tags', // 'tags', 'bars', 'dots', 'numeric', 'percentage'
+            skillMaxLevel: 10,
+            skillShowLabel: true,
+            
+            // NEW: Profile Image
+            showProfileImage: false,
+            profileImageShape: 'circle', // 'circle', 'square', 'rounded'
+            profileImageSize: 'medium', // 'small', 'medium', 'large'
+            profileImagePosition: 'right', // 'left', 'right', 'center'
+            profileImageBorder: 'none', // 'none', 'thin', 'accent'
+            profileImageUrl: '',
+            
+            // NEW: Page Numbers
+            showPageNumbers: false,
+            pageNumberPosition: 'bottom-center', // 'bottom-left', 'bottom-center', 'bottom-right'
+            pageNumberFormat: 'Seite X von Y', // 'Seite X von Y', 'X/Y', 'X'
+            
+            // NEW: Signature
+            showSignature: false,
+            signatureImage: '',
+            signatureDate: '',
+            signatureLocation: '',
+            signatureLine: true,
+            
             // Sections Order & Visibility
             sections: [
                 { id: 'header', name: 'Kopfzeile', icon: 'fa-user', visible: true, column: 'full', customTitle: '' },
@@ -80,7 +120,8 @@ class DesignEditor {
                 { id: 'projects', name: 'Projekte', icon: 'fa-project-diagram', visible: false, column: 'right', customTitle: '' },
                 { id: 'languages', name: 'Sprachen', icon: 'fa-language', visible: true, column: 'left', customTitle: '' },
                 { id: 'certifications', name: 'Zertifikate', icon: 'fa-certificate', visible: false, column: 'left', customTitle: '' },
-                { id: 'hobbies', name: 'Hobbys', icon: 'fa-heart', visible: false, column: 'left', customTitle: '' }
+                { id: 'hobbies', name: 'Hobbys', icon: 'fa-heart', visible: false, column: 'left', customTitle: '' },
+                { id: 'signature', name: 'Unterschrift', icon: 'fa-signature', visible: false, column: 'full', customTitle: '' }
             ]
         };
     }
@@ -115,7 +156,6 @@ class DesignEditor {
             });
         }
 
-        // Append new defaults not in saved settings
         byId.forEach(section => result.push(section));
         return result;
     }
@@ -142,11 +182,9 @@ class DesignEditor {
             tab.addEventListener('click', () => {
                 const targetPanel = tab.dataset.panel;
                 
-                // Update tabs
                 document.querySelectorAll('.design-tab').forEach(t => t.classList.remove('active'));
                 tab.classList.add('active');
                 
-                // Update panels
                 document.querySelectorAll('.design-panel').forEach(p => p.classList.remove('active'));
                 const panel = document.getElementById(`panel-${targetPanel}`);
                 if (panel) panel.classList.add('active');
@@ -159,7 +197,6 @@ class DesignEditor {
     // ═══════════════════════════════════════════════════════════════════════════
 
     setupTypography() {
-        // Font Family
         const fontSelect = document.getElementById('designFontFamily');
         if (fontSelect) {
             fontSelect.value = this.settings.fontFamily;
@@ -170,13 +207,8 @@ class DesignEditor {
             });
         }
 
-        // Font Size
         this.setupSlider('designFontSize', 'fontSize', 8, 14, 'pt');
-        
-        // Heading Size
         this.setupSlider('designHeadingSize', 'headingSize', 12, 24, 'pt');
-        
-        // Line Height
         this.setupSlider('designLineHeight', 'lineHeight', 1.0, 2.0, '', 0.1);
     }
 
@@ -213,6 +245,17 @@ class DesignEditor {
                 this.updatePreview();
             });
         }
+        
+        // Experience Format
+        const expFormatSelect = document.getElementById('designExperienceFormat');
+        if (expFormatSelect) {
+            expFormatSelect.value = this.settings.experienceFormat || 'mixed';
+            expFormatSelect.addEventListener('change', (e) => {
+                this.settings.experienceFormat = e.target.value;
+                this.saveSettings();
+                this.updatePreview();
+            });
+        }
     }
 
     setupSlider(elementId, settingKey, min, max, unit = '', step = 1) {
@@ -245,7 +288,7 @@ class DesignEditor {
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
-    // COLORS
+    // COLORS (Extended with Section Backgrounds)
     // ═══════════════════════════════════════════════════════════════════════════
 
     setupColors() {
@@ -253,7 +296,13 @@ class DesignEditor {
             { id: 'designAccentColor', key: 'accentColor' },
             { id: 'designTextColor', key: 'textColor' },
             { id: 'designMutedColor', key: 'mutedColor' },
-            { id: 'designBgColor', key: 'backgroundColor' }
+            { id: 'designBgColor', key: 'backgroundColor' },
+            // NEW: Section backgrounds
+            { id: 'designSidebarBg', key: 'sidebarBackground' },
+            { id: 'designSidebarText', key: 'sidebarTextColor' },
+            { id: 'designHeaderBg', key: 'headerBackground' },
+            { id: 'designLeftColumnBg', key: 'leftColumnBg' },
+            { id: 'designRightColumnBg', key: 'rightColumnBg' }
         ];
 
         colorSettings.forEach(({ id, key }) => {
@@ -261,12 +310,13 @@ class DesignEditor {
             const hexInput = document.getElementById(`${id}Hex`);
             
             if (colorPicker) {
-                colorPicker.value = this.settings[key];
+                colorPicker.value = this.settings[key] || '#ffffff';
                 
                 colorPicker.addEventListener('input', (e) => {
                     this.settings[key] = e.target.value;
                     if (hexInput) hexInput.value = e.target.value;
                     this.applySettings();
+                    this.updatePreview();
                 });
                 
                 colorPicker.addEventListener('change', () => {
@@ -275,7 +325,7 @@ class DesignEditor {
             }
             
             if (hexInput) {
-                hexInput.value = this.settings[key];
+                hexInput.value = this.settings[key] || '#ffffff';
                 hexInput.addEventListener('input', (e) => {
                     let value = e.target.value;
                     if (!value.startsWith('#')) value = '#' + value;
@@ -284,12 +334,12 @@ class DesignEditor {
                         if (colorPicker) colorPicker.value = value;
                         this.applySettings();
                         this.saveSettings();
+                        this.updatePreview();
                     }
                 });
             }
         });
 
-        // Color Presets
         this.setupColorPresets();
     }
 
@@ -320,13 +370,11 @@ class DesignEditor {
                 btn.addEventListener('click', () => {
                     this.settings.accentColor = btn.dataset.accent;
                     
-                    // Update UI
                     const accentPicker = document.getElementById('designAccentColor');
                     const accentHex = document.getElementById('designAccentColorHex');
                     if (accentPicker) accentPicker.value = btn.dataset.accent;
                     if (accentHex) accentHex.value = btn.dataset.accent;
                     
-                    // Update active state
                     presetsContainer.querySelectorAll('.design-color-preset').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     
@@ -342,22 +390,14 @@ class DesignEditor {
     // ═══════════════════════════════════════════════════════════════════════════
 
     setupSpacing() {
-        // Margins
         this.setupSlider('designMarginTop', 'marginTop', 10, 40, 'mm');
         this.setupSlider('designMarginRight', 'marginRight', 10, 40, 'mm');
         this.setupSlider('designMarginBottom', 'marginBottom', 10, 40, 'mm');
         this.setupSlider('designMarginLeft', 'marginLeft', 10, 40, 'mm');
-        
-        // Section Gap
         this.setupSlider('designSectionGap', 'sectionGap', 12, 48, 'px');
-        
-        // Item Gap
         this.setupSlider('designItemGap', 'itemGap', 6, 24, 'px');
-        
-        // Paragraph Gap
         this.setupSlider('designParagraphGap', 'paragraphGap', 0, 16, 'px');
 
-        // Uniform Margins Toggle
         const uniformToggle = document.getElementById('uniformMargins');
         if (uniformToggle) {
             uniformToggle.addEventListener('change', (e) => {
@@ -378,17 +418,73 @@ class DesignEditor {
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
-    // TEMPLATES
+    // TEMPLATES (Extended with 15 Templates)
     // ═══════════════════════════════════════════════════════════════════════════
 
     setupTemplates() {
         const templates = [
-            { id: 'modern', name: 'Modern', desc: 'Clean & Professional', icon: '📄', settings: { accentColor: '#6366f1', fontFamily: "'Inter', sans-serif" } },
-            { id: 'classic', name: 'Klassisch', desc: 'Zeitlos & Elegant', icon: '📋', settings: { accentColor: '#1e293b', fontFamily: "'Georgia', serif" } },
-            { id: 'creative', name: 'Kreativ', desc: 'Auffällig & Modern', icon: '🎨', settings: { accentColor: '#8b5cf6', fontFamily: "'Montserrat', sans-serif" } },
-            { id: 'minimal', name: 'Minimal', desc: 'Schlicht & Fokussiert', icon: '✨', settings: { accentColor: '#64748b', fontFamily: "'Inter', sans-serif" } },
-            { id: 'executive', name: 'Executive', desc: 'Führungskräfte', icon: '👔', settings: { accentColor: '#0f172a', fontFamily: "'Times New Roman', serif" } },
-            { id: 'ats', name: 'ATS-Optimiert', desc: 'Für Bewerbungssysteme', icon: '🤖', settings: { accentColor: '#1e293b', fontFamily: "'Arial', sans-serif" } }
+            // Original Templates
+            { id: 'modern', name: 'Modern', desc: 'Clean & Professional', icon: '📄', 
+              settings: { accentColor: '#6366f1', fontFamily: "'Inter', sans-serif", columns: 1, sidebarBackground: 'transparent' } },
+            { id: 'classic', name: 'Klassisch', desc: 'Zeitlos & Elegant', icon: '📋', 
+              settings: { accentColor: '#1e293b', fontFamily: "'Georgia', serif", columns: 1, sidebarBackground: 'transparent' } },
+            { id: 'creative', name: 'Kreativ', desc: 'Auffällig & Modern', icon: '🎨', 
+              settings: { accentColor: '#8b5cf6', fontFamily: "'Montserrat', sans-serif", columns: 2, sidebarBackground: 'transparent' } },
+            { id: 'minimal', name: 'Minimal', desc: 'Schlicht & Fokussiert', icon: '✨', 
+              settings: { accentColor: '#64748b', fontFamily: "'Inter', sans-serif", columns: 1, sidebarBackground: 'transparent' } },
+            { id: 'executive', name: 'Executive', desc: 'Führungskräfte', icon: '👔', 
+              settings: { accentColor: '#0f172a', fontFamily: "'Times New Roman', serif", columns: 1, sidebarBackground: 'transparent' } },
+            { id: 'ats', name: 'ATS-Optimiert', desc: 'Für Bewerbungssysteme', icon: '🤖', 
+              settings: { accentColor: '#1e293b', fontFamily: "'Arial', sans-serif", columns: 1, showIcons: false, sidebarBackground: 'transparent' } },
+            
+            // NEW: Sidebar Templates
+            { id: 'sidebar-dark', name: 'Sidebar Dunkel', desc: 'Dunkle Sidebar (wie Screenshot)', icon: '🌙', 
+              settings: { 
+                accentColor: '#ffffff', fontFamily: "'Inter', sans-serif", columns: 2,
+                sidebarBackground: '#2d3748', sidebarTextColor: '#ffffff', leftColumnBg: '#2d3748', rightColumnBg: '#ffffff'
+              } },
+            { id: 'sidebar-accent', name: 'Sidebar Akzent', desc: 'Farbige Sidebar', icon: '🎯', 
+              settings: { 
+                accentColor: '#ffffff', fontFamily: "'Inter', sans-serif", columns: 2,
+                sidebarBackground: '#6366f1', sidebarTextColor: '#ffffff', leftColumnBg: '#6366f1', rightColumnBg: '#ffffff'
+              } },
+            { id: 'sidebar-teal', name: 'Sidebar Teal', desc: 'Türkis Sidebar', icon: '🌊', 
+              settings: { 
+                accentColor: '#ffffff', fontFamily: "'Inter', sans-serif", columns: 2,
+                sidebarBackground: '#0d9488', sidebarTextColor: '#ffffff', leftColumnBg: '#0d9488', rightColumnBg: '#ffffff'
+              } },
+            
+            // NEW: Professional Templates
+            { id: 'tech', name: 'Tech/Developer', desc: 'Für IT & Entwickler', icon: '💻', 
+              settings: { 
+                accentColor: '#22c55e', fontFamily: "'Source Code Pro', monospace", columns: 2,
+                skillDisplay: 'bars', sidebarBackground: '#0f172a', sidebarTextColor: '#22c55e', leftColumnBg: '#0f172a'
+              } },
+            { id: 'finance', name: 'Finance', desc: 'Konservativ & Seriös', icon: '💼', 
+              settings: { 
+                accentColor: '#14532d', fontFamily: "'Times New Roman', serif", columns: 1,
+                sidebarBackground: 'transparent', showIcons: false
+              } },
+            { id: 'startup', name: 'Startup', desc: 'Modern & Dynamisch', icon: '🚀', 
+              settings: { 
+                accentColor: '#f97316', fontFamily: "'Nunito', sans-serif", columns: 2,
+                sidebarBackground: '#fff7ed', leftColumnBg: '#fff7ed'
+              } },
+            { id: 'academic', name: 'Akademisch', desc: 'Für Wissenschaft', icon: '🎓', 
+              settings: { 
+                accentColor: '#1e3a8a', fontFamily: "'Merriweather', serif", columns: 1,
+                sidebarBackground: 'transparent'
+              } },
+            { id: 'creative-bold', name: 'Kreativ Bold', desc: 'Mutige Farben', icon: '🎪', 
+              settings: { 
+                accentColor: '#ec4899', fontFamily: "'Montserrat', sans-serif", columns: 2,
+                sidebarBackground: '#fdf2f8', leftColumnBg: '#fdf2f8', headerBackground: '#ec4899'
+              } },
+            { id: 'executive-gold', name: 'Executive Gold', desc: 'Premium Look', icon: '👑', 
+              settings: { 
+                accentColor: '#b45309', fontFamily: "'Playfair Display', serif", columns: 1,
+                sidebarBackground: 'transparent', headerBackground: '#fffbeb'
+              } }
         ];
 
         const templatesGrid = document.getElementById('templatesGrid');
@@ -409,18 +505,16 @@ class DesignEditor {
                     const template = templates.find(t => t.id === templateId);
                     
                     if (template) {
-                        // Update active state
                         templatesGrid.querySelectorAll('.design-template-card').forEach(c => c.classList.remove('active'));
                         card.classList.add('active');
                         
-                        // Apply template settings
                         this.settings.template = templateId;
                         Object.assign(this.settings, template.settings);
                         
-                        // Update UI
                         this.updateUIFromSettings();
                         this.applySettings();
                         this.saveSettings();
+                        this.updatePreview();
                         
                         this.showNotification(`Template "${template.name}" angewendet`, 'success');
                     }
@@ -430,20 +524,322 @@ class DesignEditor {
     }
 
     updateUIFromSettings() {
-        // Update font selector
         const fontSelect = document.getElementById('designFontFamily');
         if (fontSelect) fontSelect.value = this.settings.fontFamily;
         
-        // Update color pickers
         const accentPicker = document.getElementById('designAccentColor');
         const accentHex = document.getElementById('designAccentColorHex');
         if (accentPicker) accentPicker.value = this.settings.accentColor;
         if (accentHex) accentHex.value = this.settings.accentColor;
         
-        // Update color presets
         document.querySelectorAll('.design-color-preset').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.accent === this.settings.accentColor);
         });
+        
+        const columnsSelect = document.getElementById('designColumns');
+        if (columnsSelect) columnsSelect.value = String(this.settings.columns);
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // SKILL DISPLAY OPTIONS
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    setupSkillDisplay() {
+        const skillDisplaySelect = document.getElementById('designSkillDisplay');
+        if (skillDisplaySelect) {
+            skillDisplaySelect.value = this.settings.skillDisplay || 'tags';
+            skillDisplaySelect.addEventListener('change', (e) => {
+                this.settings.skillDisplay = e.target.value;
+                this.saveSettings();
+                this.updatePreview();
+            });
+        }
+        
+        const skillMaxLevelSelect = document.getElementById('designSkillMaxLevel');
+        if (skillMaxLevelSelect) {
+            skillMaxLevelSelect.value = this.settings.skillMaxLevel || 10;
+            skillMaxLevelSelect.addEventListener('change', (e) => {
+                this.settings.skillMaxLevel = parseInt(e.target.value);
+                this.saveSettings();
+                this.updatePreview();
+            });
+        }
+        
+        const skillShowLabelToggle = document.getElementById('designSkillShowLabel');
+        if (skillShowLabelToggle) {
+            skillShowLabelToggle.checked = this.settings.skillShowLabel !== false;
+            skillShowLabelToggle.addEventListener('change', (e) => {
+                this.settings.skillShowLabel = e.target.checked;
+                this.saveSettings();
+                this.updatePreview();
+            });
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // PROFILE IMAGE
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    setupProfileImage() {
+        const showImageToggle = document.getElementById('designShowProfileImage');
+        if (showImageToggle) {
+            showImageToggle.checked = this.settings.showProfileImage;
+            showImageToggle.addEventListener('change', (e) => {
+                this.settings.showProfileImage = e.target.checked;
+                this.saveSettings();
+                this.updatePreview();
+                this.toggleImageOptions(e.target.checked);
+            });
+        }
+        
+        const imageShapeSelect = document.getElementById('designProfileImageShape');
+        if (imageShapeSelect) {
+            imageShapeSelect.value = this.settings.profileImageShape || 'circle';
+            imageShapeSelect.addEventListener('change', (e) => {
+                this.settings.profileImageShape = e.target.value;
+                this.saveSettings();
+                this.updatePreview();
+            });
+        }
+        
+        const imageSizeSelect = document.getElementById('designProfileImageSize');
+        if (imageSizeSelect) {
+            imageSizeSelect.value = this.settings.profileImageSize || 'medium';
+            imageSizeSelect.addEventListener('change', (e) => {
+                this.settings.profileImageSize = e.target.value;
+                this.saveSettings();
+                this.updatePreview();
+            });
+        }
+        
+        const imagePositionSelect = document.getElementById('designProfileImagePosition');
+        if (imagePositionSelect) {
+            imagePositionSelect.value = this.settings.profileImagePosition || 'right';
+            imagePositionSelect.addEventListener('change', (e) => {
+                this.settings.profileImagePosition = e.target.value;
+                this.saveSettings();
+                this.updatePreview();
+            });
+        }
+        
+        const imageBorderSelect = document.getElementById('designProfileImageBorder');
+        if (imageBorderSelect) {
+            imageBorderSelect.value = this.settings.profileImageBorder || 'none';
+            imageBorderSelect.addEventListener('change', (e) => {
+                this.settings.profileImageBorder = e.target.value;
+                this.saveSettings();
+                this.updatePreview();
+            });
+        }
+        
+        // Image upload
+        const imageUpload = document.getElementById('profileImageUpload');
+        if (imageUpload) {
+            imageUpload.addEventListener('change', (e) => {
+                this.handleProfileImageUpload(e.target.files[0]);
+            });
+        }
+        
+        // Load from profile button
+        const loadFromProfileBtn = document.getElementById('loadProfileImageBtn');
+        if (loadFromProfileBtn) {
+            loadFromProfileBtn.addEventListener('click', () => {
+                this.loadProfileImageFromStorage();
+            });
+        }
+    }
+    
+    toggleImageOptions(show) {
+        const optionsContainer = document.getElementById('profileImageOptions');
+        if (optionsContainer) {
+            optionsContainer.style.display = show ? 'block' : 'none';
+        }
+    }
+    
+    async handleProfileImageUpload(file) {
+        if (!file) return;
+        
+        if (!file.type.startsWith('image/')) {
+            this.showNotification('Bitte wählen Sie eine Bilddatei', 'error');
+            return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            this.settings.profileImageUrl = e.target.result;
+            this.saveSettings();
+            this.updatePreview();
+            this.showNotification('Profilbild hochgeladen', 'success');
+        };
+        reader.readAsDataURL(file);
+    }
+    
+    loadProfileImageFromStorage() {
+        try {
+            const profile = JSON.parse(localStorage.getItem('bewerbungsmanager_profile') || '{}');
+            if (profile.profileImageUrl) {
+                this.settings.profileImageUrl = profile.profileImageUrl;
+                this.settings.showProfileImage = true;
+                this.saveSettings();
+                this.updatePreview();
+                
+                const toggle = document.getElementById('designShowProfileImage');
+                if (toggle) toggle.checked = true;
+                this.toggleImageOptions(true);
+                
+                this.showNotification('Profilbild aus Profil geladen', 'success');
+            } else {
+                this.showNotification('Kein Profilbild im Profil gefunden', 'warning');
+            }
+        } catch (e) {
+            this.showNotification('Fehler beim Laden des Profilbilds', 'error');
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // SIGNATURE
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    setupSignature() {
+        const showSignatureToggle = document.getElementById('designShowSignature');
+        if (showSignatureToggle) {
+            showSignatureToggle.checked = this.settings.showSignature;
+            showSignatureToggle.addEventListener('change', (e) => {
+                this.settings.showSignature = e.target.checked;
+                // Also toggle signature section visibility
+                const sigSection = this.sections.find(s => s.id === 'signature');
+                if (sigSection) sigSection.visible = e.target.checked;
+                this.saveSettings();
+                this.updatePreview();
+                this.toggleSignatureOptions(e.target.checked);
+            });
+        }
+        
+        const signatureUpload = document.getElementById('signatureUpload');
+        if (signatureUpload) {
+            signatureUpload.addEventListener('change', (e) => {
+                this.handleSignatureUpload(e.target.files[0]);
+            });
+        }
+        
+        const signatureLocation = document.getElementById('designSignatureLocation');
+        if (signatureLocation) {
+            signatureLocation.value = this.settings.signatureLocation || '';
+            signatureLocation.addEventListener('input', (e) => {
+                this.settings.signatureLocation = e.target.value;
+                this.saveSettings();
+                this.updatePreview();
+            });
+        }
+        
+        const signatureDate = document.getElementById('designSignatureDate');
+        if (signatureDate) {
+            signatureDate.value = this.settings.signatureDate || '';
+            signatureDate.addEventListener('input', (e) => {
+                this.settings.signatureDate = e.target.value;
+                this.saveSettings();
+                this.updatePreview();
+            });
+        }
+        
+        const signatureLine = document.getElementById('designSignatureLine');
+        if (signatureLine) {
+            signatureLine.checked = this.settings.signatureLine !== false;
+            signatureLine.addEventListener('change', (e) => {
+                this.settings.signatureLine = e.target.checked;
+                this.saveSettings();
+                this.updatePreview();
+            });
+        }
+        
+        // Auto-fill date button
+        const autoDateBtn = document.getElementById('autoFillDateBtn');
+        if (autoDateBtn) {
+            autoDateBtn.addEventListener('click', () => {
+                const today = new Date().toLocaleDateString('de-DE', { 
+                    day: '2-digit', month: 'long', year: 'numeric' 
+                });
+                this.settings.signatureDate = today;
+                if (signatureDate) signatureDate.value = today;
+                this.saveSettings();
+                this.updatePreview();
+            });
+        }
+    }
+    
+    toggleSignatureOptions(show) {
+        const optionsContainer = document.getElementById('signatureOptions');
+        if (optionsContainer) {
+            optionsContainer.style.display = show ? 'block' : 'none';
+        }
+    }
+    
+    handleSignatureUpload(file) {
+        if (!file) return;
+        
+        if (!file.type.startsWith('image/')) {
+            this.showNotification('Bitte wählen Sie eine Bilddatei (PNG empfohlen)', 'error');
+            return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            this.settings.signatureImage = e.target.result;
+            this.saveSettings();
+            this.updatePreview();
+            this.showNotification('Unterschrift hochgeladen', 'success');
+            
+            // Show preview
+            const preview = document.getElementById('signaturePreview');
+            if (preview) {
+                preview.innerHTML = `<img src="${e.target.result}" alt="Unterschrift" style="max-height: 60px;">`;
+            }
+        };
+        reader.readAsDataURL(file);
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // PAGE NUMBERS
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    setupPageNumbers() {
+        const showPageNumbersToggle = document.getElementById('designShowPageNumbers');
+        if (showPageNumbersToggle) {
+            showPageNumbersToggle.checked = this.settings.showPageNumbers;
+            showPageNumbersToggle.addEventListener('change', (e) => {
+                this.settings.showPageNumbers = e.target.checked;
+                this.saveSettings();
+                this.updatePreview();
+                this.togglePageNumberOptions(e.target.checked);
+            });
+        }
+        
+        const pageNumberPosition = document.getElementById('designPageNumberPosition');
+        if (pageNumberPosition) {
+            pageNumberPosition.value = this.settings.pageNumberPosition || 'bottom-center';
+            pageNumberPosition.addEventListener('change', (e) => {
+                this.settings.pageNumberPosition = e.target.value;
+                this.saveSettings();
+                this.updatePreview();
+            });
+        }
+        
+        const pageNumberFormat = document.getElementById('designPageNumberFormat');
+        if (pageNumberFormat) {
+            pageNumberFormat.value = this.settings.pageNumberFormat || 'Seite X von Y';
+            pageNumberFormat.addEventListener('change', (e) => {
+                this.settings.pageNumberFormat = e.target.value;
+                this.saveSettings();
+                this.updatePreview();
+            });
+        }
+    }
+    
+    togglePageNumberOptions(show) {
+        const optionsContainer = document.getElementById('pageNumberOptions');
+        if (optionsContainer) {
+            optionsContainer.style.display = show ? 'block' : 'none';
+        }
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -494,7 +890,6 @@ class DesignEditor {
             </div>
         `).join('');
 
-        // Setup toggle buttons
         container.querySelectorAll('.design-section-btn[data-action="toggle"]').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -504,7 +899,6 @@ class DesignEditor {
             });
         });
 
-        // Settings buttons
         container.querySelectorAll('.design-section-btn[data-action="settings"]').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -516,7 +910,6 @@ class DesignEditor {
             });
         });
 
-        // Settings inputs
         container.querySelectorAll('.design-section-settings').forEach(panel => {
             panel.querySelectorAll('input, select').forEach(input => {
                 input.addEventListener('input', () => {
@@ -612,8 +1005,6 @@ class DesignEditor {
         this.settings.sections = newOrder;
         this.saveSettings();
         this.updatePreview();
-        
-        console.log('📋 Sections reordered');
     }
 
     toggleSection(sectionId) {
@@ -635,26 +1026,17 @@ class DesignEditor {
         const zoomIn = document.getElementById('zoomIn');
         const zoomOut = document.getElementById('zoomOut');
         const zoomReset = document.getElementById('zoomReset');
-        const zoomValue = document.getElementById('zoomValue');
 
-        if (zoomIn) {
-            zoomIn.addEventListener('click', () => this.setZoom(this.currentZoom + 10));
-        }
-        if (zoomOut) {
-            zoomOut.addEventListener('click', () => this.setZoom(this.currentZoom - 10));
-        }
-        if (zoomReset) {
-            zoomReset.addEventListener('click', () => this.setZoom(100));
-        }
+        if (zoomIn) zoomIn.addEventListener('click', () => this.setZoom(this.currentZoom + 10));
+        if (zoomOut) zoomOut.addEventListener('click', () => this.setZoom(this.currentZoom - 10));
+        if (zoomReset) zoomReset.addEventListener('click', () => this.setZoom(100));
     }
 
     setZoom(value) {
         this.currentZoom = Math.max(50, Math.min(200, value));
         
         const zoomValue = document.getElementById('zoomValue');
-        if (zoomValue) {
-            zoomValue.textContent = this.currentZoom + '%';
-        }
+        if (zoomValue) zoomValue.textContent = this.currentZoom + '%';
         
         const previewWrapper = document.querySelector('.design-preview-wrapper');
         if (previewWrapper) {
@@ -682,12 +1064,18 @@ class DesignEditor {
         preview.style.setProperty('--resume-bg-color', this.settings.backgroundColor);
         preview.style.setProperty('--resume-border-color', this.settings.borderColor);
         
+        // NEW: Section backgrounds
+        preview.style.setProperty('--resume-sidebar-bg', this.settings.sidebarBackground || 'transparent');
+        preview.style.setProperty('--resume-sidebar-text', this.settings.sidebarTextColor || this.settings.textColor);
+        preview.style.setProperty('--resume-header-bg', this.settings.headerBackground || 'transparent');
+        preview.style.setProperty('--resume-left-column-bg', this.settings.leftColumnBg || 'transparent');
+        preview.style.setProperty('--resume-right-column-bg', this.settings.rightColumnBg || 'transparent');
+        
         preview.style.setProperty('--resume-margin', `${this.settings.marginTop}mm ${this.settings.marginRight}mm ${this.settings.marginBottom}mm ${this.settings.marginLeft}mm`);
         preview.style.setProperty('--resume-section-gap', this.settings.sectionGap + 'px');
         preview.style.setProperty('--resume-item-gap', this.settings.itemGap + 'px');
         preview.style.setProperty('--resume-paragraph-gap', this.settings.paragraphGap + 'px');
 
-        // Apply font family directly
         preview.style.fontFamily = this.settings.fontFamily;
         preview.style.fontSize = this.settings.fontSize + 'pt';
         preview.style.lineHeight = this.settings.lineHeight;
@@ -696,6 +1084,11 @@ class DesignEditor {
         preview.style.padding = `${this.settings.marginTop}mm ${this.settings.marginRight}mm ${this.settings.marginBottom}mm ${this.settings.marginLeft}mm`;
 
         preview.classList.toggle('no-icons', !this.settings.showIcons);
+        
+        // Apply template class
+        preview.className = preview.className.replace(/template-\w+/g, '');
+        preview.classList.add(`template-${this.settings.template}`);
+        
         this.updateATSCheck();
     }
 
@@ -707,13 +1100,11 @@ class DesignEditor {
         const preview = document.querySelector('.design-resume-preview');
         if (!preview) return;
 
-        // Get resume data
         const resumeData = this.getResumeData();
-        
-        // Generate preview HTML
         let html = '';
 
         const visibleSections = this.sections.filter(s => s.visible);
+        
         if (this.settings.columns === 2) {
             const full = visibleSections.filter(s => s.column === 'full');
             const left = visibleSections.filter(s => s.column === 'left');
@@ -723,12 +1114,23 @@ class DesignEditor {
                 html += this.renderSectionById(section, resumeData);
             });
 
+            const leftBg = this.settings.leftColumnBg && this.settings.leftColumnBg !== 'transparent' 
+                ? `background: ${this.settings.leftColumnBg}; padding: 20px; margin: -20px 0 -20px -${this.settings.marginLeft}mm; padding-left: ${this.settings.marginLeft}mm;` 
+                : '';
+            const rightBg = this.settings.rightColumnBg && this.settings.rightColumnBg !== 'transparent'
+                ? `background: ${this.settings.rightColumnBg}; padding: 20px;`
+                : '';
+            
+            const leftTextColor = this.settings.sidebarTextColor && this.settings.leftColumnBg !== 'transparent'
+                ? `color: ${this.settings.sidebarTextColor};`
+                : '';
+
             html += `
                 <div class="resume-preview-columns">
-                    <div class="resume-preview-column">
+                    <div class="resume-preview-column resume-preview-column-left" style="${leftBg} ${leftTextColor}">
                         ${left.map(section => this.renderSectionById(section, resumeData)).join('')}
                     </div>
-                    <div class="resume-preview-column">
+                    <div class="resume-preview-column resume-preview-column-right" style="${rightBg}">
                         ${right.map(section => this.renderSectionById(section, resumeData)).join('')}
                     </div>
                 </div>
@@ -737,6 +1139,11 @@ class DesignEditor {
             visibleSections.forEach(section => {
                 html += this.renderSectionById(section, resumeData);
             });
+        }
+        
+        // Add page numbers if enabled
+        if (this.settings.showPageNumbers) {
+            html += this.renderPageNumbers();
         }
 
         preview.innerHTML = html || this.renderPlaceholderContent();
@@ -759,13 +1166,14 @@ class DesignEditor {
                 return this.renderLanguagesSection(data, section);
             case 'projects':
                 return this.renderProjectsSection(data, section);
+            case 'signature':
+                return this.renderSignatureSection(data, section);
             default:
                 return '';
         }
     }
 
     getResumeData() {
-        // Try multiple sources: Form fields > DashboardState > CloudData > Fallbacks
         const formData = {
             firstName: document.getElementById('firstName')?.value || '',
             lastName: document.getElementById('lastName')?.value || '',
@@ -773,17 +1181,16 @@ class DesignEditor {
             email: document.getElementById('email')?.value || '',
             phone: document.getElementById('phone')?.value || '',
             location: document.getElementById('location')?.value || '',
-            summary: document.getElementById('summary')?.value || ''
+            summary: document.getElementById('summary')?.value || '',
+            birthDate: document.getElementById('birthDate')?.value || ''
         };
         
-        // Get saved profile data as fallback (from localStorage or DashboardState)
         let savedProfile = {};
         try {
             const stored = localStorage.getItem('bewerbungsmanager_profile');
             if (stored) savedProfile = JSON.parse(stored);
         } catch (e) {}
         
-        // Merge: Use form data if available, otherwise saved profile
         return {
             firstName: formData.firstName || savedProfile.firstName || 'Ihr Vorname',
             lastName: formData.lastName || savedProfile.lastName || 'Ihr Nachname',
@@ -792,6 +1199,8 @@ class DesignEditor {
             phone: formData.phone || savedProfile.phone || '+49 123 456789',
             location: formData.location || savedProfile.location || 'Stadt, Land',
             summary: formData.summary || savedProfile.summary || 'Ihr Profil...',
+            birthDate: formData.birthDate || savedProfile.birthDate || '',
+            profileImageUrl: this.settings.profileImageUrl || savedProfile.profileImageUrl || '',
             experience: this.getExperienceData(),
             education: this.getEducationData(),
             skills: this.getSkillsData(),
@@ -809,13 +1218,16 @@ class DesignEditor {
             items.push({
                 position: item.querySelector('[data-field="position"]')?.value || '',
                 company: item.querySelector('[data-field="company"]')?.value || '',
+                companyWebsite: item.querySelector('[data-field="companyWebsite"]')?.value || '',
+                companyLogo: item.querySelector('[data-field="companyLogo"]')?.value || '',
+                location: item.querySelector('[data-field="location"]')?.value || '',
                 startDate: item.querySelector('[data-field="startDate"]')?.value || '',
                 endDate: item.querySelector('[data-field="endDate"]')?.value || '',
-                description: item.querySelector('[data-field="description"]')?.value || ''
+                description: item.querySelector('[data-field="description"]')?.value || '',
+                bullets: item.querySelector('[data-field="bullets"]')?.value || ''
             });
         });
         
-        // Return actual items or empty array (no fake test data)
         return items;
     }
 
@@ -833,7 +1245,6 @@ class DesignEditor {
             });
         });
         
-        // Return actual items or empty array (no fake test data)
         return items;
     }
 
@@ -843,11 +1254,20 @@ class DesignEditor {
 
         document.querySelectorAll('#technicalSkillsContainer .skill-category-item').forEach(item => {
             const category = item.querySelector('.skill-category-name')?.value || '';
-            const skills = Array.from(item.querySelectorAll('.skill-tag input'))
-                .map(input => input.value.trim())
-                .filter(Boolean);
+            const skillElements = item.querySelectorAll('.skill-tag');
+            const skills = [];
+            
+            skillElements.forEach(skillEl => {
+                const nameInput = skillEl.querySelector('input[type="text"]');
+                const levelInput = skillEl.querySelector('input[type="range"], select[data-field="level"]');
+                skills.push({
+                    name: nameInput?.value?.trim() || '',
+                    level: levelInput ? parseInt(levelInput.value) || 5 : 5
+                });
+            });
+            
             if (category || skills.length) {
-                technicalSkills.push({ category, skills });
+                technicalSkills.push({ category, skills: skills.filter(s => s.name) });
             }
         });
 
@@ -871,7 +1291,6 @@ class DesignEditor {
             });
         });
         
-        // Return actual items or empty array (no fake test data)
         return items;
     }
 
@@ -892,22 +1311,75 @@ class DesignEditor {
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
-    // SECTION RENDERERS
+    // SECTION RENDERERS (Extended)
     // ═══════════════════════════════════════════════════════════════════════════
 
     renderHeaderSection(data, section) {
         const alignClass = this.settings.headerAlign === 'left' ? 'align-left' : '';
-        return `
-            <div class="resume-preview-header ${alignClass}">
-                <h1 class="resume-preview-name">${data.firstName} ${data.lastName}</h1>
-                <p class="resume-preview-title">${data.title}</p>
-                <div class="resume-preview-contact">
-                    ${data.email ? `<span><i class="fas fa-envelope"></i> ${data.email}</span>` : ''}
-                    ${data.phone ? `<span><i class="fas fa-phone"></i> ${data.phone}</span>` : ''}
-                    ${data.location ? `<span><i class="fas fa-map-marker-alt"></i> ${data.location}</span>` : ''}
+        const headerBg = this.settings.headerBackground && this.settings.headerBackground !== 'transparent'
+            ? `background: ${this.settings.headerBackground}; margin: -${this.settings.marginTop}mm -${this.settings.marginRight}mm 0 -${this.settings.marginLeft}mm; padding: ${this.settings.marginTop}mm ${this.settings.marginRight}mm 20px ${this.settings.marginLeft}mm;`
+            : '';
+        
+        // Profile image
+        let profileImageHtml = '';
+        if (this.settings.showProfileImage && data.profileImageUrl) {
+            const sizeMap = { small: '80px', medium: '120px', large: '160px' };
+            const size = sizeMap[this.settings.profileImageSize] || '120px';
+            const shape = this.settings.profileImageShape === 'circle' ? '50%' 
+                        : this.settings.profileImageShape === 'rounded' ? '12px' : '0';
+            const border = this.settings.profileImageBorder === 'thin' ? '2px solid #e2e8f0'
+                         : this.settings.profileImageBorder === 'accent' ? `3px solid ${this.settings.accentColor}` : 'none';
+            
+            profileImageHtml = `
+                <div class="resume-preview-profile-image" style="
+                    width: ${size}; height: ${size}; border-radius: ${shape}; border: ${border};
+                    overflow: hidden; flex-shrink: 0;
+                ">
+                    <img src="${data.profileImageUrl}" alt="Profilbild" style="width: 100%; height: 100%; object-fit: cover;">
                 </div>
+            `;
+        }
+        
+        const headerContent = `
+            <h1 class="resume-preview-name">${data.firstName} ${data.lastName}</h1>
+            ${data.birthDate ? `<p class="resume-preview-birthdate">Geb. am ${this.formatDate(data.birthDate)}</p>` : ''}
+            <p class="resume-preview-title">${data.title}</p>
+            <div class="resume-preview-contact">
+                ${data.phone ? `<span><i class="fas fa-phone"></i> ${data.phone}</span>` : ''}
+                ${data.location ? `<span><i class="fas fa-map-marker-alt"></i> ${data.location}</span>` : ''}
+                ${data.email ? `<span><i class="fas fa-envelope"></i> ${data.email}</span>` : ''}
             </div>
         `;
+        
+        if (this.settings.showProfileImage && data.profileImageUrl) {
+            const imgPos = this.settings.profileImagePosition;
+            return `
+                <div class="resume-preview-header ${alignClass}" style="${headerBg}">
+                    <div class="resume-header-with-image" style="display: flex; align-items: center; gap: 24px; ${imgPos === 'right' ? 'flex-direction: row-reverse;' : ''} ${imgPos === 'center' ? 'flex-direction: column; text-align: center;' : ''}">
+                        ${profileImageHtml}
+                        <div class="resume-header-content" style="flex: 1;">
+                            ${headerContent}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        return `
+            <div class="resume-preview-header ${alignClass}" style="${headerBg}">
+                ${headerContent}
+            </div>
+        `;
+    }
+    
+    formatDate(dateStr) {
+        if (!dateStr) return '';
+        try {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        } catch (e) {
+            return dateStr;
+        }
     }
 
     renderSummarySection(data, section) {
@@ -924,19 +1396,61 @@ class DesignEditor {
     renderExperienceSection(data, section) {
         if (!data.experience?.length) return '';
         const title = section?.customTitle || 'Berufserfahrung';
+        const format = this.settings.experienceFormat || 'mixed';
+        
         return `
             <div class="resume-preview-section">
                 <h2 class="resume-preview-section-title"><i class="fas fa-briefcase"></i> ${title}</h2>
-                ${data.experience.map(exp => `
-                    <div class="resume-preview-item">
-                        <div class="resume-preview-item-header">
-                            <span class="resume-preview-item-title">${exp.position}</span>
-                            <span class="resume-preview-item-date">${exp.startDate} - ${exp.endDate || 'heute'}</span>
+                ${data.experience.map(exp => {
+                    // Company with optional logo and link
+                    let companyHtml = exp.company;
+                    if (exp.companyWebsite) {
+                        companyHtml = `<a href="${exp.companyWebsite}" target="_blank" class="resume-company-link">${exp.company}</a>`;
+                    }
+                    if (exp.companyLogo) {
+                        companyHtml = `<span class="resume-company-with-logo"><img src="${exp.companyLogo}" alt="" class="resume-company-logo">${companyHtml}</span>`;
+                    }
+                    if (exp.location) {
+                        companyHtml += `, ${exp.location}`;
+                    }
+                    
+                    // Description based on format
+                    let descriptionHtml = '';
+                    if (format === 'prose' && exp.description) {
+                        descriptionHtml = `<p class="resume-preview-item-description">${exp.description}</p>`;
+                    } else if (format === 'bullets' && exp.bullets) {
+                        const bullets = exp.bullets.split('\n').filter(b => b.trim());
+                        descriptionHtml = `<ul class="resume-preview-bullets">${bullets.map(b => `<li>${b.replace(/^[-•*]\s*/, '')}</li>`).join('')}</ul>`;
+                    } else if (format === 'mixed') {
+                        if (exp.description) {
+                            descriptionHtml = `<p class="resume-preview-item-description">${exp.description}</p>`;
+                        }
+                        if (exp.bullets) {
+                            const bullets = exp.bullets.split('\n').filter(b => b.trim());
+                            descriptionHtml += `<ul class="resume-preview-bullets">${bullets.map(b => `<li>${b.replace(/^[-•*]\s*/, '')}</li>`).join('')}</ul>`;
+                        } else if (exp.description && exp.description.includes('\n')) {
+                            // Auto-detect bullets from description
+                            const lines = exp.description.split('\n');
+                            const firstLine = lines[0];
+                            const bulletLines = lines.slice(1).filter(l => l.trim().match(/^[-•*]/));
+                            if (bulletLines.length > 0) {
+                                descriptionHtml = `<p class="resume-preview-item-description">${firstLine}</p>`;
+                                descriptionHtml += `<ul class="resume-preview-bullets">${bulletLines.map(b => `<li>${b.replace(/^[-•*]\s*/, '')}</li>`).join('')}</ul>`;
+                            }
+                        }
+                    }
+                    
+                    return `
+                        <div class="resume-preview-item">
+                            <div class="resume-preview-item-header">
+                                <span class="resume-preview-item-title">${exp.position}</span>
+                                <span class="resume-preview-item-date">${exp.startDate} - ${exp.endDate || 'heute'}</span>
+                            </div>
+                            <div class="resume-preview-item-subtitle">${companyHtml}</div>
+                            ${descriptionHtml}
                         </div>
-                        <div class="resume-preview-item-subtitle">${exp.company}</div>
-                        ${exp.description ? `<p class="resume-preview-item-description">${exp.description}</p>` : ''}
-                    </div>
-                `).join('')}
+                    `;
+                }).join('')}
             </div>
         `;
     }
@@ -965,14 +1479,18 @@ class DesignEditor {
         const hasSoft = data.skills?.softSkills?.length;
         if (!hasTech && !hasSoft) return '';
         const title = section?.customTitle || 'Fähigkeiten';
+        const display = this.settings.skillDisplay || 'tags';
+        const maxLevel = this.settings.skillMaxLevel || 10;
+        const showLabel = this.settings.skillShowLabel !== false;
+        
         return `
             <div class="resume-preview-section">
                 <h2 class="resume-preview-section-title"><i class="fas fa-tools"></i> ${title}</h2>
                 ${hasTech ? data.skills.technicalSkills.map(category => `
                     <div class="resume-preview-item">
                         ${category.category ? `<div class="resume-preview-item-title">${category.category}</div>` : ''}
-                        <div class="resume-preview-skills">
-                            ${(category.skills || []).map(skill => `<span class="resume-preview-skill">${skill}</span>`).join('')}
+                        <div class="resume-preview-skills resume-skills-${display}">
+                            ${(category.skills || []).map(skill => this.renderSkillItem(skill, display, maxLevel, showLabel)).join('')}
                         </div>
                     </div>
                 `).join('') : ''}
@@ -986,6 +1504,54 @@ class DesignEditor {
                 ` : ''}
             </div>
         `;
+    }
+    
+    renderSkillItem(skill, display, maxLevel, showLabel) {
+        const name = typeof skill === 'string' ? skill : skill.name;
+        const level = typeof skill === 'object' ? (skill.level || 5) : 5;
+        const percentage = Math.round((level / maxLevel) * 100);
+        
+        switch (display) {
+            case 'bars':
+                return `
+                    <div class="resume-skill-bar-item">
+                        <div class="resume-skill-bar-header">
+                            <span class="resume-skill-name">${name}</span>
+                            ${showLabel ? `<span class="resume-skill-level">${level}/${maxLevel}</span>` : ''}
+                        </div>
+                        <div class="resume-skill-bar">
+                            <div class="resume-skill-bar-fill" style="width: ${percentage}%"></div>
+                        </div>
+                    </div>
+                `;
+            case 'dots':
+                const filledDots = Math.round((level / maxLevel) * 10);
+                const dots = Array(10).fill(0).map((_, i) => 
+                    `<span class="resume-skill-dot ${i < filledDots ? 'filled' : ''}"></span>`
+                ).join('');
+                return `
+                    <div class="resume-skill-dots-item">
+                        <span class="resume-skill-name">${name}</span>
+                        <div class="resume-skill-dots">${dots}</div>
+                    </div>
+                `;
+            case 'numeric':
+                return `
+                    <div class="resume-skill-numeric-item">
+                        <span class="resume-skill-name">${name}</span>
+                        <span class="resume-skill-numeric">${level}/${maxLevel}</span>
+                    </div>
+                `;
+            case 'percentage':
+                return `
+                    <div class="resume-skill-percentage-item">
+                        <span class="resume-skill-name">${name}</span>
+                        <span class="resume-skill-percentage">${percentage}%</span>
+                    </div>
+                `;
+            default: // tags
+                return `<span class="resume-preview-skill">${name}</span>`;
+        }
     }
 
     renderLanguagesSection(data, section) {
@@ -1023,6 +1589,48 @@ class DesignEditor {
             </div>
         `;
     }
+    
+    renderSignatureSection(data, section) {
+        if (!this.settings.showSignature) return '';
+        
+        const location = this.settings.signatureLocation || '';
+        const date = this.settings.signatureDate || '';
+        const signatureImage = this.settings.signatureImage || '';
+        const showLine = this.settings.signatureLine;
+        
+        return `
+            <div class="resume-preview-section resume-signature-section">
+                <div class="resume-signature-content">
+                    ${location || date ? `
+                        <p class="resume-signature-location-date">${location}${location && date ? ', ' : ''}${date}</p>
+                    ` : ''}
+                    ${signatureImage ? `
+                        <div class="resume-signature-image">
+                            <img src="${signatureImage}" alt="Unterschrift" style="max-height: 60px; max-width: 200px;">
+                        </div>
+                    ` : ''}
+                    ${showLine ? `<div class="resume-signature-line"></div>` : ''}
+                </div>
+            </div>
+        `;
+    }
+    
+    renderPageNumbers() {
+        const format = this.settings.pageNumberFormat || 'Seite X von Y';
+        const position = this.settings.pageNumberPosition || 'bottom-center';
+        
+        let text = format.replace('X', '1').replace('Y', '1');
+        
+        let alignStyle = 'text-align: center;';
+        if (position === 'bottom-left') alignStyle = 'text-align: left;';
+        if (position === 'bottom-right') alignStyle = 'text-align: right;';
+        
+        return `
+            <div class="resume-page-number" style="${alignStyle}">
+                ${text}
+            </div>
+        `;
+    }
 
     renderPlaceholderContent() {
         return `
@@ -1047,7 +1655,6 @@ class DesignEditor {
     // ═══════════════════════════════════════════════════════════════════════════
 
     setupAutoSave() {
-        // Auto-update preview when form changes
         const form = document.getElementById('resumeForm');
         if (form) {
             form.addEventListener('input', () => {
@@ -1101,7 +1708,6 @@ class DesignEditor {
     }
 
     exportToPDF() {
-        // Trigger print dialog with print-optimized styles
         window.print();
     }
 
@@ -1128,7 +1734,6 @@ function openDesignEditor() {
         modal.classList.add('active');
         document.body.style.overflow = 'hidden';
         
-        // Initialize if not already done
         if (!window.designEditor) {
             window.designEditor = new DesignEditor();
         } else {
@@ -1162,7 +1767,6 @@ function resetDesignSettings() {
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
-    // Check if we're on a page with the design editor
     if (document.getElementById('designEditorModal') || document.querySelector('.design-editor-container')) {
         window.designEditor = new DesignEditor();
     }

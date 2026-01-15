@@ -10,9 +10,9 @@
     <link rel="stylesheet" href="css/inline-suggestions.css?v=20260115">
     <link rel="stylesheet" href="css/job-match.css?v=20260115">
     <link rel="stylesheet" href="css/collaboration.css?v=20260115">
-    <link rel="stylesheet" href="css/design-editor.css?v=20260114designer">
+    <link rel="stylesheet" href="css/design-editor.css?v=20260115extended">
     <link rel="manifest" href="../manifest.json">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@300;400;500;600;700&family=Lato:wght@300;400;700&family=Montserrat:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700&family=Nunito:wght@300;400;500;600;700&family=Source+Sans+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@300;400;500;600;700&family=Lato:wght@300;400;700&family=Montserrat:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700&family=Nunito:wght@300;400;500;600;700&family=Source+Sans+Pro:wght@300;400;600;700&family=Source+Code+Pro:wght@400;500;600&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -362,6 +362,18 @@
                         <i class="fas fa-list"></i>
                         <span>Bereiche</span>
                     </button>
+                    <button class="design-tab" data-panel="skills">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Skills</span>
+                    </button>
+                    <button class="design-tab" data-panel="images">
+                        <i class="fas fa-image"></i>
+                        <span>Bilder</span>
+                    </button>
+                    <button class="design-tab" data-panel="extras">
+                        <i class="fas fa-signature"></i>
+                        <span>Extras</span>
+                    </button>
                     <button class="design-tab" data-panel="templates">
                         <i class="fas fa-th-large"></i>
                         <span>Vorlagen</span>
@@ -379,18 +391,26 @@
                         <div class="design-form-group">
                             <label>Font Family</label>
                             <select id="designFontFamily" class="design-select">
-                                <option value="'Inter', sans-serif">Inter (Modern)</option>
-                                <option value="'Roboto', sans-serif">Roboto</option>
-                                <option value="'Open Sans', sans-serif">Open Sans</option>
-                                <option value="'Lato', sans-serif">Lato</option>
-                                <option value="'Montserrat', sans-serif">Montserrat</option>
-                                <option value="'Source Sans Pro', sans-serif">Source Sans Pro</option>
-                                <option value="'Nunito', sans-serif">Nunito</option>
-                                <option value="Georgia, serif">Georgia (Klassisch)</option>
-                                <option value="'Times New Roman', serif">Times New Roman</option>
-                                <option value="'Merriweather', serif">Merriweather</option>
-                                <option value="Arial, sans-serif">Arial</option>
-                                <option value="'Helvetica Neue', sans-serif">Helvetica Neue</option>
+                                <optgroup label="Sans-Serif (Modern)">
+                                    <option value="'Inter', sans-serif">Inter</option>
+                                    <option value="'Roboto', sans-serif">Roboto</option>
+                                    <option value="'Open Sans', sans-serif">Open Sans</option>
+                                    <option value="'Lato', sans-serif">Lato</option>
+                                    <option value="'Montserrat', sans-serif">Montserrat</option>
+                                    <option value="'Source Sans Pro', sans-serif">Source Sans Pro</option>
+                                    <option value="'Nunito', sans-serif">Nunito</option>
+                                    <option value="Arial, sans-serif">Arial</option>
+                                    <option value="'Helvetica Neue', sans-serif">Helvetica Neue</option>
+                                </optgroup>
+                                <optgroup label="Serif (Klassisch)">
+                                    <option value="Georgia, serif">Georgia</option>
+                                    <option value="'Times New Roman', serif">Times New Roman</option>
+                                    <option value="'Merriweather', serif">Merriweather</option>
+                                    <option value="'Playfair Display', serif">Playfair Display</option>
+                                </optgroup>
+                                <optgroup label="Monospace (Tech)">
+                                    <option value="'Source Code Pro', monospace">Source Code Pro</option>
+                                </optgroup>
                             </select>
                         </div>
                     </div>
@@ -429,7 +449,7 @@
                             <label>Layout</label>
                             <select id="designColumns" class="design-select">
                                 <option value="1">Einspaltig</option>
-                                <option value="2">Zweispaltig</option>
+                                <option value="2">Zweispaltig (Sidebar)</option>
                             </select>
                         </div>
                         <div class="design-form-group">
@@ -446,6 +466,19 @@
                             </select>
                         </div>
                     </div>
+                    
+                    <div class="design-section">
+                        <div class="design-section-title"><i class="fas fa-list-ol"></i> Beschreibungsformat</div>
+                        <div class="design-form-group">
+                            <label>Berufserfahrung darstellen als</label>
+                            <select id="designExperienceFormat" class="design-select">
+                                <option value="prose">Nur Fließtext</option>
+                                <option value="bullets">Nur Stichpunkte</option>
+                                <option value="mixed" selected>Beschreibung + Stichpunkte</option>
+                            </select>
+                            <small>Wählen Sie, wie Ihre Tätigkeiten formatiert werden.</small>
+                        </div>
+                    </div>
                 </div>
                 
                 <!-- Colors Panel -->
@@ -456,7 +489,7 @@
                     </div>
                     
                     <div class="design-section">
-                        <div class="design-section-title"><i class="fas fa-eyedropper"></i> Individuelle Farben</div>
+                        <div class="design-section-title"><i class="fas fa-eyedropper"></i> Grundfarben</div>
                         <div class="design-color-group">
                             <div class="design-color-item">
                                 <label>Akzentfarbe</label>
@@ -484,6 +517,50 @@
                                 <div class="design-color-picker">
                                     <input type="color" id="designBgColor" value="#ffffff">
                                     <input type="text" id="designBgColorHex" class="design-color-hex" value="#ffffff">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="design-section">
+                        <div class="design-section-title"><i class="fas fa-fill-drip"></i> Bereichs-Hintergründe</div>
+                        <small style="display: block; margin-bottom: 0.75rem; color: var(--design-text-muted);">
+                            Färben Sie einzelne Bereiche ein (wie im Screenshot mit dunkler Sidebar)
+                        </small>
+                        <div class="design-color-group">
+                            <div class="design-color-item">
+                                <label>Sidebar / Links</label>
+                                <div class="design-color-picker">
+                                    <input type="color" id="designSidebarBg" value="#2d3748">
+                                    <input type="text" id="designSidebarBgHex" class="design-color-hex" value="#2d3748">
+                                </div>
+                            </div>
+                            <div class="design-color-item">
+                                <label>Sidebar Text</label>
+                                <div class="design-color-picker">
+                                    <input type="color" id="designSidebarText" value="#ffffff">
+                                    <input type="text" id="designSidebarTextHex" class="design-color-hex" value="#ffffff">
+                                </div>
+                            </div>
+                            <div class="design-color-item">
+                                <label>Header-Bereich</label>
+                                <div class="design-color-picker">
+                                    <input type="color" id="designHeaderBg" value="#ffffff">
+                                    <input type="text" id="designHeaderBgHex" class="design-color-hex" value="#ffffff">
+                                </div>
+                            </div>
+                            <div class="design-color-item">
+                                <label>Linke Spalte</label>
+                                <div class="design-color-picker">
+                                    <input type="color" id="designLeftColumnBg" value="#ffffff">
+                                    <input type="text" id="designLeftColumnBgHex" class="design-color-hex" value="#ffffff">
+                                </div>
+                            </div>
+                            <div class="design-color-item">
+                                <label>Rechte Spalte</label>
+                                <div class="design-color-picker">
+                                    <input type="color" id="designRightColumnBg" value="#ffffff">
+                                    <input type="text" id="designRightColumnBgHex" class="design-color-hex" value="#ffffff">
                                 </div>
                             </div>
                         </div>
@@ -564,6 +641,186 @@
                         </p>
                         <div id="sectionsList" class="design-sections-list">
                             <!-- Wird dynamisch gefüllt -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Skills Panel -->
+                <div id="panel-skills" class="design-panel">
+                    <div class="design-section">
+                        <div class="design-section-title"><i class="fas fa-chart-bar"></i> Skill-Darstellung</div>
+                        <div class="design-form-group">
+                            <label>Anzeige-Stil</label>
+                            <select id="designSkillDisplay" class="design-select">
+                                <option value="tags">Tags (Badges)</option>
+                                <option value="bars">Balken (wie im Screenshot)</option>
+                                <option value="dots">Punkte (●●●●○○)</option>
+                                <option value="numeric">Numerisch (8/10)</option>
+                                <option value="percentage">Prozent (80%)</option>
+                            </select>
+                            <small>Wählen Sie, wie Ihre Fähigkeiten visualisiert werden.</small>
+                        </div>
+                        <div class="design-form-group">
+                            <label>Maximaler Level</label>
+                            <select id="designSkillMaxLevel" class="design-select">
+                                <option value="5">5 (1-5)</option>
+                                <option value="10" selected>10 (1-10)</option>
+                                <option value="100">100 (Prozent)</option>
+                            </select>
+                        </div>
+                        <div class="design-form-group">
+                            <label class="design-toggle">
+                                <input type="checkbox" id="designSkillShowLabel" checked>
+                                <span class="design-toggle-label">Level-Wert anzeigen</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="design-section">
+                        <div class="design-section-title"><i class="fas fa-info-circle"></i> Hinweis</div>
+                        <p style="font-size: 0.75rem; color: var(--design-text-muted);">
+                            Um Skill-Level zu setzen, bearbeiten Sie Ihre Fähigkeiten im Formular. 
+                            Jeder Skill kann einen Level von 1-10 haben.
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Images Panel -->
+                <div id="panel-images" class="design-panel">
+                    <div class="design-section">
+                        <div class="design-section-title"><i class="fas fa-user-circle"></i> Profilbild</div>
+                        <div class="design-form-group">
+                            <label class="design-toggle">
+                                <input type="checkbox" id="designShowProfileImage">
+                                <span class="design-toggle-label">Profilbild anzeigen</span>
+                            </label>
+                        </div>
+                        <div id="profileImageOptions" class="design-options-container" style="display: none;">
+                            <div class="design-form-group">
+                                <label>Bild hochladen</label>
+                                <div class="design-file-upload">
+                                    <label class="design-file-upload-btn">
+                                        <i class="fas fa-upload"></i> Bild wählen
+                                        <input type="file" id="profileImageUpload" accept="image/*">
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="design-form-group">
+                                <button type="button" id="loadProfileImageBtn" class="design-action-btn" style="width: 100%;">
+                                    <i class="fas fa-cloud-download-alt"></i> Aus Profil laden
+                                </button>
+                            </div>
+                            <div class="design-form-group">
+                                <label>Form</label>
+                                <select id="designProfileImageShape" class="design-select">
+                                    <option value="circle">Rund</option>
+                                    <option value="square">Quadratisch</option>
+                                    <option value="rounded">Abgerundet</option>
+                                </select>
+                            </div>
+                            <div class="design-form-group">
+                                <label>Größe</label>
+                                <select id="designProfileImageSize" class="design-select">
+                                    <option value="small">Klein (80px)</option>
+                                    <option value="medium" selected>Mittel (120px)</option>
+                                    <option value="large">Groß (160px)</option>
+                                </select>
+                            </div>
+                            <div class="design-form-group">
+                                <label>Position</label>
+                                <select id="designProfileImagePosition" class="design-select">
+                                    <option value="left">Links</option>
+                                    <option value="right" selected>Rechts</option>
+                                    <option value="center">Zentriert</option>
+                                </select>
+                            </div>
+                            <div class="design-form-group">
+                                <label>Rahmen</label>
+                                <select id="designProfileImageBorder" class="design-select">
+                                    <option value="none">Kein Rahmen</option>
+                                    <option value="thin">Dünner Rahmen</option>
+                                    <option value="accent">Akzentfarbe</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="design-section">
+                        <div class="design-section-title"><i class="fas fa-building"></i> Firmenlogos</div>
+                        <p style="font-size: 0.75rem; color: var(--design-text-muted); margin-bottom: 0.75rem;">
+                            Firmenlogos können bei jeder Berufserfahrung im Formular hochgeladen werden.
+                            Sie werden neben dem Firmennamen angezeigt.
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Extras Panel (Signature, Page Numbers) -->
+                <div id="panel-extras" class="design-panel">
+                    <div class="design-section">
+                        <div class="design-section-title"><i class="fas fa-signature"></i> Unterschrift</div>
+                        <div class="design-form-group">
+                            <label class="design-toggle">
+                                <input type="checkbox" id="designShowSignature">
+                                <span class="design-toggle-label">Unterschrift anzeigen</span>
+                            </label>
+                        </div>
+                        <div id="signatureOptions" class="design-options-container" style="display: none;">
+                            <div class="design-form-group">
+                                <label>Unterschrift hochladen (PNG empfohlen)</label>
+                                <div class="design-file-upload">
+                                    <label class="design-file-upload-btn">
+                                        <i class="fas fa-signature"></i> Unterschrift wählen
+                                        <input type="file" id="signatureUpload" accept="image/*">
+                                    </label>
+                                </div>
+                                <div id="signaturePreview" class="design-image-preview" style="margin-top: 0.5rem;"></div>
+                            </div>
+                            <div class="design-form-group">
+                                <label>Ort</label>
+                                <input type="text" id="designSignatureLocation" class="design-select" placeholder="z.B. München">
+                            </div>
+                            <div class="design-form-group">
+                                <label>Datum</label>
+                                <div style="display: flex; gap: 0.5rem;">
+                                    <input type="text" id="designSignatureDate" class="design-select" placeholder="z.B. 15. Januar 2026" style="flex: 1;">
+                                    <button type="button" id="autoFillDateBtn" class="design-action-btn" title="Heutiges Datum">
+                                        <i class="fas fa-calendar-day"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="design-form-group">
+                                <label class="design-toggle">
+                                    <input type="checkbox" id="designSignatureLine" checked>
+                                    <span class="design-toggle-label">Linie unter Unterschrift</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="design-section">
+                        <div class="design-section-title"><i class="fas fa-list-ol"></i> Seitenzahlen</div>
+                        <div class="design-form-group">
+                            <label class="design-toggle">
+                                <input type="checkbox" id="designShowPageNumbers">
+                                <span class="design-toggle-label">Seitenzahlen anzeigen</span>
+                            </label>
+                        </div>
+                        <div id="pageNumberOptions" class="design-options-container" style="display: none;">
+                            <div class="design-form-group">
+                                <label>Position</label>
+                                <select id="designPageNumberPosition" class="design-select">
+                                    <option value="bottom-left">Unten links</option>
+                                    <option value="bottom-center" selected>Unten mittig</option>
+                                    <option value="bottom-right">Unten rechts</option>
+                                </select>
+                            </div>
+                            <div class="design-form-group">
+                                <label>Format</label>
+                                <select id="designPageNumberFormat" class="design-select">
+                                    <option value="Seite X von Y">Seite 1 von 2</option>
+                                    <option value="X/Y">1/2</option>
+                                    <option value="X">1</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -700,7 +957,7 @@
     <script src="../js/global-api-manager.js?v=20260112cloud"></script>
     <script src="../js/cloud-data-service.js?v=20260114c"></script>
     <script src="js/resume-editor.js?v=20260114ai"></script>
-    <script src="js/design-editor.js?v=20260114designer"></script>
+    <script src="js/design-editor.js?v=20260115extended"></script>
     <script src="js/inline-ai-coach.js?v=20260115"></script>
     <script src="js/job-match-analyzer.js?v=20260115"></script>
     <script src="js/industry-templates.js?v=20260115"></script>
