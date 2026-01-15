@@ -1825,6 +1825,11 @@ async function loadCoverLetters() {
         
         console.log(`✅ ${coverLetters.length} Anschreiben geladen`);
         
+        // Stats aktualisieren
+        if (typeof updateDashboardStats === 'function') {
+            await updateDashboardStats();
+        }
+        
     } catch (error) {
         console.error('Fehler beim Laden der Anschreiben:', error);
     }
@@ -2486,7 +2491,136 @@ function initPortfolioTab() {
             }
         });
     });
+    
+    // Design-Controls initialisieren
+    setupPortfolioDesignControls();
+    
+    // Lade Design-Einstellungen aus Anschreiben/Lebenslauf wenn vorhanden
+    loadDesignFromEditors();
 }
+
+/**
+ * Initialisiert die Design-Controls für die Bewerbungsmappe
+ */
+function setupPortfolioDesignControls() {
+    // Schriftgröße
+    const fontSizeSlider = document.getElementById('fontSize');
+    const fontSizeValue = document.getElementById('fontSizeValue');
+    if (fontSizeSlider && fontSizeValue) {
+        fontSizeSlider.addEventListener('input', (e) => {
+            fontSizeValue.textContent = `${e.target.value}pt`;
+        });
+    }
+    
+    // Zeilenabstand
+    const lineHeightSlider = document.getElementById('lineHeight');
+    const lineHeightValue = document.getElementById('lineHeightValue');
+    if (lineHeightSlider && lineHeightValue) {
+        lineHeightSlider.addEventListener('input', (e) => {
+            lineHeightValue.textContent = e.target.value;
+        });
+    }
+    
+    // Seitenrand
+    const pageMarginSlider = document.getElementById('pageMargin');
+    const pageMarginValue = document.getElementById('pageMarginValue');
+    if (pageMarginSlider && pageMarginValue) {
+        pageMarginSlider.addEventListener('input', (e) => {
+            pageMarginValue.textContent = `${e.target.value}mm`;
+        });
+    }
+    
+    // Absatz-Abstand
+    const paragraphSpacingSlider = document.getElementById('paragraphSpacing');
+    const paragraphSpacingValue = document.getElementById('paragraphSpacingValue');
+    if (paragraphSpacingSlider && paragraphSpacingValue) {
+        paragraphSpacingSlider.addEventListener('input', (e) => {
+            paragraphSpacingValue.textContent = `${e.target.value}px`;
+        });
+    }
+}
+
+/**
+ * Lädt Design-Einstellungen aus Anschreiben- und Lebenslauf-Designern
+ */
+window.loadDesignFromEditors = function() {
+    console.log('🎨 Lade Design-Einstellungen aus Editoren...');
+    
+    // Lade aus Anschreiben-Designer
+    const coverLetterDesign = localStorage.getItem('cover_letter_design_settings');
+    if (coverLetterDesign) {
+        try {
+            const design = JSON.parse(coverLetterDesign);
+            if (design.color) document.getElementById('accentColor').value = design.color;
+            if (design.font) document.getElementById('fontFamily').value = design.font;
+            if (design.fontSize) {
+                document.getElementById('fontSize').value = design.fontSize;
+                document.getElementById('fontSizeValue').textContent = `${design.fontSize}pt`;
+            }
+            if (design.lineHeight) {
+                document.getElementById('lineHeight').value = design.lineHeight;
+                document.getElementById('lineHeightValue').textContent = design.lineHeight;
+            }
+            if (design.margin) {
+                document.getElementById('pageMargin').value = design.margin;
+                document.getElementById('pageMarginValue').textContent = `${design.margin}mm`;
+            }
+            if (design.paragraphSpacing) {
+                document.getElementById('paragraphSpacing').value = design.paragraphSpacing;
+                document.getElementById('paragraphSpacingValue').textContent = `${design.paragraphSpacing}px`;
+            }
+            console.log('✅ Design vom Anschreiben-Designer geladen');
+        } catch (e) {
+            console.warn('Fehler beim Laden des Anschreiben-Designs:', e);
+        }
+    }
+    
+    // Lade aus Lebenslauf-Designer
+    const resumeDesign = localStorage.getItem('resume_design_settings');
+    if (resumeDesign) {
+        try {
+            const design = JSON.parse(resumeDesign);
+            // Überschreibe nur wenn nicht bereits vom Anschreiben-Designer gesetzt
+            if (design.accentColor && !coverLetterDesign) {
+                document.getElementById('accentColor').value = design.accentColor;
+            }
+            if (design.textColor) {
+                document.getElementById('textColor').value = design.textColor;
+            }
+            if (design.backgroundColor) {
+                document.getElementById('backgroundColor').value = design.backgroundColor;
+            }
+            if (design.fontFamily && !coverLetterDesign) {
+                document.getElementById('fontFamily').value = design.fontFamily.replace(/'/g, '');
+            }
+            if (design.fontSize && !coverLetterDesign) {
+                document.getElementById('fontSize').value = design.fontSize;
+                document.getElementById('fontSizeValue').textContent = `${design.fontSize}pt`;
+            }
+            if (design.lineHeight && !coverLetterDesign) {
+                document.getElementById('lineHeight').value = design.lineHeight;
+                document.getElementById('lineHeightValue').textContent = design.lineHeight;
+            }
+            if (design.marginTop && !coverLetterDesign) {
+                const avgMargin = (parseInt(design.marginTop) + parseInt(design.marginBottom || design.marginTop)) / 2;
+                document.getElementById('pageMargin').value = Math.round(avgMargin);
+                document.getElementById('pageMarginValue').textContent = `${Math.round(avgMargin)}mm`;
+            }
+            if (design.paragraphGap && !coverLetterDesign) {
+                document.getElementById('paragraphSpacing').value = design.paragraphGap;
+                document.getElementById('paragraphSpacingValue').textContent = `${design.paragraphGap}px`;
+            }
+            if (design.showPageNumbers !== undefined) {
+                document.getElementById('showPageNumbers').checked = design.showPageNumbers;
+            }
+            console.log('✅ Design vom Lebenslauf-Designer geladen');
+        } catch (e) {
+            console.warn('Fehler beim Laden des Lebenslauf-Designs:', e);
+        }
+    }
+    
+    showToast('Design-Einstellungen geladen', 'success');
+};
 
 /**
  * Lädt verfügbare Dokumente für die Auswahlmenüs
@@ -2571,16 +2705,25 @@ async function previewPortfolio() {
     // Sammle alle Daten
     const data = await collectPortfolioData(settings);
     
-    // Template und Farbe
+    // Template und Design-Einstellungen
     const template = localStorage.getItem('portfolio_template') || 'classic';
-    const accentColor = document.getElementById('accentColor')?.value || '#2563eb';
-    const fontFamily = document.getElementById('fontFamily')?.value || 'Inter';
+    const designSettings = getPortfolioDesignSettings();
     
-    // Generiere HTML-Vorschau
-    const html = generatePortfolioHTML(data, template, accentColor, fontFamily);
+    // Generiere HTML-Vorschau mit allen Design-Einstellungen
+    const html = generatePortfolioHTML(data, template, designSettings);
+    
+    // Wende Design-Einstellungen auf Container an
+    const style = `
+        font-family: ${designSettings.fontFamily}, sans-serif;
+        font-size: ${designSettings.fontSize}pt;
+        line-height: ${designSettings.lineHeight};
+        color: ${designSettings.textColor};
+        background: ${designSettings.backgroundColor};
+        padding: ${designSettings.pageMargin}mm;
+    `;
     
     previewContainer.innerHTML = `
-        <div class="preview-document" style="font-family: ${fontFamily}, sans-serif;">
+        <div class="preview-document" style="${style}">
             ${html}
         </div>
     `;
@@ -2609,15 +2752,33 @@ async function collectPortfolioData(settings) {
         certificates: []
     };
     
-    // Anschreiben
+    // Anschreiben - CLOUD FIRST
     if (settings.includeCoverLetter && settings.coverLetterId) {
-        const coverLetters = JSON.parse(localStorage.getItem('cover_letter_drafts') || '[]');
+        let coverLetters = [];
+        if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
+            try {
+                coverLetters = await window.cloudDataService.getCoverLetters();
+            } catch (e) {
+                coverLetters = JSON.parse(localStorage.getItem('cover_letter_drafts') || '[]');
+            }
+        } else {
+            coverLetters = JSON.parse(localStorage.getItem('cover_letter_drafts') || '[]');
+        }
         data.coverLetter = coverLetters.find(cl => cl.id === settings.coverLetterId);
     }
     
-    // Lebenslauf
+    // Lebenslauf - CLOUD FIRST
     if (settings.includeResume && settings.resumeId) {
-        const resumes = JSON.parse(localStorage.getItem('user_resumes') || '[]');
+        let resumes = [];
+        if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
+            try {
+                resumes = await window.cloudDataService.getResumes();
+            } catch (e) {
+                resumes = JSON.parse(localStorage.getItem('user_resumes') || '[]');
+            }
+        } else {
+            resumes = JSON.parse(localStorage.getItem('user_resumes') || '[]');
+        }
         data.resume = resumes.find(r => r.id === settings.resumeId);
     }
     
@@ -2627,63 +2788,102 @@ async function collectPortfolioData(settings) {
         data.photo = photos.find(p => p.id === settings.photoId);
     }
     
-    // Zeugnisse
+    // Zeugnisse - CLOUD FIRST
     if (settings.includeCertificates && settings.certificateIds.length > 0) {
-        const documents = JSON.parse(localStorage.getItem('user_certificates') || '[]');
+        let documents = [];
+        if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
+            try {
+                documents = await window.cloudDataService.getDocuments();
+            } catch (e) {
+                documents = JSON.parse(localStorage.getItem('user_certificates') || '[]');
+            }
+        } else {
+            documents = JSON.parse(localStorage.getItem('user_certificates') || '[]');
+        }
         data.certificates = documents.filter(d => settings.certificateIds.includes(d.id));
     }
     
     return data;
 }
 
-function generatePortfolioHTML(data, template, accentColor, fontFamily) {
+/**
+ * Sammelt alle Design-Einstellungen aus dem Portfolio-Design-Panel
+ */
+function getPortfolioDesignSettings() {
+    return {
+        template: localStorage.getItem('portfolio_template') || 'classic',
+        accentColor: document.getElementById('accentColor')?.value || '#2563eb',
+        textColor: document.getElementById('textColor')?.value || '#1e293b',
+        backgroundColor: document.getElementById('backgroundColor')?.value || '#ffffff',
+        fontFamily: document.getElementById('fontFamily')?.value || 'Inter',
+        fontSize: parseFloat(document.getElementById('fontSize')?.value || 11),
+        lineHeight: parseFloat(document.getElementById('lineHeight')?.value || 1.6),
+        pageMargin: parseInt(document.getElementById('pageMargin')?.value || 25),
+        paragraphSpacing: parseInt(document.getElementById('paragraphSpacing')?.value || 10),
+        showPageNumbers: document.getElementById('showPageNumbers')?.checked || false,
+        unifiedDesign: document.getElementById('unifiedDesign')?.checked !== false
+    };
+}
+
+function generatePortfolioHTML(data, template, designSettings) {
+    const { accentColor, textColor, fontSize, lineHeight, paragraphSpacing, showPageNumbers } = designSettings;
     let html = '';
+    let pageNumber = 1;
     
     // Anschreiben-Seite
     if (data.coverLetter) {
+        const pageNumberHTML = showPageNumbers ? `<div style="text-align: center; margin-top: 2rem; color: #999; font-size: 0.8rem;">Seite ${pageNumber}</div>` : '';
         html += `
-            <div class="preview-page" style="border-bottom: 1px dashed #ccc;">
-                <h3 style="color: ${accentColor}; margin-bottom: 1rem;">Anschreiben</h3>
-                <div style="white-space: pre-wrap; font-size: 0.9rem; line-height: 1.6;">
+            <div class="preview-page portfolio-page" style="border-bottom: 1px dashed #ccc; margin-bottom: ${paragraphSpacing}px; padding-bottom: ${paragraphSpacing}px;">
+                <h3 style="color: ${accentColor}; margin-bottom: 1rem; font-size: ${fontSize + 2}pt;">Anschreiben</h3>
+                <div style="white-space: pre-wrap; font-size: ${fontSize}pt; line-height: ${lineHeight}; color: ${textColor};">
                     ${data.coverLetter.content || ''}
                 </div>
+                ${pageNumberHTML}
             </div>
         `;
+        pageNumber++;
     }
     
     // Lebenslauf-Seite
     if (data.resume) {
-        const resumeHTML = generateResumePreview(data.resume, data.photo, template, accentColor);
+        const resumeHTML = generateResumePreview(data.resume, data.photo, template, designSettings);
+        const pageNumberHTML = showPageNumbers ? `<div style="text-align: center; margin-top: 2rem; color: #999; font-size: 0.8rem;">Seite ${pageNumber}</div>` : '';
         html += `
-            <div class="preview-page" style="border-bottom: 1px dashed #ccc;">
+            <div class="preview-page portfolio-page" style="border-bottom: 1px dashed #ccc; margin-bottom: ${paragraphSpacing}px; padding-bottom: ${paragraphSpacing}px;">
                 ${resumeHTML}
+                ${pageNumberHTML}
             </div>
         `;
+        pageNumber++;
     }
     
     // Zeugnisse-Info
     if (data.certificates.length > 0) {
+        const pageNumberHTML = showPageNumbers ? `<div style="text-align: center; margin-top: 2rem; color: #999; font-size: 0.8rem;">Seite ${pageNumber}</div>` : '';
         html += `
-            <div class="preview-page">
-                <h3 style="color: ${accentColor}; margin-bottom: 1rem;">Anlagen</h3>
-                <ul style="padding-left: 1.5rem;">
-                    ${data.certificates.map(c => `<li>${c.name || c.fileName || 'Dokument'}</li>`).join('')}
+            <div class="preview-page portfolio-page">
+                <h3 style="color: ${accentColor}; margin-bottom: 1rem; font-size: ${fontSize + 2}pt;">Anlagen</h3>
+                <ul style="padding-left: 1.5rem; color: ${textColor}; font-size: ${fontSize}pt; line-height: ${lineHeight};">
+                    ${data.certificates.map(c => `<li style="margin-bottom: ${paragraphSpacing / 2}px;">${c.name || c.fileName || 'Dokument'}</li>`).join('')}
                 </ul>
-                <p style="color: #666; font-size: 0.85rem; margin-top: 1rem;">
+                <p style="color: #666; font-size: ${fontSize - 1}pt; margin-top: 1rem;">
                     Die Zeugnisse werden dem PDF angehängt.
                 </p>
+                ${pageNumberHTML}
             </div>
         `;
     }
     
     if (!html) {
-        html = '<div class="preview-page" style="text-align: center; padding: 3rem;"><p>Bitte wählen Sie mindestens ein Dokument aus.</p></div>';
+        html = `<div class="preview-page" style="text-align: center; padding: 3rem; color: ${textColor};"><p>Bitte wählen Sie mindestens ein Dokument aus.</p></div>`;
     }
     
     return html;
 }
 
-function generateResumePreview(resume, photo, template, accentColor) {
+function generateResumePreview(resume, photo, template, designSettings) {
+    const { accentColor, textColor, fontSize, lineHeight, paragraphSpacing } = designSettings;
     const personal = resume.personalInfo || {};
     const name = `${personal.firstName || ''} ${personal.lastName || ''}`.trim() || 'Ihr Name';
     
@@ -2694,17 +2894,17 @@ function generateResumePreview(resume, photo, template, accentColor) {
     }
     
     return `
-        <div style="display: flex; gap: 1.5rem; margin-bottom: 1.5rem;">
+        <div style="display: flex; gap: 1.5rem; margin-bottom: ${paragraphSpacing}px;">
             ${photoHTML}
             <div>
-                <h2 style="color: ${accentColor}; margin-bottom: 0.5rem;">${name}</h2>
-                <p style="color: #666;">${personal.title || ''}</p>
-                <p style="color: #888; font-size: 0.85rem;">${personal.email || ''}</p>
-                <p style="color: #888; font-size: 0.85rem;">${personal.phone || ''}</p>
+                <h2 style="color: ${accentColor}; margin-bottom: 0.5rem; font-size: ${fontSize + 4}pt;">${name}</h2>
+                <p style="color: ${textColor}; opacity: 0.8; font-size: ${fontSize}pt; line-height: ${lineHeight};">${personal.title || ''}</p>
+                <p style="color: ${textColor}; opacity: 0.7; font-size: ${fontSize - 1}pt; line-height: ${lineHeight};">${personal.email || ''}</p>
+                <p style="color: ${textColor}; opacity: 0.7; font-size: ${fontSize - 1}pt; line-height: ${lineHeight};">${personal.phone || ''}</p>
             </div>
         </div>
-        ${personal.summary ? `<div style="margin-bottom: 1rem;"><strong style="color: ${accentColor};">Profil</strong><p style="font-size: 0.9rem;">${personal.summary}</p></div>` : ''}
-        <p style="color: #999; font-size: 0.8rem; text-align: center; margin-top: 2rem;">
+        ${personal.summary ? `<div style="margin-bottom: ${paragraphSpacing}px;"><strong style="color: ${accentColor}; font-size: ${fontSize + 1}pt;">Profil</strong><p style="font-size: ${fontSize}pt; line-height: ${lineHeight}; color: ${textColor}; margin-top: 0.5rem;">${personal.summary}</p></div>` : ''}
+        <p style="color: ${textColor}; opacity: 0.6; font-size: ${fontSize - 2}pt; text-align: center; margin-top: 2rem;">
             Vollständiger Lebenslauf wird im PDF generiert...
         </p>
     `;
