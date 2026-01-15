@@ -4,14 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Interview-Vorbereitung - Bewerbungsmanager</title>
-    <meta name="description" content="Bereiten Sie sich optimal auf Interviews vor. KI-generierte Fragen, Musterantworten und Unternehmens-Recherche.">
-    
-    <!-- CSS -->
     <link rel="stylesheet" href="../styles.css">
     <link rel="stylesheet" href="css/applications-main.css">
-    <link rel="stylesheet" href="css/applications-workflow.css">
-    
-    <!-- Fonts -->
+    <link rel="stylesheet" href="css/interview-prep.css?v=20260115">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -24,7 +19,6 @@
                 <span class="nav-title">Manuel Weiss</span>
             </div>
             
-            <!-- Mobile Hamburger Button -->
             <button class="mobile-hamburger" id="mobileHamburger" aria-label="Menü öffnen">
                 <span class="hamburger-line"></span>
                 <span class="hamburger-line"></span>
@@ -33,541 +27,172 @@
             
             <div class="nav-menu">
                 <a href="../index.html" class="nav-link">Start</a>
-                <a href="../persoenlichkeitsentwicklung-uebersicht.html" class="nav-link">Persönlichkeitsentwicklung</a>
                 <a href="index.html" class="nav-link active">Bewerbungsmanager</a>
-                <a href="../website-services.html" class="nav-link">Services</a>
-            </div>
-            
-            <div class="auth-section">
-                <button id="realAuthButton" class="btn-auth">
-                    <i class="fas fa-user"></i>
-                    Anmelden
-                </button>
-                <div id="realUserMenu" class="user-menu" style="display: none;">
-                    <div class="user-info">
-                        <img id="userAvatarImg" src="../images/manuel-weiss-portrait.jpg" alt="User Avatar" class="user-avatar-img">
-                        <span id="userName">Benutzer</span>
-                    </div>
-                    <a href="../user-profile.html#applications" class="user-menu-link">
-                        <i class="fas fa-chart-line"></i>
-                        Dashboard
-                    </a>
-                    <a href="#" class="user-menu-link" onclick="window.realUserAuth.logout()">
-                        <i class="fas fa-sign-out-alt"></i>
-                        Abmelden
-                    </a>
-                </div>
+                <a href="../user-profile.html" class="nav-link">Profil</a>
             </div>
         </div>
     </nav>
-    
-    <!-- Mobile Menu Fullscreen -->
-    <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
-    <div class="mobile-menu-fullscreen" id="mobileMenuFullscreen">
-        <div class="mobile-menu-content">
-            <a href="../index.html" class="mobile-menu-link"><i class="fas fa-home"></i> Start</a>
-            <a href="../persoenlichkeitsentwicklung-uebersicht.html" class="mobile-menu-link"><i class="fas fa-brain"></i> Persönlichkeitsentwicklung</a>
-            <a href="index.html" class="mobile-menu-link active"><i class="fas fa-file-alt"></i> Bewerbungsmanager</a>
-            <a href="../website-services.html" class="mobile-menu-link"><i class="fas fa-cogs"></i> Services</a>
-            <div class="mobile-menu-divider"></div>
-            <button id="mobileAuthButton" class="mobile-auth-btn"><i class="fas fa-user"></i> <span>Anmelden</span></button>
-        </div>
-    </div>
-
-    <!-- Progress Bar -->
-    <div class="progress-container">
-        <div class="progress-bar">
-            <div class="progress-fill" style="width: 100%"></div>
-        </div>
-        <div class="progress-text">Schritt 5 von 5: Interview-Vorbereitung</div>
-    </div>
 
     <!-- Main Content -->
-    <main class="main-content">
-        <div class="container">
-            <div class="workflow-header">
-                <h1 class="workflow-title">Interview-Vorbereitung</h1>
-                <p class="workflow-subtitle">
-                    Bereiten Sie sich optimal auf Ihr Interview vor. KI-generierte Fragen, Musterantworten und Unternehmens-Recherche.
-                </p>
+    <main class="interview-prep-container">
+        <!-- Header -->
+        <div class="interview-header">
+            <a href="dashboard.html" class="btn-back">
+                <i class="fas fa-arrow-left"></i> Zurück
+            </a>
+            <div class="header-title">
+                <h1><i class="fas fa-comments"></i> Interview-Vorbereitung</h1>
+                <p>KI-gestützte Vorbereitung auf Ihr Vorstellungsgespräch</p>
             </div>
+        </div>
 
-            <!-- Interview Setup -->
-            <section class="form-section">
-                <div class="section-header">
-                    <h2 class="section-title">
-                        <i class="fas fa-cog"></i>
-                        Interview-Einstellungen
-                    </h2>
-                    <p class="section-description">Konfigurieren Sie Ihre Interview-Vorbereitung</p>
-                </div>
-                
-                <form id="interviewSetupForm" class="interview-form">
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="interviewCompany" class="form-label">Unternehmen *</label>
-                            <input type="text" id="interviewCompany" name="company" class="form-input" placeholder="z.B. Tech Corp GmbH" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="interviewPosition" class="form-label">Position *</label>
-                            <input type="text" id="interviewPosition" name="position" class="form-input" placeholder="z.B. Senior Developer" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="interviewType" class="form-label">Interview-Typ</label>
-                            <select id="interviewType" name="type" class="form-select">
-                                <option value="technical">Technisches Interview</option>
-                                <option value="behavioral">Verhaltens-Interview</option>
-                                <option value="case">Case-Study Interview</option>
-                                <option value="panel">Panel-Interview</option>
-                                <option value="phone">Telefon-Interview</option>
-                                <option value="video">Video-Interview</option>
-                                <option value="mixed">Gemischtes Interview</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="interviewLevel" class="form-label">Erfahrungslevel</label>
-                            <select id="interviewLevel" name="level" class="form-select">
-                                <option value="junior">Junior (0-2 Jahre)</option>
-                                <option value="mid">Mid-Level (2-5 Jahre)</option>
-                                <option value="senior">Senior (5+ Jahre)</option>
-                                <option value="lead">Lead/Manager</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="interviewIndustry" class="form-label">Branche</label>
-                            <select id="interviewIndustry" name="industry" class="form-select">
-                                <option value="it">IT & Software</option>
-                                <option value="finance">Finanzwesen</option>
-                                <option value="healthcare">Gesundheitswesen</option>
-                                <option value="education">Bildung</option>
-                                <option value="marketing">Marketing</option>
-                                <option value="consulting">Beratung</option>
-                                <option value="manufacturing">Produktion</option>
-                                <option value="retail">Einzelhandel</option>
-                                <option value="other">Sonstige</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="interviewDuration" class="form-label">Interview-Dauer</label>
-                            <select id="interviewDuration" name="duration" class="form-select">
-                                <option value="30">30 Minuten</option>
-                                <option value="45">45 Minuten</option>
-                                <option value="60">1 Stunde</option>
-                                <option value="90">1,5 Stunden</option>
-                                <option value="120">2 Stunden</option>
-                                <option value="180">3+ Stunden</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-robot"></i>
-                            Fragen generieren
-                        </button>
-                    </div>
-                </form>
-            </section>
-
-            <!-- Generated Questions -->
-            <section id="questionsSection" class="form-section" style="display: none;">
-                <div class="section-header">
-                    <h2 class="section-title">
-                        <i class="fas fa-question-circle"></i>
-                        Generierte Interview-Fragen
-                    </h2>
-                    <p class="section-description">Üben Sie mit diesen personalisierten Fragen</p>
-                </div>
-                
-                <div class="questions-container" id="questionsContainer">
-                    <!-- Questions will be generated here -->
-                </div>
-                
-                <div class="questions-actions">
-                    <button type="button" class="btn btn-outline" onclick="regenerateQuestions()">
-                        <i class="fas fa-redo"></i>
-                        Neue Fragen generieren
-                    </button>
-                    <button type="button" class="btn btn-primary" onclick="startPractice()">
-                        <i class="fas fa-play"></i>
-                        Übungsmodus starten
-                    </button>
-                </div>
-            </section>
-
-            <!-- Practice Mode -->
-            <section id="practiceSection" class="form-section" style="display: none;">
-                <div class="section-header">
-                    <h2 class="section-title">
-                        <i class="fas fa-stopwatch"></i>
-                        Übungsmodus
-                    </h2>
-                    <p class="section-description">Beantworten Sie die Fragen unter Zeitdruck</p>
-                </div>
-                
-                <div class="practice-container">
-                    <div class="practice-header">
-                        <div class="question-counter">
-                            <span id="currentQuestion">1</span> von <span id="totalQuestions">10</span>
-                        </div>
-                        <div class="timer">
-                            <i class="fas fa-clock"></i>
-                            <span id="timerDisplay">05:00</span>
-                        </div>
-                    </div>
-                    
-                    <div class="practice-question">
-                        <h3 id="practiceQuestionText">Frage wird geladen...</h3>
-                        <div class="question-category" id="practiceQuestionCategory">Kategorie</div>
-                    </div>
-                    
-                    <div class="practice-answer">
-                        <textarea id="practiceAnswer" class="form-textarea" rows="6" placeholder="Ihre Antwort hier..."></textarea>
-                        <div class="answer-tips" id="answerTips">
-                            <!-- Tips will be shown here -->
-                        </div>
-                    </div>
-                    
-                    <div class="practice-actions">
-                        <button type="button" class="btn btn-outline" onclick="skipQuestion()">
-                            <i class="fas fa-forward"></i>
-                            Überspringen
-                        </button>
-                        <button type="button" class="btn btn-primary" onclick="nextQuestion()">
-                            <i class="fas fa-arrow-right"></i>
-                            Nächste Frage
-                        </button>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Company Research -->
-            <section class="form-section">
-                <div class="section-header">
-                    <h2 class="section-title">
-                        <i class="fas fa-search"></i>
-                        Unternehmens-Recherche
-                    </h2>
-                    <p class="section-description">Wichtige Informationen über das Unternehmen</p>
-                </div>
-                
-                <div class="research-container">
-                    <div class="research-item">
-                        <h3 class="research-title">Unternehmenswerte</h3>
-                        <div class="research-content" id="companyValues">
-                            <div class="loading-placeholder">
-                                <i class="fas fa-spinner fa-spin"></i>
-                                <span>Lade Unternehmensdaten...</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="research-item">
-                        <h3 class="research-title">Aktuelle Projekte</h3>
-                        <div class="research-content" id="companyProjects">
-                            <div class="loading-placeholder">
-                                <i class="fas fa-spinner fa-spin"></i>
-                                <span>Lade Projektdaten...</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="research-item">
-                        <h3 class="research-title">Unternehmenskultur</h3>
-                        <div class="research-content" id="companyCulture">
-                            <div class="loading-placeholder">
-                                <i class="fas fa-spinner fa-spin"></i>
-                                <span>Lade Kulturdaten...</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="research-item">
-                        <h3 class="research-title">Interview-Tipps</h3>
-                        <div class="research-content" id="interviewTips">
-                            <div class="loading-placeholder">
-                                <i class="fas fa-spinner fa-spin"></i>
-                                <span>Generiere Tipps...</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- STAR Method Guide -->
-            <section class="form-section">
-                <div class="section-header">
-                    <h2 class="section-title">
-                        <i class="fas fa-star"></i>
-                        STAR-Methode Guide
-                    </h2>
-                    <p class="section-description">Strukturierte Antworten mit der STAR-Methode</p>
-                </div>
-                
-                <div class="star-guide">
-                    <div class="star-step">
-                        <div class="step-icon">
-                            <span class="step-letter">S</span>
-                        </div>
-                        <div class="step-content">
-                            <h3 class="step-title">Situation</h3>
-                            <p class="step-description">Beschreiben Sie die Situation oder den Kontext</p>
-                            <div class="step-example">
-                                <strong>Beispiel:</strong> "In meinem vorherigen Job als Projektmanager..."
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="star-step">
-                        <div class="step-icon">
-                            <span class="step-letter">T</span>
-                        </div>
-                        <div class="step-content">
-                            <h3 class="step-title">Task</h3>
-                            <p class="step-description">Erklären Sie Ihre Aufgabe oder Verantwortung</p>
-                            <div class="step-example">
-                                <strong>Beispiel:</strong> "Ich war verantwortlich für die Koordination von 5 Entwicklern..."
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="star-step">
-                        <div class="step-icon">
-                            <span class="step-letter">A</span>
-                        </div>
-                        <div class="step-content">
-                            <h3 class="step-title">Action</h3>
-                            <p class="step-description">Beschreiben Sie die konkreten Handlungen</p>
-                            <div class="step-example">
-                                <strong>Beispiel:</strong> "Ich implementierte ein neues Projektmanagement-Tool..."
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="star-step">
-                        <div class="step-icon">
-                            <span class="step-letter">R</span>
-                        </div>
-                        <div class="step-content">
-                            <h3 class="step-title">Result</h3>
-                            <p class="step-description">Erklären Sie das Ergebnis oder den Erfolg</p>
-                            <div class="step-example">
-                                <strong>Beispiel:</strong> "Dadurch konnten wir die Projektlaufzeit um 30% reduzieren..."
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Form Actions -->
-            <div class="form-actions">
-                <button type="button" class="btn btn-outline" onclick="history.back()">
-                    <i class="fas fa-arrow-left"></i>
-                    Zurück
+        <!-- Application Selection -->
+        <section class="interview-section">
+            <h2><i class="fas fa-briefcase"></i> Bewerbung auswählen</h2>
+            <div class="application-selector">
+                <select id="applicationSelect">
+                    <option value="">Bewerbung auswählen...</option>
+                </select>
+                <span class="or-divider">oder</span>
+                <button type="button" class="btn-secondary" id="manualEntryBtn">
+                    <i class="fas fa-edit"></i> Manuell eingeben
                 </button>
-                
-                <button type="button" class="btn btn-primary" id="completeBtn" onclick="handleComplete()">
-                    <i class="fas fa-check"></i>
-                    Vorbereitung abschließen
+            </div>
+            
+            <!-- Manual Entry Form -->
+            <div id="manualEntryForm" class="manual-entry-form" style="display: none;">
+                <div class="form-group">
+                    <label>Position</label>
+                    <input type="text" id="manualPosition" placeholder="z.B. Frontend Developer">
+                </div>
+                <div class="form-group">
+                    <label>Unternehmen</label>
+                    <input type="text" id="manualCompany" placeholder="z.B. TechCorp GmbH">
+                </div>
+                <div class="form-group full-width">
+                    <label>Stellenbeschreibung</label>
+                    <textarea id="manualJobDescription" rows="4" placeholder="Relevante Anforderungen aus der Stellenausschreibung..."></textarea>
+                </div>
+            </div>
+            
+            <button type="button" class="btn-primary btn-generate" id="generateQuestionsBtn">
+                <i class="fas fa-magic"></i> Fragen generieren
+            </button>
+        </section>
+
+        <!-- Loading State -->
+        <div id="loadingState" class="loading-state" style="display: none;">
+            <div class="loading-animation">
+                <i class="fas fa-brain fa-spin"></i>
+            </div>
+            <h3>KI analysiert Ihre Bewerbung...</h3>
+            <p>Generiere typische Interviewfragen und passende Antworten</p>
+        </div>
+
+        <!-- Generated Content -->
+        <div id="generatedContent" class="generated-content" style="display: none;">
+            <!-- Interview Questions -->
+            <section class="interview-section questions-section">
+                <h2><i class="fas fa-question-circle"></i> Wahrscheinliche Interviewfragen</h2>
+                <div id="questionsList" class="questions-list"></div>
+            </section>
+
+            <!-- STAR Answers -->
+            <section class="interview-section star-section">
+                <h2><i class="fas fa-star"></i> STAR-Antworten aus Ihrem Lebenslauf</h2>
+                <p class="section-description">Basierend auf Ihren Erfahrungen - perfekt für Verhaltenfragen</p>
+                <div id="starAnswers" class="star-answers"></div>
+            </section>
+
+            <!-- Strengths & Weaknesses -->
+            <section class="interview-section analysis-section">
+                <div class="analysis-grid">
+                    <div class="analysis-card strengths">
+                        <h3><i class="fas fa-thumbs-up"></i> Ihre Stärken für diese Rolle</h3>
+                        <ul id="strengthsList"></ul>
+                    </div>
+                    <div class="analysis-card weaknesses">
+                        <h3><i class="fas fa-exclamation-triangle"></i> Mögliche Gap-Fragen</h3>
+                        <ul id="weaknessesList"></ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Questions to Ask -->
+            <section class="interview-section ask-section">
+                <h2><i class="fas fa-hand-paper"></i> Fragen, die Sie stellen sollten</h2>
+                <div id="questionsToAsk" class="questions-to-ask"></div>
+            </section>
+
+            <!-- Salary Estimate (Optional) -->
+            <section class="interview-section salary-section" id="salarySection" style="display: none;">
+                <h2><i class="fas fa-euro-sign"></i> Gehaltseinschätzung</h2>
+                <div class="salary-card">
+                    <div class="salary-range">
+                        <span class="salary-min" id="salaryMin">€0</span>
+                        <span class="salary-divider">-</span>
+                        <span class="salary-max" id="salaryMax">€0</span>
+                    </div>
+                    <p class="salary-note">Basierend auf Position, Branche und Region (Deutschland)</p>
+                </div>
+            </section>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button type="button" class="btn-secondary" id="exportPrepBtn">
+                    <i class="fas fa-file-pdf"></i> Als PDF exportieren
+                </button>
+                <button type="button" class="btn-secondary" id="practiceBtn">
+                    <i class="fas fa-microphone"></i> Übungsmodus starten
                 </button>
             </div>
         </div>
     </main>
 
-    <!-- Loading Overlay -->
-    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
-        <div class="loading-spinner">
-            <div class="spinner"></div>
-            <h3>Interview-Fragen werden generiert...</h3>
-            <p>Bitte warten Sie, während die KI Ihre personalisierten Fragen erstellt.</p>
+    <!-- Practice Modal -->
+    <div id="practiceModal" class="practice-modal">
+        <div class="practice-content">
+            <div class="practice-header">
+                <h2><i class="fas fa-microphone"></i> Übungsmodus</h2>
+                <button type="button" class="practice-close" id="closePractice">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="practice-body">
+                <div class="practice-question">
+                    <span class="question-number">Frage 1/10</span>
+                    <p id="currentQuestion">Laden...</p>
+                </div>
+                <div class="practice-timer">
+                    <i class="fas fa-clock"></i>
+                    <span id="practiceTimer">2:00</span>
+                </div>
+                <div class="practice-actions">
+                    <button type="button" class="btn-secondary" id="skipQuestionBtn">
+                        <i class="fas fa-forward"></i> Überspringen
+                    </button>
+                    <button type="button" class="btn-primary" id="nextQuestionBtn">
+                        <i class="fas fa-check"></i> Nächste Frage
+                    </button>
+                </div>
+                <div class="practice-hint">
+                    <button type="button" id="showHintBtn">
+                        <i class="fas fa-lightbulb"></i> Tipp anzeigen
+                    </button>
+                    <div id="hintText" class="hint-text" style="display: none;"></div>
+                </div>
+            </div>
         </div>
     </div>
 
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
     <!-- Scripts -->
-    
-    
-    <!-- AWS Config MUSS ZUERST kommen -->
-    <script>
-        window.AWS_CONFIG = {
-            userPoolId: 'eu-central-1_8gP4gLK9r',
-            clientId: '7kc5tt6a23fgh53d60vkefm812',
-            region: 'eu-central-1',
-            apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod',
-            domain: {
-                name: 'manuel-weiss.ch',
-                email: 'mail@manuel-weiss.ch',
-                region: 'eu-central-1'
-            },
-            s3: {
-                bucket: 'mawps-user-files-1760106396',
-                region: 'eu-central-1'
-            },
-            dynamoDB: {
-                tableName: 'mawps-user-profiles',
-                region: 'eu-central-1'
-            },
-            apiGateway: {
-                baseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod',
-                endpoints: {
-                    userProfile: '/user/profile',
-                    userProgress: '/user/progress',
-                    userSettings: '/user/settings'
-                }
-            }
-        };
-    </script>
-    
-    <!-- AWS SDK -->
-    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
-    
-    <!-- Auth System MUSS VOR den Application Scripts kommen -->
-    <script src="../js/real-user-auth-system.js?v=20250116"></script>
-    
-    <!-- Core APIs -->
-    <script src="../js/aws-profile-api.js"></script>
-    <script src="../js/user-progress-tracker.js"></script>
-    
-    <!-- Workflow Integration -->
-    <script src="../js/workflow-progress-integration.js"></script>
-    
-    <!-- Application Scripts ZULETZT laden -->
-    <script src="js/interview-assistant.js"></script>
-
-    <!-- AWS Auth System - Einheitliche Implementierung -->
-    
-    <script>
-        // AWS Configuration for Production - INLINE
-        window.AWS_CONFIG = {
-            // Cognito User Pool Configuration
-            userPoolId: 'eu-central-1_8gP4gLK9r',
-            clientId: '7kc5tt6a23fgh53d60vkefm812',
-            region: 'eu-central-1',
-            apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod',
-            dynamoDB: {
-                tableName: 'mawps-user-profiles',
-                region: 'eu-central-1'
-            },
-            
-            // Domain Configuration
-            domain: {
-                name: 'manuel-weiss.ch',
-                email: 'mail@manuel-weiss.ch',
-                region: 'eu-central-1'
-            apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod',
-            dynamoDB: {
-                tableName: 'mawps-user-profiles',
-                region: 'eu-central-1'
-            },
-            },
-            
-            // S3 Configuration for file uploads
-            s3: {
-                bucket: 'mawps-user-files-1760106396',
-                region: 'eu-central-1'
-            apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod',
-            dynamoDB: {
-                tableName: 'mawps-user-profiles',
-                region: 'eu-central-1'
-            },
-            },
-            
-            // DynamoDB Configuration for user data
-            dynamodb: {
-                tableName: 'mawps-user-profiles',
-                region: 'eu-central-1'
-            apiBaseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod',
-            dynamoDB: {
-                tableName: 'mawps-user-profiles',
-                region: 'eu-central-1'
-            },
-            },
-            
-            // API Gateway Configuration
-            apiGateway: {
-                baseUrl: 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod',
-                endpoints: {
-                    userProfile: '/user/profile',
-                    userProgress: '/user/progress',
-                    userSettings: '/user/settings'
-                }
-            }
-        };
-        
-        // Initialize AWS with configuration
-        if (typeof AWS !== 'undefined') {
-            AWS.config.update({
-                region: window.AWS_CONFIG.region
-            });
-            
-            // Configure Cognito
-            window.AWS_COGNITO_CONFIG = {
-                UserPoolId: window.AWS_CONFIG.userPoolId,
-                ClientId: window.AWS_CONFIG.clientId
-            };
-            
-            console.log('AWS Configuration loaded (inline)');
-        } else {
-            console.log('AWS SDK not loaded yet, will configure when loaded');
-        }
-    </script>
-
-    <!-- Auth & Core - mit Cache-Busting -->
-    
-    <!-- Mobile Menu Script -->
-    <script>
-        (function() {
-            const mobileHamburger = document.getElementById('mobileHamburger');
-            const mobileMenuFullscreen = document.getElementById('mobileMenuFullscreen');
-            const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
-            const mobileAuthButton = document.getElementById('mobileAuthButton');
-            
-            if (!mobileHamburger || !mobileMenuFullscreen) return;
-            
-            let menuOpen = false;
-            
-            function openMenu() {
-                menuOpen = true;
-                mobileHamburger.classList.add('active');
-                mobileMenuFullscreen.classList.add('active');
-                if (mobileMenuOverlay) mobileMenuOverlay.classList.add('active');
-                document.body.style.overflow = 'hidden';
-            }
-            
-            function closeMenu() {
-                menuOpen = false;
-                mobileHamburger.classList.remove('active');
-                mobileMenuFullscreen.classList.remove('active');
-                if (mobileMenuOverlay) mobileMenuOverlay.classList.remove('active');
-                document.body.style.overflow = '';
-            }
-            
-            mobileHamburger.onclick = function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                menuOpen ? closeMenu() : openMenu();
-            };
-            
-            mobileMenuFullscreen.querySelectorAll('.mobile-menu-link').forEach(link => {
-                link.onclick = closeMenu;
-            });
-            
-            if (mobileMenuOverlay) mobileMenuOverlay.onclick = closeMenu;
-            
-            if (mobileAuthButton) {
-                mobileAuthButton.onclick = function() {
-                    closeMenu();
-                    const mainAuthButton = document.getElementById('realAuthButton');
-                    if (mainAuthButton) mainAuthButton.click();
-                };
-            }
-        })();
-    </script>
-
+    <script src="../js/unified-aws-auth.js?v=20260115"></script>
+    <script src="../js/aws-profile-api.js?v=20260115"></script>
+    <script src="../js/aws-api-settings.js?v=20260115"></script>
+    <script src="../js/cloud-data-service.js?v=20260115"></script>
+    <script src="js/interview-prep.js?v=20260115"></script>
 </body>
 </html>
-
