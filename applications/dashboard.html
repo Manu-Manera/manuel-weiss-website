@@ -2127,8 +2127,28 @@ Ihre Aufgaben:
                     updatedAt: now
                 };
                 
-                const user = window.awsAuth?.getCurrentUser?.() || window.realUserAuth?.getCurrentUser?.();
-                const userId = user?.userId || user?.id || user?.email || 'anonymous';
+                // Hole User-ID - versuche verschiedene Quellen
+                let userId = 'anonymous';
+                try {
+                    const user = window.awsAuth?.getCurrentUser?.() || window.realUserAuth?.getCurrentUser?.();
+                    if (user) {
+                        userId = user.userId || user.id || user.email || user.sub || 'anonymous';
+                    }
+                    // Fallback: Versuche aus localStorage
+                    if (userId === 'anonymous') {
+                        const profile = JSON.parse(localStorage.getItem('bewerbungsmanager_profile') || '{}');
+                        userId = profile.userId || profile.id || profile.email || 'anonymous';
+                    }
+                    // Fallback: Versuche aus unifiedProfileService
+                    if (userId === 'anonymous' && window.unifiedProfileService) {
+                        const profile = window.unifiedProfileService.getProfileData();
+                        userId = profile?.userId || profile?.id || profile?.email || 'anonymous';
+                    }
+                    console.log('👤 User-ID für Upload:', userId);
+                } catch (userError) {
+                    console.warn('⚠️ Fehler beim Abrufen der User-ID:', userError);
+                    userId = 'anonymous';
+                }
                 
                 let uploadError = null;
                 let uploadSuccess = false;
@@ -2143,6 +2163,14 @@ Ihre Aufgaben:
                         };
                         const uploadCategory = categoryMap[category] || 'certificate';
                         
+                        console.log('📤 Starte Smart Media Upload:', { 
+                            fileName: file.name, 
+                            fileSize: file.size, 
+                            fileType: file.type,
+                            category: uploadCategory,
+                            userId: userId 
+                        });
+                        
                         showToast('Upload läuft...', 'info');
                         
                         const result = await window.smartMediaUpload.upload(file, {
@@ -2150,36 +2178,70 @@ Ihre Aufgaben:
                             userId: userId,
                             onProgress: (progress) => {
                                 console.log(`Upload Progress: ${progress}% - ${file.name}`);
+                            },
+                            onError: (error) => {
+                                console.error('❌ Smart Media Upload Error Callback:', error);
                             }
                         });
+                        
+                        console.log('📥 Smart Media Upload Result:', result);
                         
                         if (result && result.url) {
                             documentData.url = result.url;
                             documentData.storage = result.uploadMethod === 'AWS S3' ? 's3' : 'local';
+                            documentData.s3Url = result.s3Url || null;
+                            documentData.base64 = result.base64 || null;
                             uploadSuccess = true;
-                            console.log('✅ Smart Media Upload erfolgreich:', result.url);
+                            console.log('✅ Smart Media Upload erfolgreich:', {
+                                url: result.url,
+                                method: result.uploadMethod,
+                                storage: documentData.storage
+                            });
+                        } else {
+                            throw new Error('Upload erfolgreich, aber keine URL erhalten');
                         }
                     } catch (error) {
                         uploadError = error;
-                        console.warn('Smart Media Upload fehlgeschlagen, versuche Fallback:', error);
+                        console.error('❌ Smart Media Upload fehlgeschlagen:', {
+                            error: error.message,
+                            stack: error.stack,
+                            fileName: file.name,
+                            fileSize: file.size
+                        });
+                        console.warn('Versuche Fallback...');
                     }
+                } else {
+                    console.warn('⚠️ smartMediaUpload nicht verfügbar');
                 }
                 
                 // 2. Fallback: awsMedia.uploadDocument
                 if (!uploadSuccess && window.awsMedia?.uploadDocument) {
                     try {
                         const fileType = category === 'work' ? 'document' : 'certificate';
+                        console.log('📤 Versuche AWS Media Upload Fallback:', { fileType, userId });
+                        
                         const uploadResult = await window.awsMedia.uploadDocument(file, userId, fileType);
+                        
                         if (uploadResult && uploadResult.publicUrl) {
                             documentData.url = uploadResult.publicUrl;
                             documentData.storage = 's3';
+                            documentData.s3Key = uploadResult.key || null;
                             uploadSuccess = true;
                             console.log('✅ AWS Media Upload erfolgreich:', uploadResult.publicUrl);
+                        } else {
+                            throw new Error('Upload erfolgreich, aber keine publicUrl erhalten');
                         }
                     } catch (error) {
                         uploadError = error;
-                        console.warn('AWS Media Upload fehlgeschlagen, versuche lokalen Fallback:', error);
+                        console.error('❌ AWS Media Upload fehlgeschlagen:', {
+                            error: error.message,
+                            stack: error.stack,
+                            fileName: file.name
+                        });
+                        console.warn('Versuche lokalen Fallback...');
                     }
+                } else if (!uploadSuccess) {
+                    console.warn('⚠️ awsMedia.uploadDocument nicht verfügbar');
                 }
                 
                 // 3. Fallback: Lokaler Speicher (nur für kleine Dateien)
