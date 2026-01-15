@@ -1385,6 +1385,38 @@ Ihre Aufgaben:
             
             if (!authButton) return;
             
+            // Hilfsfunktion zum Aktualisieren der UI mit Profildaten
+            function updateUIWithProfile(displayName, profileImage) {
+                const isLoggedIn = window.awsAuth && window.awsAuth.isLoggedIn();
+                if (!isLoggedIn) return;
+                
+                authButton.innerHTML = `
+                    <img src="${profileImage}" alt="User" class="nav-user-avatar">
+                    <span>${displayName}</span>
+                    <i class="fas fa-chevron-down"></i>
+                `;
+                authButton.classList.add('logged-in');
+                
+                if (document.getElementById('userName')) {
+                    document.getElementById('userName').textContent = displayName;
+                }
+                if (document.getElementById('userAvatarImg')) {
+                    document.getElementById('userAvatarImg').src = profileImage;
+                }
+            }
+            
+            // UnifiedProfileService Listener registrieren - aktualisiert UI sobald Profil geladen
+            if (window.unifiedProfileService) {
+                window.unifiedProfileService.onProfileChange((profile) => {
+                    if (profile && profile.firstName && profile.firstName !== 'Test') {
+                        const displayName = window.unifiedProfileService.getDisplayName();
+                        const profileImage = window.unifiedProfileService.getProfileImage() || '../images/default-avatar.png';
+                        console.log('📊 UnifiedProfileService Update - Name:', displayName);
+                        updateUIWithProfile(displayName, profileImage);
+                    }
+                });
+            }
+            
             // Update UI based on login state
             async function updateAuthState() {
                 const isLoggedIn = window.awsAuth && window.awsAuth.isLoggedIn();
