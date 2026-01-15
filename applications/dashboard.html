@@ -2268,8 +2268,16 @@ Ihre Aufgaben:
                             error: error.message,
                             stack: error.stack,
                             fileName: file.name,
-                            fileSize: file.size
+                            fileSize: file.size,
+                            errorName: error.name,
+                            errorCause: error.cause
                         });
+                        
+                        // Spezifische Fehlermeldungen
+                        if (error.message && error.message.includes('Load failed')) {
+                            console.error('❌ Load failed Fehler erkannt - mögliche Ursachen: Netzwerkfehler, CORS, oder API-Endpoint nicht erreichbar');
+                        }
+                        
                         console.warn('Versuche Fallback...');
                     }
                 } else {
@@ -2298,8 +2306,17 @@ Ihre Aufgaben:
                         console.error('❌ AWS Media Upload fehlgeschlagen:', {
                             error: error.message,
                             stack: error.stack,
-                            fileName: file.name
+                            fileName: file.name,
+                            errorName: error.name,
+                            errorCause: error.cause
                         });
+                        
+                        // Spezifische Fehlermeldungen
+                        if (error.message && (error.message.includes('Load failed') || error.message.includes('Failed to fetch'))) {
+                            console.error('❌ Netzwerkfehler erkannt - API-Endpoint möglicherweise nicht erreichbar');
+                            console.error('API_BASE:', window.AWS_APP_CONFIG?.MEDIA_API_BASE || window.AWS_APP_CONFIG?.API_BASE || 'Nicht konfiguriert');
+                        }
+                        
                         console.warn('Versuche lokalen Fallback...');
                     }
                 } else if (!uploadSuccess) {
