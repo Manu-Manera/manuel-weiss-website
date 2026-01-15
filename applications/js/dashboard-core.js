@@ -94,6 +94,9 @@ async function initDashboard() {
     updateApplicationsList();
     updateProfileForm();
     
+    // Dashboard Stats aktualisieren (Anschreiben, Lebensläufe, etc.)
+    await updateDashboardStats();
+    
     // Check URL hash for tab
     const hash = window.location.hash.replace('#', '');
     if (hash && document.getElementById(`tab-${hash}`)) {
@@ -423,6 +426,94 @@ function updateStatsBar() {
             setTimeout(() => el.classList.remove('updated'), 300);
         }
     });
+}
+
+/**
+ * Aktualisiert alle Dashboard-Statistiken (Anschreiben, Lebensläufe, Zeugnisse, Fotos, etc.)
+ */
+async function updateDashboardStats() {
+    try {
+        // Anschreiben
+        let coverLetters = [];
+        if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
+            coverLetters = await window.cloudDataService.getCoverLetters(true);
+        } else {
+            const local = localStorage.getItem('cover_letter_drafts');
+            coverLetters = local ? JSON.parse(local) : [];
+        }
+        const statCoverLetters = document.getElementById('statCoverLetters');
+        if (statCoverLetters) {
+            statCoverLetters.textContent = coverLetters.length;
+        }
+        
+        // Lebensläufe
+        let resumes = [];
+        if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
+            resumes = await window.cloudDataService.getResumes(true);
+        } else {
+            const local = localStorage.getItem('user_resumes');
+            resumes = local ? JSON.parse(local) : [];
+        }
+        const statResumes = document.getElementById('statResumes');
+        if (statResumes) {
+            statResumes.textContent = resumes.length;
+        }
+        
+        // Zeugnisse/Dokumente
+        let documents = [];
+        if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
+            documents = await window.cloudDataService.getDocuments(true);
+        } else {
+            const local = localStorage.getItem('user_certificates');
+            documents = local ? JSON.parse(local) : [];
+        }
+        const statDocuments = document.getElementById('statDocuments');
+        if (statDocuments) {
+            statDocuments.textContent = documents.length;
+        }
+        
+        // Fotos
+        let photos = [];
+        if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
+            photos = await window.cloudDataService.getPhotos(true);
+        } else {
+            const local = localStorage.getItem('user_photos');
+            photos = local ? JSON.parse(local) : [];
+        }
+        const statPhotos = document.getElementById('statPhotos');
+        if (statPhotos) {
+            statPhotos.textContent = photos.length;
+        }
+        
+        // Bewerbungsmappen
+        let portfolios = [];
+        if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
+            portfolios = await window.cloudDataService.getPortfolios?.(true) || [];
+        } else {
+            const local = localStorage.getItem('user_portfolios');
+            portfolios = local ? JSON.parse(local) : [];
+        }
+        const statPortfolios = document.getElementById('statPortfolios');
+        if (statPortfolios) {
+            statPortfolios.textContent = portfolios.length;
+        }
+        
+        // Aktive Bewerbungen
+        const statTotal = document.getElementById('statTotal');
+        if (statTotal) {
+            statTotal.textContent = DashboardState.stats.total || 0;
+        }
+        
+        console.log('✅ Dashboard Stats aktualisiert:', {
+            coverLetters: coverLetters.length,
+            resumes: resumes.length,
+            documents: documents.length,
+            photos: photos.length,
+            portfolios: portfolios.length
+        });
+    } catch (error) {
+        console.error('Fehler beim Aktualisieren der Dashboard-Stats:', error);
+    }
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -1902,6 +1993,9 @@ async function loadResumes() {
         
         console.log(`✅ ${resumes.length} Lebensläufe geladen`);
         
+        // Stats aktualisieren
+        await updateDashboardStats();
+        
     } catch (error) {
         console.error('Fehler beim Laden der Lebensläufe:', error);
     }
@@ -1973,6 +2067,9 @@ async function loadCertificates() {
         
         console.log(`✅ ${documents.length} Dokumente geladen`);
         
+        // Stats aktualisieren
+        await updateDashboardStats();
+        
     } catch (error) {
         console.error('Fehler beim Laden der Dokumente:', error);
     }
@@ -2032,7 +2129,8 @@ async function deleteCoverLetter(id) {
     if (!confirm('Anschreiben wirklich löschen?')) return;
     
     try {
-        if (window.cloudDataService) {
+        // Cloud löschen
+        if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
             await window.cloudDataService.deleteCoverLetter(id);
             // Cache invalidieren
             if (window.cloudDataService.cache) {
@@ -2051,7 +2149,12 @@ async function deleteCoverLetter(id) {
         const element = document.querySelector(`.cover-letter-item[data-id="${id}"]`);
         if (element) element.remove();
         
+        // Liste neu laden
         await loadCoverLetters();
+        
+        // Stats aktualisieren
+        await updateDashboardStats();
+        
         showToast('Anschreiben gelöscht', 'success');
     } catch (error) {
         console.error('Fehler beim Löschen:', error);
@@ -2068,7 +2171,8 @@ async function deleteResume(id) {
     if (!confirm('Lebenslauf wirklich löschen?')) return;
     
     try {
-        if (window.cloudDataService) {
+        // Cloud löschen
+        if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
             await window.cloudDataService.deleteResume(id);
             // Cache invalidieren für sofortige Aktualisierung
             if (window.cloudDataService.cache) {
@@ -2084,13 +2188,17 @@ async function deleteResume(id) {
         localStorage.setItem('user_resumes', JSON.stringify(resumes));
         
         // Sofort das Element aus dem DOM entfernen
-        const element = document.querySelector(`[data-id="${id}"]`);
+        const element = document.querySelector(`.resume-item[data-id="${id}"]`);
         if (element) {
             element.remove();
         }
         
-        // Dann vollständig neu laden
+        // Liste neu laden
         await loadResumes();
+        
+        // Stats aktualisieren
+        await updateDashboardStats();
+        
         showToast('Lebenslauf gelöscht', 'success');
     } catch (error) {
         console.error('Fehler beim Löschen:', error);
@@ -2158,6 +2266,7 @@ window.showTab = showTab;
 window.showToast = showToast;
 window.saveState = saveState;
 window.updateStatsBar = updateStatsBar;
+window.updateDashboardStats = updateDashboardStats;
 window.updateApplicationsList = updateApplicationsList;
 window.updateApplication = updateApplication;
 window.changeStatus = changeStatus;
@@ -2285,6 +2394,9 @@ async function loadPhotos() {
         }
         
         console.log(`✅ ${photos.length} Fotos geladen`);
+        
+        // Stats aktualisieren
+        await updateDashboardStats();
         
     } catch (error) {
         console.error('Fehler beim Laden der Fotos:', error);
