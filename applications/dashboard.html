@@ -1828,83 +1828,9 @@ Ihre Aufgaben:
             });
         }
         
-        // Load saved cover letters - CLOUD FIRST, dann localStorage Fallback
-        async function loadCoverLetters() {
-            try {
-                const container = document.getElementById('coverLettersList');
-                const emptyState = document.getElementById('coverLettersEmpty');
-                
-                if (!container) return;
-                
-                let drafts = [];
-                
-                // PRIORITÄT 1: Cloud-Daten über cloudDataService
-                if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
-                    try {
-                        console.log('📥 Lade Anschreiben aus Cloud...');
-                        const cloudDrafts = await window.cloudDataService.getCoverLetters(true); // forceRefresh
-                        if (cloudDrafts && cloudDrafts.length > 0) {
-                            drafts = cloudDrafts;
-                            console.log('✅ Anschreiben aus Cloud geladen:', drafts.length);
-                            // Synchronisiere mit localStorage
-                            localStorage.setItem('cover_letter_drafts', JSON.stringify(drafts));
-                        }
-                    } catch (cloudError) {
-                        console.warn('⚠️ Cloud-Laden fehlgeschlagen:', cloudError);
-                    }
-                }
-                
-                // FALLBACK: localStorage wenn Cloud leer oder nicht verfügbar
-                if (drafts.length === 0) {
-                    drafts = JSON.parse(localStorage.getItem('cover_letter_drafts') || '[]');
-                    console.log('📥 Anschreiben aus localStorage:', drafts.length);
-                }
-                
-                if (drafts.length === 0) {
-                    container.innerHTML = '';
-                    if (emptyState) emptyState.style.display = 'flex';
-                    return;
-                }
-                
-                if (emptyState) emptyState.style.display = 'none';
-                
-                container.innerHTML = drafts.map((draft, index) => {
-                    const date = new Date(draft.createdAt).toLocaleDateString('de-DE', {
-                        day: '2-digit', month: '2-digit', year: 'numeric'
-                    });
-                    const company = draft.jobData?.company || 'Unbekanntes Unternehmen';
-                    const position = draft.jobData?.position || 'Position';
-                    const preview = draft.content?.substring(0, 150) + '...' || '';
-                    
-                    return `
-                        <div class="cover-letter-item" data-id="${draft.id}">
-                            <div class="cover-letter-info">
-                                <h4>${position}</h4>
-                                <p class="company">${company}</p>
-                                <p class="date">${date}</p>
-                                <p class="preview">${preview}</p>
-                            </div>
-                            <div class="cover-letter-actions">
-                                <button onclick="viewCoverLetter('${draft.id}')" class="btn-icon" title="Ansehen">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <button onclick="copyCoverLetter('${draft.id}')" class="btn-icon" title="Kopieren">
-                                    <i class="fas fa-copy"></i>
-                                </button>
-                                <button onclick="downloadCoverLetter('${draft.id}')" class="btn-icon" title="Herunterladen">
-                                    <i class="fas fa-download"></i>
-                                </button>
-                                <button onclick="deleteCoverLetter('${draft.id}')" class="btn-icon btn-danger" title="Löschen">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-            } catch (error) {
-                console.error('Error loading cover letters:', error);
-            }
-        }
+        // HINWEIS: loadCoverLetters ist jetzt in dashboard-core.js definiert
+        // und wird als window.loadCoverLetters exportiert
+        // Die lokale Funktion wurde entfernt, um Konflikte zu vermeiden
         
         // View cover letter in modal
         window.viewCoverLetter = function(id) {
@@ -1965,16 +1891,9 @@ Ihre Aufgaben:
             showToast('Anschreiben heruntergeladen', 'success');
         };
         
-        // Delete cover letter
-        window.deleteCoverLetter = function(id) {
-            if (!confirm('Anschreiben wirklich löschen?')) return;
-            
-            const drafts = JSON.parse(localStorage.getItem('cover_letter_drafts') || '[]');
-            const filtered = drafts.filter(d => d.id !== id);
-            localStorage.setItem('cover_letter_drafts', JSON.stringify(filtered));
-            loadCoverLetters();
-            showToast('Anschreiben gelöscht', 'success');
-        };
+        // HINWEIS: deleteCoverLetter ist jetzt in dashboard-core.js definiert
+        // und wird als window.deleteCoverLetter exportiert
+        // Die alte Funktion wurde entfernt, um Konflikte zu vermeiden
         
         // Simple toast notification
         function showToast(message, type = 'info') {
@@ -2010,8 +1929,12 @@ Ihre Aufgaben:
             // Initialize dashboard
             initDashboard();
             
-            // Load cover letters when switching to that tab
-            loadCoverLetters();
+            // Load cover letters when switching to that tab - nutze window.loadCoverLetters aus dashboard-core.js
+            if (typeof window.loadCoverLetters === 'function') {
+                await window.loadCoverLetters();
+            } else {
+                console.warn('window.loadCoverLetters nicht verfügbar');
+            }
             
             // Initialize documents tab
             initDocumentsTab();

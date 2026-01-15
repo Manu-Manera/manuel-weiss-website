@@ -1865,9 +1865,15 @@ async function loadCoverLetters() {
     try {
         let coverLetters = [];
         
-        // Versuche Cloud-Service zu nutzen
+        // Versuche Cloud-Service zu nutzen (mit forceRefresh für aktuelle Daten)
         if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
-            coverLetters = await window.cloudDataService.getCoverLetters();
+            try {
+                coverLetters = await window.cloudDataService.getCoverLetters(true); // forceRefresh
+            } catch (error) {
+                console.warn('Cloud-Laden fehlgeschlagen, verwende localStorage:', error);
+                const local = localStorage.getItem('cover_letter_drafts');
+                coverLetters = local ? JSON.parse(local) : [];
+            }
         } else {
             // Fallback: localStorage
             const local = localStorage.getItem('cover_letter_drafts');
