@@ -582,6 +582,34 @@ function applyOCRData() {
         if (expContainer) {
             expContainer.innerHTML = '';
             
+            // Hilfsfunktion: Konvertiere MM/YYYY zu YYYY-MM (für input type="month")
+            const convertDateFormat = (dateStr) => {
+                if (!dateStr) return '';
+                // Verschiedene Formate verarbeiten
+                const lowerDate = dateStr.toLowerCase();
+                if (lowerDate === 'heute' || lowerDate === 'present' || lowerDate === 'aktuell') {
+                    return ''; // Aktueller Job, Enddatum leer
+                }
+                // MM/YYYY -> YYYY-MM
+                const slashMatch = dateStr.match(/^(\d{1,2})\/(\d{4})$/);
+                if (slashMatch) {
+                    const month = slashMatch[1].padStart(2, '0');
+                    return `${slashMatch[2]}-${month}`;
+                }
+                // MM.YYYY -> YYYY-MM
+                const dotMatch = dateStr.match(/^(\d{1,2})\.(\d{4})$/);
+                if (dotMatch) {
+                    const month = dotMatch[1].padStart(2, '0');
+                    return `${dotMatch[2]}-${month}`;
+                }
+                // YYYY -> YYYY-01
+                const yearMatch = dateStr.match(/^(\d{4})$/);
+                if (yearMatch) {
+                    return `${yearMatch[1]}-01`;
+                }
+                return dateStr;
+            };
+            
             // Add each experience entry
             parsed.experience.forEach((exp, index) => {
                 // Convert bullets array to string with line breaks
@@ -590,13 +618,17 @@ function applyOCRData() {
                     bulletsText = exp.bullets.map(b => `- ${b}`).join('\n');
                 }
                 
+                const isCurrentJob = exp.endDate?.toLowerCase() === 'heute' || 
+                                    exp.endDate?.toLowerCase() === 'present' ||
+                                    exp.endDate?.toLowerCase() === 'aktuell';
+                
                 const experienceData = {
                     position: exp.position || '',
                     company: exp.company || '',
                     location: exp.location || '',
-                    startDate: exp.startDate || '',
-                    endDate: exp.endDate || '',
-                    currentJob: exp.endDate?.toLowerCase() === 'heute' || exp.endDate?.toLowerCase() === 'present',
+                    startDate: convertDateFormat(exp.startDate),
+                    endDate: isCurrentJob ? '' : convertDateFormat(exp.endDate),
+                    currentJob: isCurrentJob,
                     description: exp.description || '',
                     bullets: bulletsText,
                     technologies: exp.technologies || []
@@ -614,13 +646,36 @@ function applyOCRData() {
         if (eduContainer) {
             eduContainer.innerHTML = '';
             
+            // Hilfsfunktion: Konvertiere MM/YYYY zu YYYY-MM
+            const convertDateFormat = (dateStr) => {
+                if (!dateStr) return '';
+                // MM/YYYY -> YYYY-MM
+                const slashMatch = dateStr.match(/^(\d{1,2})\/(\d{4})$/);
+                if (slashMatch) {
+                    const month = slashMatch[1].padStart(2, '0');
+                    return `${slashMatch[2]}-${month}`;
+                }
+                // MM.YYYY -> YYYY-MM
+                const dotMatch = dateStr.match(/^(\d{1,2})\.(\d{4})$/);
+                if (dotMatch) {
+                    const month = dotMatch[1].padStart(2, '0');
+                    return `${dotMatch[2]}-${month}`;
+                }
+                // YYYY -> YYYY-01
+                const yearMatch = dateStr.match(/^(\d{4})$/);
+                if (yearMatch) {
+                    return `${yearMatch[1]}-01`;
+                }
+                return dateStr;
+            };
+            
             parsed.education.forEach((edu, index) => {
                 const educationData = {
                     degree: edu.degree || '',
                     institution: edu.institution || '',
                     location: edu.location || '',
-                    startDate: edu.startDate || '',
-                    endDate: edu.endDate || '',
+                    startDate: convertDateFormat(edu.startDate),
+                    endDate: convertDateFormat(edu.endDate),
                     fieldOfStudy: edu.fieldOfStudy || '',
                     description: edu.description || ''
                 };
@@ -633,12 +688,17 @@ function applyOCRData() {
     
     // Apply skills
     if (parsed.skills) {
-        // Technical skills
+        // Technical skills - verwende die korrekte Funktion addTechnicalSkillCategory
         if (parsed.skills.technical && Array.isArray(parsed.skills.technical)) {
             const techContainer = document.getElementById('technicalSkillsContainer');
-            if (techContainer && typeof addSkillCategory === 'function') {
+            if (techContainer) {
                 techContainer.innerHTML = '';
-                addSkillCategory('Technische Fähigkeiten', parsed.skills.technical);
+                // Gruppiere Skills in Kategorien wenn möglich
+                if (typeof addTechnicalSkillCategory === 'function') {
+                    // Alle technischen Skills als eine Kategorie
+                    addTechnicalSkillCategory('Technische Fähigkeiten', parsed.skills.technical);
+                    console.log('✅ Technische Skills hinzugefügt:', parsed.skills.technical);
+                }
             }
         }
         
@@ -652,6 +712,7 @@ function applyOCRData() {
                         addSoftSkill(skill);
                     }
                 });
+                console.log('✅ Soft Skills hinzugefügt:', parsed.skills.soft);
             }
         }
     }
