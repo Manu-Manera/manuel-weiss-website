@@ -26,9 +26,15 @@
      */
     class SmartMediaUpload {
         constructor() {
+            // API Base aus verschiedenen Quellen holen
+            const apiBase = window.AWS_APP_CONFIG?.API_BASE 
+                         || window.AWS_APP_CONFIG?.MEDIA_API_BASE 
+                         || window.awsMedia?.API_BASE 
+                         || '';
+            
             this.config = {
-                apiBase: window.AWS_APP_CONFIG?.MEDIA_API_BASE || '',
-                maxFileSize: 5 * 1024 * 1024, // 5MB
+                apiBase: apiBase,
+                maxFileSize: 10 * 1024 * 1024, // 10MB (erhöht für größere PDFs)
                 allowedImageTypes: ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/svg+xml'],
                 allowedDocumentTypes: ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
                 defaultUserId: 'owner'
@@ -36,6 +42,11 @@
             
             this.uploadQueue = [];
             this.isUploading = false;
+            
+            console.log('🔧 Smart Media Upload initialisiert:', {
+                apiBase: this.config.apiBase ? '✅ Konfiguriert' : '❌ Nicht konfiguriert',
+                maxFileSize: `${this.config.maxFileSize / 1024 / 1024}MB`
+            });
         }
 
         /**
@@ -61,8 +72,10 @@
             }
 
             try {
-                // 1) Base64 für sofortige Vorschau
+                // 1) Base64 für sofortige Vorschau (auch für PDFs/Dokumente als Fallback)
                 let base64Preview = null;
+                // Für Bilder: immer Base64 für Vorschau
+                // Für PDFs/Dokumente: Base64 als Fallback wenn S3 fehlschlägt
                 if (file.type.startsWith('image/')) {
                     base64Preview = await this.fileToBase64(file);
                 }
@@ -70,10 +83,18 @@
                 // 2) Upload zu AWS S3
                 let uploadedUrl = null;
                 let uploadMethod = 'Base64 (Fallback)';
+                let s3Error = null;
                 
                 try {
-                    if (window.awsMedia && this.config.apiBase) {
-                        console.log('📤 Upload zu AWS S3...');
+                    if (window.awsMedia) {
+                        // Prüfe ob API_BASE konfiguriert ist
+                        const apiBase = window.AWS_APP_CONFIG?.API_BASE || window.awsMedia?.API_BASE;
+                        if (!apiBase) {
+                            console.warn('⚠️ API_BASE nicht konfiguriert, überspringe S3 Upload');
+                            throw new Error('API Endpoint nicht konfiguriert');
+                        }
+                        
+                        console.log('📤 Upload zu AWS S3...', { category, fileType: file.type, userId });
                         
                         if (category === 'profile' || category === 'service' || file.type.startsWith('image/')) {
                             const result = await window.awsMedia.uploadProfileImage(file, userId);
@@ -81,25 +102,48 @@
                                 uploadedUrl = result.publicUrl;
                                 uploadMethod = 'AWS S3';
                                 console.log('✅ S3 Upload erfolgreich:', uploadedUrl);
+                            } else {
+                                throw new Error('Upload erfolgreich, aber keine URL erhalten');
                             }
                         } else if (category === 'document' || category === 'cv' || category === 'certificate') {
                             const fileType = category === 'cv' ? 'cv' : category === 'certificate' ? 'certificate' : 'document';
+                            console.log(`📄 Uploading document: ${file.name} (${fileType})`);
                             const result = await window.awsMedia.uploadDocument(file, userId, fileType);
                             if (result && result.publicUrl) {
                                 uploadedUrl = result.publicUrl;
                                 uploadMethod = 'AWS S3';
                                 console.log('✅ S3 Document Upload erfolgreich:', uploadedUrl);
+                            } else {
+                                throw new Error('Upload erfolgreich, aber keine URL erhalten');
                             }
                         }
+                    } else {
+                        throw new Error('awsMedia nicht verfügbar');
                     }
                 } catch (error) {
+                    s3Error = error;
                     console.warn('⚠️ AWS Upload fehlgeschlagen, verwende Base64 Fallback:', error);
+                    
+                    // Für PDFs/Dokumente: Base64 als Fallback erstellen
+                    if (!base64Preview && (file.type === 'application/pdf' || category === 'document' || category === 'cv' || category === 'certificate')) {
+                        try {
+                            console.log('📄 Erstelle Base64 Fallback für Dokument...');
+                            base64Preview = await this.fileToBase64(file);
+                            console.log('✅ Base64 Fallback erstellt');
+                        } catch (base64Error) {
+                            console.error('❌ Base64 Fallback fehlgeschlagen:', base64Error);
+                            throw new Error(`Upload fehlgeschlagen: ${error.message || 'Unbekannter Fehler'}. Base64 Fallback ebenfalls fehlgeschlagen: ${base64Error.message}`);
+                        }
+                    }
                 }
 
                 // 3) Finale Quelle: S3 URL oder Base64
                 const finalSrc = uploadedUrl || base64Preview;
                 if (!finalSrc) {
-                    throw new Error('Keine Bildquelle verfügbar');
+                    const errorMsg = s3Error 
+                        ? `Upload fehlgeschlagen: ${s3Error.message || 'Unbekannter Fehler'}. Keine Fallback-Quelle verfügbar.`
+                        : 'Keine Bildquelle verfügbar';
+                    throw new Error(errorMsg);
                 }
 
                 // 4) Speichere in localStorage (kategorie-spezifisch)
