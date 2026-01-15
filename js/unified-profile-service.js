@@ -582,31 +582,59 @@ class UnifiedProfileService {
     }
 
     /**
-     * Gibt den Anzeigenamen zurück
+     * Gibt den Anzeigenamen zurück - FILTERT "Test User" IMMER
      */
     getDisplayName() {
         if (!this.profile) return 'Profil';
         
         const { firstName, lastName, email } = this.profile;
         
-        if (firstName && lastName) {
+        // KRITISCH: "Test" und "Test User" NIEMALS anzeigen
+        const isTestName = firstName === 'Test' || 
+                          (firstName === 'Test' && lastName === 'User') ||
+                          firstName === 'TEST' ||
+                          firstName === 'test';
+        
+        if (firstName && lastName && !isTestName) {
             return `${firstName} ${lastName}`;
         }
-        if (firstName) {
+        if (firstName && !isTestName) {
             return firstName;
         }
+        
+        // Fallback: Email-Prefix
         if (email) {
             const emailName = email.split('@')[0];
-            return emailName.length > 3 ? emailName : 'Profil';
+            // Formatiere Email-Prefix besser (z.B. "weiss-manuel" -> "Weiss Manuel")
+            if (emailName.length > 3) {
+                const formatted = emailName
+                    .split(/[-_.]/)
+                    .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+                    .join(' ');
+                return formatted;
+            }
+            return emailName;
         }
         return 'Profil';
     }
 
     /**
-     * Gibt den Vornamen zurück
+     * Gibt den Vornamen zurück - FILTERT "Test" IMMER
      */
     getFirstName() {
-        return this.profile?.firstName || '';
+        const firstName = this.profile?.firstName || '';
+        
+        // "Test" NIEMALS zurückgeben
+        if (firstName === 'Test' || firstName === 'TEST' || firstName === 'test') {
+            // Fallback: Ersten Teil der Email verwenden
+            const email = this.profile?.email || '';
+            if (email) {
+                const emailName = email.split('@')[0].split(/[-_.]/)[0];
+                return emailName.charAt(0).toUpperCase() + emailName.slice(1);
+            }
+            return '';
+        }
+        return firstName;
     }
 
     /**
