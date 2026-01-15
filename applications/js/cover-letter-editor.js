@@ -122,25 +122,49 @@ class CoverLetterEditor {
         this.setupSlider('paragraphSpacingSlider', 'paragraphSpacing', 'px');
         this.setupSlider('signatureSpacingSlider', 'signatureGap', 'px');
 
-        // Signature upload
+        // Signature upload with background extraction and drag & drop
         const signatureUpload = document.getElementById('signatureUpload');
         const removeSignatureBtn = document.getElementById('removeSignatureBtn');
         if (signatureUpload) {
-            signatureUpload.addEventListener('change', (e) => {
+            signatureUpload.addEventListener('change', async (e) => {
                 const file = e.target.files?.[0];
                 if (!file) return;
-                const reader = new FileReader();
-                reader.onload = () => {
-                    this.design.signatureImage = reader.result;
+                try {
+                    const extractedSignature = await this.extractSignatureFromImage(file);
+                    this.design.signatureImage = extractedSignature;
+                    this.design.signaturePosition = { x: 0, y: 0 };
+                    this.design.signatureSize = 200; // Default width in px
                     this.applyDesign();
-                };
-                reader.readAsDataURL(file);
+                    this.setupSignatureDragDrop();
+                    this.showToast('Unterschrift erfolgreich extrahiert! Sie können sie per Drag & Drop positionieren.', 'success');
+                } catch (error) {
+                    console.error('Fehler beim Extrahieren der Unterschrift:', error);
+                    // Fallback: Normales Bild laden
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        this.design.signatureImage = reader.result;
+                        this.design.signaturePosition = { x: 0, y: 0 };
+                        this.design.signatureSize = 200;
+                        this.applyDesign();
+                        this.setupSignatureDragDrop();
+                    };
+                    reader.readAsDataURL(file);
+                }
             });
         }
         if (removeSignatureBtn) {
             removeSignatureBtn.addEventListener('click', () => {
                 this.design.signatureImage = '';
+                this.design.signaturePosition = null;
+                this.design.signatureSize = null;
                 if (signatureUpload) signatureUpload.value = '';
+                const signatureImg = document.getElementById('signatureImage');
+                if (signatureImg) {
+                    signatureImg.style.display = 'none';
+                    signatureImg.style.left = '';
+                    signatureImg.style.top = '';
+                    signatureImg.style.width = '';
+                }
                 this.applyDesign();
             });
         }
@@ -696,25 +720,46 @@ ${description.substring(0, 2000)}`;
         const lastName = this.profileData.lastName || this.profileData.name?.split(' ').slice(1).join(' ') || '';
         const fullName = `${firstName} ${lastName}`.trim() || 'Ihr Name';
         
-        if (nameEl) nameEl.textContent = fullName;
+        // Name - nur setzen wenn leer oder Platzhalter
+        if (nameEl && (!nameEl.textContent.trim() || nameEl.textContent.trim() === 'Max Mustermann' || nameEl.textContent.trim() === 'Ihr Name')) {
+            nameEl.textContent = fullName;
+        }
+        
         if (signatureEl) {
             // Prüfe ob es ein Input oder Span ist
             if (signatureEl.tagName === 'INPUT') {
-                signatureEl.value = fullName;
+                if (!signatureEl.value || signatureEl.value === 'Ihr Name') {
+                    signatureEl.value = fullName;
+                }
             } else {
-                signatureEl.textContent = fullName;
+                if (!signatureEl.textContent.trim() || signatureEl.textContent.trim() === 'Ihr Name') {
+                    signatureEl.textContent = fullName;
+                }
             }
         }
         
+        // Adresse - nur setzen wenn leer oder Platzhalter
         if (addressEl) {
-            const address = this.profileData.address || this.profileData.location || '';
-            addressEl.textContent = address || 'Ihre Adresse';
+            const currentAddress = addressEl.textContent.trim();
+            if (!currentAddress || currentAddress === 'Musterstraße 1, 12345 Musterstadt' || currentAddress === 'Ihre Adresse') {
+                const address = this.profileData.address || this.profileData.location || '';
+                if (address) {
+                    addressEl.textContent = address;
+                } else {
+                    addressEl.textContent = 'Ihre Adresse';
+                }
+            }
         }
         
+        // Kontakt - nur setzen wenn leer oder Platzhalter
         if (contactEl) {
-            const email = this.profileData.email || '';
-            const phone = this.profileData.phone || '';
-            contactEl.textContent = [email, phone].filter(Boolean).join(' | ') || 'Ihre Kontaktdaten';
+            const currentContact = contactEl.textContent.trim();
+            if (!currentContact || currentContact === 'max@example.com | +49 123 456789' || currentContact === 'Ihre Kontaktdaten') {
+                const email = this.profileData.email || '';
+                const phone = this.profileData.phone || '';
+                const contactText = [email, phone].filter(Boolean).join(' | ');
+                contactEl.textContent = contactText || 'Ihre Kontaktdaten';
+            }
         }
     }
 
@@ -1155,38 +1200,46 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
         
         const companyDisplay = document.getElementById('companyNameDisplay');
         if (companyDisplay) {
-            companyDisplay.textContent = jobData.companyName || '';
+            // Nur setzen wenn leer oder Platzhalter
+            const currentCompany = companyDisplay.textContent.trim();
+            if (!currentCompany || currentCompany === 'Firmenname') {
+                companyDisplay.textContent = jobData.companyName || '';
+            }
         }
         
         const contactDisplay = document.getElementById('contactPersonDisplay');
         if (contactDisplay) {
-            if (jobData.contactPerson) {
-                // Best Practices für verschiedene Länder
-                switch (country) {
-                    case 'CH':
-                    case 'DE':
-                    case 'AT':
-                        contactDisplay.textContent = `z.Hd. ${jobData.contactPerson}`;
-                        break;
-                    case 'US':
-                        contactDisplay.textContent = `Attention: ${jobData.contactPerson}`;
-                        break;
-                    default:
-                        contactDisplay.textContent = `z.Hd. ${jobData.contactPerson}`;
-                }
-            } else {
-                // Standard je nach Land
-                switch (country) {
-                    case 'CH':
-                    case 'DE':
-                    case 'AT':
-                        contactDisplay.textContent = 'Personalabteilung';
-                        break;
-                    case 'US':
-                        contactDisplay.textContent = 'Human Resources';
-                        break;
-                    default:
-                        contactDisplay.textContent = 'Personalabteilung';
+            // Nur setzen wenn leer oder Platzhalter
+            const currentContact = contactDisplay.textContent.trim();
+            if (!currentContact || currentContact === 'z.Hd. Ansprechpartner' || currentContact === 'Personalabteilung' || currentContact === 'Human Resources') {
+                if (jobData.contactPerson) {
+                    // Best Practices für verschiedene Länder
+                    switch (country) {
+                        case 'CH':
+                        case 'DE':
+                        case 'AT':
+                            contactDisplay.textContent = `z.Hd. ${jobData.contactPerson}`;
+                            break;
+                        case 'US':
+                            contactDisplay.textContent = `Attention: ${jobData.contactPerson}`;
+                            break;
+                        default:
+                            contactDisplay.textContent = `z.Hd. ${jobData.contactPerson}`;
+                    }
+                } else {
+                    // Standard je nach Land
+                    switch (country) {
+                        case 'CH':
+                        case 'DE':
+                        case 'AT':
+                            contactDisplay.textContent = 'Personalabteilung';
+                            break;
+                        case 'US':
+                            contactDisplay.textContent = 'Human Resources';
+                            break;
+                        default:
+                            contactDisplay.textContent = 'Personalabteilung';
+                    }
                 }
             }
         }
@@ -1240,11 +1293,185 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
             if (this.design.signatureImage) {
                 signatureImg.src = this.design.signatureImage;
                 signatureImg.style.display = 'block';
+                signatureImg.style.position = 'relative';
+                signatureImg.style.cursor = 'move';
+                signatureImg.style.userSelect = 'none';
+                
+                // Position und Größe anwenden
+                if (this.design.signaturePosition) {
+                    signatureImg.style.left = `${this.design.signaturePosition.x}px`;
+                    signatureImg.style.top = `${this.design.signaturePosition.y}px`;
+                }
+                if (this.design.signatureSize) {
+                    signatureImg.style.width = `${this.design.signatureSize}px`;
+                    signatureImg.style.height = 'auto';
+                }
             } else {
                 signatureImg.removeAttribute('src');
                 signatureImg.style.display = 'none';
             }
         }
+    }
+
+    /**
+     * Extrahiert Unterschrift aus Bild (entfernt Hintergrund)
+     */
+    async extractSignatureFromImage(file) {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            const reader = new FileReader();
+            
+            reader.onload = (e) => {
+                img.onload = () => {
+                    try {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        const ctx = canvas.getContext('2d');
+                        
+                        // Zeichne Bild auf Canvas
+                        ctx.drawImage(img, 0, 0);
+                        
+                        // Hole Bilddaten
+                        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                        const data = imageData.data;
+                        
+                        // Einfache Hintergrundentfernung: Weiß/heller Hintergrund wird transparent
+                        // Annahme: Unterschrift ist dunkel, Hintergrund ist hell
+                        for (let i = 0; i < data.length; i += 4) {
+                            const r = data[i];
+                            const g = data[i + 1];
+                            const b = data[i + 2];
+                            const a = data[i + 3];
+                            
+                            // Berechne Helligkeit
+                            const brightness = (r + g + b) / 3;
+                            
+                            // Wenn Pixel sehr hell ist (wahrscheinlich Hintergrund), mache transparent
+                            if (brightness > 240) {
+                                data[i + 3] = 0; // Transparent
+                            } else if (brightness > 200) {
+                                // Sanfter Übergang
+                                data[i + 3] = Math.max(0, a - (brightness - 200) * 2);
+                            }
+                        }
+                        
+                        // Setze verarbeitete Daten zurück
+                        ctx.putImageData(imageData, 0, 0);
+                        
+                        // Konvertiere zu Data URL
+                        const extractedDataUrl = canvas.toDataURL('image/png');
+                        resolve(extractedDataUrl);
+                    } catch (error) {
+                        reject(error);
+                    }
+                };
+                
+                img.onerror = () => reject(new Error('Fehler beim Laden des Bildes'));
+                img.src = e.target.result;
+            };
+            
+            reader.onerror = () => reject(new Error('Fehler beim Lesen der Datei'));
+            reader.readAsDataURL(file);
+        });
+    }
+
+    /**
+     * Setup Drag & Drop für Unterschrift
+     */
+    setupSignatureDragDrop() {
+        const signatureImg = document.getElementById('signatureImage');
+        if (!signatureImg || !this.design.signatureImage) return;
+        
+        let isDragging = false;
+        let startX, startY, initialX, initialY;
+        
+        // Maus-Events
+        signatureImg.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            startX = e.clientX;
+            startY = e.clientY;
+            
+            const rect = signatureImg.getBoundingClientRect();
+            initialX = this.design.signaturePosition?.x || 0;
+            initialY = this.design.signaturePosition?.y || 0;
+            
+            signatureImg.style.cursor = 'grabbing';
+            e.preventDefault();
+        });
+        
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            
+            const deltaX = e.clientX - startX;
+            const deltaY = e.clientY - startY;
+            
+            const newX = initialX + deltaX;
+            const newY = initialY + deltaY;
+            
+            signatureImg.style.left = `${newX}px`;
+            signatureImg.style.top = `${newY}px`;
+        });
+        
+        document.addEventListener('mouseup', () => {
+            if (isDragging) {
+                const rect = signatureImg.getBoundingClientRect();
+                const container = document.getElementById('signatureContainer');
+                if (container) {
+                    const containerRect = container.getBoundingClientRect();
+                    const relativeX = rect.left - containerRect.left;
+                    const relativeY = rect.top - containerRect.top;
+                    
+                    this.design.signaturePosition = { x: relativeX, y: relativeY };
+                    signatureImg.style.cursor = 'move';
+                }
+                isDragging = false;
+            }
+        });
+        
+        // Touch-Events für Mobile
+        signatureImg.addEventListener('touchstart', (e) => {
+            isDragging = true;
+            const touch = e.touches[0];
+            startX = touch.clientX;
+            startY = touch.clientY;
+            
+            const rect = signatureImg.getBoundingClientRect();
+            initialX = this.design.signaturePosition?.x || 0;
+            initialY = this.design.signaturePosition?.y || 0;
+            
+            e.preventDefault();
+        });
+        
+        document.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            const touch = e.touches[0];
+            
+            const deltaX = touch.clientX - startX;
+            const deltaY = touch.clientY - startY;
+            
+            const newX = initialX + deltaX;
+            const newY = initialY + deltaY;
+            
+            signatureImg.style.left = `${newX}px`;
+            signatureImg.style.top = `${newY}px`;
+            e.preventDefault();
+        });
+        
+        document.addEventListener('touchend', () => {
+            if (isDragging) {
+                const rect = signatureImg.getBoundingClientRect();
+                const container = document.getElementById('signatureContainer');
+                if (container) {
+                    const containerRect = container.getBoundingClientRect();
+                    const relativeX = rect.left - containerRect.left;
+                    const relativeY = rect.top - containerRect.top;
+                    
+                    this.design.signaturePosition = { x: relativeX, y: relativeY };
+                }
+                isDragging = false;
+            }
+        });
     }
 
     updateStats() {

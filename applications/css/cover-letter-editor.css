@@ -565,6 +565,30 @@
     color: var(--cl-text-muted);
 }
 
+/* Editierbare Felder */
+.editable-field {
+    min-height: 1.2em;
+    padding: 2px 4px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+    outline: none;
+}
+
+.editable-field:empty:before {
+    content: attr(placeholder);
+    color: var(--cl-text-muted);
+    opacity: 0.5;
+}
+
+.editable-field:focus {
+    background-color: rgba(99, 102, 241, 0.1);
+    border: 1px dashed var(--cl-primary);
+}
+
+.editable-field:hover {
+    background-color: rgba(99, 102, 241, 0.05);
+}
+
 .letter-date {
     text-align: right;
     color: var(--cl-text-muted);
@@ -682,10 +706,30 @@
     gap: 0.5rem;
 }
 
+.signature-container {
+    position: relative;
+    min-height: 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
 #signatureImage {
     max-width: 200px;
     max-height: 80px;
     object-fit: contain;
+    position: relative;
+    cursor: move;
+    user-select: none;
+    transition: opacity 0.2s;
+}
+
+#signatureImage:hover {
+    opacity: 0.9;
+}
+
+#signatureImage:active {
+    cursor: grabbing;
 }
 
 /* Editor Toolbar */
