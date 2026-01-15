@@ -863,6 +863,10 @@ ${description.substring(0, 2000)}`;
     async generateWithAI(jobData, apiKey) {
         const prompt = this.buildPrompt(jobData);
         
+        // Verwende gpt-4o-mini für bessere Qualität, fallback zu gpt-3.5-turbo
+        const model = 'gpt-4o-mini';
+        const maxTokens = this.options.length === 'short' ? 600 : this.options.length === 'medium' ? 1000 : 1400;
+        
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
             headers: {
@@ -870,19 +874,19 @@ ${description.substring(0, 2000)}`;
                 'Authorization': `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-                model: 'gpt-3.5-turbo',
+                model: model,
                 messages: [
                     {
                         role: 'system',
-                        content: 'Du bist ein professioneller Bewerbungsberater. Erstelle überzeugende Anschreiben auf Deutsch.'
+                        content: 'Du bist ein professioneller Bewerbungsberater und Experte für überzeugende Bewerbungsanschreiben. Du erstellst personalisierte, spezifische und authentische Anschreiben, die genau auf die Stellenbeschreibung eingehen. Du verwendest konkrete Beispiele, messbare Ergebnisse und vermeidest Floskeln.'
                     },
                     {
                         role: 'user',
                         content: prompt
                     }
                 ],
-                temperature: 0.7,
-                max_tokens: 800
+                temperature: 0.7, // Balance zwischen Kreativität und Konsistenz
+                max_tokens: maxTokens
             })
         });
         
