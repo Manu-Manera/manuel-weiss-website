@@ -1539,12 +1539,15 @@ class DesignEditor {
         const resumeData = this.getResumeData();
         let html = '';
 
+        // Trenne Unterschrift von anderen Sections - sie kommt IMMER ganz unten
         const visibleSections = this.sections.filter(s => s.visible);
+        const signatureSection = visibleSections.find(s => s.id === 'signature');
+        const otherSections = visibleSections.filter(s => s.id !== 'signature');
         
         if (this.settings.columns === 2) {
-            const full = visibleSections.filter(s => s.column === 'full');
-            const left = visibleSections.filter(s => s.column === 'left');
-            const right = visibleSections.filter(s => s.column === 'right');
+            const full = otherSections.filter(s => s.column === 'full');
+            const left = otherSections.filter(s => s.column === 'left');
+            const right = otherSections.filter(s => s.column === 'right');
 
             full.forEach(section => {
                 html += this.renderSectionById(section, resumeData);
@@ -1572,9 +1575,14 @@ class DesignEditor {
                 </div>
             `;
         } else {
-            visibleSections.forEach(section => {
+            otherSections.forEach(section => {
                 html += this.renderSectionById(section, resumeData);
             });
+        }
+        
+        // Unterschrift IMMER ganz unten, nach allen anderen Sections
+        if (signatureSection) {
+            html += this.renderSectionById(signatureSection, resumeData);
         }
         
         // Add page numbers if enabled

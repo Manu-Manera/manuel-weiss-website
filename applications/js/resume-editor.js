@@ -920,16 +920,27 @@ function applyOCRData() {
                     return { name: skill, level: 5 };
                 });
                 
-                if (typeof addTechnicalSkillWithRating === 'function') {
-                    skillsWithRating.forEach(skill => {
-                        addTechnicalSkillWithRating(skill.name, skill.level);
-                    });
-                } else if (typeof addTechnicalSkillCategory === 'function') {
-                    // Fallback auf alte Funktion
-                    const skillNames = skillsWithRating.map(s => s.name);
-                    addTechnicalSkillCategory('Technische Fähigkeiten', skillNames);
-                }
-                console.log('✅ Technische Skills hinzugefügt:', skillsWithRating);
+                // Warte kurz, damit die Funktionen verfügbar sind
+                setTimeout(() => {
+                    if (typeof addTechnicalSkillWithRating === 'function') {
+                        skillsWithRating.forEach(skill => {
+                            addTechnicalSkillWithRating(skill.name, skill.level || 5, '');
+                        });
+                        console.log('✅ Technische Skills mit Level hinzugefügt:', skillsWithRating);
+                    } else if (typeof window.addTechnicalSkillWithRating === 'function') {
+                        skillsWithRating.forEach(skill => {
+                            window.addTechnicalSkillWithRating(skill.name, skill.level || 5, '');
+                        });
+                        console.log('✅ Technische Skills mit Level hinzugefügt (window):', skillsWithRating);
+                    } else if (typeof addTechnicalSkillCategory === 'function') {
+                        // Fallback auf alte Funktion (ohne Level)
+                        console.warn('⚠️ addTechnicalSkillWithRating nicht verfügbar, verwende Fallback ohne Level');
+                        const skillNames = skillsWithRating.map(s => s.name);
+                        addTechnicalSkillCategory('Technische Fähigkeiten', skillNames);
+                    } else {
+                        console.error('❌ Keine Skill-Funktion verfügbar!');
+                    }
+                }, 100);
             }
         }
         
@@ -939,18 +950,23 @@ function applyOCRData() {
             if (softContainer) {
                 softContainer.innerHTML = '';
                 
-                parsed.skills.soft.forEach(skill => {
-                    // Neues Format: {name: "Skill", level: 8}
-                    const skillName = typeof skill === 'object' ? skill.name : skill;
-                    const skillLevel = typeof skill === 'object' ? skill.level : 5;
-                    
-                    if (typeof addSoftSkillWithRating === 'function') {
-                        addSoftSkillWithRating(skillName, skillLevel);
-                    } else if (typeof addSoftSkill === 'function') {
-                        addSoftSkill(skillName);
-                    }
-                });
-                console.log('✅ Soft Skills hinzugefügt:', parsed.skills.soft);
+                // Warte kurz, damit die Funktionen verfügbar sind
+                setTimeout(() => {
+                    parsed.skills.soft.forEach(skill => {
+                        // Neues Format: {name: "Skill", level: 8}
+                        const skillName = typeof skill === 'object' ? skill.name : skill;
+                        const skillLevel = typeof skill === 'object' ? (skill.level || 5) : 5;
+                        
+                        if (typeof addSoftSkillWithRating === 'function') {
+                            addSoftSkillWithRating(skillName, skillLevel, '');
+                        } else if (typeof window.addSoftSkillWithRating === 'function') {
+                            window.addSoftSkillWithRating(skillName, skillLevel, '');
+                        } else if (typeof addSoftSkill === 'function') {
+                            addSoftSkill(skillName);
+                        }
+                    });
+                    console.log('✅ Soft Skills mit Level hinzugefügt:', parsed.skills.soft);
+                }, 100);
             }
         }
     }
