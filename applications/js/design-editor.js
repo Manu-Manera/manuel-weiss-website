@@ -85,6 +85,9 @@ class DesignEditor {
             // Template
             template: 'modern',
             columns: 1,
+            // Column widths (for 2-column layout)
+            leftColumnWidth: 35, // percentage
+            rightColumnWidth: 65, // percentage
             
             // NEW: Experience Format
             experienceFormat: 'mixed', // 'prose', 'bullets', 'mixed'
@@ -241,10 +244,47 @@ class DesignEditor {
             columnsSelect.value = String(this.settings.columns || 1);
             columnsSelect.addEventListener('change', (e) => {
                 this.settings.columns = parseInt(e.target.value, 10);
+                // Zeige/Verstecke Spaltenbreite-Controls
+                const columnWidthControls = document.getElementById('columnWidthControls');
+                if (columnWidthControls) {
+                    columnWidthControls.style.display = this.settings.columns === 2 ? 'block' : 'none';
+                }
                 this.applySettings();
                 this.saveSettings();
                 this.updatePreview();
             });
+            
+            // Initial: Zeige Controls wenn 2-Spalten aktiv
+            const columnWidthControls = document.getElementById('columnWidthControls');
+            if (columnWidthControls) {
+                columnWidthControls.style.display = this.settings.columns === 2 ? 'block' : 'none';
+            }
+        }
+        
+        // Spaltenbreite-Slider
+        this.setupSlider('designLeftColumnWidth', 'leftColumnWidth', 20, 50, '%', 1);
+        this.setupSlider('designRightColumnWidth', 'rightColumnWidth', 50, 80, '%', 1);
+        
+        // Synchronisiere Spaltenbreiten (Summe sollte ~100% sein)
+        const leftSlider = document.getElementById('designLeftColumnWidth');
+        const rightSlider = document.getElementById('designRightColumnWidth');
+        if (leftSlider && rightSlider) {
+            const syncColumns = () => {
+                const left = parseInt(leftSlider.value);
+                const right = parseInt(rightSlider.value);
+                // Wenn Summe nicht 100, passe rechte Spalte an
+                if (left + right !== 100) {
+                    rightSlider.value = 100 - left;
+                    this.settings.rightColumnWidth = 100 - left;
+                    const rightValue = document.getElementById('designRightColumnWidthValue');
+                    if (rightValue) rightValue.textContent = (100 - left) + '%';
+                }
+                this.saveSettings();
+                this.updatePreview();
+            };
+            
+            leftSlider.addEventListener('change', syncColumns);
+            rightSlider.addEventListener('change', syncColumns);
         }
 
         const showIconsToggle = document.getElementById('designShowIcons');
@@ -1563,9 +1603,13 @@ class DesignEditor {
             const leftTextColor = this.settings.sidebarTextColor && this.settings.leftColumnBg !== 'transparent'
                 ? `color: ${this.settings.sidebarTextColor};`
                 : '';
+            
+            // Spaltenbreiten anwenden
+            const leftWidth = this.settings.leftColumnWidth || 35;
+            const rightWidth = this.settings.rightColumnWidth || 65;
 
             html += `
-                <div class="resume-preview-columns">
+                <div class="resume-preview-columns" style="display: grid; grid-template-columns: ${leftWidth}% ${rightWidth}%; gap: 24px;">
                     <div class="resume-preview-column resume-preview-column-left" style="${leftBg} ${leftTextColor}">
                         ${left.map(section => this.renderSectionById(section, resumeData)).join('')}
                     </div>
@@ -1791,12 +1835,15 @@ class DesignEditor {
     // ═══════════════════════════════════════════════════════════════════════════
 
     renderHeaderSection(data, section) {
-        const alignClass = this.settings.headerAlign === 'left' ? 'align-left' : '';
+        // Header-Ausrichtung: left, center, right
+        const alignClass = this.settings.headerAlign === 'left' ? 'align-left' 
+                         : this.settings.headerAlign === 'right' ? 'align-right' 
+                         : ''; // center ist default
         const headerBg = this.settings.headerBackground && this.settings.headerBackground !== 'transparent'
             ? `background: ${this.settings.headerBackground}; margin: -${this.settings.marginTop}mm -${this.settings.marginRight}mm 0 -${this.settings.marginLeft}mm; padding: ${this.settings.marginTop}mm ${this.settings.marginRight}mm 20px ${this.settings.marginLeft}mm;`
             : '';
         
-        // Profile image
+        // Profile image mit Crop-Einstellungen
         let profileImageHtml = '';
         if (this.settings.showProfileImage && data.profileImageUrl) {
             const sizeMap = { small: '80px', medium: '120px', large: '160px' };
@@ -1806,12 +1853,28 @@ class DesignEditor {
             const border = this.settings.profileImageBorder === 'thin' ? '2px solid #e2e8f0'
                          : this.settings.profileImageBorder === 'accent' ? `3px solid ${this.settings.accentColor}` : 'none';
             
+            // Crop-Einstellungen anwenden
+            const zoom = this.settings.profileImageZoom || 100;
+            const offsetX = this.settings.profileImageOffsetX || 0;
+            const offsetY = this.settings.profileImageOffsetY || 0;
+            
             profileImageHtml = `
                 <div class="resume-preview-profile-image" style="
                     width: ${size}; height: ${size}; border-radius: ${shape}; border: ${border};
-                    overflow: hidden; flex-shrink: 0;
+                    overflow: hidden; flex-shrink: 0; position: relative;
                 ">
-                    <img src="${data.profileImageUrl}" alt="Profilbild" style="width: 100%; height: 100%; object-fit: cover;">
+                    <img src="${data.profileImageUrl}" alt="Profilbild" style="
+                        width: ${zoom}%;
+                        height: ${zoom}%;
+                        object-fit: cover;
+                        object-position: ${50 + offsetX}% ${50 + offsetY}%;
+                        transform: translate(${offsetX}%, ${offsetY}%);
+                        position: absolute;
+                        top: 50%;
+                        left: 50%;
+                        margin-top: -${zoom/2}%;
+                        margin-left: -${zoom/2}%;
+                    ">
                 </div>
             `;
         }
