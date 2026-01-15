@@ -539,13 +539,16 @@ FÜR JEDE BERUFSERFAHRUNG EXTRAHIERE:
 - location: Stadt/Land
 - startDate: Format MM/YYYY (z.B. "05/2022")
 - endDate: Format MM/YYYY oder "heute"/"aktuell"
-- description: Der VOLLSTÄNDIGE Fließtext, der die Rolle beschreibt (NICHT kürzen!)
-- bullets: JEDER EINZELNE Stichpunkt als separates Array-Element
+- description: Der VOLLSTÄNDIGE Text, der die Rolle beschreibt - INKLUSIVE ALLER Stichpunkte!
+  * WICHTIG: Wenn Stichpunkte vorhanden sind (• oder -), füge sie ALLE in das description-Feld ein
+  * Format: Beschreibungstext (falls vorhanden) + Zeilenumbruch + alle Stichpunkte mit Zeilenumbrüchen
   * Beispiel: Wenn du siehst:
-    "• Leitung von Implementierungsprojekten
+    "Verantwortlich für HR-Prozesse.
+     • Leitung von Implementierungsprojekten
      • Konzeption und Konfiguration
      • Beratung zu HR-Prozessen"
-    Dann muss bullets sein: ["Leitung von Implementierungsprojekten", "Konzeption und Konfiguration", "Beratung zu HR-Prozessen"]
+    Dann muss description sein: "Verantwortlich für HR-Prozesse.\n• Leitung von Implementierungsprojekten\n• Konzeption und Konfiguration\n• Beratung zu HR-Prozessen"
+  * KEIN separates bullets-Feld mehr - alles in description!
 - technologies: Alle erwähnten Tools, Software, Systeme (z.B. SAP, UKG, ADONIS, etc.)
 
 ═══════════════════════════════════════════════════════════════════════════════
@@ -578,12 +581,7 @@ OUTPUT FORMAT (NUR VALIDES JSON):
             "location": "Stadt",
             "startDate": "MM/YYYY",
             "endDate": "MM/YYYY oder heute",
-            "description": "VOLLSTÄNDIGER Beschreibungstext - NICHT KÜRZEN!",
-            "bullets": [
-                "Erster vollständiger Stichpunkt",
-                "Zweiter vollständiger Stichpunkt",
-                "ALLE weiteren Stichpunkte einzeln"
-            ],
+            "description": "VOLLSTÄNDIGER Beschreibungstext INKLUSIVE ALLER Stichpunkte - NICHT KÜRZEN!\n• Erster vollständiger Stichpunkt\n• Zweiter vollständiger Stichpunkt\n• ALLE weiteren Stichpunkte mit Zeilenumbrüchen",
             "technologies": ["Tool1", "System2"]
         }
     ],
@@ -707,7 +705,7 @@ WICHTIG:
 Format:
 {
     "name": "", "email": "", "phone": "", "address": "", "title": "", "summary": "",
-    "experience": [{"position": "", "company": "", "location": "", "startDate": "MM/YYYY", "endDate": "MM/YYYY", "description": "VOLLSTÄNDIG", "bullets": ["JEDER Stichpunkt einzeln"], "technologies": []}],
+    "experience": [{"position": "", "company": "", "location": "", "startDate": "MM/YYYY", "endDate": "MM/YYYY", "description": "VOLLSTÄNDIG INKLUSIVE ALLER STICHPUNKTE (mit Zeilenumbrüchen)", "technologies": []}],
     "education": [{"degree": "", "institution": "", "location": "", "startDate": "", "endDate": "", "description": ""}],
     "skills": {"technical": [{"name": "", "level": 5}], "soft": [{"name": "", "level": 5}]},
     "languages": [{"language": "", "level": ""}]
@@ -821,15 +819,24 @@ function applyOCRData() {
             console.log(`📋 Verarbeite ${parsed.experience.length} Berufserfahrungen...`);
             
             parsed.experience.forEach((exp, index) => {
-                // Convert bullets array to string with line breaks
-                let bulletsText = '';
-                if (exp.bullets && Array.isArray(exp.bullets)) {
-                    // Stelle sicher, dass alle Bullets als Strings verarbeitet werden
-                    bulletsText = exp.bullets.map(b => {
+                // Kombiniere description und bullets in ein einziges Beschreibungsfeld
+                let fullDescription = exp.description || '';
+                
+                if (exp.bullets && Array.isArray(exp.bullets) && exp.bullets.length > 0) {
+                    // Konvertiere bullets zu Text mit Zeilenumbrüchen
+                    const bulletsText = exp.bullets.map(b => {
                         const text = typeof b === 'string' ? b : String(b);
                         return text.startsWith('-') || text.startsWith('•') ? text : `- ${text}`;
                     }).join('\n');
-                    console.log(`  ✓ ${exp.position}: ${exp.bullets.length} Stichpunkte extrahiert`);
+                    
+                    // Füge bullets zur description hinzu (mit Zeilenumbruch dazwischen)
+                    if (fullDescription) {
+                        fullDescription += '\n\n' + bulletsText;
+                    } else {
+                        fullDescription = bulletsText;
+                    }
+                    
+                    console.log(`  ✓ ${exp.position}: ${exp.bullets.length} Stichpunkte in Beschreibung integriert`);
                 }
                 
                 const isCurrentJob = exp.endDate?.toLowerCase() === 'heute' || 
@@ -845,8 +852,7 @@ function applyOCRData() {
                     startDate: convertDateFormat(exp.startDate),
                     endDate: isCurrentJob ? '' : convertDateFormat(exp.endDate),
                     currentJob: isCurrentJob,
-                    description: exp.description || '',
-                    bullets: bulletsText,
+                    description: fullDescription.trim(),
                     technologies: exp.technologies || []
                 };
                 
@@ -1666,13 +1672,9 @@ function addExperience(experienceData = {}) {
                 </div>
             </div>
             <div class="form-group" style="margin-bottom: 1rem;">
-                <label>Beschreibung (Fließtext)</label>
-                <textarea data-field="description" rows="3" placeholder="Kurze Beschreibung Ihrer Rolle und Hauptaufgaben...">${experienceData.description || ''}</textarea>
-            </div>
-            <div class="form-group" style="margin-bottom: 1rem;">
-                <label>Tätigkeiten als Stichpunkte</label>
-                <textarea data-field="bullets" rows="4" placeholder="- Entwicklung von Webanwendungen&#10;- Leitung eines 5-köpfigen Teams&#10;- Einführung agiler Methoden">${(experienceData.bullets || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
-                <small style="color: #64748b; font-size: 0.75rem;">Jede Zeile wird als Stichpunkt dargestellt. Beginnen Sie mit - oder •</small>
+                <label>Beschreibung (Fließtext) *</label>
+                <textarea data-field="description" rows="6" placeholder="Beschreiben Sie Ihre Rolle, Hauptaufgaben und Erfolge. Sie können auch Stichpunkte verwenden (mit - oder •). Die KI kann Ihnen bei der Optimierung helfen." required>${(experienceData.description || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</textarea>
+                <small style="color: #64748b; font-size: 0.75rem;">Alle Informationen aus dem PDF-Lebenslauf landen hier. Nutzen Sie die KI-Integration für Optimierungen.</small>
             </div>
             <div class="form-group" style="margin-bottom: 1rem;">
                 <label>Achievements (Erfolge)</label>
@@ -2984,18 +2986,12 @@ function generateResumeHTML(data, style = {}) {
                 companyHtml += `, ${exp.location}`;
             }
             
-            // Build description with optional bullets
+            // Build description (bullets sind jetzt in description integriert)
             let descHtml = '';
             if (exp.description) {
-                descHtml += `<div class="entry-description">${exp.description}</div>`;
-            }
-            if (exp.bullets) {
-                const bulletLines = exp.bullets.split('\\n').filter(b => b.trim());
-                if (bulletLines.length > 0) {
-                    descHtml += `<ul class="entry-bullets" style="margin: 5px 0 0 20px; padding: 0; font-size: 10pt; color: #374151;">
-                        ${bulletLines.map(b => `<li style="margin-bottom: 2px;">${b.replace(/^[-•*]\\s*/, '')}</li>`).join('')}
-                    </ul>`;
-                }
+                // Konvertiere Zeilenumbrüche zu <br> für bessere Darstellung
+                const descriptionText = exp.description.replace(/\n/g, '<br>');
+                descHtml = `<div class="entry-description">${descriptionText}</div>`;
             }
             
             return `

@@ -1711,8 +1711,8 @@ class DesignEditor {
                 location: item.querySelector('[data-field="location"]')?.value || '',
                 startDate: item.querySelector('[data-field="startDate"]')?.value || '',
                 endDate: item.querySelector('[data-field="endDate"]')?.value || '',
-                description: item.querySelector('[data-field="description"]')?.value || '',
-                bullets: item.querySelector('[data-field="bullets"]')?.value || ''
+                description: item.querySelector('[data-field="description"]')?.value || ''
+                // bullets sind jetzt in description integriert
             });
         });
         
@@ -1953,29 +1953,30 @@ class DesignEditor {
                         companyHtml += `, ${exp.location}`;
                     }
                     
-                    // Description based on format
+                    // Description (bullets sind jetzt in description integriert)
                     let descriptionHtml = '';
-                    if (format === 'prose' && exp.description) {
-                        descriptionHtml = `<p class="resume-preview-item-description">${exp.description}</p>`;
-                    } else if (format === 'bullets' && exp.bullets) {
-                        const bullets = exp.bullets.split('\n').filter(b => b.trim());
-                        descriptionHtml = `<ul class="resume-preview-bullets">${bullets.map(b => `<li>${b.replace(/^[-•*]\s*/, '')}</li>`).join('')}</ul>`;
-                    } else if (format === 'mixed') {
-                        if (exp.description) {
-                            descriptionHtml = `<p class="resume-preview-item-description">${exp.description}</p>`;
-                        }
-                        if (exp.bullets) {
-                            const bullets = exp.bullets.split('\n').filter(b => b.trim());
-                            descriptionHtml += `<ul class="resume-preview-bullets">${bullets.map(b => `<li>${b.replace(/^[-•*]\s*/, '')}</li>`).join('')}</ul>`;
-                        } else if (exp.description && exp.description.includes('\n')) {
-                            // Auto-detect bullets from description
-                            const lines = exp.description.split('\n');
-                            const firstLine = lines[0];
-                            const bulletLines = lines.slice(1).filter(l => l.trim().match(/^[-•*]/));
+                    if (exp.description) {
+                        // Konvertiere Zeilenumbrüche zu <br> für bessere Darstellung
+                        // Wenn format 'bullets' oder 'mixed', konvertiere Stichpunkte zu <ul>
+                        if (format === 'bullets' || (format === 'mixed' && exp.description.includes('\n'))) {
+                            const lines = exp.description.split('\n').filter(l => l.trim());
+                            const bulletLines = lines.filter(l => l.trim().match(/^[-•*]/));
+                            const proseLines = lines.filter(l => !l.trim().match(/^[-•*]/));
+                            
                             if (bulletLines.length > 0) {
-                                descriptionHtml = `<p class="resume-preview-item-description">${firstLine}</p>`;
-                                descriptionHtml += `<ul class="resume-preview-bullets">${bulletLines.map(b => `<li>${b.replace(/^[-•*]\s*/, '')}</li>`).join('')}</ul>`;
+                                // Rendere als Bullet-Liste
+                                descriptionHtml = `<ul class="resume-preview-bullets">${bulletLines.map(b => `<li>${b.replace(/^[-•*]\s*/, '')}</li>`).join('')}</ul>`;
+                                // Füge Prose-Lines vorher hinzu, falls vorhanden
+                                if (proseLines.length > 0) {
+                                    descriptionHtml = `<p class="resume-preview-item-description">${proseLines.join('<br>')}</p>` + descriptionHtml;
+                                }
+                            } else {
+                                // Keine Bullets erkannt, rendere als normalen Text
+                                descriptionHtml = `<p class="resume-preview-item-description">${exp.description.replace(/\n/g, '<br>')}</p>`;
                             }
+                        } else {
+                            // Format 'prose' - einfach als Text rendern
+                            descriptionHtml = `<p class="resume-preview-item-description">${exp.description.replace(/\n/g, '<br>')}</p>`;
                         }
                     }
                     
