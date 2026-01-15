@@ -249,9 +249,9 @@
                         <!-- Letter Header -->
                         <div class="letter-header">
                             <div class="letter-sender">
-                                <span id="senderName">Max Mustermann</span>
-                                <span id="senderAddress">Musterstraße 1, 12345 Musterstadt</span>
-                                <span id="senderContact">max@example.com | +49 123 456789</span>
+                                <span id="senderName" contenteditable="true" class="editable-field">Max Mustermann</span>
+                                <span id="senderAddress" contenteditable="true" class="editable-field" placeholder="Ihre Adresse">Musterstraße 1, 12345 Musterstadt</span>
+                                <span id="senderContact" contenteditable="true" class="editable-field" placeholder="Ihre Kontaktdaten">max@example.com | +49 123 456789</span>
                             </div>
                             <div class="letter-date" id="letterDate"></div>
                         </div>
@@ -259,8 +259,8 @@
                         <!-- Letter Recipient -->
                         <div class="letter-recipient">
                             <input type="text" id="greetingSalutation" value="Sehr geehrte Damen und Herren," class="greeting-salutation-input" placeholder="Anrede (z.B. Sehr geehrte Damen und Herren,)">
-                            <span id="companyNameDisplay"></span>
-                            <span id="contactPersonDisplay"></span>
+                            <span id="companyNameDisplay" contenteditable="true" class="editable-field" placeholder="Firmenname"></span>
+                            <span id="contactPersonDisplay" contenteditable="true" class="editable-field" placeholder="z.Hd. Ansprechpartner"></span>
                         </div>
 
                         <!-- Letter Subject -->
@@ -276,8 +276,10 @@
                         <!-- Letter Footer -->
                         <div class="letter-footer">
                             <input type="text" id="greetingText" value="Mit freundlichen Grüßen" class="greeting-input" placeholder="Grußformel">
-                        <img id="signatureImage" alt="Unterschrift" style="display:none;">
-                            <input type="text" id="signatureName" class="signature-name-input" placeholder="Ihr Name">
+                            <div class="signature-container" id="signatureContainer">
+                                <img id="signatureImage" alt="Unterschrift" class="signature-image" style="display:none; cursor: move; user-select: none;" draggable="false">
+                                <input type="text" id="signatureName" class="signature-name-input" placeholder="Ihr Name">
+                            </div>
                         </div>
                     </div>
                 </div>
