@@ -13,7 +13,7 @@
     <!-- CSS -->
     <link rel="stylesheet" href="../styles.css">
     <link rel="stylesheet" href="css/applications-main.css">
-    <link rel="stylesheet" href="css/dashboard.css?v=20260115mobile">
+    <link rel="stylesheet" href="css/dashboard.css?v=20260115fix">
     <link rel="stylesheet" href="css/landing.css?v=20260110">
     
     <!-- Critical Mobile Navbar Override - Wie Hauptseite -->
@@ -329,23 +329,37 @@
 
     <!-- MAIN DASHBOARD -->
     <main class="dashboard-main">
-        <!-- Hero Stats Bar -->
+        <!-- Hero Stats Bar - Anklickbare Kacheln -->
         <div class="dashboard-stats-bar">
-            <div class="stat-item">
+            <div class="stat-item clickable" onclick="showTab('cover')" title="Anschreiben anzeigen">
                 <i class="fas fa-envelope"></i>
                 <div class="stat-content">
                     <span class="stat-number" id="statCoverLetters">0</span>
                     <span class="stat-label">Anschreiben</span>
                 </div>
             </div>
-            <div class="stat-item">
+            <div class="stat-item clickable" onclick="showTab('resume')" title="Lebensläufe anzeigen">
                 <i class="fas fa-file-alt"></i>
                 <div class="stat-content">
-                    <span class="stat-number" id="statResumes">1</span>
+                    <span class="stat-number" id="statResumes">0</span>
                     <span class="stat-label">Lebensläufe</span>
                 </div>
             </div>
-            <div class="stat-item">
+            <div class="stat-item clickable" onclick="showTab('documents')" title="Zeugnisse anzeigen">
+                <i class="fas fa-certificate"></i>
+                <div class="stat-content">
+                    <span class="stat-number" id="statDocuments">0</span>
+                    <span class="stat-label">Zeugnisse</span>
+                </div>
+            </div>
+            <div class="stat-item clickable" onclick="showTab('photos')" title="Fotos anzeigen">
+                <i class="fas fa-camera"></i>
+                <div class="stat-content">
+                    <span class="stat-number" id="statPhotos">0</span>
+                    <span class="stat-label">Fotos</span>
+                </div>
+            </div>
+            <div class="stat-item clickable" onclick="showTab('tracking')" title="Bewerbungen anzeigen">
                 <i class="fas fa-paper-plane"></i>
                 <div class="stat-content">
                     <span class="stat-number" id="statTotal">0</span>
@@ -1348,10 +1362,10 @@ Ihre Aufgaben:
     <script src="../js/global-api-manager.js?v=20260112i"></script>
     <script src="../js/aws-api-settings.js?v=20260113fix"></script>
     <script src="../js/cloud-data-service.js?v=20260114c"></script>
-    <script src="../js/unified-profile-service.js?v=20260115"></script>
+    <script src="../js/unified-profile-service.js?v=20260115fix2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="js/utils.js?v=20260112i"></script>
-    <script src="js/dashboard-core.js?v=20260113fix2"></script>
+    <script src="js/dashboard-core.js?v=20260115fix3"></script>
     <script src="js/quick-apply.js?v=20260112i"></script>
     
     <script>
@@ -1390,51 +1404,78 @@ Ihre Aufgaben:
             
             if (!authButton) return;
             
-            // DROPDOWN STATE - Komplett isoliert
+            // DROPDOWN STATE - Komplett isoliert und sicher
             let dropdownIsOpen = false;
-            let lastUserInteraction = 0;
+            let lastUserClickTime = 0;
+            let isMouseDown = false;
             
+            // Sichere Dropdown-Steuerung
             function forceCloseDropdown() {
                 dropdownIsOpen = false;
                 if (userDropdown) {
                     userDropdown.style.display = 'none';
                     userDropdown.classList.remove('show');
+                    userDropdown.setAttribute('aria-hidden', 'true');
                 }
             }
             
-            function toggleDropdown() {
-                // Nur wenn letzte Interaktion kürzlich war (verhindert programmatisches Öffnen)
+            function openDropdown() {
+                // Nur öffnen wenn: mousedown kürzlich war UND mindestens 50ms vergangen sind
                 const now = Date.now();
-                if (now - lastUserInteraction > 100) {
-                    console.log('❌ Dropdown-Toggle blockiert (keine kürzliche User-Interaktion)');
-                    return;
+                const timeSinceClick = now - lastUserClickTime;
+                if (timeSinceClick > 1000) {
+                    console.log('❌ Dropdown-Öffnen blockiert: zu lange seit letztem Klick (' + timeSinceClick + 'ms)');
+                    return false;
                 }
                 
-                dropdownIsOpen = !dropdownIsOpen;
+                dropdownIsOpen = true;
                 if (userDropdown) {
-                    userDropdown.style.display = dropdownIsOpen ? 'block' : 'none';
+                    userDropdown.style.display = 'block';
+                    userDropdown.classList.add('show');
+                    userDropdown.setAttribute('aria-hidden', 'false');
                 }
+                return true;
             }
             
-            // Schließe Dropdown bei fast allem
+            // CRITICAL: Schließe Dropdown bei JEDEM verdächtigen Event
             forceCloseDropdown(); // Initial geschlossen
             window.addEventListener('blur', forceCloseDropdown);
             window.addEventListener('focus', forceCloseDropdown);
             document.addEventListener('visibilitychange', forceCloseDropdown);
             document.addEventListener('scroll', forceCloseDropdown, true);
             
-            // Auth button click - STRIKTE Überprüfung
+            // Mousedown registrieren für sicheren Klick-Check
+            authButton.addEventListener('mousedown', (e) => {
+                if (e.isTrusted && e.button === 0) {
+                    isMouseDown = true;
+                    lastUserClickTime = Date.now();
+                }
+            }, { passive: true });
+            
+            authButton.addEventListener('mouseup', () => {
+                isMouseDown = false;
+            }, { passive: true });
+            
+            // Auth button click - ULTRA-STRIKTE Überprüfung
             authButton.addEventListener('click', (e) => {
-                // MEHRFACHE Sicherheitsprüfungen
+                // Sicherheitsprüfung 1: Muss ein trusted Event sein
                 if (!e.isTrusted) {
-                    console.log('❌ Programmatischer Klick blockiert');
+                    console.log('❌ [Auth] Programmatischer Klick blockiert');
                     forceCloseDropdown();
                     return;
                 }
                 
-                // Muss ein echter Pointer-Event sein
-                if (e.detail === 0 && e.pointerType !== 'mouse' && e.pointerType !== 'touch') {
-                    console.log('❌ Kein echter Pointer-Event');
+                // Sicherheitsprüfung 2: Muss ein echter Maus-Klick sein (detail > 0)
+                if (e.detail === 0) {
+                    console.log('❌ [Auth] Kein echter Mausklick (detail=0)');
+                    forceCloseDropdown();
+                    return;
+                }
+                
+                // Sicherheitsprüfung 3: lastUserClickTime muss kürzlich sein
+                const timeSinceClick = Date.now() - lastUserClickTime;
+                if (timeSinceClick > 1000) {
+                    console.log('❌ [Auth] Klick zu alt:', timeSinceClick, 'ms');
                     forceCloseDropdown();
                     return;
                 }
@@ -1442,12 +1483,15 @@ Ihre Aufgaben:
                 e.preventDefault();
                 e.stopPropagation();
                 
-                lastUserInteraction = Date.now();
-                
                 const isLoggedIn = window.awsAuth && window.awsAuth.isLoggedIn();
                 
                 if (isLoggedIn) {
-                    toggleDropdown();
+                    // Toggle basierend auf aktuellem Zustand
+                    if (dropdownIsOpen) {
+                        forceCloseDropdown();
+                    } else {
+                        openDropdown();
+                    }
                 } else {
                     forceCloseDropdown();
                     if (window.authModals) {
@@ -1456,7 +1500,7 @@ Ihre Aufgaben:
                         window.unifiedAuthModals.showLogin();
                     }
                 }
-            }, { passive: false });
+            }, { passive: false, capture: false });
             
             // Klick außerhalb schließt
             document.addEventListener('click', (e) => {
@@ -2278,6 +2322,16 @@ Ihre Aufgaben:
             const resumes = JSON.parse(localStorage.getItem('user_resumes') || '[]');
             const statResumes = document.getElementById('statResumes');
             if (statResumes) statResumes.textContent = resumes.length || 0;
+            
+            // Zeugnisse/Dokumente zählen
+            const documents = JSON.parse(localStorage.getItem('user_documents') || '[]');
+            const statDocuments = document.getElementById('statDocuments');
+            if (statDocuments) statDocuments.textContent = documents.length || 0;
+            
+            // Fotos zählen
+            const photos = JSON.parse(localStorage.getItem('user_application_photos') || '[]');
+            const statPhotos = document.getElementById('statPhotos');
+            if (statPhotos) statPhotos.textContent = photos.length || 0;
             
             // Bewerbungen aus DashboardState
             const apps = JSON.parse(localStorage.getItem('bewerbungsmanager_applications') || '[]');

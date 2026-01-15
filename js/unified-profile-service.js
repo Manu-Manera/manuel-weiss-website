@@ -60,9 +60,18 @@ class UnifiedProfileService {
             const cached = localStorage.getItem(this.cacheKey);
             if (cached) {
                 const { data, timestamp } = JSON.parse(cached);
+                
+                // KRITISCH: Cache verwerfen wenn "Test User" enthalten
+                if (data?.firstName === 'Test' || 
+                    (data?.firstName === 'Test' && data?.lastName === 'User')) {
+                    console.log('⚠️ Cache enthält "Test User" - wird verworfen');
+                    localStorage.removeItem(this.cacheKey);
+                    return false;
+                }
+                
                 if (Date.now() - timestamp < this.cacheExpiry) {
                     this.profile = data;
-                    console.log('📦 Profil aus Cache geladen');
+                    console.log('📦 Profil aus Cache geladen:', data?.firstName, data?.lastName);
                     return true;
                 }
             }
@@ -216,7 +225,7 @@ class UnifiedProfileService {
      */
     async loadFromResume() {
         try {
-            // Versuche Cloud-Resume
+            // PRIORITÄT 1: Cloud-Resumes
             if (window.cloudDataService) {
                 try {
                     const resumes = await window.cloudDataService.getResumes();
@@ -225,20 +234,40 @@ class UnifiedProfileService {
                         const latest = resumes.sort((a, b) => 
                             new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0)
                         )[0];
+                        console.log('📄 Resume aus Cloud geladen:', latest.personalInfo?.firstName);
                         return this.normalizeResumeData(latest);
                     }
                 } catch (e) {
-                    console.log('Cloud-Resume nicht verfügbar');
+                    console.log('Cloud-Resume nicht verfügbar:', e.message);
                 }
             }
 
-            // Fallback: LocalStorage Resume
+            // PRIORITÄT 2: user_resumes (Hauptspeicher für Dashboard)
+            const userResumes = localStorage.getItem('user_resumes');
+            if (userResumes) {
+                try {
+                    const resumes = JSON.parse(userResumes);
+                    if (resumes && resumes.length > 0) {
+                        const latest = resumes.sort((a, b) => 
+                            new Date(b.updatedAt || b.createdAt || 0) - new Date(a.updatedAt || a.createdAt || 0)
+                        )[0];
+                        console.log('📄 Resume aus user_resumes geladen:', latest.personalInfo?.firstName);
+                        return this.normalizeResumeData(latest);
+                    }
+                } catch (e) {
+                    console.log('user_resumes Parse-Fehler:', e.message);
+                }
+            }
+
+            // PRIORITÄT 3: resumeData (Älteres Format)
             const stored = localStorage.getItem('resumeData');
             if (stored) {
-                return this.normalizeResumeData(JSON.parse(stored));
+                const data = JSON.parse(stored);
+                console.log('📄 Resume aus resumeData geladen');
+                return this.normalizeResumeData(data);
             }
             
-            // Versuche auch gespeicherte Lebenslauf-Versionen
+            // PRIORITÄT 4: resume_versions
             const versions = localStorage.getItem('resume_versions');
             if (versions) {
                 const versionList = JSON.parse(versions);
@@ -246,6 +275,7 @@ class UnifiedProfileService {
                     const latest = versionList.sort((a, b) => 
                         new Date(b.savedAt || 0) - new Date(a.savedAt || 0)
                     )[0];
+                    console.log('📄 Resume aus resume_versions geladen');
                     return this.normalizeResumeData(latest.data || latest);
                 }
             }
@@ -369,18 +399,26 @@ class UnifiedProfileService {
             }
 
             if (userData) {
-                // Prüfe auf "Test User" - diese Daten ignorieren
+                // Prüfe auf "Test User" - diese Daten IMMER ignorieren
                 const name = userData.name || '';
                 const nameParts = name.split(' ');
+                const firstName = userData.firstName || nameParts[0] || '';
+                const lastName = userData.lastName || nameParts.slice(1).join(' ') || '';
                 
-                if (nameParts[0] === 'Test' && (nameParts[1] === 'User' || !nameParts[1])) {
-                    console.log('⚠️ Auth-Daten sind Testdaten, werden ignoriert');
+                // ERWEITERTE Prüfung auf Test-Daten
+                const testFirstNames = ['Test', 'test', 'TEST', 'Testuser', 'TestUser'];
+                const testLastNames = ['User', 'user', 'USER', ''];
+                
+                if (testFirstNames.includes(firstName) && 
+                    (testLastNames.includes(lastName) || !lastName)) {
+                    console.log('⚠️ Auth-Daten sind Testdaten, werden komplett ignoriert');
+                    // Nur Email zurückgeben, keinen Namen
                     return { email: userData.email || '' };
                 }
 
                 return {
-                    firstName: userData.firstName || nameParts[0] || '',
-                    lastName: userData.lastName || nameParts.slice(1).join(' ') || '',
+                    firstName: firstName,
+                    lastName: lastName,
                     email: userData.email || '',
                     profileImageUrl: userData.picture || userData.avatar || ''
                 };
