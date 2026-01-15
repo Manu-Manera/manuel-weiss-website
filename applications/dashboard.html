@@ -2130,26 +2130,71 @@ Ihre Aufgaben:
                 const userId = user?.userId || user?.id || user?.email || 'anonymous';
                 
                 let uploadError = null;
+                let uploadSuccess = false;
                 
-                // Upload to S3 if possible
-                if (window.awsMedia?.uploadDocument) {
+                // 1. Versuche Smart Media Upload (beste Option)
+                if (window.smartMediaUpload) {
                     try {
-                        const fileType = category === 'work' ? 'document' : 'certificate';
-                        const uploadResult = await window.awsMedia.uploadDocument(file, userId, fileType);
-                        documentData.url = uploadResult.publicUrl;
-                        documentData.storage = 's3';
+                        const categoryMap = {
+                            'certificates': 'certificate',
+                            'awards': 'certificate',
+                            'work': 'document'
+                        };
+                        const uploadCategory = categoryMap[category] || 'certificate';
+                        
+                        showToast('Upload läuft...', 'info');
+                        
+                        const result = await window.smartMediaUpload.upload(file, {
+                            category: uploadCategory,
+                            userId: userId,
+                            onProgress: (progress) => {
+                                console.log(`Upload Progress: ${progress}% - ${file.name}`);
+                            }
+                        });
+                        
+                        if (result && result.url) {
+                            documentData.url = result.url;
+                            documentData.storage = result.uploadMethod === 'AWS S3' ? 's3' : 'local';
+                            uploadSuccess = true;
+                            console.log('✅ Smart Media Upload erfolgreich:', result.url);
+                        }
                     } catch (error) {
                         uploadError = error;
-                        console.warn('S3 Upload fehlgeschlagen, fallback lokal:', error);
+                        console.warn('Smart Media Upload fehlgeschlagen, versuche Fallback:', error);
                     }
                 }
                 
-                if (!documentData.url) {
-                    if (file.size > 1024 * 1024) {
-                        showToast('PDF zu groß für lokalen Speicher. Bitte erneut versuchen.', 'error');
+                // 2. Fallback: awsMedia.uploadDocument
+                if (!uploadSuccess && window.awsMedia?.uploadDocument) {
+                    try {
+                        const fileType = category === 'work' ? 'document' : 'certificate';
+                        const uploadResult = await window.awsMedia.uploadDocument(file, userId, fileType);
+                        if (uploadResult && uploadResult.publicUrl) {
+                            documentData.url = uploadResult.publicUrl;
+                            documentData.storage = 's3';
+                            uploadSuccess = true;
+                            console.log('✅ AWS Media Upload erfolgreich:', uploadResult.publicUrl);
+                        }
+                    } catch (error) {
+                        uploadError = error;
+                        console.warn('AWS Media Upload fehlgeschlagen, versuche lokalen Fallback:', error);
+                    }
+                }
+                
+                // 3. Fallback: Lokaler Speicher (nur für kleine Dateien)
+                if (!uploadSuccess) {
+                    // localStorage Limit ist ca. 5-10MB, aber wir nehmen 5MB als sicher
+                    const maxLocalSize = 5 * 1024 * 1024; // 5MB
+                    
+                    if (file.size > maxLocalSize) {
+                        const errorMsg = uploadError 
+                            ? `Upload fehlgeschlagen: ${uploadError.message || 'Unbekannter Fehler'}. Datei ist zu groß für lokalen Speicher (max. 5MB). Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.`
+                            : 'PDF zu groß für lokalen Speicher (max. 5MB). Bitte versuchen Sie es erneut.';
+                        showToast(errorMsg, 'error');
                         element.closest('.document-category-modal').remove();
                         return;
                     }
+                    
                     // readFileAsDataURL ist in dashboard-core.js definiert
                     // Falls nicht verfügbar, hier definieren
                     const readFileAsDataURL = window.readFileAsDataURL || function(file) {
@@ -2160,9 +2205,18 @@ Ihre Aufgaben:
                             reader.readAsDataURL(file);
                         });
                     };
-                    const dataUrl = await readFileAsDataURL(file);
-                    documentData.dataUrl = dataUrl;
-                    documentData.storage = 'local';
+                    
+                    try {
+                        const dataUrl = await readFileAsDataURL(file);
+                        documentData.dataUrl = dataUrl;
+                        documentData.storage = 'local';
+                        console.log('✅ Dokument lokal gespeichert (Fallback)');
+                    } catch (readError) {
+                        console.error('Fehler beim Lesen der Datei:', readError);
+                        showToast('Fehler beim Lesen der Datei. Bitte versuchen Sie es erneut.', 'error');
+                        element.closest('.document-category-modal').remove();
+                        return;
+                    }
                 }
                 
                 // Save metadata to cloud - IMMER wenn eingeloggt
