@@ -227,27 +227,31 @@
       console.error('❌ Document upload error:', {
         error: error.message,
         stack: error.stack,
-        endpoint: endpoint,
         fileName: file.name,
         fileSize: file.size,
-        userId: userId
+        fileType: file.type,
+        userId: userId,
+        endpoint: endpoint
       });
       
       // Provide more helpful error messages
-      if (error.message && (error.message.includes('Failed to fetch') || error.message.includes('NetworkError') || error.message.includes('Load failed'))) {
+      if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
         throw new Error(`Netzwerkfehler: Die Verbindung zum Server konnte nicht hergestellt werden. ` +
           `Bitte überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut. ` +
           `Endpoint: ${endpoint}`);
       }
       
-      // Wenn die Fehlermeldung bereits eine benutzerfreundliche Nachricht enthält, diese verwenden
-      if (error.message && (error.message.includes('API Gateway') || error.message.includes('Upload-URL-Anfrage') || error.message.includes('Upload fehlgeschlagen') || error.message.includes('Zugriff verweigert'))) {
+      // Wenn die Fehlermeldung bereits benutzerfreundlich ist, weiterwerfen
+      if (error.message.includes('Upload fehlgeschlagen') || 
+          error.message.includes('Zugriff verweigert') || 
+          error.message.includes('Netzwerkfehler') ||
+          error.message.includes('API Gateway nicht verfügbar') ||
+          error.message.includes('Upload-URL-Anfrage fehlgeschlagen')) {
         throw error;
       }
       
-      // Generische Fehlermeldung mit mehr Kontext
-      throw new Error(`Upload fehlgeschlagen: ${error.message || 'Unbekannter Fehler'}. ` +
-        `Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.`);
+      // Generische Fehlermeldung für unbekannte Fehler
+      throw new Error(`Upload fehlgeschlagen: ${error.message || 'Unbekannter Fehler'}. Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.`);
     }
   }
 
