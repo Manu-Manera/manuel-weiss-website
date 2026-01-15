@@ -1248,3 +1248,205 @@
 .design-section-item {
     animation: slideInLeft 0.3s ease-out;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SKILLS MIT BEWERTUNG
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.skill-item-rated {
+    background: #f8fafc;
+    border: 1px solid var(--design-border);
+    border-radius: 8px;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.skill-item-rated.soft {
+    background: linear-gradient(135deg, #fef3c7 0%, #fff7ed 100%);
+    border-color: #f59e0b;
+}
+
+.skill-rated-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.skill-name-input {
+    flex: 1;
+    min-width: 120px;
+    padding: 0.5rem;
+    border: 1px solid var(--design-border);
+    border-radius: 4px;
+    font-size: 0.875rem;
+}
+
+.skill-level-control {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    border: 1px solid var(--design-border);
+}
+
+.skill-level-control label {
+    font-size: 0.7rem;
+    color: var(--design-text-muted);
+}
+
+.skill-level-control input[type="range"] {
+    width: 80px;
+    height: 6px;
+}
+
+.skill-level-display {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--design-accent);
+    min-width: 35px;
+}
+
+.skill-category-input {
+    width: 100%;
+    margin-top: 0.5rem;
+    padding: 0.35rem 0.5rem;
+    border: 1px dashed var(--design-border);
+    border-radius: 4px;
+    font-size: 0.75rem;
+    color: var(--design-text-muted);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   BILDAUSSCHNITT / IMAGE CROP
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.image-crop-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.image-crop-controls label {
+    min-width: 55px;
+}
+
+.image-crop-controls input[type="range"] {
+    flex: 1;
+}
+
+.design-image-preview {
+    background: #f8fafc;
+    border: 1px solid var(--design-border);
+    border-radius: 6px;
+    padding: 0.5rem;
+    text-align: center;
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.design-image-preview img {
+    max-width: 100%;
+    max-height: 150px;
+    border-radius: 4px;
+    object-fit: contain;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   UNTERSCHRIFT / SIGNATURE STYLES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.signature-draggable {
+    cursor: grab;
+    transition: border-color 0.2s;
+}
+
+.signature-draggable:hover {
+    border-color: var(--design-accent);
+}
+
+.signature-draggable.dragging {
+    cursor: grabbing;
+    border-color: var(--design-success);
+}
+
+.signature-draggable .drag-hint {
+    display: block;
+    text-align: center;
+}
+
+.signature-draggable img {
+    cursor: grab;
+}
+
+.signature-size-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.signature-size-controls input[type="range"] {
+    flex: 1;
+}
+
+/* Signature in Resume Preview */
+.resume-signature-area {
+    position: absolute;
+    cursor: move;
+    user-select: none;
+    z-index: 100;
+}
+
+.resume-signature-area.draggable {
+    outline: 2px dashed var(--design-accent);
+    outline-offset: 4px;
+}
+
+.resume-signature-area img {
+    pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DATUMSFORMAT PREVIEW
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.date-format-preview {
+    font-family: monospace;
+}
+
+#dateFormatPreview {
+    font-weight: 600;
+    color: var(--design-accent);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   FIRMENLOGO / COMPANY LOGO
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.resume-company-logo {
+    position: absolute;
+    z-index: 50;
+}
+
+.resume-company-logo.top-left {
+    top: 20px;
+    left: 20px;
+}
+
+.resume-company-logo.top-right {
+    top: 20px;
+    right: 20px;
+}
+
+.resume-company-logo.bottom-right {
+    bottom: 20px;
+    right: 20px;
+}
+
+.resume-company-logo img {
+    object-fit: contain;
+}

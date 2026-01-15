@@ -32,12 +32,16 @@ class DesignEditor {
         this.setupAutoSave();
         this.setupSkillDisplay();
         this.setupProfileImage();
+        this.setupImageCrop();
+        this.setupCompanyLogo();
+        this.setupDateFormat();
         this.setupSignature();
+        this.setupSignatureExtended();
         this.setupPageNumbers();
         this.applySettings();
         this.updatePreview();
         
-        console.log('🎨 Design Editor initialized (Extended)');
+        console.log('🎨 Design Editor initialized (Extended + DateFormat + ImageCrop + CompanyLogo)');
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -97,18 +101,37 @@ class DesignEditor {
             profileImagePosition: 'right', // 'left', 'right', 'center'
             profileImageBorder: 'none', // 'none', 'thin', 'accent'
             profileImageUrl: '',
+            // Image Crop Settings
+            profileImageZoom: 100,
+            profileImageOffsetX: 0,
+            profileImageOffsetY: 0,
+            
+            // NEW: Company Logo (Application Target)
+            showCompanyLogo: false,
+            companyLogoUrl: '',
+            companyLogoPosition: 'top-right', // 'top-left', 'top-right', 'bottom-right'
+            companyLogoSize: 'medium', // 'small', 'medium', 'large'
+            
+            // NEW: Date Format Settings
+            dateFormat: 'MM.YYYY', // 'MM.YYYY', 'MM/YYYY', 'MMMM YYYY', 'MMM YYYY', 'YYYY'
+            dateSeparator: ' - ', // ' - ', ' – ', ' bis ', ' → '
+            dateCurrent: 'heute', // 'heute', 'aktuell', 'present', 'bis heute'
             
             // NEW: Page Numbers
             showPageNumbers: false,
             pageNumberPosition: 'bottom-center', // 'bottom-left', 'bottom-center', 'bottom-right'
             pageNumberFormat: 'Seite X von Y', // 'Seite X von Y', 'X/Y', 'X'
             
-            // NEW: Signature
+            // NEW: Signature (Extended)
             showSignature: false,
             signatureImage: '',
             signatureDate: '',
             signatureLocation: '',
             signatureLine: true,
+            signaturePosition: 'bottom-right', // 'bottom-right', 'bottom-left', 'bottom-center', 'after-content', 'custom'
+            signatureWidth: 150,
+            signatureCustomX: 70, // percentage
+            signatureCustomY: 90, // percentage
             
             // Sections Order & Visibility
             sections: [
@@ -843,6 +866,419 @@ class DesignEditor {
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
+    // DATE FORMAT SETTINGS
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    setupDateFormat() {
+        const dateFormat = document.getElementById('designDateFormat');
+        const dateSeparator = document.getElementById('designDateSeparator');
+        const dateCurrent = document.getElementById('designDateCurrent');
+        
+        const updatePreview = () => {
+            const previewEl = document.getElementById('dateFormatPreview');
+            if (previewEl) {
+                const format = this.settings.dateFormat || 'MM.YYYY';
+                const sep = this.settings.dateSeparator || ' - ';
+                const current = this.settings.dateCurrent || 'heute';
+                previewEl.textContent = this.formatDateExample(format) + sep + current;
+            }
+            this.saveSettings();
+            this.updatePreview();
+        };
+        
+        if (dateFormat) {
+            dateFormat.value = this.settings.dateFormat || 'MM.YYYY';
+            dateFormat.addEventListener('change', (e) => {
+                this.settings.dateFormat = e.target.value;
+                updatePreview();
+            });
+        }
+        
+        if (dateSeparator) {
+            dateSeparator.value = this.settings.dateSeparator || ' - ';
+            dateSeparator.addEventListener('change', (e) => {
+                this.settings.dateSeparator = e.target.value;
+                updatePreview();
+            });
+        }
+        
+        if (dateCurrent) {
+            dateCurrent.value = this.settings.dateCurrent || 'heute';
+            dateCurrent.addEventListener('change', (e) => {
+                this.settings.dateCurrent = e.target.value;
+                updatePreview();
+            });
+        }
+        
+        // Initial preview
+        const previewEl = document.getElementById('dateFormatPreview');
+        if (previewEl) {
+            const format = this.settings.dateFormat || 'MM.YYYY';
+            const sep = this.settings.dateSeparator || ' - ';
+            const current = this.settings.dateCurrent || 'heute';
+            previewEl.textContent = this.formatDateExample(format) + sep + current;
+        }
+    }
+    
+    formatDateExample(format) {
+        const now = new Date();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const year = now.getFullYear();
+        const monthNames = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 
+                           'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
+        const monthShort = ['Jan.', 'Feb.', 'März', 'Apr.', 'Mai', 'Juni', 
+                           'Juli', 'Aug.', 'Sep.', 'Okt.', 'Nov.', 'Dez.'];
+        
+        switch(format) {
+            case 'MM.YYYY': return `${month}.${year}`;
+            case 'MM/YYYY': return `${month}/${year}`;
+            case 'MMMM YYYY': return `${monthNames[now.getMonth()]} ${year}`;
+            case 'MMM YYYY': return `${monthShort[now.getMonth()]} ${year}`;
+            case 'YYYY': return `${year}`;
+            default: return `${month}.${year}`;
+        }
+    }
+    
+    /**
+     * Formatiert ein Datum gemäß den aktuellen Einstellungen
+     */
+    formatDate(dateStr, isCurrent = false) {
+        if (!dateStr && isCurrent) {
+            return this.settings.dateCurrent || 'heute';
+        }
+        if (!dateStr) return '';
+        
+        // Parse YYYY-MM format
+        const match = dateStr.match(/^(\d{4})-(\d{2})$/);
+        if (!match) return dateStr;
+        
+        const year = match[1];
+        const month = match[2];
+        const monthNum = parseInt(month) - 1;
+        
+        const monthNames = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 
+                           'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
+        const monthShort = ['Jan.', 'Feb.', 'März', 'Apr.', 'Mai', 'Juni', 
+                           'Juli', 'Aug.', 'Sep.', 'Okt.', 'Nov.', 'Dez.'];
+        
+        const format = this.settings.dateFormat || 'MM.YYYY';
+        
+        switch(format) {
+            case 'MM.YYYY': return `${month}.${year}`;
+            case 'MM/YYYY': return `${month}/${year}`;
+            case 'MMMM YYYY': return `${monthNames[monthNum]} ${year}`;
+            case 'MMM YYYY': return `${monthShort[monthNum]} ${year}`;
+            case 'YYYY': return year;
+            default: return `${month}.${year}`;
+        }
+    }
+    
+    formatDateRange(startDate, endDate, isCurrent = false) {
+        const start = this.formatDate(startDate);
+        const end = isCurrent ? (this.settings.dateCurrent || 'heute') : this.formatDate(endDate);
+        const sep = this.settings.dateSeparator || ' - ';
+        return start + sep + end;
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // IMAGE CROP SETTINGS
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    setupImageCrop() {
+        const zoomSlider = document.getElementById('profileImageZoom');
+        const offsetXSlider = document.getElementById('profileImageOffsetX');
+        const offsetYSlider = document.getElementById('profileImageOffsetY');
+        const resetBtn = document.getElementById('resetImageCropBtn');
+        
+        const updateCrop = () => {
+            this.saveSettings();
+            this.updatePreview();
+            this.updateProfileImagePreview();
+        };
+        
+        if (zoomSlider) {
+            zoomSlider.value = this.settings.profileImageZoom || 100;
+            document.getElementById('zoomValue').textContent = zoomSlider.value + '%';
+            zoomSlider.addEventListener('input', (e) => {
+                this.settings.profileImageZoom = parseInt(e.target.value);
+                updateCrop();
+            });
+        }
+        
+        if (offsetXSlider) {
+            offsetXSlider.value = this.settings.profileImageOffsetX || 0;
+            document.getElementById('offsetXValue').textContent = offsetXSlider.value + '%';
+            offsetXSlider.addEventListener('input', (e) => {
+                this.settings.profileImageOffsetX = parseInt(e.target.value);
+                updateCrop();
+            });
+        }
+        
+        if (offsetYSlider) {
+            offsetYSlider.value = this.settings.profileImageOffsetY || 0;
+            document.getElementById('offsetYValue').textContent = offsetYSlider.value + '%';
+            offsetYSlider.addEventListener('input', (e) => {
+                this.settings.profileImageOffsetY = parseInt(e.target.value);
+                updateCrop();
+            });
+        }
+        
+        if (resetBtn) {
+            resetBtn.addEventListener('click', () => {
+                this.settings.profileImageZoom = 100;
+                this.settings.profileImageOffsetX = 0;
+                this.settings.profileImageOffsetY = 0;
+                
+                if (zoomSlider) { zoomSlider.value = 100; document.getElementById('zoomValue').textContent = '100%'; }
+                if (offsetXSlider) { offsetXSlider.value = 0; document.getElementById('offsetXValue').textContent = '0%'; }
+                if (offsetYSlider) { offsetYSlider.value = 0; document.getElementById('offsetYValue').textContent = '0%'; }
+                
+                updateCrop();
+            });
+        }
+    }
+    
+    updateProfileImagePreview() {
+        const preview = document.getElementById('profileImagePreview');
+        if (!preview || !this.settings.profileImageUrl) return;
+        
+        const zoom = this.settings.profileImageZoom || 100;
+        const offsetX = this.settings.profileImageOffsetX || 0;
+        const offsetY = this.settings.profileImageOffsetY || 0;
+        
+        preview.innerHTML = `
+            <div style="width: 100px; height: 100px; overflow: hidden; border-radius: ${this.settings.profileImageShape === 'circle' ? '50%' : '8px'}; margin: 0 auto;">
+                <img src="${this.settings.profileImageUrl}" style="
+                    width: ${zoom}%;
+                    height: ${zoom}%;
+                    object-fit: cover;
+                    transform: translate(${offsetX}%, ${offsetY}%);
+                ">
+            </div>
+        `;
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // COMPANY LOGO SETTINGS
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    setupCompanyLogo() {
+        const showToggle = document.getElementById('designShowCompanyLogo');
+        const uploadInput = document.getElementById('companyLogoUpload');
+        const positionSelect = document.getElementById('designCompanyLogoPosition');
+        const sizeSelect = document.getElementById('designCompanyLogoSize');
+        
+        if (showToggle) {
+            showToggle.checked = this.settings.showCompanyLogo || false;
+            showToggle.addEventListener('change', (e) => {
+                this.settings.showCompanyLogo = e.target.checked;
+                this.toggleCompanyLogoOptions(e.target.checked);
+                this.saveSettings();
+                this.updatePreview();
+            });
+            this.toggleCompanyLogoOptions(showToggle.checked);
+        }
+        
+        if (uploadInput) {
+            uploadInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        this.settings.companyLogoUrl = event.target.result;
+                        this.showCompanyLogoPreview(event.target.result);
+                        this.saveSettings();
+                        this.updatePreview();
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+        
+        if (positionSelect) {
+            positionSelect.value = this.settings.companyLogoPosition || 'top-right';
+            positionSelect.addEventListener('change', (e) => {
+                this.settings.companyLogoPosition = e.target.value;
+                this.saveSettings();
+                this.updatePreview();
+            });
+        }
+        
+        if (sizeSelect) {
+            sizeSelect.value = this.settings.companyLogoSize || 'medium';
+            sizeSelect.addEventListener('change', (e) => {
+                this.settings.companyLogoSize = e.target.value;
+                this.saveSettings();
+                this.updatePreview();
+            });
+        }
+        
+        // Load existing logo
+        if (this.settings.companyLogoUrl) {
+            this.showCompanyLogoPreview(this.settings.companyLogoUrl);
+        }
+    }
+    
+    toggleCompanyLogoOptions(show) {
+        const options = document.getElementById('companyLogoOptions');
+        if (options) {
+            options.style.display = show ? 'block' : 'none';
+        }
+    }
+    
+    showCompanyLogoPreview(dataUrl) {
+        const preview = document.getElementById('companyLogoPreview');
+        if (preview) {
+            preview.innerHTML = `<img src="${dataUrl}" alt="Firmenlogo" style="max-height: 60px;">`;
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // SIGNATURE EXTENDED SETTINGS
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    setupSignatureExtended() {
+        const positionSelect = document.getElementById('designSignaturePosition');
+        const widthSlider = document.getElementById('signatureWidth');
+        const customXSlider = document.getElementById('signatureCustomX');
+        const customYSlider = document.getElementById('signatureCustomY');
+        
+        if (positionSelect) {
+            positionSelect.value = this.settings.signaturePosition || 'bottom-right';
+            positionSelect.addEventListener('change', (e) => {
+                this.settings.signaturePosition = e.target.value;
+                this.toggleCustomSignaturePosition(e.target.value === 'custom');
+                this.saveSettings();
+                this.updatePreview();
+            });
+            this.toggleCustomSignaturePosition(positionSelect.value === 'custom');
+        }
+        
+        if (widthSlider) {
+            widthSlider.value = this.settings.signatureWidth || 150;
+            document.getElementById('signatureWidthValue').textContent = widthSlider.value + 'px';
+            widthSlider.addEventListener('input', (e) => {
+                this.settings.signatureWidth = parseInt(e.target.value);
+                document.getElementById('signatureWidthValue').textContent = e.target.value + 'px';
+                this.saveSettings();
+                this.updatePreview();
+            });
+        }
+        
+        if (customXSlider) {
+            customXSlider.value = this.settings.signatureCustomX || 70;
+            document.getElementById('signatureXValue').textContent = customXSlider.value + '%';
+            customXSlider.addEventListener('input', (e) => {
+                this.settings.signatureCustomX = parseInt(e.target.value);
+                document.getElementById('signatureXValue').textContent = e.target.value + '%';
+                this.saveSettings();
+                this.updatePreview();
+            });
+        }
+        
+        if (customYSlider) {
+            customYSlider.value = this.settings.signatureCustomY || 90;
+            document.getElementById('signatureYValue').textContent = customYSlider.value + '%';
+            customYSlider.addEventListener('input', (e) => {
+                this.settings.signatureCustomY = parseInt(e.target.value);
+                document.getElementById('signatureYValue').textContent = e.target.value + '%';
+                this.saveSettings();
+                this.updatePreview();
+            });
+        }
+        
+        // Setup signature image extraction (remove background)
+        this.setupSignatureExtraction();
+    }
+    
+    toggleCustomSignaturePosition(show) {
+        const customOptions = document.getElementById('customSignaturePosition');
+        if (customOptions) {
+            customOptions.style.display = show ? 'block' : 'none';
+        }
+    }
+    
+    setupSignatureExtraction() {
+        const signaturePreview = document.getElementById('signaturePreview');
+        if (!signaturePreview) return;
+        
+        // Make signature preview a drop zone
+        signaturePreview.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            signaturePreview.classList.add('dragging');
+        });
+        
+        signaturePreview.addEventListener('dragleave', () => {
+            signaturePreview.classList.remove('dragging');
+        });
+        
+        signaturePreview.addEventListener('drop', (e) => {
+            e.preventDefault();
+            signaturePreview.classList.remove('dragging');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0 && files[0].type.startsWith('image/')) {
+                this.processSignatureImage(files[0]);
+            }
+        });
+    }
+    
+    processSignatureImage(file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const img = new Image();
+            img.onload = () => {
+                // Create canvas for background removal
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext('2d');
+                
+                ctx.drawImage(img, 0, 0);
+                
+                // Get image data for processing
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const data = imageData.data;
+                
+                // Simple background removal: make white/light pixels transparent
+                for (let i = 0; i < data.length; i += 4) {
+                    const r = data[i];
+                    const g = data[i + 1];
+                    const b = data[i + 2];
+                    
+                    // Calculate brightness
+                    const brightness = (r + g + b) / 3;
+                    
+                    // If pixel is light (likely background), make it transparent
+                    if (brightness > 220) {
+                        data[i + 3] = 0; // Set alpha to 0
+                    } else if (brightness > 180) {
+                        // Partially transparent for gray edges
+                        data[i + 3] = Math.round(255 * (1 - (brightness - 180) / 40));
+                    }
+                }
+                
+                ctx.putImageData(imageData, 0, 0);
+                
+                // Convert to base64
+                const processedDataUrl = canvas.toDataURL('image/png');
+                this.settings.signatureImage = processedDataUrl;
+                
+                // Update preview
+                const preview = document.getElementById('signaturePreview');
+                if (preview) {
+                    preview.innerHTML = `<img src="${processedDataUrl}" alt="Unterschrift" style="max-width: 100%; max-height: 80px;">`;
+                }
+                
+                this.saveSettings();
+                this.updatePreview();
+            };
+            img.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
     // SECTIONS (Drag & Drop)
     // ═══════════════════════════════════════════════════════════════════════════
 
@@ -1252,6 +1688,7 @@ class DesignEditor {
         const technicalSkills = [];
         const softSkills = [];
 
+        // Alte Kategorie-basierte Skills
         document.querySelectorAll('#technicalSkillsContainer .skill-category-item').forEach(item => {
             const category = item.querySelector('.skill-category-name')?.value || '';
             const skillElements = item.querySelectorAll('.skill-tag');
@@ -1270,10 +1707,41 @@ class DesignEditor {
                 technicalSkills.push({ category, skills: skills.filter(s => s.name) });
             }
         });
+        
+        // NEUE: Skills mit Bewertung (skill-item-rated)
+        const ratedSkillsMap = new Map(); // Group by category
+        
+        document.querySelectorAll('#technicalSkillsContainer .skill-item-rated:not(.soft)').forEach(item => {
+            const name = item.querySelector('[data-field="skillName"]')?.value?.trim() || '';
+            const level = parseInt(item.querySelector('[data-field="skillLevel"]')?.value) || 5;
+            const category = item.querySelector('[data-field="skillCategory"]')?.value?.trim() || 'Allgemein';
+            
+            if (name) {
+                if (!ratedSkillsMap.has(category)) {
+                    ratedSkillsMap.set(category, []);
+                }
+                ratedSkillsMap.get(category).push({ name, level });
+            }
+        });
+        
+        // Convert map to array format
+        ratedSkillsMap.forEach((skills, category) => {
+            technicalSkills.push({ category, skills });
+        });
 
+        // Alte Soft Skills (ohne Bewertung)
         document.querySelectorAll('#softSkillsContainer .soft-skill-item').forEach(item => {
             const skill = item.querySelector('input[type="text"]')?.value || '';
             if (skill) softSkills.push(skill);
+        });
+        
+        // NEUE: Soft Skills mit Bewertung
+        document.querySelectorAll('#softSkillsContainer .skill-item-rated.soft').forEach(item => {
+            const name = item.querySelector('[data-field="skillName"]')?.value?.trim() || '';
+            const level = parseInt(item.querySelector('[data-field="skillLevel"]')?.value) || 5;
+            if (name) {
+                softSkills.push({ name, level });
+            }
         });
 
         return { technicalSkills, softSkills };
@@ -1440,11 +1908,14 @@ class DesignEditor {
                         }
                     }
                     
+                    // Format dates according to settings
+                    const dateRange = this.formatDateRange(exp.startDate, exp.endDate, exp.currentJob || !exp.endDate);
+                    
                     return `
                         <div class="resume-preview-item">
                             <div class="resume-preview-item-header">
                                 <span class="resume-preview-item-title">${exp.position}</span>
-                                <span class="resume-preview-item-date">${exp.startDate} - ${exp.endDate || 'heute'}</span>
+                                <span class="resume-preview-item-date">${dateRange}</span>
                             </div>
                             <div class="resume-preview-item-subtitle">${companyHtml}</div>
                             ${descriptionHtml}
@@ -1461,15 +1932,19 @@ class DesignEditor {
         return `
             <div class="resume-preview-section">
                 <h2 class="resume-preview-section-title"><i class="fas fa-graduation-cap"></i> ${title}</h2>
-                ${data.education.map(edu => `
+                ${data.education.map(edu => {
+                    const dateRange = this.formatDateRange(edu.startDate, edu.endDate, edu.current || !edu.endDate);
+                    return `
                     <div class="resume-preview-item">
                         <div class="resume-preview-item-header">
                             <span class="resume-preview-item-title">${edu.degree}</span>
-                            <span class="resume-preview-item-date">${edu.startDate} - ${edu.endDate}</span>
+                            <span class="resume-preview-item-date">${dateRange}</span>
                         </div>
-                        <div class="resume-preview-item-subtitle">${edu.institution}</div>
+                        <div class="resume-preview-item-subtitle">${edu.institution}${edu.location ? `, ${edu.location}` : ''}</div>
+                        ${edu.description ? `<p class="resume-preview-item-description">${edu.description}</p>` : ''}
                     </div>
-                `).join('')}
+                    `;
+                }).join('')}
             </div>
         `;
     }
@@ -1497,8 +1972,8 @@ class DesignEditor {
                 ${hasSoft ? `
                     <div class="resume-preview-item">
                         <div class="resume-preview-item-title">Soft Skills</div>
-                        <div class="resume-preview-skills">
-                            ${data.skills.softSkills.map(skill => `<span class="resume-preview-skill">${skill}</span>`).join('')}
+                        <div class="resume-preview-skills resume-skills-${display}">
+                            ${data.skills.softSkills.map(skill => this.renderSkillItem(skill, display, maxLevel, showLabel)).join('')}
                         </div>
                     </div>
                 ` : ''}
