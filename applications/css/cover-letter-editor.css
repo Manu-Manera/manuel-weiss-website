@@ -615,6 +615,16 @@
     color: var(--letter-accent, var(--cl-primary));
 }
 
+.letter-salutation {
+    margin-bottom: 1.5rem;
+}
+
+.letter-salutation .greeting-salutation-input {
+    width: 100%;
+    margin-bottom: 0;
+    font-weight: 500;
+}
+
 .letter-body {
     margin-bottom: 2rem;
 }
