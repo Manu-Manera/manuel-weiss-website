@@ -72,38 +72,73 @@ async function loadProfileData() {
     try {
         let profile = null;
         
-        // Versuche Cloud-Service zu nutzen
-        if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
+        // PRIORITÄT 1: UnifiedProfileService (beste Datenquelle)
+        if (window.unifiedProfileService?.isInitialized) {
+            profile = window.unifiedProfileService.getProfile();
+            if (profile && profile.firstName && profile.firstName !== 'Test') {
+                console.log('✅ Nutze UnifiedProfileService für Profildaten');
+            } else {
+                profile = null;
+            }
+        }
+        
+        // PRIORITÄT 2: Cloud-Service
+        if (!profile && window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
             console.log('📄 Lade Profildaten aus Cloud...');
             profile = await window.cloudDataService.getProfile();
-        } else {
-            // Fallback: API direkt
+        }
+        
+        // PRIORITÄT 3: API direkt
+        if (!profile) {
             const token = await getAuthToken();
-            if (!token) return;
+            if (token) {
+                const response = await fetch('https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod/profile', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
 
-            const response = await fetch('https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod/profile', {
-                headers: {
-                    'Authorization': `Bearer ${token}`
+                if (response.ok) {
+                    profile = await response.json();
                 }
-            });
-
-            if (response.ok) {
-                profile = await response.json();
             }
         }
         
         if (profile) {
+            // Fülle Formular mit Profildaten vor (ignoriere "Test User")
+            const firstName = profile.firstName;
+            const lastName = profile.lastName;
             
-            // Fülle Formular mit Profildaten vor
-            if (profile.firstName) document.getElementById('firstName').value = profile.firstName;
-            if (profile.lastName) document.getElementById('lastName').value = profile.lastName;
-            if (profile.email) document.getElementById('email').value = profile.email;
-            if (profile.phone) document.getElementById('phone').value = profile.phone;
-            if (profile.location) document.getElementById('address').value = profile.location;
+            if (firstName && firstName !== 'Test') {
+                const firstNameEl = document.getElementById('firstName');
+                if (firstNameEl) firstNameEl.value = firstName;
+            }
+            if (lastName && lastName !== 'User') {
+                const lastNameEl = document.getElementById('lastName');
+                if (lastNameEl) lastNameEl.value = lastName;
+            }
+            if (profile.email) {
+                const emailEl = document.getElementById('email');
+                if (emailEl) emailEl.value = profile.email;
+            }
+            if (profile.phone) {
+                const phoneEl = document.getElementById('phone');
+                if (phoneEl) phoneEl.value = profile.phone;
+            }
+            if (profile.location) {
+                const addressEl = document.getElementById('address');
+                if (addressEl) addressEl.value = profile.location;
+            }
             
             // LinkedIn und Website aus preferences oder settings
-            if (profile.preferences?.linkedin) document.getElementById('linkedin').value = profile.preferences.linkedin;
-            if (profile.preferences?.website) document.getElementById('website').value = profile.preferences.website;
+            if (profile.preferences?.linkedin || profile.linkedin) {
+                const linkedinEl = document.getElementById('linkedin');
+                if (linkedinEl) linkedinEl.value = profile.preferences?.linkedin || profile.linkedin;
+            }
+            if (profile.preferences?.website || profile.website) {
+                const websiteEl = document.getElementById('website');
+                if (websiteEl) websiteEl.value = profile.preferences?.website || profile.website;
+            }
             
             console.log('✅ Profildaten für Vorausfüllung geladen');
         }
