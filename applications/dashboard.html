@@ -2016,8 +2016,12 @@ Ihre Aufgaben:
             // Initialize documents tab
             initDocumentsTab();
             
-            // Load resumes
-            loadResumes();
+            // Load resumes - nutze window.loadResumes aus dashboard-core.js
+            if (typeof window.loadResumes === 'function') {
+                await window.loadResumes();
+            } else {
+                console.warn('window.loadResumes nicht verfügbar');
+            }
             
             // Update stats
             updateDashboardStats();
@@ -2027,93 +2031,8 @@ Ihre Aufgaben:
         // LEBENSLÄUFE FUNKTIONEN
         // ═══════════════════════════════════════════════════════════════════════════
         
-        // Load resumes - CLOUD FIRST, dann localStorage Fallback
-        async function loadResumes() {
-            try {
-                const container = document.getElementById('resumesList');
-                const emptyState = document.getElementById('resumesEmpty');
-                
-                if (!container) return;
-                
-                let resumes = [];
-                
-                // PRIORITÄT 1: Cloud-Daten über cloudDataService
-                if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
-                    try {
-                        console.log('📥 Lade Lebensläufe aus Cloud...');
-                        const cloudResumes = await window.cloudDataService.getResumes(true); // forceRefresh
-                        if (cloudResumes && cloudResumes.length > 0) {
-                            resumes = cloudResumes;
-                            console.log('✅ Lebensläufe aus Cloud geladen:', resumes.length);
-                            // Synchronisiere mit localStorage
-                            localStorage.setItem('user_resumes', JSON.stringify(resumes));
-                        }
-                    } catch (cloudError) {
-                        console.warn('⚠️ Cloud-Laden fehlgeschlagen:', cloudError);
-                    }
-                }
-                
-                // FALLBACK: localStorage wenn Cloud leer oder nicht verfügbar
-                if (resumes.length === 0) {
-                    resumes = JSON.parse(localStorage.getItem('user_resumes') || '[]');
-                    console.log('📥 Lebensläufe aus localStorage:', resumes.length);
-                }
-                
-                if (resumes.length === 0) {
-                    container.innerHTML = '';
-                    if (emptyState) emptyState.style.display = 'flex';
-                    return;
-                }
-                
-                if (emptyState) emptyState.style.display = 'none';
-                
-                container.innerHTML = resumes.map((resume, index) => {
-                    const date = new Date(resume.updatedAt || resume.createdAt).toLocaleDateString('de-DE', {
-                        day: '2-digit', month: '2-digit', year: 'numeric'
-                    });
-                    const name = `${resume.firstName || ''} ${resume.lastName || ''}`.trim() || 'Lebenslauf';
-                    const title = resume.title || 'Berufsbezeichnung';
-                    const summary = resume.summary?.substring(0, 120) + (resume.summary?.length > 120 ? '...' : '') || '';
-                    
-                    return `
-                        <div class="resume-item" data-id="${resume.id}">
-                            <div class="resume-item-info">
-                                <h4>${name}</h4>
-                                <p class="resume-title">${title}</p>
-                                <p class="resume-date">Aktualisiert: ${date}</p>
-                                <p class="resume-preview">${summary}</p>
-                            </div>
-                            <div class="resume-item-actions">
-                                <a href="resume-editor.html?id=${resume.id}" class="btn-icon" title="Bearbeiten">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <button onclick="viewResumePDF('${resume.id}')" class="btn-icon" title="PDF anzeigen">
-                                    <i class="fas fa-file-pdf"></i>
-                                </button>
-                                <button onclick="duplicateResume('${resume.id}')" class="btn-icon" title="Duplizieren">
-                                    <i class="fas fa-copy"></i>
-                                </button>
-                                <button onclick="deleteResume('${resume.id}')" class="btn-icon btn-danger" title="Löschen">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-                
-                // Update Statistik
-                const statResumes = document.getElementById('statResumes');
-                if (statResumes) statResumes.textContent = resumes.length;
-                
-                // Stats aktualisieren (auch andere Stats wie Anschreiben, etc.)
-                if (typeof updateDashboardStats === 'function') {
-                    await updateDashboardStats();
-                }
-                
-            } catch (error) {
-                console.error('Error loading resumes:', error);
-            }
-        }
+        // HINWEIS: loadResumes ist jetzt in dashboard-core.js definiert und wird als window.loadResumes exportiert
+        // Die lokale Funktion wurde entfernt, um Konflikte zu vermeiden
         
         window.viewResumePDF = function(id) {
             // Öffne resume-editor mit PDF-Export-Modus
@@ -2158,7 +2077,10 @@ Ihre Aufgaben:
                     localStorage.setItem('user_resumes', JSON.stringify(resumes));
                 }
                 
-                await loadResumes();
+                // Nutze window.loadResumes aus dashboard-core.js
+                if (typeof window.loadResumes === 'function') {
+                    await window.loadResumes();
+                }
                 
                 // Stats aktualisieren
                 if (typeof updateDashboardStats === 'function') {

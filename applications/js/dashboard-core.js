@@ -1942,9 +1942,15 @@ async function loadResumes() {
     try {
         let resumes = [];
         
-        // Versuche Cloud-Service zu nutzen
+        // Versuche Cloud-Service zu nutzen (mit forceRefresh für aktuelle Daten)
         if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
-            resumes = await window.cloudDataService.getResumes();
+            try {
+                resumes = await window.cloudDataService.getResumes(true); // forceRefresh
+            } catch (error) {
+                console.warn('Cloud-Laden fehlgeschlagen, verwende localStorage:', error);
+                const local = localStorage.getItem('user_resumes');
+                resumes = local ? JSON.parse(local) : [];
+            }
         } else {
             // Fallback: localStorage
             const local = localStorage.getItem('user_resumes');
@@ -1960,29 +1966,39 @@ async function loadResumes() {
         if (emptyState) emptyState.style.display = 'none';
         
         container.innerHTML = resumes.map((resume) => {
-            const date = new Date(resume.createdAt || resume.updatedAt || Date.now()).toLocaleDateString('de-DE');
+            const date = new Date(resume.createdAt || resume.updatedAt || Date.now()).toLocaleDateString('de-DE', {
+                day: '2-digit', month: '2-digit', year: 'numeric'
+            });
+            // Unterstütze beide Datenstrukturen: personalInfo und direkte Felder
             const name = resume.personalInfo?.firstName && resume.personalInfo?.lastName 
                 ? `${resume.personalInfo.firstName} ${resume.personalInfo.lastName}` 
-                : resume.name || 'Unbenannter Lebenslauf';
-            const title = resume.personalInfo?.title || resume.title || '';
+                : (resume.firstName && resume.lastName)
+                    ? `${resume.firstName} ${resume.lastName}`.trim()
+                    : resume.name || 'Unbenannter Lebenslauf';
+            const title = resume.personalInfo?.title || resume.title || 'Berufsbezeichnung';
+            const summary = resume.personalInfo?.summary || resume.summary || '';
+            const summaryPreview = summary ? summary.substring(0, 120) + (summary.length > 120 ? '...' : '') : '';
             
             return `
                 <div class="resume-item" data-id="${resume.id}">
-                    <div class="resume-info">
-                        <h4>${name}</h4>
-                        <p class="title">${title}</p>
-                        <p class="date">Erstellt: ${date}</p>
+                    <div class="resume-item-info">
+                        <h4>${escapeHtml(name)}</h4>
+                        <p class="resume-title">${escapeHtml(title)}</p>
+                        <p class="resume-date">Aktualisiert: ${date}</p>
+                        ${summaryPreview ? `<p class="resume-preview">${escapeHtml(summaryPreview)}</p>` : ''}
                     </div>
-                    <div class="resume-actions">
-                        <button onclick="viewResume('${resume.id}')" class="btn-icon" title="Ansehen">
-                            <i class="fas fa-eye"></i>
-                        </button>
+                    <div class="resume-item-actions">
                         <a href="resume-editor.html?id=${resume.id}" class="btn-icon" title="Bearbeiten">
                             <i class="fas fa-edit"></i>
                         </a>
-                        <button onclick="downloadResumePDF('${resume.id}')" class="btn-icon" title="PDF Herunterladen">
-                            <i class="fas fa-download"></i>
+                        <button onclick="viewResumePDF('${resume.id}')" class="btn-icon" title="PDF anzeigen">
+                            <i class="fas fa-file-pdf"></i>
                         </button>
+                        ${typeof window.duplicateResume === 'function' ? `
+                        <button onclick="duplicateResume('${resume.id}')" class="btn-icon" title="Duplizieren">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                        ` : ''}
                         <button onclick="deleteResume('${resume.id}')" class="btn-icon btn-danger" title="Löschen">
                             <i class="fas fa-trash"></i>
                         </button>
