@@ -1344,6 +1344,7 @@ Ihre Aufgaben:
     <script src="../js/global-api-manager.js?v=20260112i"></script>
     <script src="../js/aws-api-settings.js?v=20260113fix"></script>
     <script src="../js/cloud-data-service.js?v=20260114c"></script>
+    <script src="../js/unified-profile-service.js?v=20260115"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="js/utils.js?v=20260112i"></script>
     <script src="js/dashboard-core.js?v=20260113fix2"></script>
@@ -1390,70 +1391,76 @@ Ihre Aufgaben:
                 const userData = isLoggedIn ? window.awsAuth.getUserDataFromToken() : null;
                 
                 if (isLoggedIn && userData) {
-                    // Versuche Name aus dem Profil zu laden (falls verfügbar)
-                    let displayName = userData.name;
+                    let displayName = '';
+                    let profileImage = userData.picture || '../images/default-avatar.png';
                     
-                    // Wenn kein Name im Token, versuche AWS-Profil zu laden
-                    if (!displayName && window.awsProfileAPI) {
+                    // PRIORITÄT 1: UnifiedProfileService (beste Datenquelle)
+                    if (window.unifiedProfileService?.isInitialized) {
+                        displayName = window.unifiedProfileService.getDisplayName();
+                        const profileImg = window.unifiedProfileService.getProfileImage();
+                        if (profileImg) profileImage = profileImg;
+                        console.log('✅ Name aus UnifiedProfileService:', displayName);
+                    }
+                    
+                    // PRIORITÄT 2: AWS-Profil
+                    if (!displayName || displayName === 'Profil') {
                         try {
-                            // Warte auf awsProfileAPI Initialisierung
-                            if (!window.awsProfileAPI.isInitialized) {
-                                console.log('⏳ Warte auf awsProfileAPI...');
-                                await new Promise((resolve) => {
-                                    let attempts = 0;
-                                    const check = setInterval(() => {
-                                        attempts++;
-                                        if (window.awsProfileAPI?.isInitialized || attempts > 20) {
-                                            clearInterval(check);
-                                            resolve();
-                                        }
-                                    }, 100);
-                                });
-                            }
-                            
-                            console.log('📡 Lade Profil für Auth-Button...');
-                            const profile = await window.awsProfileAPI.loadProfile();
-                            console.log('📋 Geladenes Profil:', profile);
-                            
-                            if (profile) {
-                                // Unterstütze verschiedene Profil-Formate
-                                const firstName = profile.firstName || profile.personal?.firstName || '';
-                                const lastName = profile.lastName || profile.personal?.lastName || '';
-                                
-                                if (firstName) {
-                                    displayName = firstName + (lastName ? ' ' + lastName : '');
-                                    console.log('✅ Name aus Profil:', displayName);
+                            if (window.awsProfileAPI?.isInitialized) {
+                                const profile = await window.awsProfileAPI.loadProfile();
+                                if (profile) {
+                                    const firstName = profile.firstName || profile.personal?.firstName || '';
+                                    const lastName = profile.lastName || profile.personal?.lastName || '';
+                                    
+                                    // "Test User" ignorieren!
+                                    if (firstName && !(firstName === 'Test' && lastName === 'User')) {
+                                        displayName = firstName + (lastName ? ' ' + lastName : '');
+                                        console.log('✅ Name aus AWS-Profil:', displayName);
+                                    }
+                                    if (profile.profileImageUrl) profileImage = profile.profileImageUrl;
                                 }
                             }
                         } catch (e) {
-                            console.log('ℹ️ Profil nicht verfügbar:', e.message);
+                            console.log('ℹ️ AWS-Profil nicht verfügbar');
                         }
                     }
                     
-                    // Fallback: Email-Vorname (nur wenn länger als 3 Zeichen, sonst "Profil")
-                    if (!displayName && userData.email) {
-                        const emailName = userData.email.split('@')[0];
-                        displayName = emailName.length > 3 ? emailName : 'Profil';
-                        console.log('ℹ️ Verwende Email-Fallback:', displayName);
+                    // PRIORITÄT 3: Token-Name (aber NICHT "Test User"!)
+                    if (!displayName || displayName === 'Profil') {
+                        const tokenName = userData.name || '';
+                        if (tokenName && tokenName !== 'Test User' && tokenName !== 'Test') {
+                            displayName = tokenName;
+                            console.log('✅ Name aus Token:', displayName);
+                        }
                     }
                     
-                    // Logged in
+                    // PRIORITÄT 4: Email-Fallback
+                    if (!displayName || displayName === 'Profil') {
+                        if (userData.email) {
+                            const emailName = userData.email.split('@')[0];
+                            displayName = emailName.length > 3 ? emailName : 'Profil';
+                            console.log('ℹ️ Verwende Email-Fallback:', displayName);
+                        }
+                    }
+                    
+                    // Logged in - Finaler Name (niemals "Test")
+                    displayName = displayName || 'Profil';
+                    
                     authButton.innerHTML = `
-                        <img src="${userData.picture || '../images/default-avatar.png'}" alt="User" class="nav-user-avatar">
-                        <span>${displayName || 'Profil'}</span>
+                        <img src="${profileImage}" alt="User" class="nav-user-avatar">
+                        <span>${displayName}</span>
                         <i class="fas fa-chevron-down"></i>
                     `;
                     authButton.classList.add('logged-in');
                     
                     // Update dropdown
                     if (document.getElementById('userName')) {
-                        document.getElementById('userName').textContent = displayName || 'Benutzer';
+                        document.getElementById('userName').textContent = displayName;
                     }
                     if (document.getElementById('userEmail')) {
                         document.getElementById('userEmail').textContent = userData.email || '';
                     }
                     if (document.getElementById('userAvatarImg')) {
-                        document.getElementById('userAvatarImg').src = userData.picture || '../images/default-avatar.png';
+                        document.getElementById('userAvatarImg').src = profileImage;
                     }
                     
                     // Mobile

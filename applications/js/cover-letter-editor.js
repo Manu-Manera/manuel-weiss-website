@@ -404,13 +404,24 @@ class CoverLetterEditor {
 
     async loadUserProfile() {
         try {
-            // Try cloud data service first
-            if (window.cloudDataService) {
-                const cloudProfile = await window.cloudDataService.getProfile(true);
-                this.profileData = this.normalizeProfileData(cloudProfile);
+            // PRIORITÄT 1: UnifiedProfileService (beste Datenquelle)
+            if (window.unifiedProfileService?.isInitialized) {
+                const unifiedProfile = window.unifiedProfileService.getProfile();
+                if (unifiedProfile && unifiedProfile.firstName && unifiedProfile.firstName !== 'Test') {
+                    this.profileData = unifiedProfile;
+                    console.log('✅ Nutze UnifiedProfileService für Profildaten');
+                }
             }
             
-            // Fallback to localStorage
+            // PRIORITÄT 2: Cloud data service
+            if (!this.profileData || Object.keys(this.profileData).length === 0) {
+                if (window.cloudDataService) {
+                    const cloudProfile = await window.cloudDataService.getProfile(true);
+                    this.profileData = this.normalizeProfileData(cloudProfile);
+                }
+            }
+            
+            // PRIORITÄT 3: localStorage
             if (!this.profileData || Object.keys(this.profileData).length === 0) {
                 const stored = localStorage.getItem('bewerbungsmanager_profile') || localStorage.getItem('userProfile') || localStorage.getItem('profile_data');
                 if (stored) {

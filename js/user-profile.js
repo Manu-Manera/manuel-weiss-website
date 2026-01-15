@@ -10,6 +10,19 @@ class UserProfile {
 
     async init() {
         this.setupEventListeners();
+        
+        // PRIORITÄT: UnifiedProfileService nutzen wenn verfügbar
+        if (window.unifiedProfileService) {
+            window.unifiedProfileService.onProfileChange((profile) => {
+                console.log('📊 UnifiedProfileService Änderung empfangen:', profile);
+                if (profile && profile.firstName) {
+                    this.profileData = { ...this.profileData, ...profile };
+                    this.populateFormFields(this.profileData);
+                    this.updateUIWithProfile(profile);
+                }
+            });
+        }
+        
         await this.loadProfileDataFromAWS();
         
         // Initialisiere progressData, falls noch nicht gesetzt
@@ -542,6 +555,24 @@ class UserProfile {
                 return;
             }
             
+            // PRIORITÄT 1: UnifiedProfileService verwenden (beste Datenquelle)
+            if (window.unifiedProfileService?.isInitialized) {
+                const unifiedData = window.unifiedProfileService.getProfile();
+                if (unifiedData && unifiedData.firstName && unifiedData.firstName !== 'Test') {
+                    console.log('✅ Nutze UnifiedProfileService:', unifiedData);
+                    this.profileData = {
+                        ...this.loadProfileData(), // Start with defaults
+                        ...unifiedData,
+                    };
+                    this.populateFormFields(this.profileData);
+                    if (this.profileData.profileImageUrl) {
+                        const profileImg = document.getElementById('profileImage');
+                        if (profileImg) profileImg.src = this.profileData.profileImageUrl;
+                    }
+                    return;
+                }
+            }
+            
             // Get auth user data first
             const currentUser = window.realUserAuth.getCurrentUser();
             const userData = window.realUserAuth.getUserDataFromToken?.() || null;
@@ -574,14 +605,17 @@ class UserProfile {
             const normalizedAwsData = this.normalizeProfileData(awsData);
             const authFallback = this.getAuthFallbackData(userData || currentUser);
             
+            // WICHTIG: "Test User" aus Auth-Daten ignorieren!
+            const isTestUser = authFallback.firstName === 'Test' && authFallback.lastName === 'User';
+            
             // Merge: AWS data + Auth data (AWS data has priority, auth only as fallback)
             // IMPORTANT: Saved profile data should not be overwritten by auth data
             this.profileData = {
                 ...this.loadProfileData(), // Start with defaults
                 ...normalizedAwsData, // Override with normalized AWS data (saved profile data has priority)
-                // Use auth data ONLY if AWS data doesn't have these fields
-                firstName: normalizedAwsData.firstName || authFallback.firstName || '',
-                lastName: normalizedAwsData.lastName || authFallback.lastName || '',
+                // Use auth data ONLY if AWS data doesn't have these fields and NOT "Test User"
+                firstName: normalizedAwsData.firstName || (!isTestUser ? authFallback.firstName : '') || '',
+                lastName: normalizedAwsData.lastName || (!isTestUser ? authFallback.lastName : '') || '',
                 email: normalizedAwsData.email || authFallback.email || ''
             };
             
@@ -763,6 +797,38 @@ class UserProfile {
         setField('dataSharing', data.dataSharing);
         
         console.log('✅ Form fields populated with data:', data);
+    }
+    
+    /**
+     * Aktualisiert UI-Elemente mit Profildaten
+     */
+    updateUIWithProfile(profile) {
+        if (!profile) return;
+        
+        // Update Header-Bereich
+        const userNameEl = document.getElementById('userName');
+        const userEmailEl = document.getElementById('userEmail');
+        const profileImageEl = document.getElementById('profileImage');
+        
+        if (userNameEl && profile.firstName) {
+            const fullName = `${profile.firstName || ''} ${profile.lastName || ''}`.trim();
+            if (fullName && fullName !== 'Test User' && fullName !== 'Test') {
+                userNameEl.textContent = fullName;
+            }
+        }
+        
+        if (userEmailEl && profile.email) {
+            userEmailEl.textContent = profile.email;
+        }
+        
+        if (profileImageEl && profile.profileImageUrl) {
+            profileImageEl.src = profile.profileImageUrl;
+        }
+        
+        console.log('✅ UI mit Profildaten aktualisiert:', {
+            name: userNameEl?.textContent,
+            email: userEmailEl?.textContent
+        });
     }
     
     async migrateLocalDataIfNeeded() {
