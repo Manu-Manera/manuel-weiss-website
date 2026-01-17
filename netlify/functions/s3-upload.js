@@ -13,12 +13,12 @@ const BUCKET_NAME = 'manuel-weiss-profile-media-bucket';
 const DOCUMENTS_PREFIX = 'public/documents/';
 const PROFILE_PREFIX = 'public/profile-images/';
 
-// S3 Client initialisieren - Region MUSS explizit gesetzt werden
+// S3 Client initialisieren - verwendet NETLIFY_AWS_* Variablen
 const s3 = new AWS.S3({
   region: REGION,
   signatureVersion: 'v4',
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  accessKeyId: process.env.NETLIFY_AWS_ACCESS_KEY_ID || process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.NETLIFY_AWS_SECRET_ACCESS_KEY || process.env.AWS_SECRET_ACCESS_KEY,
   endpoint: `https://s3.${REGION}.amazonaws.com`,
   s3ForcePathStyle: false
 });
@@ -80,15 +80,24 @@ exports.handler = async (event) => {
       };
     }
 
-    // AWS Credentials prüfen
-    if (!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY) {
-      console.error('❌ AWS Credentials fehlen!');
+    // AWS Credentials prüfen (NETLIFY_AWS_* oder AWS_*)
+    const accessKey = process.env.NETLIFY_AWS_ACCESS_KEY_ID || process.env.AWS_ACCESS_KEY_ID;
+    const secretKey = process.env.NETLIFY_AWS_SECRET_ACCESS_KEY || process.env.AWS_SECRET_ACCESS_KEY;
+    
+    if (!accessKey || !secretKey) {
+      console.error('❌ AWS Credentials fehlen!', {
+        hasAccessKey: !!accessKey,
+        hasSecretKey: !!secretKey,
+        envKeys: Object.keys(process.env).filter(k => k.includes('AWS'))
+      });
       return {
         statusCode: 500,
         headers: corsHeaders,
         body: JSON.stringify({ error: 'AWS credentials not configured' })
       };
     }
+    
+    console.log('🔑 AWS Credentials gefunden:', { accessKeyPrefix: accessKey.substring(0, 10) + '...' });
 
     // Prefix und Dateiendung bestimmen
     let prefix, fileExt;
