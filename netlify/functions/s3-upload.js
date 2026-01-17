@@ -186,3 +186,4 @@ function getExtFromContentType(ct, fileType) {
   // Default
   return fileType === 'cv' || fileType === 'certificate' || fileType === 'document' ? '.pdf' : '.jpg';
 }
+// Updated: Sat Jan 17 12:36:54 CET 2026
