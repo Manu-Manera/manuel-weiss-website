@@ -518,39 +518,46 @@ function getUserId() {
 async function processTextWithGPT(text, apiKey) {
     // Zeige die Textlänge für Debugging
     console.log(`📝 Zu analysierender Text: ${text.length} Zeichen`);
+    console.log(`📄 Extrahierter Text (erste 2000 Zeichen):`, text.substring(0, 2000));
     
-    const prompt = `Du bist ein präziser Datenextraktions-Assistent. Deine Aufgabe ist es, ALLE Informationen aus dem folgenden Lebenslauf zu extrahieren.
+    const prompt = `Du bist ein WÖRTLICHER Datenextraktions-Assistent. Du KOPIERST Text - du FASST NICHT ZUSAMMEN.
+
+🚨🚨🚨 KRITISCH - LIES DIES GENAU 🚨🚨🚨
+
+Du machst IMMER den gleichen Fehler: Du KÜRZT Beschreibungen auf 1-2 Sätze.
+Das ist VERBOTEN. Du musst JEDEN EINZELNEN SATZ und JEDEN STICHPUNKT kopieren!
+
+BEISPIEL WAS DU FALSCH MACHST:
+Original: "• Implementierung von SAP SuccessFactors für 5000 Mitarbeiter
+          • Schulung der HR-Abteilung in 3 Ländern  
+          • Optimierung der Recruiting-Prozesse
+          • Integration mit bestehenden Systemen
+          • Projektleitung für Go-Live"
+          
+Was du FALSCH machst: "Implementierung von SAP SuccessFactors und Schulung der HR-Abteilung"
+Was du RICHTIG machen musst: "• Implementierung von SAP SuccessFactors für 5000 Mitarbeiter\n• Schulung der HR-Abteilung in 3 Ländern\n• Optimierung der Recruiting-Prozesse\n• Integration mit bestehenden Systemen\n• Projektleitung für Go-Live"
 
 ═══════════════════════════════════════════════════════════════════════════════
-ABSOLUTE REGELN - VERSTOSS VERBOTEN:
+REGELN FÜR BERUFSERFAHRUNG - description FELD:
 ═══════════════════════════════════════════════════════════════════════════════
 
-1. VOLLSTÄNDIGKEIT: Extrahiere JEDEN einzelnen Stichpunkt, JEDE Tätigkeit, JEDE Information
-2. KEINE KÜRZUNGEN: Kopiere Beschreibungen WORT FÜR WORT aus dem Original
-3. KEINE ZUSAMMENFASSUNGEN: Fasse NIEMALS mehrere Punkte zusammen
-4. KEINE AUSLASSUNGEN: Wenn 15 Stichpunkte im Original stehen, müssen 15 im Output sein
-5. VOLLSTÄNDIGE SÄTZE: Kürze keine Sätze ab, keine "usw.", "etc." hinzufügen
+1. KOPIERE WÖRTLICH jeden Stichpunkt aus dem Original
+2. Wenn 10 Stichpunkte im PDF stehen → 10 Stichpunkte im JSON
+3. Verwende \n für Zeilenumbrüche zwischen Stichpunkten
+4. KEINE Zusammenfassung, KEIN "etc.", KEIN Kürzen
+5. Jeder Stichpunkt beginnt mit • oder -
 
 ═══════════════════════════════════════════════════════════════════════════════
-FÜR JEDE BERUFSERFAHRUNG EXTRAHIERE:
+FELDER FÜR JEDE BERUFSERFAHRUNG:
 ═══════════════════════════════════════════════════════════════════════════════
 
 - position: Exakte Jobbezeichnung
-- company: Firmenname + ggf. Website-URL wenn vorhanden
+- company: Firmenname
 - location: Stadt/Land
-- startDate: Format MM/YYYY (z.B. "05/2022")
-- endDate: Format MM/YYYY oder "heute"/"aktuell"
-- description: Der VOLLSTÄNDIGE Text, der die Rolle beschreibt - INKLUSIVE ALLER Stichpunkte!
-  * WICHTIG: Wenn Stichpunkte vorhanden sind (• oder -), füge sie ALLE in das description-Feld ein
-  * Format: Beschreibungstext (falls vorhanden) + Zeilenumbruch + alle Stichpunkte mit Zeilenumbrüchen
-  * Beispiel: Wenn du siehst:
-    "Verantwortlich für HR-Prozesse.
-     • Leitung von Implementierungsprojekten
-     • Konzeption und Konfiguration
-     • Beratung zu HR-Prozessen"
-    Dann muss description sein: "Verantwortlich für HR-Prozesse.\n• Leitung von Implementierungsprojekten\n• Konzeption und Konfiguration\n• Beratung zu HR-Prozessen"
-  * KEIN separates bullets-Feld mehr - alles in description!
-- technologies: Alle erwähnten Tools, Software, Systeme (z.B. SAP, UKG, ADONIS, etc.)
+- startDate: Format MM/YYYY
+- endDate: Format MM/YYYY oder "heute"
+- description: ALLE Stichpunkte mit \n getrennt - NICHTS WEGLASSEN!
+- technologies: Erwähnte Tools/Software als Array
 
 ═══════════════════════════════════════════════════════════════════════════════
 FÜR SKILLS/KOMPETENZEN:
@@ -636,17 +643,20 @@ ${text}`;
                 messages: [
                     {
                         role: 'system',
-                        content: `Du bist ein präziser Datenextraktions-Assistent für Lebensläufe. 
+                        content: `Du bist ein KOPIER-Assistent. Du fasst NIEMALS zusammen.
 
-DEINE MISSION: Extrahiere ALLE Informationen VOLLSTÄNDIG.
+DEIN GRÖSSTER FEHLER: Du kürzt Beschreibungen auf 1-2 Sätze. DAS IST VERBOTEN!
 
-KRITISCHE REGELN:
-1. KÜRZE NIEMALS - Wenn ein Stichpunkt 50 Wörter hat, extrahiere alle 50 Wörter
-2. LASSE NICHTS AUS - Wenn 10 Tätigkeiten genannt werden, extrahiere alle 10
-3. FASSE NICHT ZUSAMMEN - Jeder Punkt bleibt einzeln
-4. KOPIERE WORTGETREU - Ändere keine Formulierungen
+REGEL: Wenn im Original 8 Stichpunkte stehen, MÜSSEN 8 Stichpunkte im JSON sein.
+REGEL: Du KOPIERST wörtlich, du FORMULIERST NICHT um.
+REGEL: Das description-Feld muss ALLE Tätigkeiten enthalten, getrennt mit \n
 
-Du antwortest NUR mit validem JSON, keine Erklärungen, kein Markdown.`
+BEISPIEL:
+Original hat: "• Punkt 1 • Punkt 2 • Punkt 3 • Punkt 4 • Punkt 5"
+FALSCH: "Punkt 1 und weitere Aufgaben"
+RICHTIG: "• Punkt 1\n• Punkt 2\n• Punkt 3\n• Punkt 4\n• Punkt 5"
+
+Du antwortest NUR mit validem JSON.`
                     },
                     {
                         role: 'user',
@@ -684,7 +694,21 @@ Du antwortest NUR mit validem JSON, keine Erklärungen, kein Markdown.`
             throw new Error('Konnte JSON nicht parsen');
         }
         
-        return JSON.parse(jsonMatch[0]);
+        const result = JSON.parse(jsonMatch[0]);
+        
+        // DEBUG: Zeige was GPT zurückgegeben hat
+        console.log('🤖 GPT Antwort - Berufserfahrungen:');
+        if (result.experience) {
+            result.experience.forEach((exp, i) => {
+                const descLength = (exp.description || '').length;
+                const bulletCount = (exp.description || '').split('\n').filter(l => l.trim().startsWith('•') || l.trim().startsWith('-')).length;
+                console.log(`  ${i+1}. ${exp.position} @ ${exp.company}`);
+                console.log(`     Beschreibung: ${descLength} Zeichen, ${bulletCount} Stichpunkte`);
+                console.log(`     Preview: ${(exp.description || '').substring(0, 200)}...`);
+            });
+        }
+        
+        return result;
         
     } catch (error) {
         console.error('GPT Processing Error:', error);
