@@ -1233,59 +1233,61 @@
                 }
                 
                 // 3. GPT-3.5 für Strukturierung verwenden - verbessertes Prompt
-                const prompt = `Analysiere den folgenden Lebenslauf-Text und extrahiere ALLE strukturierten Daten im JSON-Format.
-Antworte NUR mit einem gültigen JSON-Objekt ohne zusätzlichen Text oder Erklärungen.
+                const prompt = `EXTRAHIERE ALLE DATEN VOLLSTÄNDIG aus diesem Lebenslauf.
 
-KRITISCH WICHTIG:
-1. Extrahiere ALLE Berufserfahrungen - auch kurze Jobs, Ausbildungsberufe (z.B. "Seiler", "Monteur"), Zivildienst
-2. Extrahiere ALLE Ausbildungen - Studium, Weiterbildungen, Berufsausbildungen, Schulabschlüsse
-3. Extrahiere ALLE Skills aus dem Kompetenzen-Bereich mit ihren Bewertungen/Levels
-4. Sprachen separat extrahieren (Deutsch, Englisch, Spanisch etc.)
+🚨 WICHTIGSTE REGEL FÜR BESCHREIBUNGEN:
+- KOPIERE die Beschreibung/Tätigkeiten WORT FÜR WORT aus dem Original
+- Wenn 8 Stichpunkte im Original stehen → 8 Stichpunkte im JSON
+- KÜRZE NIEMALS - FASSE NIEMALS ZUSAMMEN
+- Verwende \\n für Zeilenumbrüche zwischen Stichpunkten
 
-Gewünschtes Format:
+BEISPIEL FÜR BESCHREIBUNG:
+Original im PDF:
+"• Implementierung von SAP SuccessFactors
+• Schulung von 50 Mitarbeitern  
+• Projektleitung für Go-Live
+• Support und Dokumentation"
+
+RICHTIG (so muss es im JSON sein):
+"description": "• Implementierung von SAP SuccessFactors\\n• Schulung von 50 Mitarbeitern\\n• Projektleitung für Go-Live\\n• Support und Dokumentation"
+
+FALSCH (das darfst du NICHT machen):
+"description": "Implementierung von SAP SuccessFactors und Schulung der Mitarbeiter"
+
+Gewünschtes JSON-Format:
 {
     "name": "Vollständiger Name",
-    "email": "Email-Adresse",
-    "phone": "Telefonnummer mit Ländervorwahl",
-    "address": "Vollständige Adresse",
-    "website": "Website/Portfolio URL falls vorhanden",
-    "linkedin": "LinkedIn URL falls vorhanden",
-    "title": "Aktuelle oder letzte Berufsbezeichnung",
-    "summary": "Erstelle ein Profil (2-3 Sätze) mit Kernkompetenzen",
+    "email": "Email",
+    "phone": "Telefon",
+    "address": "Adresse",
+    "title": "Aktuelle Berufsbezeichnung",
+    "summary": "Kurzes Profil (2-3 Sätze)",
     "experience": [
         {
-            "position": "Position/Jobtitel (z.B. 'HR Consultant', 'Seiler', 'Zivildienstleistender')",
-            "company": "Firmenname",
-            "location": "Standort",
+            "position": "Jobtitel",
+            "company": "Firma",
+            "location": "Ort",
             "startDate": "YYYY-MM",
-            "endDate": "YYYY-MM oder 'heute'",
-            "description": "Aufgabenbeschreibung"
+            "endDate": "YYYY-MM oder heute",
+            "description": "ALLE Tätigkeiten/Stichpunkte VOLLSTÄNDIG mit \\n getrennt - NICHTS WEGLASSEN!"
         }
     ],
     "education": [
         {
-            "degree": "Abschluss (z.B. 'Bachelor', 'Ausbildung als Seiler', 'Betriebswirt')",
+            "degree": "Abschluss",
             "fieldOfStudy": "Fachrichtung",
-            "institution": "Institution (z.B. Universität, Handwerkskammer, Berufsschule)",
+            "institution": "Institution",
             "startDate": "YYYY-MM",
             "endDate": "YYYY-MM",
-            "description": "Details zur Ausbildung falls vorhanden"
+            "description": "Details"
         }
     ],
-    "technicalSkills": [
-        {
-            "category": "Kategorie (z.B. 'Projektmanagement', 'Software', 'Methoden')",
-            "skills": ["PRINCE2", "SCRUM", "etc."]
-        }
-    ],
-    "softSkills": ["Präsentationen", "Workshops", "Teamführung", "etc."],
-    "languages": [
-        {
-            "language": "Sprache",
-            "level": "Niveau (z.B. 'Muttersprache', 'C1', 'B2', 'A2')"
-        }
-    ]
+    "technicalSkills": [{"category": "Kategorie", "skills": ["Skill1", "Skill2"]}],
+    "softSkills": ["Soft Skill 1", "Soft Skill 2"],
+    "languages": [{"language": "Sprache", "level": "Niveau"}]
 }
+
+Antworte NUR mit validem JSON!
 
 LEBENSLAUF-TEXT:
 ${fullText.substring(0, 14000)}`;
@@ -1304,15 +1306,15 @@ ${fullText.substring(0, 14000)}`;
                         messages: [
                             {
                                 role: 'system',
-                                content: 'Du bist ein Experte für das Parsen von Lebensläufen. Extrahiere ALLE strukturierten Daten vollständig aus dem Text. Antworte NUR mit einem gültigen JSON-Objekt ohne zusätzlichen Text, Markdown oder Erklärungen. Konvertiere Datumsformate zu YYYY-MM.'
+                                content: 'Du extrahierst Lebenslauf-Daten in JSON. WICHTIGSTE REGEL: Kopiere ALLE Beschreibungen und Tätigkeiten WORT FÜR WORT - kürze NIEMALS und fasse NIEMALS zusammen! Wenn im Original 5 Stichpunkte stehen, müssen alle 5 im JSON sein. Verwende \\n für Zeilenumbrüche. Antworte NUR mit validem JSON.'
                             },
                             {
                                 role: 'user',
                                 content: prompt
                             }
                         ],
-                        max_tokens: 4000,
-                        temperature: 0.1
+                        max_tokens: 8000,
+                        temperature: 0
                     })
                 });
                 
