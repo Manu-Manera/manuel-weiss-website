@@ -46,7 +46,7 @@ exports.handler = async (event) => {
     const body = parseBody(event);
     const bucket = process.env.BUCKET_NAME;
     if (!bucket) {
-      return json(500, { error: 'Missing BUCKET_NAME env' });
+      return json(500, { error: 'Missing BUCKET_NAME env' }, event);
     }
 
     const contentType = (body && body.contentType) || 'image/jpeg';
@@ -110,10 +110,10 @@ exports.handler = async (event) => {
       expires,
       region: REGION,
       fileType,
-    });
+    }, event);
   } catch (error) {
     console.error('Error:', error);
-    return json(500, { error: error.message });
+    return json(500, { error: error.message }, event);
   }
 };
 
@@ -126,7 +126,7 @@ async function handleWebsiteImages(event, method, path) {
       // Save website images
       const body = parseBody(event);
       if (!body || !body.userId) {
-        return json(400, { error: 'Missing userId' });
+        return json(400, { error: 'Missing userId' }, event);
       }
       
       const item = {
@@ -145,13 +145,13 @@ async function handleWebsiteImages(event, method, path) {
       }).promise();
       
       console.log('✅ Website images saved successfully');
-      return json(200, { success: true, item });
+      return json(200, { success: true, item }, event);
       
     } else if (method === 'GET' && path.includes('/website-images/')) {
       // Get website images
       const userId = path.split('/').pop();
       if (!userId) {
-        return json(400, { error: 'Missing userId in path' });
+        return json(400, { error: 'Missing userId in path' }, event);
       }
       
       console.log('📥 Loading website images from DynamoDB:', { userId, table: PROFILE_TABLE });
@@ -169,7 +169,7 @@ async function handleWebsiteImages(event, method, path) {
       
       if (!result.Item || result.Item.type !== 'website-images') {
         console.log('⚠️ Website images not found for userId:', userId);
-        return json(404, { error: 'Website images not found' });
+        return json(404, { error: 'Website images not found' }, event);
       }
       
       console.log('✅ Website images loaded successfully');
@@ -178,10 +178,10 @@ async function handleWebsiteImages(event, method, path) {
         profileImageDefault: result.Item.profileImageDefault || null,
         profileImageHover: result.Item.profileImageHover || null,
         updatedAt: result.Item.updatedAt
-      });
+      }, event);
     } else {
       console.log('⚠️ Method not allowed:', { method, path });
-      return json(405, { error: 'Method not allowed' });
+      return json(405, { error: 'Method not allowed' }, event);
     }
   } catch (error) {
     console.error('❌ Website images error:', {
@@ -190,11 +190,11 @@ async function handleWebsiteImages(event, method, path) {
       name: error.name,
       stack: error.stack
     });
-    return json(500, { 
+    return json(500, {
       error: 'Internal server error',
       message: error.message,
       code: error.code
-    });
+    }, event);
   }
 }
 
@@ -207,14 +207,31 @@ function parseBody(event) {
   }
 }
 
-function json(statusCode, body) {
+function json(statusCode, body, event = null) {
+  // Get origin from event headers for dynamic CORS
+  const origin = (event && event.headers && (event.headers.Origin || event.headers.origin)) || '*';
+  
+  // Allowed origins - check if origin is in the list
+  const allowedOrigins = [
+    'https://manuel-weiss.ch',
+    'https://www.manuel-weiss.ch',
+    'https://mawps.netlify.app',
+    'http://localhost:3000',
+    'http://localhost:8888',
+    'http://localhost:8000'
+  ];
+  
+  const corsOrigin = allowedOrigins.includes(origin) ? origin : '*';
+  
   return {
     statusCode,
     headers: {
       'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Headers': 'Content-Type,Authorization',
-      'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
+      'Access-Control-Allow-Origin': corsOrigin,
+      'Access-Control-Allow-Headers': 'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token',
+      'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS',
+      'Access-Control-Max-Age': '3000',
+      'Access-Control-Allow-Credentials': 'true',
     },
     body: JSON.stringify(body),
   };
