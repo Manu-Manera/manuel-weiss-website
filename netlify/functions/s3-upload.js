@@ -7,18 +7,20 @@
 
 const AWS = require('aws-sdk');
 
-// AWS Konfiguration aus Umgebungsvariablen
-const REGION = process.env.AWS_REGION || 'eu-central-1';
-const BUCKET_NAME = process.env.S3_BUCKET_NAME || 'manuel-weiss-profile-media-bucket';
+// AWS Konfiguration - HARDCODED für Zuverlässigkeit
+const REGION = 'eu-central-1';
+const BUCKET_NAME = 'manuel-weiss-profile-media-bucket';
 const DOCUMENTS_PREFIX = 'public/documents/';
 const PROFILE_PREFIX = 'public/profile-images/';
 
-// S3 Client initialisieren
+// S3 Client initialisieren - Region MUSS explizit gesetzt werden
 const s3 = new AWS.S3({
   region: REGION,
   signatureVersion: 'v4',
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  endpoint: `https://s3.${REGION}.amazonaws.com`,
+  s3ForcePathStyle: false
 });
 
 // CORS Headers
