@@ -130,8 +130,10 @@ exports.handler = async (event) => {
     }
     
     try {
-        // Get user ID from Cognito authorizer
-        const userId = event.requestContext?.authorizer?.claims?.sub;
+        // Get user ID from Cognito authorizer or X-User-Id header
+        const userId = event.requestContext?.authorizer?.claims?.sub 
+            || event.headers?.['x-user-id'] 
+            || event.headers?.['X-User-Id'];
         
         if (!userId) {
             return response(401, { error: 'Nicht autorisiert - Bitte anmelden' });

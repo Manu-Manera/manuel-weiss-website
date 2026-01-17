@@ -1,0 +1,10 @@
+{
+  "name": "profile-image-upload-lambda",
+  "version": "1.0.0",
+  "description": "AWS Lambda for profile image and document uploads via S3 presigned URLs",
+  "main": "index.js",
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.0.0",
+    "@aws-sdk/s3-request-presigner": "^3.0.0"
+  }
+}

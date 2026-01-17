@@ -1,0 +1,7 @@
+{
+  "name": "cv-general-lambda",
+  "version": "1.0.0",
+  "description": "AWS Lambda for baseline CV generation",
+  "main": "index.js",
+  "dependencies": {}
+}

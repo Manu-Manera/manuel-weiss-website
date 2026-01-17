@@ -2103,7 +2103,8 @@
                 }, 10000);
                 
                 try {
-                    const response = await fetch('/.netlify/functions/hero-video-settings');
+                    const apiUrl = window.getApiUrl ? window.getApiUrl('HERO_VIDEO_SETTINGS') : '/.netlify/functions/hero-video-settings';
+                    const response = await fetch(apiUrl);
                     if (!response.ok) {
                         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                     }

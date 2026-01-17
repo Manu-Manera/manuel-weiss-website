@@ -1,0 +1,7 @@
+{
+  "name": "openai-proxy-lambda",
+  "version": "1.0.0",
+  "description": "AWS Lambda for OpenAI API proxy",
+  "main": "index.js",
+  "dependencies": {}
+}

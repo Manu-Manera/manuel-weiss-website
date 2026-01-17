@@ -13,8 +13,13 @@ class WorkflowAPI {
     }
 
     initApiBaseUrl() {
-        // Immer Netlify Functions verwenden (kein CORS-Problem)
-        this.apiBaseUrl = '/.netlify/functions/user-data';
+        // Verwende zentrale API-Konfiguration
+        if (window.getApiUrl) {
+            this.apiBaseUrl = window.getApiUrl('USER_DATA');
+        } else {
+            // Fallback auf Netlify Functions
+            this.apiBaseUrl = '/.netlify/functions/user-data';
+        }
     }
 
     /**

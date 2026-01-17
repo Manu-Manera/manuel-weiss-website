@@ -2449,7 +2449,8 @@
             
             async saveHighscore(name, score) {
                 try {
-                    const response = await fetch('/.netlify/functions/snowflake-highscores', {
+                    const apiUrl = window.getApiUrl ? window.getApiUrl('SNOWFLAKE_HIGHSCORES') : '/.netlify/functions/snowflake-highscores';
+                    const response = await fetch(apiUrl, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -2481,7 +2482,8 @@
             
             async loadHighscores() {
                 try {
-                    const response = await fetch('/.netlify/functions/snowflake-highscores');
+                    const apiUrl = window.getApiUrl ? window.getApiUrl('SNOWFLAKE_HIGHSCORES') : '/.netlify/functions/snowflake-highscores';
+                    const response = await fetch(apiUrl);
                     if (!response.ok) {
                         throw new Error('Failed to load highscores');
                     }
@@ -2706,7 +2708,8 @@
                 }, 10000);
                 
                 try {
-                    const response = await fetch('/.netlify/functions/hero-video-settings');
+                    const apiUrl = window.getApiUrl ? window.getApiUrl('HERO_VIDEO_SETTINGS') : '/.netlify/functions/hero-video-settings';
+                    const response = await fetch(apiUrl);
                     if (!response.ok) {
                         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                     }

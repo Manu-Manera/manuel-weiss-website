@@ -12,8 +12,8 @@ class AWSProfileAPI {
         this.dynamoDB = null;
         this.s3 = null;
         
-        // Netlify Function als primäre Datenquelle (AWS API Gateway ist eingeschränkt)
-        this.netlifyFunctionUrl = '/.netlify/functions/user-data';
+        // Verwende zentrale API-Konfiguration
+        this.netlifyFunctionUrl = window.getApiUrl ? window.getApiUrl('USER_DATA') : '/.netlify/functions/user-data';
         
         this.init();
     }

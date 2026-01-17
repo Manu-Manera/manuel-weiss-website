@@ -1,0 +1,7 @@
+{
+  "name": "cv-files-parse-lambda",
+  "version": "1.0.0",
+  "description": "AWS Lambda for CV files parsing",
+  "main": "index.js",
+  "dependencies": {}
+}

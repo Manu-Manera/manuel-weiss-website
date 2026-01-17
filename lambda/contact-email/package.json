@@ -1,0 +1,9 @@
+{
+  "name": "contact-email-lambda",
+  "version": "1.0.0",
+  "description": "AWS Lambda for contact form emails via SES",
+  "main": "index.js",
+  "dependencies": {
+    "@aws-sdk/client-ses": "^3.0.0"
+  }
+}
