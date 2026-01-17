@@ -9,7 +9,7 @@ const AWS = require('aws-sdk');
 
 // AWS Konfiguration - HARDCODED für Zuverlässigkeit
 const REGION = 'eu-central-1';
-const BUCKET_NAME = 'manuel-weiss-profile-media-bucket';
+const BUCKET_NAME = 'mawps-profile-images';
 const DOCUMENTS_PREFIX = 'public/documents/';
 const PROFILE_PREFIX = 'public/profile-images/';
 
