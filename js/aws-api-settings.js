@@ -211,7 +211,18 @@ class AWSAPISettingsService {
 
             const data = await response.json();
             console.log(`✅ Vollständiger API Key für ${provider} geladen`);
-            return data;
+            // Extrahiere den Key-String aus dem Response-Objekt
+            const apiKey = data.apiKey || data.key || data[provider] || data;
+            // Stelle sicher, dass wir einen String zurückgeben
+            if (typeof apiKey === 'string') {
+                return apiKey;
+            }
+            // Falls data selbst ein String ist (direkter Key)
+            if (typeof data === 'string') {
+                return data;
+            }
+            console.warn('⚠️ API Key Format unerwartet:', data);
+            return null;
         } catch (error) {
             console.error(`❌ Fehler beim Laden des vollständigen API Keys für ${provider}:`, error);
             throw error;
