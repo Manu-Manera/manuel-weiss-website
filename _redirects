@@ -1,5 +1,5 @@
-# Netlify Redirects - Manuel Weiss Enterprise Platform
-# =====================================================
+# Netlify Redirects - Manuel Weiss Website
+# =========================================
 
 # Admin & Management Routes
 /admin              /admin.html           200
@@ -35,9 +35,9 @@
 /swagger            /api-documentation.html   200
 
 # PWA Routes
-/manifest.json      /public/manifest.json     200
-/sw.js             /public/sw.js             200
-/service-worker.js /public/sw.js             200
+/manifest.json      /manifest.json     200
+/sw.js             /sw.js             200
+/service-worker.js /sw.js             200
 
 # Health & Status Routes
 /health             /health.html           200
@@ -45,13 +45,23 @@
 /healthz            /health.html           200
 /readyz             /health.html           200
 
-# Media Routes (CloudFront Integration)
-/media/*            https://d1234567890.cloudfront.net/media/:splat    200
-/assets/*           https://d1234567890.cloudfront.net/assets/:splat    200
-/images/*           https://d1234567890.cloudfront.net/images/:splat    200
+# Netlify Functions API Proxy (für /api/* Aufrufe)
+# Diese werden auf die Netlify Functions umgeleitet
+/api/user-data/*    /.netlify/functions/user-data/:splat  200
+/api/cv-general     /.netlify/functions/cv-general        200
+/api/cv-target      /.netlify/functions/cv-target         200
+/api/cv-job-parse   /.netlify/functions/cv-job-parse      200
+/api/cv-files-parse /.netlify/functions/cv-files-parse    200
+/api/cv-export      /.netlify/functions/cv-export         200
+/api/job-parser     /.netlify/functions/job-parser        200
+/api/openai-proxy   /.netlify/functions/openai-proxy      200
+/api/api-settings/* /.netlify/functions/api-settings/:splat 200
+/api/hero-video/*   /.netlify/functions/hero-video-settings 200
+/api/s3-upload      /.netlify/functions/s3-upload         200
+/api/contact        /.netlify/functions/send-contact-email 200
+/api/highscores     /.netlify/functions/snowflake-highscores 200
 
-# API Proxy Routes (für lokale Entwicklung)
-/api/*              https://api-gateway.execute-api.eu-central-1.amazonaws.com/prod/:splat  200
-
-# SPA Fallback für React-Routen
-/*                 /index.html               200
+# WICHTIG: Kein Catch-all Redirect für SPA!
+# Das würde alle anderen Routen überschreiben
+# Wenn nötig, nur für spezifische Apps:
+# /app/*             /app/index.html           200

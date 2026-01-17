@@ -7,6 +7,7 @@ import { ComputeStack } from '../lib/compute-stack';
 import { AuthStack } from '../lib/auth-stack';
 import { ObservabilityStack } from '../lib/observability-stack';
 import { SecurityStack } from '../lib/security-stack';
+import { WebsiteApiStack } from '../lib/website-api-stack';
 
 const app = new cdk.App();
 
@@ -104,6 +105,19 @@ new cdk.CfnOutput(authStack, 'UserPoolClientId', {
 new cdk.CfnOutput(observabilityStack, 'DashboardUrl', {
   value: `https://console.aws.amazon.com/cloudwatch/home?region=${env.region}#dashboards:name=${observabilityStack.dashboard.dashboardName}`,
   description: 'CloudWatch Dashboard URL'
+});
+
+// ========================================
+// WEBSITE API STACK (Netlify Migration)
+// ========================================
+const websiteApiStack = new WebsiteApiStack(app, 'manuel-weiss-website-api', {
+  env,
+  description: 'Website API für manuel-weiss.ch (ersetzt Netlify Functions)'
+});
+
+new cdk.CfnOutput(websiteApiStack, 'WebsiteApiEndpoint', {
+  value: websiteApiStack.api.url,
+  description: 'Website API URL - Ersetze /.netlify/functions/ mit dieser URL'
 });
 
 // Tags

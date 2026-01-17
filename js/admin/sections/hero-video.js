@@ -101,7 +101,8 @@ class HeroVideoSection {
 
     async loadCurrentVideo() {
         try {
-            const response = await fetch('/.netlify/functions/hero-video-settings');
+            const apiUrl = window.getApiUrl ? window.getApiUrl('HERO_VIDEO_SETTINGS') : '/.netlify/functions/hero-video-settings';
+            const response = await fetch(apiUrl);
             const data = await response.json();
 
             const infoP = document.getElementById('currentVideoInfo');
@@ -173,7 +174,8 @@ class HeroVideoSection {
                 console.log('🚀 Versuche direkten S3-Upload (Pre-Signed URL)...');
                 
                 // Schritt 1: Hole Pre-Signed URL
-                const uploadUrlResponse = await fetch('/.netlify/functions/hero-video-upload', {
+                const uploadApiUrl = window.getApiUrl ? window.getApiUrl('HERO_VIDEO_UPLOAD') : '/.netlify/functions/hero-video-upload';
+                const uploadUrlResponse = await fetch(uploadApiUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -243,7 +245,8 @@ class HeroVideoSection {
                         throw new Error('publicUrl wurde nicht gesetzt');
                     }
 
-                    const settingsResponse = await fetch('/.netlify/functions/hero-video-settings', {
+                    const settingsApiUrl = window.getApiUrl ? window.getApiUrl('HERO_VIDEO_SETTINGS') : '/.netlify/functions/hero-video-settings';
+                    const settingsResponse = await fetch(settingsApiUrl, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ videoUrl: publicUrl })
@@ -325,7 +328,8 @@ class HeroVideoSection {
                     if (progressFill) progressFill.style.width = '30%';
                     if (progressPercentage) progressPercentage.textContent = '30%';
 
-                    const uploadResponse = await fetch('/.netlify/functions/hero-video-upload-direct', {
+                    const directUploadApiUrl = window.getApiUrl ? window.getApiUrl('HERO_VIDEO_UPLOAD') : '/.netlify/functions/hero-video-upload-direct';
+                    const uploadResponse = await fetch(directUploadApiUrl, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
@@ -362,7 +366,8 @@ class HeroVideoSection {
                     // WICHTIG: Speichere URL auch manuell in Settings, falls DynamoDB-Speicherung fehlgeschlagen ist
                     console.log('💾 Speichere Video-URL in Settings...');
                     try {
-                        const settingsResponse = await fetch('/.netlify/functions/hero-video-settings', {
+                        const saveSettingsApiUrl = window.getApiUrl ? window.getApiUrl('HERO_VIDEO_SETTINGS') : '/.netlify/functions/hero-video-settings';
+                        const settingsResponse = await fetch(saveSettingsApiUrl, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ videoUrl: publicUrl })

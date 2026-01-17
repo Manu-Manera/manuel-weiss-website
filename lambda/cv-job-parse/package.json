@@ -1,0 +1,7 @@
+{
+  "name": "cv-job-parse-lambda",
+  "version": "1.0.0",
+  "description": "AWS Lambda for job posting parsing",
+  "main": "index.js",
+  "dependencies": {}
+}

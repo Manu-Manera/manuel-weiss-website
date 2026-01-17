@@ -14,26 +14,19 @@ class AWSAPISettingsService {
 
     /**
      * API Endpoint ermitteln
-     * Nutzt jetzt primär die Netlify Function für sichere API-Key-Speicherung
+     * Nutzt zentrale API-Konfiguration für einfache Umschaltung
      */
     _getApiEndpoint() {
-        // Primär: Netlify Function (sicher, verschlüsselt)
-        // Die Netlify Function ist unter /.netlify/functions/api-settings erreichbar
-        if (window.location.hostname.includes('netlify.app') || 
-            window.location.hostname.includes('manuel-weiss.ch') ||
-            window.location.hostname === 'localhost') {
-            return '/.netlify/functions';
+        // Verwende zentrale API-Konfiguration
+        if (window.getApiUrl) {
+            // getApiUrl gibt bereits den vollständigen Pfad zurück
+            const apiSettingsUrl = window.getApiUrl('API_SETTINGS');
+            // Extrahiere den Basis-Pfad (ohne /api-settings am Ende)
+            return apiSettingsUrl.replace(/\/api-settings$/, '');
         }
         
-        // Fallback: AWS API Gateway (falls Netlify nicht verfügbar)
-        if (window.AWS_CONFIG?.apiBaseUrl) {
-            return window.AWS_CONFIG.apiBaseUrl;
-        }
-        if (window.AWS_CONFIG?.apiEndpoint) {
-            return window.AWS_CONFIG.apiEndpoint;
-        }
-        
-        return 'https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod';
+        // Fallback: Netlify Functions
+        return '/.netlify/functions';
     }
 
     /**

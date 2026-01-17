@@ -7,21 +7,21 @@
   const globalConfig = window.AWS_APP_CONFIG || {};
   const API_BASE = (globalConfig.MEDIA_API_BASE || '').replace(/\/$/, '');
   
-  // Netlify Function als Fallback (funktioniert immer)
-  const NETLIFY_UPLOAD_URL = '/.netlify/functions/s3-upload';
+  // Verwende zentrale API-Konfiguration für Upload-URL
+  const getUploadUrl = () => window.getApiUrl ? window.getApiUrl('S3_UPLOAD') : '/.netlify/functions/s3-upload';
 
   async function requestPresignedUrl(options) {
-    // Versuche zuerst Netlify Function (zuverlässiger)
-    const netlifyEndpoint = NETLIFY_UPLOAD_URL;
+    // Verwende zentrale API-Konfiguration
+    const uploadEndpoint = getUploadUrl();
     
     try {
-      console.log(`📤 Requesting presigned URL from Netlify: ${netlifyEndpoint}`, {
+      console.log(`📤 Requesting presigned URL from: ${uploadEndpoint}`, {
         contentType: options.contentType,
         userId: options.userId,
         fileType: options.fileType || 'document'
       });
       
-      const netlifyRes = await fetch(netlifyEndpoint, {
+      const uploadRes = await fetch(uploadEndpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
@@ -31,15 +31,15 @@
         }),
       });
       
-      if (netlifyRes.ok) {
-        const data = await netlifyRes.json();
-        console.log('✅ Presigned URL von Netlify erhalten:', data.key);
+      if (uploadRes.ok) {
+        const data = await uploadRes.json();
+        console.log('✅ Presigned URL erhalten:', data.key);
         return data;
       }
       
-      console.warn('⚠️ Netlify Function fehlgeschlagen, versuche AWS Lambda...');
-    } catch (netlifyError) {
-      console.warn('⚠️ Netlify Function nicht erreichbar:', netlifyError.message);
+      console.warn('⚠️ Upload API fehlgeschlagen, versuche AWS Lambda Fallback...');
+    } catch (uploadError) {
+      console.warn('⚠️ Upload API nicht erreichbar:', uploadError.message);
     }
     
     // Fallback: AWS Lambda (kann kaputt sein)

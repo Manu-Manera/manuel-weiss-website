@@ -1,0 +1,7 @@
+{
+  "name": "cv-export-lambda",
+  "version": "1.0.0",
+  "description": "AWS Lambda for CV export",
+  "main": "index.js",
+  "dependencies": {}
+}

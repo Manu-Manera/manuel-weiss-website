@@ -357,8 +357,9 @@ class LinkedInImporter {
         this.showLoading('Profil wird abgerufen...');
         
         try {
-            // Use Netlify Function as proxy to avoid CORS
-            const response = await fetch('/.netlify/functions/linkedin-scrape', {
+            // Use API proxy to avoid CORS
+            const apiUrl = window.getApiUrl ? window.getApiUrl('LINKEDIN_SCRAPE') : '/.netlify/functions/linkedin-scrape';
+            const response = await fetch(apiUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ url })

@@ -457,9 +457,10 @@ async function getOpenAIApiKey() {
             }
         }
         
-        // 3. Versuche über Netlify Function
+        // 3. Versuche über API (zentrale Konfiguration)
         try {
-            const response = await fetch('/.netlify/functions/api-settings/key?provider=openai', {
+            const apiUrl = window.getApiUrl ? window.getApiUrl('API_SETTINGS') + '/key?provider=openai' : '/.netlify/functions/api-settings/key?provider=openai';
+            const response = await fetch(apiUrl, {
                 headers: {
                     'X-User-Id': getUserId()
                 }
@@ -467,7 +468,7 @@ async function getOpenAIApiKey() {
             if (response.ok) {
                 const data = await response.json();
                 if (data.apiKey) {
-                    console.log('✅ API-Key über Netlify Function geladen');
+                    console.log('✅ API-Key über API geladen');
                     return data.apiKey;
                 }
             }

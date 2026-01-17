@@ -357,6 +357,7 @@
     </div>
     
     <!-- Scripts -->
+    <script src="js/aws-app-config.js"></script>
     <script src="js/global-ai-service.js"></script>
     <script src="js/cv-tailor.js"></script>
     
@@ -458,7 +459,8 @@
             updateStats();
             
             try {
-                const response = await fetch('/.netlify/functions/cv-files-parse', {
+                const apiUrl = window.getApiUrl ? window.getApiUrl('CV_FILES_PARSE') : '/.netlify/functions/cv-files-parse';
+                const response = await fetch(apiUrl, {
                     method: 'OPTIONS'
                 });
                 
@@ -487,7 +489,8 @@
                     experience: [{ title: 'Developer', company: 'Test Corp' }]
                 };
                 
-                const response = await fetch('/.netlify/functions/cv-general', {
+                const apiUrl = window.getApiUrl ? window.getApiUrl('CV_GENERAL') : '/.netlify/functions/cv-general';
+                const response = await fetch(apiUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ apiKey, cvData: mockCVData })
@@ -517,7 +520,8 @@
                 const apiKey = await window.cvTailor.getAPIKey();
                 const mockJobText = 'Wir suchen einen Senior Software Developer mit Erfahrung in JavaScript und React.';
                 
-                const response = await fetch('/.netlify/functions/cv-job-parse', {
+                const apiUrl = window.getApiUrl ? window.getApiUrl('CV_JOB_PARSE') : '/.netlify/functions/cv-job-parse';
+                const response = await fetch(apiUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ apiKey, jobInput: mockJobText, inputType: 'text' })
@@ -548,7 +552,8 @@
                 const mockBaselineCV = 'PERSONAL INFORMATION\nTest User\n\nWORK EXPERIENCE\nDeveloper at Test Corp';
                 const mockJobData = { company: 'Test Corp', position: 'Developer', requirements: { must_have: ['JavaScript'] } };
                 
-                const response = await fetch('/.netlify/functions/cv-target', {
+                const apiUrl = window.getApiUrl ? window.getApiUrl('CV_TARGET') : '/.netlify/functions/cv-target';
+                const response = await fetch(apiUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ apiKey, baselineCV: mockBaselineCV, jobData: mockJobData })
@@ -577,7 +582,8 @@
             try {
                 const mockCVContent = 'Test CV Content';
                 
-                const response = await fetch('/.netlify/functions/cv-export', {
+                const apiUrl = window.getApiUrl ? window.getApiUrl('CV_EXPORT') : '/.netlify/functions/cv-export';
+                const response = await fetch(apiUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ format: 'docx', cvContent: mockCVContent, fileName: 'test-cv.docx' })

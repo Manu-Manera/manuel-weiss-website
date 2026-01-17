@@ -6,7 +6,8 @@
 
 class CloudDataService {
     constructor() {
-        this.apiEndpoint = '/.netlify/functions/user-data';
+        // Verwende zentrale API-Konfiguration
+        this.apiEndpoint = window.getApiUrl ? window.getApiUrl('USER_DATA') : '/.netlify/functions/user-data';
         this.cache = {
             profile: null,
             resumes: null,
