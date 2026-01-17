@@ -6,8 +6,43 @@
 (function initAwsMediaHelpers() {
   const globalConfig = window.AWS_APP_CONFIG || {};
   const API_BASE = (globalConfig.MEDIA_API_BASE || '').replace(/\/$/, '');
+  
+  // Netlify Function als Fallback (funktioniert immer)
+  const NETLIFY_UPLOAD_URL = '/.netlify/functions/s3-upload';
 
   async function requestPresignedUrl(options) {
+    // Versuche zuerst Netlify Function (zuverlässiger)
+    const netlifyEndpoint = NETLIFY_UPLOAD_URL;
+    
+    try {
+      console.log(`📤 Requesting presigned URL from Netlify: ${netlifyEndpoint}`, {
+        contentType: options.contentType,
+        userId: options.userId,
+        fileType: options.fileType || 'document'
+      });
+      
+      const netlifyRes = await fetch(netlifyEndpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          contentType: options.contentType, 
+          userId: options.userId,
+          fileType: options.fileType || 'document'
+        }),
+      });
+      
+      if (netlifyRes.ok) {
+        const data = await netlifyRes.json();
+        console.log('✅ Presigned URL von Netlify erhalten:', data.key);
+        return data;
+      }
+      
+      console.warn('⚠️ Netlify Function fehlgeschlagen, versuche AWS Lambda...');
+    } catch (netlifyError) {
+      console.warn('⚠️ Netlify Function nicht erreichbar:', netlifyError.message);
+    }
+    
+    // Fallback: AWS Lambda (kann kaputt sein)
     if (!API_BASE) {
       throw new Error('API Endpoint nicht konfiguriert. Bitte kontaktieren Sie den Administrator.');
     }
@@ -15,23 +50,11 @@
     const endpoint = `${API_BASE}/profile-image/upload-url`;
     
     try {
-      console.log(`📤 Requesting presigned URL from: ${endpoint}`, {
+      console.log(`📤 Requesting presigned URL from AWS: ${endpoint}`, {
         contentType: options.contentType,
         userId: options.userId,
         apiBase: API_BASE
       });
-      
-      // Zuerst OPTIONS-Request testen (CORS Preflight)
-      try {
-        const optionsRes = await fetch(endpoint, {
-          method: 'OPTIONS',
-          headers: { 'Content-Type': 'application/json' }
-        });
-        console.log('✅ CORS Preflight erfolgreich:', optionsRes.status);
-      } catch (optionsError) {
-        console.warn('⚠️ CORS Preflight fehlgeschlagen:', optionsError);
-        // Weiter mit POST-Request, da manche Server OPTIONS nicht unterstützen
-      }
       
       const res = await fetch(endpoint, {
       method: 'POST',
