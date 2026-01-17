@@ -1192,11 +1192,18 @@
                 }
                 
                 // Methode 2: Aus AWS Settings (wenn eingeloggt)
-                if (!apiKey && window.awsAPISettings) {
+                if (!apiKey && (window.awsApiSettings || window.awsAPISettings)) {
                     try {
-                        if (window.awsAPISettings.isUserLoggedIn && window.awsAPISettings.isUserLoggedIn()) {
-                            apiKey = await window.awsAPISettings.getFullApiKey('openai');
-                            if (apiKey) {
+                        const awsSettings = window.awsApiSettings || window.awsAPISettings;
+                        if (awsSettings.isUserLoggedIn && awsSettings.isUserLoggedIn()) {
+                            let awsKey = await awsSettings.getFullApiKey('openai');
+                            // Validierung: Stelle sicher dass es ein String ist
+                            if (awsKey && typeof awsKey === 'object') {
+                                console.warn('⚠️ API Key ist Objekt, extrahiere String:', awsKey);
+                                awsKey = awsKey.apiKey || awsKey.key || awsKey.openai || null;
+                            }
+                            if (awsKey && typeof awsKey === 'string' && awsKey.startsWith('sk-')) {
+                                apiKey = awsKey;
                                 console.log('✅ API-Key aus AWS geladen');
                             }
                         }
