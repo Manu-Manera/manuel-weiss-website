@@ -5,7 +5,12 @@
  * Ersetzt die kaputte AWS Lambda für Datei-Uploads
  */
 
-const AWS = require('aws-sdk');
+let AWS;
+try {
+  AWS = require('aws-sdk');
+} catch (err) {
+  console.error('❌ aws-sdk konnte nicht geladen werden:', err.message);
+}
 
 // AWS Konfiguration - HARDCODED für Zuverlässigkeit
 const REGION = 'eu-central-1';
@@ -13,15 +18,34 @@ const BUCKET_NAME = 'mawps-profile-images';
 const DOCUMENTS_PREFIX = 'public/documents/';
 const PROFILE_PREFIX = 'public/profile-images/';
 
-// S3 Client initialisieren - verwendet NETLIFY_AWS_* Variablen
-const s3 = new AWS.S3({
-  region: REGION,
-  signatureVersion: 'v4',
-  accessKeyId: process.env.NETLIFY_AWS_ACCESS_KEY_ID || process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.NETLIFY_AWS_SECRET_ACCESS_KEY || process.env.AWS_SECRET_ACCESS_KEY,
-  endpoint: `https://s3.${REGION}.amazonaws.com`,
-  s3ForcePathStyle: false
-});
+// S3 Client wird lazy initialisiert
+let s3 = null;
+
+function getS3Client() {
+  if (s3) return s3;
+  
+  if (!AWS) {
+    throw new Error('aws-sdk not available');
+  }
+  
+  const accessKeyId = process.env.NETLIFY_AWS_ACCESS_KEY_ID || process.env.AWS_ACCESS_KEY_ID;
+  const secretAccessKey = process.env.NETLIFY_AWS_SECRET_ACCESS_KEY || process.env.AWS_SECRET_ACCESS_KEY;
+  
+  if (!accessKeyId || !secretAccessKey) {
+    throw new Error('AWS credentials not configured');
+  }
+  
+  s3 = new AWS.S3({
+    region: REGION,
+    signatureVersion: 'v4',
+    accessKeyId: accessKeyId,
+    secretAccessKey: secretAccessKey,
+    endpoint: `https://s3.${REGION}.amazonaws.com`,
+    s3ForcePathStyle: false
+  });
+  
+  return s3;
+}
 
 // CORS Headers
 const corsHeaders = {
@@ -57,8 +81,29 @@ exports.handler = async (event) => {
   }
 
   try {
+    // Prüfe ob AWS SDK verfügbar ist
+    if (!AWS) {
+      console.error('❌ AWS SDK nicht verfügbar!');
+      return {
+        statusCode: 500,
+        headers: corsHeaders,
+        body: JSON.stringify({ error: 'AWS SDK not available', details: 'The aws-sdk module could not be loaded' })
+      };
+    }
+
     // Request Body parsen
-    const body = JSON.parse(event.body || '{}');
+    let body;
+    try {
+      body = JSON.parse(event.body || '{}');
+    } catch (parseError) {
+      console.error('❌ JSON Parse Error:', parseError.message);
+      return {
+        statusCode: 400,
+        headers: corsHeaders,
+        body: JSON.stringify({ error: 'Invalid JSON in request body', details: parseError.message })
+      };
+    }
+    
     const { contentType, userId, fileType } = body;
 
     console.log('📋 Upload-Anfrage:', { contentType, userId, fileType });
@@ -80,24 +125,22 @@ exports.handler = async (event) => {
       };
     }
 
-    // AWS Credentials prüfen (NETLIFY_AWS_* oder AWS_*)
-    const accessKey = process.env.NETLIFY_AWS_ACCESS_KEY_ID || process.env.AWS_ACCESS_KEY_ID;
-    const secretKey = process.env.NETLIFY_AWS_SECRET_ACCESS_KEY || process.env.AWS_SECRET_ACCESS_KEY;
-    
-    if (!accessKey || !secretKey) {
-      console.error('❌ AWS Credentials fehlen!', {
-        hasAccessKey: !!accessKey,
-        hasSecretKey: !!secretKey,
-        envKeys: Object.keys(process.env).filter(k => k.includes('AWS'))
-      });
+    // S3 Client initialisieren (mit Credential-Prüfung)
+    let s3Client;
+    try {
+      s3Client = getS3Client();
+    } catch (credError) {
+      console.error('❌ S3 Client Fehler:', credError.message);
       return {
         statusCode: 500,
         headers: corsHeaders,
-        body: JSON.stringify({ error: 'AWS credentials not configured' })
+        body: JSON.stringify({ 
+          error: 'AWS configuration error', 
+          details: credError.message,
+          hint: 'Please check NETLIFY_AWS_ACCESS_KEY_ID and NETLIFY_AWS_SECRET_ACCESS_KEY environment variables'
+        })
       };
     }
-    
-    console.log('🔑 AWS Credentials gefunden:', { accessKeyPrefix: accessKey.substring(0, 10) + '...' });
 
     // Prefix und Dateiendung bestimmen
     let prefix, fileExt;
@@ -136,7 +179,7 @@ exports.handler = async (event) => {
     };
 
     // Presigned URL generieren
-    const url = await s3.getSignedUrlPromise('putObject', params);
+    const url = await s3Client.getSignedUrlPromise('putObject', params);
 
     // Public URL erstellen
     const keyParts = key.split('/');
@@ -160,13 +203,14 @@ exports.handler = async (event) => {
     };
 
   } catch (error) {
-    console.error('❌ Fehler:', error);
+    console.error('❌ Unerwarteter Fehler:', error);
     return {
       statusCode: 500,
       headers: corsHeaders,
       body: JSON.stringify({
         error: 'Internal server error',
-        message: error.message
+        message: error.message,
+        stack: error.stack
       })
     };
   }
@@ -195,4 +239,4 @@ function getExtFromContentType(ct, fileType) {
   // Default
   return fileType === 'cv' || fileType === 'certificate' || fileType === 'document' ? '.pdf' : '.jpg';
 }
-// Updated: Sat Jan 17 12:36:54 CET 2026
+// Updated: Sat Jan 17 14:00:00 CET 2026 - Improved error handling
