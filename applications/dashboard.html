@@ -2273,9 +2273,16 @@ Ihre Aufgaben:
                             errorCause: error.cause
                         });
                         
-                        // Spezifische Fehlermeldungen
-                        if (error.message && error.message.includes('Load failed')) {
-                            console.error('❌ Load failed Fehler erkannt - mögliche Ursachen: Netzwerkfehler, CORS, oder API-Endpoint nicht erreichbar');
+                        // Spezifische Fehlermeldungen für "Load failed"
+                        if (error.message && (error.message.includes('Load failed') || 
+                            error.message.includes('Failed to fetch') || 
+                            error.message.includes('NetworkError'))) {
+                            console.error('❌ Netzwerkfehler erkannt - mögliche Ursachen: Netzwerkfehler, CORS, oder API-Endpoint nicht erreichbar');
+                            console.error('API_BASE:', window.AWS_APP_CONFIG?.MEDIA_API_BASE || window.AWS_APP_CONFIG?.API_BASE || 'Nicht konfiguriert');
+                            // Normalisiere Fehlermeldung für bessere Anzeige
+                            if (error.message.includes('Load failed')) {
+                                uploadError = new Error('Netzwerkfehler: Die Verbindung zum Server konnte nicht hergestellt werden. Bitte überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.');
+                            }
                         }
                         
                         console.warn('Versuche Fallback...');
@@ -2329,11 +2336,22 @@ Ihre Aufgaben:
                 if (!uploadSuccess) {
                     // WICHTIG: Wenn User eingeloggt ist, KEIN lokaler Fallback!
                     if (isLoggedIn) {
-                        const errorMsg = uploadError 
-                            ? `Cloud-Upload fehlgeschlagen: ${uploadError.message || 'Unbekannter Fehler'}. Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.`
-                            : 'Cloud-Upload fehlgeschlagen. Bitte versuchen Sie es erneut.';
+                        // Normalisiere Fehlermeldung - entferne doppelte "Bitte versuchen Sie es erneut"
+                        let errorMsg = uploadError?.message || 'Unbekannter Fehler';
+                        
+                        // Entferne doppelte Meldungen
+                        if (errorMsg.includes('Bitte versuchen Sie es erneut') && errorMsg.includes('Bitte versuchen Sie es erneut')) {
+                            errorMsg = errorMsg.replace(/Bitte versuchen Sie es erneut\.?\s*/g, '').trim();
+                            errorMsg = errorMsg + '. Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.';
+                        } else if (!errorMsg.includes('Bitte versuchen Sie es erneut')) {
+                            errorMsg = errorMsg + '. Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.';
+                        }
+                        
+                        const finalErrorMsg = `Cloud-Upload fehlgeschlagen: ${errorMsg}`;
+                        
                         console.error('❌ Upload fehlgeschlagen für angemeldeten User:', {
                             error: uploadError,
+                            errorMessage: uploadError?.message,
                             fileName: file.name,
                             fileSize: file.size,
                             userId: userId,
@@ -2341,7 +2359,7 @@ Ihre Aufgaben:
                             awsMediaAvailable: !!window.awsMedia,
                             apiBase: window.AWS_APP_CONFIG?.MEDIA_API_BASE || window.AWS_APP_CONFIG?.API_BASE || 'Nicht konfiguriert'
                         });
-                        showToast(errorMsg, 'error');
+                        showToast(finalErrorMsg, 'error');
                         element.closest('.document-category-modal').remove();
                         return; // ABBRUCH - kein lokaler Fallback für angemeldete User!
                     }

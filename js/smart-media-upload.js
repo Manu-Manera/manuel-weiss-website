@@ -124,7 +124,27 @@
                     s3Error = error;
                     console.warn('⚠️ AWS Upload fehlgeschlagen, verwende Base64 Fallback:', error);
                     
-                    // Für PDFs/Dokumente: Base64 als Fallback erstellen
+                    // Normalisiere "Load failed" Fehler für bessere Fehlermeldungen
+                    if (error.message && (error.message.includes('Load failed') || 
+                        error.message.includes('Failed to fetch') || 
+                        error.message.includes('NetworkError'))) {
+                        console.error('❌ Netzwerkfehler beim S3 Upload erkannt');
+                        // Für eingeloggte User: Fehler weiterwerfen (kein Base64 Fallback)
+                        // Für nicht eingeloggte User: Base64 Fallback verwenden
+                        const isLoggedIn = window.cloudDataService?.isUserLoggedIn?.() || 
+                                          window.awsAuth?.isLoggedIn?.() || 
+                                          window.realUserAuth?.isLoggedIn?.() ||
+                                          false;
+                        if (isLoggedIn) {
+                            // Normalisiere Fehlermeldung
+                            const normalizedError = error.message.includes('Netzwerkfehler') 
+                                ? error 
+                                : new Error('Netzwerkfehler: Die Verbindung zum Server konnte nicht hergestellt werden. Bitte überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.');
+                            throw normalizedError;
+                        }
+                    }
+                    
+                    // Für PDFs/Dokumente: Base64 als Fallback erstellen (nur für nicht eingeloggte User)
                     if (!base64Preview && (file.type === 'application/pdf' || category === 'document' || category === 'cv' || category === 'certificate')) {
                         try {
                             console.log('📄 Erstelle Base64 Fallback für Dokument...');
