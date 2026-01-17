@@ -9,6 +9,20 @@
   NODE_VERSION = "18"
   NPM_FLAGS = "--no-save"
 
+# =============================================
+# BRANCH DEPLOYS - Zum Testen ohne Prod-Kosten
+# =============================================
+# develop Branch: https://develop--mawps.netlify.app
+# Aktiviere im Netlify Dashboard: Site settings → Build & deploy → Branches
+
+[context.branch-deploy]
+  # Gleiche Build-Einstellungen für Branch Deploys
+  command = "echo 'Branch deploy - no build required'"
+
+[context.deploy-preview]
+  # Deploy Previews für Pull Requests
+  command = "echo 'Deploy preview - no build required'"
+
 # Hinweis: AWS-Umgebungsvariablen werden NICHT während des Builds benötigt
 # Die statische Website verwendet AWS SDK direkt im Browser zur Laufzeit
 # Falls Netlify Functions AWS-Zugriff benötigen, sollten die Variablen
