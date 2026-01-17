@@ -64,15 +64,7 @@ window.AWS_APP_CONFIG = Object.assign({}, window.AWS_APP_CONFIG || {}, {
     SNOWFLAKE_HIGHSCORES: '/snowflake-highscores',
     
     // Contact
-    CONTACT_EMAIL: '/contact-email',
-    
-    // Neue Functions
-    API_KEY_AUTH: '/api-key-auth',
-    DOCUMENTS_API: '/documents-api',
-    USER_MANAGEMENT: '/user-management',
-    PROFILE_IMAGE: '/profile-image-upload',
-    BEWERBUNGSPROFIL: '/bewerbungsprofil-api',
-    LINKEDIN_SCRAPE: '/linkedin-scrape'
+    CONTACT_EMAIL: '/contact-email'
   },
   
   // ========================================
@@ -116,16 +108,9 @@ window.AWS_APP_CONFIG = Object.assign({}, window.AWS_APP_CONFIG || {}, {
         'PROFILE_IMAGE_UPLOAD': '/.netlify/functions/s3-upload',
         'S3_UPLOAD': '/.netlify/functions/s3-upload',
         'SNOWFLAKE_HIGHSCORES': '/.netlify/functions/snowflake-highscores',
-        'CONTACT_EMAIL': '/.netlify/functions/send-contact-email',
-        // Neue Functions
-        'API_KEY_AUTH': '/.netlify/functions/api-key-auth',
-        'DOCUMENTS_API': '/.netlify/functions/documents-api',
-        'USER_MANAGEMENT': '/.netlify/functions/user-management',
-        'PROFILE_IMAGE': '/.netlify/functions/profile-image-upload',
-        'BEWERBUNGSPROFIL': '/.netlify/functions/bewerbungsprofil-api',
-        'LINKEDIN_SCRAPE': '/.netlify/functions/linkedin-scrape'
+        'CONTACT_EMAIL': '/.netlify/functions/send-contact-email'
       };
-      return netlifyMap[endpoint] || \`/.netlify/functions/\${endpoint.toLowerCase().replace(/_/g, '-')}\`;
+      return netlifyMap[endpoint] || `/.netlify/functions/${endpoint.toLowerCase().replace(/_/g, '-')}`;
     }
   }
 });
