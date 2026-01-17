@@ -75,10 +75,20 @@
       console.error('❌ Presigned URL request error:', error);
       
       // Provide more helpful error messages
-      if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+      if (error.message.includes('Failed to fetch') || 
+          error.message.includes('NetworkError') || 
+          error.message.includes('Load failed') ||
+          error.name === 'TypeError' && error.message.includes('fetch')) {
         throw new Error(`Netzwerkfehler: Die Verbindung zum Server konnte nicht hergestellt werden. ` +
           `Bitte überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut. ` +
           `Endpoint: ${endpoint}`);
+      }
+      
+      // Wenn die Fehlermeldung bereits benutzerfreundlich ist, weiterwerfen
+      if (error.message.includes('Netzwerkfehler') || 
+          error.message.includes('API Gateway nicht verfügbar') ||
+          error.message.includes('Upload-URL-Anfrage fehlgeschlagen')) {
+        throw error;
       }
       
       throw error;
@@ -235,7 +245,10 @@
       });
       
       // Provide more helpful error messages
-      if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+      if (error.message.includes('Failed to fetch') || 
+          error.message.includes('NetworkError') || 
+          error.message.includes('Load failed') ||
+          error.name === 'TypeError' && error.message.includes('fetch')) {
         throw new Error(`Netzwerkfehler: Die Verbindung zum Server konnte nicht hergestellt werden. ` +
           `Bitte überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut. ` +
           `Endpoint: ${endpoint}`);
