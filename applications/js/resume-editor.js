@@ -278,13 +278,22 @@ async function uploadAndProcessPDF(file) {
         updateProgress(30, 'Text extrahiert, analysiere mit KI...');
         
         // 2. OpenAI API-Key abrufen
-        const apiKey = await getOpenAIApiKey();
+        let apiKey = await getOpenAIApiKey();
         
-        if (!apiKey) {
-            showNotification('OpenAI API-Key nicht gefunden. Bitte im Admin-Panel konfigurieren.', 'error');
+        // Validierung: Stelle sicher dass apiKey ein String ist
+        if (apiKey && typeof apiKey === 'object') {
+            console.warn('⚠️ API Key ist ein Objekt, extrahiere String:', apiKey);
+            apiKey = apiKey.apiKey || apiKey.key || apiKey.openai || null;
+        }
+        
+        if (!apiKey || typeof apiKey !== 'string') {
+            console.error('❌ API Key ungültig:', apiKey);
+            showNotification('OpenAI API-Key nicht gefunden oder ungültig. Bitte im Admin-Panel konfigurieren.', 'error');
             document.getElementById('uploadProgress').style.display = 'none';
             return;
         }
+        
+        console.log('✅ API Key geladen, Typ:', typeof apiKey, 'Länge:', apiKey.length);
         
         updateProgress(50, 'KI-Analyse läuft...');
         
