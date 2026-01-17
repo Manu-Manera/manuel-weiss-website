@@ -15,7 +15,23 @@
     const endpoint = `${API_BASE}/profile-image/upload-url`;
     
     try {
-      console.log(`📤 Requesting presigned URL from: ${endpoint}`);
+      console.log(`📤 Requesting presigned URL from: ${endpoint}`, {
+        contentType: options.contentType,
+        userId: options.userId,
+        apiBase: API_BASE
+      });
+      
+      // Zuerst OPTIONS-Request testen (CORS Preflight)
+      try {
+        const optionsRes = await fetch(endpoint, {
+          method: 'OPTIONS',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        console.log('✅ CORS Preflight erfolgreich:', optionsRes.status);
+      } catch (optionsError) {
+        console.warn('⚠️ CORS Preflight fehlgeschlagen:', optionsError);
+        // Weiter mit POST-Request, da manche Server OPTIONS nicht unterstützen
+      }
       
       const res = await fetch(endpoint, {
       method: 'POST',
@@ -72,26 +88,52 @@
       console.log('✅ Presigned URL erhalten:', data.key);
       return data;
     } catch (error) {
-      console.error('❌ Presigned URL request error:', error);
+      console.error('❌ Presigned URL request error:', {
+        error: error.message,
+        name: error.name,
+        stack: error.stack,
+        endpoint: endpoint,
+        apiBase: API_BASE
+      });
       
-      // Provide more helpful error messages
-      if (error.message.includes('Failed to fetch') || 
+      // Detaillierte Fehleranalyse
+      let errorMessage = 'Unbekannter Fehler';
+      
+      // CORS-Fehler erkennen
+      if (error.message.includes('CORS') || 
+          error.message.includes('Access-Control') ||
+          (error.name === 'TypeError' && error.message.includes('Failed to fetch') && navigator.onLine)) {
+        errorMessage = `CORS-Fehler: Der Server erlaubt keine Anfragen von dieser Domain. ` +
+          `Bitte kontaktieren Sie den Administrator. Endpoint: ${endpoint}`;
+      }
+      // Netzwerkfehler
+      else if (error.message.includes('Failed to fetch') || 
           error.message.includes('NetworkError') || 
           error.message.includes('Load failed') ||
-          error.name === 'TypeError' && error.message.includes('fetch')) {
-        throw new Error(`Netzwerkfehler: Die Verbindung zum Server konnte nicht hergestellt werden. ` +
+          (error.name === 'TypeError' && error.message.includes('fetch'))) {
+        errorMessage = `Netzwerkfehler: Die Verbindung zum Server konnte nicht hergestellt werden. ` +
           `Bitte überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut. ` +
-          `Endpoint: ${endpoint}`);
+          `Endpoint: ${endpoint}`;
       }
-      
+      // SSL/TLS-Fehler
+      else if (error.message.includes('SSL') || error.message.includes('TLS') || error.message.includes('certificate')) {
+        errorMessage = `SSL/TLS-Fehler: Die Verbindung konnte nicht sicher hergestellt werden. ` +
+          `Bitte kontaktieren Sie den Administrator. Endpoint: ${endpoint}`;
+      }
       // Wenn die Fehlermeldung bereits benutzerfreundlich ist, weiterwerfen
-      if (error.message.includes('Netzwerkfehler') || 
+      else if (error.message.includes('Netzwerkfehler') || 
           error.message.includes('API Gateway nicht verfügbar') ||
-          error.message.includes('Upload-URL-Anfrage fehlgeschlagen')) {
+          error.message.includes('Upload-URL-Anfrage fehlgeschlagen') ||
+          error.message.includes('CORS-Fehler')) {
         throw error;
       }
+      // Generischer Fehler
+      else {
+        errorMessage = `Upload-URL-Anfrage fehlgeschlagen: ${error.message || 'Unbekannter Fehler'}. ` +
+          `Endpoint: ${endpoint}`;
+      }
       
-      throw error;
+      throw new Error(errorMessage);
     }
   }
 
