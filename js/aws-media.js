@@ -11,38 +11,41 @@
   const getUploadUrl = () => window.getApiUrl ? window.getApiUrl('S3_UPLOAD') : '/.netlify/functions/s3-upload';
 
   async function requestPresignedUrl(options) {
-    // Verwende zentrale API-Konfiguration
+    // Verwende zentrale API-Konfiguration (Netlify Function)
     const uploadEndpoint = getUploadUrl();
     
-    try {
-      console.log(`📤 Requesting presigned URL from: ${uploadEndpoint}`, {
-        contentType: options.contentType,
+    console.log(`📤 Requesting presigned URL from: ${uploadEndpoint}`, {
+      contentType: options.contentType,
+      userId: options.userId,
+      fileType: options.fileType || 'document'
+    });
+    
+    const uploadRes = await fetch(uploadEndpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        contentType: options.contentType, 
         userId: options.userId,
         fileType: options.fileType || 'document'
-      });
-      
-      const uploadRes = await fetch(uploadEndpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          contentType: options.contentType, 
-          userId: options.userId,
-          fileType: options.fileType || 'document'
-        }),
-      });
-      
-      if (uploadRes.ok) {
-        const data = await uploadRes.json();
-        console.log('✅ Presigned URL erhalten:', data.key);
-        return data;
-      }
-      
-      console.warn('⚠️ Upload API fehlgeschlagen, versuche AWS Lambda Fallback...');
-    } catch (uploadError) {
-      console.warn('⚠️ Upload API nicht erreichbar:', uploadError.message);
+      }),
+    });
+    
+    if (uploadRes.ok) {
+      const data = await uploadRes.json();
+      console.log('✅ Presigned URL erhalten:', data.key);
+      return data;
     }
     
-    // Fallback: AWS Lambda (kann kaputt sein)
+    // Fehlerbehandlung
+    const errorText = await uploadRes.text().catch(() => 'Unknown error');
+    console.error('❌ Upload API Error:', uploadRes.status, errorText);
+    
+    // Kein Fallback mehr auf alte AWS API - die funktioniert nicht mehr
+    throw new Error(`Upload fehlgeschlagen (${uploadRes.status}): ${errorText}`);
+  }
+  
+  // DEPRECATED: Alte AWS Lambda Fallback-Funktion (nicht mehr verwendet)
+  async function requestPresignedUrlLegacy(options) {
     if (!API_BASE) {
       throw new Error('API Endpoint nicht konfiguriert. Bitte kontaktieren Sie den Administrator.');
     }
