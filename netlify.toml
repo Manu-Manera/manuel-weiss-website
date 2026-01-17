@@ -65,11 +65,7 @@
   to = "/applications/index.html"
   status = 301
 
-# API Settings Function mit Sub-Pfaden
-[[redirects]]
-  from = "/.netlify/functions/api-settings/*"
-  to = "/.netlify/functions/api-settings/:splat"
-  status = 200
+# API Settings wird direkt aufgerufen, kein Redirect nötig
 
 # Headers für bessere Performance und Sicherheit
 [[headers]]
