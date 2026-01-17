@@ -230,9 +230,33 @@
 
   async function uploadProfileImage(file, userId = 'anonymous') {
     if (!file || !file.type?.startsWith('image/')) throw new Error('Invalid image file');
-    const presign = await requestPresignedUrl({ contentType: file.type, userId });
-    const publicUrl = await uploadWithPresignedUrl(file, presign);
-    return { publicUrl, key: presign.key, bucket: presign.bucket, region: presign.region };
+    
+    try {
+      console.log('📤 Starting profile image upload:', {
+        fileName: file.name,
+        fileSize: file.size,
+        userId: userId
+      });
+      
+      // Verwendet requestPresignedUrl (mit Netlify Function als primäre Quelle)
+      const presign = await requestPresignedUrl({ 
+        contentType: file.type, 
+        userId: userId,
+        fileType: 'profile'
+      });
+      
+      const publicUrl = await uploadWithPresignedUrl(file, presign);
+      console.log('✅ Profilbild erfolgreich hochgeladen:', publicUrl);
+      
+      return { publicUrl, key: presign.key, bucket: presign.bucket, region: presign.region };
+    } catch (error) {
+      console.error('❌ Profile image upload error:', {
+        error: error.message,
+        fileName: file.name,
+        userId: userId
+      });
+      throw error;
+    }
   }
 
   async function uploadDocument(file, userId = 'anonymous', fileType = 'document') {
@@ -244,50 +268,23 @@
       throw new Error(`Invalid fileType. Must be one of: ${validTypes.join(', ')}`);
     }
     
-    // Check if API_BASE is configured
-    if (!API_BASE) {
-      throw new Error('API Endpoint nicht konfiguriert. Bitte kontaktieren Sie den Administrator.');
-    }
-    
-    // WORKAROUND: Use profile-image endpoint with fileType parameter until /document/upload-url is deployed
-    // The Lambda function already supports fileType parameter
-    const endpoint = `${API_BASE}/profile-image/upload-url`;
-    
     try {
-      console.log(`📤 Requesting presigned URL from: ${endpoint}`);
-      
-      const presign = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          contentType: file.type, 
-          userId: userId,
-          fileType: fileType  // Lambda function will handle this
-        }),
+      console.log('📤 Starting document upload:', {
+        fileName: file.name,
+        fileSize: file.size,
+        fileType: fileType,
+        userId: userId
       });
       
-      // Handle 502 Bad Gateway and other server errors
-      if (presign.status === 502 || presign.status === 503 || presign.status === 504) {
-        const errorMsg = `AWS API Gateway nicht verfügbar (${presign.status}). ` +
-          `Der Server antwortet nicht. Bitte versuchen Sie es in ein paar Sekunden erneut. ` +
-          `Endpoint: ${endpoint}`;
-        console.error('❌ API Gateway Error:', errorMsg);
-        throw new Error(errorMsg);
-      }
-      
-      if (!presign.ok) {
-        const errorText = await presign.text();
-        const errorMsg = `Upload-URL-Anfrage fehlgeschlagen (${presign.status}): ${errorText || presign.statusText}. ` +
-          `Endpoint: ${endpoint}`;
-        console.error('❌ Presign Error:', errorMsg);
-        throw new Error(errorMsg);
-      }
-      
-      const presignData = await presign.json();
-      console.log('✅ Presigned URL erhalten:', presignData.key);
+      // Verwendet requestPresignedUrl (mit Netlify Function als primäre Quelle)
+      const presignData = await requestPresignedUrl({ 
+        contentType: file.type, 
+        userId: userId,
+        fileType: fileType
+      });
       
       const publicUrl = await uploadWithPresignedUrl(file, presignData);
-      console.log('✅ Datei erfolgreich hochgeladen:', publicUrl);
+      console.log('✅ Dokument erfolgreich hochgeladen:', publicUrl);
       
       return { 
         publicUrl, 
@@ -301,35 +298,14 @@
     } catch (error) {
       console.error('❌ Document upload error:', {
         error: error.message,
-        stack: error.stack,
         fileName: file.name,
         fileSize: file.size,
-        fileType: file.type,
-        userId: userId,
-        endpoint: endpoint
+        fileType: fileType,
+        userId: userId
       });
       
-      // Provide more helpful error messages
-      if (error.message.includes('Failed to fetch') || 
-          error.message.includes('NetworkError') || 
-          error.message.includes('Load failed') ||
-          error.name === 'TypeError' && error.message.includes('fetch')) {
-        throw new Error(`Netzwerkfehler: Die Verbindung zum Server konnte nicht hergestellt werden. ` +
-          `Bitte überprüfen Sie Ihre Internetverbindung und versuchen Sie es erneut. ` +
-          `Endpoint: ${endpoint}`);
-      }
-      
-      // Wenn die Fehlermeldung bereits benutzerfreundlich ist, weiterwerfen
-      if (error.message.includes('Upload fehlgeschlagen') || 
-          error.message.includes('Zugriff verweigert') || 
-          error.message.includes('Netzwerkfehler') ||
-          error.message.includes('API Gateway nicht verfügbar') ||
-          error.message.includes('Upload-URL-Anfrage fehlgeschlagen')) {
-        throw error;
-      }
-      
-      // Generische Fehlermeldung für unbekannte Fehler
-      throw new Error(`Upload fehlgeschlagen: ${error.message || 'Unbekannter Fehler'}. Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.`);
+      // Benutzerfreundliche Fehlermeldung weiterwerfen
+      throw error;
     }
   }
 
