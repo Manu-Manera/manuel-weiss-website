@@ -361,10 +361,10 @@ class ApiKeysSection {
      */
     getDefaultModel(service) {
         // Modelle werden automatisch je nach Funktion gewählt
-        // OCR: gpt-5.2 (reasoning: low)
-        // CV-Generierung: gpt-5.2 (reasoning: medium, verbosity: high)
+        // OCR/Extraktion: gpt-4o oder gpt-4o-mini (schnell, günstig)
+        // CV-Generierung/Anschreiben: gpt-4o (beste Qualität)
         const defaults = {
-            'openai': 'gpt-5.2',
+            'openai': 'gpt-4o',
             'anthropic': 'claude-3-sonnet-20240229',
             'google': 'gemini-pro'
         };

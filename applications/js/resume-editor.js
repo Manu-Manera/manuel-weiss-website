@@ -663,8 +663,7 @@ ${text}`;
                 'Authorization': `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-                model: 'gpt-5.2',
-                reasoning_effort: 'low',
+                model: 'gpt-4o',
                 messages: [
                     {
                         role: 'system',
@@ -688,7 +687,8 @@ ${text}`;
                         content: prompt
                     }
                 ],
-                max_completion_tokens: 16000
+                max_tokens: 16000,
+                temperature: 0.3
             })
         });
         
@@ -733,9 +733,9 @@ ${text}`;
     }
 }
 
-// Fallback-Funktion mit gpt-5-mini
+// Fallback-Funktion mit gpt-4o-mini
 async function processTextWithGPTFallback(text, apiKey) {
-    console.log('🔄 Verwende gpt-5-mini Fallback...');
+    console.log('🔄 Verwende gpt-4o-mini Fallback...');
     
     const prompt = `Extrahiere ALLE Daten aus diesem Lebenslauf VOLLSTÄNDIG als JSON.
     
@@ -764,18 +764,18 @@ ${text}`;
             'Authorization': `Bearer ${apiKey}`
         },
         body: JSON.stringify({
-            model: 'gpt-5-mini',
-            reasoning_effort: 'low',
+            model: 'gpt-4o-mini',
             messages: [
                 { role: 'system', content: 'Extrahiere ALLE Daten vollständig. STICHPUNKTE BEIBEHALTEN mit • oder -. Antworte NUR mit JSON.' },
                 { role: 'user', content: prompt }
             ],
-            max_completion_tokens: 16000
+            max_tokens: 16000,
+            temperature: 0.3
         })
     });
     
     if (!response.ok) {
-        throw new Error('Auch gpt-5-mini Fallback fehlgeschlagen');
+        throw new Error('Auch gpt-4o-mini Fallback fehlgeschlagen');
     }
     
     const data = await response.json();
@@ -2247,14 +2247,15 @@ async function callOpenAI(messages, apiKey, opts = {}) {
             'Authorization': `Bearer ${apiKey}`
         },
         body: JSON.stringify({
-            model: 'gpt-5.2',
+            model: 'gpt-4o',
             messages,
-            reasoning_effort: opts.reasoning || 'low',
-            max_completion_tokens: opts.maxTokens ?? 2000
+            max_tokens: opts.maxTokens ?? 2000,
+            temperature: opts.temperature ?? 0.7
         })
     });
     if (!response.ok) {
         const errData = await response.json().catch(() => ({}));
+        console.error('OpenAI API Error:', errData);
         throw new Error(errData.error?.message || `API Error: ${response.status}`);
     }
     const data = await response.json();

@@ -235,9 +235,9 @@ class AICoverLetterGenerator {
                             type: 'openai',
                             key: apiKeys.openai.apiKey,
                             config: {
-                                model: apiKeys.openai.model || 'gpt-5.2',
+                                model: apiKeys.openai.model || 'gpt-4o',
                                 maxTokens: apiKeys.openai.maxTokens || 1000,
-                                temperature: apiKeys.openai.temperature || 0.3
+                                temperature: apiKeys.openai.temperature || 0.7
                             }
                         };
                     }
@@ -435,8 +435,7 @@ class AICoverLetterGenerator {
                 'Authorization': `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-                model: serviceOptions?.model || 'gpt-5.2',
-                reasoning_effort: 'medium',
+                model: serviceOptions?.model || 'gpt-4o',
                 messages: [
                     {
                         role: 'system',
@@ -447,7 +446,8 @@ class AICoverLetterGenerator {
                         content: prompt
                     }
                 ],
-                max_completion_tokens: serviceOptions?.maxTokens || 2000
+                max_tokens: serviceOptions?.maxTokens || 2000,
+                temperature: serviceOptions?.temperature || 0.7
             })
         });
         
@@ -1105,8 +1105,7 @@ Erstelle nur das Anschreiben ohne zusätzliche Erklärungen.
                 'Authorization': `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-                model: 'gpt-5.2',
-                reasoning_effort: 'low',
+                model: 'gpt-4o-mini',
                 messages: [
                     {
                         role: 'system',
@@ -1117,7 +1116,8 @@ Erstelle nur das Anschreiben ohne zusätzliche Erklärungen.
                         content: `Generiere 3 alternative Formulierungen für: "${text}"`
                     }
                 ],
-                max_completion_tokens: 500
+                max_tokens: 500,
+                temperature: 0.7
             })
         });
         
@@ -1217,8 +1217,7 @@ Erstelle nur das Anschreiben ohne zusätzliche Erklärungen.
                     'Authorization': `Bearer ${apiKey}`
                 },
                 body: JSON.stringify({
-                    model: 'gpt-5.2',
-                    reasoning_effort: 'low',
+                    model: 'gpt-4o-mini',
                     messages: [
                         {
                             role: 'system',
@@ -1229,7 +1228,8 @@ Erstelle nur das Anschreiben ohne zusätzliche Erklärungen.
                             content: `${instruction}: "${this.selectedText}"`
                         }
                     ],
-                    max_completion_tokens: 500
+                    max_tokens: 500,
+                    temperature: 0.7
                 })
             });
             

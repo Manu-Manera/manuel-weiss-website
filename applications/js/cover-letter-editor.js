@@ -318,8 +318,7 @@ ${description.substring(0, 2000)}`;
                     'Authorization': `Bearer ${apiKey}`
                 },
                 body: JSON.stringify({
-                    model: 'gpt-5.2',
-                    reasoning_effort: 'low',
+                    model: 'gpt-4o-mini',
                     messages: [
                         {
                             role: 'system',
@@ -330,7 +329,8 @@ ${description.substring(0, 2000)}`;
                             content: prompt
                         }
                     ],
-                    max_completion_tokens: 500
+                    max_tokens: 500,
+                    temperature: 0.3
                 })
             });
 
@@ -941,8 +941,8 @@ ${description.substring(0, 2000)}`;
     async generateWithAI(jobData, apiKey) {
         const prompt = this.buildPrompt(jobData);
         
-        // Verwende GPT-5.2 für beste Qualität
-        const model = 'gpt-5.2';
+        // Verwende gpt-4o für beste Qualität (aktuellstes GPT-Modell)
+        const model = 'gpt-4o';
         const maxTokens = this.options.length === 'short' ? 600 : this.options.length === 'medium' ? 1000 : 1400;
         
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -953,7 +953,6 @@ ${description.substring(0, 2000)}`;
             },
             body: JSON.stringify({
                 model: model,
-                reasoning_effort: 'medium',
                 messages: [
                     {
                         role: 'system',
@@ -964,7 +963,8 @@ ${description.substring(0, 2000)}`;
                         content: prompt
                     }
                 ],
-                max_completion_tokens: maxTokens
+                max_tokens: maxTokens,
+                temperature: 0.7
             })
         });
         
@@ -984,14 +984,16 @@ ${description.substring(0, 2000)}`;
                 'Authorization': `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-                model: opts.model || 'gpt-5.2',
-                reasoning_effort: opts.reasoningEffort || 'low',
+                model: opts.model || 'gpt-4o',
                 messages,
-                max_completion_tokens: opts.maxTokens ?? 1000
+                max_tokens: opts.maxTokens ?? 1000,
+                temperature: opts.temperature ?? 0.7
             })
         });
         if (!response.ok) {
-            throw new Error(`API Error: ${response.status}`);
+            const errorData = await response.json().catch(() => ({}));
+            console.error('OpenAI API Error:', errorData);
+            throw new Error(`API Error: ${response.status} - ${errorData.error?.message || 'Unknown'}`);
         }
         const data = await response.json();
         return data.choices?.[0]?.message?.content || '';
