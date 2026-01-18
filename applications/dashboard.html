@@ -773,10 +773,16 @@ Ihre Aufgaben:
             <!-- ═══════════════════════════════════════════════════════════ -->
             <div id="tab-documents" class="tab-content">
                 <div class="documents-container">
-                    <div class="documents-header">
-                        <h2><i class="fas fa-certificate"></i> Zeugnisse & Zertifikate</h2>
-                        <p>Laden Sie Ihre Zeugnisse und Zertifikate hoch, um sie bei Bewerbungen schnell anhängen zu können.</p>
-                                </div>
+                    <div class="documents-header" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+                        <div>
+                            <h2><i class="fas fa-certificate"></i> Zeugnisse & Zertifikate</h2>
+                            <p>Laden Sie Ihre Zeugnisse und Zertifikate hoch, um sie bei Bewerbungen schnell anhängen zu können.</p>
+                        </div>
+                        <a href="pdf-editor.html" class="btn-action" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.25rem; background: linear-gradient(135deg, #6366f1, #818cf8); color: white; border-radius: 8px; text-decoration: none; font-weight: 500; transition: all 0.2s; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);">
+                            <i class="fas fa-file-pdf"></i> PDF Editor
+                            <span style="background: #f59e0b; color: white; font-size: 0.65rem; padding: 0.15rem 0.4rem; border-radius: 4px; margin-left: 0.25rem;">NEU</span>
+                        </a>
+                    </div>
                     
                     <!-- Upload Area -->
                     <div class="documents-upload-area">
@@ -2577,30 +2583,163 @@ Ihre Aufgaben:
             return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
         }
         
-        window.viewDocument = function(category, id) {
+        // Hole frische presigned URL für S3-Dokumente
+        async function getFreshDocumentUrl(doc) {
+            // Wenn Base64-Daten vorhanden sind, verwende diese (laufen nicht ab)
+            if (doc.dataUrl && doc.dataUrl.startsWith('data:')) {
+                return doc.dataUrl;
+            }
+            if (doc.base64 && doc.base64.startsWith('data:')) {
+                return doc.base64;
+            }
+            
+            // Wenn es ein lokales Dokument ist oder keine S3-URL
+            if (doc.storage === 'local' || !doc.s3Key) {
+                return doc.url || doc.dataUrl;
+            }
+            
+            // Für S3-Dokumente: Hole frische presigned URL
+            if (doc.s3Key && window.cloudDataService?.isUserLoggedIn?.()) {
+                try {
+                    console.log('🔄 Hole frische URL für:', doc.s3Key);
+                    
+                    // Versuche über documents-api
+                    const token = await window.awsAuth?.getAuthToken?.() || 
+                                  await window.realUserAuth?.getAuthToken?.() ||
+                                  localStorage.getItem('authToken');
+                    
+                    if (token) {
+                        const response = await fetch(`/.netlify/functions/s3-download-url`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${token}`
+                            },
+                            body: JSON.stringify({ 
+                                s3Key: doc.s3Key,
+                                bucket: doc.bucket || 'mawps-user-files-1760106396'
+                            })
+                        });
+                        
+                        if (response.ok) {
+                            const data = await response.json();
+                            if (data.downloadUrl) {
+                                console.log('✅ Frische URL erhalten');
+                                return data.downloadUrl;
+                            }
+                        }
+                    }
+                } catch (error) {
+                    console.warn('⚠️ Konnte keine frische URL abrufen:', error);
+                }
+            }
+            
+            // Fallback: Verwende gespeicherte URL (könnte abgelaufen sein)
+            return doc.url || doc.s3Url || doc.dataUrl;
+        }
+        
+        window.viewDocument = async function(category, id) {
             const documents = JSON.parse(localStorage.getItem('user_certificates') || '[]');
             const doc = documents.find(d => d.id === id);
-            if (!doc) return;
+            if (!doc) {
+                showToast('Dokument nicht gefunden', 'error');
+                return;
+            }
             
-            const url = doc.url || doc.dataUrl;
-            if (!url) return;
+            showToast('Lade Dokument...', 'info');
             
-            const win = window.open();
-            win.document.write(`<iframe src="${url}" style="width:100%;height:100%;border:none;"></iframe>`);
+            try {
+                const url = await getFreshDocumentUrl(doc);
+                if (!url) {
+                    showToast('Keine URL verfügbar', 'error');
+                    return;
+                }
+                
+                const win = window.open('', '_blank');
+                if (win) {
+                    win.document.write(`
+                        <!DOCTYPE html>
+                        <html>
+                        <head>
+                            <title>${doc.name}</title>
+                            <style>
+                                * { margin: 0; padding: 0; }
+                                html, body { height: 100%; overflow: hidden; }
+                                iframe { width: 100%; height: 100%; border: none; }
+                            </style>
+                        </head>
+                        <body>
+                            <iframe src="${url}"></iframe>
+                        </body>
+                        </html>
+                    `);
+                    win.document.close();
+                } else {
+                    // Popup blocked - versuche direkten Link
+                    window.location.href = url;
+                }
+            } catch (error) {
+                console.error('Fehler beim Anzeigen:', error);
+                showToast('Fehler beim Laden des Dokuments', 'error');
+            }
         };
         
-        window.downloadDocument = function(category, id) {
+        window.downloadDocument = async function(category, id) {
             const documents = JSON.parse(localStorage.getItem('user_certificates') || '[]');
             const doc = documents.find(d => d.id === id);
-            if (!doc) return;
+            if (!doc) {
+                showToast('Dokument nicht gefunden', 'error');
+                return;
+            }
             
-            const url = doc.url || doc.dataUrl;
-            if (!url) return;
+            showToast('Lade Dokument zum Download...', 'info');
             
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = doc.name;
-            a.click();
+            try {
+                const url = await getFreshDocumentUrl(doc);
+                if (!url) {
+                    showToast('Keine URL verfügbar', 'error');
+                    return;
+                }
+                
+                // Für Base64-URLs: direkter Download
+                if (url.startsWith('data:')) {
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = doc.name;
+                    a.click();
+                    showToast('Download gestartet', 'success');
+                    return;
+                }
+                
+                // Für S3-URLs: Fetch und Blob erstellen
+                try {
+                    const response = await fetch(url);
+                    if (!response.ok) throw new Error('Download fehlgeschlagen');
+                    
+                    const blob = await response.blob();
+                    const blobUrl = URL.createObjectURL(blob);
+                    
+                    const a = document.createElement('a');
+                    a.href = blobUrl;
+                    a.download = doc.name;
+                    a.click();
+                    
+                    // Cleanup
+                    setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+                    showToast('Download erfolgreich', 'success');
+                } catch (fetchError) {
+                    // Fallback: Direkter Link
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = doc.name;
+                    a.target = '_blank';
+                    a.click();
+                    showToast('Download gestartet (Browser-Fenster öffnet sich)', 'info');
+                }
+            } catch (error) {
+                console.error('Fehler beim Download:', error);
+                showToast('Fehler beim Download', 'error');
+            }
         };
         
         window.deleteDocument = async function(category, id) {

@@ -1,0 +1,1603 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Editor - Manuel Weiss</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- PDF.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <!-- pdf-lib -->
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <!-- SortableJS für Drag & Drop -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --bg-hover: #334155;
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --accent: #f59e0b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text);
+            min-height: 100vh;
+        }
+        
+        /* Header */
+        .pdf-header {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .pdf-header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .pdf-header h1 i {
+            color: var(--primary);
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-light);
+            transform: translateY(-1px);
+        }
+        
+        .btn-secondary {
+            background: var(--bg-hover);
+            color: var(--text);
+        }
+        
+        .btn-secondary:hover {
+            background: #475569;
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+        
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #059669;
+        }
+        
+        /* Main Layout */
+        .pdf-container {
+            display: flex;
+            height: calc(100vh - 72px);
+        }
+        
+        /* Sidebar */
+        .pdf-sidebar {
+            width: 280px;
+            background: var(--bg-card);
+            border-right: 1px solid var(--border);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .sidebar-section {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .sidebar-section h3 {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+        
+        .file-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .file-item {
+            background: var(--bg-dark);
+            border-radius: 8px;
+            padding: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .file-item:hover {
+            background: var(--bg-hover);
+        }
+        
+        .file-item.active {
+            background: var(--primary);
+        }
+        
+        .file-item i {
+            color: var(--danger);
+            font-size: 1.25rem;
+        }
+        
+        .file-item.active i {
+            color: white;
+        }
+        
+        .file-info {
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        .file-name {
+            font-size: 0.85rem;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .file-meta {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+        
+        .file-item.active .file-meta {
+            color: rgba(255,255,255,0.7);
+        }
+        
+        .file-remove {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 0.25rem;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        
+        .file-item:hover .file-remove {
+            opacity: 1;
+        }
+        
+        .file-remove:hover {
+            color: var(--danger);
+        }
+        
+        /* Tools */
+        .tool-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+        }
+        
+        .tool-btn {
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.75rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text);
+        }
+        
+        .tool-btn:hover {
+            background: var(--bg-hover);
+            border-color: var(--primary);
+        }
+        
+        .tool-btn i {
+            font-size: 1.25rem;
+            color: var(--primary);
+        }
+        
+        .tool-btn span {
+            font-size: 0.75rem;
+        }
+        
+        /* Main Area */
+        .pdf-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        /* Toolbar */
+        .pdf-toolbar {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+        
+        .toolbar-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .toolbar-btn {
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.85rem;
+        }
+        
+        .toolbar-btn:hover {
+            background: var(--bg-hover);
+            border-color: var(--primary);
+        }
+        
+        .toolbar-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .toolbar-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* Page Grid */
+        .page-grid-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            background: var(--bg-dark);
+        }
+        
+        .page-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 1.5rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .page-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: grab;
+            transition: all 0.2s;
+            position: relative;
+        }
+        
+        .page-card:active {
+            cursor: grabbing;
+        }
+        
+        .page-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .page-card.selected {
+            outline: 3px solid var(--primary);
+        }
+        
+        .page-card.sortable-ghost {
+            opacity: 0.4;
+        }
+        
+        .page-card.sortable-drag {
+            opacity: 0.9;
+        }
+        
+        .page-preview {
+            aspect-ratio: 210/297;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .page-preview canvas {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        
+        .page-footer {
+            padding: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .page-number {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+        
+        .page-actions {
+            display: flex;
+            gap: 0.25rem;
+        }
+        
+        .page-action-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 0.4rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .page-action-btn:hover {
+            background: var(--bg-hover);
+            color: var(--primary);
+        }
+        
+        /* Selection Overlay */
+        .page-select {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            width: 24px;
+            height: 24px;
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        
+        .page-card:hover .page-select,
+        .page-card.selected .page-select {
+            opacity: 1;
+        }
+        
+        .page-card.selected .page-select {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .page-card.selected .page-select i {
+            color: white;
+        }
+        
+        /* Rotation Badge */
+        .rotation-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: var(--accent);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            display: none;
+        }
+        
+        .page-card[data-rotation]:not([data-rotation="0"]) .rotation-badge {
+            display: block;
+        }
+        
+        /* Upload Zone */
+        .upload-zone {
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 3rem 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin: 2rem auto;
+            max-width: 600px;
+        }
+        
+        .upload-zone:hover {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+        }
+        
+        .upload-zone.drag-over {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.2);
+        }
+        
+        .upload-zone i {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        
+        .upload-zone h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .upload-zone p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+        
+        .empty-state h2 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .empty-state p {
+            color: var(--text-muted);
+            max-width: 400px;
+        }
+        
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+        
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal {
+            background: var(--bg-card);
+            border-radius: 16px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow: hidden;
+            transform: scale(0.9);
+            transition: transform 0.3s;
+        }
+        
+        .modal-overlay.active .modal {
+            transform: scale(1);
+        }
+        
+        .modal-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .modal-header h2 {
+            font-size: 1.25rem;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        .modal-body {
+            padding: 1.5rem;
+            overflow-y: auto;
+            max-height: calc(90vh - 140px);
+        }
+        
+        .modal-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+        }
+        
+        /* Form elements */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+        
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 0.9rem;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        /* Toast */
+        .toast-container {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            z-index: 10000;
+        }
+        
+        .toast {
+            background: var(--bg-card);
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        .toast.success i { color: var(--success); }
+        .toast.error i { color: var(--danger); }
+        .toast.info i { color: var(--primary); }
+        
+        /* Loading */
+        .loading-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+        
+        .loading-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .pdf-container {
+                flex-direction: column;
+            }
+            
+            .pdf-sidebar {
+                width: 100%;
+                max-height: 200px;
+            }
+            
+            .page-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+                gap: 1rem;
+            }
+            
+            .pdf-toolbar {
+                flex-wrap: wrap;
+                padding: 0.5rem 1rem;
+            }
+            
+            .header-actions {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="pdf-header">
+        <h1><i class="fas fa-file-pdf"></i> PDF Editor</h1>
+        <div class="header-actions">
+            <button class="btn btn-secondary" onclick="window.location.href='dashboard.html'">
+                <i class="fas fa-arrow-left"></i> Zurück
+            </button>
+            <button class="btn btn-success" id="exportBtn" disabled>
+                <i class="fas fa-download"></i> PDF speichern
+            </button>
+        </div>
+    </header>
+    
+    <!-- Main Container -->
+    <div class="pdf-container">
+        <!-- Sidebar -->
+        <aside class="pdf-sidebar">
+            <div class="sidebar-section">
+                <h3><i class="fas fa-folder-open"></i> PDFs</h3>
+                <div class="upload-zone" id="sidebarUpload">
+                    <i class="fas fa-plus"></i>
+                    <p>PDF hinzufügen</p>
+                </div>
+                <div class="file-list" id="fileList"></div>
+            </div>
+            
+            <div class="sidebar-section">
+                <h3><i class="fas fa-tools"></i> Werkzeuge</h3>
+                <div class="tool-buttons">
+                    <button class="tool-btn" onclick="mergePDFs()" title="Mehrere PDFs zu einem zusammenfügen">
+                        <i class="fas fa-object-group"></i>
+                        <span>Zusammenfügen</span>
+                    </button>
+                    <button class="tool-btn" onclick="splitPDF()" title="PDF in einzelne Seiten aufteilen">
+                        <i class="fas fa-scissors"></i>
+                        <span>Aufteilen</span>
+                    </button>
+                    <button class="tool-btn" onclick="rotateSelected(90)" title="Ausgewählte Seiten drehen">
+                        <i class="fas fa-rotate-right"></i>
+                        <span>Drehen</span>
+                    </button>
+                    <button class="tool-btn" onclick="deleteSelected()" title="Ausgewählte Seiten löschen">
+                        <i class="fas fa-trash"></i>
+                        <span>Löschen</span>
+                    </button>
+                    <button class="tool-btn" onclick="showResizeModal()" title="Seitengröße anpassen">
+                        <i class="fas fa-expand-arrows-alt"></i>
+                        <span>Größe ändern</span>
+                    </button>
+                    <button class="tool-btn" onclick="createNewPDF()" title="Neues leeres PDF erstellen">
+                        <i class="fas fa-plus-circle"></i>
+                        <span>Neues PDF</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="sidebar-section" style="margin-top: auto;">
+                <h3><i class="fas fa-info-circle"></i> Info</h3>
+                <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.5;">
+                    Ziehen Sie PDFs per Drag & Drop oder klicken Sie zum Hochladen. 
+                    Seiten können per Drag & Drop neu angeordnet werden.
+                </p>
+            </div>
+        </aside>
+        
+        <!-- Main Area -->
+        <main class="pdf-main">
+            <!-- Toolbar -->
+            <div class="pdf-toolbar">
+                <div class="toolbar-group">
+                    <button class="toolbar-btn" onclick="selectAll()" title="Alle auswählen">
+                        <i class="fas fa-check-double"></i> Alle
+                    </button>
+                    <button class="toolbar-btn" onclick="deselectAll()" title="Auswahl aufheben">
+                        <i class="fas fa-times"></i> Keine
+                    </button>
+                    <button class="toolbar-btn" onclick="invertSelection()" title="Auswahl umkehren">
+                        <i class="fas fa-exchange-alt"></i> Umkehren
+                    </button>
+                </div>
+                
+                <div class="toolbar-group">
+                    <span style="color: var(--text-muted); font-size: 0.85rem;" id="selectionInfo">
+                        0 Seiten ausgewählt
+                    </span>
+                </div>
+                
+                <div class="toolbar-group">
+                    <button class="toolbar-btn" onclick="rotateSelected(-90)" title="90° links drehen">
+                        <i class="fas fa-undo"></i>
+                    </button>
+                    <button class="toolbar-btn" onclick="rotateSelected(90)" title="90° rechts drehen">
+                        <i class="fas fa-redo"></i>
+                    </button>
+                    <button class="toolbar-btn" onclick="deleteSelected()" title="Ausgewählte löschen">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Page Grid -->
+            <div class="page-grid-container" id="pageGridContainer">
+                <div class="empty-state" id="emptyState">
+                    <i class="fas fa-file-pdf"></i>
+                    <h2>Keine PDF geladen</h2>
+                    <p>Ziehen Sie eine oder mehrere PDF-Dateien hierher oder klicken Sie auf den Button unten</p>
+                    <br>
+                    <label class="btn btn-primary" style="cursor: pointer;">
+                        <i class="fas fa-upload"></i> PDF hochladen
+                        <input type="file" accept="application/pdf" multiple hidden id="mainFileInput">
+                    </label>
+                </div>
+                
+                <div class="page-grid" id="pageGrid" style="display: none;"></div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Resize Modal -->
+    <div class="modal-overlay" id="resizeModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2><i class="fas fa-expand-arrows-alt"></i> Seitengröße ändern</h2>
+                <button class="modal-close" onclick="closeModal('resizeModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Zielformat</label>
+                    <select id="pageSizeSelect">
+                        <option value="a4">A4 (210 × 297 mm)</option>
+                        <option value="a3">A3 (297 × 420 mm)</option>
+                        <option value="a5">A5 (148 × 210 mm)</option>
+                        <option value="letter">Letter (215.9 × 279.4 mm)</option>
+                        <option value="legal">Legal (215.9 × 355.6 mm)</option>
+                        <option value="custom">Benutzerdefiniert</option>
+                    </select>
+                </div>
+                <div class="form-group" id="customSizeGroup" style="display: none;">
+                    <label>Breite × Höhe (mm)</label>
+                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                        <input type="number" id="customWidth" value="210" min="50" max="1000">
+                        <span>×</span>
+                        <input type="number" id="customHeight" value="297" min="50" max="1000">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Anwenden auf</label>
+                    <select id="resizeScope">
+                        <option value="selected">Ausgewählte Seiten</option>
+                        <option value="all">Alle Seiten</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('resizeModal')">Abbrechen</button>
+                <button class="btn btn-primary" onclick="applyResize()">Anwenden</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Split Modal -->
+    <div class="modal-overlay" id="splitModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2><i class="fas fa-scissors"></i> PDF aufteilen</h2>
+                <button class="modal-close" onclick="closeModal('splitModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Aufteilen nach</label>
+                    <select id="splitMode">
+                        <option value="each">Jede Seite einzeln</option>
+                        <option value="range">Seitenbereich</option>
+                        <option value="selected">Nur ausgewählte Seiten</option>
+                    </select>
+                </div>
+                <div class="form-group" id="rangeGroup" style="display: none;">
+                    <label>Seitenbereich (z.B. 1-3, 5, 7-10)</label>
+                    <input type="text" id="splitRange" placeholder="1-3, 5, 7-10">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('splitModal')">Abbrechen</button>
+                <button class="btn btn-primary" onclick="applySplit()">Aufteilen</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <p id="loadingText">Verarbeite...</p>
+    </div>
+    
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+    
+    <!-- Hidden File Input -->
+    <input type="file" accept="application/pdf" multiple hidden id="hiddenFileInput">
+    
+    <script>
+        // Configure PDF.js worker
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        
+        // State
+        const state = {
+            files: [],          // Array of {id, name, data, numPages}
+            pages: [],          // Array of {id, fileId, pageNum, rotation, canvas}
+            selectedPages: new Set(),
+            sortable: null
+        };
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            initDropZones();
+            initSortable();
+            initModals();
+        });
+        
+        // Drop Zones
+        function initDropZones() {
+            const zones = [
+                document.getElementById('pageGridContainer'),
+                document.getElementById('sidebarUpload')
+            ];
+            
+            zones.forEach(zone => {
+                if (!zone) return;
+                
+                zone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    zone.classList.add('drag-over');
+                });
+                
+                zone.addEventListener('dragleave', () => {
+                    zone.classList.remove('drag-over');
+                });
+                
+                zone.addEventListener('drop', async (e) => {
+                    e.preventDefault();
+                    zone.classList.remove('drag-over');
+                    
+                    const files = Array.from(e.dataTransfer.files).filter(f => f.type === 'application/pdf');
+                    if (files.length) await handleFiles(files);
+                });
+                
+                zone.addEventListener('click', (e) => {
+                    if (e.target.closest('.page-card') || e.target.closest('button') || e.target.closest('input')) return;
+                    document.getElementById('hiddenFileInput').click();
+                });
+            });
+            
+            // File inputs
+            document.getElementById('hiddenFileInput').addEventListener('change', async (e) => {
+                const files = Array.from(e.target.files);
+                if (files.length) await handleFiles(files);
+                e.target.value = '';
+            });
+            
+            document.getElementById('mainFileInput').addEventListener('change', async (e) => {
+                const files = Array.from(e.target.files);
+                if (files.length) await handleFiles(files);
+                e.target.value = '';
+            });
+        }
+        
+        // Sortable
+        function initSortable() {
+            const grid = document.getElementById('pageGrid');
+            state.sortable = new Sortable(grid, {
+                animation: 200,
+                ghostClass: 'sortable-ghost',
+                dragClass: 'sortable-drag',
+                handle: '.page-preview',
+                onEnd: (evt) => {
+                    // Reorder pages array
+                    const pageCards = grid.querySelectorAll('.page-card');
+                    const newOrder = Array.from(pageCards).map(card => card.dataset.pageId);
+                    state.pages.sort((a, b) => newOrder.indexOf(a.id) - newOrder.indexOf(b.id));
+                    updatePageNumbers();
+                }
+            });
+        }
+        
+        // Modals
+        function initModals() {
+            document.getElementById('pageSizeSelect').addEventListener('change', (e) => {
+                document.getElementById('customSizeGroup').style.display = 
+                    e.target.value === 'custom' ? 'block' : 'none';
+            });
+            
+            document.getElementById('splitMode').addEventListener('change', (e) => {
+                document.getElementById('rangeGroup').style.display = 
+                    e.target.value === 'range' ? 'block' : 'none';
+            });
+        }
+        
+        function openModal(id) {
+            document.getElementById(id).classList.add('active');
+        }
+        
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+        
+        // File Handling
+        async function handleFiles(files) {
+            showLoading('Lade PDFs...');
+            
+            for (const file of files) {
+                try {
+                    const arrayBuffer = await file.arrayBuffer();
+                    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                    
+                    const fileId = 'file_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                    
+                    state.files.push({
+                        id: fileId,
+                        name: file.name,
+                        data: arrayBuffer,
+                        numPages: pdf.numPages
+                    });
+                    
+                    // Add pages
+                    for (let i = 1; i <= pdf.numPages; i++) {
+                        const page = await pdf.getPage(i);
+                        const pageId = fileId + '_page_' + i;
+                        
+                        state.pages.push({
+                            id: pageId,
+                            fileId: fileId,
+                            pageNum: i,
+                            rotation: 0,
+                            pdfPage: page
+                        });
+                    }
+                    
+                    toast(`${file.name} geladen (${pdf.numPages} Seiten)`, 'success');
+                } catch (error) {
+                    console.error('Error loading PDF:', error);
+                    toast(`Fehler beim Laden: ${file.name}`, 'error');
+                }
+            }
+            
+            hideLoading();
+            updateUI();
+        }
+        
+        // UI Updates
+        function updateUI() {
+            updateFileList();
+            updatePageGrid();
+            updateSelectionInfo();
+            
+            const hasPages = state.pages.length > 0;
+            document.getElementById('emptyState').style.display = hasPages ? 'none' : 'flex';
+            document.getElementById('pageGrid').style.display = hasPages ? 'grid' : 'none';
+            document.getElementById('exportBtn').disabled = !hasPages;
+        }
+        
+        function updateFileList() {
+            const list = document.getElementById('fileList');
+            list.innerHTML = state.files.map(file => `
+                <div class="file-item" data-file-id="${file.id}">
+                    <i class="fas fa-file-pdf"></i>
+                    <div class="file-info">
+                        <div class="file-name">${file.name}</div>
+                        <div class="file-meta">${file.numPages} Seiten</div>
+                    </div>
+                    <button class="file-remove" onclick="removeFile('${file.id}', event)">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+        
+        async function updatePageGrid() {
+            const grid = document.getElementById('pageGrid');
+            grid.innerHTML = '';
+            
+            for (let i = 0; i < state.pages.length; i++) {
+                const page = state.pages[i];
+                const card = document.createElement('div');
+                card.className = 'page-card' + (state.selectedPages.has(page.id) ? ' selected' : '');
+                card.dataset.pageId = page.id;
+                card.dataset.rotation = page.rotation || 0;
+                
+                card.innerHTML = `
+                    <div class="page-select" onclick="togglePageSelection('${page.id}', event)">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div class="rotation-badge">${page.rotation}°</div>
+                    <div class="page-preview">
+                        <canvas></canvas>
+                    </div>
+                    <div class="page-footer">
+                        <span class="page-number">Seite ${i + 1}</span>
+                        <div class="page-actions">
+                            <button class="page-action-btn" onclick="rotatePage('${page.id}', -90)" title="Links drehen">
+                                <i class="fas fa-undo"></i>
+                            </button>
+                            <button class="page-action-btn" onclick="rotatePage('${page.id}', 90)" title="Rechts drehen">
+                                <i class="fas fa-redo"></i>
+                            </button>
+                            <button class="page-action-btn" onclick="deletePage('${page.id}')" title="Löschen">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                grid.appendChild(card);
+                
+                // Render page
+                await renderPagePreview(page, card.querySelector('canvas'));
+            }
+        }
+        
+        async function renderPagePreview(page, canvas) {
+            const viewport = page.pdfPage.getViewport({ scale: 0.5, rotation: page.rotation || 0 });
+            canvas.width = viewport.width;
+            canvas.height = viewport.height;
+            
+            await page.pdfPage.render({
+                canvasContext: canvas.getContext('2d'),
+                viewport: viewport
+            }).promise;
+        }
+        
+        function updatePageNumbers() {
+            const cards = document.querySelectorAll('.page-card');
+            cards.forEach((card, index) => {
+                card.querySelector('.page-number').textContent = `Seite ${index + 1}`;
+            });
+        }
+        
+        function updateSelectionInfo() {
+            const count = state.selectedPages.size;
+            document.getElementById('selectionInfo').textContent = 
+                count === 0 ? 'Keine Seiten ausgewählt' : 
+                count === 1 ? '1 Seite ausgewählt' : 
+                `${count} Seiten ausgewählt`;
+        }
+        
+        // Selection
+        function togglePageSelection(pageId, event) {
+            if (event) event.stopPropagation();
+            
+            if (state.selectedPages.has(pageId)) {
+                state.selectedPages.delete(pageId);
+            } else {
+                state.selectedPages.add(pageId);
+            }
+            
+            const card = document.querySelector(`[data-page-id="${pageId}"]`);
+            if (card) card.classList.toggle('selected', state.selectedPages.has(pageId));
+            
+            updateSelectionInfo();
+        }
+        
+        function selectAll() {
+            state.pages.forEach(page => state.selectedPages.add(page.id));
+            document.querySelectorAll('.page-card').forEach(card => card.classList.add('selected'));
+            updateSelectionInfo();
+        }
+        
+        function deselectAll() {
+            state.selectedPages.clear();
+            document.querySelectorAll('.page-card').forEach(card => card.classList.remove('selected'));
+            updateSelectionInfo();
+        }
+        
+        function invertSelection() {
+            state.pages.forEach(page => {
+                if (state.selectedPages.has(page.id)) {
+                    state.selectedPages.delete(page.id);
+                } else {
+                    state.selectedPages.add(page.id);
+                }
+            });
+            
+            document.querySelectorAll('.page-card').forEach(card => {
+                card.classList.toggle('selected', state.selectedPages.has(card.dataset.pageId));
+            });
+            
+            updateSelectionInfo();
+        }
+        
+        // Page Operations
+        async function rotatePage(pageId, degrees) {
+            const page = state.pages.find(p => p.id === pageId);
+            if (!page) return;
+            
+            page.rotation = ((page.rotation || 0) + degrees + 360) % 360;
+            
+            const card = document.querySelector(`[data-page-id="${pageId}"]`);
+            if (card) {
+                card.dataset.rotation = page.rotation;
+                card.querySelector('.rotation-badge').textContent = page.rotation + '°';
+                await renderPagePreview(page, card.querySelector('canvas'));
+            }
+        }
+        
+        async function rotateSelected(degrees) {
+            if (state.selectedPages.size === 0) {
+                toast('Keine Seiten ausgewählt', 'info');
+                return;
+            }
+            
+            for (const pageId of state.selectedPages) {
+                await rotatePage(pageId, degrees);
+            }
+            
+            toast(`${state.selectedPages.size} Seite(n) gedreht`, 'success');
+        }
+        
+        function deletePage(pageId) {
+            const index = state.pages.findIndex(p => p.id === pageId);
+            if (index === -1) return;
+            
+            state.pages.splice(index, 1);
+            state.selectedPages.delete(pageId);
+            
+            const card = document.querySelector(`[data-page-id="${pageId}"]`);
+            if (card) card.remove();
+            
+            updatePageNumbers();
+            updateSelectionInfo();
+            
+            // Remove file if no pages left
+            const files = new Set(state.pages.map(p => p.fileId));
+            state.files = state.files.filter(f => files.has(f.id));
+            updateFileList();
+            
+            if (state.pages.length === 0) {
+                document.getElementById('emptyState').style.display = 'flex';
+                document.getElementById('pageGrid').style.display = 'none';
+                document.getElementById('exportBtn').disabled = true;
+            }
+        }
+        
+        function deleteSelected() {
+            if (state.selectedPages.size === 0) {
+                toast('Keine Seiten ausgewählt', 'info');
+                return;
+            }
+            
+            const count = state.selectedPages.size;
+            const pageIds = [...state.selectedPages];
+            
+            pageIds.forEach(pageId => deletePage(pageId));
+            
+            toast(`${count} Seite(n) gelöscht`, 'success');
+        }
+        
+        function removeFile(fileId, event) {
+            if (event) event.stopPropagation();
+            
+            // Remove pages from this file
+            const pageIds = state.pages.filter(p => p.fileId === fileId).map(p => p.id);
+            pageIds.forEach(pageId => {
+                state.pages = state.pages.filter(p => p.id !== pageId);
+                state.selectedPages.delete(pageId);
+            });
+            
+            // Remove file
+            state.files = state.files.filter(f => f.id !== fileId);
+            
+            updateUI();
+            toast('PDF entfernt', 'info');
+        }
+        
+        // Tools
+        async function mergePDFs() {
+            if (state.files.length < 2) {
+                toast('Mindestens 2 PDFs zum Zusammenfügen erforderlich', 'info');
+                return;
+            }
+            
+            toast('PDFs sind bereits zusammengefügt - neu anordnen und speichern', 'info');
+        }
+        
+        function splitPDF() {
+            if (state.pages.length === 0) {
+                toast('Keine Seiten zum Aufteilen', 'info');
+                return;
+            }
+            openModal('splitModal');
+        }
+        
+        async function applySplit() {
+            const mode = document.getElementById('splitMode').value;
+            closeModal('splitModal');
+            
+            showLoading('Teile PDF auf...');
+            
+            try {
+                const { PDFDocument } = PDFLib;
+                let pagesToSplit = [];
+                
+                if (mode === 'selected') {
+                    if (state.selectedPages.size === 0) {
+                        toast('Keine Seiten ausgewählt', 'info');
+                        hideLoading();
+                        return;
+                    }
+                    pagesToSplit = state.pages.filter(p => state.selectedPages.has(p.id));
+                } else if (mode === 'range') {
+                    const rangeStr = document.getElementById('splitRange').value;
+                    const indices = parseRange(rangeStr);
+                    pagesToSplit = indices.map(i => state.pages[i - 1]).filter(Boolean);
+                } else {
+                    pagesToSplit = [...state.pages];
+                }
+                
+                // Create zip with individual PDFs
+                for (let i = 0; i < pagesToSplit.length; i++) {
+                    const page = pagesToSplit[i];
+                    const file = state.files.find(f => f.id === page.fileId);
+                    if (!file) continue;
+                    
+                    const srcDoc = await PDFDocument.load(file.data);
+                    const newDoc = await PDFDocument.create();
+                    const [copiedPage] = await newDoc.copyPages(srcDoc, [page.pageNum - 1]);
+                    
+                    if (page.rotation) {
+                        copiedPage.setRotation(PDFLib.degrees(page.rotation));
+                    }
+                    
+                    newDoc.addPage(copiedPage);
+                    
+                    const pdfBytes = await newDoc.save();
+                    downloadBlob(new Blob([pdfBytes], { type: 'application/pdf' }), `Seite_${i + 1}.pdf`);
+                    
+                    // Small delay between downloads
+                    await new Promise(r => setTimeout(r, 200));
+                }
+                
+                toast(`${pagesToSplit.length} PDF(s) erstellt`, 'success');
+            } catch (error) {
+                console.error('Split error:', error);
+                toast('Fehler beim Aufteilen', 'error');
+            }
+            
+            hideLoading();
+        }
+        
+        function parseRange(str) {
+            const indices = [];
+            const parts = str.split(',').map(s => s.trim());
+            
+            for (const part of parts) {
+                if (part.includes('-')) {
+                    const [start, end] = part.split('-').map(Number);
+                    for (let i = start; i <= end; i++) indices.push(i);
+                } else {
+                    indices.push(Number(part));
+                }
+            }
+            
+            return [...new Set(indices)].sort((a, b) => a - b);
+        }
+        
+        function showResizeModal() {
+            if (state.pages.length === 0) {
+                toast('Keine Seiten zum Bearbeiten', 'info');
+                return;
+            }
+            openModal('resizeModal');
+        }
+        
+        async function applyResize() {
+            closeModal('resizeModal');
+            
+            const sizeSelect = document.getElementById('pageSizeSelect').value;
+            const scope = document.getElementById('resizeScope').value;
+            
+            let width, height;
+            switch (sizeSelect) {
+                case 'a4': width = 595.276; height = 841.890; break;
+                case 'a3': width = 841.890; height = 1190.551; break;
+                case 'a5': width = 419.528; height = 595.276; break;
+                case 'letter': width = 612; height = 792; break;
+                case 'legal': width = 612; height = 1008; break;
+                case 'custom':
+                    width = parseFloat(document.getElementById('customWidth').value) * 2.83465;
+                    height = parseFloat(document.getElementById('customHeight').value) * 2.83465;
+                    break;
+            }
+            
+            toast(`Größenänderung wird beim Speichern angewendet (${sizeSelect.toUpperCase()})`, 'info');
+            
+            // Store resize settings in state
+            state.targetSize = { width, height };
+            state.resizeScope = scope;
+        }
+        
+        async function createNewPDF() {
+            showLoading('Erstelle neues PDF...');
+            
+            try {
+                const { PDFDocument, rgb, StandardFonts } = PDFLib;
+                const pdfDoc = await PDFDocument.create();
+                const page = pdfDoc.addPage([595.276, 841.890]); // A4
+                
+                // Add some text
+                const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+                page.drawText('Neues PDF-Dokument', {
+                    x: 50,
+                    y: page.getHeight() - 100,
+                    size: 24,
+                    font: font,
+                    color: rgb(0.2, 0.2, 0.2)
+                });
+                
+                page.drawText('Erstellt mit PDF Editor', {
+                    x: 50,
+                    y: page.getHeight() - 140,
+                    size: 12,
+                    font: font,
+                    color: rgb(0.5, 0.5, 0.5)
+                });
+                
+                const pdfBytes = await pdfDoc.save();
+                
+                // Add to state
+                const fileId = 'file_new_' + Date.now();
+                const pdf = await pdfjsLib.getDocument({ data: pdfBytes }).promise;
+                const pdfPage = await pdf.getPage(1);
+                
+                state.files.push({
+                    id: fileId,
+                    name: 'Neues_Dokument.pdf',
+                    data: pdfBytes.buffer,
+                    numPages: 1
+                });
+                
+                state.pages.push({
+                    id: fileId + '_page_1',
+                    fileId: fileId,
+                    pageNum: 1,
+                    rotation: 0,
+                    pdfPage: pdfPage
+                });
+                
+                updateUI();
+                toast('Neues PDF erstellt', 'success');
+            } catch (error) {
+                console.error('Create error:', error);
+                toast('Fehler beim Erstellen', 'error');
+            }
+            
+            hideLoading();
+        }
+        
+        // Export
+        document.getElementById('exportBtn').addEventListener('click', async () => {
+            if (state.pages.length === 0) return;
+            
+            showLoading('Erstelle PDF...');
+            
+            try {
+                const { PDFDocument } = PDFLib;
+                const mergedDoc = await PDFDocument.create();
+                
+                // Group pages by source file for efficient copying
+                const fileGroups = new Map();
+                for (const page of state.pages) {
+                    if (!fileGroups.has(page.fileId)) {
+                        fileGroups.set(page.fileId, []);
+                    }
+                    fileGroups.get(page.fileId).push(page);
+                }
+                
+                // Copy pages from each source
+                for (const [fileId, pages] of fileGroups) {
+                    const file = state.files.find(f => f.id === fileId);
+                    if (!file) continue;
+                    
+                    const srcDoc = await PDFDocument.load(file.data);
+                    
+                    for (const page of pages) {
+                        const [copiedPage] = await mergedDoc.copyPages(srcDoc, [page.pageNum - 1]);
+                        
+                        // Apply rotation
+                        if (page.rotation) {
+                            const currentRotation = copiedPage.getRotation().angle;
+                            copiedPage.setRotation(PDFLib.degrees(currentRotation + page.rotation));
+                        }
+                        
+                        // Apply resize if set
+                        if (state.targetSize) {
+                            const shouldResize = state.resizeScope === 'all' || 
+                                (state.resizeScope === 'selected' && state.selectedPages.has(page.id));
+                            
+                            if (shouldResize) {
+                                copiedPage.setSize(state.targetSize.width, state.targetSize.height);
+                            }
+                        }
+                        
+                        mergedDoc.addPage(copiedPage);
+                    }
+                }
+                
+                // Reorder pages according to current state order
+                const orderedDoc = await PDFDocument.create();
+                const pageIndices = state.pages.map(p => {
+                    let index = 0;
+                    for (let i = 0; i < state.pages.indexOf(p); i++) {
+                        index++;
+                    }
+                    return index;
+                });
+                
+                const copiedPages = await orderedDoc.copyPages(mergedDoc, pageIndices);
+                copiedPages.forEach(page => orderedDoc.addPage(page));
+                
+                const pdfBytes = await mergedDoc.save();
+                
+                // Download
+                const filename = state.files.length === 1 
+                    ? state.files[0].name.replace('.pdf', '_bearbeitet.pdf')
+                    : 'Zusammengefuegt.pdf';
+                
+                downloadBlob(new Blob([pdfBytes], { type: 'application/pdf' }), filename);
+                
+                toast('PDF gespeichert!', 'success');
+            } catch (error) {
+                console.error('Export error:', error);
+                toast('Fehler beim Speichern', 'error');
+            }
+            
+            hideLoading();
+        });
+        
+        // Helpers
+        function downloadBlob(blob, filename) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+        }
+        
+        function showLoading(text = 'Verarbeite...') {
+            document.getElementById('loadingText').textContent = text;
+            document.getElementById('loadingOverlay').classList.add('active');
+        }
+        
+        function hideLoading() {
+            document.getElementById('loadingOverlay').classList.remove('active');
+        }
+        
+        function toast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            const icons = {
+                success: 'fa-check-circle',
+                error: 'fa-exclamation-circle',
+                info: 'fa-info-circle'
+            };
+            
+            toast.innerHTML = `
+                <i class="fas ${icons[type] || icons.info}"></i>
+                <span>${message}</span>
+            `;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideIn 0.3s ease reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
