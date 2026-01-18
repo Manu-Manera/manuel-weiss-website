@@ -166,6 +166,10 @@ class DesignEditor {
             
             // Resume Title ("Lebenslauf" Überschrift)
             showResumeTitle: true,
+            resumeTitleText: 'Lebenslauf',
+            resumeTitleSize: 10, // pt
+            resumeTitleColor: '', // leer = mutedColor verwenden
+            resumeTitleSpacing: 3, // letter-spacing in px
             
             // NEW: Signature (Extended)
             showSignature: false,
@@ -358,6 +362,94 @@ class DesignEditor {
             expFormatSelect.value = this.settings.experienceFormat || 'mixed';
             expFormatSelect.addEventListener('change', (e) => {
                 this.settings.experienceFormat = e.target.value;
+                this.saveSettings();
+                this.updatePreview();
+            });
+        }
+        
+        // Resume Title Settings
+        this.setupResumeTitleSettings();
+    }
+    
+    setupResumeTitleSettings() {
+        const showTitleToggle = document.getElementById('designShowResumeTitle');
+        const titleOptions = document.getElementById('resumeTitleOptions');
+        
+        if (showTitleToggle) {
+            showTitleToggle.checked = this.settings.showResumeTitle !== false;
+            showTitleToggle.addEventListener('change', (e) => {
+                this.settings.showResumeTitle = e.target.checked;
+                if (titleOptions) titleOptions.style.display = e.target.checked ? 'block' : 'none';
+                this.saveSettings();
+                this.updatePreview();
+            });
+            // Initial visibility
+            if (titleOptions) titleOptions.style.display = showTitleToggle.checked ? 'block' : 'none';
+        }
+        
+        // Title Text
+        const titleTextInput = document.getElementById('designResumeTitleText');
+        if (titleTextInput) {
+            titleTextInput.value = this.settings.resumeTitleText || 'Lebenslauf';
+            titleTextInput.addEventListener('input', (e) => {
+                this.settings.resumeTitleText = e.target.value;
+                this.saveSettings();
+                this.updatePreview();
+            });
+        }
+        
+        // Title Size
+        const titleSizeSlider = document.getElementById('designResumeTitleSize');
+        const titleSizeValue = document.getElementById('designResumeTitleSizeValue');
+        if (titleSizeSlider) {
+            titleSizeSlider.value = this.settings.resumeTitleSize || 10;
+            if (titleSizeValue) titleSizeValue.textContent = titleSizeSlider.value + 'pt';
+            titleSizeSlider.addEventListener('input', (e) => {
+                this.settings.resumeTitleSize = parseInt(e.target.value);
+                if (titleSizeValue) titleSizeValue.textContent = e.target.value + 'pt';
+                this.saveSettings();
+                this.updatePreview();
+            });
+        }
+        
+        // Title Color
+        const titleColorPicker = document.getElementById('designResumeTitleColor');
+        const titleColorHex = document.getElementById('designResumeTitleColorHex');
+        if (titleColorPicker) {
+            const currentColor = this.settings.resumeTitleColor || this.settings.mutedColor || '#64748b';
+            titleColorPicker.value = currentColor;
+            if (titleColorHex) titleColorHex.value = currentColor;
+            
+            titleColorPicker.addEventListener('input', (e) => {
+                this.settings.resumeTitleColor = e.target.value;
+                if (titleColorHex) titleColorHex.value = e.target.value;
+                this.saveSettings();
+                this.updatePreview();
+            });
+            
+            if (titleColorHex) {
+                titleColorHex.addEventListener('input', (e) => {
+                    let value = e.target.value;
+                    if (!value.startsWith('#')) value = '#' + value;
+                    if (/^#[0-9A-Fa-f]{6}$/.test(value)) {
+                        this.settings.resumeTitleColor = value;
+                        titleColorPicker.value = value;
+                        this.saveSettings();
+                        this.updatePreview();
+                    }
+                });
+            }
+        }
+        
+        // Title Letter Spacing
+        const titleSpacingSlider = document.getElementById('designResumeTitleSpacing');
+        const titleSpacingValue = document.getElementById('designResumeTitleSpacingValue');
+        if (titleSpacingSlider) {
+            titleSpacingSlider.value = this.settings.resumeTitleSpacing || 3;
+            if (titleSpacingValue) titleSpacingValue.textContent = titleSpacingSlider.value + 'px';
+            titleSpacingSlider.addEventListener('input', (e) => {
+                this.settings.resumeTitleSpacing = parseInt(e.target.value);
+                if (titleSpacingValue) titleSpacingValue.textContent = e.target.value + 'px';
                 this.saveSettings();
                 this.updatePreview();
             });
@@ -816,20 +908,54 @@ class DesignEditor {
         
         container.innerHTML = html;
         
-        // Add click handlers for dots
-        container.querySelectorAll('.skill-dot-edit').forEach(dot => {
-            dot.addEventListener('click', (e) => {
-                const newLevel = parseInt(e.target.dataset.level);
-                const type = e.target.dataset.type;
-                const catIndex = parseInt(e.target.dataset.cat);
-                const skillIndex = parseInt(e.target.dataset.skill);
-                
-                this.updateSkillLevel(type, catIndex, skillIndex, newLevel);
-            });
-        });
+        // Add CSS for sliders
+        if (!document.getElementById('skill-slider-styles')) {
+            const style = document.createElement('style');
+            style.id = 'skill-slider-styles';
+            style.textContent = `
+                .skill-level-slider::-webkit-slider-thumb {
+                    -webkit-appearance: none;
+                    width: 16px;
+                    height: 16px;
+                    border-radius: 50%;
+                    background: var(--design-primary);
+                    cursor: pointer;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+                    transition: transform 0.1s;
+                }
+                .skill-level-slider::-webkit-slider-thumb:hover {
+                    transform: scale(1.2);
+                }
+                .skill-level-slider::-moz-range-thumb {
+                    width: 16px;
+                    height: 16px;
+                    border-radius: 50%;
+                    background: var(--design-primary);
+                    cursor: pointer;
+                    border: none;
+                }
+                .skill-edit-row:hover {
+                    background: rgba(255,255,255,0.05);
+                    border-radius: 6px;
+                    margin: 0 -4px;
+                    padding-left: 4px;
+                    padding-right: 4px;
+                }
+            `;
+            document.head.appendChild(style);
+        }
         
-        // Add input handlers for sliders
+        // Add input handlers for sliders with visual feedback
         container.querySelectorAll('.skill-level-slider').forEach(slider => {
+            const maxLevel = this.settings.skillMaxLevel || 10;
+            
+            // Update gradient on input
+            const updateSliderBackground = (el) => {
+                const value = parseInt(el.value);
+                const percentage = Math.round((value / maxLevel) * 100);
+                el.style.background = `linear-gradient(to right, var(--design-primary) ${percentage}%, rgba(255,255,255,0.2) ${percentage}%)`;
+            };
+            
             slider.addEventListener('input', (e) => {
                 const newLevel = parseInt(e.target.value);
                 const type = e.target.dataset.type;
@@ -837,34 +963,52 @@ class DesignEditor {
                 const skillIndex = parseInt(e.target.dataset.skill);
                 
                 // Update display
-                const display = e.target.nextElementSibling;
-                if (display) display.textContent = newLevel;
+                const displayId = e.target.id + '-display';
+                const display = document.getElementById(displayId);
+                if (display) display.textContent = `${newLevel}/${maxLevel}`;
                 
+                // Update slider background
+                updateSliderBackground(e.target);
+                
+                // Debounce the actual update to form
+                clearTimeout(this._skillUpdateTimeout);
+                this._skillUpdateTimeout = setTimeout(() => {
+                    this.updateSkillLevel(type, catIndex, skillIndex, newLevel);
+                }, 100);
+            });
+            
+            slider.addEventListener('change', (e) => {
+                const newLevel = parseInt(e.target.value);
+                const type = e.target.dataset.type;
+                const catIndex = parseInt(e.target.dataset.cat);
+                const skillIndex = parseInt(e.target.dataset.skill);
                 this.updateSkillLevel(type, catIndex, skillIndex, newLevel);
             });
         });
     }
     
     renderSkillLevelRow(name, level, maxLevel, type, catIndex, skillIndex) {
-        const dots = Array(10).fill(0).map((_, i) => {
-            const dotLevel = Math.round((i + 1) * (maxLevel / 10));
-            const filled = i < Math.round((level / maxLevel) * 10);
-            return `<span class="skill-dot-edit ${filled ? 'filled' : ''}" 
-                         data-level="${dotLevel}" data-type="${type}" data-cat="${catIndex}" data-skill="${skillIndex}"
-                         style="width: 12px; height: 12px; border-radius: 50%; display: inline-block; margin: 0 2px;
-                                background: ${filled ? 'var(--design-primary)' : 'rgba(255,255,255,0.2)'}; cursor: pointer;
-                                transition: transform 0.1s; border: 1px solid rgba(255,255,255,0.3);"
-                         onmouseover="this.style.transform='scale(1.2)'" 
-                         onmouseout="this.style.transform='scale(1)'"></span>`;
-        }).join('');
+        const uniqueId = `skill-${type}-${catIndex}-${skillIndex}`;
+        const percentage = Math.round((level / maxLevel) * 100);
         
         return `
-            <div style="display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
-                <span style="flex: 1; font-size: 0.8rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${name}">${name}</span>
-                <div style="display: flex; align-items: center; gap: 2px;">
-                    ${dots}
+            <div class="skill-edit-row" style="padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.08);">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+                    <span style="font-size: 0.85rem; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 70%;" title="${name}">${name}</span>
+                    <span class="skill-level-display" id="${uniqueId}-display" style="font-size: 0.75rem; color: var(--design-primary); font-weight: 600; min-width: 40px; text-align: right;">${level}/${maxLevel}</span>
                 </div>
-                <span style="font-size: 0.7rem; min-width: 24px; text-align: right; color: var(--design-text-muted);">${level}</span>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <input type="range" 
+                           class="skill-level-slider" 
+                           id="${uniqueId}"
+                           data-type="${type}" 
+                           data-cat="${catIndex}" 
+                           data-skill="${skillIndex}"
+                           min="1" 
+                           max="${maxLevel}" 
+                           value="${level}"
+                           style="flex: 1; height: 6px; -webkit-appearance: none; background: linear-gradient(to right, var(--design-primary) ${percentage}%, rgba(255,255,255,0.2) ${percentage}%); border-radius: 3px; cursor: pointer;">
+                </div>
             </div>
         `;
     }
@@ -973,13 +1117,175 @@ class DesignEditor {
             });
         }
         
-        // Load from profile button
+        // Load from profile button - now shows image gallery
         const loadFromProfileBtn = document.getElementById('loadProfileImageBtn');
         if (loadFromProfileBtn) {
             loadFromProfileBtn.addEventListener('click', () => {
-                this.loadProfileImageFromStorage();
+                this.showApplicationImagesGallery();
             });
         }
+    }
+    
+    async showApplicationImagesGallery() {
+        const gallery = document.getElementById('applicationImagesGallery');
+        const imagesList = document.getElementById('applicationImagesList');
+        
+        if (!gallery || !imagesList) {
+            // Fallback to old behavior
+            this.loadProfileImageFromStorage();
+            return;
+        }
+        
+        // Toggle gallery visibility
+        const isVisible = gallery.style.display !== 'none';
+        if (isVisible) {
+            gallery.style.display = 'none';
+            return;
+        }
+        
+        gallery.style.display = 'block';
+        imagesList.innerHTML = '<p style="font-size: 0.75rem; color: var(--design-text-muted); grid-column: span 3;">Lade Bilder...</p>';
+        
+        // Collect all available images
+        const images = [];
+        
+        // 1. Dashboard Photos (bewerbungsbilder)
+        try {
+            const dashboardPhotos = JSON.parse(localStorage.getItem('dashboard_photos') || '{}');
+            if (dashboardPhotos.profileImage) {
+                images.push({ url: dashboardPhotos.profileImage, label: 'Profilbild', source: 'dashboard' });
+            }
+            if (dashboardPhotos.bewerbungsbilder && Array.isArray(dashboardPhotos.bewerbungsbilder)) {
+                dashboardPhotos.bewerbungsbilder.forEach((img, i) => {
+                    images.push({ url: img, label: `Bewerbungsbild ${i + 1}`, source: 'dashboard' });
+                });
+            }
+            // Also check for photos array
+            if (dashboardPhotos.photos && Array.isArray(dashboardPhotos.photos)) {
+                dashboardPhotos.photos.forEach((img, i) => {
+                    if (img && !images.find(x => x.url === img)) {
+                        images.push({ url: img, label: `Foto ${i + 1}`, source: 'dashboard' });
+                    }
+                });
+            }
+        } catch (e) {}
+        
+        // 2. User Profile images
+        try {
+            const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
+            if (userProfile.profileImage && !images.find(x => x.url === userProfile.profileImage)) {
+                images.push({ url: userProfile.profileImage, label: 'User Profil', source: 'profile' });
+            }
+            if (userProfile.bewerbungsbilder && Array.isArray(userProfile.bewerbungsbilder)) {
+                userProfile.bewerbungsbilder.forEach((img, i) => {
+                    if (!images.find(x => x.url === img)) {
+                        images.push({ url: img, label: `Bild ${i + 1}`, source: 'profile' });
+                    }
+                });
+            }
+        } catch (e) {}
+        
+        // 3. Cloud Profile (if logged in)
+        if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
+            try {
+                const cloudProfile = await window.cloudDataService.getProfile();
+                if (cloudProfile?.profileImageUrl && !images.find(x => x.url === cloudProfile.profileImageUrl)) {
+                    images.push({ url: cloudProfile.profileImageUrl, label: 'Cloud Profil', source: 'cloud' });
+                }
+                if (cloudProfile?.bewerbungsbilder && Array.isArray(cloudProfile.bewerbungsbilder)) {
+                    cloudProfile.bewerbungsbilder.forEach((img, i) => {
+                        if (!images.find(x => x.url === img)) {
+                            images.push({ url: img, label: `Cloud Bild ${i + 1}`, source: 'cloud' });
+                        }
+                    });
+                }
+            } catch (e) {}
+        }
+        
+        // 4. Application Manager stored images
+        try {
+            const appImages = JSON.parse(localStorage.getItem('application_images') || '[]');
+            appImages.forEach((img, i) => {
+                if (img && !images.find(x => x.url === img)) {
+                    images.push({ url: img, label: `App Bild ${i + 1}`, source: 'app' });
+                }
+            });
+        } catch (e) {}
+        
+        // 5. Resumes with profile images
+        try {
+            const resumes = JSON.parse(localStorage.getItem('user_resumes') || '[]');
+            resumes.forEach((resume, i) => {
+                if (resume.profileImageUrl && !images.find(x => x.url === resume.profileImageUrl)) {
+                    images.push({ url: resume.profileImageUrl, label: `CV ${resume.name || i + 1}`, source: 'resume' });
+                }
+            });
+        } catch (e) {}
+        
+        if (images.length === 0) {
+            imagesList.innerHTML = `
+                <p style="font-size: 0.75rem; color: var(--design-text-muted); grid-column: span 3; text-align: center; padding: 1rem;">
+                    Keine Bewerbungsbilder gefunden.<br>
+                    <small>Laden Sie ein Bild hoch oder speichern Sie Bilder im Dashboard.</small>
+                </p>
+            `;
+            return;
+        }
+        
+        // Render images
+        imagesList.innerHTML = images.map((img, index) => `
+            <div class="image-select-item" data-url="${img.url}" 
+                 style="cursor: pointer; border-radius: 8px; overflow: hidden; aspect-ratio: 1; 
+                        border: 2px solid transparent; transition: all 0.2s; position: relative;"
+                 title="${img.label}">
+                <img src="${img.url}" alt="${img.label}" 
+                     style="width: 100%; height: 100%; object-fit: cover;"
+                     onerror="this.parentElement.style.display='none'">
+                <span style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.7); 
+                             font-size: 0.6rem; padding: 2px 4px; color: white; text-align: center; 
+                             text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">
+                    ${img.label}
+                </span>
+            </div>
+        `).join('');
+        
+        // Add click handlers
+        imagesList.querySelectorAll('.image-select-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const url = item.dataset.url;
+                this.settings.profileImageUrl = url;
+                this.settings.showProfileImage = true;
+                // Reset crop settings for new image
+                this.settings.profileImageZoom = 100;
+                this.settings.profileImageOffsetX = 0;
+                this.settings.profileImageOffsetY = 0;
+                this.saveSettings();
+                this.updatePreview();
+                
+                const toggle = document.getElementById('designShowProfileImage');
+                if (toggle) toggle.checked = true;
+                
+                // Highlight selected
+                imagesList.querySelectorAll('.image-select-item').forEach(i => {
+                    i.style.borderColor = 'transparent';
+                });
+                item.style.borderColor = 'var(--design-primary)';
+                
+                this.showNotification('Bild ausgewählt', 'success');
+            });
+            
+            // Hover effect
+            item.addEventListener('mouseenter', () => {
+                if (item.style.borderColor !== 'var(--design-primary)') {
+                    item.style.borderColor = 'rgba(99, 102, 241, 0.5)';
+                }
+            });
+            item.addEventListener('mouseleave', () => {
+                if (item.style.borderColor !== 'var(--design-primary)') {
+                    item.style.borderColor = 'transparent';
+                }
+            });
+        });
     }
     
     toggleImageOptions(show) {
@@ -1478,14 +1784,18 @@ class DesignEditor {
         const zoom = this.settings.profileImageZoom || 100;
         const offsetX = this.settings.profileImageOffsetX || 0;
         const offsetY = this.settings.profileImageOffsetY || 0;
+        const zoomFactor = zoom / 100;
+        const posX = Math.max(0, Math.min(100, 50 + offsetX));
+        const posY = Math.max(0, Math.min(100, 50 + offsetY));
         
         preview.innerHTML = `
-            <div style="width: 100px; height: 100px; overflow: hidden; border-radius: ${this.settings.profileImageShape === 'circle' ? '50%' : '8px'}; margin: 0 auto;">
+            <div style="width: 100px; height: 100px; overflow: hidden; border-radius: ${this.settings.profileImageShape === 'circle' ? '50%' : '8px'}; margin: 0 auto; background: #f1f5f9;">
                 <img src="${this.settings.profileImageUrl}" style="
-                    width: ${zoom}%;
-                    height: ${zoom}%;
+                    width: 100%;
+                    height: 100%;
                     object-fit: cover;
-                    transform: translate(${offsetX}%, ${offsetY}%);
+                    transform: scale(${zoomFactor});
+                    transform-origin: ${posX}% ${posY}%;
                 ">
             </div>
         `;
@@ -2473,17 +2783,22 @@ class DesignEditor {
             ? `background: ${this.settings.headerBackground}; margin: -${this.settings.marginTop}mm -${this.settings.marginRight}mm 0 -${this.settings.marginLeft}mm; padding: ${this.settings.marginTop}mm ${this.settings.marginRight}mm 20px ${this.settings.marginLeft}mm;`
             : '';
         
-        // "LEBENSLAUF" Überschrift (je nach Template)
+        // "LEBENSLAUF" Überschrift (je nach Template, jetzt editierbar)
         const showResumeTitle = this.settings.showResumeTitle !== false;
+        const titleText = this.settings.resumeTitleText || 'Lebenslauf';
+        const titleSize = this.settings.resumeTitleSize || 10;
+        const titleColor = this.settings.resumeTitleColor || this.settings.mutedColor;
+        const titleSpacing = this.settings.resumeTitleSpacing || 3;
+        
         const resumeTitleHtml = showResumeTitle ? `
             <p class="resume-document-title" style="
                 text-transform: uppercase;
-                letter-spacing: 3px;
-                font-size: 10px;
-                color: ${this.settings.mutedColor};
+                letter-spacing: ${titleSpacing}px;
+                font-size: ${titleSize}px;
+                color: ${titleColor};
                 margin-bottom: 8px;
                 font-weight: 500;
-            ">Lebenslauf</p>
+            ">${titleText}</p>
         ` : '';
         
         // Profile image mit Crop-Einstellungen
@@ -2496,30 +2811,34 @@ class DesignEditor {
             const border = this.settings.profileImageBorder === 'thin' ? '2px solid #e2e8f0'
                          : this.settings.profileImageBorder === 'accent' ? `3px solid ${this.settings.accentColor}` : 'none';
             
-            // Crop-Einstellungen anwenden
+            // Crop-Einstellungen
             const zoom = this.settings.profileImageZoom || 100;
             const offsetX = this.settings.profileImageOffsetX || 0;
             const offsetY = this.settings.profileImageOffsetY || 0;
             
-            // Bild-Handling: Zoom und Versatz ohne Abschneiden
-            // Bei Zoom < 100: Bild wird kleiner, mehr Rand sichtbar
-            // Bei Zoom > 100: Bild wird größer, Zoom-Effekt
-            // Versatz: Verschiebt den Fokuspunkt
+            // Einfache Zoom-Logik: 
+            // - Zoom 100% = Bild füllt Container komplett
+            // - Zoom 150% = Bild ist 1.5x größer, man sieht einen Ausschnitt
+            // - Offset verschiebt welchen Teil des Bildes man sieht
             const zoomFactor = zoom / 100;
-            const imgWidth = zoomFactor >= 1 ? 100 * zoomFactor : 100;
-            const imgHeight = zoomFactor >= 1 ? 100 * zoomFactor : 100;
+            
+            // Object-position: 50% = zentriert, mit Offset verschieben
+            // Bei Zoom > 100 funktioniert object-position um den sichtbaren Bereich zu verschieben
+            const posX = Math.max(0, Math.min(100, 50 + offsetX));
+            const posY = Math.max(0, Math.min(100, 50 + offsetY));
             
             profileImageHtml = `
                 <div class="resume-preview-profile-image" style="
                     width: ${size}; height: ${size}; border-radius: ${shape}; border: ${border};
-                    overflow: hidden; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+                    overflow: hidden; flex-shrink: 0; position: relative;
                     background: #f1f5f9;
                 ">
                     <img src="${data.profileImageUrl}" alt="Profilbild" style="
-                        width: ${imgWidth}%;
-                        height: ${imgHeight}%;
-                        object-fit: ${zoomFactor < 1 ? 'contain' : 'cover'};
-                        object-position: ${50 + offsetX}% ${50 + offsetY}%;
+                        width: 100%;
+                        height: 100%;
+                        object-fit: cover;
+                        transform: scale(${zoomFactor});
+                        transform-origin: ${posX}% ${posY}%;
                     ">
                 </div>
             `;

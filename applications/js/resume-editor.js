@@ -2202,20 +2202,40 @@ function buildSimpleDiff(oldText, newText) {
 // =============================================
 
 async function getOpenAIKey() {
+    console.log('🔑 Getting OpenAI Key...');
+    
+    // Try awsAPISettings first
     if (window.awsAPISettings) {
         try {
             const key = await window.awsAPISettings.getFullApiKey('openai');
-            if (key && !key.includes('...')) return key;
+            if (key && typeof key === 'string' && !key.includes('...') && key.startsWith('sk-')) {
+                console.log('✅ Got key from awsAPISettings');
+                return key;
+            }
         } catch (e) {
             console.warn('AWS API Settings error:', e);
         }
     }
+    
+    // Try global_api_keys localStorage
     try {
         const globalKeys = JSON.parse(localStorage.getItem('global_api_keys') || '{}');
-        if (globalKeys.openai?.key && !globalKeys.openai.key.includes('...')) {
+        if (globalKeys.openai?.key && !globalKeys.openai.key.includes('...') && globalKeys.openai.key.startsWith('sk-')) {
+            console.log('✅ Got key from global_api_keys localStorage');
             return globalKeys.openai.key;
         }
     } catch (e) {}
+    
+    // Try admin-api-settings localStorage
+    try {
+        const adminSettings = JSON.parse(localStorage.getItem('admin-api-settings') || '{}');
+        if (adminSettings.openai?.apiKey && adminSettings.openai.apiKey.startsWith('sk-')) {
+            console.log('✅ Got key from admin-api-settings');
+            return adminSettings.openai.apiKey;
+        }
+    } catch (e) {}
+    
+    console.warn('❌ No OpenAI key found');
     return null;
 }
 
@@ -2689,12 +2709,33 @@ function setupResumeAiTools() {
     document.addEventListener('click', async (event) => {
         const button = event.target.closest('.ai-inline-action');
         if (!button) return;
+        
+        event.preventDefault();
+        event.stopPropagation();
+        
         const action = button.dataset.aiAction;
         const itemId = button.dataset.itemId;
-        if (action === 'optimize-experience') await optimizeExperienceItem(itemId);
-        if (action === 'alternatives-experience') await alternativesExperienceItem(itemId);
-        if (action === 'optimize-project') await optimizeProjectItem(itemId);
-        if (action === 'alternatives-project') await alternativesProjectItem(itemId);
+        
+        // Show loading state
+        const originalText = button.innerHTML;
+        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Lädt...';
+        button.disabled = true;
+        
+        console.log('🤖 AI Action:', action, 'Item:', itemId);
+        
+        try {
+            if (action === 'optimize-experience') await optimizeExperienceItem(itemId);
+            if (action === 'alternatives-experience') await alternativesExperienceItem(itemId);
+            if (action === 'optimize-project') await optimizeProjectItem(itemId);
+            if (action === 'alternatives-project') await alternativesProjectItem(itemId);
+        } catch (error) {
+            console.error('AI Action Error:', error);
+            renderAiResult('aiSuggestions', `<p style="color: #ef4444;">Fehler: ${error.message}</p>`);
+        } finally {
+            // Restore button
+            button.innerHTML = originalText;
+            button.disabled = false;
+        }
     });
 }
 
