@@ -1273,6 +1273,8 @@ KRITISCHE REGELN:
 - Wenn ein Feld nicht im Dokument vorkommt → null setzen (nicht raten)
 - description bei experience: EXAKT KOPIEREN - jeder Stichpunkt, jede Zeile
 - Verwende \\n für Zeilenumbrüche in descriptions
+- STICHPUNKTE BEIBEHALTEN: Wenn im Original "• Punkt" oder "- Punkt" steht → übernehme das Bullet-Zeichen!
+- Format: "• Stichpunkt 1\\n• Stichpunkt 2\\n• Stichpunkt 3"
 - NIEMALS zusammenfassen oder kürzen
 - Vor dem Finalisieren: Re-scan des Dokuments auf verpasste Felder
 </extraction_spec>
@@ -1317,6 +1319,8 @@ ${fullText.substring(0, 50000)}`;
 <extraction_completeness>
 - Extrahiere JEDEN Stichpunkt, JEDE Zeile aus Beschreibungen
 - Wenn 8 Bullet Points im Original → 8 im JSON
+- STICHPUNKTE BEIBEHALTEN: "• " oder "- " aus Original übernehmen
+- Format für Stichpunkte: "• Punkt 1\\n• Punkt 2\\n• Punkt 3"
 - Bei Unsicherheit über Feldwert → null setzen
 - Vor Finalisierung: Re-scan auf verpasste Informationen
 </extraction_completeness>`
