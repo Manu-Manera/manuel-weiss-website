@@ -1926,16 +1926,31 @@ Ihre Aufgaben:
             setTimeout(() => toast.remove(), 3000);
         }
         
+        // Prüfe ob Dashboard im iframe geladen wird (embedded mode)
+        const urlParams = new URLSearchParams(window.location.search);
+        const isEmbedded = urlParams.get('embedded') === 'true' || window.self !== window.top;
+        
+        if (isEmbedded) {
+            document.body.classList.add('embedded');
+            // Navigation ausblenden
+            const navbar = document.querySelector('.navbar');
+            if (navbar) navbar.style.display = 'none';
+        }
+        
         // Initialize on load
         document.addEventListener('DOMContentLoaded', async () => {
-            // Setup mobile menu
-            setupMobileMenu();
+            // Setup mobile menu (nur wenn nicht embedded)
+            if (!isEmbedded) {
+                setupMobileMenu();
+            }
             
             // Wait for auth system
             await waitForAuthSystem();
             
-            // Setup auth UI
-            setupAuthUI();
+            // Setup auth UI (nur wenn nicht embedded)
+            if (!isEmbedded) {
+                setupAuthUI();
+            }
             
             // Initialize auth modals if not already done
             if (!window.authModals && window.UnifiedAuthModals) {
