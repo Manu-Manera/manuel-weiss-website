@@ -1430,8 +1430,6 @@ KRITISCHE REGELN:
 LEBENSLAUF-TEXT:
 ${fullText.substring(0, 50000)}`;
 
-                updateProgress(60, 'KI analysiert Lebenslauf...');
-                
                 // FINALE VALIDIERUNG: apiKey MUSS ein String sein!
                 if (typeof apiKey !== 'string') {
                     console.error('❌ API Key ist kein String:', typeof apiKey, apiKey);
@@ -1444,6 +1442,11 @@ ${fullText.substring(0, 50000)}`;
                 }
                 console.log('🤖 Sende Anfrage an GPT-5.2 mit Key:', apiKey.substring(0, 7) + '...');
                 
+                // Animierte Progress-Anzeige während KI-Verarbeitung
+                updateProgress(60, '🤖 KI analysiert Lebenslauf... (kann 10-30 Sek. dauern)', true);
+                
+                const startTime = Date.now();
+                
                 const response = await fetch('https://api.openai.com/v1/chat/completions', {
                     method: 'POST',
                     headers: {
@@ -1452,36 +1455,26 @@ ${fullText.substring(0, 50000)}`;
                     },
                     body: JSON.stringify({
                         model: 'gpt-5.2',
-                        reasoning_effort: 'medium',
+                        reasoning_effort: 'low',
                         messages: [
                             {
                                 role: 'system',
-                                content: `Du bist ein präziser Datenextraktions-Assistent für Lebensläufe.
-
-<output_verbosity_spec>
-- Antworte NUR mit validem JSON
-- Keine Erklärungen, kein Markdown, keine Kommentare
-- Exakte Reproduktion aller Texte ohne Zusammenfassung
-</output_verbosity_spec>
-
-<extraction_completeness>
-- Extrahiere JEDEN Stichpunkt, JEDE Zeile aus Beschreibungen
-- Wenn 8 Bullet Points im Original → 8 im JSON (ALLE übernehmen!)
-- STICHPUNKT-FORMAT: Jede Tätigkeitsbeschreibung die im Original eine eigene Zeile ist → "• " voranstellen
-- Korrekt: "• Installation von Anlagen\\n• Wartung und Reparatur\\n• Kundenberatung"
-- FALSCH: "Installation, Wartung, Kundenberatung" (NIEMALS zusammenfassen!)
-- Bei Unsicherheit über Feldwert → null setzen
-- ADRESSE: Straße (street), PLZ (postalCode), Stadt (city), Land (country) SEPARAT extrahieren
-</extraction_completeness>`
+                                content: `Du bist ein schneller Datenextraktions-Assistent für Lebensläufe. Antworte NUR mit validem JSON, keine Erklärungen. Extrahiere alle Daten vollständig. STICHPUNKTE BEIBEHALTEN: "• " oder "- " übernehmen. ADRESSE separat: street, postalCode, city, country.`
                             },
                             {
                                 role: 'user',
                                 content: prompt
                             }
                         ],
-                        max_completion_tokens: 16000
+                        max_completion_tokens: 12000
                     })
                 });
+                
+                // Stoppe Animation
+                if (typeof stopProgressAnimation === 'function') stopProgressAnimation();
+                
+                const duration = ((Date.now() - startTime) / 1000).toFixed(1);
+                console.log(`⏱️ KI-Anfrage dauerte ${duration}s`);
                 
                 if (!response.ok) {
                     const errorData = await response.json().catch(() => ({}));
@@ -1493,7 +1486,7 @@ ${fullText.substring(0, 50000)}`;
                 const aiResponse = data.choices[0]?.message?.content || '';
                 console.log('📊 GPT Antwort:', aiResponse.substring(0, 500) + '...');
                 
-                updateProgress(90, 'Daten werden aufbereitet...');
+                updateProgress(90, `✅ Analyse fertig (${duration}s) - Daten werden aufbereitet...`);
                 
                 // JSON aus der Antwort extrahieren
                 let parsedData;
