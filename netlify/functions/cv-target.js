@@ -93,7 +93,7 @@ Schlüsselwörter: ${jobData.keywords?.join(', ') || ''}
                 'Authorization': `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-                model: 'gpt-3.5-turbo',
+                model: 'gpt-5.2',
                 messages: [
                     {
                         role: 'system',
@@ -123,8 +123,8 @@ Vor dem Finalisieren prüfen:
                         content: prompt
                     }
                 ],
-                max_tokens: 8000,
-                temperature: 0.7
+                reasoning_effort: 'medium',
+                max_completion_tokens: 8000
             })
         });
 

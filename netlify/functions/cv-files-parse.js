@@ -160,7 +160,7 @@ ${combinedText.substring(0, 50000)}`;
                 'Authorization': `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-                model: 'gpt-3.5-turbo',
+                model: 'gpt-5.2',
                 messages: [
                     {
                         role: 'system',
@@ -183,9 +183,8 @@ ${combinedText.substring(0, 50000)}`;
                         content: parsePrompt
                     }
                 ],
-                max_tokens: 16000,
-                temperature: 0.3,
-                response_format: { type: 'json_object' }
+                reasoning_effort: 'medium',
+                max_completion_tokens: 16000
             })
         });
 

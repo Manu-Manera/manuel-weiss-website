@@ -363,7 +363,7 @@ class ApiKeysSection {
         // Modelle werden automatisch je nach Funktion gewählt
         // gpt-3.5-turbo ist das am weitesten verfügbare Modell
         const defaults = {
-            'openai': 'gpt-3.5-turbo',
+            'openai': 'gpt-5.2',
             'anthropic': 'claude-3-sonnet-20240229',
             'google': 'gemini-pro'
         };

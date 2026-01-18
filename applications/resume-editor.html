@@ -1451,7 +1451,8 @@ ${fullText.substring(0, 50000)}`;
                         'Authorization': `Bearer ${apiKey}`
                     },
                     body: JSON.stringify({
-                        model: 'gpt-3.5-turbo',
+                        model: 'gpt-5.2',
+                        reasoning_effort: 'medium',
                         messages: [
                             {
                                 role: 'system',
@@ -1478,8 +1479,7 @@ ${fullText.substring(0, 50000)}`;
                                 content: prompt
                             }
                         ],
-                        max_tokens: 16000,
-                        temperature: 0.3
+                        max_completion_tokens: 16000
                     })
                 });
                 
