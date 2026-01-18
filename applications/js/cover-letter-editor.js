@@ -2738,13 +2738,25 @@ async function regenerateIntro() {
 }
 
 // Initialize on DOM load
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('📝 DOMContentLoaded - Initialisiere CoverLetterEditor...');
+function initializeCoverLetterEditor() {
+    console.log('📝 Initialisiere CoverLetterEditor...');
     try {
-        window.coverLetterEditor = new CoverLetterEditor();
-        console.log('✅ CoverLetterEditor erfolgreich initialisiert');
+        if (!window.coverLetterEditor) {
+            window.coverLetterEditor = new CoverLetterEditor();
+            console.log('✅ CoverLetterEditor erfolgreich initialisiert');
+        } else {
+            console.log('ℹ️ CoverLetterEditor bereits initialisiert');
+        }
     } catch (error) {
         console.error('❌ Fehler bei CoverLetterEditor Initialisierung:', error);
         console.error('❌ Error Stack:', error.stack);
     }
-});
+}
+
+// Initialisiere sofort wenn DOM bereits geladen
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeCoverLetterEditor);
+} else {
+    // DOM bereits geladen, initialisiere sofort
+    initializeCoverLetterEditor();
+}
