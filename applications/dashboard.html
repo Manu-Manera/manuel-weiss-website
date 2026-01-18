@@ -1948,14 +1948,32 @@ Ihre Aufgaben:
                 dashboardContainer.style.marginTop = '0';
             }
             
-            // Signalisiere dem Parent-Frame, dass Dashboard geladen ist
-            if (window.parent !== window.self) {
-                try {
-                    window.parent.postMessage({ type: 'dashboard-loaded', source: 'dashboard' }, '*');
-                    console.log('✅ Parent-Frame benachrichtigt');
-                } catch (e) {
-                    console.warn('⚠️ Konnte Parent-Frame nicht benachrichtigen:', e);
+            // Funktion zum Benachrichtigen des Parent-Frames
+            const notifyParentLoaded = () => {
+                if (window.parent !== window.self) {
+                    try {
+                        window.parent.postMessage({ 
+                            type: 'dashboard-loaded', 
+                            source: 'dashboard',
+                            timestamp: Date.now()
+                        }, '*');
+                        console.log('✅ Parent-Frame benachrichtigt (embedded mode)');
+                    } catch (e) {
+                        console.warn('⚠️ Konnte Parent-Frame nicht benachrichtigen:', e);
+                    }
                 }
+            };
+            
+            // Benachrichtige sofort (für schnelle Kommunikation)
+            notifyParentLoaded();
+            
+            // Benachrichtige auch nach vollständigem Laden
+            if (document.readyState === 'complete') {
+                setTimeout(notifyParentLoaded, 500);
+            } else {
+                window.addEventListener('load', () => {
+                    setTimeout(notifyParentLoaded, 500);
+                });
             }
         }
         

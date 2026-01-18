@@ -891,6 +891,8 @@ input:checked + .toggle-slider:before {
     top: 0;
     left: 0;
     z-index: 1;
+    opacity: 1;
+    visibility: visible;
 }
 
 .iframe-loading-state {

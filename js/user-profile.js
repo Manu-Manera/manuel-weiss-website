@@ -480,10 +480,12 @@ class UserProfile {
                 
                 // PostMessage Handler für Dashboard-Kommunikation
                 const messageHandler = (event) => {
-                    if (event.data && event.data.type === 'dashboard-loaded') {
-                        console.log('✅ Dashboard hat geladen-Signal gesendet');
-                        if (loading) loading.style.display = 'none';
-                        if (error) error.style.display = 'none';
+                    if (event.data && event.data.source === 'dashboard') {
+                        if (event.data.type === 'dashboard-loaded' || event.data.type === 'dashboard-initialized') {
+                            console.log('✅ Dashboard hat geladen-Signal gesendet:', event.data.type);
+                            if (loading) loading.style.display = 'none';
+                            if (error) error.style.display = 'none';
+                        }
                     }
                 };
                 window.addEventListener('message', messageHandler);
