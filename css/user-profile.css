@@ -859,6 +859,36 @@ input:checked + .toggle-slider:before {
 }
 
 /* Applications Dashboard */
+/* Embedded Dashboard */
+.applications-dashboard-embed {
+    width: 100%;
+    height: calc(100vh - 200px);
+    min-height: 600px;
+    border: none;
+    overflow: hidden;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+}
+
+.applications-dashboard-embed iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+}
+
+/* Embedded Mode - Hide Navigation in Dashboard */
+.applications-dashboard-embed iframe[src*="embedded=true"] {
+    /* Dashboard wird im iframe angezeigt */
+}
+
+@media (max-width: 768px) {
+    .applications-dashboard-embed {
+        height: calc(100vh - 150px);
+        min-height: 500px;
+    }
+}
+
 .applications-dashboard {
     display: flex;
     flex-direction: column;
