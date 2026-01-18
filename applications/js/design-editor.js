@@ -125,6 +125,9 @@ class DesignEditor {
             pageNumberPosition: 'bottom-center', // 'bottom-left', 'bottom-center', 'bottom-right'
             pageNumberFormat: 'Seite X von Y', // 'Seite X von Y', 'X/Y', 'X'
             
+            // Resume Title ("Lebenslauf" Überschrift)
+            showResumeTitle: true,
+            
             // NEW: Signature (Extended)
             showSignature: false,
             signatureImage: '',
@@ -488,65 +491,115 @@ class DesignEditor {
         const templates = [
             // Original Templates
             { id: 'modern', name: 'Modern', desc: 'Clean & Professional', icon: '📄', 
-              settings: { accentColor: '#6366f1', fontFamily: "'Inter', sans-serif", columns: 1, sidebarBackground: 'transparent' } },
+              settings: { accentColor: '#6366f1', fontFamily: "'Inter', sans-serif", columns: 1, sidebarBackground: 'transparent', showResumeTitle: true } },
             { id: 'classic', name: 'Klassisch', desc: 'Zeitlos & Elegant', icon: '📋', 
-              settings: { accentColor: '#1e293b', fontFamily: "'Georgia', serif", columns: 1, sidebarBackground: 'transparent' } },
+              settings: { accentColor: '#1e293b', fontFamily: "'Georgia', serif", columns: 1, sidebarBackground: 'transparent', showResumeTitle: true } },
             { id: 'creative', name: 'Kreativ', desc: 'Auffällig & Modern', icon: '🎨', 
-              settings: { accentColor: '#8b5cf6', fontFamily: "'Montserrat', sans-serif", columns: 2, sidebarBackground: 'transparent' } },
+              settings: { accentColor: '#8b5cf6', fontFamily: "'Montserrat', sans-serif", columns: 2, sidebarBackground: 'transparent', showResumeTitle: false } },
             { id: 'minimal', name: 'Minimal', desc: 'Schlicht & Fokussiert', icon: '✨', 
-              settings: { accentColor: '#64748b', fontFamily: "'Inter', sans-serif", columns: 1, sidebarBackground: 'transparent' } },
+              settings: { accentColor: '#64748b', fontFamily: "'Inter', sans-serif", columns: 1, sidebarBackground: 'transparent', showResumeTitle: false } },
             { id: 'executive', name: 'Executive', desc: 'Führungskräfte', icon: '👔', 
-              settings: { accentColor: '#0f172a', fontFamily: "'Times New Roman', serif", columns: 1, sidebarBackground: 'transparent' } },
+              settings: { accentColor: '#0f172a', fontFamily: "'Times New Roman', serif", columns: 1, sidebarBackground: 'transparent', showResumeTitle: true } },
             { id: 'ats', name: 'ATS-Optimiert', desc: 'Für Bewerbungssysteme', icon: '🤖', 
-              settings: { accentColor: '#1e293b', fontFamily: "'Arial', sans-serif", columns: 1, showIcons: false, sidebarBackground: 'transparent' } },
+              settings: { accentColor: '#1e293b', fontFamily: "'Arial', sans-serif", columns: 1, showIcons: false, sidebarBackground: 'transparent', showResumeTitle: true } },
             
-            // NEW: Sidebar Templates
-            { id: 'sidebar-dark', name: 'Sidebar Dunkel', desc: 'Dunkle Sidebar (wie Screenshot)', icon: '🌙', 
+            // Sidebar Templates
+            { id: 'sidebar-dark', name: 'Sidebar Dunkel', desc: 'Dunkle Sidebar', icon: '🌙', 
               settings: { 
                 accentColor: '#ffffff', fontFamily: "'Inter', sans-serif", columns: 2,
-                sidebarBackground: '#2d3748', sidebarTextColor: '#ffffff', leftColumnBg: '#2d3748', rightColumnBg: '#ffffff'
+                sidebarBackground: '#2d3748', sidebarTextColor: '#ffffff', leftColumnBg: '#2d3748', rightColumnBg: '#ffffff', showResumeTitle: false
               } },
             { id: 'sidebar-accent', name: 'Sidebar Akzent', desc: 'Farbige Sidebar', icon: '🎯', 
               settings: { 
                 accentColor: '#ffffff', fontFamily: "'Inter', sans-serif", columns: 2,
-                sidebarBackground: '#6366f1', sidebarTextColor: '#ffffff', leftColumnBg: '#6366f1', rightColumnBg: '#ffffff'
+                sidebarBackground: '#6366f1', sidebarTextColor: '#ffffff', leftColumnBg: '#6366f1', rightColumnBg: '#ffffff', showResumeTitle: false
               } },
             { id: 'sidebar-teal', name: 'Sidebar Teal', desc: 'Türkis Sidebar', icon: '🌊', 
               settings: { 
                 accentColor: '#ffffff', fontFamily: "'Inter', sans-serif", columns: 2,
-                sidebarBackground: '#0d9488', sidebarTextColor: '#ffffff', leftColumnBg: '#0d9488', rightColumnBg: '#ffffff'
+                sidebarBackground: '#0d9488', sidebarTextColor: '#ffffff', leftColumnBg: '#0d9488', rightColumnBg: '#ffffff', showResumeTitle: false
               } },
             
-            // NEW: Professional Templates
+            // Professional Templates
             { id: 'tech', name: 'Tech/Developer', desc: 'Für IT & Entwickler', icon: '💻', 
               settings: { 
                 accentColor: '#22c55e', fontFamily: "'Source Code Pro', monospace", columns: 2,
-                skillDisplay: 'bars', sidebarBackground: '#0f172a', sidebarTextColor: '#22c55e', leftColumnBg: '#0f172a'
+                skillDisplay: 'bars', sidebarBackground: '#0f172a', sidebarTextColor: '#22c55e', leftColumnBg: '#0f172a', showResumeTitle: false
               } },
             { id: 'finance', name: 'Finance', desc: 'Konservativ & Seriös', icon: '💼', 
               settings: { 
                 accentColor: '#14532d', fontFamily: "'Times New Roman', serif", columns: 1,
-                sidebarBackground: 'transparent', showIcons: false
+                sidebarBackground: 'transparent', showIcons: false, showResumeTitle: true
               } },
             { id: 'startup', name: 'Startup', desc: 'Modern & Dynamisch', icon: '🚀', 
               settings: { 
                 accentColor: '#f97316', fontFamily: "'Nunito', sans-serif", columns: 2,
-                sidebarBackground: '#fff7ed', leftColumnBg: '#fff7ed'
+                sidebarBackground: '#fff7ed', leftColumnBg: '#fff7ed', showResumeTitle: false
               } },
             { id: 'academic', name: 'Akademisch', desc: 'Für Wissenschaft', icon: '🎓', 
               settings: { 
                 accentColor: '#1e3a8a', fontFamily: "'Merriweather', serif", columns: 1,
-                sidebarBackground: 'transparent'
+                sidebarBackground: 'transparent', showResumeTitle: true
               } },
             { id: 'creative-bold', name: 'Kreativ Bold', desc: 'Mutige Farben', icon: '🎪', 
               settings: { 
                 accentColor: '#ec4899', fontFamily: "'Montserrat', sans-serif", columns: 2,
-                sidebarBackground: '#fdf2f8', leftColumnBg: '#fdf2f8', headerBackground: '#ec4899'
+                sidebarBackground: '#fdf2f8', leftColumnBg: '#fdf2f8', headerBackground: '#ec4899', showResumeTitle: false
               } },
             { id: 'executive-gold', name: 'Executive Gold', desc: 'Premium Look', icon: '👑', 
               settings: { 
                 accentColor: '#b45309', fontFamily: "'Playfair Display', serif", columns: 1,
-                sidebarBackground: 'transparent', headerBackground: '#fffbeb'
+                sidebarBackground: 'transparent', headerBackground: '#fffbeb', showResumeTitle: true
+              } },
+            
+            // NEUE stylische Templates
+            { id: 'swiss', name: 'Swiss Design', desc: 'Helvetica-Stil, Clean', icon: '🇨🇭', 
+              settings: { 
+                accentColor: '#dc2626', fontFamily: "'Helvetica Neue', 'Arial', sans-serif", columns: 1,
+                sidebarBackground: 'transparent', fontSize: 10, lineHeight: 1.4, showResumeTitle: true,
+                headerAlign: 'left'
+              } },
+            { id: 'nordic', name: 'Nordic', desc: 'Skandinavisch minimalistisch', icon: '❄️', 
+              settings: { 
+                accentColor: '#0ea5e9', fontFamily: "'Open Sans', sans-serif", columns: 2,
+                sidebarBackground: '#f8fafc', leftColumnBg: '#f8fafc', sidebarTextColor: '#334155',
+                showResumeTitle: false, fontSize: 10
+              } },
+            { id: 'dark-mode', name: 'Dark Mode', desc: 'Dunkler Hintergrund', icon: '🌑', 
+              settings: { 
+                accentColor: '#a78bfa', fontFamily: "'Inter', sans-serif", columns: 1,
+                backgroundColor: '#1e1e2e', textColor: '#cdd6f4', mutedColor: '#9399b2',
+                headerBackground: '#313244', sidebarBackground: 'transparent', showResumeTitle: false
+              } },
+            { id: 'gradient', name: 'Gradient Header', desc: 'Farbverlauf-Header', icon: '🌈', 
+              settings: { 
+                accentColor: '#ffffff', fontFamily: "'Poppins', sans-serif", columns: 1,
+                headerBackground: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                headerTextColor: '#ffffff', sidebarBackground: 'transparent', showResumeTitle: false
+              } },
+            { id: 'consulting', name: 'Consulting', desc: 'McKinsey/BCG Style', icon: '📊', 
+              settings: { 
+                accentColor: '#1e40af', fontFamily: "'Roboto', sans-serif", columns: 1,
+                sidebarBackground: 'transparent', showIcons: false, showResumeTitle: true,
+                experienceFormat: 'bullets', fontSize: 10
+              } },
+            { id: 'designer', name: 'Designer Portfolio', desc: 'Kreativ & Visuell', icon: '🎭', 
+              settings: { 
+                accentColor: '#f43f5e', fontFamily: "'Lato', sans-serif", columns: 2,
+                sidebarBackground: '#18181b', sidebarTextColor: '#fafafa', leftColumnBg: '#18181b',
+                skillDisplay: 'dots', showResumeTitle: false, profileImageShape: 'rounded'
+              } },
+            { id: 'elegant', name: 'Elegant Serif', desc: 'Zeitschriften-Look', icon: '📰', 
+              settings: { 
+                accentColor: '#78350f', fontFamily: "'Playfair Display', serif", columns: 1,
+                sidebarBackground: 'transparent', headerAlign: 'center', showResumeTitle: true,
+                fontSize: 11, lineHeight: 1.6
+              } },
+            { id: 'tech-minimal', name: 'Tech Minimal', desc: 'FAANG-Style', icon: '⚡', 
+              settings: { 
+                accentColor: '#059669', fontFamily: "'SF Pro Display', -apple-system, sans-serif", columns: 1,
+                sidebarBackground: 'transparent', showIcons: true, showResumeTitle: false,
+                skillDisplay: 'tags', experienceFormat: 'bullets'
               } }
         ];
 
@@ -737,11 +790,52 @@ class DesignEditor {
         reader.readAsDataURL(file);
     }
     
-    loadProfileImageFromStorage() {
+    async loadProfileImageFromStorage() {
         try {
-            const profile = JSON.parse(localStorage.getItem('bewerbungsmanager_profile') || '{}');
-            if (profile.profileImageUrl) {
-                this.settings.profileImageUrl = profile.profileImageUrl;
+            let imageUrl = null;
+            
+            // 1. Versuche aus Cloud zu laden (falls eingeloggt)
+            if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
+                try {
+                    const cloudProfile = await window.cloudDataService.getProfile();
+                    if (cloudProfile?.profileImageUrl) {
+                        imageUrl = cloudProfile.profileImageUrl;
+                        console.log('✅ Profilbild aus Cloud geladen');
+                    }
+                } catch (e) {
+                    console.warn('Cloud-Profilbild nicht verfügbar:', e);
+                }
+            }
+            
+            // 2. Fallback: localStorage bewerbungsmanager_profile
+            if (!imageUrl) {
+                const profile = JSON.parse(localStorage.getItem('bewerbungsmanager_profile') || '{}');
+                if (profile.profileImageUrl) {
+                    imageUrl = profile.profileImageUrl;
+                    console.log('✅ Profilbild aus bewerbungsmanager_profile geladen');
+                }
+            }
+            
+            // 3. Fallback: userProfile im localStorage
+            if (!imageUrl) {
+                const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
+                if (userProfile.profileImage || userProfile.profileImageUrl) {
+                    imageUrl = userProfile.profileImage || userProfile.profileImageUrl;
+                    console.log('✅ Profilbild aus userProfile geladen');
+                }
+            }
+            
+            // 4. Fallback: AWS S3 Profil-URL
+            if (!imageUrl) {
+                const s3Profile = localStorage.getItem('profile_image_s3_url');
+                if (s3Profile) {
+                    imageUrl = s3Profile;
+                    console.log('✅ Profilbild aus S3 URL geladen');
+                }
+            }
+            
+            if (imageUrl) {
+                this.settings.profileImageUrl = imageUrl;
                 this.settings.showProfileImage = true;
                 this.saveSettings();
                 this.updatePreview();
@@ -750,11 +844,15 @@ class DesignEditor {
                 if (toggle) toggle.checked = true;
                 this.toggleImageOptions(true);
                 
-                this.showNotification('Profilbild aus Profil geladen', 'success');
+                // Update preview
+                this.updateProfileImagePreview();
+                
+                this.showNotification('Profilbild geladen', 'success');
             } else {
-                this.showNotification('Kein Profilbild im Profil gefunden', 'warning');
+                this.showNotification('Kein Profilbild gefunden. Bitte im Dashboard hochladen.', 'warning');
             }
         } catch (e) {
+            console.error('Fehler beim Laden des Profilbilds:', e);
             this.showNotification('Fehler beim Laden des Profilbilds', 'error');
         }
     }
@@ -847,18 +945,73 @@ class DesignEditor {
         
         const reader = new FileReader();
         reader.onload = (e) => {
-            this.settings.signatureImage = e.target.result;
-            this.saveSettings();
-            this.updatePreview();
-            this.showNotification('Unterschrift hochgeladen', 'success');
-            
-            // Show preview
-            const preview = document.getElementById('signaturePreview');
-            if (preview) {
-                preview.innerHTML = `<img src="${e.target.result}" alt="Unterschrift" style="max-height: 60px;">`;
-            }
+            // Automatisch weißen/hellen Hintergrund entfernen
+            this.removeSignatureBackground(e.target.result).then(transparentImage => {
+                this.settings.signatureImage = transparentImage;
+                this.saveSettings();
+                this.updatePreview();
+                this.showNotification('Unterschrift hochgeladen & freigestellt', 'success');
+                
+                // Show preview
+                const preview = document.getElementById('signaturePreview');
+                if (preview) {
+                    preview.innerHTML = `<img src="${transparentImage}" alt="Unterschrift" style="max-height: 60px; background: repeating-conic-gradient(#f0f0f0 0% 25%, transparent 0% 50%) 50% / 10px 10px;">`;
+                }
+            }).catch(() => {
+                // Fallback ohne Freistellung
+                this.settings.signatureImage = e.target.result;
+                this.saveSettings();
+                this.updatePreview();
+                this.showNotification('Unterschrift hochgeladen', 'success');
+            });
         };
         reader.readAsDataURL(file);
+    }
+    
+    /**
+     * Entfernt weißen/hellen Hintergrund von Unterschriften
+     * Macht helle Pixel transparent
+     */
+    removeSignatureBackground(imageDataUrl) {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                
+                ctx.drawImage(img, 0, 0);
+                
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const data = imageData.data;
+                
+                // Threshold für "weiß" (0-255, höher = mehr wird transparent)
+                const threshold = 240;
+                
+                for (let i = 0; i < data.length; i += 4) {
+                    const r = data[i];
+                    const g = data[i + 1];
+                    const b = data[i + 2];
+                    
+                    // Prüfe ob Pixel hell genug ist (nahe weiß)
+                    if (r > threshold && g > threshold && b > threshold) {
+                        // Mache Pixel transparent
+                        data[i + 3] = 0;
+                    } else if (r > 200 && g > 200 && b > 200) {
+                        // Semi-transparent für leicht graue Pixel
+                        const brightness = (r + g + b) / 3;
+                        data[i + 3] = Math.max(0, 255 - (brightness - 200) * 5);
+                    }
+                }
+                
+                ctx.putImageData(imageData, 0, 0);
+                resolve(canvas.toDataURL('image/png'));
+            };
+            img.onerror = reject;
+            img.src = imageDataUrl;
+        });
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -1670,7 +1823,9 @@ class DesignEditor {
             phone: document.getElementById('phone')?.value || '',
             location: document.getElementById('location')?.value || '',
             summary: document.getElementById('summary')?.value || '',
-            birthDate: document.getElementById('birthDate')?.value || ''
+            birthDate: document.getElementById('birthDate')?.value || '',
+            linkedin: document.getElementById('linkedin')?.value || '',
+            website: document.getElementById('website')?.value || ''
         };
         
         let savedProfile = {};
@@ -1688,6 +1843,8 @@ class DesignEditor {
             location: formData.location || savedProfile.location || 'Stadt, Land',
             summary: formData.summary || savedProfile.summary || 'Ihr Profil...',
             birthDate: formData.birthDate || savedProfile.birthDate || '',
+            linkedin: formData.linkedin || savedProfile.linkedin || '',
+            website: formData.website || savedProfile.website || '',
             profileImageUrl: this.settings.profileImageUrl || savedProfile.profileImageUrl || '',
             experience: this.getExperienceData(),
             education: this.getEducationData(),
@@ -1843,6 +2000,19 @@ class DesignEditor {
             ? `background: ${this.settings.headerBackground}; margin: -${this.settings.marginTop}mm -${this.settings.marginRight}mm 0 -${this.settings.marginLeft}mm; padding: ${this.settings.marginTop}mm ${this.settings.marginRight}mm 20px ${this.settings.marginLeft}mm;`
             : '';
         
+        // "LEBENSLAUF" Überschrift (je nach Template)
+        const showResumeTitle = this.settings.showResumeTitle !== false;
+        const resumeTitleHtml = showResumeTitle ? `
+            <p class="resume-document-title" style="
+                text-transform: uppercase;
+                letter-spacing: 3px;
+                font-size: 10px;
+                color: ${this.settings.mutedColor};
+                margin-bottom: 8px;
+                font-weight: 500;
+            ">Lebenslauf</p>
+        ` : '';
+        
         // Profile image mit Crop-Einstellungen
         let profileImageHtml = '';
         if (this.settings.showProfileImage && data.profileImageUrl) {
@@ -1879,14 +2049,22 @@ class DesignEditor {
             `;
         }
         
+        // LinkedIn URL formatieren (nur Username anzeigen)
+        const linkedinDisplay = data.linkedin ? (data.linkedin.includes('linkedin.com') 
+            ? data.linkedin.replace(/.*linkedin\.com\/in\//, '').replace(/\/$/, '')
+            : data.linkedin) : '';
+        
         const headerContent = `
+            ${resumeTitleHtml}
             <h1 class="resume-preview-name">${data.firstName} ${data.lastName}</h1>
-            ${data.birthDate ? `<p class="resume-preview-birthdate">Geb. am ${this.formatDate(data.birthDate)}</p>` : ''}
             <p class="resume-preview-title">${data.title}</p>
+            ${data.birthDate ? `<p class="resume-preview-birthdate" style="font-size: 0.85em; color: ${this.settings.mutedColor};">Geboren am ${this.formatBirthDate(data.birthDate)}</p>` : ''}
             <div class="resume-preview-contact">
                 ${data.phone ? `<span><i class="fas fa-phone"></i> ${data.phone}</span>` : ''}
                 ${data.location ? `<span><i class="fas fa-map-marker-alt"></i> ${data.location}</span>` : ''}
                 ${data.email ? `<span><i class="fas fa-envelope"></i> ${data.email}</span>` : ''}
+                ${data.linkedin ? `<span><i class="fab fa-linkedin"></i> ${linkedinDisplay}</span>` : ''}
+                ${data.website ? `<span><i class="fas fa-globe"></i> ${data.website.replace(/https?:\/\//, '')}</span>` : ''}
             </div>
         `;
         
@@ -1909,6 +2087,17 @@ class DesignEditor {
                 ${headerContent}
             </div>
         `;
+    }
+    
+    formatBirthDate(dateStr) {
+        if (!dateStr) return '';
+        try {
+            const date = new Date(dateStr);
+            if (isNaN(date.getTime())) return dateStr;
+            return date.toLocaleDateString('de-DE', { day: '2-digit', month: 'long', year: 'numeric' });
+        } catch (e) {
+            return dateStr;
+        }
     }
     
     formatDate(dateStr) {
