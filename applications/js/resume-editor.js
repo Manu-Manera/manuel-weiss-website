@@ -449,10 +449,10 @@ function reconstructTextWithStructure(items) {
 async function getOpenAIApiKey() {
     try {
         // 1. Versuche über aws-api-settings
-        if (window.awsApiSettings) {
-            const key = await window.awsApiSettings.getFullApiKey('openai');
+        if (window.awsAPISettings) {
+            const key = await window.awsAPISettings.getFullApiKey('openai');
             if (key) {
-                console.log('✅ API-Key über awsApiSettings geladen');
+                console.log('✅ API-Key über awsAPISettings geladen');
                 return key;
             }
         }
@@ -640,7 +640,7 @@ LEBENSLAUF-TEXT ZUM ANALYSIEREN:
 ${text}`;
 
     try {
-        // Verwende gpt-4o für bessere Qualität bei komplexen Dokumenten
+        // Verwende GPT-5.2 für beste Qualität bei komplexen Dokumenten
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
             headers: {
@@ -648,45 +648,38 @@ ${text}`;
                 'Authorization': `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-                model: 'gpt-4o', // Besseres Modell für komplexe Extraktion
+                model: 'gpt-5.2',
+                reasoning_effort: 'low',
                 messages: [
                     {
                         role: 'system',
-                        content: `Du bist ein KOPIER-Assistent. Du fasst NIEMALS zusammen.
+                        content: `Du bist ein präziser Datenextraktions-Assistent.
 
-DEIN GRÖSSTER FEHLER: Du kürzt Beschreibungen auf 1-2 Sätze. DAS IST VERBOTEN!
+<extraction_completeness>
+- KOPIERE ALLE Beschreibungen WORT FÜR WORT
+- Wenn im Original 8 Stichpunkte → 8 Stichpunkte im JSON
+- STICHPUNKTE BEIBEHALTEN: "• " oder "- " übernehmen
+- Format: "• Punkt 1\\n• Punkt 2\\n• Punkt 3"
+- NIEMALS zusammenfassen oder kürzen
+</extraction_completeness>
 
-REGEL: Wenn im Original 8 Stichpunkte stehen, MÜSSEN 8 Stichpunkte im JSON sein.
-REGEL: Du KOPIERST wörtlich, du FORMULIERST NICHT um.
-REGEL: Das description-Feld muss ALLE Tätigkeiten enthalten, getrennt mit \n
-
-BEISPIEL:
-Original hat: "• Punkt 1 • Punkt 2 • Punkt 3 • Punkt 4 • Punkt 5"
-FALSCH: "Punkt 1 und weitere Aufgaben"
-RICHTIG: "• Punkt 1\n• Punkt 2\n• Punkt 3\n• Punkt 4\n• Punkt 5"
-
-Du antwortest NUR mit validem JSON.`
+<output_verbosity_spec>
+- Antworte NUR mit validem JSON
+- Keine Erklärungen, kein Markdown
+</output_verbosity_spec>`
                     },
                     {
                         role: 'user',
                         content: prompt
                     }
                 ],
-                temperature: 0.05, // Noch niedrigere Temperatur für konsistente Extraktion
-                max_tokens: 16000  // Maximum für vollständige Antworten
+                max_completion_tokens: 16000
             })
         });
         
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({}));
             console.error('OpenAI API Error:', errorData);
-            
-            // Fallback zu gpt-4o-mini wenn gpt-4o nicht verfügbar
-            if (errorData.error?.code === 'model_not_found' || errorData.error?.message?.includes('model')) {
-                console.log('⚠️ gpt-4o nicht verfügbar, verwende gpt-4o-mini als Fallback...');
-                return processTextWithGPTFallback(text, apiKey);
-            }
-            
             throw new Error(errorData.error?.message || 'OpenAI API Fehler');
         }
         
@@ -725,21 +718,22 @@ Du antwortest NUR mit validem JSON.`
     }
 }
 
-// Fallback-Funktion mit gpt-4o-mini
+// Fallback-Funktion mit gpt-5-mini
 async function processTextWithGPTFallback(text, apiKey) {
-    console.log('🔄 Verwende gpt-4o-mini Fallback...');
+    console.log('🔄 Verwende gpt-5-mini Fallback...');
     
     const prompt = `Extrahiere ALLE Daten aus diesem Lebenslauf VOLLSTÄNDIG als JSON.
     
 WICHTIG:
 - Extrahiere JEDEN Stichpunkt einzeln
+- STICHPUNKTE BEIBEHALTEN: "• " oder "- " übernehmen
 - Kürze KEINE Beschreibungen
 - Fasse NICHT zusammen
 
 Format:
 {
     "name": "", "email": "", "phone": "", "address": "", "title": "", "summary": "",
-    "experience": [{"position": "", "company": "", "location": "", "startDate": "MM/YYYY", "endDate": "MM/YYYY", "description": "VOLLSTÄNDIG INKLUSIVE ALLER STICHPUNKTE (mit Zeilenumbrüchen)", "technologies": []}],
+    "experience": [{"position": "", "company": "", "location": "", "startDate": "MM/YYYY", "endDate": "MM/YYYY", "description": "• Punkt 1\\n• Punkt 2\\n• Punkt 3", "technologies": []}],
     "education": [{"degree": "", "institution": "", "location": "", "startDate": "", "endDate": "", "description": ""}],
     "skills": {"technical": [{"name": "", "level": 5}], "soft": [{"name": "", "level": 5}]},
     "languages": [{"language": "", "level": ""}]
@@ -755,18 +749,18 @@ ${text}`;
             'Authorization': `Bearer ${apiKey}`
         },
         body: JSON.stringify({
-            model: 'gpt-4o-mini',
+            model: 'gpt-5-mini',
+            reasoning_effort: 'low',
             messages: [
-                { role: 'system', content: 'Extrahiere ALLE Daten vollständig. Antworte NUR mit JSON.' },
+                { role: 'system', content: 'Extrahiere ALLE Daten vollständig. STICHPUNKTE BEIBEHALTEN mit • oder -. Antworte NUR mit JSON.' },
                 { role: 'user', content: prompt }
             ],
-            temperature: 0.05,
-            max_tokens: 16000
+            max_completion_tokens: 16000
         })
     });
     
     if (!response.ok) {
-        throw new Error('Auch gpt-4o-mini Fallback fehlgeschlagen');
+        throw new Error('Auch gpt-5-mini Fallback fehlgeschlagen');
     }
     
     const data = await response.json();
@@ -2218,14 +2212,15 @@ async function callOpenAI(messages, apiKey, opts = {}) {
             'Authorization': `Bearer ${apiKey}`
         },
         body: JSON.stringify({
-            model: opts.model || 'gpt-3.5-turbo',
+            model: 'gpt-5.2',
             messages,
-            temperature: opts.temperature ?? 0.6,
-            max_tokens: opts.maxTokens ?? 500
+            reasoning_effort: opts.reasoning || 'low',
+            max_completion_tokens: opts.maxTokens ?? 2000
         })
     });
     if (!response.ok) {
-        throw new Error(`API Error: ${response.status}`);
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.error?.message || `API Error: ${response.status}`);
     }
     const data = await response.json();
     return data.choices?.[0]?.message?.content || '';
