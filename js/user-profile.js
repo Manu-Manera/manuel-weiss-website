@@ -388,7 +388,7 @@ class UserProfile {
         });
     }
 
-    switchTab(tabName) {
+    async switchTab(tabName) {
         try {
             // Prüfe, ob Tab-Button existiert
             const tabButton = document.querySelector(`[data-tab="${tabName}"]`);
@@ -431,10 +431,12 @@ class UserProfile {
             
             // Lade Bewerbungsdaten beim Wechsel zum applications-Tab
             if (tabName === 'applications') {
-                this.loadApplicationsData();
-                this.loadCoverLetters();
-                this.loadResumes();
+                // Dashboard wird im iframe geladen, keine zusätzliche Datenladung nötig
+                // Das Dashboard lädt seine eigenen Daten
             }
+            
+            // API-First: Lade Tab-Daten über API
+            await this.loadTabDataFromAPI(tabName);
         } catch (error) {
             console.error(`❌ Fehler beim Wechseln zum Tab "${tabName}":`, error);
         }
