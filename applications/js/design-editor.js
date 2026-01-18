@@ -1994,6 +1994,32 @@ class DesignEditor {
             preview.innerHTML = `<img src="${dataUrl}" alt="Firmenlogo" style="max-height: 60px;">`;
         }
     }
+    
+    renderCompanyLogo() {
+        if (!this.settings.showCompanyLogo || !this.settings.companyLogoUrl) return '';
+        
+        const position = this.settings.companyLogoPosition || 'top-right';
+        const size = this.settings.companyLogoSize || 'medium';
+        
+        const sizeMap = {
+            small: '40px',
+            medium: '60px',
+            large: '80px'
+        };
+        const maxHeight = sizeMap[size];
+        
+        const positionStyles = {
+            'top-left': 'position: absolute; top: 15mm; left: 15mm;',
+            'top-right': 'position: absolute; top: 15mm; right: 15mm;',
+            'bottom-right': 'position: absolute; bottom: 15mm; right: 15mm;'
+        };
+        
+        return `
+            <div class="resume-company-logo-overlay" style="${positionStyles[position]} z-index: 100;">
+                <img src="${this.settings.companyLogoUrl}" alt="Firmenlogo" style="max-height: ${maxHeight}; max-width: 100px; object-fit: contain;">
+            </div>
+        `;
+    }
 
     // ═══════════════════════════════════════════════════════════════════════════
     // SIGNATURE EXTENDED SETTINGS
@@ -2062,6 +2088,11 @@ class DesignEditor {
     
     setupSignatureExtraction() {
         const signaturePreview = document.getElementById('signaturePreview');
+        
+        // Load existing signature into preview if available
+        if (signaturePreview && this.settings.signatureImage) {
+            signaturePreview.innerHTML = `<img src="${this.settings.signatureImage}" alt="Unterschrift" style="max-width: 100%; max-height: 80px;">`;
+        }
         
         // Make signature preview a drop zone
         if (signaturePreview) {
@@ -2686,8 +2717,14 @@ class DesignEditor {
         if (this.settings.showPageNumbers) {
             html += this.renderPageNumbers();
         }
+        
+        // Add company logo if enabled
+        let companyLogoHtml = '';
+        if (this.settings.showCompanyLogo && this.settings.companyLogoUrl) {
+            companyLogoHtml = this.renderCompanyLogo();
+        }
 
-        preview.innerHTML = html || this.renderPlaceholderContent();
+        preview.innerHTML = companyLogoHtml + html || this.renderPlaceholderContent();
         this.updateATSCheck();
     }
 
@@ -3014,7 +3051,9 @@ class DesignEditor {
         }
     }
     
-    formatDate(dateStr) {
+    // formatDate ist weiter oben definiert und verwendet die Date-Format-Settings
+    // Diese Hilfsfunktion formatiert Daten für spezielle Fälle (z.B. Geburtsdatum)
+    formatFullDate(dateStr) {
         if (!dateStr) return '';
         try {
             const date = new Date(dateStr);
@@ -3231,15 +3270,34 @@ class DesignEditor {
     renderLanguagesSection(data, section) {
         if (!data.languages?.length) return '';
         const title = section?.customTitle || 'Sprachen';
+        
+        // Map proficiency levels to display text with CEFR levels
+        const levelMap = {
+            'muttersprache': { text: 'Muttersprache', cefr: '' },
+            'verhandlungssicher': { text: 'Verhandlungssicher', cefr: 'C2' },
+            'fließend': { text: 'Fließend', cefr: 'C1' },
+            'gut': { text: 'Gut', cefr: 'B2' },
+            'grundkenntnisse': { text: 'Grundkenntnisse', cefr: 'A2/B1' },
+            'anfänger': { text: 'Anfänger', cefr: 'A1' }
+        };
+        
         return `
             <div class="resume-preview-section">
                 <h2 class="resume-preview-section-title"><i class="fas fa-language"></i> ${title}</h2>
-                ${data.languages.map(lang => `
-                    <div class="resume-preview-item" style="display: flex; justify-content: space-between;">
+                ${data.languages.map(lang => {
+                    const level = lang.level || lang.proficiency || '';
+                    const levelLower = level.toLowerCase();
+                    const levelInfo = levelMap[levelLower] || { text: level, cefr: '' };
+                    const displayText = levelInfo.cefr 
+                        ? `${levelInfo.text} (${levelInfo.cefr})`
+                        : levelInfo.text;
+                    
+                    return `
+                    <div class="resume-preview-item" style="display: flex; justify-content: space-between; align-items: center;">
                         <span>${lang.language}</span>
-                        <span style="color: var(--resume-muted-color)">${lang.level}</span>
+                        <span style="color: var(--resume-muted-color); font-size: 0.9em;">${displayText}</span>
                     </div>
-                `).join('')}
+                `}).join('')}
             </div>
         `;
     }
@@ -3250,16 +3308,18 @@ class DesignEditor {
         return `
             <div class="resume-preview-section">
                 <h2 class="resume-preview-section-title"><i class="fas fa-project-diagram"></i> ${title}</h2>
-                ${data.projects.map(project => `
+                ${data.projects.map(project => {
+                    const dateRange = this.formatDateRange(project.startDate, project.endDate, !project.endDate);
+                    return `
                     <div class="resume-preview-item">
                         <div class="resume-preview-item-header">
                             <span class="resume-preview-item-title">${project.name}</span>
-                            <span class="resume-preview-item-date">${project.startDate} - ${project.endDate || 'heute'}</span>
+                            <span class="resume-preview-item-date">${dateRange}</span>
                         </div>
                         ${project.role ? `<div class="resume-preview-item-subtitle">${project.role}</div>` : ''}
                         ${project.description ? `<p class="resume-preview-item-description">${project.description}</p>` : ''}
                     </div>
-                `).join('')}
+                `}).join('')}
             </div>
         `;
     }

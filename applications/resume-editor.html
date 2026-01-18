@@ -370,6 +370,14 @@
                 <div class="design-sidebar-header">
                     <h2><i class="fas fa-palette"></i> Design Editor</h2>
                     <p>Lebenslauf professionell gestalten</p>
+                    <div class="design-header-actions" style="display: flex; gap: 8px; margin-top: 12px;">
+                        <button type="button" class="design-export-btn" onclick="window.designEditor?.exportToPDF()" style="flex: 1; padding: 10px 16px; background: linear-gradient(135deg, #dc2626, #ef4444); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 0.9rem; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s;">
+                            <i class="fas fa-file-pdf"></i> PDF exportieren
+                        </button>
+                        <button type="button" class="design-close-btn" onclick="closeDesignEditor()" style="padding: 10px 16px; background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 0.9rem;">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
                 </div>
                 
                 <!-- Tabs -->
@@ -1369,8 +1377,12 @@ SCHEMA (strikt einhalten, keine extra Felder):
     "lastName": string (NUR der Nachname, z.B. "Weiß" oder "Müller-Schmidt"),
     "email": string | null,
     "phone": string | null,
+    "street": string | null (Straße mit Hausnummer, z.B. "Musterstraße 12a"),
+    "postalCode": string | null (PLZ, z.B. "80331" oder "8001"),
     "city": string | null (NUR Stadt, z.B. "München" oder "Zürich"),
     "country": string | null (NUR Land, z.B. "Deutschland" oder "Schweiz"),
+    "birthDate": string | null (Geburtsdatum im Format YYYY-MM-DD),
+    "nationality": string | null (Staatsangehörigkeit, z.B. "Deutsch" oder "Österreichisch"),
     "title": string | null (aktuelle Berufsbezeichnung),
     "summary": string | null (existierendes Kurzprofil aus dem Dokument - NICHT erfinden!),
     "experience": [
@@ -1380,7 +1392,7 @@ SCHEMA (strikt einhalten, keine extra Felder):
             "location": string | null (Stadt der Firma),
             "startDate": string (YYYY-MM),
             "endDate": string (YYYY-MM oder "heute"),
-            "description": string (VOLLSTÄNDIG mit \\n für Zeilenumbrüche)
+            "description": string (VOLLSTÄNDIGE Beschreibung mit ALLEN Stichpunkten! Verwende "• " für jeden Stichpunkt. Format: "• Stichpunkt 1\\n• Stichpunkt 2\\n• Stichpunkt 3". NIEMALS kürzen!)
         }
     ],
     "education": [
@@ -1399,13 +1411,20 @@ SCHEMA (strikt einhalten, keine extra Felder):
 }
 
 KRITISCHE REGELN:
-- Wenn ein Feld nicht im Dokument vorkommt → null setzen (nicht raten)
+- Wenn ein Feld nicht im Dokument vorkommt → null setzen (NICHT raten oder erfinden!)
 - description bei experience: EXAKT KOPIEREN - jeder Stichpunkt, jede Zeile
 - Verwende \\n für Zeilenumbrüche in descriptions
-- STICHPUNKTE BEIBEHALTEN: Wenn im Original "• Punkt" oder "- Punkt" steht → übernehme das Bullet-Zeichen!
-- Format: "• Stichpunkt 1\\n• Stichpunkt 2\\n• Stichpunkt 3"
-- NIEMALS zusammenfassen oder kürzen
-- Vor dem Finalisieren: Re-scan des Dokuments auf verpasste Felder
+- STICHPUNKTE BEIBEHALTEN: 
+  * Jede Zeile die mit "•", "-", "–", "*", ">" oder Zahlen wie "1." beginnt → als Stichpunkt übernehmen
+  * Format MUSS sein: "• Stichpunkt 1\\n• Stichpunkt 2\\n• Stichpunkt 3"
+  * JEDER einzelne Stichpunkt wird mit "• " eingeleitet
+  * ALLE Stichpunkte übernehmen - NIEMALS zusammenfassen oder kürzen!
+- Adress-Extraktion:
+  * street: Straßenname + Hausnummer (z.B. "Musterstraße 12a")
+  * postalCode: PLZ (z.B. "80331")  
+  * city: Stadt (z.B. "München")
+  * country: Land (z.B. "Deutschland")
+- Vor dem Finalisieren: Re-scan des Dokuments auf verpasste Felder und Stichpunkte
 </extraction_spec>
 
 LEBENSLAUF-TEXT:
@@ -1447,11 +1466,12 @@ ${fullText.substring(0, 50000)}`;
 
 <extraction_completeness>
 - Extrahiere JEDEN Stichpunkt, JEDE Zeile aus Beschreibungen
-- Wenn 8 Bullet Points im Original → 8 im JSON
-- STICHPUNKTE BEIBEHALTEN: "• " oder "- " aus Original übernehmen
-- Format für Stichpunkte: "• Punkt 1\\n• Punkt 2\\n• Punkt 3"
+- Wenn 8 Bullet Points im Original → 8 im JSON (ALLE übernehmen!)
+- STICHPUNKT-FORMAT: Jede Tätigkeitsbeschreibung die im Original eine eigene Zeile ist → "• " voranstellen
+- Korrekt: "• Installation von Anlagen\\n• Wartung und Reparatur\\n• Kundenberatung"
+- FALSCH: "Installation, Wartung, Kundenberatung" (NIEMALS zusammenfassen!)
 - Bei Unsicherheit über Feldwert → null setzen
-- Vor Finalisierung: Re-scan auf verpasste Informationen
+- ADRESSE: Straße (street), PLZ (postalCode), Stadt (city), Land (country) SEPARAT extrahieren
 </extraction_completeness>`
                             },
                             {
@@ -1573,17 +1593,35 @@ ${fullText.substring(0, 50000)}`;
                 if (parsed.email && document.getElementById('email')) document.getElementById('email').value = parsed.email;
                 if (parsed.phone && document.getElementById('phone')) document.getElementById('phone').value = parsed.phone;
                 
-                // Location: Stadt, Land (NICHT Straße)
+                // Vollständige Adresse bauen und setzen
+                const fullAddress = [parsed.street, parsed.postalCode, parsed.city, parsed.country].filter(Boolean).join(', ');
+                if (fullAddress && document.getElementById('address')) {
+                    document.getElementById('address').value = fullAddress;
+                }
+                
+                // Location: Stadt, Land für Standort-Feld
                 const locationStr = [parsed.city, parsed.country].filter(Boolean).join(', ');
                 if (locationStr && document.getElementById('location')) {
                     document.getElementById('location').value = locationStr;
                 }
-                // Fallback für alte "address" Struktur - extrahiere nur Stadt/Land
-                if (!locationStr && parsed.address) {
-                    // Versuche Stadt aus Adresse zu extrahieren (letzte Teile nach Komma)
+                
+                // Geburtsdatum und Nationalität (falls Felder existieren)
+                if (parsed.birthDate && document.getElementById('birthDate')) {
+                    document.getElementById('birthDate').value = parsed.birthDate;
+                }
+                if (parsed.nationality && document.getElementById('nationality')) {
+                    document.getElementById('nationality').value = parsed.nationality;
+                }
+                
+                // Fallback für alte "address" Struktur
+                if (!fullAddress && parsed.address) {
+                    if (document.getElementById('address')) document.getElementById('address').value = parsed.address;
+                    // Extrahiere Stadt/Land für Location
                     const addressParts = parsed.address.split(',').map(p => p.trim());
                     const cityCountry = addressParts.slice(-2).join(', ');
-                    if (document.getElementById('location')) document.getElementById('location').value = cityCountry;
+                    if (document.getElementById('location') && !locationStr) {
+                        document.getElementById('location').value = cityCountry;
+                    }
                 }
                 
                 if (parsed.title && document.getElementById('title')) document.getElementById('title').value = parsed.title;
