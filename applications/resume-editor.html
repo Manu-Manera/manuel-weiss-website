@@ -1232,65 +1232,53 @@
                     throw new Error('Kein OpenAI API-Key gefunden. Bitte melden Sie sich an und konfigurieren Sie den API-Key im Admin Panel.');
                 }
                 
-                // 3. GPT-3.5 für Strukturierung verwenden - verbessertes Prompt
-                const prompt = `EXTRAHIERE ALLE DATEN VOLLSTÄNDIG aus diesem Lebenslauf.
+                // 3. GPT-5.2 für Strukturierung verwenden - optimiert nach GPT-5.2 Prompting Guide
+                const prompt = `<extraction_spec>
+Du extrahierst strukturierte Daten aus einem Lebenslauf in JSON.
 
-🚨 WICHTIGSTE REGEL FÜR BESCHREIBUNGEN:
-- KOPIERE die Beschreibung/Tätigkeiten WORT FÜR WORT aus dem Original
-- Wenn 8 Stichpunkte im Original stehen → 8 Stichpunkte im JSON
-- KÜRZE NIEMALS - FASSE NIEMALS ZUSAMMEN
-- Verwende \\n für Zeilenumbrüche zwischen Stichpunkten
-
-BEISPIEL FÜR BESCHREIBUNG:
-Original im PDF:
-"• Implementierung von SAP SuccessFactors
-• Schulung von 50 Mitarbeitern  
-• Projektleitung für Go-Live
-• Support und Dokumentation"
-
-RICHTIG (so muss es im JSON sein):
-"description": "• Implementierung von SAP SuccessFactors\\n• Schulung von 50 Mitarbeitern\\n• Projektleitung für Go-Live\\n• Support und Dokumentation"
-
-FALSCH (das darfst du NICHT machen):
-"description": "Implementierung von SAP SuccessFactors und Schulung der Mitarbeiter"
-
-Gewünschtes JSON-Format:
+SCHEMA (strikt einhalten, keine extra Felder):
 {
-    "name": "Vollständiger Name",
-    "email": "Email",
-    "phone": "Telefon",
-    "address": "Adresse",
-    "title": "Aktuelle Berufsbezeichnung",
-    "summary": "Kurzes Profil (2-3 Sätze)",
+    "name": string,
+    "email": string | null,
+    "phone": string | null,
+    "address": string | null,
+    "title": string | null,
+    "summary": string | null,
     "experience": [
         {
-            "position": "Jobtitel",
-            "company": "Firma",
-            "location": "Ort",
-            "startDate": "YYYY-MM",
-            "endDate": "YYYY-MM oder heute",
-            "description": "ALLE Tätigkeiten/Stichpunkte VOLLSTÄNDIG mit \\n getrennt - NICHTS WEGLASSEN!"
+            "position": string,
+            "company": string,
+            "location": string | null,
+            "startDate": string (YYYY-MM),
+            "endDate": string (YYYY-MM oder "heute"),
+            "description": string (VOLLSTÄNDIG mit \\n für Zeilenumbrüche)
         }
     ],
     "education": [
         {
-            "degree": "Abschluss",
-            "fieldOfStudy": "Fachrichtung",
-            "institution": "Institution",
-            "startDate": "YYYY-MM",
-            "endDate": "YYYY-MM",
-            "description": "Details"
+            "degree": string,
+            "fieldOfStudy": string | null,
+            "institution": string,
+            "startDate": string | null,
+            "endDate": string | null,
+            "description": string | null
         }
     ],
-    "technicalSkills": [{"category": "Kategorie", "skills": ["Skill1", "Skill2"]}],
-    "softSkills": ["Soft Skill 1", "Soft Skill 2"],
-    "languages": [{"language": "Sprache", "level": "Niveau"}]
+    "technicalSkills": [{"category": string, "skills": [string]}],
+    "softSkills": [string],
+    "languages": [{"language": string, "level": string}]
 }
 
-Antworte NUR mit validem JSON!
+KRITISCHE REGELN:
+- Wenn ein Feld nicht im Dokument vorkommt → null setzen (nicht raten)
+- description bei experience: EXAKT KOPIEREN - jeder Stichpunkt, jede Zeile
+- Verwende \\n für Zeilenumbrüche in descriptions
+- NIEMALS zusammenfassen oder kürzen
+- Vor dem Finalisieren: Re-scan des Dokuments auf verpasste Felder
+</extraction_spec>
 
 LEBENSLAUF-TEXT:
-${fullText.substring(0, 14000)}`;
+${fullText.substring(0, 50000)}`;
 
                 updateProgress(60, 'KI analysiert Lebenslauf...');
                 
@@ -1304,7 +1292,7 @@ ${fullText.substring(0, 14000)}`;
                 if (!apiKey || typeof apiKey !== 'string' || !apiKey.startsWith('sk-')) {
                     throw new Error('Ungültiger API-Key. Bitte im Admin Panel neu konfigurieren.');
                 }
-                console.log('🤖 Sende Anfrage an GPT-3.5 mit Key:', apiKey.substring(0, 7) + '...');
+                console.log('🤖 Sende Anfrage an GPT-5.2 mit Key:', apiKey.substring(0, 7) + '...');
                 
                 const response = await fetch('https://api.openai.com/v1/chat/completions', {
                     method: 'POST',
@@ -1318,14 +1306,27 @@ ${fullText.substring(0, 14000)}`;
                         messages: [
                             {
                                 role: 'system',
-                                content: 'Du extrahierst Lebenslauf-Daten in JSON. WICHTIGSTE REGEL: Kopiere ALLE Beschreibungen und Tätigkeiten WORT FÜR WORT - kürze NIEMALS und fasse NIEMALS zusammen! Wenn im Original 5 Stichpunkte stehen, müssen alle 5 im JSON sein. Verwende \\n für Zeilenumbrüche. Antworte NUR mit validem JSON.'
+                                content: `Du bist ein präziser Datenextraktions-Assistent für Lebensläufe.
+
+<output_verbosity_spec>
+- Antworte NUR mit validem JSON
+- Keine Erklärungen, kein Markdown, keine Kommentare
+- Exakte Reproduktion aller Texte ohne Zusammenfassung
+</output_verbosity_spec>
+
+<extraction_completeness>
+- Extrahiere JEDEN Stichpunkt, JEDE Zeile aus Beschreibungen
+- Wenn 8 Bullet Points im Original → 8 im JSON
+- Bei Unsicherheit über Feldwert → null setzen
+- Vor Finalisierung: Re-scan auf verpasste Informationen
+</extraction_completeness>`
                             },
                             {
                                 role: 'user',
                                 content: prompt
                             }
                         ],
-                        max_completion_tokens: 4096
+                        max_completion_tokens: 16000
                     })
                 });
                 

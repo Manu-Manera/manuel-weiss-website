@@ -307,7 +307,7 @@ async function saveApiSettings(userId, data) {
                 settingsItem[provider] = {
                     apiKey: apiKey || '',
                     model: data[provider].model || existingSettings[provider]?.model || defaultModels[provider],
-                    maxTokens: data[provider].maxTokens || existingSettings[provider]?.maxTokens || 1000,
+                    maxTokens: data[provider].maxTokens || existingSettings[provider]?.maxTokens || 16000,
                     temperature: data[provider].temperature ?? existingSettings[provider]?.temperature ?? 0.7
                 };
             } else if (existingSettings[provider]) {

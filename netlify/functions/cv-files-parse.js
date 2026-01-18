@@ -98,51 +98,60 @@ exports.handler = async (event, context) => {
             };
         }
 
-        // Verwende OpenAI für Text-Extraktion und Strukturierung
-        const parsePrompt = `Extrahiere strukturierte Informationen aus diesem Lebenslauf-Text. 
-Antworte NUR als valides JSON in diesem exakten Format:
+        // Verwende GPT-5.2 für Text-Extraktion (optimiert nach Prompting Guide)
+        const parsePrompt = `<extraction_spec>
+Extrahiere strukturierte Daten aus diesem Lebenslauf.
+
+SCHEMA (strikt einhalten, keine extra Felder):
 {
     "personalInfo": {
-        "name": "Vollständiger Name",
-        "email": "E-Mail oder null",
-        "phone": "Telefon oder null",
-        "address": "Adresse oder null",
-        "linkedin": "LinkedIn URL oder null",
-        "website": "Website URL oder null"
+        "name": string,
+        "email": string | null,
+        "phone": string | null,
+        "address": string | null,
+        "linkedin": string | null,
+        "website": string | null
     },
     "experience": [
         {
-            "title": "Jobtitel",
-            "company": "Firmenname",
-            "period": "Zeitraum",
-            "description": "Beschreibung",
-            "achievements": ["Erfolg 1", "Erfolg 2"]
+            "title": string,
+            "company": string,
+            "period": string,
+            "description": string (VOLLSTÄNDIG mit \\n),
+            "achievements": [string]
         }
     ],
     "education": [
         {
-            "degree": "Abschluss",
-            "institution": "Institution",
-            "period": "Zeitraum",
-            "description": "Beschreibung"
+            "degree": string,
+            "institution": string,
+            "period": string | null,
+            "description": string | null
         }
     ],
     "skills": {
-        "technical": ["Skill 1", "Skill 2"],
-        "languages": [{"language": "Sprache", "level": "Niveau"}],
-        "soft": ["Soft Skill 1"]
+        "technical": [string],
+        "languages": [{"language": string, "level": string}],
+        "soft": [string]
     },
     "certificates": [
         {
-            "name": "Zertifikat Name",
-            "issuer": "Aussteller",
-            "date": "Datum"
+            "name": string,
+            "issuer": string | null,
+            "date": string | null
         }
     ]
 }
 
-Lebenslauf-Text:
-${combinedText.substring(0, 15000)}`; // Limit auf 15k Zeichen
+KRITISCHE REGELN:
+- Wenn Feld nicht vorhanden → null setzen (nicht raten)
+- description bei experience: EXAKT KOPIEREN - jeder Stichpunkt
+- achievements: Alle messbaren Erfolge extrahieren
+- Re-scan vor Finalisierung auf verpasste Informationen
+</extraction_spec>
+
+LEBENSLAUF-TEXT:
+${combinedText.substring(0, 50000)}`;
 
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
@@ -156,14 +165,26 @@ ${combinedText.substring(0, 15000)}`; // Limit auf 15k Zeichen
                 messages: [
                     {
                         role: 'system',
-                        content: 'Du bist ein Experte für Lebenslauf-Parsing. Du extrahierst präzise strukturierte Informationen aus Lebensläufen und antwortest NUR als valides JSON.'
+                        content: `Du bist ein präziser Datenextraktions-Assistent für Lebensläufe.
+
+<output_verbosity_spec>
+- Antworte NUR mit validem JSON
+- Keine Erklärungen, kein Markdown
+- Exakte Reproduktion aller Beschreibungen
+</output_verbosity_spec>
+
+<extraction_completeness>
+- Extrahiere JEDEN Stichpunkt aus Beschreibungen
+- Bei Unsicherheit über Feldwert → null setzen
+- Vor Finalisierung: Re-scan auf verpasste Informationen
+</extraction_completeness>`
                     },
                     {
                         role: 'user',
                         content: parsePrompt
                     }
                 ],
-                max_completion_tokens: 2000,
+                max_completion_tokens: 16000,
                 response_format: { type: 'json_object' }
             })
         });
