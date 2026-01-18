@@ -862,12 +862,13 @@ input:checked + .toggle-slider:before {
 /* Embedded Dashboard */
 .applications-dashboard-embed {
     width: 100%;
-    height: calc(100vh - 200px);
+    height: calc(100vh - 250px);
     min-height: 600px;
     border: none;
     overflow: hidden;
     background: var(--bg-secondary);
     border-radius: var(--radius-lg);
+    position: relative;
 }
 
 .applications-dashboard-embed iframe {
@@ -875,6 +876,9 @@ input:checked + .toggle-slider:before {
     height: 100%;
     border: none;
     display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
 /* Embedded Mode - Hide Navigation in Dashboard */

@@ -433,10 +433,17 @@ class UserProfile {
             if (tabName === 'applications') {
                 // Dashboard wird im iframe geladen, keine zusätzliche Datenladung nötig
                 // Das Dashboard lädt seine eigenen Daten
+                // Stelle sicher, dass iframe geladen wird
+                const iframe = document.getElementById('dashboardIframe');
+                if (iframe && !iframe.src.includes('embedded=true')) {
+                    iframe.src = 'applications/dashboard.html?action=new-application&embedded=true';
+                }
             }
             
-            // API-First: Lade Tab-Daten über API
-            await this.loadTabDataFromAPI(tabName);
+            // API-First: Lade Tab-Daten über API (nur wenn nicht applications, da das im iframe lädt)
+            if (tabName !== 'applications') {
+                await this.loadTabDataFromAPI(tabName);
+            }
         } catch (error) {
             console.error(`❌ Fehler beim Wechseln zum Tab "${tabName}":`, error);
         }
