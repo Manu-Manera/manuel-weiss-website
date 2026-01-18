@@ -641,9 +641,18 @@ class DesignEditor {
     }
 
     updateUIFromSettings() {
+        // Typography
         const fontSelect = document.getElementById('designFontFamily');
         if (fontSelect) fontSelect.value = this.settings.fontFamily;
         
+        const fontSizeSlider = document.getElementById('designFontSize');
+        if (fontSizeSlider) {
+            fontSizeSlider.value = this.settings.fontSize || 11;
+            const display = document.getElementById('designFontSizeValue');
+            if (display) display.textContent = fontSizeSlider.value + 'pt';
+        }
+        
+        // Colors
         const accentPicker = document.getElementById('designAccentColor');
         const accentHex = document.getElementById('designAccentColorHex');
         if (accentPicker) accentPicker.value = this.settings.accentColor;
@@ -653,8 +662,27 @@ class DesignEditor {
             btn.classList.toggle('active', btn.dataset.accent === this.settings.accentColor);
         });
         
+        // Layout
         const columnsSelect = document.getElementById('designColumns');
         if (columnsSelect) columnsSelect.value = String(this.settings.columns);
+        
+        const headerAlignSelect = document.getElementById('designHeaderAlign');
+        if (headerAlignSelect) headerAlignSelect.value = this.settings.headerAlign || 'center';
+        
+        // Skill Display
+        const skillDisplaySelect = document.getElementById('designSkillDisplay');
+        if (skillDisplaySelect) skillDisplaySelect.value = this.settings.skillDisplay || 'tags';
+        
+        // Experience Format
+        const expFormatSelect = document.getElementById('designExperienceFormat');
+        if (expFormatSelect) expFormatSelect.value = this.settings.experienceFormat || 'mixed';
+        
+        // Icons Toggle
+        const showIconsToggle = document.getElementById('designShowIcons');
+        if (showIconsToggle) showIconsToggle.checked = this.settings.showIcons !== false;
+        
+        // Force a complete re-render of the preview
+        this.applySettings();
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -2285,19 +2313,25 @@ class DesignEditor {
             const offsetX = this.settings.profileImageOffsetX || 0;
             const offsetY = this.settings.profileImageOffsetY || 0;
             
-            // Besseres Bild-Handling: object-position für Versatz ohne Abschneiden
+            // Bild-Handling: Zoom und Versatz ohne Abschneiden
+            // Bei Zoom < 100: Bild wird kleiner, mehr Rand sichtbar
+            // Bei Zoom > 100: Bild wird größer, Zoom-Effekt
+            // Versatz: Verschiebt den Fokuspunkt
+            const zoomFactor = zoom / 100;
+            const imgWidth = zoomFactor >= 1 ? 100 * zoomFactor : 100;
+            const imgHeight = zoomFactor >= 1 ? 100 * zoomFactor : 100;
+            
             profileImageHtml = `
                 <div class="resume-preview-profile-image" style="
                     width: ${size}; height: ${size}; border-radius: ${shape}; border: ${border};
-                    overflow: hidden; flex-shrink: 0;
+                    overflow: hidden; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+                    background: #f1f5f9;
                 ">
                     <img src="${data.profileImageUrl}" alt="Profilbild" style="
-                        width: 100%;
-                        height: 100%;
-                        object-fit: cover;
+                        width: ${imgWidth}%;
+                        height: ${imgHeight}%;
+                        object-fit: ${zoomFactor < 1 ? 'contain' : 'cover'};
                         object-position: ${50 + offsetX}% ${50 + offsetY}%;
-                        transform: scale(${zoom / 100});
-                        transform-origin: ${50 + offsetX}% ${50 + offsetY}%;
                     ">
                 </div>
             `;
