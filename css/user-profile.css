@@ -310,6 +310,12 @@ body {
     padding: 2rem;
 }
 
+/* Applications Tab: Kein Padding für iframe */
+.tab-content #applications {
+    padding: 0;
+    height: 100%;
+}
+
 .tab-panel {
     display: none;
 }
@@ -862,13 +868,15 @@ input:checked + .toggle-slider:before {
 /* Embedded Dashboard */
 .applications-dashboard-embed {
     width: 100%;
-    height: calc(100vh - 250px);
-    min-height: 600px;
+    height: calc(100vh - 300px);
+    min-height: 700px;
     border: none;
     overflow: hidden;
     background: var(--bg-secondary);
     border-radius: var(--radius-lg);
     position: relative;
+    display: flex;
+    align-items: stretch;
 }
 
 .applications-dashboard-embed iframe {
@@ -876,9 +884,8 @@ input:checked + .toggle-slider:before {
     height: 100%;
     border: none;
     display: block;
-    position: absolute;
-    top: 0;
-    left: 0;
+    flex: 1;
+    background: white;
 }
 
 /* Embedded Mode - Hide Navigation in Dashboard */
