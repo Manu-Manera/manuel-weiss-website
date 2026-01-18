@@ -1299,17 +1299,19 @@ Du extrahierst strukturierte Daten aus einem Lebenslauf in JSON.
 
 SCHEMA (strikt einhalten, keine extra Felder):
 {
-    "name": string,
+    "firstName": string (NUR der/die Vornamen, z.B. "Manuel Alexander"),
+    "lastName": string (NUR der Nachname, z.B. "Weiß" oder "Müller-Schmidt"),
     "email": string | null,
     "phone": string | null,
-    "address": string | null,
-    "title": string | null,
-    "summary": string | null,
+    "city": string | null (NUR Stadt, z.B. "München" oder "Zürich"),
+    "country": string | null (NUR Land, z.B. "Deutschland" oder "Schweiz"),
+    "title": string | null (aktuelle Berufsbezeichnung),
+    "summary": string | null (existierendes Kurzprofil aus dem Dokument - NICHT erfinden!),
     "experience": [
         {
             "position": string,
             "company": string,
-            "location": string | null,
+            "location": string | null (Stadt der Firma),
             "startDate": string (YYYY-MM),
             "endDate": string (YYYY-MM oder "heute"),
             "description": string (VOLLSTÄNDIG mit \\n für Zeilenumbrüche)
@@ -1485,18 +1487,39 @@ ${fullText.substring(0, 50000)}`;
                 
                 console.log('📝 Übernehme OCR-Daten:', parsed);
                 
-                // Persönliche Daten
-                if (parsed.name) {
-                    const nameParts = parsed.name.split(' ');
-                    const firstName = nameParts[0] || '';
-                    const lastName = nameParts.slice(1).join(' ') || '';
+                // Persönliche Daten - Neue Struktur mit separaten Feldern
+                if (parsed.firstName && document.getElementById('firstName')) {
+                    document.getElementById('firstName').value = parsed.firstName;
+                }
+                if (parsed.lastName && document.getElementById('lastName')) {
+                    document.getElementById('lastName').value = parsed.lastName;
+                }
+                // Fallback für alte "name" Struktur
+                if (!parsed.firstName && !parsed.lastName && parsed.name) {
+                    const nameParts = parsed.name.trim().split(/\s+/);
+                    // Letztes Wort ist Nachname, Rest sind Vornamen
+                    const lastName = nameParts.pop() || '';
+                    const firstName = nameParts.join(' ') || '';
                     if (document.getElementById('firstName')) document.getElementById('firstName').value = firstName;
                     if (document.getElementById('lastName')) document.getElementById('lastName').value = lastName;
                 }
+                
                 if (parsed.email && document.getElementById('email')) document.getElementById('email').value = parsed.email;
                 if (parsed.phone && document.getElementById('phone')) document.getElementById('phone').value = parsed.phone;
-                if (parsed.address && document.getElementById('address')) document.getElementById('address').value = parsed.address;
-                if (parsed.address && document.getElementById('location')) document.getElementById('location').value = parsed.address;
+                
+                // Location: Stadt, Land (NICHT Straße)
+                const locationStr = [parsed.city, parsed.country].filter(Boolean).join(', ');
+                if (locationStr && document.getElementById('location')) {
+                    document.getElementById('location').value = locationStr;
+                }
+                // Fallback für alte "address" Struktur - extrahiere nur Stadt/Land
+                if (!locationStr && parsed.address) {
+                    // Versuche Stadt aus Adresse zu extrahieren (letzte Teile nach Komma)
+                    const addressParts = parsed.address.split(',').map(p => p.trim());
+                    const cityCountry = addressParts.slice(-2).join(', ');
+                    if (document.getElementById('location')) document.getElementById('location').value = cityCountry;
+                }
+                
                 if (parsed.title && document.getElementById('title')) document.getElementById('title').value = parsed.title;
                 if (parsed.summary && document.getElementById('summary')) document.getElementById('summary').value = parsed.summary;
                 if (parsed.website && document.getElementById('website')) document.getElementById('website').value = parsed.website;
