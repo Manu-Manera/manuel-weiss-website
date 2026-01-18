@@ -952,21 +952,43 @@ function applyOCRData() {
     }
     
     // Apply skills - MIT BEWERTUNG
-    if (parsed.skills) {
-        // Technical skills - verwende die korrekte Funktion addTechnicalSkillCategory
-        if (parsed.skills.technical && Array.isArray(parsed.skills.technical)) {
-            const techContainer = document.getElementById('technicalSkillsContainer');
-            if (techContainer) {
-                techContainer.innerHTML = '';
+    // Unterstütze beide Formate: parsed.skills.technical/soft UND parsed.technicalSkills/softSkills
+    const technicalSkills = parsed.skills?.technical || parsed.technicalSkills || [];
+    const softSkills = parsed.skills?.soft || parsed.softSkills || [];
+    
+    // Technical skills - verwende die korrekte Funktion addTechnicalSkillWithRating
+    if (technicalSkills.length > 0) {
+        const techContainer = document.getElementById('technicalSkillsContainer');
+        if (techContainer) {
+            techContainer.innerHTML = '';
+            
+            // Prüfe ob es kategorisierte Skills sind (Format: [{category, skills}])
+            const isCategorized = technicalSkills[0]?.category !== undefined || technicalSkills[0]?.skills !== undefined;
+            
+            if (isCategorized) {
+                // Kategorisierte Skills (Format aus OCR: [{category: "IT", skills: ["Python", "Java"]}])
+                console.log('📂 Verarbeite kategorisierte Skills:', technicalSkills);
                 
-                // Konvertiere Skills in das erwartete Format (mit Bewertung)
-                const skillsWithRating = parsed.skills.technical.map(skill => {
+                setTimeout(() => {
+                    technicalSkills.forEach(category => {
+                        const categoryName = category.category || 'Fähigkeiten';
+                        const categorySkills = category.skills || [];
+                        
+                        if (typeof addTechnicalSkillCategory === 'function') {
+                            addTechnicalSkillCategory(categoryName, categorySkills);
+                            console.log(`✅ Kategorie "${categoryName}" mit ${categorySkills.length} Skills hinzugefügt`);
+                        }
+                    });
+                }, 100);
+            } else {
+                // Flache Liste von Skills (mit oder ohne Level)
+                const skillsWithRating = technicalSkills.map(skill => {
                     // Neues Format: {name: "Skill", level: 8}
                     if (typeof skill === 'object' && skill.name) {
                         return { name: skill.name, level: skill.level || 5 };
                     }
                     // Altes Format: "Skill" als String
-                    return { name: skill, level: 5 };
+                    return { name: String(skill), level: 5 };
                 });
                 
                 // Warte kurz, damit die Funktionen verfügbar sind
@@ -992,31 +1014,31 @@ function applyOCRData() {
                 }, 100);
             }
         }
-        
-        // Soft skills
-        if (parsed.skills.soft && Array.isArray(parsed.skills.soft)) {
-            const softContainer = document.getElementById('softSkillsContainer');
-            if (softContainer) {
-                softContainer.innerHTML = '';
-                
-                // Warte kurz, damit die Funktionen verfügbar sind
-                setTimeout(() => {
-                    parsed.skills.soft.forEach(skill => {
-                        // Neues Format: {name: "Skill", level: 8}
-                        const skillName = typeof skill === 'object' ? skill.name : skill;
-                        const skillLevel = typeof skill === 'object' ? (skill.level || 5) : 5;
-                        
-                        if (typeof addSoftSkillWithRating === 'function') {
-                            addSoftSkillWithRating(skillName, skillLevel, '');
-                        } else if (typeof window.addSoftSkillWithRating === 'function') {
-                            window.addSoftSkillWithRating(skillName, skillLevel, '');
-                        } else if (typeof addSoftSkill === 'function') {
-                            addSoftSkill(skillName);
-                        }
-                    });
-                    console.log('✅ Soft Skills mit Level hinzugefügt:', parsed.skills.soft);
-                }, 100);
-            }
+    }
+    
+    // Soft skills
+    if (softSkills.length > 0) {
+        const softContainer = document.getElementById('softSkillsContainer');
+        if (softContainer) {
+            softContainer.innerHTML = '';
+            
+            // Warte kurz, damit die Funktionen verfügbar sind
+            setTimeout(() => {
+                softSkills.forEach(skill => {
+                    // Neues Format: {name: "Skill", level: 8}
+                    const skillName = typeof skill === 'object' ? skill.name : String(skill);
+                    const skillLevel = typeof skill === 'object' ? (skill.level || 5) : 5;
+                    
+                    if (typeof addSoftSkillWithRating === 'function') {
+                        addSoftSkillWithRating(skillName, skillLevel, '');
+                    } else if (typeof window.addSoftSkillWithRating === 'function') {
+                        window.addSoftSkillWithRating(skillName, skillLevel, '');
+                    } else if (typeof addSoftSkill === 'function') {
+                        addSoftSkill(skillName);
+                    }
+                });
+                console.log('✅ Soft Skills hinzugefügt:', softSkills);
+            }, 100);
         }
     }
     

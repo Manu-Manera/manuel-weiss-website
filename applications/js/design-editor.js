@@ -1027,38 +1027,68 @@ class DesignEditor {
         
         container.innerHTML = html;
         
-        // Add CSS for sliders
+        // Add CSS for sliders - mit verbessertem Thumb-Styling für alle Browser
         if (!document.getElementById('skill-slider-styles')) {
             const style = document.createElement('style');
             style.id = 'skill-slider-styles';
             style.textContent = `
-                .skill-level-slider::-webkit-slider-thumb {
-                    -webkit-appearance: none;
-                    width: 16px;
-                    height: 16px;
-                    border-radius: 50%;
-                    background: var(--design-primary);
+                .skill-level-slider {
+                    -webkit-appearance: none !important;
+                    appearance: none !important;
+                    width: 100%;
+                    height: 8px;
+                    border-radius: 4px;
+                    outline: none;
                     cursor: pointer;
-                    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-                    transition: transform 0.1s;
+                    margin: 4px 0;
+                }
+                .skill-level-slider::-webkit-slider-runnable-track {
+                    width: 100%;
+                    height: 8px;
+                    border-radius: 4px;
+                    background: transparent;
+                }
+                .skill-level-slider::-webkit-slider-thumb {
+                    -webkit-appearance: none !important;
+                    appearance: none !important;
+                    width: 20px;
+                    height: 20px;
+                    border-radius: 50%;
+                    background: linear-gradient(135deg, #818cf8, #6366f1);
+                    cursor: grab;
+                    box-shadow: 0 2px 6px rgba(99,102,241,0.5), 0 0 0 2px rgba(255,255,255,0.2);
+                    border: 2px solid white;
+                    margin-top: -6px;
+                    transition: transform 0.15s ease, box-shadow 0.15s ease;
                 }
                 .skill-level-slider::-webkit-slider-thumb:hover {
-                    transform: scale(1.2);
+                    transform: scale(1.15);
+                    box-shadow: 0 3px 10px rgba(99,102,241,0.6), 0 0 0 3px rgba(255,255,255,0.3);
+                }
+                .skill-level-slider::-webkit-slider-thumb:active {
+                    cursor: grabbing;
+                    transform: scale(1.1);
+                }
+                .skill-level-slider::-moz-range-track {
+                    width: 100%;
+                    height: 8px;
+                    border-radius: 4px;
+                    background: transparent;
                 }
                 .skill-level-slider::-moz-range-thumb {
-                    width: 16px;
-                    height: 16px;
+                    width: 18px;
+                    height: 18px;
                     border-radius: 50%;
-                    background: var(--design-primary);
-                    cursor: pointer;
-                    border: none;
+                    background: linear-gradient(135deg, #818cf8, #6366f1);
+                    cursor: grab;
+                    border: 2px solid white;
+                    box-shadow: 0 2px 6px rgba(99,102,241,0.5);
+                }
+                .skill-level-slider::-moz-range-thumb:hover {
+                    transform: scale(1.15);
                 }
                 .skill-edit-row:hover {
-                    background: rgba(255,255,255,0.05);
-                    border-radius: 6px;
-                    margin: 0 -4px;
-                    padding-left: 4px;
-                    padding-right: 4px;
+                    background: rgba(99,102,241,0.08);
                 }
             `;
             document.head.appendChild(style);
@@ -1111,12 +1141,12 @@ class DesignEditor {
         const percentage = Math.round((level / maxLevel) * 100);
         
         return `
-            <div class="skill-edit-row" style="padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.08);">
-                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
-                    <span style="font-size: 0.85rem; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 70%;" title="${name}">${name}</span>
-                    <span class="skill-level-display" id="${uniqueId}-display" style="font-size: 0.75rem; color: var(--design-primary); font-weight: 600; min-width: 40px; text-align: right;">${level}/${maxLevel}</span>
+            <div class="skill-edit-row" style="padding: 10px 4px; border-bottom: 1px solid rgba(255,255,255,0.08); border-radius: 6px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                    <span style="font-size: 0.85rem; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 65%;" title="${name}">${name}</span>
+                    <span class="skill-level-display" id="${uniqueId}-display" style="font-size: 0.8rem; color: var(--design-primary, #6366f1); font-weight: 700; min-width: 45px; text-align: right; background: rgba(99,102,241,0.15); padding: 2px 8px; border-radius: 4px;">${level}/${maxLevel}</span>
                 </div>
-                <div style="display: flex; align-items: center; gap: 8px;">
+                <div style="display: flex; align-items: center; gap: 8px; position: relative;">
                     <input type="range" 
                            class="skill-level-slider" 
                            id="${uniqueId}"
@@ -1126,7 +1156,7 @@ class DesignEditor {
                            min="1" 
                            max="${maxLevel}" 
                            value="${level}"
-                           style="flex: 1; height: 6px; -webkit-appearance: none; background: linear-gradient(to right, var(--design-primary) ${percentage}%, rgba(255,255,255,0.2) ${percentage}%); border-radius: 3px; cursor: pointer;">
+                           style="width: 100%; height: 8px; appearance: none; -webkit-appearance: none; -moz-appearance: none; background: linear-gradient(to right, var(--design-primary, #6366f1) ${percentage}%, rgba(255,255,255,0.15) ${percentage}%); border-radius: 4px; cursor: pointer; outline: none; margin: 0; padding: 0;">
                 </div>
             </div>
         `;
@@ -3512,54 +3542,133 @@ class DesignEditor {
         try {
             // Prüfe ob html2pdf verfügbar ist, sonst lade es
             if (typeof html2pdf === 'undefined') {
-                await this.loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js');
+                console.log('📥 Lade html2pdf Bibliothek...');
+                try {
+                    await this.loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js');
+                    console.log('✅ html2pdf geladen');
+                } catch (loadError) {
+                    console.warn('⚠️ CDN nicht erreichbar, versuche Druckdialog:', loadError);
+                    throw new Error('Bibliothek konnte nicht geladen werden');
+                }
             }
+            
+            // Warte kurz bis die Bibliothek verfügbar ist
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            if (typeof html2pdf === 'undefined') {
+                throw new Error('html2pdf nicht verfügbar');
+            }
+            
+            // Bereite Preview für Export vor
+            const resumeData = this.getResumeData();
+            const filename = `Lebenslauf_${resumeData.firstName || 'Vorname'}_${resumeData.lastName || 'Nachname'}.pdf`.replace(/\s+/g, '_');
+            
+            // Clone und bereite für PDF vor
+            const exportContainer = preview.cloneNode(true);
+            exportContainer.style.width = '210mm';
+            exportContainer.style.minHeight = '297mm';
+            exportContainer.style.backgroundColor = this.settings.backgroundColor || '#ffffff';
+            exportContainer.style.position = 'absolute';
+            exportContainer.style.left = '-9999px';
+            document.body.appendChild(exportContainer);
             
             // Konfiguration für PDF
             const opt = {
-                margin: [0, 0, 0, 0],
-                filename: `Lebenslauf_${this.getResumeData().firstName}_${this.getResumeData().lastName}.pdf`,
-                image: { type: 'jpeg', quality: 0.98 },
+                margin: 0,
+                filename: filename,
+                image: { type: 'jpeg', quality: 0.95 },
                 html2canvas: { 
                     scale: 2, 
                     useCORS: true,
                     letterRendering: true,
-                    scrollY: -window.scrollY
+                    logging: false,
+                    allowTaint: true,
+                    backgroundColor: this.settings.backgroundColor || '#ffffff'
                 },
                 jsPDF: { 
                     unit: 'mm', 
                     format: 'a4', 
-                    orientation: 'portrait' 
+                    orientation: 'portrait',
+                    compress: true
                 },
-                pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+                pagebreak: { mode: ['css', 'legacy'] }
             };
-            
-            // Clone preview for export (ohne Scroll)
-            const clone = preview.cloneNode(true);
-            clone.style.width = '210mm';
-            clone.style.minHeight = '297mm';
-            clone.style.padding = '20mm';
-            clone.style.boxSizing = 'border-box';
-            clone.style.backgroundColor = this.settings.backgroundColor || '#ffffff';
             
             // Export
             await html2pdf().set(opt).from(preview).save();
             
+            // Cleanup
+            document.body.removeChild(exportContainer);
+            
             this.showNotification('PDF erfolgreich exportiert!', 'success');
         } catch (error) {
             console.error('PDF Export Fehler:', error);
-            // Fallback zu Print
-            this.showNotification('PDF Export fehlgeschlagen, öffne Druckdialog...', 'warning');
-            window.print();
+            // Fallback zu Print-Dialog mit speziellem Print-CSS
+            this.showNotification('Öffne Druckdialog für PDF-Export...', 'info');
+            this.openPrintDialog();
         }
+    }
+    
+    openPrintDialog() {
+        // Füge temporäres Print-CSS hinzu
+        const printStyle = document.createElement('style');
+        printStyle.id = 'temp-print-styles';
+        printStyle.textContent = `
+            @media print {
+                body * {
+                    visibility: hidden;
+                }
+                #resumePreview, #resumePreview * {
+                    visibility: visible !important;
+                }
+                #resumePreview {
+                    position: absolute;
+                    left: 0;
+                    top: 0;
+                    width: 210mm !important;
+                    min-height: 297mm !important;
+                    margin: 0 !important;
+                    padding: 20mm !important;
+                    box-sizing: border-box !important;
+                    background: white !important;
+                    -webkit-print-color-adjust: exact !important;
+                    print-color-adjust: exact !important;
+                }
+                .design-sidebar, .mobile-design-toggle, .fab-design-toggle {
+                    display: none !important;
+                }
+            }
+        `;
+        document.head.appendChild(printStyle);
+        
+        window.print();
+        
+        // Entferne Print-CSS nach dem Drucken
+        setTimeout(() => {
+            const tempStyle = document.getElementById('temp-print-styles');
+            if (tempStyle) tempStyle.remove();
+        }, 1000);
     }
     
     loadScript(src) {
         return new Promise((resolve, reject) => {
+            // Prüfe ob Script schon geladen
+            if (document.querySelector(`script[src="${src}"]`)) {
+                resolve();
+                return;
+            }
+            
             const script = document.createElement('script');
             script.src = src;
-            script.onload = resolve;
-            script.onerror = reject;
+            script.crossOrigin = 'anonymous';
+            script.onload = () => {
+                console.log(`✅ Script geladen: ${src}`);
+                resolve();
+            };
+            script.onerror = (err) => {
+                console.error(`❌ Script Fehler: ${src}`, err);
+                reject(err);
+            };
             document.head.appendChild(script);
         });
     }
