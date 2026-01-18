@@ -1936,12 +1936,22 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
 
     showLoading() {
         const loading = document.getElementById('loadingAnimation');
-        if (loading) loading.style.display = 'flex';
+        if (loading) {
+            loading.style.display = 'flex';
+            console.log('📊 Loading-Animation angezeigt');
+        } else {
+            console.warn('⚠️ loadingAnimation Element nicht gefunden');
+        }
     }
 
     hideLoading() {
         const loading = document.getElementById('loadingAnimation');
-        if (loading) loading.style.display = 'none';
+        if (loading) {
+            loading.style.display = 'none';
+            console.log('📊 Loading-Animation ausgeblendet');
+        } else {
+            console.warn('⚠️ loadingAnimation Element nicht gefunden');
+        }
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -2042,7 +2052,14 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
 
     showToast(message, type = 'info') {
         const container = document.getElementById('toastContainer');
-        if (!container) return;
+        if (!container) {
+            console.warn('⚠️ toastContainer nicht gefunden, zeige Toast in Konsole:', message);
+            // Fallback: Alert für wichtige Nachrichten
+            if (type === 'error') {
+                alert(message);
+            }
+            return;
+        }
         
         const icons = {
             success: 'fa-check-circle',
