@@ -150,6 +150,7 @@ class DesignEditor {
                 { id: 'languages', name: 'Sprachen', icon: 'fa-language', visible: true, column: 'left', customTitle: '' },
                 { id: 'certifications', name: 'Zertifikate', icon: 'fa-certificate', visible: false, column: 'left', customTitle: '' },
                 { id: 'hobbies', name: 'Hobbys', icon: 'fa-heart', visible: false, column: 'left', customTitle: '' },
+                { id: 'references', name: 'Referenzen', icon: 'fa-user-check', visible: false, column: 'full', customTitle: '' },
                 { id: 'signature', name: 'Unterschrift', icon: 'fa-signature', visible: false, column: 'full', customTitle: '' }
             ]
         };
@@ -807,7 +808,18 @@ class DesignEditor {
                 }
             }
             
-            // 2. Fallback: localStorage bewerbungsmanager_profile
+            // 2. Dashboard-Bilder prüfen (photos section)
+            if (!imageUrl) {
+                try {
+                    const dashboardPhotos = JSON.parse(localStorage.getItem('dashboard_photos') || '{}');
+                    if (dashboardPhotos.profileImage) {
+                        imageUrl = dashboardPhotos.profileImage;
+                        console.log('✅ Profilbild aus Dashboard Photos geladen');
+                    }
+                } catch (e) {}
+            }
+            
+            // 3. Fallback: localStorage bewerbungsmanager_profile
             if (!imageUrl) {
                 const profile = JSON.parse(localStorage.getItem('bewerbungsmanager_profile') || '{}');
                 if (profile.profileImageUrl) {
@@ -816,7 +828,7 @@ class DesignEditor {
                 }
             }
             
-            // 3. Fallback: userProfile im localStorage
+            // 4. Fallback: userProfile im localStorage
             if (!imageUrl) {
                 const userProfile = JSON.parse(localStorage.getItem('userProfile') || '{}');
                 if (userProfile.profileImage || userProfile.profileImageUrl) {
@@ -825,13 +837,25 @@ class DesignEditor {
                 }
             }
             
-            // 4. Fallback: AWS S3 Profil-URL
+            // 5. Fallback: AWS S3 Profil-URL
             if (!imageUrl) {
                 const s3Profile = localStorage.getItem('profile_image_s3_url');
                 if (s3Profile) {
                     imageUrl = s3Profile;
                     console.log('✅ Profilbild aus S3 URL geladen');
                 }
+            }
+            
+            // 6. Fallback: Lebenslauf-Daten aus Resume Editor
+            if (!imageUrl) {
+                try {
+                    const resumes = JSON.parse(localStorage.getItem('user_resumes') || '[]');
+                    const latestResume = resumes[0];
+                    if (latestResume?.profileImageUrl) {
+                        imageUrl = latestResume.profileImageUrl;
+                        console.log('✅ Profilbild aus letztem Lebenslauf geladen');
+                    }
+                } catch (e) {}
             }
             
             if (imageUrl) {
@@ -1807,6 +1831,8 @@ class DesignEditor {
                 return this.renderLanguagesSection(data, section);
             case 'projects':
                 return this.renderProjectsSection(data, section);
+            case 'references':
+                return this.renderReferencesSection(data, section);
             case 'signature':
                 return this.renderSignatureSection(data, section);
             default:
@@ -2028,22 +2054,19 @@ class DesignEditor {
             const offsetX = this.settings.profileImageOffsetX || 0;
             const offsetY = this.settings.profileImageOffsetY || 0;
             
+            // Besseres Bild-Handling: object-position für Versatz ohne Abschneiden
             profileImageHtml = `
                 <div class="resume-preview-profile-image" style="
                     width: ${size}; height: ${size}; border-radius: ${shape}; border: ${border};
-                    overflow: hidden; flex-shrink: 0; position: relative;
+                    overflow: hidden; flex-shrink: 0;
                 ">
                     <img src="${data.profileImageUrl}" alt="Profilbild" style="
-                        width: ${zoom}%;
-                        height: ${zoom}%;
+                        width: 100%;
+                        height: 100%;
                         object-fit: cover;
                         object-position: ${50 + offsetX}% ${50 + offsetY}%;
-                        transform: translate(${offsetX}%, ${offsetY}%);
-                        position: absolute;
-                        top: 50%;
-                        left: 50%;
-                        margin-top: -${zoom/2}%;
-                        margin-left: -${zoom/2}%;
+                        transform: scale(${zoom / 100});
+                        transform-origin: ${50 + offsetX}% ${50 + offsetY}%;
                     ">
                 </div>
             `;
@@ -2142,25 +2165,45 @@ class DesignEditor {
                         companyHtml += `, ${exp.location}`;
                     }
                     
-                    // Description (bullets sind jetzt in description integriert)
+                    // Description: Fließtext VOR Stichpunkten, Stichpunkte als Liste
                     let descriptionHtml = '';
                     if (exp.description) {
-                        // Konvertiere Zeilenumbrüche zu <br> für bessere Darstellung
-                        // Wenn format 'bullets' oder 'mixed', konvertiere Stichpunkte zu <ul>
                         if (format === 'bullets' || (format === 'mixed' && exp.description.includes('\n'))) {
                             const lines = exp.description.split('\n').filter(l => l.trim());
-                            const bulletLines = lines.filter(l => l.trim().match(/^[-•*]/));
-                            const proseLines = lines.filter(l => !l.trim().match(/^[-•*]/));
                             
-                            if (bulletLines.length > 0) {
-                                // Rendere als Bullet-Liste
-                                descriptionHtml = `<ul class="resume-preview-bullets">${bulletLines.map(b => `<li>${b.replace(/^[-•*]\s*/, '')}</li>`).join('')}</ul>`;
-                                // Füge Prose-Lines vorher hinzu, falls vorhanden
-                                if (proseLines.length > 0) {
-                                    descriptionHtml = `<p class="resume-preview-item-description">${proseLines.join('<br>')}</p>` + descriptionHtml;
+                            // Teile in Abschnitte: Fließtext (vor Bullets) und Bullets
+                            let proseSection = [];
+                            let bulletSection = [];
+                            let inBulletSection = false;
+                            
+                            for (const line of lines) {
+                                const isBullet = line.trim().match(/^[-•*·→▸►]/);
+                                if (isBullet) {
+                                    inBulletSection = true;
+                                    bulletSection.push(line.replace(/^[-•*·→▸►]\s*/, ''));
+                                } else if (!inBulletSection) {
+                                    // Fließtext VOR den Stichpunkten
+                                    proseSection.push(line);
+                                } else {
+                                    // Fließtext NACH den Stichpunkten (z.B. Einleitung die fälschlicherweise danach kam)
+                                    // Behandle als weitere Prose-Zeile unter den Bullets
+                                    proseSection.push(line);
                                 }
-                            } else {
-                                // Keine Bullets erkannt, rendere als normalen Text
+                            }
+                            
+                            // Rendere: Erst Fließtext, dann Bullets
+                            if (proseSection.length > 0 && proseSection.some(p => !p.match(/^[-•*·→▸►]/))) {
+                                const cleanProseLines = proseSection.filter(p => !p.match(/^[-•*·→▸►]/));
+                                if (cleanProseLines.length > 0) {
+                                    descriptionHtml += `<p class="resume-preview-item-description">${cleanProseLines.join('<br>')}</p>`;
+                                }
+                            }
+                            if (bulletSection.length > 0) {
+                                descriptionHtml += `<ul class="resume-preview-bullets">${bulletSection.map(b => `<li>${b}</li>`).join('')}</ul>`;
+                            }
+                            
+                            // Fallback wenn nur Fließtext
+                            if (!descriptionHtml) {
                                 descriptionHtml = `<p class="resume-preview-item-description">${exp.description.replace(/\n/g, '<br>')}</p>`;
                             }
                         } else {
@@ -2247,15 +2290,19 @@ class DesignEditor {
         const level = typeof skill === 'object' ? (skill.level || 5) : 5;
         const percentage = Math.round((level / maxLevel) * 100);
         
+        // Bei schmaler Spalte (< 35%) stacked Layout verwenden
+        const isNarrow = (this.settings.leftColumnWidth || 35) < 35;
+        const stackedStyle = isNarrow ? 'flex-direction: column; align-items: flex-start; gap: 4px;' : '';
+        
         switch (display) {
             case 'bars':
                 return `
-                    <div class="resume-skill-bar-item">
-                        <div class="resume-skill-bar-header">
+                    <div class="resume-skill-bar-item" style="${stackedStyle}">
+                        <div class="resume-skill-bar-header" style="width: 100%;">
                             <span class="resume-skill-name">${name}</span>
                             ${showLabel ? `<span class="resume-skill-level">${level}/${maxLevel}</span>` : ''}
                         </div>
-                        <div class="resume-skill-bar">
+                        <div class="resume-skill-bar" style="width: 100%;">
                             <div class="resume-skill-bar-fill" style="width: ${percentage}%"></div>
                         </div>
                     </div>
@@ -2266,21 +2313,21 @@ class DesignEditor {
                     `<span class="resume-skill-dot ${i < filledDots ? 'filled' : ''}"></span>`
                 ).join('');
                 return `
-                    <div class="resume-skill-dots-item">
-                        <span class="resume-skill-name">${name}</span>
+                    <div class="resume-skill-dots-item" style="${isNarrow ? 'flex-direction: column; align-items: flex-start;' : ''}">
+                        <span class="resume-skill-name" style="${isNarrow ? 'margin-bottom: 4px;' : ''}">${name}</span>
                         <div class="resume-skill-dots">${dots}</div>
                     </div>
                 `;
             case 'numeric':
                 return `
-                    <div class="resume-skill-numeric-item">
+                    <div class="resume-skill-numeric-item" style="${stackedStyle}">
                         <span class="resume-skill-name">${name}</span>
                         <span class="resume-skill-numeric">${level}/${maxLevel}</span>
                     </div>
                 `;
             case 'percentage':
                 return `
-                    <div class="resume-skill-percentage-item">
+                    <div class="resume-skill-percentage-item" style="${stackedStyle}">
                         <span class="resume-skill-name">${name}</span>
                         <span class="resume-skill-percentage">${percentage}%</span>
                     </div>
@@ -2326,6 +2373,41 @@ class DesignEditor {
         `;
     }
     
+    renderReferencesSection(data, section) {
+        const title = section?.customTitle || 'Referenzen';
+        // Referenzen können aus verschiedenen Quellen kommen
+        const references = data.references || [];
+        
+        // Wenn keine Referenzen vorhanden, zeige "auf Anfrage"
+        if (!references.length) {
+            return `
+                <div class="resume-preview-section">
+                    <h2 class="resume-preview-section-title"><i class="fas fa-user-check"></i> ${title}</h2>
+                    <p class="resume-preview-item-description" style="font-style: italic; color: ${this.settings.mutedColor};">
+                        Referenzen werden auf Anfrage gerne zur Verfügung gestellt.
+                    </p>
+                </div>
+            `;
+        }
+        
+        return `
+            <div class="resume-preview-section">
+                <h2 class="resume-preview-section-title"><i class="fas fa-user-check"></i> ${title}</h2>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+                    ${references.map(ref => `
+                        <div class="resume-preview-item" style="padding: 12px; background: ${this.settings.sidebarBackground !== 'transparent' ? 'rgba(255,255,255,0.1)' : '#f8fafc'}; border-radius: 8px;">
+                            <div class="resume-preview-item-title" style="font-weight: 600;">${ref.name || 'Name'}</div>
+                            <div class="resume-preview-item-subtitle" style="font-size: 0.85em;">${ref.position || ''}</div>
+                            <div style="font-size: 0.85em; color: ${this.settings.mutedColor};">${ref.company || ''}</div>
+                            ${ref.email ? `<div style="font-size: 0.8em; margin-top: 8px;"><i class="fas fa-envelope"></i> ${ref.email}</div>` : ''}
+                            ${ref.phone ? `<div style="font-size: 0.8em;"><i class="fas fa-phone"></i> ${ref.phone}</div>` : ''}
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    }
+    
     renderSignatureSection(data, section) {
         if (!this.settings.showSignature) return '';
         
@@ -2333,19 +2415,42 @@ class DesignEditor {
         const date = this.settings.signatureDate || '';
         const signatureImage = this.settings.signatureImage || '';
         const showLine = this.settings.signatureLine;
+        const position = this.settings.signaturePosition || 'bottom-right';
+        const width = this.settings.signatureWidth || 150;
+        
+        // Position-Styling
+        let positionStyle = '';
+        let alignStyle = 'text-align: right;';
+        switch (position) {
+            case 'bottom-left':
+                alignStyle = 'text-align: left;';
+                break;
+            case 'bottom-center':
+                alignStyle = 'text-align: center;';
+                break;
+            case 'bottom-right':
+                alignStyle = 'text-align: right;';
+                break;
+            case 'custom':
+                const customX = this.settings.signatureCustomX || 70;
+                const customY = this.settings.signatureCustomY || 90;
+                positionStyle = `position: absolute; left: ${customX}%; top: ${customY}%; transform: translate(-50%, -50%);`;
+                alignStyle = 'text-align: center;';
+                break;
+        }
         
         return `
-            <div class="resume-preview-section resume-signature-section">
-                <div class="resume-signature-content">
+            <div class="resume-preview-section resume-signature-section" style="${alignStyle} margin-top: auto; padding-top: 30px;">
+                <div class="resume-signature-content" style="display: inline-block; ${positionStyle}">
                     ${location || date ? `
-                        <p class="resume-signature-location-date">${location}${location && date ? ', ' : ''}${date}</p>
+                        <p class="resume-signature-location-date" style="margin-bottom: 8px; font-size: 0.9em;">${location}${location && date ? ', ' : ''}${date}</p>
                     ` : ''}
                     ${signatureImage ? `
-                        <div class="resume-signature-image">
-                            <img src="${signatureImage}" alt="Unterschrift" style="max-height: 60px; max-width: 200px;">
+                        <div class="resume-signature-image" style="margin-bottom: 4px;">
+                            <img src="${signatureImage}" alt="Unterschrift" style="height: auto; width: ${width}px; max-width: 100%;">
                         </div>
                     ` : ''}
-                    ${showLine ? `<div class="resume-signature-line"></div>` : ''}
+                    ${showLine ? `<div class="resume-signature-line" style="width: ${width}px; border-bottom: 1px solid ${this.settings.textColor}; margin: 0 auto;"></div>` : ''}
                 </div>
             </div>
         `;
@@ -2443,8 +2548,69 @@ class DesignEditor {
         `).join('');
     }
 
-    exportToPDF() {
-        window.print();
+    async exportToPDF() {
+        const preview = document.getElementById('resumePreview');
+        if (!preview) {
+            this.showNotification('Keine Vorschau zum Exportieren vorhanden', 'error');
+            return;
+        }
+        
+        // Zeige Loading-Status
+        this.showNotification('PDF wird generiert...', 'info');
+        
+        try {
+            // Prüfe ob html2pdf verfügbar ist, sonst lade es
+            if (typeof html2pdf === 'undefined') {
+                await this.loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js');
+            }
+            
+            // Konfiguration für PDF
+            const opt = {
+                margin: [0, 0, 0, 0],
+                filename: `Lebenslauf_${this.getResumeData().firstName}_${this.getResumeData().lastName}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { 
+                    scale: 2, 
+                    useCORS: true,
+                    letterRendering: true,
+                    scrollY: -window.scrollY
+                },
+                jsPDF: { 
+                    unit: 'mm', 
+                    format: 'a4', 
+                    orientation: 'portrait' 
+                },
+                pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+            };
+            
+            // Clone preview for export (ohne Scroll)
+            const clone = preview.cloneNode(true);
+            clone.style.width = '210mm';
+            clone.style.minHeight = '297mm';
+            clone.style.padding = '20mm';
+            clone.style.boxSizing = 'border-box';
+            clone.style.backgroundColor = this.settings.backgroundColor || '#ffffff';
+            
+            // Export
+            await html2pdf().set(opt).from(preview).save();
+            
+            this.showNotification('PDF erfolgreich exportiert!', 'success');
+        } catch (error) {
+            console.error('PDF Export Fehler:', error);
+            // Fallback zu Print
+            this.showNotification('PDF Export fehlgeschlagen, öffne Druckdialog...', 'warning');
+            window.print();
+        }
+    }
+    
+    loadScript(src) {
+        return new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = src;
+            script.onload = resolve;
+            script.onerror = reject;
+            document.head.appendChild(script);
+        });
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
