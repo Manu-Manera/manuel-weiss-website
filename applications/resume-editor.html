@@ -346,9 +346,27 @@
 
     <!-- Design Editor Modal (Full-Screen) -->
     <div id="designEditorModal" class="design-editor-modal">
+        <!-- Mobile Overlay für Design Editor -->
+        <div class="design-mobile-overlay" id="designMobileOverlay"></div>
+        
+        <!-- Mobile Toggle Button -->
+        <button class="mobile-design-toggle" id="mobileDesignToggle" style="display: none;">
+            <i class="fas fa-sliders-h"></i>
+        </button>
+        
+        <!-- Mobile Quick Actions -->
+        <div class="mobile-design-actions" id="mobileDesignActions" style="display: none;">
+            <button class="mobile-action-btn" id="mobileExportPdfBtn" title="PDF exportieren">
+                <i class="fas fa-file-pdf"></i>
+            </button>
+            <button class="mobile-action-btn primary" id="mobileCloseDesignBtn" title="Schließen">
+                <i class="fas fa-check"></i>
+            </button>
+        </div>
+        
         <div class="design-editor-container">
             <!-- Sidebar -->
-            <aside class="design-sidebar">
+            <aside class="design-sidebar" id="designSidebar">
                 <div class="design-sidebar-header">
                     <h2><i class="fas fa-palette"></i> Design Editor</h2>
                     <p>Lebenslauf professionell gestalten</p>
