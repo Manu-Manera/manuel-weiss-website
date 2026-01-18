@@ -217,6 +217,35 @@ class CloudDataService {
     }
 
     /**
+     * Einzelnen Lebenslauf per ID laden (schneller als alle laden)
+     */
+    async getResumeById(resumeId) {
+        // Erst im Cache prüfen
+        if (this.cache.resumes && this.cacheExpiry.resumes > Date.now()) {
+            const cached = this.cache.resumes.find(r => r.id === resumeId);
+            if (cached) {
+                console.log('✅ Lebenslauf aus Cache geladen');
+                return cached;
+            }
+        }
+
+        // Dann in localStorage prüfen
+        const local = localStorage.getItem('user_resumes');
+        if (local) {
+            const resumes = JSON.parse(local);
+            const found = resumes.find(r => r.id === resumeId);
+            if (found) {
+                console.log('✅ Lebenslauf aus localStorage geladen');
+                return found;
+            }
+        }
+
+        // Wenn nicht gefunden, alle laden (füllt Cache)
+        const all = await this.getResumes(true);
+        return all.find(r => r.id === resumeId) || null;
+    }
+
+    /**
      * Lebenslauf speichern
      */
     async saveResume(resumeData) {
