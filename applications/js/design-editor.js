@@ -1417,27 +1417,33 @@ class DesignEditor {
     
     setupSignatureExtraction() {
         const signaturePreview = document.getElementById('signaturePreview');
-        if (!signaturePreview) return;
         
         // Make signature preview a drop zone
-        signaturePreview.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            signaturePreview.classList.add('dragging');
-        });
-        
-        signaturePreview.addEventListener('dragleave', () => {
-            signaturePreview.classList.remove('dragging');
-        });
-        
-        signaturePreview.addEventListener('drop', (e) => {
-            e.preventDefault();
-            signaturePreview.classList.remove('dragging');
+        if (signaturePreview) {
+            signaturePreview.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                signaturePreview.classList.add('dragging');
+            });
             
-            const files = e.dataTransfer.files;
-            if (files.length > 0 && files[0].type.startsWith('image/')) {
-                this.processSignatureImage(files[0]);
-            }
-        });
+            signaturePreview.addEventListener('dragleave', () => {
+                signaturePreview.classList.remove('dragging');
+            });
+            
+            signaturePreview.addEventListener('drop', (e) => {
+                e.preventDefault();
+                signaturePreview.classList.remove('dragging');
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0 && files[0].type.startsWith('image/')) {
+                    this.processSignatureImage(files[0]);
+                }
+            });
+        }
+        
+        // Setup signature tabs, canvas, and generator
+        this.setupSignatureTabs();
+        this.setupSignatureCanvas();
+        this.setupSignatureGenerator();
     }
     
     processSignatureImage(file) {
@@ -1493,6 +1499,231 @@ class DesignEditor {
             img.src = event.target.result;
         };
         reader.readAsDataURL(file);
+    }
+    
+    setupSignatureTabs() {
+        const tabs = document.querySelectorAll('.signature-tab');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active from all tabs
+                tabs.forEach(t => {
+                    t.classList.remove('active');
+                    t.style.background = 'transparent';
+                    t.style.color = 'var(--design-text-muted)';
+                });
+                // Add active to clicked tab
+                tab.classList.add('active');
+                tab.style.background = 'var(--design-primary)';
+                tab.style.color = 'white';
+                
+                // Hide all tab contents
+                document.querySelectorAll('.signature-tab-content').forEach(c => c.style.display = 'none');
+                
+                // Show selected tab content
+                const tabId = tab.dataset.tab;
+                const content = document.getElementById(`signatureTab${tabId.charAt(0).toUpperCase() + tabId.slice(1)}`);
+                if (content) content.style.display = 'block';
+            });
+        });
+    }
+    
+    setupSignatureCanvas() {
+        const canvas = document.getElementById('signatureCanvas');
+        if (!canvas) return;
+        
+        const ctx = canvas.getContext('2d');
+        let isDrawing = false;
+        let lastX = 0;
+        let lastY = 0;
+        
+        // Configure canvas
+        ctx.strokeStyle = '#1e293b';
+        ctx.lineWidth = 2;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        
+        const getPos = (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            
+            if (e.touches) {
+                return {
+                    x: (e.touches[0].clientX - rect.left) * scaleX,
+                    y: (e.touches[0].clientY - rect.top) * scaleY
+                };
+            }
+            return {
+                x: (e.clientX - rect.left) * scaleX,
+                y: (e.clientY - rect.top) * scaleY
+            };
+        };
+        
+        const startDrawing = (e) => {
+            isDrawing = true;
+            const pos = getPos(e);
+            lastX = pos.x;
+            lastY = pos.y;
+        };
+        
+        const draw = (e) => {
+            if (!isDrawing) return;
+            e.preventDefault();
+            
+            const pos = getPos(e);
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+            
+            lastX = pos.x;
+            lastY = pos.y;
+        };
+        
+        const stopDrawing = () => {
+            isDrawing = false;
+        };
+        
+        // Mouse events
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseout', stopDrawing);
+        
+        // Touch events
+        canvas.addEventListener('touchstart', startDrawing);
+        canvas.addEventListener('touchmove', draw);
+        canvas.addEventListener('touchend', stopDrawing);
+        
+        // Clear button
+        const clearBtn = document.getElementById('clearSignatureCanvas');
+        if (clearBtn) {
+            clearBtn.addEventListener('click', () => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            });
+        }
+        
+        // Use drawn signature button
+        const useBtn = document.getElementById('useDrawnSignature');
+        if (useBtn) {
+            useBtn.addEventListener('click', () => {
+                const dataUrl = canvas.toDataURL('image/png');
+                this.settings.signatureImage = dataUrl;
+                
+                const preview = document.getElementById('signaturePreview');
+                if (preview) {
+                    preview.innerHTML = `<img src="${dataUrl}" alt="Unterschrift" style="max-width: 100%; max-height: 80px;">`;
+                }
+                
+                this.saveSettings();
+                this.updatePreview();
+                this.showNotification('Gezeichnete Unterschrift übernommen', 'success');
+            });
+        }
+    }
+    
+    setupSignatureGenerator() {
+        const nameInput = document.getElementById('signatureNameInput');
+        const styleSelect = document.getElementById('signatureStyleSelect');
+        const preview = document.getElementById('signatureGeneratePreview');
+        const useBtn = document.getElementById('useGeneratedSignature');
+        
+        // Load Google Fonts for signature styles
+        if (!document.getElementById('signatureFonts')) {
+            const link = document.createElement('link');
+            link.id = 'signatureFonts';
+            link.rel = 'stylesheet';
+            link.href = 'https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Great+Vibes&family=Pacifico&family=Satisfy&family=Allura&family=Sacramento&family=Alex+Brush&display=swap';
+            document.head.appendChild(link);
+        }
+        
+        const updatePreview = () => {
+            if (!preview) return;
+            const name = nameInput?.value || 'Ihr Name';
+            const font = styleSelect?.value || "'Dancing Script', cursive";
+            preview.innerHTML = `<span style="font-family: ${font}; font-size: 32px; color: #1e293b;">${name}</span>`;
+        };
+        
+        if (nameInput) {
+            nameInput.addEventListener('input', updatePreview);
+        }
+        if (styleSelect) {
+            styleSelect.addEventListener('change', updatePreview);
+        }
+        
+        if (useBtn) {
+            useBtn.addEventListener('click', async () => {
+                const name = nameInput?.value || 'Ihr Name';
+                const font = styleSelect?.value || "'Dancing Script', cursive";
+                
+                // Create canvas to convert text to image
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                // Set canvas size
+                canvas.width = 400;
+                canvas.height = 100;
+                
+                // Clear canvas
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Set font (wait for it to load)
+                ctx.font = `48px ${font}`;
+                ctx.fillStyle = '#1e293b';
+                ctx.textBaseline = 'middle';
+                ctx.textAlign = 'center';
+                
+                // Draw text
+                ctx.fillText(name, canvas.width / 2, canvas.height / 2);
+                
+                // Trim canvas to content
+                const trimmedCanvas = this.trimCanvas(canvas);
+                
+                const dataUrl = trimmedCanvas.toDataURL('image/png');
+                this.settings.signatureImage = dataUrl;
+                
+                const signaturePreview = document.getElementById('signaturePreview');
+                if (signaturePreview) {
+                    signaturePreview.innerHTML = `<img src="${dataUrl}" alt="Unterschrift" style="max-width: 100%; max-height: 80px;">`;
+                }
+                
+                this.saveSettings();
+                this.updatePreview();
+                this.showNotification('Generierte Unterschrift übernommen', 'success');
+            });
+        }
+    }
+    
+    trimCanvas(canvas) {
+        const ctx = canvas.getContext('2d');
+        const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = pixels.data;
+        
+        let top = canvas.height, left = canvas.width, right = 0, bottom = 0;
+        
+        for (let y = 0; y < canvas.height; y++) {
+            for (let x = 0; x < canvas.width; x++) {
+                const alpha = data[(y * canvas.width + x) * 4 + 3];
+                if (alpha > 0) {
+                    if (y < top) top = y;
+                    if (y > bottom) bottom = y;
+                    if (x < left) left = x;
+                    if (x > right) right = x;
+                }
+            }
+        }
+        
+        const width = right - left + 20;
+        const height = bottom - top + 20;
+        
+        const trimmed = document.createElement('canvas');
+        trimmed.width = width;
+        trimmed.height = height;
+        
+        const trimCtx = trimmed.getContext('2d');
+        trimCtx.drawImage(canvas, left - 10, top - 10, width, height, 0, 0, width, height);
+        
+        return trimmed;
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
