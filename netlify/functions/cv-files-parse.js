@@ -151,7 +151,8 @@ ${combinedText.substring(0, 15000)}`; // Limit auf 15k Zeichen
                 'Authorization': `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-                model: 'gpt-4-turbo',
+                model: 'gpt-5.2',
+                reasoning_effort: 'low',
                 messages: [
                     {
                         role: 'system',
