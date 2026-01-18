@@ -435,8 +435,29 @@ class UserProfile {
                 // Das Dashboard lädt seine eigenen Daten
                 // Stelle sicher, dass iframe geladen wird
                 const iframe = document.getElementById('dashboardIframe');
-                if (iframe && !iframe.src.includes('embedded=true')) {
-                    iframe.src = 'applications/dashboard.html?action=new-application&embedded=true';
+                if (iframe) {
+                    // Zeige Loading-State
+                    const loading = document.getElementById('iframeLoading');
+                    if (loading) loading.style.display = 'block';
+                    const error = document.getElementById('iframeError');
+                    if (error) error.style.display = 'none';
+                    
+                    // Lade iframe neu falls nötig
+                    if (!iframe.src.includes('embedded=true')) {
+                        iframe.src = 'applications/dashboard.html?action=new-application&embedded=true';
+                    } else {
+                        // Reload iframe um sicherzustellen dass es geladen wird
+                        iframe.src = iframe.src;
+                    }
+                    
+                    // Timeout für Error-Handling
+                    setTimeout(() => {
+                        const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
+                        if (!iframeDoc && loading) {
+                            loading.style.display = 'none';
+                            if (error) error.style.display = 'block';
+                        }
+                    }, 5000);
                 }
             }
             
