@@ -390,10 +390,10 @@ ${description.substring(0, 2000)}`;
             console.log('🔍 Setup Generate Button - Button gefunden:', !!generateBtn);
             
             if (generateBtn) {
-                // Entferne alten onclick-Handler falls vorhanden
-                generateBtn.onclick = null;
+                // Entferne alten onclick-Handler NICHT - er dient als Fallback
+                // generateBtn.onclick = null; // ENTFERNT - onclick bleibt als Fallback
                 
-                // Füge Event-Listener hinzu
+                // Füge Event-Listener hinzu (wird vor onclick ausgeführt wegen capture: true)
                 generateBtn.addEventListener('click', (e) => {
                     console.log('✅ Generate Button geklickt (Event-Listener)!');
                     e.preventDefault();
@@ -402,8 +402,9 @@ ${description.substring(0, 2000)}`;
                         this.generateCoverLetter();
                     } else {
                         console.error('❌ this.generateCoverLetter ist keine Funktion!', this);
+                        // Fallback: onclick-Handler wird ausgeführt
                     }
-                }, { capture: true });
+                }, { capture: true, once: false });
                 
                 console.log('✅ Event-Listener für Generate Button registriert');
             } else {
