@@ -57,25 +57,34 @@ exports.handler = async (event, context) => {
             // Für jetzt: Annahme dass jobInput bereits der Text ist
         }
 
-        // Parse mit OpenAI
-        const parsePrompt = `Analysiere diese Stellenausschreibung und extrahiere strukturierte Informationen.
+        // Parse mit GPT-5.2 (optimiert nach Prompting Guide)
+        const parsePrompt = `<extraction_spec>
+Extrahiere strukturierte Daten aus dieser Stellenausschreibung.
 
-${jobText}
-
-Antworte NUR als valides JSON:
+SCHEMA (strikt einhalten):
 {
-    "company": "Firmenname",
-    "position": "Stellenbezeichnung",
-    "location": "Standort",
+    "company": string,
+    "position": string,
+    "location": string | null,
     "requirements": {
-        "must_have": ["Anforderung 1", "Anforderung 2"],
-        "nice_to_have": ["Anforderung 1", "Anforderung 2"]
+        "must_have": [string],
+        "nice_to_have": [string]
     },
-    "responsibilities": ["Aufgabe 1", "Aufgabe 2"],
-    "keywords": ["Keyword 1", "Keyword 2"],
-    "industry": "Branche",
-    "experience_level": "Erfahrungslevel"
-}`;
+    "responsibilities": [string],
+    "keywords": [string],
+    "industry": string | null,
+    "experience_level": string | null
+}
+
+REGELN:
+- Wenn Feld nicht vorhanden → null setzen
+- Keywords: Alle technischen Begriffe, Tools, Methoden extrahieren
+- Requirements trennen in "must_have" vs "nice_to_have"
+- Re-scan vor Finalisierung auf verpasste Keywords
+</extraction_spec>
+
+STELLENAUSSCHREIBUNG:
+${jobText}`;
 
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
@@ -89,14 +98,25 @@ Antworte NUR als valides JSON:
                 messages: [
                     {
                         role: 'system',
-                        content: 'Du bist ein Experte für Stellenausschreibungen. Du extrahierst präzise und strukturiert alle relevanten Informationen.'
+                        content: `Du bist ein präziser Datenextraktions-Assistent für Stellenausschreibungen.
+
+<output_verbosity_spec>
+- Antworte NUR mit validem JSON
+- Keine Erklärungen, kein Markdown
+</output_verbosity_spec>
+
+<extraction_completeness>
+- Extrahiere ALLE relevanten Keywords und Anforderungen
+- Unterscheide klar zwischen Muss- und Kann-Anforderungen
+- Bei Unsicherheit über Feldwert → null setzen
+</extraction_completeness>`
                     },
                     {
                         role: 'user',
                         content: parsePrompt
                     }
                 ],
-                max_completion_tokens: 2000,
+                max_completion_tokens: 4000,
                 response_format: { type: 'json_object' }
             })
         });

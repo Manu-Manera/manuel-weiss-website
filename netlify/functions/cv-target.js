@@ -57,28 +57,34 @@ exports.handler = async (event, context) => {
             };
         }
 
-        // Generiere Targeted-CV mit OpenAI GPT-4 Turbo
+        // Generiere Targeted-CV mit GPT-5.2 (optimiert nach Prompting Guide)
         const prompt = `Passe diesen Lebenslauf präzise an die Stellenausschreibung an.
 
-BASELINE CV:
+<baseline_cv>
 ${baselineCV}
+</baseline_cv>
 
-STELLENAUSSCHREIBUNG:
+<job_posting>
 Firma: ${jobData.company}
 Position: ${jobData.position}
 Anforderungen: ${JSON.stringify(jobData.requirements, null, 2)}
 Schlüsselwörter: ${jobData.keywords?.join(', ') || ''}
+</job_posting>
 
-WICHTIGE REGELN:
-1. Erfinde NICHTS - nur vorhandene Informationen umformulieren und betonen
-2. Hebe relevante Erfahrungen und Skills hervor
-3. Verwende Keywords aus der Stellenausschreibung natürlich
-4. Betone Erfolge, die zu den Anforderungen passen
-5. Behalte die gleiche Struktur wie der Baseline-CV
-6. Maximal 2 Seiten
-7. Professioneller, überzeugender Ton
+<design_and_scope_constraints>
+- Implementiere EXAKT und NUR die Anpassung an diese Stelle
+- ERFINDE NICHTS - nur vorhandene Informationen umformulieren
+- Keywords aus der Stellenausschreibung natürlich einbauen
+- Gleiche Struktur wie Baseline-CV beibehalten
+- Maximal 2 Seiten
+</design_and_scope_constraints>
 
-Erstelle den angepassten CV im gleichen Format wie der Baseline-CV.`;
+<optimization_focus>
+1. Relevante Erfahrungen und Skills hervorheben
+2. Erfolge betonen, die zu Anforderungen passen
+3. Professional Summary auf die Stelle zuschneiden
+4. Skill-Reihenfolge nach Relevanz für die Stelle
+</optimization_focus>`;
 
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
@@ -93,14 +99,33 @@ Erstelle den angepassten CV im gleichen Format wie der Baseline-CV.`;
                 messages: [
                     {
                         role: 'system',
-                        content: 'Du bist ein Experte für zielgerichtete Lebensläufe. Du passt CVs präzise an Stellenausschreibungen an, ohne Informationen zu erfinden.'
+                        content: `Du bist ein Experte für zielgerichtete Lebensläufe.
+
+<core_mission>
+Passe CVs präzise an Stellenausschreibungen an.
+Maximiere die Passung zwischen Kandidat und Stelle.
+Professioneller, überzeugender Ton.
+</core_mission>
+
+<factuality>
+- NIEMALS Informationen erfinden oder übertreiben
+- Nur vorhandene Daten umformulieren und strategisch betonen
+- Bei Lücken: elegant umschreiben, nicht erfinden
+</factuality>
+
+<high_risk_self_check>
+Vor dem Finalisieren prüfen:
+- Wurden ALLE relevanten Keywords natürlich eingebaut?
+- Ist NICHTS erfunden oder übertrieben?
+- Passt die Länge (max 2 Seiten)?
+</high_risk_self_check>`
                     },
                     {
                         role: 'user',
                         content: prompt
                     }
                 ],
-                max_completion_tokens: 3000
+                max_completion_tokens: 8000
             })
         });
 

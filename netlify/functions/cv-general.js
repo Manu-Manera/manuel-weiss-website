@@ -49,28 +49,29 @@ exports.handler = async (event, context) => {
             };
         }
 
-        // Generiere Baseline-CV mit OpenAI GPT-4 Turbo
-        const prompt = `Erstelle einen modernen, professionellen Lebenslauf (CV) basierend auf folgenden Daten:
+        // Generiere Baseline-CV mit GPT-5.2 (optimiert nach Prompting Guide)
+        const prompt = `Erstelle einen professionellen Lebenslauf basierend auf diesen Daten:
 
 ${JSON.stringify(cvData, null, 2)}
 
-Anforderungen:
-- Modern-internationales Format
-- Saubere Struktur und Lesbarkeit
-- Professioneller Ton
-- Fokus auf Leistungen und Erfolge
-- Maximal 2 Seiten
-- Format: Strukturierter Text mit klaren Abschnitten
+<output_verbosity_spec>
+- Strukturierter Text mit klaren Abschnitten
+- Maximal 2 Seiten Inhalt
+- Konkrete Bullet Points für Erfolge (quantifiziert wo möglich)
+- Professioneller, überzeugender Ton
+</output_verbosity_spec>
 
-Antworte als strukturierter Text mit folgenden Abschnitten:
-1. PERSONAL INFORMATION
-2. PROFESSIONAL SUMMARY
-3. WORK EXPERIENCE (mit Bullet Points für Erfolge)
-4. EDUCATION
-5. SKILLS
-6. CERTIFICATIONS (falls vorhanden)
-
-Verwende klare Formatierung mit Absätzen und Bullet Points.`;
+<design_and_scope_constraints>
+- EXAKT diese Struktur verwenden:
+  1. PERSONAL INFORMATION
+  2. PROFESSIONAL SUMMARY (2-3 prägnante Sätze)
+  3. WORK EXPERIENCE (chronologisch, Bullet Points für Erfolge)
+  4. EDUCATION
+  5. SKILLS (kategorisiert)
+  6. CERTIFICATIONS (falls vorhanden)
+- Keine erfundenen Informationen
+- Vorhandene Daten optimal präsentieren
+</design_and_scope_constraints>`;
 
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
@@ -85,14 +86,26 @@ Verwende klare Formatierung mit Absätzen und Bullet Points.`;
                 messages: [
                     {
                         role: 'system',
-                        content: 'Du bist ein Experte für professionelle Lebensläufe und CVs. Du erstellst moderne, strukturierte und überzeugende Lebensläufe.'
+                        content: `Du bist ein Experte für professionelle Lebensläufe.
+
+<core_mission>
+Erstelle moderne, strukturierte und überzeugende CVs.
+Fokus auf messbare Erfolge und konkrete Leistungen.
+Professioneller Ton ohne Übertreibungen.
+</core_mission>
+
+<factuality>
+- NIEMALS Informationen erfinden
+- Nur vorhandene Daten verwenden und optimal präsentieren
+- Bei fehlenden Daten: Abschnitt weglassen oder "Auf Anfrage" schreiben
+</factuality>`
                     },
                     {
                         role: 'user',
                         content: prompt
                     }
                 ],
-                max_completion_tokens: 3000
+                max_completion_tokens: 8000
             })
         });
 
