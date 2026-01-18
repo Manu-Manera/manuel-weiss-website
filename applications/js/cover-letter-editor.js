@@ -374,8 +374,26 @@ ${description.substring(0, 2000)}`;
 
     setupGenerateButton() {
         const generateBtn = document.getElementById('generateBtn');
+        console.log('🔍 Setup Generate Button - Button gefunden:', !!generateBtn);
         if (generateBtn) {
-            generateBtn.addEventListener('click', () => {
+            generateBtn.addEventListener('click', (e) => {
+                console.log('✅ Generate Button geklickt!');
+                e.preventDefault();
+                e.stopPropagation();
+                this.generateCoverLetter();
+            });
+            console.log('✅ Event-Listener für Generate Button registriert');
+        } else {
+            console.error('❌ Generate Button nicht gefunden! ID: generateBtn');
+        }
+        
+        // Auch für Mobile Button
+        const mobileGenerateBtn = document.getElementById('mobileGenerateBtn');
+        if (mobileGenerateBtn) {
+            mobileGenerateBtn.addEventListener('click', (e) => {
+                console.log('✅ Mobile Generate Button geklickt!');
+                e.preventDefault();
+                e.stopPropagation();
                 this.generateCoverLetter();
             });
         }
@@ -821,42 +839,70 @@ ${description.substring(0, 2000)}`;
     // ═══════════════════════════════════════════════════════════════════════════
 
     async generateCoverLetter() {
-        if (this.isGenerating) return;
+        console.log('🚀 generateCoverLetter() aufgerufen');
         
-        if (!this.validateForm()) {
-            this.showToast('Bitte füllen Sie alle Pflichtfelder aus', 'error');
+        if (this.isGenerating) {
+            console.warn('⚠️ Bereits am Generieren, ignoriere erneuten Aufruf');
             return;
         }
         
+        console.log('✅ Validierung starten...');
+        if (!this.validateForm()) {
+            console.error('❌ Formular-Validierung fehlgeschlagen');
+            this.showToast('Bitte füllen Sie alle Pflichtfelder aus', 'error');
+            return;
+        }
+        console.log('✅ Formular-Validierung erfolgreich');
+        
         this.isGenerating = true;
+        console.log('📊 Loading-State aktivieren...');
         this.showLoading();
         
         try {
+            console.log('📝 Job-Daten sammeln...');
             const jobData = this.collectJobData();
+            console.log('📝 Job-Daten:', jobData);
+            
+            console.log('🔑 API-Key abrufen...');
             const apiKey = await this.getAPIKey();
+            console.log('🔑 API-Key gefunden:', !!apiKey);
             
             let content;
             if (apiKey) {
+                console.log('🤖 Generiere mit AI...');
                 content = await this.generateWithAI(jobData, apiKey);
+                console.log('✅ AI-Generierung erfolgreich, Länge:', content?.length);
             } else {
+                console.warn('⚠️ Kein API-Key, verwende Template');
                 this.showToast('Kein API-Key gefunden. Verwende Template.', 'warning');
                 content = this.generateFromTemplate(jobData);
+                console.log('✅ Template-Generierung erfolgreich, Länge:', content?.length);
             }
             
+            console.log('📄 Anschreiben anzeigen...');
             this.displayGeneratedLetter(content, jobData);
             this.showToast('Anschreiben erfolgreich generiert!', 'success');
+            console.log('✅ Anschreiben erfolgreich generiert und angezeigt');
             
         } catch (error) {
-            console.error('Generation error:', error);
+            console.error('❌ Generation error:', error);
+            console.error('❌ Error Stack:', error.stack);
             this.showToast('Fehler bei der Generierung. Verwende Template.', 'warning');
             
             // Fallback to template
-            const jobData = this.collectJobData();
-            const content = this.generateFromTemplate(jobData);
-            this.displayGeneratedLetter(content, jobData);
+            try {
+                const jobData = this.collectJobData();
+                const content = this.generateFromTemplate(jobData);
+                this.displayGeneratedLetter(content, jobData);
+                console.log('✅ Fallback auf Template erfolgreich');
+            } catch (fallbackError) {
+                console.error('❌ Auch Fallback fehlgeschlagen:', fallbackError);
+                this.showToast('Kritischer Fehler bei der Generierung', 'error');
+            }
         } finally {
             this.isGenerating = false;
             this.hideLoading();
+            console.log('🏁 Generierung abgeschlossen');
         }
     }
 
@@ -2613,5 +2659,12 @@ async function regenerateIntro() {
 
 // Initialize on DOM load
 document.addEventListener('DOMContentLoaded', () => {
-    window.coverLetterEditor = new CoverLetterEditor();
+    console.log('📝 DOMContentLoaded - Initialisiere CoverLetterEditor...');
+    try {
+        window.coverLetterEditor = new CoverLetterEditor();
+        console.log('✅ CoverLetterEditor erfolgreich initialisiert');
+    } catch (error) {
+        console.error('❌ Fehler bei CoverLetterEditor Initialisierung:', error);
+        console.error('❌ Error Stack:', error.stack);
+    }
 });
