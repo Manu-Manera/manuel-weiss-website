@@ -310,10 +310,14 @@ body {
     padding: 2rem;
 }
 
-/* Applications Tab: Kein Padding für iframe */
+/* Applications Tab: Kein Padding für iframe, volle Höhe */
 .tab-content #applications {
-    padding: 0;
-    height: 100%;
+    padding: 0 !important;
+    margin: 0 !important;
+    height: calc(100vh - 380px) !important;
+    min-height: 600px !important;
+    position: relative !important;
+    overflow: hidden !important;
 }
 
 .tab-panel {
@@ -868,15 +872,13 @@ input:checked + .toggle-slider:before {
 /* Embedded Dashboard */
 .applications-dashboard-embed {
     width: 100%;
-    height: calc(100vh - 300px);
-    min-height: 700px;
+    height: 100%;
+    min-height: 600px;
     border: none;
     overflow: hidden;
-    background: var(--bg-secondary);
-    border-radius: var(--radius-lg);
+    background: white;
     position: relative;
-    display: flex;
-    align-items: stretch;
+    display: block;
 }
 
 .applications-dashboard-embed iframe {
@@ -884,8 +886,63 @@ input:checked + .toggle-slider:before {
     height: 100%;
     border: none;
     display: block;
-    flex: 1;
     background: white;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+.iframe-loading-state {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    text-align: center;
+    color: var(--text-secondary);
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.iframe-loading-state i {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+    display: block;
+}
+
+.iframe-loading-state p {
+    margin: 0;
+    font-weight: 500;
+}
+
+.iframe-error-state {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    text-align: center;
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    max-width: 400px;
+}
+
+.iframe-error-state i {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: var(--error-color);
+    display: block;
+}
+
+.iframe-error-state p {
+    margin: 0 0 1rem 0;
+    font-weight: 500;
 }
 
 /* Embedded Mode - Hide Navigation in Dashboard */
