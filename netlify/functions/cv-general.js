@@ -79,7 +79,9 @@ Verwende klare Formatierung mit Absätzen und Bullet Points.`;
                 'Authorization': `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-                model: 'gpt-4-turbo',
+                model: 'gpt-5.2',
+                reasoning_effort: 'medium',
+                verbosity: 'high',
                 messages: [
                     {
                         role: 'system',

@@ -84,7 +84,8 @@ Antworte NUR als valides JSON:
                 'Authorization': `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-                model: 'gpt-4-turbo',
+                model: 'gpt-5.2',
+                reasoning_effort: 'low',
                 messages: [
                     {
                         role: 'system',

@@ -87,7 +87,9 @@ Erstelle den angepassten CV im gleichen Format wie der Baseline-CV.`;
                 'Authorization': `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-                model: 'gpt-4-turbo',
+                model: 'gpt-5.2',
+                reasoning_effort: 'medium',
+                verbosity: 'high',
                 messages: [
                     {
                         role: 'system',

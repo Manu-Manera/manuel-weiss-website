@@ -360,8 +360,11 @@ class ApiKeysSection {
      * Default Model für Service
      */
     getDefaultModel(service) {
+        // Modelle werden automatisch je nach Funktion gewählt
+        // OCR: gpt-5.2 (reasoning: low)
+        // CV-Generierung: gpt-5.2 (reasoning: medium, verbosity: high)
         const defaults = {
-            'openai': 'gpt-4o-mini',
+            'openai': 'gpt-5.2',
             'anthropic': 'claude-3-sonnet-20240229',
             'google': 'gemini-pro'
         };
