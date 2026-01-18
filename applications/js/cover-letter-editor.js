@@ -1331,17 +1331,34 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
     // ═══════════════════════════════════════════════════════════════════════════
 
     displayGeneratedLetter(content, jobData) {
+        console.log('📄 displayGeneratedLetter aufgerufen, Content-Länge:', content?.length);
+        
         // Hide empty state
         const emptyState = document.getElementById('emptyState');
-        if (emptyState) emptyState.style.display = 'none';
+        if (emptyState) {
+            emptyState.style.display = 'none';
+            console.log('✅ Empty State ausgeblendet');
+        } else {
+            console.warn('⚠️ emptyState Element nicht gefunden');
+        }
         
         // Show generated letter
         const generatedLetter = document.getElementById('generatedLetter');
-        if (generatedLetter) generatedLetter.style.display = 'block';
+        if (generatedLetter) {
+            generatedLetter.style.display = 'block';
+            console.log('✅ Generated Letter angezeigt');
+        } else {
+            console.error('❌ generatedLetter Element nicht gefunden!');
+        }
         
         // Show toolbar
         const toolbar = document.getElementById('editorToolbar');
-        if (toolbar) toolbar.style.display = 'flex';
+        if (toolbar) {
+            toolbar.style.display = 'flex';
+            console.log('✅ Toolbar angezeigt');
+        } else {
+            console.warn('⚠️ editorToolbar Element nicht gefunden');
+        }
         
         // Entferne Grußformeln aus dem generierten Content (werden im Footer angezeigt)
         const cleanedContent = this.removeGreetingFromContent(content);
