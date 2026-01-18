@@ -1460,13 +1460,17 @@ ${fullText.substring(0, 50000)}`;
                     parsed.experience.forEach((exp, index) => {
                         setTimeout(() => {
                             if (typeof addExperience === 'function') {
+                                // Konvertiere \\n zu echten Zeilenumbrüchen für Stichpunkte
+                                let description = exp.description || '';
+                                description = description.replace(/\\n/g, '\n');
+                                
                                 addExperience({
                                     position: exp.position || '',
                                     company: exp.company || '',
                                     location: exp.location || '',
                                     startDate: exp.startDate || '',
                                     endDate: exp.endDate === 'heute' || exp.endDate === 'present' ? '' : (exp.endDate || ''),
-                                    description: exp.description || '',
+                                    description: description,
                                     currentJob: exp.endDate === 'heute' || exp.endDate === 'present' || exp.endDate?.toLowerCase() === 'heute'
                                 });
                             }
