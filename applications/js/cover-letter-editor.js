@@ -286,7 +286,8 @@ ${description.substring(0, 2000)}`;
                     'Authorization': `Bearer ${apiKey}`
                 },
                 body: JSON.stringify({
-                    model: 'gpt-4o-mini',
+                    model: 'gpt-5.2',
+                    reasoning_effort: 'low',
                     messages: [
                         {
                             role: 'system',
@@ -297,8 +298,7 @@ ${description.substring(0, 2000)}`;
                             content: prompt
                         }
                     ],
-                    temperature: 0.1,
-                    max_tokens: 200
+                    max_completion_tokens: 500
                 })
             });
 
@@ -863,8 +863,8 @@ ${description.substring(0, 2000)}`;
     async generateWithAI(jobData, apiKey) {
         const prompt = this.buildPrompt(jobData);
         
-        // Verwende gpt-4o-mini für bessere Qualität, fallback zu gpt-3.5-turbo
-        const model = 'gpt-4o-mini';
+        // Verwende GPT-5.2 für beste Qualität
+        const model = 'gpt-5.2';
         const maxTokens = this.options.length === 'short' ? 600 : this.options.length === 'medium' ? 1000 : 1400;
         
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -875,6 +875,7 @@ ${description.substring(0, 2000)}`;
             },
             body: JSON.stringify({
                 model: model,
+                reasoning_effort: 'medium',
                 messages: [
                     {
                         role: 'system',
@@ -885,8 +886,7 @@ ${description.substring(0, 2000)}`;
                         content: prompt
                     }
                 ],
-                temperature: 0.7, // Balance zwischen Kreativität und Konsistenz
-                max_tokens: maxTokens
+                max_completion_tokens: maxTokens
             })
         });
         
@@ -906,10 +906,10 @@ ${description.substring(0, 2000)}`;
                 'Authorization': `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-                model: opts.model || 'gpt-3.5-turbo',
+                model: opts.model || 'gpt-5.2',
+                reasoning_effort: opts.reasoningEffort || 'low',
                 messages,
-                temperature: opts.temperature ?? 0.6,
-                max_tokens: opts.maxTokens ?? 500
+                max_completion_tokens: opts.maxTokens ?? 1000
             })
         });
         if (!response.ok) {

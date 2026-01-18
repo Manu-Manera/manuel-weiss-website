@@ -26,6 +26,7 @@
 .cover-letter-editor {
     min-height: calc(100vh - 70px);
     background: var(--cl-bg);
+    padding-top: 70px; /* Platz für fixed navbar */
 }
 
 .editor-header {
@@ -1337,8 +1338,18 @@
 }
 
 @media (max-width: 768px) {
+    .cover-letter-editor {
+        padding-top: 60px;
+    }
+    
     .editor-header {
         flex-wrap: wrap;
+        padding: 0.75rem 1rem;
+        position: sticky;
+        top: 60px;
+        z-index: 90;
+        background: var(--cl-card);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
     
     .editor-title {
@@ -1348,12 +1359,36 @@
         margin-top: 0.5rem;
     }
     
+    .editor-title h1 {
+        font-size: 1rem;
+    }
+    
+    .editor-title p {
+        font-size: 0.75rem;
+        display: none; /* Hide subtitle on mobile */
+    }
+    
     .btn-back {
         padding: 0.375rem 0.75rem;
+        font-size: 0.8rem;
+    }
+    
+    .btn-back span {
+        display: none; /* Hide text, show only icon */
+    }
+    
+    .editor-actions {
+        gap: 0.25rem;
+    }
+    
+    .editor-actions .btn-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 0.9rem;
     }
     
     .editor-content {
-        padding: 1rem;
+        padding: 0.75rem;
     }
     
     .option-buttons {
@@ -1363,6 +1398,137 @@
     .option-btn {
         flex-direction: row;
         justify-content: flex-start;
+    }
+    
+    /* Mobile Sidebar Toggle */
+    .editor-sidebar {
+        position: fixed;
+        left: -100%;
+        top: 120px;
+        bottom: 0;
+        width: 85%;
+        max-width: 320px;
+        z-index: 100;
+        transition: left 0.3s ease;
+        box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+        overflow-y: auto;
+        background: var(--cl-card);
+    }
+    
+    .editor-sidebar.mobile-open {
+        left: 0;
+    }
+    
+    /* Mobile FAB for sidebar */
+    .mobile-sidebar-toggle {
+        display: flex !important;
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: var(--cl-primary);
+        color: white;
+        border: none;
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        z-index: 101;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+    }
+    
+    /* Mobile quick actions */
+    .mobile-quick-actions {
+        display: flex !important;
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        gap: 10px;
+        z-index: 101;
+    }
+    
+    .mobile-quick-btn {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        border: none;
+        background: var(--cl-card);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        color: var(--cl-primary);
+        font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .mobile-quick-btn.primary {
+        background: var(--cl-success);
+        color: white;
+        width: 56px;
+        height: 56px;
+    }
+    
+    /* Editor content full width */
+    .generated-letter {
+        min-height: auto;
+        font-size: 0.9rem;
+        padding: 1.25rem;
+    }
+    
+    .generated-letter .letter-header {
+        font-size: 0.85rem;
+    }
+    
+    /* Overlay for sidebar */
+    .mobile-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 99;
+    }
+    
+    .mobile-overlay.active {
+        display: block;
+    }
+    
+    /* Form optimizations */
+    .sidebar-section {
+        padding: 1rem;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        font-size: 16px; /* Prevent zoom on iOS */
+        padding: 0.75rem;
+    }
+    
+    /* Bottom safe area for iOS */
+    .editor-content {
+        padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 20px) + 80px);
+    }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+    .editor-title h1 {
+        font-size: 0.9rem;
+    }
+    
+    .editor-header {
+        padding: 0.5rem 0.75rem;
+    }
+    
+    .generated-letter {
+        padding: 1rem;
+        font-size: 0.85rem;
+    }
+    
+    .btn-block {
+        padding: 0.875rem;
+        font-size: 0.9rem;
     }
 }
 

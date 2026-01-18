@@ -128,7 +128,8 @@ class CoverLetterGPT {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                model: 'gpt-4',
+                model: 'gpt-5.2',
+                reasoning_effort: 'medium',
                 messages: [
                     {
                         role: 'system',
@@ -139,8 +140,7 @@ class CoverLetterGPT {
                         content: prompt
                     }
                 ],
-                max_tokens: 500,
-                temperature: 0.7
+                max_completion_tokens: 2000
             })
         });
 

@@ -38,10 +38,49 @@ class DesignEditor {
         this.setupSignature();
         this.setupSignatureExtended();
         this.setupPageNumbers();
+        this.setupMobile();
         this.applySettings();
         this.updatePreview();
         
-        console.log('🎨 Design Editor initialized (Extended + DateFormat + ImageCrop + CompanyLogo)');
+        console.log('🎨 Design Editor initialized (Extended + Mobile + DateFormat + ImageCrop + CompanyLogo)');
+    }
+    
+    setupMobile() {
+        const toggleBtn = document.getElementById('mobileDesignToggle');
+        const sidebar = document.getElementById('designSidebar');
+        const overlay = document.getElementById('designMobileOverlay');
+        const closeBtn = document.getElementById('mobileCloseDesignBtn');
+        const exportBtn = document.getElementById('mobileExportPdfBtn');
+        
+        const toggleSidebar = () => {
+            sidebar?.classList.toggle('mobile-open');
+            overlay?.classList.toggle('active');
+        };
+        
+        toggleBtn?.addEventListener('click', toggleSidebar);
+        overlay?.addEventListener('click', toggleSidebar);
+        
+        // Close button closes design editor
+        closeBtn?.addEventListener('click', () => {
+            document.getElementById('designEditorModal')?.classList.remove('active');
+            document.body.style.overflow = '';
+        });
+        
+        // Export PDF button
+        exportBtn?.addEventListener('click', () => {
+            this.exportToPDF();
+        });
+        
+        // Check if mobile and show/hide elements
+        const checkMobile = () => {
+            const isMobile = window.innerWidth <= 768;
+            if (toggleBtn) toggleBtn.style.display = isMobile ? 'flex' : 'none';
+            const actionsEl = document.getElementById('mobileDesignActions');
+            if (actionsEl) actionsEl.style.display = isMobile ? 'flex' : 'none';
+        };
+        
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
