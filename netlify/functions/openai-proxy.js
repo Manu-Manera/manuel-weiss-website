@@ -50,9 +50,9 @@ exports.handler = async (event, context) => {
                 'Authorization': `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-                model: 'gpt-3.5-turbo',
+                model: 'gpt-4o-mini',
                 messages: [{ role: 'user', content: 'Test' }],
-                max_completion_tokens: 5,
+                max_tokens: 5,
                 temperature: 0.1
             })
         });

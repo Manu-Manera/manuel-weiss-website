@@ -80,9 +80,7 @@ ${JSON.stringify(cvData, null, 2)}
                 'Authorization': `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-                model: 'gpt-5.2',
-                reasoning_effort: 'medium',
-                verbosity: 'high',
+                model: 'gpt-4o',
                 messages: [
                     {
                         role: 'system',
@@ -105,7 +103,8 @@ Professioneller Ton ohne Übertreibungen.
                         content: prompt
                     }
                 ],
-                max_completion_tokens: 8000
+                max_tokens: 8000,
+                temperature: 0.7
             })
         });
 
