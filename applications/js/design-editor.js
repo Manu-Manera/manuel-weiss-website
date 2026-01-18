@@ -3049,7 +3049,7 @@ class DesignEditor {
                 ${data.phone ? `<span><i class="fas fa-phone"></i> ${data.phone}</span>` : ''}
                 ${data.location ? `<span><i class="fas fa-map-marker-alt"></i> ${data.location}</span>` : ''}
                 ${data.email ? `<span><i class="fas fa-envelope"></i> ${data.email}</span>` : ''}
-                ${data.linkedin ? `<span><i class="fab fa-linkedin"></i> ${linkedinDisplay}</span>` : ''}
+                ${data.linkedin ? `<span><i class="fab fa-linkedin"></i> <a href="${linkedinDisplay}" target="_blank" rel="noopener" style="color: inherit; text-decoration: none;">${linkedinDisplay}</a></span>` : ''}
                 ${data.website ? `<span><i class="fas fa-globe"></i> ${data.website.replace(/https?:\/\//, '')}</span>` : ''}
             </div>
         `;
@@ -3568,15 +3568,6 @@ class DesignEditor {
             const resumeData = this.getResumeData();
             const filename = `Lebenslauf_${resumeData.firstName || 'Vorname'}_${resumeData.lastName || 'Nachname'}.pdf`.replace(/\s+/g, '_');
             
-            // Clone und bereite für PDF vor
-            const exportContainer = preview.cloneNode(true);
-            exportContainer.style.width = '210mm';
-            exportContainer.style.minHeight = '297mm';
-            exportContainer.style.backgroundColor = this.settings.backgroundColor || '#ffffff';
-            exportContainer.style.position = 'absolute';
-            exportContainer.style.left = '-9999px';
-            document.body.appendChild(exportContainer);
-            
             // Konfiguration für PDF
             const opt = {
                 margin: 0,
@@ -3588,7 +3579,9 @@ class DesignEditor {
                     letterRendering: true,
                     logging: false,
                     allowTaint: true,
-                    backgroundColor: this.settings.backgroundColor || '#ffffff'
+                    backgroundColor: this.settings.backgroundColor || '#ffffff',
+                    windowWidth: 794, // A4 width in pixels at 96 DPI
+                    windowHeight: 1123 // A4 height in pixels at 96 DPI
                 },
                 jsPDF: { 
                     unit: 'mm', 
@@ -3599,11 +3592,8 @@ class DesignEditor {
                 pagebreak: { mode: ['css', 'legacy'] }
             };
             
-            // Export - verwende clone statt original
-            await html2pdf().set(opt).from(exportContainer).save();
-            
-            // Cleanup
-            document.body.removeChild(exportContainer);
+            // Export direkt vom Preview (html2pdf klont intern)
+            await html2pdf().set(opt).from(preview).save();
             
             this.showNotification('PDF erfolgreich exportiert!', 'success');
         } catch (error) {
