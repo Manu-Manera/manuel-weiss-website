@@ -632,8 +632,16 @@
             overlay?.addEventListener('click', toggleSidebar);
             
             // Mobile Quick Actions
-            document.getElementById('mobileGenerateBtn')?.addEventListener('click', () => {
-                document.getElementById('generateBtn')?.click();
+            document.getElementById('mobileGenerateBtn')?.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('📱 Mobile Generate Button geklickt');
+                const generateBtn = document.getElementById('generateBtn');
+                if (generateBtn) {
+                    generateBtn.click();
+                } else {
+                    console.error('❌ Desktop Generate Button nicht gefunden für Mobile-Trigger');
+                }
             });
             
             document.getElementById('mobileSaveBtn')?.addEventListener('click', () => {
