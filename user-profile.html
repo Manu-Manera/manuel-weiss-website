@@ -186,8 +186,8 @@
                 </div>
 
                 <!-- Applications Tab (Bewerbungsmanager) -->
-                <div class="tab-panel" id="applications" style="padding: 0; height: calc(100vh - 300px); min-height: 700px; position: relative;">
-                    <div class="applications-dashboard-embed" style="width: 100%; height: 100%; position: relative;">
+                <div class="tab-panel" id="applications" style="padding: 0; margin: 0; height: calc(100vh - 280px); min-height: 700px; position: relative; overflow: hidden;">
+                    <div class="applications-dashboard-embed" style="width: 100%; height: 100%; position: relative; background: white;">
                         <div id="iframeLoading" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10; text-align: center; color: var(--text-secondary); background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
                             <i class="fas fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 1rem; color: var(--primary-color);"></i>
                             <p style="margin: 0; font-weight: 500;">Dashboard wird geladen...</p>
@@ -204,10 +204,8 @@
                             src="applications/dashboard.html?action=new-application&embedded=true" 
                             title="Bewerbungsmanager Dashboard"
                             allowfullscreen
-                            loading="eager"
-                            onload="setTimeout(() => { const loading = document.getElementById('iframeLoading'); if(loading) loading.style.display = 'none'; }, 500);"
-                            onerror="document.getElementById('iframeError').style.display = 'block'; document.getElementById('iframeLoading').style.display = 'none';"
-                            style="width: 100%; height: 100%; border: none; display: block; position: relative; z-index: 1; background: white;">
+                            sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-top-navigation"
+                            style="width: 100%; height: 100%; border: none; display: block; position: absolute; top: 0; left: 0; z-index: 1; background: white;">
                         </iframe>
                     </div>
                 </div>
