@@ -176,6 +176,38 @@ class CoverLetterEditor {
                 this.syncFromResumeDesign();
             });
         }
+        
+        // Custom Color Picker
+        const customColorPicker = document.getElementById('customColorPicker');
+        const customColorHex = document.getElementById('customColorHex');
+        
+        if (customColorPicker) {
+            customColorPicker.addEventListener('input', (e) => {
+                const color = e.target.value;
+                this.design.color = color;
+                if (customColorHex) customColorHex.value = color;
+                
+                // Deselect all color buttons
+                document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
+                
+                this.applyDesign();
+            });
+        }
+        
+        if (customColorHex) {
+            customColorHex.addEventListener('input', (e) => {
+                let value = e.target.value;
+                if (!value.startsWith('#')) value = '#' + value;
+                if (/^#[0-9A-Fa-f]{6}$/.test(value)) {
+                    this.design.color = value;
+                    if (customColorPicker) customColorPicker.value = value;
+                    
+                    document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
+                    
+                    this.applyDesign();
+                }
+            });
+        }
     }
 
     setupSlider(sliderId, designKey, unit) {
@@ -839,24 +871,70 @@ ${description.substring(0, 2000)}`;
     }
 
     async getAPIKey() {
-        // Try AWS API Settings
+        console.log('🔑 Suche API-Key für Anschreiben...');
+        
+        // 1. Try AWS API Settings
         if (window.awsAPISettings) {
             try {
                 const key = await window.awsAPISettings.getFullApiKey('openai');
-                if (key && !key.includes('...')) return key;
+                if (key && typeof key === 'string' && !key.includes('...') && key.startsWith('sk-')) {
+                    console.log('✅ API-Key über awsAPISettings geladen');
+                    return key;
+                }
             } catch (e) {
                 console.warn('AWS API Settings error:', e);
             }
         }
         
-        // Try global_api_keys
+        // 2. Try globalApiManager
+        if (window.globalApiManager) {
+            try {
+                const key = await window.globalApiManager.getApiKey('openai');
+                if (key && typeof key === 'string' && !key.includes('...') && key.startsWith('sk-')) {
+                    console.log('✅ API-Key über globalApiManager geladen');
+                    return key;
+                }
+            } catch (e) {}
+        }
+        
+        // 3. Try admin_state (Admin Panel)
+        try {
+            const stateManagerData = localStorage.getItem('admin_state');
+            if (stateManagerData) {
+                const state = JSON.parse(stateManagerData);
+                if (state.services?.openai?.key && !state.services.openai.key.includes('...')) {
+                    console.log('✅ API-Key aus admin_state geladen');
+                    return state.services.openai.key;
+                }
+                // Alternative Struktur
+                if (state.apiKeys?.openai?.apiKey && !state.apiKeys.openai.apiKey.includes('...')) {
+                    console.log('✅ API-Key aus admin_state.apiKeys geladen');
+                    return state.apiKeys.openai.apiKey;
+                }
+            }
+        } catch (e) {
+            console.warn('Kein API-Key in admin_state:', e);
+        }
+        
+        // 4. Try global_api_keys
         try {
             const globalKeys = JSON.parse(localStorage.getItem('global_api_keys') || '{}');
-            if (globalKeys.openai?.key && !globalKeys.openai.key.includes('...')) {
+            if (globalKeys.openai?.key && !globalKeys.openai.key.includes('...') && globalKeys.openai.key.startsWith('sk-')) {
+                console.log('✅ API-Key aus global_api_keys geladen');
                 return globalKeys.openai.key;
             }
         } catch (e) {}
         
+        // 5. Try direct openai_api_key
+        try {
+            const directKey = localStorage.getItem('openai_api_key');
+            if (directKey && !directKey.includes('...') && directKey.startsWith('sk-')) {
+                console.log('✅ API-Key direkt aus localStorage geladen');
+                return directKey;
+            }
+        } catch (e) {}
+        
+        console.warn('❌ Kein API-Key gefunden');
         return null;
     }
 
@@ -1381,6 +1459,9 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
         letter.style.fontSize = `${this.design.fontSize}pt`;
         letter.style.lineHeight = this.design.lineHeight;
         letter.style.padding = `${this.design.margin}mm`;
+        
+        // Style-spezifische Anpassungen
+        this.applyLetterStyle(letter);
 
         const signatureImg = document.getElementById('signatureImage');
         if (signatureImg) {
@@ -1405,6 +1486,127 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
                 signatureImg.style.display = 'none';
             }
         }
+    }
+    
+    applyLetterStyle(letter) {
+        // Reset all style classes
+        letter.classList.remove('style-modern', 'style-classic', 'style-minimal', 'style-elegant', 'style-creative', 'style-corporate');
+        
+        // Add current style class
+        letter.classList.add(`style-${this.design.style}`);
+        
+        // Style-spezifische CSS-Variablen
+        const accentColor = this.design.color;
+        
+        switch (this.design.style) {
+            case 'modern':
+                letter.style.setProperty('--header-style', `linear-gradient(135deg, ${accentColor} 0%, ${accentColor}dd 100%)`);
+                letter.style.setProperty('--header-text-color', '#ffffff');
+                letter.style.setProperty('--border-style', 'none');
+                letter.style.borderRadius = '0';
+                break;
+                
+            case 'classic':
+                letter.style.setProperty('--header-style', 'transparent');
+                letter.style.setProperty('--header-text-color', '#1e293b');
+                letter.style.setProperty('--border-style', `2px solid ${accentColor}`);
+                letter.style.borderLeft = `3px solid ${accentColor}`;
+                letter.style.borderRadius = '0';
+                break;
+                
+            case 'minimal':
+                letter.style.setProperty('--header-style', 'transparent');
+                letter.style.setProperty('--header-text-color', '#1e293b');
+                letter.style.setProperty('--border-style', 'none');
+                letter.style.borderRadius = '0';
+                letter.style.borderLeft = 'none';
+                break;
+                
+            case 'elegant':
+                letter.style.setProperty('--header-style', 'transparent');
+                letter.style.setProperty('--header-text-color', '#1e293b');
+                letter.style.setProperty('--border-style', `1px solid ${accentColor}`);
+                letter.style.borderTop = `4px solid ${accentColor}`;
+                letter.style.borderRadius = '0';
+                letter.style.borderLeft = 'none';
+                break;
+                
+            case 'creative':
+                letter.style.setProperty('--header-style', `linear-gradient(135deg, ${accentColor} 0%, ${this.adjustColor(accentColor, 30)} 50%, ${this.adjustColor(accentColor, 60)} 100%)`);
+                letter.style.setProperty('--header-text-color', '#ffffff');
+                letter.style.setProperty('--border-style', 'none');
+                letter.style.borderRadius = '12px';
+                letter.style.borderLeft = 'none';
+                break;
+                
+            case 'corporate':
+                letter.style.setProperty('--header-style', `linear-gradient(to bottom, ${accentColor} 0%, ${accentColor} 35%, transparent 35%)`);
+                letter.style.setProperty('--header-text-color', '#ffffff');
+                letter.style.setProperty('--border-style', 'none');
+                letter.style.borderRadius = '0';
+                letter.style.borderLeft = 'none';
+                break;
+                
+            default:
+                break;
+        }
+    }
+    
+    // Hilfsfunktion: Farbe anpassen (für Gradienten)
+    adjustColor(color, degrees) {
+        // Einfache Farbrotation für kreative Gradienten
+        const hex = color.replace('#', '');
+        const r = parseInt(hex.substr(0, 2), 16);
+        const g = parseInt(hex.substr(2, 2), 16);
+        const b = parseInt(hex.substr(4, 2), 16);
+        
+        // Rotate hue
+        const hsl = this.rgbToHsl(r, g, b);
+        hsl[0] = (hsl[0] + degrees / 360) % 1;
+        const rgb = this.hslToRgb(hsl[0], hsl[1], hsl[2]);
+        
+        return `#${rgb[0].toString(16).padStart(2, '0')}${rgb[1].toString(16).padStart(2, '0')}${rgb[2].toString(16).padStart(2, '0')}`;
+    }
+    
+    rgbToHsl(r, g, b) {
+        r /= 255; g /= 255; b /= 255;
+        const max = Math.max(r, g, b), min = Math.min(r, g, b);
+        let h, s, l = (max + min) / 2;
+        
+        if (max === min) {
+            h = s = 0;
+        } else {
+            const d = max - min;
+            s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+            switch (max) {
+                case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
+                case g: h = ((b - r) / d + 2) / 6; break;
+                case b: h = ((r - g) / d + 4) / 6; break;
+            }
+        }
+        return [h, s, l];
+    }
+    
+    hslToRgb(h, s, l) {
+        let r, g, b;
+        if (s === 0) {
+            r = g = b = l;
+        } else {
+            const hue2rgb = (p, q, t) => {
+                if (t < 0) t += 1;
+                if (t > 1) t -= 1;
+                if (t < 1/6) return p + (q - p) * 6 * t;
+                if (t < 1/2) return q;
+                if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+                return p;
+            };
+            const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+            const p = 2 * l - q;
+            r = hue2rgb(p, q, h + 1/3);
+            g = hue2rgb(p, q, h);
+            b = hue2rgb(p, q, h - 1/3);
+        }
+        return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
     }
 
     /**

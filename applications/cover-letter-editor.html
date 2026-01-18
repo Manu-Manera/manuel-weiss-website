@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="css/split-view.css?v=20260115">
     <link rel="stylesheet" href="css/collaboration.css?v=20260115">
     <link rel="manifest" href="../manifest.json">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&family=Lato:wght@300;400;700&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@300;400;500;600;700&family=Lato:wght@300;400;700&family=Montserrat:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700&family=Nunito:wght@300;400;500;600;700&family=Source+Sans+Pro:wght@300;400;600;700&family=Source+Code+Pro:wght@400;500;600&family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Quicksand:wght@300;400;500;600;700&family=DM+Sans:wght@400;500;700&family=Cormorant+Garamond:wght@400;500;600;700&family=Libre+Baskerville:wght@400;700&family=Crimson+Pro:wght@400;500;600;700&family=Cinzel:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -362,32 +362,89 @@
                             <span class="style-preview minimal-preview"></span>
                             <span>Minimal</span>
                         </button>
+                        <button class="style-btn" data-style="elegant">
+                            <span class="style-preview elegant-preview"></span>
+                            <span>Elegant</span>
+                        </button>
+                        <button class="style-btn" data-style="creative">
+                            <span class="style-preview creative-preview"></span>
+                            <span>Kreativ</span>
+                        </button>
+                        <button class="style-btn" data-style="corporate">
+                            <span class="style-preview corporate-preview"></span>
+                            <span>Corporate</span>
+                        </button>
                     </div>
                 </div>
 
-                <!-- Font Selection -->
+                <!-- Font Selection - Synchron mit Lebenslauf -->
                 <div class="design-section">
                     <label>Schriftart</label>
                     <select id="fontSelect" class="design-select">
-                        <option value="Inter">Inter (Modern)</option>
-                        <option value="Roboto">Roboto</option>
-                        <option value="Lato">Lato</option>
-                        <option value="Merriweather">Merriweather (Klassisch)</option>
-                        <option value="Arial">Arial</option>
-                        <option value="Times New Roman">Times New Roman</option>
+                        <optgroup label="Sans-Serif (Modern)">
+                            <option value="Inter" selected>Inter (Modern)</option>
+                            <option value="Roboto">Roboto</option>
+                            <option value="Open Sans">Open Sans</option>
+                            <option value="Lato">Lato</option>
+                            <option value="Montserrat">Montserrat</option>
+                            <option value="Nunito">Nunito</option>
+                            <option value="Source Sans Pro">Source Sans Pro</option>
+                            <option value="Poppins">Poppins</option>
+                            <option value="Quicksand">Quicksand</option>
+                            <option value="DM Sans">DM Sans</option>
+                        </optgroup>
+                        <optgroup label="Serif (Klassisch)">
+                            <option value="Merriweather">Merriweather</option>
+                            <option value="Playfair Display">Playfair Display</option>
+                            <option value="Cormorant Garamond">Cormorant Garamond</option>
+                            <option value="Libre Baskerville">Libre Baskerville</option>
+                            <option value="Crimson Pro">Crimson Pro</option>
+                            <option value="Cinzel">Cinzel</option>
+                        </optgroup>
+                        <optgroup label="Monospace (Technisch)">
+                            <option value="Source Code Pro">Source Code Pro</option>
+                            <option value="JetBrains Mono">JetBrains Mono</option>
+                            <option value="Fira Code">Fira Code</option>
+                        </optgroup>
+                        <optgroup label="System-Fonts">
+                            <option value="Arial">Arial</option>
+                            <option value="Times New Roman">Times New Roman</option>
+                            <option value="Georgia">Georgia</option>
+                            <option value="Helvetica Neue">Helvetica Neue</option>
+                        </optgroup>
                     </select>
                 </div>
 
-                <!-- Color Theme -->
+                <!-- Color Theme - Erweitert -->
                 <div class="design-section">
                     <label>Farbschema</label>
-                    <div class="color-options">
-                        <button class="color-btn active" data-color="#6366f1" style="background: #6366f1;"></button>
-                        <button class="color-btn" data-color="#3b82f6" style="background: #3b82f6;"></button>
-                        <button class="color-btn" data-color="#10b981" style="background: #10b981;"></button>
-                        <button class="color-btn" data-color="#8b5cf6" style="background: #8b5cf6;"></button>
-                        <button class="color-btn" data-color="#1e293b" style="background: #1e293b;"></button>
-                        <button class="color-btn" data-color="#ef4444" style="background: #ef4444;"></button>
+                    <div class="color-options" style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px;">
+                        <!-- Professional -->
+                        <button class="color-btn active" data-color="#6366f1" style="background: #6366f1;" title="Indigo"></button>
+                        <button class="color-btn" data-color="#3b82f6" style="background: #3b82f6;" title="Blau"></button>
+                        <button class="color-btn" data-color="#0891b2" style="background: #0891b2;" title="Cyan"></button>
+                        <button class="color-btn" data-color="#059669" style="background: #059669;" title="Smaragd"></button>
+                        <button class="color-btn" data-color="#10b981" style="background: #10b981;" title="Grün"></button>
+                        <button class="color-btn" data-color="#84cc16" style="background: #84cc16;" title="Lime"></button>
+                        <!-- Creative -->
+                        <button class="color-btn" data-color="#8b5cf6" style="background: #8b5cf6;" title="Violett"></button>
+                        <button class="color-btn" data-color="#a855f7" style="background: #a855f7;" title="Lila"></button>
+                        <button class="color-btn" data-color="#ec4899" style="background: #ec4899;" title="Pink"></button>
+                        <button class="color-btn" data-color="#f43f5e" style="background: #f43f5e;" title="Rose"></button>
+                        <button class="color-btn" data-color="#ef4444" style="background: #ef4444;" title="Rot"></button>
+                        <button class="color-btn" data-color="#f97316" style="background: #f97316;" title="Orange"></button>
+                        <!-- Neutral -->
+                        <button class="color-btn" data-color="#1e293b" style="background: #1e293b;" title="Slate"></button>
+                        <button class="color-btn" data-color="#374151" style="background: #374151;" title="Grau"></button>
+                        <button class="color-btn" data-color="#78716c" style="background: #78716c;" title="Stone"></button>
+                        <button class="color-btn" data-color="#a16207" style="background: #a16207;" title="Amber"></button>
+                        <button class="color-btn" data-color="#dc2626" style="background: #dc2626;" title="Schweizer Rot"></button>
+                        <button class="color-btn" data-color="#fbbf24" style="background: #fbbf24;" title="Gold"></button>
+                    </div>
+                    <!-- Custom Color Picker -->
+                    <div style="display: flex; align-items: center; gap: 8px; margin-top: 8px;">
+                        <input type="color" id="customColorPicker" value="#6366f1" style="width: 36px; height: 28px; border: none; cursor: pointer; border-radius: 4px;">
+                        <input type="text" id="customColorHex" value="#6366f1" class="design-select" style="flex: 1; font-family: monospace; font-size: 0.8rem;" placeholder="#HEX">
                     </div>
                 </div>
 
