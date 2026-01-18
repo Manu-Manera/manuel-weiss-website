@@ -287,7 +287,7 @@ async function saveApiSettings(userId, data) {
         // Encrypt and save each provider
         const providers = ['openai', 'anthropic', 'google'];
         const defaultModels = {
-            openai: 'gpt-4o',
+            openai: 'gpt-3.5-turbo',
             anthropic: 'claude-3-sonnet-20240229',
             google: 'gemini-pro'
         };

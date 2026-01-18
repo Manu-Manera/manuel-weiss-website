@@ -143,7 +143,7 @@ const AIProviderManager = {
             return {
                 type: 'openai',
                 key: legacyKey,
-                config: { model: 'gpt-4o-mini', maxTokens: 1000, temperature: 0.7 }
+                config: { model: 'gpt-3.5-turbo', maxTokens: 1000, temperature: 0.7 }
             };
         }
 
@@ -160,7 +160,7 @@ const AIProviderManager = {
                 type: 'openai',
                 key: apiKeys.openai.apiKey,
                 config: {
-                    model: apiKeys.openai.model || 'gpt-4o-mini',
+                    model: apiKeys.openai.model || 'gpt-3.5-turbo',
                     maxTokens: apiKeys.openai.maxTokens || 1000,
                     temperature: apiKeys.openai.temperature || 0.7
                 }
@@ -262,7 +262,7 @@ const AIProviderManager = {
                 'Authorization': `Bearer ${provider.key}`
             },
             body: JSON.stringify({
-                model: provider.config.model || 'gpt-4o-mini',
+                model: provider.config.model || 'gpt-3.5-turbo',
                 messages: [
                     { role: 'system', content: systemPrompt },
                     { role: 'user', content: prompt }

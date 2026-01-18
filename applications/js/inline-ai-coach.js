@@ -433,7 +433,7 @@ Antworte NUR mit dem JSON-Array, keine zusätzlichen Erklärungen.`;
                     'Authorization': `Bearer ${apiKey}`
                 },
                 body: JSON.stringify({
-                    model: 'gpt-4o-mini',
+                    model: 'gpt-3.5-turbo',
                     messages: [
                         { role: 'system', content: 'Du bist ein professioneller Bewerbungsberater. Antworte ausschließlich mit gültigem JSON.' },
                         { role: 'user', content: prompt }
