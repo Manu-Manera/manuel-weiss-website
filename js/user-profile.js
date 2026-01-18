@@ -1516,29 +1516,80 @@ class UserProfile {
 
     /**
      * Applications Tab - Bewerbungsmanager
+     * Dashboard wird jetzt als iframe eingebunden
      */
     initApplicationsTab() {
-        // Event Listener für "Neue Bewerbung erstellen" Button
-        const startNewApplicationBtn = document.getElementById('startNewApplication');
-        if (startNewApplicationBtn) {
-            startNewApplicationBtn.addEventListener('click', () => {
-                this.startNewApplication();
-            });
-        }
+        // Dashboard wird im iframe geladen, keine Event Listener nötig
+        // Das Dashboard hat seine eigenen Event Handler
+    }
+    
+    /**
+     * API-First: Lade Tab-Daten über API
+     */
+    async loadTabDataFromAPI(tabName) {
+        try {
+            const token = await this.getAuthToken();
+            if (!token) {
+                console.warn('⚠️ Kein Auth-Token für API-Call');
+                return;
+            }
 
-        // Event Listener für Status-Filter
-        const statusFilter = document.getElementById('statusFilter');
-        if (statusFilter) {
-            statusFilter.addEventListener('change', () => {
-                this.filterApplications(statusFilter.value);
-            });
-        }
+            const apiBase = '/.netlify/functions/user-profile-api';
+            let endpoint = '';
 
-        // Lade Bewerbungsdaten wenn Tab aktiv ist
-        if (this.currentTab === 'applications') {
-            this.loadApplicationsData();
-            this.loadCoverLetters();
-            this.loadResumes();
+            switch (tabName) {
+                case 'personal':
+                    endpoint = '/personal';
+                    break;
+                case 'applications':
+                    endpoint = '/applications';
+                    break;
+                case 'settings':
+                    endpoint = '/settings';
+                    break;
+                case 'progress':
+                    endpoint = '/progress';
+                    break;
+                case 'achievements':
+                    endpoint = '/achievements';
+                    break;
+                case 'training':
+                    endpoint = '/training';
+                    break;
+                case 'nutrition':
+                    endpoint = '/nutrition';
+                    break;
+                case 'coach':
+                    endpoint = '/coach';
+                    break;
+                case 'journal':
+                    endpoint = '/journal';
+                    break;
+                default:
+                    return;
+            }
+
+            const response = await fetch(`${apiBase}${endpoint}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log(`✅ Tab-Daten geladen für ${tabName}:`, data);
+                
+                // Verarbeite Daten je nach Tab
+                if (tabName === 'personal' && data) {
+                    this.populateFormFields(data);
+                }
+                // Weitere Tab-spezifische Verarbeitung kann hier hinzugefügt werden
+            } else {
+                console.warn(`⚠️ API-Call für ${tabName} fehlgeschlagen:`, response.status);
+            }
+        } catch (error) {
+            console.error(`❌ Fehler beim Laden der Tab-Daten für ${tabName}:`, error);
         }
     }
 
