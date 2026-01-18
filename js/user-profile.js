@@ -431,71 +431,80 @@ class UserProfile {
             
             // Lade Bewerbungsdaten beim Wechsel zum applications-Tab
             if (tabName === 'applications') {
-                // Dashboard wird im iframe geladen, keine zusätzliche Datenladung nötig
-                // Das Dashboard lädt seine eigenen Daten
-                // Stelle sicher, dass iframe geladen wird
+                // Dashboard wird im iframe geladen
                 const iframe = document.getElementById('dashboardIframe');
-                if (iframe) {
-                    console.log('🔄 Lade Dashboard iframe...');
-                    
-                    // Zeige Loading-State
-                    const loading = document.getElementById('iframeLoading');
-                    if (loading) loading.style.display = 'block';
-                    const error = document.getElementById('iframeError');
-                    if (error) error.style.display = 'none';
-                    
-                    // Setze iframe src
-                    const dashboardUrl = 'applications/dashboard.html?action=new-application&embedded=true';
-                    if (iframe.src !== window.location.origin + '/' + dashboardUrl && !iframe.src.includes(dashboardUrl)) {
-                        console.log('📡 Setze iframe src:', dashboardUrl);
-                        iframe.src = dashboardUrl;
-                    }
-                    
-                    // Prüfe ob iframe geladen wird
-                    iframe.addEventListener('load', () => {
-                        console.log('✅ Dashboard iframe load-Event');
-                        setTimeout(() => {
-                            if (loading) loading.style.display = 'none';
-                            if (error) error.style.display = 'none';
-                        }, 1000);
-                    });
-                    
-                    // Höre auf Nachrichten vom Dashboard
-                    window.addEventListener('message', (event) => {
-                        if (event.data && event.data.type === 'dashboard-loaded') {
-                            console.log('✅ Dashboard hat geladen-Signal gesendet');
-                            if (loading) loading.style.display = 'none';
-                            if (error) error.style.display = 'none';
-                        }
-                    });
-                    
-                    iframe.addEventListener('error', () => {
-                        console.error('❌ Dashboard iframe Fehler');
-                        if (loading) loading.style.display = 'none';
-                        if (error) error.style.display = 'block';
-                    });
-                    
-                    // Timeout für Error-Handling (falls iframe nicht lädt)
-                    setTimeout(() => {
-                        try {
-                            const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
-                            if (!iframeDoc || !iframeDoc.body) {
-                                console.warn('⚠️ Dashboard iframe scheint nicht geladen zu sein');
-                                if (loading) loading.style.display = 'none';
-                                if (error) error.style.display = 'block';
-                            } else {
-                                console.log('✅ Dashboard iframe Inhalt gefunden');
-                                if (loading) loading.style.display = 'none';
-                            }
-                        } catch (e) {
-                            // CORS-Fehler erwartet, aber iframe könnte trotzdem geladen sein
-                            console.log('ℹ️ CORS-Check nicht möglich (erwartet bei iframe)');
-                            if (loading) loading.style.display = 'none';
-                        }
-                    }, 3000);
-                } else {
+                const loading = document.getElementById('iframeLoading');
+                const error = document.getElementById('iframeError');
+                
+                if (!iframe) {
                     console.error('❌ Dashboard iframe nicht gefunden!');
+                    return;
                 }
+                
+                console.log('🔄 Initialisiere Dashboard iframe...');
+                
+                // Zeige Loading-State
+                if (loading) loading.style.display = 'block';
+                if (error) error.style.display = 'none';
+                
+                // Setze iframe src (falls noch nicht gesetzt)
+                const dashboardUrl = 'applications/dashboard.html?action=new-application&embedded=true';
+                const currentSrc = iframe.src || '';
+                
+                if (!currentSrc.includes('dashboard.html')) {
+                    console.log('📡 Setze iframe src:', dashboardUrl);
+                    iframe.src = dashboardUrl;
+                } else {
+                    console.log('ℹ️ iframe src bereits gesetzt');
+                }
+                
+                // Load-Event Handler (einmalig)
+                const loadHandler = () => {
+                    console.log('✅ Dashboard iframe load-Event empfangen');
+                    setTimeout(() => {
+                        if (loading) loading.style.display = 'none';
+                        if (error) error.style.display = 'none';
+                    }, 500);
+                    iframe.removeEventListener('load', loadHandler);
+                };
+                iframe.addEventListener('load', loadHandler);
+                
+                // Error-Event Handler
+                const errorHandler = () => {
+                    console.error('❌ Dashboard iframe Error-Event');
+                    if (loading) loading.style.display = 'none';
+                    if (error) error.style.display = 'block';
+                    iframe.removeEventListener('error', errorHandler);
+                };
+                iframe.addEventListener('error', errorHandler);
+                
+                // PostMessage Handler für Dashboard-Kommunikation
+                const messageHandler = (event) => {
+                    if (event.data && event.data.type === 'dashboard-loaded') {
+                        console.log('✅ Dashboard hat geladen-Signal gesendet');
+                        if (loading) loading.style.display = 'none';
+                        if (error) error.style.display = 'none';
+                    }
+                };
+                window.addEventListener('message', messageHandler);
+                
+                // Timeout-Fallback (nach 5 Sekunden)
+                setTimeout(() => {
+                    try {
+                        const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
+                        if (iframeDoc && iframeDoc.body && iframeDoc.body.children.length > 0) {
+                            console.log('✅ Dashboard iframe Inhalt gefunden');
+                            if (loading) loading.style.display = 'none';
+                        } else {
+                            console.warn('⚠️ Dashboard iframe scheint leer zu sein');
+                            if (loading) loading.style.display = 'none';
+                        }
+                    } catch (e) {
+                        // CORS-Fehler ist normal bei iframes
+                        console.log('ℹ️ CORS-Check nicht möglich (normal bei iframe)');
+                        if (loading) loading.style.display = 'none';
+                    }
+                }, 5000);
             }
             
             // API-First: Lade Tab-Daten über API (nur wenn nicht applications, da das im iframe lädt)
