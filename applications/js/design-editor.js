@@ -1156,7 +1156,7 @@ class DesignEditor {
                            min="1" 
                            max="${maxLevel}" 
                            value="${level}"
-                           style="width: 100%; height: 8px; appearance: none; -webkit-appearance: none; -moz-appearance: none; background: linear-gradient(to right, var(--design-primary, #6366f1) ${percentage}%, rgba(255,255,255,0.15) ${percentage}%); border-radius: 4px; cursor: pointer; outline: none; margin: 0; padding: 0;">
+                           style="width: 100%; height: 8px; appearance: none; -webkit-appearance: none; -moz-appearance: none; background: linear-gradient(to right, var(--design-primary, #6366f1) ${percentage}%, rgba(255,255,255,0.15) ${percentage}%); border-radius: 4px; cursor: pointer; outline: none; margin: 0; padding: 0; position: relative; z-index: 10; pointer-events: auto;">
                 </div>
             </div>
         `;
@@ -3030,10 +3030,15 @@ class DesignEditor {
             `;
         }
         
-        // LinkedIn URL formatieren (nur Username anzeigen)
-        const linkedinDisplay = data.linkedin ? (data.linkedin.includes('linkedin.com') 
-            ? data.linkedin.replace(/.*linkedin\.com\/in\//, '').replace(/\/$/, '')
-            : data.linkedin) : '';
+        // LinkedIn URL vollständig anzeigen (mit https:// wenn nicht vorhanden)
+        let linkedinDisplay = data.linkedin || '';
+        if (linkedinDisplay && !linkedinDisplay.startsWith('http')) {
+            if (linkedinDisplay.includes('linkedin.com')) {
+                linkedinDisplay = 'https://' + linkedinDisplay;
+            } else {
+                linkedinDisplay = 'https://www.linkedin.com/in/' + linkedinDisplay.replace(/^\/+/, '');
+            }
+        }
         
         const headerContent = `
             ${resumeTitleHtml}
@@ -3323,9 +3328,9 @@ class DesignEditor {
                         : levelInfo.text;
                     
                     return `
-                    <div class="resume-preview-item" style="display: flex; justify-content: space-between; align-items: center;">
-                        <span>${lang.language}</span>
-                        <span style="color: var(--resume-muted-color); font-size: 0.9em;">${displayText}</span>
+                    <div class="resume-preview-item" style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;">
+                        <span style="flex: 1; min-width: 100px;">${lang.language}</span>
+                        <span style="color: var(--resume-muted-color); font-size: 0.9em; text-align: right; white-space: nowrap;">${displayText}</span>
                     </div>
                 `}).join('')}
             </div>
@@ -3594,8 +3599,8 @@ class DesignEditor {
                 pagebreak: { mode: ['css', 'legacy'] }
             };
             
-            // Export
-            await html2pdf().set(opt).from(preview).save();
+            // Export - verwende clone statt original
+            await html2pdf().set(opt).from(exportContainer).save();
             
             // Cleanup
             document.body.removeChild(exportContainer);

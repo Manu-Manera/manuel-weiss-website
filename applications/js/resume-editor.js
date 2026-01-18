@@ -219,9 +219,14 @@ document.getElementById('resumeForm').addEventListener('submit', async (e) => {
             resumeId = Date.now().toString(36);
         }
         
+        // Versionsname aus Input-Feld holen
+        const versionNameInput = document.getElementById('resumeVersionName');
+        const versionName = versionNameInput?.value?.trim() || null;
+        
         const resumeData = {
             id: resumeId,
             ...formData,
+            name: versionName || formData.name || `${formData.firstName || ''} ${formData.lastName || ''}`.trim() || 'Unbenannter Lebenslauf',
             createdAt: formData.createdAt || new Date().toISOString(),
             updatedAt: new Date().toISOString()
         };
@@ -247,10 +252,7 @@ document.getElementById('resumeForm').addEventListener('submit', async (e) => {
         
         showNotification('✅ Lebenslauf gespeichert!', 'success');
         
-        // Zurück zum Dashboard nach kurzem Delay
-        setTimeout(() => {
-            window.location.href = 'dashboard.html#resume';
-        }, 1500);
+        // Nur speichern, nicht zur Übersicht zurückkehren
         
     } catch (error) {
         console.error('Error saving resume:', error);
