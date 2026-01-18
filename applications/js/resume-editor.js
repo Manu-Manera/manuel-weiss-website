@@ -664,7 +664,7 @@ ${text}`;
             },
             body: JSON.stringify({
                 model: 'gpt-5.2',
-                reasoning_effort: 'medium',
+                reasoning_effort: 'low',
                 messages: [
                     {
                         role: 'system',
@@ -1947,9 +1947,56 @@ function removeLanguage(languageId) {
     document.querySelector(`[data-language-id="${languageId}"]`).remove();
 }
 
-function updateProgress(percent, text) {
-    document.getElementById('progressFill').style.width = percent + '%';
-    document.getElementById('progressText').textContent = text;
+let progressInterval = null;
+
+function updateProgress(percent, text, animate = false) {
+    const progressFill = document.getElementById('progressFill');
+    const progressText = document.getElementById('progressText');
+    const progressContainer = document.getElementById('uploadProgress');
+    
+    if (progressFill) progressFill.style.width = percent + '%';
+    if (progressText) progressText.textContent = text;
+    
+    // Zeige Progress-Container
+    if (progressContainer && percent > 0) {
+        progressContainer.style.display = 'block';
+    }
+    
+    // Stoppe vorherige Animation
+    if (progressInterval) {
+        clearInterval(progressInterval);
+        progressInterval = null;
+    }
+    
+    // Animierte Progress-Anzeige während KI-Verarbeitung
+    if (animate && progressFill) {
+        let animPercent = percent;
+        const maxPercent = Math.min(percent + 25, 95); // Max 95% während Animation
+        
+        progressInterval = setInterval(() => {
+            animPercent += 0.3;
+            if (animPercent >= maxPercent) {
+                animPercent = percent; // Reset und wieder von vorn
+            }
+            progressFill.style.width = animPercent + '%';
+        }, 100);
+        
+        // Pulsierender Text-Effekt
+        if (progressText) {
+            progressText.style.animation = 'pulse 1.5s ease-in-out infinite';
+        }
+    } else if (progressText) {
+        progressText.style.animation = 'none';
+    }
+}
+
+function stopProgressAnimation() {
+    if (progressInterval) {
+        clearInterval(progressInterval);
+        progressInterval = null;
+    }
+    const progressText = document.getElementById('progressText');
+    if (progressText) progressText.style.animation = 'none';
 }
 
 function discardOCR() {
