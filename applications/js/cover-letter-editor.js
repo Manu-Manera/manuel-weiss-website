@@ -37,6 +37,17 @@ class CoverLetterEditor {
     async init() {
         console.log('📝 Cover Letter Editor initializing...');
         
+        // Warte kurz, um sicherzustellen, dass DOM vollständig geladen ist
+        await new Promise(resolve => {
+            if (document.readyState === 'complete') {
+                resolve();
+            } else {
+                window.addEventListener('load', resolve);
+                // Fallback nach 100ms
+                setTimeout(resolve, 100);
+            }
+        });
+        
         // Setup event handlers
         this.setupOptionButtons();
         this.setupDesignControls();
@@ -373,30 +384,64 @@ ${description.substring(0, 2000)}`;
     }
 
     setupGenerateButton() {
-        const generateBtn = document.getElementById('generateBtn');
-        console.log('🔍 Setup Generate Button - Button gefunden:', !!generateBtn);
-        if (generateBtn) {
-            generateBtn.addEventListener('click', (e) => {
-                console.log('✅ Generate Button geklickt!');
-                e.preventDefault();
-                e.stopPropagation();
-                this.generateCoverLetter();
-            });
-            console.log('✅ Event-Listener für Generate Button registriert');
-        } else {
-            console.error('❌ Generate Button nicht gefunden! ID: generateBtn');
+        // Warte bis Button im DOM ist
+        const setupButton = () => {
+            const generateBtn = document.getElementById('generateBtn');
+            console.log('🔍 Setup Generate Button - Button gefunden:', !!generateBtn);
+            
+            if (generateBtn) {
+                // Entferne alten onclick-Handler falls vorhanden
+                generateBtn.onclick = null;
+                
+                // Füge Event-Listener hinzu
+                generateBtn.addEventListener('click', (e) => {
+                    console.log('✅ Generate Button geklickt (Event-Listener)!');
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (this && typeof this.generateCoverLetter === 'function') {
+                        this.generateCoverLetter();
+                    } else {
+                        console.error('❌ this.generateCoverLetter ist keine Funktion!', this);
+                    }
+                }, { capture: true });
+                
+                console.log('✅ Event-Listener für Generate Button registriert');
+            } else {
+                console.error('❌ Generate Button nicht gefunden! ID: generateBtn');
+                // Retry nach kurzer Verzögerung
+                setTimeout(setupButton, 100);
+            }
+        };
+        
+        // Versuche sofort
+        setupButton();
+        
+        // Auch nach DOMContentLoaded nochmal versuchen (falls Button später geladen wird)
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', setupButton);
         }
         
         // Auch für Mobile Button
-        const mobileGenerateBtn = document.getElementById('mobileGenerateBtn');
-        if (mobileGenerateBtn) {
-            mobileGenerateBtn.addEventListener('click', (e) => {
-                console.log('✅ Mobile Generate Button geklickt!');
-                e.preventDefault();
-                e.stopPropagation();
-                this.generateCoverLetter();
-            });
-        }
+        const setupMobileButton = () => {
+            const mobileGenerateBtn = document.getElementById('mobileGenerateBtn');
+            if (mobileGenerateBtn) {
+                mobileGenerateBtn.addEventListener('click', (e) => {
+                    console.log('✅ Mobile Generate Button geklickt!');
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (this && typeof this.generateCoverLetter === 'function') {
+                        this.generateCoverLetter();
+                    } else {
+                        // Fallback: Desktop Button klicken
+                        const desktopBtn = document.getElementById('generateBtn');
+                        if (desktopBtn) desktopBtn.click();
+                    }
+                }, { capture: true });
+            } else {
+                setTimeout(setupMobileButton, 100);
+            }
+        };
+        setupMobileButton();
     }
 
     setupSaveExport() {
