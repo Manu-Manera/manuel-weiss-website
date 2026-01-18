@@ -220,7 +220,7 @@
                 </div>
 
                 <!-- Generate Button -->
-                <button id="generateBtn" class="btn-generate">
+                <button id="generateBtn" class="btn-generate" onclick="if(window.coverLetterEditor){window.coverLetterEditor.generateCoverLetter();} else {console.error('CoverLetterEditor nicht initialisiert');}">
                     <i class="fas fa-magic"></i> Anschreiben generieren
                 </button>
             </aside>
