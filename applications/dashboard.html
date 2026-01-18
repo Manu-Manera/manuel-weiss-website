@@ -1999,8 +1999,24 @@ Ihre Aufgaben:
             
             // Initialize dashboard (auch im embedded-Modus)
             console.log('🚀 Initialisiere Dashboard...');
-            initDashboard();
+            await initDashboard();
             console.log('✅ Dashboard initialisiert');
+            
+            // Benachrichtige Parent-Frame nach vollständiger Initialisierung
+            if (isEmbedded && window.parent !== window.self) {
+                setTimeout(() => {
+                    try {
+                        window.parent.postMessage({ 
+                            type: 'dashboard-initialized', 
+                            source: 'dashboard',
+                            timestamp: Date.now()
+                        }, '*');
+                        console.log('✅ Dashboard-Initialisierung an Parent-Frame gemeldet');
+                    } catch (e) {
+                        console.warn('⚠️ Konnte Parent-Frame nicht benachrichtigen:', e);
+                    }
+                }, 1000);
+            }
             
             // Load cover letters when switching to that tab - nutze window.loadCoverLetters aus dashboard-core.js
             if (typeof window.loadCoverLetters === 'function') {

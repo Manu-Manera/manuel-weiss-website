@@ -311,13 +311,22 @@ body {
 }
 
 /* Applications Tab: Kein Padding für iframe, volle Höhe */
+.tab-content {
+    padding: 2rem;
+}
+
+.tab-content:has(#applications) {
+    padding: 0 !important;
+}
+
 .tab-panel#applications {
     padding: 0 !important;
     margin: 0 !important;
-    height: calc(100vh - 380px) !important;
+    height: calc(100vh - 360px) !important;
     min-height: 600px !important;
     position: relative !important;
     overflow: hidden !important;
+    display: block !important;
 }
 
 .tab-panel {
