@@ -31,10 +31,24 @@ async function loadResume() {
         const action = urlParams.get('action');
         
         if (resumeId) {
+            // Zeige Loading-Status
+            showNotification('Lebenslauf wird geladen...', 'info');
+            
             // Versuche aus Cloud zu laden
             let resumes = [];
             if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
                 console.log('📄 Lade Lebenslauf aus Cloud...');
+                // Versuche zuerst direkt per ID zu laden (schneller)
+                if (window.cloudDataService.getResumeById) {
+                    const resume = await window.cloudDataService.getResumeById(resumeId);
+                    if (resume) {
+                        resumeData = resume;
+                        populateForm(resume);
+                        showNotification('Lebenslauf geladen', 'success');
+                        return;
+                    }
+                }
+                // Fallback: Alle laden und filtern
                 resumes = await window.cloudDataService.getResumes();
             } else {
                 // Fallback: localStorage
@@ -63,6 +77,7 @@ async function loadResume() {
         
     } catch (error) {
         console.error('Error loading resume:', error);
+        showNotification('Fehler beim Laden', 'error');
         await loadProfileData();
     }
 }
