@@ -933,6 +933,115 @@
     border: 1px solid #e2e8f0;
 }
 
+.elegant-preview {
+    background: linear-gradient(to bottom, #f8fafc 20%, #fef3c7 20% 25%, #f8fafc 25%);
+    border: 1px solid #d4af37;
+}
+
+.creative-preview {
+    background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 50%, #3b82f6 100%);
+    border-radius: 8px;
+}
+
+.corporate-preview {
+    background: linear-gradient(to bottom, #1e3a5f 35%, #f8fafc 35%);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LETTER STYLE VARIANTS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Modern Style */
+.generated-letter.style-modern .letter-header {
+    background: var(--header-style, linear-gradient(135deg, #6366f1 0%, #6366f1dd 100%));
+    color: var(--header-text-color, #ffffff);
+    padding: 1.5rem;
+    margin: calc(var(--letter-margin, 25mm) * -1);
+    margin-bottom: 2rem;
+    border-radius: 0;
+}
+
+.generated-letter.style-modern .letter-sender-name {
+    color: inherit;
+    font-weight: 600;
+}
+
+.generated-letter.style-modern .letter-sender-contact {
+    color: rgba(255,255,255,0.9);
+}
+
+/* Classic Style */
+.generated-letter.style-classic {
+    border-left: 3px solid var(--letter-accent, #6366f1);
+}
+
+.generated-letter.style-classic .letter-header {
+    background: transparent;
+    color: #1e293b;
+    padding-left: 1rem;
+}
+
+/* Minimal Style */
+.generated-letter.style-minimal .letter-header {
+    background: transparent;
+    color: #1e293b;
+}
+
+.generated-letter.style-minimal .letter-sender-name {
+    font-weight: 500;
+}
+
+/* Elegant Style */
+.generated-letter.style-elegant {
+    border-top: 4px solid var(--letter-accent, #6366f1);
+}
+
+.generated-letter.style-elegant .letter-header {
+    background: transparent;
+    color: #1e293b;
+    padding-top: 1rem;
+}
+
+.generated-letter.style-elegant .letter-sender-name {
+    font-family: 'Playfair Display', 'Georgia', serif;
+    font-size: 1.25em;
+}
+
+/* Creative Style */
+.generated-letter.style-creative {
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.generated-letter.style-creative .letter-header {
+    background: var(--header-style, linear-gradient(135deg, #ec4899 0%, #8b5cf6 50%, #3b82f6 100%));
+    color: #ffffff;
+    padding: 2rem;
+    margin: calc(var(--letter-margin, 25mm) * -1);
+    margin-bottom: 2rem;
+    border-radius: 12px 12px 0 0;
+}
+
+.generated-letter.style-creative .letter-sender-name {
+    font-size: 1.3em;
+    font-weight: 700;
+}
+
+/* Corporate Style */
+.generated-letter.style-corporate .letter-header {
+    background: var(--letter-accent, #1e3a5f);
+    color: #ffffff;
+    padding: 2rem;
+    margin: calc(var(--letter-margin, 25mm) * -1);
+    margin-bottom: 2rem;
+}
+
+.generated-letter.style-corporate .letter-sender-name {
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
 .style-btn span:last-child {
     font-size: 0.7rem;
     color: var(--cl-text-muted);
