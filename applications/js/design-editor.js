@@ -697,6 +697,7 @@ class DesignEditor {
                 this.settings.skillDisplay = e.target.value;
                 this.saveSettings();
                 this.updatePreview();
+                this.renderSkillLevelEditor();
             });
         }
         
@@ -707,6 +708,7 @@ class DesignEditor {
                 this.settings.skillMaxLevel = parseInt(e.target.value);
                 this.saveSettings();
                 this.updatePreview();
+                this.renderSkillLevelEditor();
             });
         }
         
@@ -719,6 +721,153 @@ class DesignEditor {
                 this.updatePreview();
             });
         }
+        
+        // Refresh button
+        const refreshBtn = document.getElementById('refreshSkillLevels');
+        if (refreshBtn) {
+            refreshBtn.addEventListener('click', () => {
+                this.renderSkillLevelEditor();
+                this.showNotification('Skills aktualisiert', 'success');
+            });
+        }
+        
+        // Initial render after a short delay (to let form data load)
+        setTimeout(() => this.renderSkillLevelEditor(), 500);
+    }
+    
+    renderSkillLevelEditor() {
+        const container = document.getElementById('skillLevelEditor');
+        if (!container) return;
+        
+        const skillsData = this.getSkillsData();
+        const maxLevel = this.settings.skillMaxLevel || 10;
+        
+        if (!skillsData.technicalSkills?.length && !skillsData.softSkills?.length) {
+            container.innerHTML = `
+                <p style="font-size: 0.75rem; color: var(--design-text-muted); font-style: italic;">
+                    Fügen Sie erst Skills im Formular hinzu...
+                </p>
+            `;
+            return;
+        }
+        
+        let html = '';
+        
+        // Technical Skills
+        skillsData.technicalSkills.forEach((category, catIndex) => {
+            if (category.category) {
+                html += `<div style="font-size: 0.7rem; font-weight: 600; color: var(--design-text-secondary); margin: 8px 0 4px; text-transform: uppercase;">${category.category}</div>`;
+            }
+            (category.skills || []).forEach((skill, skillIndex) => {
+                const name = typeof skill === 'string' ? skill : skill.name;
+                const level = typeof skill === 'object' ? (skill.level || 5) : 5;
+                html += this.renderSkillLevelRow(name, level, maxLevel, 'tech', catIndex, skillIndex);
+            });
+        });
+        
+        // Soft Skills
+        if (skillsData.softSkills?.length) {
+            html += `<div style="font-size: 0.7rem; font-weight: 600; color: var(--design-text-secondary); margin: 12px 0 4px; text-transform: uppercase;">Soft Skills</div>`;
+            skillsData.softSkills.forEach((skill, index) => {
+                const name = typeof skill === 'string' ? skill : skill.name;
+                const level = typeof skill === 'object' ? (skill.level || 5) : 5;
+                html += this.renderSkillLevelRow(name, level, maxLevel, 'soft', 0, index);
+            });
+        }
+        
+        container.innerHTML = html;
+        
+        // Add click handlers for dots
+        container.querySelectorAll('.skill-dot-edit').forEach(dot => {
+            dot.addEventListener('click', (e) => {
+                const newLevel = parseInt(e.target.dataset.level);
+                const type = e.target.dataset.type;
+                const catIndex = parseInt(e.target.dataset.cat);
+                const skillIndex = parseInt(e.target.dataset.skill);
+                
+                this.updateSkillLevel(type, catIndex, skillIndex, newLevel);
+            });
+        });
+        
+        // Add input handlers for sliders
+        container.querySelectorAll('.skill-level-slider').forEach(slider => {
+            slider.addEventListener('input', (e) => {
+                const newLevel = parseInt(e.target.value);
+                const type = e.target.dataset.type;
+                const catIndex = parseInt(e.target.dataset.cat);
+                const skillIndex = parseInt(e.target.dataset.skill);
+                
+                // Update display
+                const display = e.target.nextElementSibling;
+                if (display) display.textContent = newLevel;
+                
+                this.updateSkillLevel(type, catIndex, skillIndex, newLevel);
+            });
+        });
+    }
+    
+    renderSkillLevelRow(name, level, maxLevel, type, catIndex, skillIndex) {
+        const dots = Array(10).fill(0).map((_, i) => {
+            const dotLevel = Math.round((i + 1) * (maxLevel / 10));
+            const filled = i < Math.round((level / maxLevel) * 10);
+            return `<span class="skill-dot-edit ${filled ? 'filled' : ''}" 
+                         data-level="${dotLevel}" data-type="${type}" data-cat="${catIndex}" data-skill="${skillIndex}"
+                         style="width: 12px; height: 12px; border-radius: 50%; display: inline-block; margin: 0 2px;
+                                background: ${filled ? 'var(--design-primary)' : 'rgba(255,255,255,0.2)'}; cursor: pointer;
+                                transition: transform 0.1s; border: 1px solid rgba(255,255,255,0.3);"
+                         onmouseover="this.style.transform='scale(1.2)'" 
+                         onmouseout="this.style.transform='scale(1)'"></span>`;
+        }).join('');
+        
+        return `
+            <div style="display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                <span style="flex: 1; font-size: 0.8rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${name}">${name}</span>
+                <div style="display: flex; align-items: center; gap: 2px;">
+                    ${dots}
+                </div>
+                <span style="font-size: 0.7rem; min-width: 24px; text-align: right; color: var(--design-text-muted);">${level}</span>
+            </div>
+        `;
+    }
+    
+    updateSkillLevel(type, catIndex, skillIndex, newLevel) {
+        // Update the actual form data
+        if (type === 'tech') {
+            const containers = document.querySelectorAll('#technicalSkillsContainer .skill-category-item, #technicalSkillsContainer .skill-item-rated:not(.soft)');
+            let currentCatIndex = -1;
+            let currentSkillIndex = -1;
+            
+            containers.forEach(item => {
+                if (item.classList.contains('skill-category-item')) {
+                    currentCatIndex++;
+                    currentSkillIndex = -1;
+                    
+                    if (currentCatIndex === catIndex) {
+                        const skillTags = item.querySelectorAll('.skill-tag');
+                        if (skillTags[skillIndex]) {
+                            const levelInput = skillTags[skillIndex].querySelector('input[type="range"], select[data-field="level"]');
+                            if (levelInput) levelInput.value = newLevel;
+                        }
+                    }
+                } else if (item.classList.contains('skill-item-rated')) {
+                    currentSkillIndex++;
+                    if (currentSkillIndex === skillIndex) {
+                        const levelInput = item.querySelector('[data-field="skillLevel"]');
+                        if (levelInput) levelInput.value = newLevel;
+                    }
+                }
+            });
+        } else if (type === 'soft') {
+            const softSkills = document.querySelectorAll('#softSkillsContainer .skill-item-rated.soft');
+            if (softSkills[skillIndex]) {
+                const levelInput = softSkills[skillIndex].querySelector('[data-field="skillLevel"]');
+                if (levelInput) levelInput.value = newLevel;
+            }
+        }
+        
+        // Re-render preview
+        this.updatePreview();
+        this.renderSkillLevelEditor();
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
