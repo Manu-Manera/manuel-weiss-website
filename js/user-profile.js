@@ -453,9 +453,20 @@ class UserProfile {
                     
                     // Prüfe ob iframe geladen wird
                     iframe.addEventListener('load', () => {
-                        console.log('✅ Dashboard iframe geladen');
-                        if (loading) loading.style.display = 'none';
-                        if (error) error.style.display = 'none';
+                        console.log('✅ Dashboard iframe load-Event');
+                        setTimeout(() => {
+                            if (loading) loading.style.display = 'none';
+                            if (error) error.style.display = 'none';
+                        }, 1000);
+                    });
+                    
+                    // Höre auf Nachrichten vom Dashboard
+                    window.addEventListener('message', (event) => {
+                        if (event.data && event.data.type === 'dashboard-loaded') {
+                            console.log('✅ Dashboard hat geladen-Signal gesendet');
+                            if (loading) loading.style.display = 'none';
+                            if (error) error.style.display = 'none';
+                        }
                     });
                     
                     iframe.addEventListener('error', () => {
