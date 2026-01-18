@@ -1930,11 +1930,33 @@ Ihre Aufgaben:
         const urlParams = new URLSearchParams(window.location.search);
         const isEmbedded = urlParams.get('embedded') === 'true' || window.self !== window.top;
         
+        console.log('🔍 Dashboard geladen, embedded:', isEmbedded, 'URL:', window.location.href);
+        
         if (isEmbedded) {
             document.body.classList.add('embedded');
             // Navigation ausblenden
             const navbar = document.querySelector('.navbar');
-            if (navbar) navbar.style.display = 'none';
+            if (navbar) {
+                navbar.style.display = 'none';
+                console.log('✅ Navigation ausgeblendet');
+            }
+            
+            // Dashboard-Container anpassen für embedded
+            const dashboardContainer = document.querySelector('.dashboard-container');
+            if (dashboardContainer) {
+                dashboardContainer.style.paddingTop = '0';
+                dashboardContainer.style.marginTop = '0';
+            }
+            
+            // Signalisiere dem Parent-Frame, dass Dashboard geladen ist
+            if (window.parent !== window.self) {
+                try {
+                    window.parent.postMessage({ type: 'dashboard-loaded', source: 'dashboard' }, '*');
+                    console.log('✅ Parent-Frame benachrichtigt');
+                } catch (e) {
+                    console.warn('⚠️ Konnte Parent-Frame nicht benachrichtigen:', e);
+                }
+            }
         }
         
         // Initialize on load
@@ -1957,8 +1979,10 @@ Ihre Aufgaben:
                 window.authModals = new UnifiedAuthModals();
             }
             
-            // Initialize dashboard
+            // Initialize dashboard (auch im embedded-Modus)
+            console.log('🚀 Initialisiere Dashboard...');
             initDashboard();
+            console.log('✅ Dashboard initialisiert');
             
             // Load cover letters when switching to that tab - nutze window.loadCoverLetters aus dashboard-core.js
             if (typeof window.loadCoverLetters === 'function') {
