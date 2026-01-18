@@ -311,7 +311,7 @@ body {
 }
 
 /* Applications Tab: Kein Padding für iframe, volle Höhe */
-.tab-content #applications {
+.tab-panel#applications {
     padding: 0 !important;
     margin: 0 !important;
     height: calc(100vh - 380px) !important;
