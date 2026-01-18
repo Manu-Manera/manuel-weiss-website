@@ -528,6 +528,39 @@
                             <small>Wählen Sie, wie Ihre Tätigkeiten formatiert werden.</small>
                         </div>
                     </div>
+                    
+                    <div class="design-section">
+                        <div class="design-section-title"><i class="fas fa-heading"></i> Dokumententitel</div>
+                        <div class="design-form-group">
+                            <label class="design-toggle">
+                                <input type="checkbox" id="designShowResumeTitle" checked>
+                                <span class="design-toggle-label">"Lebenslauf" anzeigen</span>
+                            </label>
+                        </div>
+                        <div id="resumeTitleOptions" style="display: block;">
+                            <div class="design-form-group">
+                                <label>Titel-Text</label>
+                                <input type="text" id="designResumeTitleText" class="design-input" value="Lebenslauf" placeholder="Lebenslauf">
+                            </div>
+                            <div class="design-slider-group">
+                                <label>Schriftgröße</label>
+                                <input type="range" id="designResumeTitleSize" class="design-slider" min="8" max="16" value="10">
+                                <span id="designResumeTitleSizeValue" class="design-slider-value">10pt</span>
+                            </div>
+                            <div class="design-form-group">
+                                <label>Farbe</label>
+                                <div style="display: flex; gap: 8px;">
+                                    <input type="color" id="designResumeTitleColor" class="design-color-picker" value="#64748b">
+                                    <input type="text" id="designResumeTitleColorHex" class="design-input" style="flex:1;" placeholder="#64748b">
+                                </div>
+                            </div>
+                            <div class="design-slider-group">
+                                <label>Buchstaben-Abstand</label>
+                                <input type="range" id="designResumeTitleSpacing" class="design-slider" min="0" max="8" value="3">
+                                <span id="designResumeTitleSpacingValue" class="design-slider-value">3px</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 
                 <!-- Colors Panel -->
@@ -763,8 +796,15 @@
                             </div>
                             <div class="design-form-group">
                                 <button type="button" id="loadProfileImageBtn" class="design-action-btn" style="width: 100%;">
-                                    <i class="fas fa-cloud-download-alt"></i> Aus Profil laden
+                                    <i class="fas fa-images"></i> Bewerbungsbild wählen
                                 </button>
+                            </div>
+                            <!-- Bildauswahl-Galerie -->
+                            <div id="applicationImagesGallery" class="application-images-gallery" style="display: none;">
+                                <label style="font-size: 0.75rem; margin-bottom: 0.5rem; display: block;">Verfügbare Bilder:</label>
+                                <div id="applicationImagesList" class="images-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; max-height: 200px; overflow-y: auto;">
+                                    <!-- Images loaded dynamically -->
+                                </div>
                             </div>
                             <div class="design-form-group">
                                 <label>Form</label>
