@@ -898,19 +898,80 @@
                             </label>
                         </div>
                         <div id="signatureOptions" class="design-options-container" style="display: none;">
-                            <div class="design-form-group">
-                                <label>Unterschrift hochladen</label>
-                                <div class="design-file-upload">
-                                    <label class="design-file-upload-btn">
-                                        <i class="fas fa-signature"></i> Unterschrift wählen
-                                        <input type="file" id="signatureUpload" accept="image/*">
-                                    </label>
+                            <!-- Tab-Auswahl für Unterschrift-Methode -->
+                            <div class="signature-method-tabs" style="display: flex; gap: 4px; margin-bottom: 1rem; background: rgba(0,0,0,0.2); padding: 4px; border-radius: 8px;">
+                                <button type="button" class="signature-tab active" data-tab="upload" style="flex: 1; padding: 8px; border: none; border-radius: 6px; background: var(--design-primary); color: white; cursor: pointer; font-size: 0.75rem;">
+                                    <i class="fas fa-upload"></i> Hochladen
+                                </button>
+                                <button type="button" class="signature-tab" data-tab="draw" style="flex: 1; padding: 8px; border: none; border-radius: 6px; background: transparent; color: var(--design-text-muted); cursor: pointer; font-size: 0.75rem;">
+                                    <i class="fas fa-pen"></i> Zeichnen
+                                </button>
+                                <button type="button" class="signature-tab" data-tab="generate" style="flex: 1; padding: 8px; border: none; border-radius: 6px; background: transparent; color: var(--design-text-muted); cursor: pointer; font-size: 0.75rem;">
+                                    <i class="fas fa-magic"></i> Generieren
+                                </button>
+                            </div>
+                            
+                            <!-- Upload Tab -->
+                            <div id="signatureTabUpload" class="signature-tab-content">
+                                <div class="design-form-group">
+                                    <label>Unterschrift hochladen</label>
+                                    <div class="design-file-upload">
+                                        <label class="design-file-upload-btn">
+                                            <i class="fas fa-signature"></i> Unterschrift wählen
+                                            <input type="file" id="signatureUpload" accept="image/*">
+                                        </label>
+                                    </div>
+                                    <p style="font-size: 0.65rem; color: var(--design-text-muted); margin-top: 0.25rem;">
+                                        <i class="fas fa-magic"></i> Die Unterschrift wird automatisch freigestellt (transparenter Hintergrund).
+                                    </p>
                                 </div>
-                                <p style="font-size: 0.65rem; color: var(--design-text-muted); margin-top: 0.25rem;">
-                                    <i class="fas fa-magic"></i> Die Unterschrift wird automatisch freigestellt (transparenter Hintergrund).
-                                </p>
-                                <div id="signaturePreview" class="design-image-preview signature-draggable" style="margin-top: 0.5rem; position: relative; border: 2px dashed rgba(59,130,246,0.3); padding: 1rem; min-height: 80px;">
-                                    <span class="drag-hint" style="font-size: 0.7rem; color: var(--design-text-muted);">Unterschrift hierher ziehen oder hochladen</span>
+                            </div>
+                            
+                            <!-- Zeichnen Tab -->
+                            <div id="signatureTabDraw" class="signature-tab-content" style="display: none;">
+                                <div class="design-form-group">
+                                    <label>Unterschrift zeichnen</label>
+                                    <div style="background: white; border-radius: 8px; padding: 4px; position: relative;">
+                                        <canvas id="signatureCanvas" width="280" height="100" style="width: 100%; border: 1px solid #e2e8f0; border-radius: 6px; cursor: crosshair; touch-action: none;"></canvas>
+                                        <button type="button" id="clearSignatureCanvas" style="position: absolute; top: 8px; right: 8px; padding: 4px 8px; font-size: 0.7rem; background: rgba(0,0,0,0.5); color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                            <i class="fas fa-eraser"></i>
+                                        </button>
+                                    </div>
+                                    <button type="button" id="useDrawnSignature" style="width: 100%; margin-top: 8px; padding: 10px; background: var(--design-primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.85rem;">
+                                        <i class="fas fa-check"></i> Diese Unterschrift verwenden
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Generieren Tab -->
+                            <div id="signatureTabGenerate" class="signature-tab-content" style="display: none;">
+                                <div class="design-form-group">
+                                    <label>Name für Unterschrift</label>
+                                    <input type="text" id="signatureNameInput" class="design-select" placeholder="Ihr Name" style="margin-bottom: 8px;">
+                                    <label style="font-size: 0.75rem; margin-top: 8px;">Schriftstil</label>
+                                    <select id="signatureStyleSelect" class="design-select">
+                                        <option value="'Dancing Script', cursive">Elegant (Dancing Script)</option>
+                                        <option value="'Great Vibes', cursive">Vibes (Great Vibes)</option>
+                                        <option value="'Pacifico', cursive">Pacifico</option>
+                                        <option value="'Satisfy', cursive">Satisfy</option>
+                                        <option value="'Allura', cursive">Allura</option>
+                                        <option value="'Sacramento', cursive">Sacramento</option>
+                                        <option value="'Alex Brush', cursive">Alex Brush</option>
+                                    </select>
+                                    <div id="signatureGeneratePreview" style="margin-top: 12px; padding: 16px; background: white; border-radius: 8px; text-align: center; min-height: 60px;">
+                                        <span style="font-family: 'Dancing Script', cursive; font-size: 32px; color: #1e293b;">Ihr Name</span>
+                                    </div>
+                                    <button type="button" id="useGeneratedSignature" style="width: 100%; margin-top: 8px; padding: 10px; background: var(--design-primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.85rem;">
+                                        <i class="fas fa-check"></i> Diese Unterschrift verwenden
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Vorschau (für alle Tabs) -->
+                            <div class="design-form-group" style="margin-top: 12px;">
+                                <label>Aktuelle Unterschrift</label>
+                                <div id="signaturePreview" class="design-image-preview signature-draggable" style="position: relative; border: 2px dashed rgba(59,130,246,0.3); padding: 1rem; min-height: 80px; background: repeating-conic-gradient(#f0f0f0 0% 25%, transparent 0% 50%) 50% / 10px 10px;">
+                                    <span class="drag-hint" style="font-size: 0.7rem; color: var(--design-text-muted);">Noch keine Unterschrift</span>
                                 </div>
                             </div>
                             
