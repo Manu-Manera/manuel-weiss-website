@@ -436,28 +436,54 @@ class UserProfile {
                 // Stelle sicher, dass iframe geladen wird
                 const iframe = document.getElementById('dashboardIframe');
                 if (iframe) {
+                    console.log('🔄 Lade Dashboard iframe...');
+                    
                     // Zeige Loading-State
                     const loading = document.getElementById('iframeLoading');
                     if (loading) loading.style.display = 'block';
                     const error = document.getElementById('iframeError');
                     if (error) error.style.display = 'none';
                     
-                    // Lade iframe neu falls nötig
-                    if (!iframe.src.includes('embedded=true')) {
-                        iframe.src = 'applications/dashboard.html?action=new-application&embedded=true';
-                    } else {
-                        // Reload iframe um sicherzustellen dass es geladen wird
-                        iframe.src = iframe.src;
+                    // Setze iframe src
+                    const dashboardUrl = 'applications/dashboard.html?action=new-application&embedded=true';
+                    if (iframe.src !== window.location.origin + '/' + dashboardUrl && !iframe.src.includes(dashboardUrl)) {
+                        console.log('📡 Setze iframe src:', dashboardUrl);
+                        iframe.src = dashboardUrl;
                     }
                     
-                    // Timeout für Error-Handling
+                    // Prüfe ob iframe geladen wird
+                    iframe.addEventListener('load', () => {
+                        console.log('✅ Dashboard iframe geladen');
+                        if (loading) loading.style.display = 'none';
+                        if (error) error.style.display = 'none';
+                    });
+                    
+                    iframe.addEventListener('error', () => {
+                        console.error('❌ Dashboard iframe Fehler');
+                        if (loading) loading.style.display = 'none';
+                        if (error) error.style.display = 'block';
+                    });
+                    
+                    // Timeout für Error-Handling (falls iframe nicht lädt)
                     setTimeout(() => {
-                        const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
-                        if (!iframeDoc && loading) {
-                            loading.style.display = 'none';
-                            if (error) error.style.display = 'block';
+                        try {
+                            const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
+                            if (!iframeDoc || !iframeDoc.body) {
+                                console.warn('⚠️ Dashboard iframe scheint nicht geladen zu sein');
+                                if (loading) loading.style.display = 'none';
+                                if (error) error.style.display = 'block';
+                            } else {
+                                console.log('✅ Dashboard iframe Inhalt gefunden');
+                                if (loading) loading.style.display = 'none';
+                            }
+                        } catch (e) {
+                            // CORS-Fehler erwartet, aber iframe könnte trotzdem geladen sein
+                            console.log('ℹ️ CORS-Check nicht möglich (erwartet bei iframe)');
+                            if (loading) loading.style.display = 'none';
                         }
-                    }, 5000);
+                    }, 3000);
+                } else {
+                    console.error('❌ Dashboard iframe nicht gefunden!');
                 }
             }
             
