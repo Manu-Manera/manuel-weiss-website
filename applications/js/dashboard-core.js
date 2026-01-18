@@ -1886,6 +1886,13 @@ async function loadCoverLetters() {
             return;
         }
         
+        // Sortiere nach neuestem zuerst (updatedAt > createdAt)
+        coverLetters.sort((a, b) => {
+            const dateA = new Date(a.updatedAt || a.createdAt || 0);
+            const dateB = new Date(b.updatedAt || b.createdAt || 0);
+            return dateB - dateA; // Neueste zuerst
+        });
+        
         if (emptyState) emptyState.style.display = 'none';
         
         container.innerHTML = coverLetters.map((cl, index) => {
@@ -1969,9 +1976,16 @@ async function loadResumes() {
             return;
         }
         
+        // Sortiere nach neuestem zuerst (updatedAt > createdAt > id)
+        resumes.sort((a, b) => {
+            const dateA = new Date(a.updatedAt || a.createdAt || 0);
+            const dateB = new Date(b.updatedAt || b.createdAt || 0);
+            return dateB - dateA; // Neueste zuerst
+        });
+        
         if (emptyState) emptyState.style.display = 'none';
         
-        container.innerHTML = resumes.map((resume) => {
+        container.innerHTML = resumes.map((resume, index) => {
             const date = new Date(resume.createdAt || resume.updatedAt || Date.now()).toLocaleDateString('de-DE', {
                 day: '2-digit', month: '2-digit', year: 'numeric'
             });
