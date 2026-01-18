@@ -100,8 +100,7 @@ Erstelle den angepassten CV im gleichen Format wie der Baseline-CV.`;
                         content: prompt
                     }
                 ],
-                max_tokens: 3000,
-                temperature: 0.3
+                max_completion_tokens: 3000
             })
         });
 

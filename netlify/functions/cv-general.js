@@ -92,8 +92,7 @@ Verwende klare Formatierung mit Absätzen und Bullet Points.`;
                         content: prompt
                     }
                 ],
-                max_tokens: 3000,
-                temperature: 0.3
+                max_completion_tokens: 3000
             })
         });
 
