@@ -96,8 +96,7 @@ Antworte NUR als valides JSON:
                         content: parsePrompt
                     }
                 ],
-                max_tokens: 2000,
-                temperature: 0.1,
+                max_completion_tokens: 2000,
                 response_format: { type: 'json_object' }
             })
         });
