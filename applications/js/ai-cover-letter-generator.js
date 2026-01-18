@@ -235,7 +235,7 @@ class AICoverLetterGenerator {
                             type: 'openai',
                             key: apiKeys.openai.apiKey,
                             config: {
-                                model: apiKeys.openai.model || 'gpt-4o',
+                                model: apiKeys.openai.model || 'gpt-3.5-turbo',
                                 maxTokens: apiKeys.openai.maxTokens || 1000,
                                 temperature: apiKeys.openai.temperature || 0.7
                             }
@@ -289,7 +289,7 @@ class AICoverLetterGenerator {
                         type: 'openai',
                         key: apiKeys.openai.apiKey,
                         config: {
-                            model: apiKeys.openai.model || 'gpt-4o-mini',
+                            model: apiKeys.openai.model || 'gpt-3.5-turbo',
                             maxTokens: apiKeys.openai.maxTokens || 1000,
                             temperature: apiKeys.openai.temperature || 0.3
                         }
@@ -396,7 +396,7 @@ class AICoverLetterGenerator {
                 type: 'openai',
                 key: openAIKey,
                 config: {
-                    model: 'gpt-4o-mini',
+                    model: 'gpt-3.5-turbo',
                     maxTokens: 1000,
                     temperature: 0.3
                 }
@@ -435,7 +435,7 @@ class AICoverLetterGenerator {
                 'Authorization': `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-                model: serviceOptions?.model || 'gpt-4o',
+                model: serviceOptions?.model || 'gpt-3.5-turbo',
                 messages: [
                     {
                         role: 'system',
@@ -1105,7 +1105,7 @@ Erstelle nur das Anschreiben ohne zusätzliche Erklärungen.
                 'Authorization': `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-                model: 'gpt-4o-mini',
+                model: 'gpt-3.5-turbo',
                 messages: [
                     {
                         role: 'system',
@@ -1217,7 +1217,7 @@ Erstelle nur das Anschreiben ohne zusätzliche Erklärungen.
                     'Authorization': `Bearer ${apiKey}`
                 },
                 body: JSON.stringify({
-                    model: 'gpt-4o-mini',
+                    model: 'gpt-3.5-turbo',
                     messages: [
                         {
                             role: 'system',

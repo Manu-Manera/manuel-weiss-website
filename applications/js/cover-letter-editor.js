@@ -318,7 +318,7 @@ ${description.substring(0, 2000)}`;
                     'Authorization': `Bearer ${apiKey}`
                 },
                 body: JSON.stringify({
-                    model: 'gpt-4o-mini',
+                    model: 'gpt-3.5-turbo',
                     messages: [
                         {
                             role: 'system',
@@ -941,8 +941,8 @@ ${description.substring(0, 2000)}`;
     async generateWithAI(jobData, apiKey) {
         const prompt = this.buildPrompt(jobData);
         
-        // Verwende gpt-4o für beste Qualität (aktuellstes GPT-Modell)
-        const model = 'gpt-4o';
+        // Verwende gpt-3.5-turbo für breite Kompatibilität
+        const model = 'gpt-3.5-turbo';
         const maxTokens = this.options.length === 'short' ? 600 : this.options.length === 'medium' ? 1000 : 1400;
         
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -984,7 +984,7 @@ ${description.substring(0, 2000)}`;
                 'Authorization': `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-                model: opts.model || 'gpt-4o',
+                model: opts.model || 'gpt-3.5-turbo',
                 messages,
                 max_tokens: opts.maxTokens ?? 1000,
                 temperature: opts.temperature ?? 0.7

@@ -26,7 +26,7 @@ exports.handler = async (event, context) => {
     }
 
     try {
-        const { apiKey, prompt, model = 'gpt-4o-mini', max_tokens = 1000, temperature = 0.3 } = JSON.parse(event.body);
+        const { apiKey, prompt, model = 'gpt-3.5-turbo', max_tokens = 1000, temperature = 0.3 } = JSON.parse(event.body);
         
         if (!apiKey || !prompt) {
             return {

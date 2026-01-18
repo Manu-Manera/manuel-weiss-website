@@ -927,7 +927,7 @@ async function generateWithGPT(userData) {
     const prompt = buildGPTPrompt(userData);
     
     // Lade Modell-Konfiguration aus GlobalAPIManager (Admin Panel API Keys)
-    let model = 'gpt-4o-mini';
+    let model = 'gpt-3.5-turbo';
     let temperature = 0.7;
     let maxTokens = 1500;
     

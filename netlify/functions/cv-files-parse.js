@@ -160,7 +160,7 @@ ${combinedText.substring(0, 50000)}`;
                 'Authorization': `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-                model: 'gpt-4o',
+                model: 'gpt-3.5-turbo',
                 messages: [
                     {
                         role: 'system',

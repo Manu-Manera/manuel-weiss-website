@@ -663,7 +663,7 @@ ${text}`;
                 'Authorization': `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-                model: 'gpt-4o',
+                model: 'gpt-3.5-turbo',
                 messages: [
                     {
                         role: 'system',
@@ -733,9 +733,9 @@ ${text}`;
     }
 }
 
-// Fallback-Funktion mit gpt-4o-mini
+// Fallback-Funktion mit gpt-3.5-turbo
 async function processTextWithGPTFallback(text, apiKey) {
-    console.log('🔄 Verwende gpt-4o-mini Fallback...');
+    console.log('🔄 Verwende gpt-3.5-turbo Fallback...');
     
     const prompt = `Extrahiere ALLE Daten aus diesem Lebenslauf VOLLSTÄNDIG als JSON.
     
@@ -764,7 +764,7 @@ ${text}`;
             'Authorization': `Bearer ${apiKey}`
         },
         body: JSON.stringify({
-            model: 'gpt-4o-mini',
+            model: 'gpt-3.5-turbo',
             messages: [
                 { role: 'system', content: 'Extrahiere ALLE Daten vollständig. STICHPUNKTE BEIBEHALTEN mit • oder -. Antworte NUR mit JSON.' },
                 { role: 'user', content: prompt }
@@ -775,7 +775,7 @@ ${text}`;
     });
     
     if (!response.ok) {
-        throw new Error('Auch gpt-4o-mini Fallback fehlgeschlagen');
+        throw new Error('Auch gpt-3.5-turbo Fallback fehlgeschlagen');
     }
     
     const data = await response.json();
@@ -2269,7 +2269,7 @@ async function callOpenAI(messages, apiKey, opts = {}) {
             'Authorization': `Bearer ${apiKey}`
         },
         body: JSON.stringify({
-            model: 'gpt-4o',
+            model: 'gpt-3.5-turbo',
             messages,
             max_tokens: opts.maxTokens ?? 2000,
             temperature: opts.temperature ?? 0.7
