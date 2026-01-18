@@ -93,7 +93,7 @@ ${jobText}`;
                 'Authorization': `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-                model: 'gpt-3.5-turbo',
+                model: 'gpt-5.2',
                 messages: [
                     {
                         role: 'system',
@@ -115,9 +115,8 @@ ${jobText}`;
                         content: parsePrompt
                     }
                 ],
-                max_tokens: 4000,
-                temperature: 0.3,
-                response_format: { type: 'json_object' }
+                reasoning_effort: 'low',
+                max_completion_tokens: 4000
             })
         });
 

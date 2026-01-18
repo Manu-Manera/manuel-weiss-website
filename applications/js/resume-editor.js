@@ -663,7 +663,8 @@ ${text}`;
                 'Authorization': `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-                model: 'gpt-3.5-turbo',
+                model: 'gpt-5.2',
+                reasoning_effort: 'medium',
                 messages: [
                     {
                         role: 'system',
@@ -687,8 +688,7 @@ ${text}`;
                         content: prompt
                     }
                 ],
-                max_tokens: 16000,
-                temperature: 0.3
+                max_completion_tokens: 16000
             })
         });
         
@@ -764,18 +764,18 @@ ${text}`;
             'Authorization': `Bearer ${apiKey}`
         },
         body: JSON.stringify({
-            model: 'gpt-3.5-turbo',
+            model: 'gpt-5.2',
+            reasoning_effort: 'low',
             messages: [
                 { role: 'system', content: 'Extrahiere ALLE Daten vollständig. STICHPUNKTE BEIBEHALTEN mit • oder -. Antworte NUR mit JSON.' },
                 { role: 'user', content: prompt }
             ],
-            max_tokens: 16000,
-            temperature: 0.3
+            max_completion_tokens: 16000
         })
     });
     
     if (!response.ok) {
-        throw new Error('Auch gpt-3.5-turbo Fallback fehlgeschlagen');
+        throw new Error('GPT-5.2 Fallback fehlgeschlagen');
     }
     
     const data = await response.json();
@@ -2269,10 +2269,10 @@ async function callOpenAI(messages, apiKey, opts = {}) {
             'Authorization': `Bearer ${apiKey}`
         },
         body: JSON.stringify({
-            model: 'gpt-3.5-turbo',
+            model: 'gpt-5.2',
+            reasoning_effort: opts.reasoningEffort || 'low',
             messages,
-            max_tokens: opts.maxTokens ?? 2000,
-            temperature: opts.temperature ?? 0.7
+            max_completion_tokens: opts.maxTokens ?? 2000
         })
     });
     if (!response.ok) {
