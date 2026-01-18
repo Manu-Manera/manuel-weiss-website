@@ -732,6 +732,125 @@ class DesignEditor {
                 accentColor: '#059669', fontFamily: "'SF Pro Display', -apple-system, sans-serif", columns: 1,
                 sidebarBackground: 'transparent', showIcons: true, showResumeTitle: false,
                 skillDisplay: 'tags', experienceFormat: 'bullets'
+              } },
+            
+            // ═══════════════════════════════════════════════════════════════════
+            // NEUE STYLISCHE TEMPLATES 2026
+            // ═══════════════════════════════════════════════════════════════════
+            
+            // Abgerundete & Soft Designs
+            { id: 'soft-rounded', name: 'Soft Rounded', desc: 'Sanfte Rundungen, Pastell', icon: '🧸', 
+              settings: { 
+                accentColor: '#8b5cf6', fontFamily: "'Quicksand', sans-serif", columns: 2,
+                sidebarBackground: '#faf5ff', leftColumnBg: '#faf5ff', sidebarTextColor: '#6b21a8',
+                showResumeTitle: false, profileImageShape: 'rounded',
+                fontSize: 10, lineHeight: 1.5
+              } },
+            { id: 'bubble', name: 'Bubble Card', desc: 'Karten-Design mit Schatten', icon: '💭', 
+              settings: { 
+                accentColor: '#06b6d4', fontFamily: "'DM Sans', sans-serif", columns: 1,
+                sidebarBackground: 'transparent', backgroundColor: '#ecfeff',
+                showResumeTitle: false, headerBackground: '#06b6d4', headerTextColor: '#ffffff',
+                fontSize: 10
+              } },
+            { id: 'clay', name: 'Clay Morphism', desc: '3D-Effekt, weiche Schatten', icon: '🏺', 
+              settings: { 
+                accentColor: '#f472b6', fontFamily: "'Nunito', sans-serif", columns: 2,
+                sidebarBackground: '#fce7f3', leftColumnBg: '#fce7f3', sidebarTextColor: '#9d174d',
+                backgroundColor: '#fff1f2', showResumeTitle: false,
+                profileImageShape: 'circle', profileImageBorder: 'accent'
+              } },
+            
+            // Künstlerische & Kreative Designs
+            { id: 'brutalist', name: 'Brutalist', desc: 'Bold, kantig, auffällig', icon: '🏗️', 
+              settings: { 
+                accentColor: '#000000', fontFamily: "'Space Mono', monospace", columns: 1,
+                sidebarBackground: 'transparent', textColor: '#000000',
+                showResumeTitle: true, resumeTitleSize: 14, resumeTitleSpacing: 8,
+                fontSize: 10, headerAlign: 'left', showIcons: false
+              } },
+            { id: 'editorial', name: 'Editorial', desc: 'Magazin-Stil, elegant', icon: '📕', 
+              settings: { 
+                accentColor: '#991b1b', fontFamily: "'Cormorant Garamond', serif", columns: 1,
+                sidebarBackground: 'transparent', headerAlign: 'center',
+                showResumeTitle: true, resumeTitleSize: 12, fontSize: 11, lineHeight: 1.7
+              } },
+            { id: 'retro', name: 'Retro 80s', desc: 'Neon-Vibes, nostalgisch', icon: '📼', 
+              settings: { 
+                accentColor: '#f0abfc', fontFamily: "'Audiowide', cursive", columns: 2,
+                sidebarBackground: '#1e1b4b', leftColumnBg: '#1e1b4b', sidebarTextColor: '#f0abfc',
+                backgroundColor: '#0f0a1e', textColor: '#e2e8f0',
+                showResumeTitle: false, skillDisplay: 'bars'
+              } },
+            { id: 'neon', name: 'Neon Glow', desc: 'Leuchtende Akzente', icon: '💡', 
+              settings: { 
+                accentColor: '#22d3ee', fontFamily: "'Rajdhani', sans-serif", columns: 1,
+                backgroundColor: '#0c0a09', textColor: '#f5f5f4', mutedColor: '#a8a29e',
+                headerBackground: '#18181b', showResumeTitle: false,
+                skillDisplay: 'bars'
+              } },
+            
+            // Premium & Executive
+            { id: 'black-gold', name: 'Black & Gold', desc: 'Luxus, Premium', icon: '✨', 
+              settings: { 
+                accentColor: '#fbbf24', fontFamily: "'Cinzel', serif", columns: 1,
+                backgroundColor: '#0c0a09', textColor: '#fafaf9', mutedColor: '#d6d3d1',
+                headerBackground: '#1c1917', showResumeTitle: true,
+                resumeTitleColor: '#fbbf24', fontSize: 10
+              } },
+            { id: 'marble', name: 'Marble Elegant', desc: 'Marmor-Optik, luxuriös', icon: '🪨', 
+              settings: { 
+                accentColor: '#78716c', fontFamily: "'Cormorant', serif", columns: 1,
+                sidebarBackground: 'transparent', backgroundColor: '#fafaf9',
+                headerBackground: '#e7e5e4', showResumeTitle: true,
+                fontSize: 11, lineHeight: 1.6, headerAlign: 'center'
+              } },
+            
+            // Moderne Farbkombinationen
+            { id: 'mint-fresh', name: 'Mint Fresh', desc: 'Frisch, modern, clean', icon: '🌿', 
+              settings: { 
+                accentColor: '#10b981', fontFamily: "'Outfit', sans-serif", columns: 2,
+                sidebarBackground: '#ecfdf5', leftColumnBg: '#ecfdf5', sidebarTextColor: '#065f46',
+                showResumeTitle: false, profileImageShape: 'circle'
+              } },
+            { id: 'sunset', name: 'Sunset Warm', desc: 'Warme Farben, einladend', icon: '🌅', 
+              settings: { 
+                accentColor: '#ea580c', fontFamily: "'Rubik', sans-serif", columns: 1,
+                headerBackground: 'linear-gradient(135deg, #fed7aa 0%, #fdba74 100%)',
+                sidebarBackground: 'transparent', showResumeTitle: false
+              } },
+            { id: 'ocean', name: 'Ocean Blue', desc: 'Tiefes Blau, professionell', icon: '🌊', 
+              settings: { 
+                accentColor: '#0369a1', fontFamily: "'IBM Plex Sans', sans-serif", columns: 2,
+                sidebarBackground: '#0c4a6e', leftColumnBg: '#0c4a6e', sidebarTextColor: '#e0f2fe',
+                showResumeTitle: false, skillDisplay: 'bars'
+              } },
+            { id: 'lavender', name: 'Lavender Dream', desc: 'Sanft, beruhigend', icon: '💜', 
+              settings: { 
+                accentColor: '#7c3aed', fontFamily: "'Quicksand', sans-serif", columns: 2,
+                sidebarBackground: '#ede9fe', leftColumnBg: '#ede9fe', sidebarTextColor: '#5b21b6',
+                backgroundColor: '#faf5ff', showResumeTitle: false,
+                profileImageShape: 'rounded'
+              } },
+            
+            // Industrie-spezifisch
+            { id: 'healthcare', name: 'Healthcare', desc: 'Medizin & Pflege', icon: '🏥', 
+              settings: { 
+                accentColor: '#0891b2', fontFamily: "'Source Sans Pro', sans-serif", columns: 1,
+                sidebarBackground: 'transparent', showResumeTitle: true,
+                showIcons: true, fontSize: 10
+              } },
+            { id: 'legal', name: 'Legal', desc: 'Jura, seriös', icon: '⚖️', 
+              settings: { 
+                accentColor: '#1e3a5f', fontFamily: "'Libre Baskerville', serif", columns: 1,
+                sidebarBackground: 'transparent', showResumeTitle: true,
+                showIcons: false, fontSize: 10, experienceFormat: 'prose'
+              } },
+            { id: 'creative-agency', name: 'Agency', desc: 'Agentur & Marketing', icon: '🎨', 
+              settings: { 
+                accentColor: '#be185d', fontFamily: "'Sora', sans-serif", columns: 2,
+                sidebarBackground: '#500724', leftColumnBg: '#500724', sidebarTextColor: '#fce7f3',
+                showResumeTitle: false, skillDisplay: 'tags'
               } }
         ];
 
