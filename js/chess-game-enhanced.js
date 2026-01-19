@@ -170,12 +170,7 @@ class ChessGameEnhanced {
         if (!this.dragStartSquare) return;
         
         const { row: fromRow, col: fromCol } = this.dragStartSquare;
-        if (await this.makeMove(fromRow, fromCol, toRow, toCol)) {
-            this.renderBoard();
-            if (this.gameMode === 'computer' && this.currentPlayer === 'black') {
-                setTimeout(() => this.computerMove(), 500);
-            }
-        }
+        await this.executeMove(fromRow, fromCol, toRow, toCol);
         
         this.draggedPiece = null;
         this.dragStartSquare = null;
