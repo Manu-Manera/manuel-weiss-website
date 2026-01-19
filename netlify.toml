@@ -1,73 +1,35 @@
+# Netlify Configuration
+# Optimiert für Credit-Sparsamkeit
+
 [build]
-  # Build für statische Website - Functions werden separat deployed
-  command = "echo 'Static site - no build required'"
+  # Kein Build-Command nötig, da statische Seite
+  command = ""
   publish = "."
-  functions = "netlify/functions"
-  ignore = "node_modules"
-  
-[build.environment]
-  NODE_VERSION = "18"
-  NPM_FLAGS = "--no-save"
 
-# =============================================
-# BRANCH DEPLOYS - Zum Testen ohne Prod-Kosten
-# =============================================
-# develop Branch: https://develop--mawps.netlify.app
-# Aktiviere im Netlify Dashboard: Site settings → Build & deploy → Branches
+# Branch Deploy Settings - NUR Production Branch deployt
+[context.production]
+  command = ""
+  publish = "."
 
-[context.branch-deploy]
-  # Gleiche Build-Einstellungen für Branch Deploys
-  command = "echo 'Branch deploy - no build required'"
-
+# Preview Deploys (Pull Requests) - DEAKTIVIERT um Credits zu sparen
 [context.deploy-preview]
-  # Deploy Previews für Pull Requests
-  command = "echo 'Deploy preview - no build required'"
+  command = ""
+  publish = "."
+  # Deaktiviert - keine Preview Deploys
+  skip_processing = true
 
-# Hinweis: AWS-Umgebungsvariablen werden NICHT während des Builds benötigt
-# Die statische Website verwendet AWS SDK direkt im Browser zur Laufzeit
-# Falls Netlify Functions AWS-Zugriff benötigen, sollten die Variablen
-# im Netlify Dashboard unter "Site settings → Environment variables" gesetzt werden
-# und NICHT hier in netlify.toml (um Build-Fehler zu vermeiden)
-  
-# Redirects für bessere SEO
-[[redirects]]
-  from = "/admin"
-  to = "/admin.html"
-  status = 301
+# Branch Deploys - DEAKTIVIERT um Credits zu sparen
+[context.branch-deploy]
+  command = ""
+  publish = "."
+  # Deaktiviert - keine Branch Deploys
+  skip_processing = true
 
-[[redirects]]
-  from = "/persoenlichkeitsentwicklung"
-  to = "/persoenlichkeitsentwicklung-uebersicht.html"
-  status = 301
+# Production Branch - NUR dieser Branch deployt
+[build.processing]
+  skip_processing = false
 
-[[redirects]]
-  from = "/personality"
-  to = "/persoenlichkeitsentwicklung-uebersicht.html"
-  status = 301
-
-[[redirects]]
-  from = "/methods"
-  to = "/persoenlichkeitsentwicklung-uebersicht.html"
-  status = 301
-
-[[redirects]]
-  from = "/applications"
-  to = "/applications/index.html"
-  status = 301
-
-[[redirects]]
-  from = "/bewerbung"
-  to = "/applications/index.html"
-  status = 301
-
-[[redirects]]
-  from = "/bewerbungen"
-  to = "/applications/index.html"
-  status = 301
-
-# API Settings wird direkt aufgerufen, kein Redirect nötig
-
-# Headers für bessere Performance und Sicherheit
+# Headers für Performance
 [[headers]]
   for = "/*"
   [headers.values]
@@ -75,45 +37,10 @@
     X-XSS-Protection = "1; mode=block"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
-    Cache-Control = "public, max-age=31536000"
 
-# Spezielle Headers für HTML-Dateien
-[[headers]]
-  for = "*.html"
-  [headers.values]
-    Cache-Control = "no-cache, no-store, must-revalidate"
-    Pragma = "no-cache"
-    Expires = "0"
-    Content-Type = "text/html; charset=utf-8"
-
-# Headers für CSS und JS
-[[headers]]
-  for = "*.css"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000"
-    Content-Type = "text/css"
-
-[[headers]]
-  for = "*.js"
-  [headers.values]
-    Cache-Control = "public, max-age=0, must-revalidate"
-    Content-Type = "application/javascript"
-
-# Headers für Bilder
-[[headers]]
-  for = "*.jpg"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000"
-    Content-Type = "image/jpeg"
-
-[[headers]]
-  for = "*.png"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000"
-    Content-Type = "image/png"
-
-[[headers]]
-  for = "*.jpeg"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000"
-    Content-Type = "image/jpeg"
+# Redirects
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+  force = false
