@@ -14,6 +14,18 @@ class ChessGame {
         this.computerDifficulty = 'medium'; // 'easy', 'medium', 'hard'
         this.moveHistory = [];
         this.isComputerThinking = false;
+        this.castlingRights = {
+            white: { kingside: true, queenside: true },
+            black: { kingside: true, queenside: true }
+        };
+        this.enPassantTarget = null; // {row, col} wenn En Passant möglich
+        this.halfMoveClock = 0; // Für 50-Zug-Regel
+        this.fullMoveNumber = 1;
+        this.inCheck = { white: false, black: false };
+        this.checkmate = { white: false, black: false };
+        this.stalemate = false;
+        this.draggedPiece = null;
+        this.dragStartSquare = null;
         this.init();
     }
 
@@ -35,6 +47,18 @@ class ChessGame {
         // Weiße Figuren
         this.board[6] = Array(8).fill('P');
         this.board[7] = ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'];
+        
+        // Reset game state
+        this.castlingRights = {
+            white: { kingside: true, queenside: true },
+            black: { kingside: true, queenside: true }
+        };
+        this.enPassantTarget = null;
+        this.halfMoveClock = 0;
+        this.fullMoveNumber = 1;
+        this.inCheck = { white: false, black: false };
+        this.checkmate = { white: false, black: false };
+        this.stalemate = false;
     }
 
     renderBoard() {
@@ -55,10 +79,15 @@ class ChessGame {
                     const pieceElement = document.createElement('div');
                     pieceElement.className = 'chess-piece';
                     pieceElement.textContent = this.getPieceSymbol(piece);
+                    pieceElement.draggable = true;
+                    pieceElement.addEventListener('dragstart', (e) => this.handleDragStart(e, row, col));
+                    pieceElement.addEventListener('dragend', (e) => this.handleDragEnd(e));
                     square.appendChild(pieceElement);
                 }
                 
                 square.addEventListener('click', () => this.handleSquareClick(row, col));
+                square.addEventListener('dragover', (e) => this.handleDragOver(e));
+                square.addEventListener('drop', (e) => this.handleDrop(e, row, col));
                 boardElement.appendChild(square);
             }
         }
@@ -68,6 +97,9 @@ class ChessGame {
             this.highlightSquare(this.selectedSquare.row, this.selectedSquare.col);
             this.showPossibleMoves(this.selectedSquare.row, this.selectedSquare.col);
         }
+        
+        // Highlight König im Schach
+        this.highlightCheck();
     }
 
     getPieceSymbol(piece) {
