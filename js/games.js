@@ -154,24 +154,61 @@ class GamesManager {
         const container = document.getElementById('onlinePlayersList');
         if (!container) return;
         
-        if (this.onlinePlayers.length === 0) {
-            container.innerHTML = '<div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Keine Spieler online</div>';
+        // Filtere aktuellen Spieler und offline Spieler
+        const visiblePlayers = this.onlinePlayers.filter(p => 
+            p.id !== this.currentUser?.id && p.status === 'online'
+        );
+        
+        if (visiblePlayers.length === 0) {
+            container.innerHTML = '<div class="no-players"><i class="fas fa-users"></i><p>Keine anderen Spieler online</p></div>';
             return;
         }
         
-        container.innerHTML = this.onlinePlayers.map(player => `
-            <div class="online-player">
-                <span class="status-dot"></span>
-                <span>${player.name}</span>
-                ${player.game ? `<span class="game-badge">${player.game}</span>` : ''}
-            </div>
+        container.innerHTML = visiblePlayers.map(player => `
+            <li class="online-player-item" data-player-id="${player.id}">
+                <div class="player-avatar">
+                    ${player.name.charAt(0).toUpperCase()}
+                </div>
+                <div class="player-info">
+                    <span class="player-name">${player.name}</span>
+                    ${player.rating ? `<span class="player-rating">${player.rating}</span>` : ''}
+                </div>
+                <div class="player-actions">
+                    <button class="btn-challenge" onclick="challengePlayer('${player.id}', '${player.name}')" title="Herausfordern">
+                        <i class="fas fa-chess"></i>
+                    </button>
+                </div>
+            </li>
         `).join('');
     }
 
     updateGameStats() {
-        const chessPlayers = this.onlinePlayers.filter(p => p.game === 'chess' || !p.game).length;
+        const chessPlayers = this.onlinePlayers.filter(p => 
+            (p.game === 'chess' || !p.game) && p.status === 'online'
+        ).length;
         document.getElementById('chessPlayersCount').textContent = chessPlayers;
         document.getElementById('tictactoePlayersCount').textContent = 0;
+    }
+
+    setOnlineStatus(isOnline) {
+        // Später: Echte API-Call zum Backend
+        console.log('Setting online status to:', isOnline);
+        // Simuliere Status-Update
+        if (this.currentUser) {
+            const userIndex = this.onlinePlayers.findIndex(p => p.id === this.currentUser.id);
+            if (userIndex !== -1) {
+                this.onlinePlayers[userIndex].status = isOnline ? 'online' : 'offline';
+            } else {
+                this.onlinePlayers.push({
+                    id: this.currentUser.id,
+                    name: this.currentUser.name || this.currentUser.email?.split('@')[0] || 'Du',
+                    status: isOnline ? 'online' : 'offline',
+                    game: null
+                });
+            }
+            this.renderOnlinePlayers();
+            this.updateGameStats();
+        }
     }
 }
 
