@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spiele - Manuel Weiss</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/games.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="index.html">
+                    <img src="manuel-weiss-portrait.jpg" alt="MW" class="nav-logo">
+                    <span class="nav-name">Manuel Weiss</span>
+                </a>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">Start</a>
+                <button class="btn-auth" id="authButton">
+                    <i class="fas fa-user"></i> <span id="authButtonText">Anmelden</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="games-container">
+        <!-- Login Required Overlay -->
+        <div id="loginOverlay" class="login-overlay">
+            <div class="login-modal">
+                <h2><i class="fas fa-lock"></i> Anmeldung erforderlich</h2>
+                <p>Bitte melden Sie sich an, um Spiele zu spielen.</p>
+                <button class="btn-primary" onclick="window.location.href='index.html#contact'">
+                    <i class="fas fa-sign-in-alt"></i> Zur Anmeldung
+                </button>
+            </div>
+        </div>
+
+        <!-- Games Overview -->
+        <div id="gamesContent" class="games-content" style="display: none;">
+            <div class="games-header">
+                <h1><i class="fas fa-chess"></i> Spiele</h1>
+                <p>Spiele gegen andere Online-Spieler</p>
+            </div>
+
+            <!-- Online Players -->
+            <div class="online-players-section">
+                <h2><i class="fas fa-users"></i> Online-Spieler</h2>
+                <div id="onlinePlayersList" class="online-players-list">
+                    <div class="loading-spinner">
+                        <i class="fas fa-spinner fa-spin"></i> Lade Online-Spieler...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Games Grid -->
+            <div class="games-grid">
+                <!-- Chess Game -->
+                <div class="game-card" id="chessCard">
+                    <div class="game-icon">
+                        <i class="fas fa-chess"></i>
+                    </div>
+                    <h3>Schach</h3>
+                    <p>Spiele Schach gegen andere Online-Spieler</p>
+                    <div class="game-stats">
+                        <span><i class="fas fa-users"></i> <span id="chessPlayersCount">0</span> Spieler online</span>
+                    </div>
+                    <button class="btn-game" onclick="startChessGame()">
+                        <i class="fas fa-play"></i> Spiel starten
+                    </button>
+                </div>
+
+                <!-- Tic-Tac-Toe Game (Placeholder) -->
+                <div class="game-card" id="tictactoeCard">
+                    <div class="game-icon">
+                        <i class="fas fa-times"></i>
+                    </div>
+                    <h3>Tic-Tac-Toe</h3>
+                    <p>Klassisches Tic-Tac-Toe (Coming Soon)</p>
+                    <div class="game-stats">
+                        <span><i class="fas fa-users"></i> <span id="tictactoePlayersCount">0</span> Spieler online</span>
+                    </div>
+                    <button class="btn-game" disabled>
+                        <i class="fas fa-clock"></i> Bald verfügbar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Chess Game Modal -->
+    <div id="chessModal" class="game-modal" style="display: none;">
+        <div class="game-modal-content">
+            <div class="game-modal-header">
+                <h2><i class="fas fa-chess"></i> Schach</h2>
+                <button class="close-modal" onclick="closeChessGame()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="chess-game-container">
+                <div class="chess-info">
+                    <div class="player-info">
+                        <div class="player white">
+                            <i class="fas fa-user"></i>
+                            <span id="whitePlayerName">Du (Weiß)</span>
+                        </div>
+                        <div class="game-status" id="gameStatus">Warte auf Gegner...</div>
+                        <div class="player black">
+                            <i class="fas fa-user"></i>
+                            <span id="blackPlayerName">Gegner (Schwarz)</span>
+                        </div>
+                    </div>
+                </div>
+                <div id="chessBoard" class="chess-board"></div>
+                <div class="chess-controls">
+                    <button class="btn-secondary" onclick="resignGame()">
+                        <i class="fas fa-flag"></i> Aufgeben
+                    </button>
+                    <button class="btn-secondary" onclick="offerDraw()">
+                        <i class="fas fa-handshake"></i> Remis anbieten
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/unified-aws-auth.js"></script>
+    <script src="js/games.js"></script>
+    <script src="js/chess-game.js"></script>
+</body>
+</html>
