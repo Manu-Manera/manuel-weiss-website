@@ -805,6 +805,427 @@
     justify-content: flex-end;
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   MOBILE OPTIMIZATION - Alte Geräte & Browser Kompatibilität
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Basis Mobile Styles - funktioniert auch auf alten Browsern */
+@media screen and (max-width: 768px) {
+    /* Container Anpassungen */
+    .games-container {
+        padding: 1rem;
+        padding-top: 80px;
+    }
+    
+    .games-content {
+        padding: 0;
+    }
+    
+    .games-header h1 {
+        font-size: 2rem;
+    }
+    
+    .games-header p {
+        font-size: 1rem;
+    }
+    
+    /* Online Players Section - Mobile */
+    .online-players-section {
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .online-players-section h2 {
+        font-size: 1.2rem;
+    }
+    
+    .online-players-list {
+        flex-direction: column;
+    }
+    
+    .online-player {
+        width: 100%;
+        padding: 1rem;
+        font-size: 1rem;
+    }
+    
+    /* Games Grid - Mobile */
+    .games-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .game-card {
+        padding: 1.5rem;
+    }
+    
+    .game-icon {
+        font-size: 3rem;
+    }
+    
+    .game-card h3 {
+        font-size: 1.5rem;
+    }
+    
+    .game-options {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .btn-game {
+        width: 100%;
+        padding: 1rem;
+        font-size: 1rem;
+        min-height: 48px; /* Mindestgröße für Touch */
+    }
+    
+    /* Chess Modal - Mobile */
+    .game-modal {
+        padding: 0.5rem;
+    }
+    
+    .game-modal-content {
+        max-width: 100%;
+        max-height: 100vh;
+        border-radius: 0;
+        padding: 1rem;
+    }
+    
+    .game-modal-header {
+        padding: 1rem;
+    }
+    
+    .game-modal-header h2 {
+        font-size: 1.5rem;
+    }
+    
+    .chess-game-container {
+        padding: 1rem;
+    }
+    
+    /* Chess Board - Mobile */
+    .chess-board {
+        width: 100%;
+        max-width: 100%;
+        aspect-ratio: 1;
+    }
+    
+    .chess-square {
+        min-height: 40px;
+        min-width: 40px;
+    }
+    
+    .chess-piece {
+        font-size: 2rem;
+        min-height: 40px;
+        min-width: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Player Info - Mobile */
+    .player-info {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .player {
+        width: 100%;
+        padding: 0.75rem;
+        font-size: 0.9rem;
+    }
+    
+    .game-status {
+        font-size: 0.9rem;
+        padding: 0.5rem;
+    }
+    
+    /* Controls - Mobile */
+    .chess-controls {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .chess-controls button {
+        width: 100%;
+        padding: 0.75rem;
+        font-size: 1rem;
+        min-height: 44px; /* Apple HIG Mindestgröße */
+    }
+    
+    /* Move History - Mobile */
+    .move-history-container {
+        max-height: 200px;
+        padding: 0.75rem;
+    }
+    
+    .move-history-container h3 {
+        font-size: 1rem;
+    }
+    
+    .move-history-row {
+        flex-wrap: wrap;
+        padding: 0.5rem;
+    }
+    
+    .move-notation {
+        font-size: 0.85rem;
+        padding: 0.25rem 0.5rem;
+        min-height: 32px;
+        display: flex;
+        align-items: center;
+    }
+    
+    /* Promotion Modal - Mobile */
+    .promotion-modal-content {
+        padding: 1.5rem;
+        max-width: 90%;
+    }
+    
+    .promotion-options {
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+    
+    .promotion-piece {
+        min-width: 70px;
+        padding: 0.75rem;
+    }
+    
+    .promotion-piece .piece-symbol {
+        font-size: 2rem;
+    }
+    
+    /* Matchmaking Dialog - Mobile */
+    .matchmaking-content {
+        padding: 1.5rem;
+        max-width: 90%;
+    }
+    
+    .matchmaking-options label {
+        padding: 1rem;
+        font-size: 0.9rem;
+    }
+    
+    /* Sidebar - Mobile (wenn vorhanden) */
+    .online-players-sidebar {
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+    
+    .sidebar-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+    
+    .player-list-container {
+        max-height: 300px;
+    }
+    
+    .online-player-item {
+        padding: 1rem;
+    }
+    
+    .player-avatar {
+        width: 48px;
+        height: 48px;
+        font-size: 1.2rem;
+    }
+    
+    .btn-challenge {
+        width: 44px;
+        height: 44px;
+    }
+    
+    .sidebar-actions .btn {
+        padding: 1rem;
+        min-height: 48px;
+    }
+    
+    /* Drag Drop Hint - Mobile */
+    .drag-drop-hint {
+        font-size: 0.85rem;
+        padding: 0.5rem;
+    }
+}
+
+/* Sehr kleine Bildschirme (alte Smartphones) */
+@media screen and (max-width: 480px) {
+    .games-container {
+        padding: 0.5rem;
+        padding-top: 70px;
+    }
+    
+    .games-header h1 {
+        font-size: 1.5rem;
+    }
+    
+    .game-card {
+        padding: 1rem;
+    }
+    
+    .game-icon {
+        font-size: 2.5rem;
+    }
+    
+    .chess-square {
+        min-height: 35px;
+        min-width: 35px;
+    }
+    
+    .chess-piece {
+        font-size: 1.5rem;
+    }
+    
+    .chess-board {
+        padding: 0.25rem;
+    }
+    
+    .move-history-container {
+        max-height: 150px;
+    }
+    
+    .promotion-piece {
+        min-width: 60px;
+        padding: 0.5rem;
+    }
+    
+    .promotion-piece .piece-symbol {
+        font-size: 1.5rem;
+    }
+}
+
+/* Alte Browser Kompatibilität - Fallbacks */
+/* Keine CSS Grid für alte Browser */
+.games-grid {
+    display: block;
+}
+
+.games-grid > * {
+    margin-bottom: 1rem;
+}
+
+/* CSS Grid nur wenn unterstützt */
+@supports (display: grid) {
+    .games-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+    }
+    
+    .games-grid > * {
+        margin-bottom: 0;
+    }
+    
+    @media screen and (max-width: 768px) {
+        .games-grid {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+    }
+}
+
+/* Backdrop Filter Fallback */
+.online-players-section {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+@supports (backdrop-filter: blur(10px)) {
+    .online-players-section {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+    }
+}
+
+/* Touch-Optimierungen */
+@media (hover: none) and (pointer: coarse) {
+    /* Touch-Geräte */
+    .chess-piece {
+        cursor: default;
+        -webkit-tap-highlight-color: transparent;
+        -webkit-touch-callout: none;
+        user-select: none;
+    }
+    
+    .btn-game,
+    .btn-challenge,
+    .chess-controls button {
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Größere Touch-Targets */
+    .chess-square {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    .move-notation {
+        min-height: 44px;
+        padding: 0.5rem;
+    }
+    
+    /* Keine Hover-Effekte auf Touch */
+    .online-player:hover,
+    .game-card:hover,
+    .promotion-piece:hover {
+        transform: none;
+    }
+}
+
+/* Alte iOS Safari Fixes */
+@supports (-webkit-touch-callout: none) {
+    .games-container {
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .move-history-container,
+    .player-list-container {
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+/* Performance-Optimierungen für alte Geräte */
+@media screen and (max-width: 768px) {
+    /* Reduziere Animationen */
+    * {
+        animation-duration: 0.2s !important;
+        transition-duration: 0.2s !important;
+    }
+    
+    /* Deaktiviere komplexe Effekte */
+    .game-card {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .online-player {
+        box-shadow: none;
+    }
+}
+
+/* Landscape Mode für Tablets */
+@media screen and (max-width: 1024px) and (orientation: landscape) {
+    .chess-board {
+        max-width: 60vh;
+        margin: 0 auto;
+    }
+    
+    .chess-game-container {
+        display: flex;
+        flex-direction: row;
+        gap: 1rem;
+    }
+    
+    .chess-info {
+        flex: 0 0 200px;
+    }
+    
+    .move-history-container {
+        max-height: calc(100vh - 300px);
+    }
+}
+
 .chess-piece {
     font-size: 3rem;
     user-select: none;
