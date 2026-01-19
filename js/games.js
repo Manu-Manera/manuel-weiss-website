@@ -182,10 +182,25 @@ function startChessGame(mode = 'player') {
         return;
     }
     
+    // Warte bis chess game initialisiert ist
     if (window.chessGame) {
         window.chessGame.startNewGame(mode);
     } else {
-        console.error('Chess game not initialized');
+        // Warte auf Initialisierung
+        const checkInterval = setInterval(() => {
+            if (window.chessGame) {
+                window.chessGame.startNewGame(mode);
+                clearInterval(checkInterval);
+            }
+        }, 100);
+        
+        setTimeout(() => {
+            clearInterval(checkInterval);
+            if (!window.chessGame) {
+                console.error('Chess game not initialized');
+                alert('Schachspiel konnte nicht geladen werden. Bitte Seite neu laden.');
+            }
+        }, 2000);
     }
 }
 
