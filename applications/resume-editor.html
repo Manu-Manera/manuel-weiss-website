@@ -120,8 +120,16 @@
                             <input type="text" id="location" name="location" placeholder="z.B. München, Deutschland">
                         </div>
                         <div class="form-group">
-                            <label>Adresse</label>
-                            <input type="text" id="address" name="address">
+                            <label>Geburtsdatum</label>
+                            <input type="date" id="birthDate" name="birthDate">
+                        </div>
+                        <div class="form-group">
+                            <label>Straße</label>
+                            <input type="text" id="street" name="street" placeholder="z.B. Musterstraße 12a">
+                        </div>
+                        <div class="form-group">
+                            <label>Adresse (vollständig)</label>
+                            <input type="text" id="address" name="address" placeholder="Wird automatisch aus Straße, PLZ und Stadt zusammengesetzt">
                         </div>
                         <div class="form-group">
                             <label>LinkedIn</label>
@@ -275,6 +283,18 @@
                     </div>
                     <button type="button" class="btn-add" onclick="addLanguage()">
                         <i class="fas fa-plus"></i> Sprache hinzufügen
+                    </button>
+                </section>
+
+                <!-- Referenzen -->
+                <section class="resume-section">
+                    <h2><i class="fas fa-user-check"></i> Referenzen</h2>
+                    <p class="section-description">Fügen Sie Referenzen hinzu (optional - wenn leer, wird "auf Anfrage" angezeigt)</p>
+                    <div id="referencesContainer">
+                        <!-- Wird dynamisch gefüllt -->
+                    </div>
+                    <button type="button" class="btn-add" onclick="addReference()">
+                        <i class="fas fa-plus"></i> Referenz hinzufügen
                     </button>
                 </section>
 
@@ -526,6 +546,90 @@
                                 <option value="center">Zentriert</option>
                                 <option value="right">Rechts</option>
                             </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Header-Felder Sichtbarkeit -->
+                    <div class="design-section">
+                        <div class="design-section-title"><i class="fas fa-sliders-h"></i> Header-Felder anzeigen</div>
+                        <p style="font-size: 0.75rem; color: var(--design-text-muted); margin-bottom: 0.75rem;">
+                            Wählen Sie, welche Felder im Header angezeigt werden
+                        </p>
+                        <div class="design-form-group">
+                            <label class="design-toggle">
+                                <input type="checkbox" id="headerFieldPhone" checked>
+                                <span class="design-toggle-label">Telefon</span>
+                            </label>
+                        </div>
+                        <div class="design-form-group">
+                            <label class="design-toggle">
+                                <input type="checkbox" id="headerFieldEmail" checked>
+                                <span class="design-toggle-label">E-Mail</span>
+                            </label>
+                        </div>
+                        <div class="design-form-group">
+                            <label class="design-toggle">
+                                <input type="checkbox" id="headerFieldLocation" checked>
+                                <span class="design-toggle-label">Standort (Stadt)</span>
+                            </label>
+                        </div>
+                        <div class="design-form-group">
+                            <label class="design-toggle">
+                                <input type="checkbox" id="headerFieldAddress" checked>
+                                <span class="design-toggle-label">Vollständige Adresse</span>
+                            </label>
+                        </div>
+                        <div class="design-form-group">
+                            <label class="design-toggle">
+                                <input type="checkbox" id="headerFieldBirthDate" checked>
+                                <span class="design-toggle-label">Geburtsdatum</span>
+                            </label>
+                        </div>
+                        <div class="design-form-group">
+                            <label class="design-toggle">
+                                <input type="checkbox" id="headerFieldLinkedIn" checked>
+                                <span class="design-toggle-label">LinkedIn</span>
+                            </label>
+                        </div>
+                        <div class="design-form-group">
+                            <label class="design-toggle">
+                                <input type="checkbox" id="headerFieldGitHub" checked>
+                                <span class="design-toggle-label">GitHub</span>
+                            </label>
+                        </div>
+                        <div class="design-form-group">
+                            <label class="design-toggle">
+                                <input type="checkbox" id="headerFieldWebsite" checked>
+                                <span class="design-toggle-label">Website</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Sprache & Übersetzung -->
+                    <div class="design-section">
+                        <div class="design-section-title"><i class="fas fa-globe"></i> Sprache & Übersetzung</div>
+                        <div class="design-form-group">
+                            <label>Dokumentsprache</label>
+                            <div style="display: flex; gap: 8px; align-items: center;">
+                                <button type="button" id="languageToggleDE" class="design-action-btn active" style="flex: 1; padding: 8px;">
+                                    🇩🇪 Deutsch
+                                </button>
+                                <button type="button" id="languageToggleEN" class="design-action-btn" style="flex: 1; padding: 8px;">
+                                    🇬🇧 English
+                                </button>
+                            </div>
+                        </div>
+                        <div class="design-form-group" id="customTranslationsContainer" style="margin-top: 12px;">
+                            <label>Überschriften anpassen</label>
+                            <small style="display: block; margin-bottom: 0.5rem; color: var(--design-text-muted);">
+                                Eigene Übersetzungen für Sektions-Titel
+                            </small>
+                            <div id="customTranslationsList" style="display: flex; flex-direction: column; gap: 8px;">
+                                <!-- Wird dynamisch gefüllt -->
+                            </div>
+                            <button type="button" id="addCustomTranslation" class="design-action-btn" style="width: 100%; margin-top: 8px; padding: 8px;">
+                                <i class="fas fa-plus"></i> Eigene Übersetzung hinzufügen
+                            </button>
                         </div>
                     </div>
                     

@@ -6,17 +6,19 @@
   command = ""
   publish = "."
 
-# Branch Deploy Settings - NUR Production Branch deployt
+# Branch Deploy Settings - NUR Deploy Previews aktiviert (keine Production Deploys)
 [context.production]
   command = ""
   publish = "."
+  # Production Deploys DEAKTIVIERT - nur Previews
+  skip_processing = true
 
-# Preview Deploys (Pull Requests) - DEAKTIVIERT um Credits zu sparen
+# Preview Deploys (Pull Requests) - AKTIVIERT für Tests
 [context.deploy-preview]
   command = ""
   publish = "."
-  # Deaktiviert - keine Preview Deploys
-  skip_processing = true
+  # Aktiviert - nur Preview Deploys
+  skip_processing = false
 
 # Branch Deploys - DEAKTIVIERT um Credits zu sparen
 [context.branch-deploy]
@@ -25,9 +27,9 @@
   # Deaktiviert - keine Branch Deploys
   skip_processing = true
 
-# Production Branch - NUR dieser Branch deployt
+# Production Branch - DEAKTIVIERT
 [build.processing]
-  skip_processing = false
+  skip_processing = true
 
 # Headers für Performance
 [[headers]]
