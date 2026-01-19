@@ -1106,7 +1106,8 @@ function collectFormData() {
         sections: collectSections(),
         skills: collectSkills(),
         languages: collectLanguages(),
-        projects: collectProjects()
+        projects: collectProjects(),
+        references: collectReferences()
     };
 }
 
@@ -1331,6 +1332,16 @@ function populateForm(data) {
             addProject(project);
         });
     }
+    
+    // Populate References
+    if (data.references && Array.isArray(data.references)) {
+        const container = document.getElementById('referencesContainer');
+        if (container) container.innerHTML = ''; // Clear existing
+        
+        data.references.forEach(ref => {
+            addReference(ref);
+        });
+    }
 }
 
 // Add Technical Skill Category
@@ -1438,8 +1449,9 @@ function addSoftSkillWithRating(skillName = '', level = 5, examples = '') {
     const skillId = 'soft-skill-rated-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
     
     const skillHtml = `
-        <div class="skill-item-rated soft" data-skill-id="${skillId}">
+        <div class="skill-item-rated soft draggable-item" data-skill-id="${skillId}" draggable="true">
             <div class="skill-rated-header">
+                <i class="fas fa-grip-vertical drag-handle" style="color: #9ca3af; cursor: grab; margin-right: 8px;"></i>
                 <input type="text" class="skill-name-input" placeholder="z.B. Kommunikation, Teamführung" value="${skillName}" data-field="skillName">
                 <div class="skill-level-control">
                     <label>Level:</label>
@@ -1456,6 +1468,9 @@ function addSoftSkillWithRating(skillName = '', level = 5, examples = '') {
     `;
     
     container.insertAdjacentHTML('beforeend', skillHtml);
+    
+    // Initialisiere Drag & Drop für den Container
+    initSoftSkillsDragAndDrop();
 }
 
 // Funktionen werden am Ende der Datei global exportiert
@@ -1471,8 +1486,9 @@ function addSoftSkill(skillName = '', examples = []) {
     const skillId = 'soft-skill-' + Date.now();
     
     const skillHtml = `
-        <div class="soft-skill-item" data-skill-id="${skillId}">
+        <div class="soft-skill-item draggable-item" data-skill-id="${skillId}" draggable="true">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <i class="fas fa-grip-vertical drag-handle" style="color: #9ca3af; cursor: grab; margin-right: 8px;"></i>
                 <input type="text" placeholder="z.B. Kommunikation, Teamarbeit" value="${skillName}" style="flex: 1; margin-right: 0.5rem;">
                 <button type="button" class="btn-remove" onclick="removeSoftSkill('${skillId}')">
                     <i class="fas fa-trash"></i>
@@ -1483,10 +1499,78 @@ function addSoftSkill(skillName = '', examples = []) {
     `;
     
     container.insertAdjacentHTML('beforeend', skillHtml);
+    
+    // Initialisiere Drag & Drop für den Container
+    initSoftSkillsDragAndDrop();
 }
 
 function removeSoftSkill(skillId) {
     document.querySelector(`[data-skill-id="${skillId}"]`).remove();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SOFT SKILLS DRAG & DROP
+// ═══════════════════════════════════════════════════════════════════════════
+
+let softSkillDraggedElement = null;
+
+function initSoftSkillsDragAndDrop() {
+    const container = document.getElementById('softSkillsContainer');
+    if (!container || container.dataset.dragInitialized) return;
+    
+    container.dataset.dragInitialized = 'true';
+    
+    container.addEventListener('dragstart', (e) => {
+        const item = e.target.closest('.draggable-item');
+        if (item) {
+            softSkillDraggedElement = item;
+            item.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+    });
+    
+    container.addEventListener('dragend', (e) => {
+        const item = e.target.closest('.draggable-item');
+        if (item) {
+            item.classList.remove('dragging');
+            softSkillDraggedElement = null;
+        }
+    });
+    
+    container.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        
+        const afterElement = getSoftSkillDragAfterElement(container, e.clientY);
+        const dragging = container.querySelector('.dragging');
+        
+        if (dragging) {
+            if (afterElement) {
+                container.insertBefore(dragging, afterElement);
+            } else {
+                container.appendChild(dragging);
+            }
+        }
+    });
+    
+    container.addEventListener('drop', (e) => {
+        e.preventDefault();
+        // Reihenfolge wird automatisch durch DOM-Position gespeichert
+    });
+}
+
+function getSoftSkillDragAfterElement(container, y) {
+    const elements = [...container.querySelectorAll('.draggable-item:not(.dragging)')];
+    
+    return elements.reduce((closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = y - box.top - box.height / 2;
+        
+        if (offset < 0 && offset > closest.offset) {
+            return { offset, element: child };
+        }
+        return closest;
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
 }
 
 // Add Project
@@ -1596,6 +1680,89 @@ function addProject(projectData = {}) {
 
 function removeProject(projectId) {
     document.querySelector(`[data-project-id="${projectId}"]`).remove();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// REFERENZEN
+// ═══════════════════════════════════════════════════════════════════════════
+
+function addReference(referenceData = {}) {
+    const container = document.getElementById('referencesContainer');
+    if (!container) return;
+    
+    const referenceId = 'reference-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+    const reference = referenceData || {};
+    
+    const referenceHtml = `
+        <div class="reference-item entry-item draggable-item" data-reference-id="${referenceId}" draggable="true">
+            <div class="entry-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h4 style="margin: 0;"><i class="fas fa-user-check"></i> Referenz</h4>
+                <button type="button" class="btn-remove" onclick="removeReference('${referenceId}')">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+            <div class="form-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label>Name *</label>
+                    <input type="text" data-field="name" value="${reference.name || ''}" placeholder="z.B. Dr. Max Mustermann" required>
+                </div>
+                <div class="form-group">
+                    <label>Position</label>
+                    <input type="text" data-field="position" value="${reference.position || ''}" placeholder="z.B. Abteilungsleiter">
+                </div>
+                <div class="form-group">
+                    <label>Unternehmen</label>
+                    <input type="text" data-field="company" value="${reference.company || ''}" placeholder="z.B. Muster GmbH">
+                </div>
+                <div class="form-group">
+                    <label>E-Mail</label>
+                    <input type="email" data-field="email" value="${reference.email || ''}" placeholder="max.mustermann@example.com">
+                </div>
+                <div class="form-group">
+                    <label>Telefon</label>
+                    <input type="tel" data-field="phone" value="${reference.phone || ''}" placeholder="+49 123 456789">
+                </div>
+                <div class="form-group">
+                    <label>Beziehung</label>
+                    <input type="text" data-field="relationship" value="${reference.relationship || ''}" placeholder="z.B. Ehemaliger Vorgesetzter">
+                </div>
+            </div>
+        </div>
+    `;
+    
+    container.insertAdjacentHTML('beforeend', referenceHtml);
+    
+    // Initialisiere Drag & Drop für den Container
+    if (typeof initDragAndDrop === 'function') {
+        initDragAndDrop(container);
+    }
+}
+
+function removeReference(referenceId) {
+    const el = document.querySelector(`[data-reference-id="${referenceId}"]`);
+    if (el) el.remove();
+}
+
+function collectReferences() {
+    const references = [];
+    
+    document.querySelectorAll('#referencesContainer .reference-item').forEach(item => {
+        const reference = {
+            name: item.querySelector('[data-field="name"]')?.value || '',
+            position: item.querySelector('[data-field="position"]')?.value || '',
+            company: item.querySelector('[data-field="company"]')?.value || '',
+            email: item.querySelector('[data-field="email"]')?.value || '',
+            phone: item.querySelector('[data-field="phone"]')?.value || '',
+            relationship: item.querySelector('[data-field="relationship"]')?.value || ''
+        };
+        
+        // Nur hinzufügen wenn Name vorhanden
+        if (reference.name.trim()) {
+            references.push(reference);
+        }
+    });
+    
+    return references;
 }
 
 function addTechTag(itemId) {

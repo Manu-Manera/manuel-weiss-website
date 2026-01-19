@@ -38,6 +38,8 @@ class DesignEditor {
         this.setupSignature();
         this.setupSignatureExtended();
         this.setupPageNumbers();
+        this.setupHeaderFields();
+        this.setupLanguage();
         this.setupMobile();
         this.applySettings();
         this.updatePreview();
@@ -167,6 +169,23 @@ class DesignEditor {
             // Resume Title ("Lebenslauf" Überschrift)
             showResumeTitle: true,
             resumeTitleText: 'Lebenslauf',
+            
+            // Header Field Visibility (welche Felder im Header angezeigt werden)
+            showHeaderField: {
+                phone: true,
+                email: true,
+                location: true,
+                address: true,
+                street: true,
+                linkedin: true,
+                github: true,
+                website: true,
+                birthDate: true
+            },
+            
+            // Language Settings
+            language: 'de', // 'de' or 'en'
+            translations: {} // Custom translations per field
             resumeTitleSize: 10, // pt
             resumeTitleColor: '', // leer = mutedColor verwenden
             resumeTitleSpacing: 3, // letter-spacing in px
@@ -1019,9 +1038,10 @@ class DesignEditor {
         if (skillsData.softSkills?.length) {
             html += `<div style="font-size: 0.7rem; font-weight: 600; color: var(--design-text-secondary); margin: 12px 0 4px; text-transform: uppercase;">Soft Skills</div>`;
             skillsData.softSkills.forEach((skill, index) => {
-                const name = typeof skill === 'string' ? skill : skill.name;
+                const name = typeof skill === 'string' ? skill : (skill.name || skill.skill || '');
                 const level = typeof skill === 'object' ? (skill.level || 5) : 5;
-                html += this.renderSkillLevelRow(name, level, maxLevel, 'soft', 0, index);
+                const examples = typeof skill === 'object' ? (skill.examples || []) : [];
+                html += this.renderSkillLevelRow(name, level, maxLevel, 'soft', 0, index, examples);
             });
         }
         
@@ -1136,9 +1156,10 @@ class DesignEditor {
         });
     }
     
-    renderSkillLevelRow(name, level, maxLevel, type, catIndex, skillIndex) {
+    renderSkillLevelRow(name, level, maxLevel, type, catIndex, skillIndex, examples = []) {
         const uniqueId = `skill-${type}-${catIndex}-${skillIndex}`;
         const percentage = Math.round((level / maxLevel) * 100);
+        const hasExamples = examples && examples.length > 0;
         
         return `
             <div class="skill-edit-row" style="padding: 10px 4px; border-bottom: 1px solid rgba(255,255,255,0.08); border-radius: 6px;">
@@ -1158,6 +1179,14 @@ class DesignEditor {
                            value="${level}"
                            style="width: 100%; height: 8px; appearance: none; -webkit-appearance: none; -moz-appearance: none; background: linear-gradient(to right, var(--design-primary, #6366f1) ${percentage}%, rgba(255,255,255,0.15) ${percentage}%); border-radius: 4px; cursor: pointer; outline: none; margin: 0; padding: 0; position: relative; z-index: 10; pointer-events: auto;">
                 </div>
+                ${hasExamples ? `
+                    <div style="margin-top: 6px; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.05); font-size: 0.75rem; color: var(--design-text-muted, #64748b);">
+                        <strong style="color: var(--design-text-secondary, #94a3b8);">Beispiele:</strong>
+                        <ul style="margin: 4px 0 0 0; padding-left: 16px; list-style: disc;">
+                            ${examples.map(ex => `<li>${ex}</li>`).join('')}
+                        </ul>
+                    </div>
+                ` : ''}
             </div>
         `;
     }
@@ -1751,6 +1780,262 @@ class DesignEditor {
         if (optionsContainer) {
             optionsContainer.style.display = show ? 'block' : 'none';
         }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // HEADER FIELDS SETTINGS
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    setupHeaderFields() {
+        // Initialisiere Standardwerte falls nicht vorhanden
+        if (!this.settings.showHeaderField) {
+            this.settings.showHeaderField = {
+                phone: true,
+                email: true,
+                location: true,
+                address: true,
+                linkedin: true,
+                github: true,
+                website: true,
+                birthDate: true
+            };
+        }
+        
+        // Setup Event Listeners für alle Header-Feld-Checkboxen
+        const fieldMap = {
+            'headerFieldPhone': 'phone',
+            'headerFieldEmail': 'email',
+            'headerFieldLocation': 'location',
+            'headerFieldAddress': 'address',
+            'headerFieldLinkedIn': 'linkedin',
+            'headerFieldGitHub': 'github',
+            'headerFieldWebsite': 'website',
+            'headerFieldBirthDate': 'birthDate'
+        };
+        
+        Object.entries(fieldMap).forEach(([checkboxId, fieldKey]) => {
+            const checkbox = document.getElementById(checkboxId);
+            if (checkbox) {
+                // Setze initialen Wert aus Settings
+                checkbox.checked = this.settings.showHeaderField[fieldKey] !== false;
+                
+                // Event Listener für Änderungen
+                checkbox.addEventListener('change', (e) => {
+                    this.settings.showHeaderField[fieldKey] = e.target.checked;
+                    this.saveSettings();
+                    this.updatePreview();
+                });
+            }
+        });
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // LANGUAGE SETTINGS
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    setupLanguage() {
+        // Initialisiere Standardwerte
+        if (!this.settings.language) {
+            this.settings.language = 'de';
+        }
+        if (!this.settings.translations) {
+            this.settings.translations = {};
+        }
+        
+        // Language Toggle Buttons
+        const btnDE = document.getElementById('languageToggleDE');
+        const btnEN = document.getElementById('languageToggleEN');
+        
+        const updateLanguageButtons = () => {
+            if (btnDE && btnEN) {
+                btnDE.classList.toggle('active', this.settings.language === 'de');
+                btnEN.classList.toggle('active', this.settings.language === 'en');
+                btnDE.style.background = this.settings.language === 'de' ? 'var(--design-accent)' : '';
+                btnDE.style.color = this.settings.language === 'de' ? 'white' : '';
+                btnEN.style.background = this.settings.language === 'en' ? 'var(--design-accent)' : '';
+                btnEN.style.color = this.settings.language === 'en' ? 'white' : '';
+            }
+        };
+        
+        if (btnDE) {
+            btnDE.addEventListener('click', () => {
+                this.settings.language = 'de';
+                updateLanguageButtons();
+                this.saveSettings();
+                this.updatePreview();
+            });
+        }
+        
+        if (btnEN) {
+            btnEN.addEventListener('click', () => {
+                this.settings.language = 'en';
+                updateLanguageButtons();
+                this.saveSettings();
+                this.updatePreview();
+            });
+        }
+        
+        updateLanguageButtons();
+        this.renderCustomTranslations();
+        
+        // Add Custom Translation Button
+        const addBtn = document.getElementById('addCustomTranslation');
+        if (addBtn) {
+            addBtn.addEventListener('click', () => {
+                this.addCustomTranslationRow();
+            });
+        }
+    }
+    
+    // Übersetzungs-Mapping
+    getTranslations() {
+        const translations = {
+            de: {
+                'Lebenslauf': 'Lebenslauf',
+                'Berufserfahrung': 'Berufserfahrung',
+                'Ausbildung': 'Ausbildung',
+                'Fähigkeiten': 'Fähigkeiten',
+                'Technische Fähigkeiten': 'Technische Fähigkeiten',
+                'Soft Skills': 'Soft Skills',
+                'Sprachen': 'Sprachen',
+                'Projekte': 'Projekte',
+                'Referenzen': 'Referenzen',
+                'Kurzprofil': 'Kurzprofil',
+                'Geboren am': 'Geboren am',
+                'Zertifikate': 'Zertifikate',
+                'Hobbys': 'Hobbys',
+                'heute': 'heute',
+                'Auf Anfrage': 'Auf Anfrage'
+            },
+            en: {
+                'Lebenslauf': 'Resume',
+                'Berufserfahrung': 'Work Experience',
+                'Ausbildung': 'Education',
+                'Fähigkeiten': 'Skills',
+                'Technische Fähigkeiten': 'Technical Skills',
+                'Soft Skills': 'Soft Skills',
+                'Sprachen': 'Languages',
+                'Projekte': 'Projects',
+                'Referenzen': 'References',
+                'Kurzprofil': 'Summary',
+                'Geboren am': 'Date of Birth',
+                'Zertifikate': 'Certifications',
+                'Hobbys': 'Hobbies',
+                'heute': 'present',
+                'Auf Anfrage': 'Upon request'
+            }
+        };
+        
+        // Merge mit benutzerdefinierten Übersetzungen
+        const custom = this.settings.translations || {};
+        const base = translations[this.settings.language] || translations.de;
+        
+        return { ...base, ...custom };
+    }
+    
+    translate(key) {
+        const translations = this.getTranslations();
+        return translations[key] || key;
+    }
+    
+    renderCustomTranslations() {
+        const container = document.getElementById('customTranslationsList');
+        if (!container) return;
+        
+        const translations = this.settings.translations || {};
+        const entries = Object.entries(translations);
+        
+        if (entries.length === 0) {
+            container.innerHTML = '<p style="font-size: 0.75rem; color: var(--design-text-muted);">Keine eigenen Übersetzungen</p>';
+            return;
+        }
+        
+        container.innerHTML = entries.map(([key, value]) => `
+            <div class="custom-translation-row" style="display: flex; gap: 8px; margin-bottom: 8px; align-items: center;">
+                <input type="text" class="design-input" value="${key}" placeholder="Original" 
+                       data-translation-key="${key}" style="flex: 1; font-size: 0.85rem;">
+                <span style="color: var(--design-text-muted);">→</span>
+                <input type="text" class="design-input" value="${value}" placeholder="Übersetzung" 
+                       data-translation-value="${key}" style="flex: 1; font-size: 0.85rem;">
+                <button type="button" class="design-action-btn" style="padding: 6px 10px;" 
+                        onclick="window.designEditor?.removeCustomTranslation('${key}')">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        `).join('');
+        
+        // Event Listeners für Inputs
+        container.querySelectorAll('input[data-translation-key]').forEach(input => {
+            input.addEventListener('change', (e) => {
+                const oldKey = e.target.dataset.translationKey;
+                const newKey = e.target.value.trim();
+                const valueInput = container.querySelector(`input[data-translation-value="${oldKey}"]`);
+                const value = valueInput?.value || '';
+                
+                if (oldKey !== newKey) {
+                    delete this.settings.translations[oldKey];
+                }
+                if (newKey && value) {
+                    this.settings.translations[newKey] = value;
+                }
+                this.saveSettings();
+                this.renderCustomTranslations();
+                this.updatePreview();
+            });
+        });
+        
+        container.querySelectorAll('input[data-translation-value]').forEach(input => {
+            input.addEventListener('change', (e) => {
+                const key = e.target.dataset.translationValue;
+                const value = e.target.value.trim();
+                if (key) {
+                    this.settings.translations[key] = value;
+                    this.saveSettings();
+                    this.updatePreview();
+                }
+            });
+        });
+    }
+    
+    addCustomTranslationRow() {
+        if (!this.settings.translations) {
+            this.settings.translations = {};
+        }
+        // Füge einen temporären Eintrag hinzu
+        const tempKey = 'Neuer Titel ' + (Object.keys(this.settings.translations).length + 1);
+        this.settings.translations[tempKey] = '';
+        this.renderCustomTranslations();
+    }
+    
+    removeCustomTranslation(key) {
+        if (this.settings.translations && this.settings.translations.hasOwnProperty(key)) {
+            delete this.settings.translations[key];
+            this.saveSettings();
+            this.renderCustomTranslations();
+            this.updatePreview();
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // REFERENCES DATA
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    getReferencesData() {
+        const container = document.getElementById('referencesContainer');
+        if (!container) return [];
+        
+        const items = [];
+        container.querySelectorAll('.reference-item, .entry-item').forEach(item => {
+            items.push({
+                name: item.querySelector('[data-field="name"]')?.value || '',
+                position: item.querySelector('[data-field="position"]')?.value || '',
+                company: item.querySelector('[data-field="company"]')?.value || '',
+                email: item.querySelector('[data-field="email"]')?.value || '',
+                phone: item.querySelector('[data-field="phone"]')?.value || ''
+            });
+        });
+        
+        return items;
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -2791,9 +3076,12 @@ class DesignEditor {
             email: document.getElementById('email')?.value || '',
             phone: document.getElementById('phone')?.value || '',
             location: document.getElementById('location')?.value || '',
+            address: document.getElementById('address')?.value || '',
+            street: document.getElementById('street')?.value || '',
             summary: document.getElementById('summary')?.value || '',
             birthDate: document.getElementById('birthDate')?.value || '',
             linkedin: document.getElementById('linkedin')?.value || '',
+            github: document.getElementById('github')?.value || '',
             website: document.getElementById('website')?.value || ''
         };
         
@@ -2810,16 +3098,20 @@ class DesignEditor {
             email: formData.email || savedProfile.email || 'email@example.com',
             phone: formData.phone || savedProfile.phone || '+49 123 456789',
             location: formData.location || savedProfile.location || 'Stadt, Land',
+            address: formData.address || savedProfile.address || '',
+            street: formData.street || savedProfile.street || '',
             summary: formData.summary || savedProfile.summary || 'Ihr Profil...',
             birthDate: formData.birthDate || savedProfile.birthDate || '',
             linkedin: formData.linkedin || savedProfile.linkedin || '',
+            github: formData.github || savedProfile.github || '',
             website: formData.website || savedProfile.website || '',
             profileImageUrl: this.settings.profileImageUrl || savedProfile.profileImageUrl || '',
             experience: this.getExperienceData(),
             education: this.getEducationData(),
             skills: this.getSkillsData(),
             languages: this.getLanguagesData(),
-            projects: this.getProjectsData()
+            projects: this.getProjectsData(),
+            references: this.getReferencesData()
         };
     }
 
@@ -2917,8 +3209,20 @@ class DesignEditor {
         document.querySelectorAll('#softSkillsContainer .skill-item-rated.soft').forEach(item => {
             const name = item.querySelector('[data-field="skillName"]')?.value?.trim() || '';
             const level = parseInt(item.querySelector('[data-field="skillLevel"]')?.value) || 5;
+            const examplesTextarea = item.querySelector('textarea[data-field="examples"]');
+            const examples = examplesTextarea ? examplesTextarea.value.split('\n').filter(e => e.trim()) : [];
             if (name) {
-                softSkills.push({ name, level });
+                softSkills.push({ name, level, examples });
+            }
+        });
+        
+        // Alte Soft Skills (ohne Bewertung) - auch mit Examples
+        document.querySelectorAll('#softSkillsContainer .soft-skill-item').forEach(item => {
+            const skill = item.querySelector('input[type="text"]')?.value || '';
+            const examplesTextarea = item.querySelector('textarea');
+            const examples = examplesTextarea ? examplesTextarea.value.split('\n').filter(e => e.trim()) : [];
+            if (skill) {
+                softSkills.push({ name: skill, level: 5, examples });
             }
         });
 
@@ -3040,17 +3344,41 @@ class DesignEditor {
             }
         }
         
+        // GitHub URL vollständig anzeigen (mit https:// wenn nicht vorhanden)
+        let githubDisplay = data.github || '';
+        if (githubDisplay && !githubDisplay.startsWith('http')) {
+            if (githubDisplay.includes('github.com')) {
+                githubDisplay = 'https://' + githubDisplay;
+            } else {
+                githubDisplay = 'https://github.com/' + githubDisplay.replace(/^\/+/, '');
+            }
+        }
+        
+        // Adresse zusammenstellen (Straße + Standort)
+        let fullAddress = '';
+        if (data.street && this.settings.showHeaderField?.street !== false) {
+            fullAddress = data.street;
+            if (data.location && this.settings.showHeaderField?.location !== false) {
+                fullAddress += ', ' + data.location;
+            }
+        } else if (data.address && this.settings.showHeaderField?.address !== false) {
+            fullAddress = data.address;
+        } else if (data.location && this.settings.showHeaderField?.location !== false) {
+            fullAddress = data.location;
+        }
+        
         const headerContent = `
             ${resumeTitleHtml}
             <h1 class="resume-preview-name">${data.firstName} ${data.lastName}</h1>
             <p class="resume-preview-title">${data.title}</p>
-            ${data.birthDate ? `<p class="resume-preview-birthdate" style="font-size: 0.85em; color: ${this.settings.mutedColor};">Geboren am ${this.formatBirthDate(data.birthDate)}</p>` : ''}
+            ${(data.birthDate && this.settings.showHeaderField?.birthDate !== false) ? `<p class="resume-preview-birthdate" style="font-size: 0.85em; color: ${this.settings.mutedColor};">Geboren am ${this.formatBirthDate(data.birthDate)}</p>` : ''}
             <div class="resume-preview-contact">
-                ${data.phone ? `<span><i class="fas fa-phone"></i> ${data.phone}</span>` : ''}
-                ${data.location ? `<span><i class="fas fa-map-marker-alt"></i> ${data.location}</span>` : ''}
-                ${data.email ? `<span><i class="fas fa-envelope"></i> ${data.email}</span>` : ''}
-                ${data.linkedin ? `<span><i class="fab fa-linkedin"></i> <a href="${linkedinDisplay}" target="_blank" rel="noopener" style="color: inherit; text-decoration: none;">${linkedinDisplay}</a></span>` : ''}
-                ${data.website ? `<span><i class="fas fa-globe"></i> ${data.website.replace(/https?:\/\//, '')}</span>` : ''}
+                ${(data.phone && this.settings.showHeaderField?.phone !== false) ? `<span><i class="fas fa-phone"></i> ${data.phone}</span>` : ''}
+                ${fullAddress ? `<span><i class="fas fa-map-marker-alt"></i> ${fullAddress}</span>` : ''}
+                ${(data.email && this.settings.showHeaderField?.email !== false) ? `<span><i class="fas fa-envelope"></i> ${data.email}</span>` : ''}
+                ${(data.linkedin && this.settings.showHeaderField?.linkedin !== false) ? `<span><i class="fab fa-linkedin"></i> <a href="${linkedinDisplay}" target="_blank" rel="noopener" style="color: inherit; text-decoration: none;">${linkedinDisplay}</a></span>` : ''}
+                ${(data.github && this.settings.showHeaderField?.github !== false) ? `<span><i class="fab fa-github"></i> <a href="${githubDisplay}" target="_blank" rel="noopener" style="color: inherit; text-decoration: none;">${githubDisplay}</a></span>` : ''}
+                ${(data.website && this.settings.showHeaderField?.website !== false) ? `<span><i class="fas fa-globe"></i> ${data.website.replace(/https?:\/\//, '')}</span>` : ''}
             </div>
         `;
         
@@ -3100,7 +3428,7 @@ class DesignEditor {
 
     renderSummarySection(data, section) {
         if (!data.summary) return '';
-        const title = section?.customTitle || 'Profil';
+        const title = section?.customTitle || this.translate('Kurzprofil');
         return `
             <div class="resume-preview-section">
                 <h2 class="resume-preview-section-title"><i class="fas fa-user"></i> ${title}</h2>
@@ -3111,7 +3439,7 @@ class DesignEditor {
 
     renderExperienceSection(data, section) {
         if (!data.experience?.length) return '';
-        const title = section?.customTitle || 'Berufserfahrung';
+        const title = section?.customTitle || this.translate('Berufserfahrung');
         const format = this.settings.experienceFormat || 'mixed';
         
         return `
@@ -3197,7 +3525,7 @@ class DesignEditor {
 
     renderEducationSection(data, section) {
         if (!data.education?.length) return '';
-        const title = section?.customTitle || 'Ausbildung';
+        const title = section?.customTitle || this.translate('Ausbildung');
         return `
             <div class="resume-preview-section">
                 <h2 class="resume-preview-section-title"><i class="fas fa-graduation-cap"></i> ${title}</h2>
@@ -3222,7 +3550,7 @@ class DesignEditor {
         const hasTech = data.skills?.technicalSkills?.length;
         const hasSoft = data.skills?.softSkills?.length;
         if (!hasTech && !hasSoft) return '';
-        const title = section?.customTitle || 'Fähigkeiten';
+        const title = section?.customTitle || this.translate('Fähigkeiten');
         const display = this.settings.skillDisplay || 'tags';
         const maxLevel = this.settings.skillMaxLevel || 10;
         const showLabel = this.settings.skillShowLabel !== false;
@@ -3240,7 +3568,7 @@ class DesignEditor {
                 `).join('') : ''}
                 ${hasSoft ? `
                     <div class="resume-preview-item">
-                        <div class="resume-preview-item-title">Soft Skills</div>
+                        <div class="resume-preview-item-title">${this.translate('Soft Skills')}</div>
                         <div class="resume-preview-skills resume-skills-${display}">
                             ${data.skills.softSkills.map(skill => this.renderSkillItem(skill, display, maxLevel, showLabel)).join('')}
                         </div>
@@ -3304,7 +3632,7 @@ class DesignEditor {
 
     renderLanguagesSection(data, section) {
         if (!data.languages?.length) return '';
-        const title = section?.customTitle || 'Sprachen';
+        const title = section?.customTitle || this.translate('Sprachen');
         
         // Map proficiency levels to display text with CEFR levels
         const levelMap = {
@@ -3339,7 +3667,7 @@ class DesignEditor {
 
     renderProjectsSection(data, section) {
         if (!data.projects?.length) return '';
-        const title = section?.customTitle || 'Projekte';
+        const title = section?.customTitle || this.translate('Projekte');
         return `
             <div class="resume-preview-section">
                 <h2 class="resume-preview-section-title"><i class="fas fa-project-diagram"></i> ${title}</h2>
@@ -3360,17 +3688,20 @@ class DesignEditor {
     }
     
     renderReferencesSection(data, section) {
-        const title = section?.customTitle || 'Referenzen';
+        const title = section?.customTitle || this.translate('Referenzen');
         // Referenzen können aus verschiedenen Quellen kommen
         const references = data.references || [];
         
         // Wenn keine Referenzen vorhanden, zeige "auf Anfrage"
         if (!references.length) {
+            const onRequestText = this.settings.language === 'en' 
+                ? 'References available upon request.'
+                : 'Referenzen werden auf Anfrage gerne zur Verfügung gestellt.';
             return `
                 <div class="resume-preview-section">
                     <h2 class="resume-preview-section-title"><i class="fas fa-user-check"></i> ${title}</h2>
                     <p class="resume-preview-item-description" style="font-style: italic; color: ${this.settings.mutedColor};">
-                        Referenzen werden auf Anfrage gerne zur Verfügung gestellt.
+                        ${onRequestText}
                     </p>
                 </div>
             `;
@@ -3551,6 +3882,8 @@ class DesignEditor {
                 try {
                     await this.loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js');
                     console.log('✅ html2pdf geladen');
+                    // Warte länger nach dem Laden
+                    await new Promise(resolve => setTimeout(resolve, 500));
                 } catch (loadError) {
                     console.warn('⚠️ CDN nicht erreichbar, versuche Druckdialog:', loadError);
                     throw new Error('Bibliothek konnte nicht geladen werden');
@@ -3558,30 +3891,42 @@ class DesignEditor {
             }
             
             // Warte kurz bis die Bibliothek verfügbar ist
-            await new Promise(resolve => setTimeout(resolve, 100));
+            await new Promise(resolve => setTimeout(resolve, 200));
             
             if (typeof html2pdf === 'undefined') {
                 throw new Error('html2pdf nicht verfügbar');
             }
             
-            // Bereite Preview für Export vor
+            // Bereite Preview für Export vor - klone das Element für bessere Qualität
             const resumeData = this.getResumeData();
             const filename = `Lebenslauf_${resumeData.firstName || 'Vorname'}_${resumeData.lastName || 'Nachname'}.pdf`.replace(/\s+/g, '_');
             
-            // Konfiguration für PDF
+            // Erstelle einen Klon des Previews für den Export
+            const clone = preview.cloneNode(true);
+            clone.style.position = 'absolute';
+            clone.style.left = '-9999px';
+            clone.style.top = '0';
+            clone.style.width = '210mm';
+            clone.style.minHeight = '297mm';
+            clone.style.backgroundColor = this.settings.backgroundColor || '#ffffff';
+            document.body.appendChild(clone);
+            
+            // Konfiguration für PDF - verbesserte Einstellungen
             const opt = {
-                margin: 0,
+                margin: [0, 0, 0, 0],
                 filename: filename,
-                image: { type: 'jpeg', quality: 0.95 },
+                image: { type: 'jpeg', quality: 0.98 },
                 html2canvas: { 
-                    scale: 2, 
+                    scale: 2,
                     useCORS: true,
                     letterRendering: true,
                     logging: false,
-                    allowTaint: true,
+                    allowTaint: false,
                     backgroundColor: this.settings.backgroundColor || '#ffffff',
                     windowWidth: 794, // A4 width in pixels at 96 DPI
-                    windowHeight: 1123 // A4 height in pixels at 96 DPI
+                    windowHeight: 1123, // A4 height in pixels at 96 DPI
+                    scrollX: 0,
+                    scrollY: 0
                 },
                 jsPDF: { 
                     unit: 'mm', 
@@ -3589,13 +3934,24 @@ class DesignEditor {
                     orientation: 'portrait',
                     compress: true
                 },
-                pagebreak: { mode: ['css', 'legacy'] }
+                pagebreak: { mode: ['css', 'legacy'], avoid: ['img', '.resume-preview-section'] }
             };
             
-            // Export direkt vom Preview (html2pdf klont intern)
-            await html2pdf().set(opt).from(preview).save();
-            
-            this.showNotification('PDF erfolgreich exportiert!', 'success');
+            try {
+                // Export vom Klon
+                await html2pdf().set(opt).from(clone).save();
+                
+                // Entferne Klon nach Export
+                document.body.removeChild(clone);
+                
+                this.showNotification('PDF erfolgreich exportiert!', 'success');
+            } catch (exportError) {
+                // Entferne Klon auch bei Fehler
+                if (document.body.contains(clone)) {
+                    document.body.removeChild(clone);
+                }
+                throw exportError;
+            }
         } catch (error) {
             console.error('PDF Export Fehler:', error);
             // Fallback zu Print-Dialog mit speziellem Print-CSS
