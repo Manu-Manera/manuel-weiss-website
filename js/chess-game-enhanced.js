@@ -678,7 +678,8 @@ class ChessGameEnhanced {
             }
             return possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
         } else {
-            return this.minimax(3, -Infinity, Infinity, true);
+            const result = this.minimax(3, -Infinity, Infinity, true);
+            return result.move;
         }
     }
 
@@ -776,7 +777,7 @@ class ChessGameEnhanced {
         let score = 0;
         const pieceValues = { 'p': 100, 'n': 320, 'b': 330, 'r': 500, 'q': 900, 'k': 20000 };
         
-        // Material
+        // Material und Position
         for (let row = 0; row < 8; row++) {
             for (let col = 0; col < 8; col++) {
                 const piece = this.board[row][col];
@@ -786,11 +787,25 @@ class ChessGameEnhanced {
                 const value = pieceValues[pieceType] || 0;
                 let positionValue = 0;
                 
-                // Positional bonuses (vereinfacht)
+                // Positional bonuses
                 if (pieceType === 'p') {
                     // Pawn advancement
                     positionValue = piece === piece.toUpperCase() ? 
                         (7 - row) * 10 : row * 10;
+                } else if (pieceType === 'n' || pieceType === 'b') {
+                    // Center control
+                    const centerDist = Math.abs(row - 3.5) + Math.abs(col - 3.5);
+                    positionValue = (7 - centerDist) * 5;
+                } else if (pieceType === 'r') {
+                    // Rook on open file
+                    let openFile = true;
+                    for (let r = 0; r < 8; r++) {
+                        if (this.board[r][col] && this.board[r][col].toLowerCase() === 'p') {
+                            openFile = false;
+                            break;
+                        }
+                    }
+                    if (openFile) positionValue = 20;
                 }
                 
                 if (piece === piece.toUpperCase()) {
@@ -802,6 +817,7 @@ class ChessGameEnhanced {
         }
         
         // Check/Checkmate bonuses
+        this.checkForCheck();
         if (this.inCheck.white) score += 50;
         if (this.inCheck.black) score -= 50;
         if (this.checkmate.white) score += 10000;
