@@ -1,46 +1,42 @@
 # Netlify Configuration
-# Optimiert für Credit-Sparsamkeit
+# ═══════════════════════════════════════════════════════════════════════════
+# NUR PREVIEW DEPLOYS - Production ist deaktiviert
+# ═══════════════════════════════════════════════════════════════════════════
+#
+# WICHTIG: Um Production-Deploys wirklich zu stoppen, gehe zu:
+# https://app.netlify.com → Site Settings → Build & Deploy → Continuous Deployment
+# → "Stop auto-publishing" aktivieren
+#
+# Dann werden nur noch Deploy Previews (Pull Requests) erstellt.
+# ═══════════════════════════════════════════════════════════════════════════
 
 [build]
-  # Kein Build-Command nötig, da statische Seite
   command = ""
   publish = "."
+  # Ignore-Pattern: Nur bei PR/Preview deployen
+  ignore = "git log -1 --format='%s' | grep -qvE '^(Merge pull request|Preview:)'"
 
-# Branch Deploy Settings - NUR Deploy Previews aktiviert (keine Production Deploys)
-[context.production]
-  command = ""
-  publish = "."
-  # Production Deploys DEAKTIVIERT - nur Previews
-  skip_processing = true
-
-# Preview Deploys (Pull Requests) - AKTIVIERT für Tests
+# Preview Deploys (Pull Requests) - AKTIVIERT
 [context.deploy-preview]
   command = ""
   publish = "."
-  # Aktiviert - nur Preview Deploys
-  skip_processing = false
 
-# Branch Deploys - DEAKTIVIERT um Credits zu sparen
+# Branch Deploys - DEAKTIVIERT
 [context.branch-deploy]
   command = ""
   publish = "."
-  # Deaktiviert - keine Branch Deploys
-  skip_processing = true
+  ignore = "exit 0"
 
-# Production Branch - DEAKTIVIERT
-[build.processing]
-  skip_processing = true
-
-# Headers für Performance
+# Headers für Performance & Security
 [[headers]]
   for = "/*"
   [headers.values]
-    X-Frame-Options = "DENY"
+    X-Frame-Options = "SAMEORIGIN"
     X-XSS-Protection = "1; mode=block"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
 
-# Redirects
+# SPA Redirect
 [[redirects]]
   from = "/*"
   to = "/index.html"
