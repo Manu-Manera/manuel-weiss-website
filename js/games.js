@@ -212,6 +212,41 @@ function updateDifficulty() {
     }
 }
 
+function undoMove() {
+    if (window.chessGame) {
+        window.chessGame.undoMove();
+    }
+}
+
+function selectPromotion(piece) {
+    if (window.chessGame && window.chessGame.promotionResolve) {
+        window.chessGame.promotionResolve(piece);
+        window.chessGame.promotionResolve = null;
+    }
+}
+
+function resignGame() {
+    if (window.chessGame) {
+        window.chessGame.resign();
+    }
+}
+
+function offerDraw() {
+    if (window.chessGame) {
+        window.chessGame.offerDraw();
+    }
+}
+
+function closeChessGame() {
+    const modal = document.getElementById('chessModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+    if (window.chessGame) {
+        window.chessGame.cleanup();
+    }
+}
+
 function closeChessGame() {
     document.getElementById('chessModal').style.display = 'none';
     if (window.chessGame) {
