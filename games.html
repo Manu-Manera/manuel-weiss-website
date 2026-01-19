@@ -71,12 +71,16 @@
                         <span><i class="fas fa-users"></i> <span id="chessPlayersCount">0</span> Spieler online</span>
                     </div>
                     <div class="game-options">
-                        <button class="btn-game" onclick="startChessGame('player')">
+                        <button class="btn-game" onclick="startChessGame('player')" id="playPlayerBtn">
                             <i class="fas fa-users"></i> Gegen Spieler
                         </button>
-                        <button class="btn-game btn-game-secondary" onclick="startChessGame('computer')">
+                        <button class="btn-game btn-game-secondary" onclick="startChessGame('computer')" id="playComputerBtn">
                             <i class="fas fa-robot"></i> Gegen Computer
                         </button>
+                    </div>
+                    <div class="drag-drop-hint">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Tipp: Figuren können per Drag & Drop oder Klick bewegt werden</span>
                     </div>
                 </div>
 
