@@ -62,6 +62,12 @@ class ChessGame {
                 boardElement.appendChild(square);
             }
         }
+        
+        // Highlight selected square und mögliche Züge
+        if (this.selectedSquare) {
+            this.highlightSquare(this.selectedSquare.row, this.selectedSquare.col);
+            this.showPossibleMoves(this.selectedSquare.row, this.selectedSquare.col);
+        }
     }
 
     getPieceSymbol(piece) {
