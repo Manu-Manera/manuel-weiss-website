@@ -14,11 +14,30 @@
 
 ## Lösungsansätze
 
+### ⚠️ WICHTIG: Kostenloser Support-Zugang
+
+**Das Problem**: AWS zeigt oft zuerst die Support-Pläne an. Du musst direkt zu den kostenlosen Optionen navigieren!
+
+**Lösung - Direkter Link zu kostenlosem Support:**
+1. Gehe direkt zu: https://console.aws.amazon.com/support/home#/case/create
+2. ODER: AWS Console → Support Center → **"Create case"** (nicht "Pläne vergleichen")
+3. Wähle: **"Account and Billing Support"** (nicht "Technical")
+4. Wähle: **"Account"** als Kategorie
+5. Wähle: **"General guidance"** als Priorität (kostenlos!)
+
+**Alternative - Telefon-Support (100% kostenlos):**
+- Deutschland: **+49-800-181-0637** (kostenlos)
+- USA: **+1-206-266-4064**
+- Sage: "Ich habe ein Account-Problem und brauche kostenlosen Support"
+- Account- und Billing-Support ist IMMER kostenlos, auch ohne Support-Plan!
+
 ### 1. Neue Support-Anfrage erstellen (Kostenlos im Basic Support)
 - **Wichtig**: Erstelle eine NEUE Support-Anfrage, nicht eine Antwort auf die alte
+- **Direkter Link**: https://console.aws.amazon.com/support/home#/case/create
 - **Kategorie**: Account and Billing Support → Account
 - **Priorität**: General guidance (kostenlos)
 - **Betreff**: "Lambda Access Denied - Security Measures Completed"
+- **NICHT auf "Pläne vergleichen" klicken!**
 
 ### 2. Telefon-Support (Kostenlos)
 - AWS Support Telefon: +49-800-181-0637 (Deutschland, kostenlos)
@@ -89,3 +108,38 @@ Manuel Weiss
 - Kontaktiere AWS Account Manager (falls vorhanden)
 - Erwäge AWS Partner Network (APN) Partner zu kontaktieren
 - Kontaktiere AWS über Social Media (Twitter: @AWSSupport)
+
+## 🚨 WICHTIG: Kostenloser Support ohne Plan
+
+**Account- und Billing-Support ist IMMER kostenlos**, auch ohne Support-Plan!
+
+**So kommst du zum kostenlosen Support:**
+
+1. **Direkter Link** (am einfachsten):
+   ```
+   https://console.aws.amazon.com/support/home#/case/create
+   ```
+
+2. **Manuell in der Console:**
+   - AWS Console öffnen
+   - Oben rechts auf deinen Namen klicken
+   - "Support Center" auswählen
+   - **"Create case"** klicken (NICHT "Pläne vergleichen"!)
+   - **"Account and Billing Support"** wählen
+   - **"Account"** als Kategorie
+   - **"General guidance"** als Priorität
+
+3. **Telefon (100% kostenlos):**
+   - Deutschland: **+49-800-181-0637**
+   - Sage: "Ich brauche kostenlosen Account-Support"
+   - Account-Probleme sind IMMER kostenlos!
+
+**Was kostet Geld:**
+- ❌ Technical Support (EC2, S3, Lambda technische Probleme)
+- ❌ Business/Enterprise Support Plans
+
+**Was ist kostenlos:**
+- ✅ Account and Billing Support (dein Fall!)
+- ✅ Security-Reviews
+- ✅ Account-Wiederherstellung
+- ✅ Telefon-Support für Account-Probleme
