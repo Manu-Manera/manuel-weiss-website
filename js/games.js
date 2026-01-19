@@ -176,16 +176,24 @@ class GamesManager {
 }
 
 // Global functions
-function startChessGame() {
+function startChessGame(mode = 'player') {
     if (!window.gamesManager || !window.gamesManager.isAuthenticated) {
         alert('Bitte melden Sie sich zuerst an.');
         return;
     }
     
     if (window.chessGame) {
-        window.chessGame.startNewGame();
+        window.chessGame.startNewGame(mode);
     } else {
         console.error('Chess game not initialized');
+    }
+}
+
+function updateDifficulty() {
+    const select = document.getElementById('difficultySelect');
+    if (window.chessGame && select) {
+        window.chessGame.computerDifficulty = select.value;
+        console.log('Schwierigkeit geändert zu:', select.value);
     }
 }
 
