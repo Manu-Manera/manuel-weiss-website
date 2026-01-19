@@ -70,9 +70,14 @@
                     <div class="game-stats">
                         <span><i class="fas fa-users"></i> <span id="chessPlayersCount">0</span> Spieler online</span>
                     </div>
-                    <button class="btn-game" onclick="startChessGame()">
-                        <i class="fas fa-play"></i> Spiel starten
-                    </button>
+                    <div class="game-options">
+                        <button class="btn-game" onclick="startChessGame('player')">
+                            <i class="fas fa-users"></i> Gegen Spieler
+                        </button>
+                        <button class="btn-game btn-game-secondary" onclick="startChessGame('computer')">
+                            <i class="fas fa-robot"></i> Gegen Computer
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Tic-Tac-Toe Game (Placeholder) -->

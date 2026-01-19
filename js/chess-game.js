@@ -10,6 +10,10 @@ class ChessGame {
         this.selectedSquare = null;
         this.gameState = 'waiting'; // waiting, playing, finished
         this.opponent = null;
+        this.gameMode = 'player'; // 'player' or 'computer'
+        this.computerDifficulty = 'medium'; // 'easy', 'medium', 'hard'
+        this.moveHistory = [];
+        this.isComputerThinking = false;
         this.init();
     }
 
@@ -70,6 +74,12 @@ class ChessGame {
 
     handleSquareClick(row, col) {
         if (this.gameState !== 'playing') return;
+        if (this.isComputerThinking) return; // Verhindere Züge während Computer denkt
+        
+        // Wenn Computer am Zug ist, ignoriere Klicks
+        if (this.gameMode === 'computer' && this.currentPlayer === 'black') {
+            return;
+        }
         
         const piece = this.board[row][col];
         const isWhitePiece = piece && piece === piece.toUpperCase();
@@ -78,17 +88,23 @@ class ChessGame {
         // Prüfe ob es der Spieler am Zug ist
         if (this.currentPlayer === 'white' && !isWhitePiece && this.selectedSquare) {
             // Versuche Zug
-            this.makeMove(this.selectedSquare.row, this.selectedSquare.col, row, col);
-            this.selectedSquare = null;
-            this.renderBoard();
+            if (this.makeMove(this.selectedSquare.row, this.selectedSquare.col, row, col)) {
+                this.selectedSquare = null;
+                this.renderBoard();
+                // Wenn gegen Computer, lass Computer ziehen
+                if (this.gameMode === 'computer' && this.currentPlayer === 'black') {
+                    setTimeout(() => this.computerMove(), 500);
+                }
+            }
             return;
         }
         
-        if (this.currentPlayer === 'black' && !isBlackPiece && this.selectedSquare) {
-            // Versuche Zug
-            this.makeMove(this.selectedSquare.row, this.selectedSquare.col, row, col);
-            this.selectedSquare = null;
-            this.renderBoard();
+        if (this.currentPlayer === 'black' && !isBlackPiece && this.selectedSquare && this.gameMode === 'player') {
+            // Versuche Zug (nur im Multiplayer-Modus)
+            if (this.makeMove(this.selectedSquare.row, this.selectedSquare.col, row, col)) {
+                this.selectedSquare = null;
+                this.renderBoard();
+            }
             return;
         }
         
@@ -97,10 +113,12 @@ class ChessGame {
             this.selectedSquare = { row, col };
             this.renderBoard();
             this.highlightSquare(row, col);
-        } else if (this.currentPlayer === 'black' && isBlackPiece) {
+            this.showPossibleMoves(row, col);
+        } else if (this.currentPlayer === 'black' && isBlackPiece && this.gameMode === 'player') {
             this.selectedSquare = { row, col };
             this.renderBoard();
             this.highlightSquare(row, col);
+            this.showPossibleMoves(row, col);
         }
     }
 
@@ -142,22 +160,35 @@ class ChessGame {
         this.renderBoard();
     }
 
-    updateGameStatus() {
+    updateGameStatus(customMessage = null) {
         const statusElement = document.getElementById('gameStatus');
         if (statusElement) {
+            if (customMessage) {
+                statusElement.textContent = customMessage;
+                return;
+            }
+            
             if (this.gameState === 'waiting') {
                 statusElement.textContent = 'Warte auf Gegner...';
             } else if (this.gameState === 'playing') {
-                statusElement.textContent = `${this.currentPlayer === 'white' ? 'Weiß' : 'Schwarz'} ist am Zug`;
+                if (this.gameMode === 'computer' && this.currentPlayer === 'black') {
+                    statusElement.textContent = 'Computer denkt nach...';
+                } else {
+                    statusElement.textContent = `${this.currentPlayer === 'white' ? 'Weiß' : 'Schwarz'} ist am Zug`;
+                }
+            } else if (this.gameState === 'finished') {
+                statusElement.textContent = 'Spiel beendet';
             }
         }
     }
 
-    startNewGame() {
-        console.log('🎮 Starting new chess game...');
-        this.gameState = 'waiting';
+    startNewGame(mode = 'player') {
+        console.log('🎮 Starting new chess game...', mode);
+        this.gameMode = mode;
+        this.gameState = mode === 'computer' ? 'playing' : 'waiting';
         this.currentPlayer = 'white';
         this.selectedSquare = null;
+        this.moveHistory = [];
         this.initializeBoard();
         this.renderBoard();
         this.updateGameStatus();
@@ -165,8 +196,19 @@ class ChessGame {
         // Zeige Modal
         document.getElementById('chessModal').style.display = 'flex';
         
-        // Suche nach Gegner (später über Backend)
-        this.findOpponent();
+        // Update UI basierend auf Modus
+        if (mode === 'computer') {
+            document.getElementById('blackPlayerName').textContent = 'Computer (Schwarz)';
+            document.getElementById('blackPlayerIcon').className = 'fas fa-robot';
+            document.getElementById('difficultySelector').style.display = 'block';
+            this.opponent = { name: 'Computer', type: 'computer' };
+            this.updateGameStatus();
+        } else {
+            document.getElementById('blackPlayerName').textContent = 'Gegner (Schwarz)';
+            document.getElementById('blackPlayerIcon').className = 'fas fa-user';
+            document.getElementById('difficultySelector').style.display = 'none';
+            this.findOpponent();
+        }
     }
 
     findOpponent() {
@@ -175,8 +217,266 @@ class ChessGame {
             this.opponent = { name: 'Gegner', id: 'opponent1' };
             this.gameState = 'playing';
             this.updateGameStatus();
-            document.getElementById('blackPlayerName').textContent = 'Gegner (Schwarz)';
         }, 2000);
+    }
+
+    async computerMove() {
+        if (this.gameState !== 'playing' || this.currentPlayer !== 'black') return;
+        if (this.isComputerThinking) return;
+        
+        this.isComputerThinking = true;
+        this.updateGameStatus('Computer denkt nach...');
+        
+        // Simuliere Denkzeit basierend auf Schwierigkeit
+        const thinkTime = this.computerDifficulty === 'easy' ? 1000 : 
+                         this.computerDifficulty === 'medium' ? 1500 : 2000;
+        
+        await new Promise(resolve => setTimeout(resolve, thinkTime));
+        
+        // Finde besten Zug
+        const move = this.findBestMove();
+        
+        if (move) {
+            this.makeMove(move.fromRow, move.fromCol, move.toRow, move.toCol);
+            this.renderBoard();
+            this.updateGameStatus();
+        }
+        
+        this.isComputerThinking = false;
+    }
+
+    findBestMove() {
+        // Einfacher Schach-Engine mit Minimax-ähnlichem Ansatz
+        const possibleMoves = this.getAllPossibleMoves('black');
+        
+        if (possibleMoves.length === 0) return null;
+        
+        // Je nach Schwierigkeit wähle unterschiedliche Strategien
+        if (this.computerDifficulty === 'easy') {
+            // Zufälliger Zug
+            return possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
+        } else if (this.computerDifficulty === 'medium') {
+            // Bevorzuge Züge, die Figuren schlagen
+            const captureMoves = possibleMoves.filter(m => 
+                this.board[m.toRow][m.toCol] !== null
+            );
+            if (captureMoves.length > 0) {
+                return captureMoves[Math.floor(Math.random() * captureMoves.length)];
+            }
+            return possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
+        } else {
+            // Hard: Minimax mit begrenzter Tiefe
+            return this.minimaxMove(possibleMoves, 2);
+        }
+    }
+
+    getAllPossibleMoves(color) {
+        const moves = [];
+        const isWhite = color === 'white';
+        
+        for (let row = 0; row < 8; row++) {
+            for (let col = 0; col < 8; col++) {
+                const piece = this.board[row][col];
+                if (!piece) continue;
+                
+                const isPieceWhite = piece === piece.toUpperCase();
+                if ((isWhite && !isPieceWhite) || (!isWhite && isPieceWhite)) continue;
+                
+                // Einfache Zug-Generierung (später erweitern)
+                const pieceMoves = this.getPieceMoves(row, col, piece);
+                pieceMoves.forEach(move => {
+                    moves.push({
+                        fromRow: row,
+                        fromCol: col,
+                        toRow: move.row,
+                        toCol: move.col,
+                        piece: piece
+                    });
+                });
+            }
+        }
+        
+        return moves;
+    }
+
+    getPieceMoves(row, col, piece) {
+        const moves = [];
+        const isWhite = piece === piece.toUpperCase();
+        const pieceType = piece.toLowerCase();
+        
+        // Einfache Zug-Regeln (später erweitern)
+        if (pieceType === 'p') {
+            // Bauern
+            const direction = isWhite ? -1 : 1;
+            const startRow = isWhite ? 6 : 1;
+            
+            // Vorwärts
+            if (row + direction >= 0 && row + direction < 8 && !this.board[row + direction][col]) {
+                moves.push({ row: row + direction, col: col });
+                // Doppelzug vom Start
+                if (row === startRow && !this.board[row + 2 * direction][col]) {
+                    moves.push({ row: row + 2 * direction, col: col });
+                }
+            }
+            
+            // Schräg schlagen
+            for (const dcol of [-1, 1]) {
+                if (col + dcol >= 0 && col + dcol < 8 && row + direction >= 0 && row + direction < 8) {
+                    const target = this.board[row + direction][col + dcol];
+                    if (target && (target === target.toUpperCase()) !== isWhite) {
+                        moves.push({ row: row + direction, col: col + dcol });
+                    }
+                }
+            }
+        } else if (pieceType === 'r') {
+            // Turm - horizontal und vertikal
+            const directions = [[0, 1], [0, -1], [1, 0], [-1, 0]];
+            directions.forEach(([drow, dcol]) => {
+                for (let i = 1; i < 8; i++) {
+                    const newRow = row + i * drow;
+                    const newCol = col + i * dcol;
+                    if (newRow < 0 || newRow >= 8 || newCol < 0 || newCol >= 8) break;
+                    const target = this.board[newRow][newCol];
+                    if (!target) {
+                        moves.push({ row: newRow, col: newCol });
+                    } else {
+                        if ((target === target.toUpperCase()) !== isWhite) {
+                            moves.push({ row: newRow, col: newCol });
+                        }
+                        break;
+                    }
+                }
+            });
+        } else if (pieceType === 'n') {
+            // Springer
+            const knightMoves = [[-2, -1], [-2, 1], [-1, -2], [-1, 2], [1, -2], [1, 2], [2, -1], [2, 1]];
+            knightMoves.forEach(([drow, dcol]) => {
+                const newRow = row + drow;
+                const newCol = col + dcol;
+                if (newRow >= 0 && newRow < 8 && newCol >= 0 && newCol < 8) {
+                    const target = this.board[newRow][newCol];
+                    if (!target || (target === target.toUpperCase()) !== isWhite) {
+                        moves.push({ row: newRow, col: newCol });
+                    }
+                }
+            });
+        } else if (pieceType === 'b') {
+            // Läufer - diagonal
+            const directions = [[1, 1], [1, -1], [-1, 1], [-1, -1]];
+            directions.forEach(([drow, dcol]) => {
+                for (let i = 1; i < 8; i++) {
+                    const newRow = row + i * drow;
+                    const newCol = col + i * dcol;
+                    if (newRow < 0 || newRow >= 8 || newCol < 0 || newCol >= 8) break;
+                    const target = this.board[newRow][newCol];
+                    if (!target) {
+                        moves.push({ row: newRow, col: newCol });
+                    } else {
+                        if ((target === target.toUpperCase()) !== isWhite) {
+                            moves.push({ row: newRow, col: newCol });
+                        }
+                        break;
+                    }
+                }
+            });
+        } else if (pieceType === 'q') {
+            // Dame - kombiniert Turm und Läufer
+            const directions = [[0, 1], [0, -1], [1, 0], [-1, 0], [1, 1], [1, -1], [-1, 1], [-1, -1]];
+            directions.forEach(([drow, dcol]) => {
+                for (let i = 1; i < 8; i++) {
+                    const newRow = row + i * drow;
+                    const newCol = col + i * dcol;
+                    if (newRow < 0 || newRow >= 8 || newCol < 0 || newCol >= 8) break;
+                    const target = this.board[newRow][newCol];
+                    if (!target) {
+                        moves.push({ row: newRow, col: newCol });
+                    } else {
+                        if ((target === target.toUpperCase()) !== isWhite) {
+                            moves.push({ row: newRow, col: newCol });
+                        }
+                        break;
+                    }
+                }
+            });
+        } else if (pieceType === 'k') {
+            // König - ein Feld in alle Richtungen
+            const directions = [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]];
+            directions.forEach(([drow, dcol]) => {
+                const newRow = row + drow;
+                const newCol = col + dcol;
+                if (newRow >= 0 && newRow < 8 && newCol >= 0 && newCol < 8) {
+                    const target = this.board[newRow][newCol];
+                    if (!target || (target === target.toUpperCase()) !== isWhite) {
+                        moves.push({ row: newRow, col: newCol });
+                    }
+                }
+            });
+        }
+        
+        return moves;
+    }
+
+    showPossibleMoves(row, col) {
+        const piece = this.board[row][col];
+        if (!piece) return;
+        
+        const moves = this.getPieceMoves(row, col, piece);
+        moves.forEach(move => {
+            const square = document.querySelector(`[data-row="${move.row}"][data-col="${move.col}"]`);
+            if (square) {
+                square.classList.add('possible-move');
+            }
+        });
+    }
+
+    minimaxMove(moves, depth) {
+        // Einfache Minimax-Implementierung
+        let bestMove = null;
+        let bestScore = -Infinity;
+        
+        moves.forEach(move => {
+            // Simuliere Zug
+            const originalPiece = this.board[move.toRow][move.toCol];
+            this.board[move.toRow][move.toCol] = this.board[move.fromRow][move.fromCol];
+            this.board[move.fromRow][move.fromCol] = null;
+            
+            const score = this.evaluatePosition();
+            
+            // Rückgängig machen
+            this.board[move.fromRow][move.fromCol] = this.board[move.toRow][move.toCol];
+            this.board[move.toRow][move.toCol] = originalPiece;
+            
+            if (score > bestScore) {
+                bestScore = score;
+                bestMove = move;
+            }
+        });
+        
+        return bestMove || moves[0];
+    }
+
+    evaluatePosition() {
+        // Einfache Positionsbewertung
+        let score = 0;
+        const pieceValues = { 'p': 1, 'n': 3, 'b': 3, 'r': 5, 'q': 9, 'k': 100 };
+        
+        for (let row = 0; row < 8; row++) {
+            for (let col = 0; col < 8; col++) {
+                const piece = this.board[row][col];
+                if (!piece) continue;
+                
+                const pieceType = piece.toLowerCase();
+                const value = pieceValues[pieceType] || 0;
+                
+                if (piece === piece.toUpperCase()) {
+                    score += value; // Weiß
+                } else {
+                    score -= value; // Schwarz
+                }
+            }
+        }
+        
+        return score;
     }
 
     resign() {
