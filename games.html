@@ -116,9 +116,17 @@
                         </div>
                         <div class="game-status" id="gameStatus">Warte auf Gegner...</div>
                         <div class="player black">
-                            <i class="fas fa-user"></i>
+                            <i id="blackPlayerIcon" class="fas fa-user"></i>
                             <span id="blackPlayerName">Gegner (Schwarz)</span>
                         </div>
+                    </div>
+                    <div class="difficulty-selector" id="difficultySelector" style="display: none;">
+                        <label>Schwierigkeit:</label>
+                        <select id="difficultySelect" onchange="updateDifficulty()">
+                            <option value="easy">Leicht</option>
+                            <option value="medium" selected>Mittel</option>
+                            <option value="hard">Schwer</option>
+                        </select>
                     </div>
                 </div>
                 <div id="chessBoard" class="chess-board"></div>
