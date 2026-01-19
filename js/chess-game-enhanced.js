@@ -648,6 +648,7 @@ class ChessGameEnhanced {
         
         this.isComputerThinking = true;
         this.updateGameStatus('Computer denkt nach...');
+        this.updateUndoButton();
         
         const thinkTime = this.computerDifficulty === 'easy' ? 1000 : 
                          this.computerDifficulty === 'medium' ? 1500 : 2500;
@@ -657,12 +658,18 @@ class ChessGameEnhanced {
         const move = this.findBestMove();
         
         if (move) {
-            await this.makeMove(move.fromRow, move.fromCol, move.toRow, move.toCol);
+            // Für Computer: Automatisch Dame bei Promotion
+            const needsPromotion = move.piece.toLowerCase() === 'p' && 
+                                  (move.toRow === 0 || move.toRow === 7);
+            const promotionPiece = needsPromotion ? (move.piece === move.piece.toUpperCase() ? 'Q' : 'q') : null;
+            
+            await this.makeMove(move.fromRow, move.fromCol, move.toRow, move.toCol, promotionPiece);
             this.renderBoard();
             this.updateGameStatus();
         }
         
         this.isComputerThinking = false;
+        this.updateUndoButton();
     }
 
     findBestMove() {
