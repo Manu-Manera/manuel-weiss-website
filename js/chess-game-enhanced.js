@@ -65,6 +65,9 @@ class ChessGameEnhanced {
         
         boardElement.innerHTML = '';
         
+        // Prüfe ob Touch-Gerät
+        const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        
         for (let row = 0; row < 8; row++) {
             for (let col = 0; col < 8; col++) {
                 const square = document.createElement('div');
@@ -77,15 +80,36 @@ class ChessGameEnhanced {
                     const pieceElement = document.createElement('div');
                     pieceElement.className = 'chess-piece';
                     pieceElement.textContent = this.getPieceSymbol(piece);
-                    pieceElement.draggable = true;
-                    pieceElement.addEventListener('dragstart', (e) => this.handleDragStart(e, row, col));
-                    pieceElement.addEventListener('dragend', (e) => this.handleDragEnd(e));
+                    
+                    // Drag & Drop nur für Desktop
+                    if (!isTouchDevice) {
+                        pieceElement.draggable = true;
+                        pieceElement.addEventListener('dragstart', (e) => this.handleDragStart(e, row, col));
+                        pieceElement.addEventListener('dragend', (e) => this.handleDragEnd(e));
+                    }
+                    
                     square.appendChild(pieceElement);
                 }
                 
+                // Click/Touch Events
                 square.addEventListener('click', () => this.handleSquareClick(row, col));
-                square.addEventListener('dragover', (e) => this.handleDragOver(e));
-                square.addEventListener('drop', (e) => this.handleDrop(e, row, col));
+                
+                // Touch Events für mobile Geräte
+                if (isTouchDevice) {
+                    square.addEventListener('touchstart', (e) => {
+                        e.preventDefault();
+                        this.handleTouchStart(e, row, col);
+                    }, { passive: false });
+                    square.addEventListener('touchend', (e) => {
+                        e.preventDefault();
+                        this.handleTouchEnd(e, row, col);
+                    }, { passive: false });
+                } else {
+                    // Desktop Drag & Drop
+                    square.addEventListener('dragover', (e) => this.handleDragOver(e));
+                    square.addEventListener('drop', (e) => this.handleDrop(e, row, col));
+                }
+                
                 boardElement.appendChild(square);
             }
         }
