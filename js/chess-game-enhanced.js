@@ -27,6 +27,8 @@ class ChessGameEnhanced {
         this.draggedPiece = null;
         this.dragStartSquare = null;
         this.kingPositions = { white: { row: 7, col: 4 }, black: { row: 0, col: 4 } };
+        this.pendingPromotion = null; // {fromRow, fromCol, toRow, toCol, piece}
+        this.promotionResolve = null;
         this.init();
     }
 
@@ -138,13 +140,13 @@ class ChessGameEnhanced {
         e.dataTransfer.dropEffect = 'move';
     }
 
-    handleDrop(e, toRow, toCol) {
+    async handleDrop(e, toRow, toCol) {
         e.preventDefault();
         
         if (!this.dragStartSquare) return;
         
         const { row: fromRow, col: fromCol } = this.dragStartSquare;
-        if (this.makeMove(fromRow, fromCol, toRow, toCol)) {
+        if (await this.makeMove(fromRow, fromCol, toRow, toCol)) {
             this.renderBoard();
             if (this.gameMode === 'computer' && this.currentPlayer === 'black') {
                 setTimeout(() => this.computerMove(), 500);
@@ -655,7 +657,7 @@ class ChessGameEnhanced {
         const move = this.findBestMove();
         
         if (move) {
-            this.makeMove(move.fromRow, move.fromCol, move.toRow, move.toCol);
+            await this.makeMove(move.fromRow, move.fromCol, move.toRow, move.toCol);
             this.renderBoard();
             this.updateGameStatus();
         }
@@ -941,6 +943,174 @@ class ChessGameEnhanced {
         this.selectedSquare = null;
         this.draggedPiece = null;
         this.dragStartSquare = null;
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // MOVE HISTORY & UNDO
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    updateMoveHistory() {
+        const historyElement = document.getElementById('moveHistory');
+        if (!historyElement) return;
+        
+        historyElement.innerHTML = '';
+        
+        if (this.moveHistory.length === 0) {
+            historyElement.innerHTML = '<p class="no-moves">Noch keine Züge</p>';
+            return;
+        }
+        
+        // Gruppiere Züge in Paaren (Weiß, Schwarz)
+        for (let i = 0; i < this.moveHistory.length; i += 2) {
+            const moveNumber = Math.floor(i / 2) + 1;
+            const whiteMove = this.moveHistory[i];
+            const blackMove = this.moveHistory[i + 1];
+            
+            const moveRow = document.createElement('div');
+            moveRow.className = 'move-history-row';
+            
+            const moveNumberSpan = document.createElement('span');
+            moveNumberSpan.className = 'move-number';
+            moveNumberSpan.textContent = `${moveNumber}.`;
+            moveRow.appendChild(moveNumberSpan);
+            
+            // Weißer Zug
+            const whiteMoveSpan = document.createElement('span');
+            whiteMoveSpan.className = 'move-notation white-move';
+            whiteMoveSpan.textContent = this.getMoveNotation(whiteMove);
+            whiteMoveSpan.onclick = () => this.jumpToMove(i);
+            moveRow.appendChild(whiteMoveSpan);
+            
+            // Schwarzer Zug (falls vorhanden)
+            if (blackMove) {
+                const blackMoveSpan = document.createElement('span');
+                blackMoveSpan.className = 'move-notation black-move';
+                blackMoveSpan.textContent = this.getMoveNotation(blackMove);
+                blackMoveSpan.onclick = () => this.jumpToMove(i + 1);
+                moveRow.appendChild(blackMoveSpan);
+            }
+            
+            historyElement.appendChild(moveRow);
+        }
+        
+        // Scroll to bottom
+        historyElement.scrollTop = historyElement.scrollHeight;
+    }
+
+    getMoveNotation(move) {
+        const piece = move.piece;
+        const pieceType = piece.toLowerCase();
+        const fromSquare = this.squareToNotation(move.from.row, move.from.col);
+        const toSquare = this.squareToNotation(move.to.row, move.to.col);
+        
+        let notation = '';
+        
+        // Spezielle Züge
+        if (move.castling) {
+            return move.castling.kingside ? 'O-O' : 'O-O-O';
+        }
+        
+        // Figurenbezeichnung (außer Bauer)
+        if (pieceType !== 'p') {
+            const pieceNames = { 'k': 'K', 'q': 'Q', 'r': 'R', 'b': 'B', 'n': 'N' };
+            notation += pieceNames[pieceType] || '';
+        }
+        
+        // Capture
+        if (move.captured) {
+            if (pieceType === 'p') {
+                notation += fromSquare[0]; // Datei des Bauern
+            }
+            notation += 'x';
+        }
+        
+        // Ziel
+        notation += toSquare;
+        
+        // Promotion
+        if (move.promotion) {
+            const promoPiece = move.promotion.toUpperCase();
+            notation += '=' + (promoPiece === 'Q' ? 'Q' : promoPiece === 'R' ? 'R' : promoPiece === 'B' ? 'B' : 'N');
+        }
+        
+        // Check/Checkmate (vereinfacht)
+        // Könnte später erweitert werden
+        
+        return notation;
+    }
+
+    squareToNotation(row, col) {
+        const files = 'abcdefgh';
+        const ranks = '87654321';
+        return files[col] + ranks[row];
+    }
+
+    jumpToMove(moveIndex) {
+        // Springe zu einem bestimmten Zug in der Historie
+        // Dies würde das Brett auf den Zustand nach diesem Zug zurücksetzen
+        // Für jetzt nur visuelles Feedback
+        console.log('Jump to move', moveIndex);
+    }
+
+    undoMove() {
+        if (this.moveHistory.length === 0) return;
+        if (this.isComputerThinking) return;
+        
+        const lastMove = this.moveHistory.pop();
+        
+        // Restore board state
+        const piece = lastMove.promotion || this.board[lastMove.to.row][lastMove.to.col];
+        this.board[lastMove.from.row][lastMove.from.col] = piece;
+        this.board[lastMove.to.row][lastMove.to.col] = lastMove.captured;
+        
+        // Restore king position
+        if (piece.toLowerCase() === 'k') {
+            const color = piece === piece.toUpperCase() ? 'white' : 'black';
+            this.kingPositions[color] = { row: lastMove.from.row, col: lastMove.from.col };
+        }
+        
+        // Restore castling
+        if (lastMove.castling) {
+            const isWhite = lastMove.from.row === 7;
+            const isKingside = lastMove.castling.kingside;
+            const rookCol = isKingside ? 5 : 3;
+            const originalRookCol = isKingside ? 7 : 0;
+            this.board[lastMove.from.row][originalRookCol] = this.board[lastMove.from.row][rookCol];
+            this.board[lastMove.from.row][rookCol] = null;
+        }
+        
+        // Restore en passant
+        if (lastMove.enPassant) {
+            const isWhite = piece === piece.toUpperCase();
+            this.board[isWhite ? lastMove.to.row + 1 : lastMove.to.row - 1][lastMove.to.col] = 
+                isWhite ? 'p' : 'P';
+        }
+        
+        // Restore state
+        this.castlingRights = lastMove.castlingRightsBefore;
+        this.enPassantTarget = lastMove.enPassantTargetBefore;
+        this.halfMoveClock = lastMove.halfMoveClockBefore;
+        this.fullMoveNumber = lastMove.fullMoveNumberBefore;
+        
+        // Switch player back
+        this.currentPlayer = this.currentPlayer === 'white' ? 'black' : 'white';
+        
+        // Re-check game state
+        this.checkForCheck();
+        this.checkForCheckmate();
+        this.checkForStalemate();
+        
+        this.renderBoard();
+        this.updateGameStatus();
+        this.updateMoveHistory();
+        this.updateUndoButton();
+    }
+
+    updateUndoButton() {
+        const undoButton = document.getElementById('undoButton');
+        if (undoButton) {
+            undoButton.disabled = this.moveHistory.length === 0 || this.isComputerThinking;
+        }
     }
 }
 

@@ -131,12 +131,21 @@
                 </div>
                 <div id="chessBoard" class="chess-board"></div>
                 <div class="chess-controls">
+                    <button class="btn-secondary" id="undoButton" onclick="undoMove()" disabled>
+                        <i class="fas fa-undo"></i> Rückgängig
+                    </button>
                     <button class="btn-secondary" onclick="resignGame()">
                         <i class="fas fa-flag"></i> Aufgeben
                     </button>
                     <button class="btn-secondary" onclick="offerDraw()">
                         <i class="fas fa-handshake"></i> Remis anbieten
                     </button>
+                </div>
+                <div class="move-history-container">
+                    <h3>Zug-Historie</h3>
+                    <div id="moveHistory" class="move-history">
+                        <!-- Züge werden hier angezeigt -->
+                    </div>
                 </div>
             </div>
         </div>
