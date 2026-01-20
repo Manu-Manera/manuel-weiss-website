@@ -26,7 +26,19 @@ class CoverLetterEditor {
             signatureImage: '',
             headerTopMargin: 0,
             headerContrast: 'auto',
-            recipientTopMargin: 25
+            recipientTopMargin: 25,
+            // Neue Einstellungen
+            subjectMarginTop: 15,
+            subjectMarginBottom: 10,
+            dateFormat: 'de-long',
+            datePosition: 'top-right',
+            dateTopOffset: 0,
+            dateIncludeLocation: false,
+            // Text-Formatierung
+            senderNameBold: true,
+            companyNameBold: false,
+            subjectBold: true,
+            signatureNameBold: false
         };
         
         this.isGenerating = false;
@@ -361,6 +373,201 @@ class CoverLetterEditor {
                     this.applyDesign();
                 }
             });
+        }
+        
+        // Neue Slider für Betreff-Abstände
+        this.setupSlider('subjectMarginTopSlider', 'subjectMarginTop', 'mm');
+        this.setupSlider('subjectMarginBottomSlider', 'subjectMarginBottom', 'mm');
+        this.setupSlider('dateTopOffsetSlider', 'dateTopOffset', 'mm');
+        
+        // Datum-Format
+        const dateFormatSelect = document.getElementById('dateFormatSelect');
+        if (dateFormatSelect) {
+            dateFormatSelect.addEventListener('change', () => {
+                this.design.dateFormat = dateFormatSelect.value;
+                this.setCurrentDate();
+                this.applyDesign();
+            });
+        }
+        
+        // Datum-Position
+        const datePositionSelect = document.getElementById('datePositionSelect');
+        if (datePositionSelect) {
+            datePositionSelect.addEventListener('change', () => {
+                this.design.datePosition = datePositionSelect.value;
+                this.applyDesign();
+            });
+        }
+        
+        // Ort vor Datum
+        const dateIncludeLocation = document.getElementById('dateIncludeLocation');
+        if (dateIncludeLocation) {
+            dateIncludeLocation.addEventListener('change', () => {
+                this.design.dateIncludeLocation = dateIncludeLocation.checked;
+                this.setCurrentDate();
+                this.applyDesign();
+            });
+        }
+        
+        // Text-Formatierung Checkboxen
+        const formatCheckboxes = [
+            { id: 'senderNameBold', key: 'senderNameBold' },
+            { id: 'companyNameBold', key: 'companyNameBold' },
+            { id: 'subjectBold', key: 'subjectBold' },
+            { id: 'signatureNameBold', key: 'signatureNameBold' }
+        ];
+        
+        formatCheckboxes.forEach(({ id, key }) => {
+            const checkbox = document.getElementById(id);
+            if (checkbox) {
+                checkbox.checked = this.design[key] !== false;
+                checkbox.addEventListener('change', () => {
+                    this.design[key] = checkbox.checked;
+                    this.applyDesign();
+                });
+            }
+        });
+        
+        // Übersetzungs-Dropdown
+        this.setupTranslateDropdown();
+    }
+    
+    setupTranslateDropdown() {
+        const translateBtn = document.getElementById('translateBtn');
+        const translateMenu = document.getElementById('translateMenu');
+        
+        if (translateBtn && translateMenu) {
+            translateBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                translateMenu.classList.toggle('show');
+            });
+            
+            // Sprach-Buttons
+            translateMenu.querySelectorAll('button[data-lang]').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const lang = btn.dataset.lang;
+                    const country = btn.dataset.country;
+                    translateMenu.classList.remove('show');
+                    await this.translateCoverLetter(lang, country);
+                });
+            });
+            
+            // Schließen bei Klick außerhalb
+            document.addEventListener('click', () => {
+                translateMenu.classList.remove('show');
+            });
+        }
+    }
+    
+    async translateCoverLetter(targetLang, targetCountry) {
+        const letterText = document.getElementById('letterText');
+        const subjectLine = document.getElementById('subjectLine');
+        const salutation = document.getElementById('greetingSalutation');
+        const greeting = document.getElementById('greetingText');
+        
+        if (!letterText || !letterText.textContent?.trim()) {
+            this.showToast('Kein Anschreiben zum Übersetzen vorhanden', 'warning');
+            return;
+        }
+        
+        const apiKey = await this.getAPIKey();
+        if (!apiKey) {
+            this.showToast('API-Key benötigt für Übersetzung', 'error');
+            return;
+        }
+        
+        this.showToast('Übersetze Anschreiben...', 'info');
+        
+        const langNames = {
+            en: targetCountry === 'US' ? 'amerikanisches Englisch' : 'britisches Englisch',
+            de: targetCountry === 'CH' ? 'Schweizer Hochdeutsch' : targetCountry === 'AT' ? 'österreichisches Deutsch' : 'Deutsch',
+            fr: 'Französisch',
+            it: 'Italienisch',
+            es: 'Spanisch',
+            pt: 'Portugiesisch',
+            nl: 'Niederländisch',
+            pl: 'Polnisch',
+            sv: 'Schwedisch',
+            da: 'Dänisch',
+            no: 'Norwegisch',
+            fi: 'Finnisch',
+            cs: 'Tschechisch',
+            hu: 'Ungarisch',
+            el: 'Griechisch'
+        };
+        
+        try {
+            const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${apiKey}`
+                },
+                body: JSON.stringify({
+                    model: 'gpt-4o-mini',
+                    messages: [{
+                        role: 'system',
+                        content: `Du bist ein professioneller Übersetzer für Geschäftskorrespondenz und Bewerbungsschreiben.
+                        Übersetze den Text in ${langNames[targetLang] || targetLang}.
+                        
+                        Wichtig:
+                        - Behalte den professionellen Ton bei
+                        - Verwende länderspezifische Formulierungen für ${targetCountry}
+                        - Passe Grußformeln an lokale Gepflogenheiten an
+                        - Behalte die Struktur (Absätze) bei
+                        - Namen und Firmennamen NICHT übersetzen`
+                    }, {
+                        role: 'user',
+                        content: `Übersetze folgendes Bewerbungsanschreiben nach ${langNames[targetLang]}:
+
+Betreff: ${subjectLine?.value || ''}
+
+Anrede: ${salutation?.value || ''}
+
+${letterText.textContent || letterText.innerText}
+
+Grußformel: ${greeting?.value || ''}
+
+Antworte im Format:
+BETREFF: [übersetzter Betreff]
+ANREDE: [übersetzte Anrede]
+TEXT: [übersetzter Haupttext]
+GRUSS: [übersetzte Grußformel]`
+                    }],
+                    max_tokens: 2000,
+                    temperature: 0.3
+                })
+            });
+            
+            if (!response.ok) throw new Error('API Fehler');
+            
+            const data = await response.json();
+            const result = data.choices?.[0]?.message?.content?.trim();
+            
+            if (result) {
+                // Parse die Antwort
+                const betreffMatch = result.match(/BETREFF:\s*(.+?)(?=\n|ANREDE:)/s);
+                const anredeMatch = result.match(/ANREDE:\s*(.+?)(?=\n|TEXT:)/s);
+                const textMatch = result.match(/TEXT:\s*(.+?)(?=\n?GRUSS:)/s);
+                const grussMatch = result.match(/GRUSS:\s*(.+?)$/s);
+                
+                if (betreffMatch && subjectLine) subjectLine.value = betreffMatch[1].trim();
+                if (anredeMatch && salutation) salutation.value = anredeMatch[1].trim();
+                if (textMatch && letterText) {
+                    if (letterText.tagName === 'TEXTAREA') {
+                        letterText.value = textMatch[1].trim();
+                    } else {
+                        letterText.innerHTML = textMatch[1].trim().replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>');
+                    }
+                }
+                if (grussMatch && greeting) greeting.value = grussMatch[1].trim();
+                
+                this.generatedContent = letterText.textContent || letterText.value;
+                this.showToast(`Anschreiben nach ${langNames[targetLang]} übersetzt!`, 'success');
+            }
+        } catch (error) {
+            console.error('Übersetzungsfehler:', error);
+            this.showToast('Übersetzung fehlgeschlagen', 'error');
         }
     }
 
@@ -964,14 +1171,18 @@ ${description.substring(0, 2000)}`;
             }
         }
         
+        // Neue mehrzeilige Adressfelder
         const nameEl = document.getElementById('senderName');
-        const addressEl = document.getElementById('senderAddress');
+        const streetEl = document.getElementById('senderStreet');
+        const cityEl = document.getElementById('senderCity');
         const contactEl = document.getElementById('senderContact');
         const signatureEl = document.getElementById('signatureName');
+        const locationEl = document.getElementById('letterLocation');
         
+        // Name: Vorname + Nachname (ohne Mittelname)
         const firstName = this.profileData.firstName || this.profileData.name?.split(' ')[0] || '';
-        const lastName = this.profileData.lastName || this.profileData.name?.split(' ').slice(1).join(' ') || '';
-        const fullName = `${firstName} ${lastName}`.trim() || 'Ihr Name';
+        const lastName = this.profileData.lastName || this.profileData.name?.split(' ').pop() || '';
+        const fullName = `${firstName} ${lastName}`.trim() || 'Vorname Nachname';
         
         // Name - IMMER setzen wenn Platzhalter oder leer
         if (nameEl) {
@@ -979,10 +1190,11 @@ ${description.substring(0, 2000)}`;
             const isPlaceholder = !currentName || 
                 currentName === 'Max Mustermann' || 
                 currentName === 'Ihr Name' || 
+                currentName === 'Vorname Nachname' ||
                 currentName === 'Muster' ||
                 currentName.includes('Mustermann') ||
-                currentName === nameEl.dataset.placeholder;
-            if (isPlaceholder && fullName && fullName !== 'Ihr Name') {
+                currentName === nameEl.dataset?.placeholder;
+            if (isPlaceholder && fullName && fullName !== 'Vorname Nachname') {
                 nameEl.textContent = fullName;
             }
         }
@@ -1000,38 +1212,47 @@ ${description.substring(0, 2000)}`;
             }
         }
         
-        // Adresse - setzen wenn Platzhalter
-        if (addressEl) {
-            const currentAddress = addressEl.textContent.trim();
-            const isPlaceholder = !currentAddress || 
-                currentAddress === 'Musterstraße 1, 12345 Musterstadt' || 
-                currentAddress === 'Ihre Adresse' ||
-                currentAddress.includes('Musterstraße') ||
-                currentAddress === addressEl.dataset?.placeholder;
+        // Straße + Hausnummer - separate Zeile
+        if (streetEl) {
+            const currentStreet = streetEl.textContent.trim();
+            const isPlaceholder = !currentStreet || 
+                currentStreet === 'Straße Hausnummer' ||
+                currentStreet === 'Musterstraße 1' ||
+                currentStreet.includes('Musterstraße') ||
+                currentStreet === streetEl.dataset?.placeholder;
             if (isPlaceholder) {
-                // Baue Adresse aus einzelnen Feldern zusammen
                 const street = this.profileData.street || this.profileData.strasse || '';
                 const houseNumber = this.profileData.houseNumber || this.profileData.hausnummer || '';
+                const streetLine = `${street} ${houseNumber}`.trim();
+                if (streetLine) {
+                    streetEl.textContent = streetLine;
+                }
+            }
+        }
+        
+        // PLZ + Ort - separate Zeile
+        if (cityEl) {
+            const currentCity = cityEl.textContent.trim();
+            const isPlaceholder = !currentCity || 
+                currentCity === 'PLZ Ort' ||
+                currentCity === '12345 Musterstadt' ||
+                currentCity.includes('Musterstadt') ||
+                currentCity === cityEl.dataset?.placeholder;
+            if (isPlaceholder) {
                 const postalCode = this.profileData.postalCode || this.profileData.plz || this.profileData.zip || '';
                 const city = this.profileData.city || this.profileData.ort || this.profileData.stadt || '';
-                
-                let fullAddress = '';
-                if (street || houseNumber) {
-                    fullAddress = `${street} ${houseNumber}`.trim();
+                const cityLine = `${postalCode} ${city}`.trim();
+                if (cityLine) {
+                    cityEl.textContent = cityLine;
                 }
-                if (postalCode || city) {
-                    if (fullAddress) fullAddress += ', ';
-                    fullAddress += `${postalCode} ${city}`.trim();
-                }
-                
-                // Fallback auf kombinierte Adressfelder
-                if (!fullAddress) {
-                    fullAddress = this.profileData.address || this.profileData.location || '';
-                }
-                
-                if (fullAddress) {
-                    addressEl.textContent = fullAddress;
-                }
+            }
+        }
+        
+        // Ort für Datum (wenn aktiviert)
+        if (locationEl && this.profileData.city) {
+            const city = this.profileData.city || this.profileData.ort || this.profileData.stadt || '';
+            if (city && !locationEl.textContent.trim()) {
+                locationEl.textContent = city;
             }
         }
         
@@ -1806,9 +2027,15 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
         letter.style.setProperty('--letter-margin', `${this.design.margin}mm`);
         letter.style.setProperty('--letter-accent', this.design.color);
         letter.style.setProperty('--letter-paragraph-gap', `${this.design.paragraphSpacing}px`);
+        letter.style.setProperty('--paragraph-spacing', `${this.design.paragraphSpacing}px`);
         letter.style.setProperty('--letter-signature-gap', `${this.design.signatureGap}px`);
         letter.style.setProperty('--header-top-margin', `${this.design.headerTopMargin || 0}mm`);
         letter.style.setProperty('--recipient-top-margin', `${this.design.recipientTopMargin || 25}mm`);
+        
+        // Neue Einstellungen
+        letter.style.setProperty('--subject-margin-top', `${this.design.subjectMarginTop || 15}mm`);
+        letter.style.setProperty('--subject-margin-bottom', `${this.design.subjectMarginBottom || 10}mm`);
+        letter.style.setProperty('--date-top-offset', `${this.design.dateTopOffset || 0}mm`);
         
         letter.style.fontFamily = `'${this.design.font}', sans-serif`;
         letter.style.fontSize = `${this.design.fontSize}pt`;
@@ -1820,6 +2047,50 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
         if (this.design.headerContrast && this.design.headerContrast !== 'auto') {
             letter.classList.add(`header-contrast-${this.design.headerContrast}`);
         }
+        
+        // Text-Formatierung anwenden
+        const senderName = document.getElementById('senderName');
+        if (senderName) {
+            senderName.style.fontWeight = this.design.senderNameBold !== false ? '600' : 'normal';
+        }
+        
+        const companyName = document.getElementById('companyNameDisplay');
+        if (companyName) {
+            companyName.style.fontWeight = this.design.companyNameBold ? '700' : '500';
+        }
+        
+        const subjectLabel = letter.querySelector('.subject-label');
+        if (subjectLabel) {
+            subjectLabel.style.fontWeight = this.design.subjectBold !== false ? '600' : 'normal';
+        }
+        
+        const signatureName = document.getElementById('signatureName');
+        if (signatureName) {
+            signatureName.style.fontWeight = this.design.signatureNameBold ? '600' : 'normal';
+        }
+        
+        // Betreff-Abstände anwenden
+        const subjectEl = letter.querySelector('.letter-subject');
+        if (subjectEl) {
+            subjectEl.style.marginTop = `${this.design.subjectMarginTop || 15}mm`;
+            subjectEl.style.marginBottom = `${this.design.subjectMarginBottom || 10}mm`;
+        }
+        
+        // Datum-Position anwenden
+        const letterHeader = letter.querySelector('.letter-header');
+        if (letterHeader) {
+            letterHeader.classList.remove('date-top-left', 'date-top-right', 'date-below-sender', 'date-above-recipient');
+            letterHeader.classList.add(`date-${this.design.datePosition || 'top-right'}`);
+        }
+        
+        // Datum-Offset anwenden
+        const dateContainer = letter.querySelector('.letter-date-container');
+        if (dateContainer) {
+            dateContainer.style.marginTop = `${this.design.dateTopOffset || 0}mm`;
+        }
+        
+        // Seitenumbruch-Indikator prüfen
+        this.checkPageBreak();
         
         // Style-spezifische Anpassungen
         this.applyLetterStyle(letter);
@@ -1846,6 +2117,27 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
                 signatureImg.removeAttribute('src');
                 signatureImg.style.display = 'none';
             }
+        }
+    }
+    
+    checkPageBreak() {
+        const letterBody = document.getElementById('letterBody');
+        const pageBreakIndicator = document.getElementById('pageBreakIndicator');
+        const pageContainer = document.querySelector('.letter-page-container');
+        
+        if (!letterBody || !pageBreakIndicator || !pageContainer) return;
+        
+        // A4 Höhe in Pixel (bei 96 DPI): 297mm ≈ 1123px, minus Margins
+        const a4HeightPx = 1123 - (this.design.margin * 2 * 3.78); // mm zu px
+        
+        const contentHeight = pageContainer.scrollHeight;
+        
+        if (contentHeight > a4HeightPx) {
+            pageBreakIndicator.classList.add('visible');
+            // Positioniere den Indikator an der richtigen Stelle
+            pageBreakIndicator.style.top = `${a4HeightPx}px`;
+        } else {
+            pageBreakIndicator.classList.remove('visible');
         }
     }
     
@@ -2148,56 +2440,75 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
 
     setCurrentDate() {
         const dateEl = document.getElementById('letterDate');
+        const locationEl = document.getElementById('letterLocation');
+        
         if (dateEl) {
             const country = this.getSelectedCountry();
+            const format = this.design.dateFormat || 'de-long';
+            const includeLocation = this.design.dateIncludeLocation;
+            const now = new Date();
+            
             let formattedDate = '';
             
-            switch (country) {
-                case 'CH':
-                    // Schweiz: Datum rechts oben, Format: "Zürich, 15. Januar 2026"
-                    const location = this.profileData?.location || '';
-                    const city = location.split(',')[0] || 'Zürich';
-                    formattedDate = new Date().toLocaleDateString('de-CH', {
-                        day: 'numeric',
-                        month: 'long',
-                        year: 'numeric'
-                    });
-                    dateEl.textContent = `${city}, ${formattedDate}`;
-                    break;
-                case 'DE':
-                    // Deutschland: Datum rechts oben, Format: "15. Januar 2026"
-                    formattedDate = new Date().toLocaleDateString('de-DE', {
-                        day: 'numeric',
-                        month: 'long',
-                        year: 'numeric'
-                    });
-                    dateEl.textContent = formattedDate;
-                    break;
-                case 'AT':
-                    // Österreich: Datum rechts oben, Format: "15. Jänner 2026" (österreichisches Format)
-                    formattedDate = new Date().toLocaleDateString('de-AT', {
-                        day: 'numeric',
-                        month: 'long',
-                        year: 'numeric'
-                    });
-                    dateEl.textContent = formattedDate;
-                    break;
-                case 'US':
-                    // USA: Datum links oben, Format: "January 15, 2026"
-                    formattedDate = new Date().toLocaleDateString('en-US', {
-                        month: 'long',
-                        day: 'numeric',
-                        year: 'numeric'
-                    });
-                    dateEl.textContent = formattedDate;
-                    break;
-                default:
-                    formattedDate = new Date().toLocaleDateString('de-DE', {
-                        day: 'numeric',
-                        month: 'long',
-                        year: 'numeric'
-                    });
-                    dateEl.textContent = formattedDate;
+            // Datumsformate
+            const formatDate = (date, formatType) => {
+                switch (formatType) {
+                    case 'de-long':
+                        return date.toLocaleDateString('de-DE', { day: 'numeric', month: 'long', year: 'numeric' });
+                    case 'de-short':
+                        return date.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                    case 'ch':
+                        return date.toLocaleDateString('de-CH', { day: 'numeric', month: 'long', year: 'numeric' });
+                    case 'at':
+                        return date.toLocaleDateString('de-AT', { day: 'numeric', month: 'long', year: 'numeric' });
+                    case 'en-uk':
+                        return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+                    case 'en-us':
+                        return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+                    case 'fr':
+                        return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+                    case 'nl':
+                        return date.toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' });
+                    case 'iso':
+                        return date.toISOString().slice(0, 10);
+                    default:
+                        return date.toLocaleDateString('de-DE', { day: 'numeric', month: 'long', year: 'numeric' });
+                }
+            };
+            
+            formattedDate = formatDate(now, format);
+            
+            // Ort vor Datum (wenn aktiviert)
+            if (includeLocation) {
+                const city = this.profileData?.city || this.profileData?.ort || 
+                            this.profileData?.location?.split(',')[0] || '';
+                if (city) {
+                    formattedDate = `${city}, ${formattedDate}`;
+                }
+                if (locationEl) locationEl.style.display = 'none';
+            } else {
+                if (locationEl) locationEl.style.display = '';
+            }
+            
+            dateEl.textContent = formattedDate;
+            
+            // Initial: Format basierend auf Land setzen
+            const dateFormatSelect = document.getElementById('dateFormatSelect');
+            if (dateFormatSelect && !this.design.dateFormatInitialized) {
+                const countryFormats = {
+                    'DE': 'de-long',
+                    'CH': 'ch',
+                    'AT': 'at',
+                    'US': 'en-us',
+                    'UK': 'en-uk',
+                    'FR': 'fr',
+                    'NL': 'nl'
+                };
+                if (countryFormats[country]) {
+                    dateFormatSelect.value = countryFormats[country];
+                    this.design.dateFormat = countryFormats[country];
+                }
+                this.design.dateFormatInitialized = true;
             }
         }
     }
@@ -2347,21 +2658,28 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
             doc.setFont('helvetica', 'normal');
             doc.setFontSize(this.design.fontSize || 11);
             
-            // === HEADER (Absender) ===
+            // === HEADER (Absender) - Mehrzeilig ===
             const senderName = document.getElementById('senderName')?.textContent || '';
-            const senderAddress = document.getElementById('senderAddress')?.textContent || '';
+            const senderStreet = document.getElementById('senderStreet')?.textContent || '';
+            const senderCity = document.getElementById('senderCity')?.textContent || '';
             const senderContact = document.getElementById('senderContact')?.textContent || '';
             
+            // Absender-Name (fett wenn eingestellt)
             doc.setFontSize(12);
-            doc.setFont('helvetica', 'bold');
+            doc.setFont('helvetica', this.design.senderNameBold !== false ? 'bold' : 'normal');
             doc.text(senderName, margin, y);
             y += 5;
             
+            // Absender-Adresse mehrzeilig
             doc.setFontSize(10);
             doc.setFont('helvetica', 'normal');
             doc.setTextColor(100, 100, 100);
-            if (senderAddress) {
-                doc.text(senderAddress, margin, y);
+            if (senderStreet) {
+                doc.text(senderStreet, margin, y);
+                y += 4;
+            }
+            if (senderCity) {
+                doc.text(senderCity, margin, y);
                 y += 4;
             }
             if (senderContact) {
@@ -2371,41 +2689,54 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
             
             // Datum rechts
             const dateText = document.getElementById('letterDate')?.textContent || new Date().toLocaleDateString('de-DE');
-            doc.text(dateText, pageWidth - margin, margin, { align: 'right' });
+            const datePosition = this.design.datePosition || 'top-right';
+            const dateTopOffset = this.design.dateTopOffset || 0;
+            
+            if (datePosition === 'top-right') {
+                doc.text(dateText, pageWidth - margin, margin + dateTopOffset, { align: 'right' });
+            } else if (datePosition === 'top-left') {
+                doc.text(dateText, margin, margin + dateTopOffset);
+            }
             
             y += 15;
             
-            // === EMPFÄNGER ===
+            // === EMPFÄNGER (mehrzeilig) ===
             doc.setTextColor(0, 0, 0);
             doc.setFontSize(11);
             
             const companyName = document.getElementById('companyNameDisplay')?.textContent || jobData.companyName || '';
-            const companyAddress = document.getElementById('companyAddressDisplay')?.textContent || '';
+            const companyStreet = document.getElementById('companyStreetDisplay')?.textContent || '';
+            const companyLocation = document.getElementById('companyLocationDisplay')?.textContent || '';
             const contactPerson = document.getElementById('contactPersonDisplay')?.textContent || '';
             
             if (companyName) {
-                doc.setFont('helvetica', 'bold');
+                doc.setFont('helvetica', this.design.companyNameBold ? 'bold' : 'normal');
                 doc.text(companyName, margin, y);
                 y += 5;
             }
             doc.setFont('helvetica', 'normal');
+            if (companyStreet) {
+                doc.text(companyStreet, margin, y);
+                y += 5;
+            }
+            if (companyLocation) {
+                doc.text(companyLocation, margin, y);
+                y += 5;
+            }
             if (contactPerson) {
                 doc.text(contactPerson, margin, y);
                 y += 5;
             }
-            if (companyAddress) {
-                doc.text(companyAddress, margin, y);
-                y += 5;
-            }
             
-            y += 15;
+            // Betreff-Abstände
+            y += this.design.subjectMarginTop || 15;
             
             // === BETREFF ===
             const subject = document.getElementById('subjectLine')?.value || `Bewerbung als ${jobData.position}`;
-            doc.setFont('helvetica', 'bold');
+            doc.setFont('helvetica', this.design.subjectBold !== false ? 'bold' : 'normal');
             doc.setFontSize(11);
             doc.text(`Betreff: ${subject}`, margin, y);
-            y += 10;
+            y += (this.design.subjectMarginBottom || 10);
             
             // === ANREDE ===
             const salutation = document.getElementById('greetingSalutation')?.value || 'Sehr geehrte Damen und Herren,';
@@ -2414,7 +2745,13 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
             y += 8;
             
             // === HAUPTTEXT ===
-            const letterText = document.getElementById('letterText')?.value || this.generatedContent || '';
+            const letterTextEl = document.getElementById('letterText');
+            let letterText = '';
+            if (letterTextEl) {
+                // Kann Textarea oder contenteditable div sein
+                letterText = letterTextEl.value || letterTextEl.textContent || letterTextEl.innerText || '';
+            }
+            letterText = letterText || this.generatedContent || '';
             const fontSize = this.design.fontSize || 11;
             const lineHeight = this.design.lineHeight || 1.5;
             
@@ -4680,7 +5017,28 @@ Gib NUR den Anschreiben-Text zurück, KEINE Meta-Informationen.`;
         
         try {
             const country = document.getElementById('countrySelect')?.value || 'CH';
-            const countryNames = { DE: 'Deutschland', CH: 'Schweiz', AT: 'Österreich', US: 'USA' };
+            const countryNames = { 
+                DE: 'Deutschland', 
+                CH: 'Schweiz', 
+                AT: 'Österreich', 
+                US: 'USA',
+                UK: 'Großbritannien',
+                FR: 'Frankreich',
+                NL: 'Niederlande',
+                IT: 'Italien',
+                ES: 'Spanien'
+            };
+            const countryPrefix = {
+                DE: 'D',
+                CH: 'CH',
+                AT: 'A',
+                FR: 'F',
+                NL: 'NL',
+                IT: 'I',
+                ES: 'E',
+                UK: 'UK',
+                US: 'US'
+            };
             
             const response = await fetch('https://api.openai.com/v1/chat/completions', {
                 method: 'POST',
@@ -4691,31 +5049,76 @@ Gib NUR den Anschreiben-Text zurück, KEINE Meta-Informationen.`;
                 body: JSON.stringify({
                     model: 'gpt-4o-mini',
                     messages: [{
-                        role: 'user',
-                        content: `Gib mir die Hauptsitz-Adresse von "${companyName}" in ${countryNames[country] || 'der Schweiz'}. 
-                        Antworte NUR mit der Adresse im Format:
-                        Straße Nr
-                        PLZ Ort
+                        role: 'system',
+                        content: `Du bist ein Experte für Firmenadressen. Suche die offizielle Hauptsitz-Adresse von Unternehmen.
+                        Für bekannte Unternehmen wie Siemens, Google, Microsoft etc. gib die lokale Niederlassung im angegebenen Land an.
                         
-                        Falls du die Adresse nicht sicher weißt, antworte mit "NICHT_GEFUNDEN".`
+                        Wichtig:
+                        - Siemens Schweiz = Siemens Schweiz AG, Freilagerstrasse 40, CH-8047 Zürich
+                        - Siemens Deutschland = Siemens AG, Werner-von-Siemens-Straße 1, D-80333 München
+                        - Google Schweiz = Google Switzerland GmbH, Brandschenkestrasse 110, CH-8002 Zürich
+                        
+                        Antworte IMMER im exakten Format, ohne zusätzlichen Text.`
+                    }, {
+                        role: 'user',
+                        content: `Gib mir die Adresse von "${companyName}" in ${countryNames[country] || 'der Schweiz'}.
+                        
+                        Antworte NUR in diesem exakten Format (4 Zeilen):
+                        [Vollständiger Firmenname inkl. Rechtsform wie GmbH, AG, etc.]
+                        [Straße Hausnummer]
+                        [${countryPrefix[country] || 'CH'} - PLZ Ort]
+                        
+                        Falls du die Adresse WIRKLICH nicht findest, antworte nur mit: NICHT_GEFUNDEN`
                     }],
-                    max_tokens: 100,
+                    max_tokens: 150,
                     temperature: 0.1
                 })
             });
             
-            if (!response.ok) return null;
+            if (!response.ok) {
+                console.error('API Fehler:', response.status);
+                return null;
+            }
             
             const data = await response.json();
             const address = data.choices?.[0]?.message?.content?.trim();
             
-            if (address && !address.includes('NICHT_GEFUNDEN') && address.length > 5) {
+            console.log('🔍 Adresssuche Ergebnis:', address);
+            
+            if (address && !address.includes('NICHT_GEFUNDEN') && address.length > 10) {
+                // Aktualisiere auch die einzelnen Felder im Brief
+                this.updateCompanyAddressFields(address);
                 return address;
             }
             return null;
         } catch (error) {
             console.error('AI Adresssuche Fehler:', error);
             return null;
+        }
+    }
+    
+    updateCompanyAddressFields(addressText) {
+        // Parse die Adresse in einzelne Zeilen
+        const lines = addressText.split('\n').map(l => l.trim()).filter(l => l);
+        
+        if (lines.length >= 2) {
+            // Firmenname
+            const companyNameDisplay = document.getElementById('companyNameDisplay');
+            if (companyNameDisplay && lines[0]) {
+                companyNameDisplay.textContent = lines[0];
+            }
+            
+            // Straße
+            const companyStreetDisplay = document.getElementById('companyStreetDisplay');
+            if (companyStreetDisplay && lines[1]) {
+                companyStreetDisplay.textContent = lines[1];
+            }
+            
+            // Land - PLZ Ort
+            const companyLocationDisplay = document.getElementById('companyLocationDisplay');
+            if (companyLocationDisplay && lines[2]) {
+                companyLocationDisplay.textContent = lines[2];
+            }
         }
     }
 }

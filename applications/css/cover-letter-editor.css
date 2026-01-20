@@ -2816,3 +2816,264 @@
     align-items: center;
     justify-content: center;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   NEUE STYLES: Mehrzeiliger Adressblock & Erweiterte Einstellungen
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Mehrzeiliger Absender-Adressblock */
+.letter-sender {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.letter-sender .sender-name {
+    font-weight: 600;
+    font-size: 1.05em;
+    color: var(--letter-accent, var(--cl-primary));
+}
+
+.letter-sender .sender-street,
+.letter-sender .sender-city,
+.letter-sender .sender-contact {
+    font-size: 0.9em;
+    color: var(--cl-text-muted);
+    font-weight: normal;
+}
+
+/* Fett/Normal Toggle für Name */
+.letter-sender.name-normal .sender-name {
+    font-weight: normal;
+}
+
+/* Mehrzeiliger Firmen-Adressblock */
+.letter-recipient {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-bottom: 1.5rem;
+}
+
+.letter-recipient .company-name {
+    font-weight: 500;
+    color: var(--cl-text);
+}
+
+.letter-recipient.company-bold .company-name {
+    font-weight: 700;
+}
+
+.letter-recipient .company-street,
+.letter-recipient .company-location,
+.letter-recipient .contact-person {
+    font-size: 0.95em;
+    color: var(--cl-text);
+}
+
+/* Datum Container */
+.letter-date-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+}
+
+.letter-location {
+    font-size: 0.9em;
+    color: var(--cl-text-muted);
+}
+
+/* Datum Positionen */
+.letter-header.date-top-left .letter-date-container {
+    order: -1;
+    align-items: flex-start;
+}
+
+.letter-header.date-below-sender .letter-date-container {
+    position: static;
+    align-items: flex-start;
+    margin-top: 1rem;
+}
+
+/* Betreff mit einstellbaren Abständen */
+.letter-subject {
+    margin-top: var(--subject-margin-top, 15mm);
+    margin-bottom: var(--subject-margin-bottom, 10mm);
+}
+
+.letter-subject .subject-label {
+    font-weight: 600;
+}
+
+.letter-subject.subject-normal .subject-label {
+    font-weight: normal;
+}
+
+/* Letter Body ohne Scrollbar */
+.letter-body {
+    overflow: visible !important;
+    min-height: auto;
+}
+
+.letter-text-content {
+    width: 100%;
+    min-height: 200px;
+    border: none;
+    background: transparent;
+    resize: none;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    color: inherit;
+    padding: 0;
+    outline: none;
+    white-space: pre-wrap;
+}
+
+.letter-text-content:empty::before {
+    content: attr(data-placeholder);
+    color: var(--cl-text-muted);
+    pointer-events: none;
+}
+
+/* Seitenumbruch-Indikator */
+.page-break-indicator {
+    display: none;
+    width: 100%;
+    text-align: center;
+    padding: 1rem 0;
+    margin: 2rem 0;
+    border-top: 2px dashed var(--cl-border);
+    border-bottom: 2px dashed var(--cl-border);
+    color: var(--cl-text-muted);
+    font-size: 0.8rem;
+    background: linear-gradient(to bottom, rgba(248,250,252,0.8), transparent, rgba(248,250,252,0.8));
+}
+
+.page-break-indicator.visible {
+    display: block;
+}
+
+/* Seiten-Container */
+.letter-page-container {
+    min-height: 297mm;
+    position: relative;
+}
+
+/* Signatur Name Formatierung */
+.signature-name-input.signature-bold {
+    font-weight: 700;
+}
+
+/* Übersetzungs-Dropdown */
+.translate-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.translate-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0.4rem 0.8rem !important;
+    width: auto !important;
+}
+
+.translate-btn span {
+    font-size: 0.8rem;
+}
+
+.translate-dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: white;
+    border: 1px solid var(--cl-border);
+    border-radius: 8px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    min-width: 200px;
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 0.5rem 0;
+}
+
+.translate-dropdown-menu.show {
+    display: block;
+}
+
+.translate-dropdown-menu .translate-menu-header {
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--cl-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--cl-border);
+    margin-bottom: 0.25rem;
+}
+
+.translate-dropdown-menu button {
+    display: block;
+    width: 100%;
+    padding: 0.6rem 1rem;
+    text-align: left;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: var(--cl-text);
+    transition: background 0.15s;
+}
+
+.translate-dropdown-menu button:hover {
+    background: var(--cl-bg);
+}
+
+/* Editor Toolbar Anpassungen */
+.editor-toolbar .toolbar-left {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    flex-wrap: wrap;
+}
+
+.toolbar-divider {
+    width: 1px;
+    height: 24px;
+    background: var(--cl-border);
+    margin: 0 0.5rem;
+}
+
+/* Absatz-Abstand anwenden */
+.letter-text-content p {
+    margin-bottom: var(--paragraph-spacing, 10px);
+}
+
+.letter-text-content p:last-child {
+    margin-bottom: 0;
+}
+
+/* Responsive Anpassungen */
+@media (max-width: 768px) {
+    .translate-dropdown-menu {
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 90%;
+        max-width: 300px;
+        max-height: 70vh;
+    }
+    
+    .translate-btn span {
+        display: none;
+    }
+}
+
+/* Design: Datum-Offset */
+.letter-date-container {
+    margin-top: var(--date-top-offset, 0);
+}
