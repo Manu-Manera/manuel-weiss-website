@@ -1,7 +1,16 @@
 # Netlify Configuration
 # ═══════════════════════════════════════════════════════════════════════════
-# PREVIEW / TEST ENVIRONMENT
-# manuel-weiss.ch = Test-Umgebung für Entwicklung
+# CREDITS SPAREN: Deploy Previews nutzen (kostenlos!)
+# 
+# WICHTIG: Im Netlify Dashboard folgende Schritte ausführen:
+# 1. Site configuration → Build & deploy → Continuous deployment
+# 2. "Build settings" → "Stop builds" klicken (stoppt Production-Deploys)
+# 3. Deploy Previews bleiben aktiv (über Pull Requests)
+#
+# Workflow:
+# - Änderungen auf einen Feature-Branch pushen
+# - Pull Request erstellen → Netlify erstellt kostenlose Preview-URL
+# - Testen auf der Preview-URL (z.B. deploy-preview-123--dein-site.netlify.app)
 # ═══════════════════════════════════════════════════════════════════════════
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -13,7 +22,31 @@
   # Veröffentliche das Root-Verzeichnis
   publish = "."
 
-# Environment Variables für Preview
+# ═══════════════════════════════════════════════════════════════════════════
+# DEPLOY PREVIEWS - Kostenlos für Pull Requests!
+# ═══════════════════════════════════════════════════════════════════════════
+[context.deploy-preview]
+  # Preview-spezifische Umgebung
+  command = ""
+  publish = "."
+
+[context.deploy-preview.environment]
+  NODE_ENV = "preview"
+  SITE_ENV = "preview"
+  CONTEXT = "deploy-preview"
+
+# ═══════════════════════════════════════════════════════════════════════════
+# BRANCH DEPLOYS - Für spezifische Branches
+# ═══════════════════════════════════════════════════════════════════════════
+[context.branch-deploy]
+  command = ""
+  publish = "."
+
+[context.branch-deploy.environment]
+  NODE_ENV = "preview"
+  SITE_ENV = "branch-deploy"
+
+# Environment Variables für Production (falls noch aktiv)
 [build.environment]
   NODE_ENV = "preview"
   SITE_ENV = "preview"
