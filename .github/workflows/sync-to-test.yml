@@ -1,0 +1,36 @@
+name: Sync to Test Branch
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Sync main to test
+        run: |
+          git config user.name "GitHub Action"
+          git config user.email "action@github.com"
+          
+          # Fetch all branches
+          git fetch origin
+          
+          # Checkout test branch
+          git checkout test || git checkout -b test
+          
+          # Merge main into test
+          git merge origin/main -m "Auto-sync from main"
+          
+          # Push to test
+          git push origin test
+          
+          echo "✅ Synced main to test branch"
+          echo "🔗 Preview will be available at: https://test--manuel-weiss.netlify.app"
