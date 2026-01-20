@@ -311,6 +311,7 @@ class UnifiedAWSAuth {
 
     /**
      * Registrierung bestätigen
+     * FIX: Besseres Logging und Fehlerbehandlung
      */
     async confirmRegistration(email, confirmationCode) {
         if (!this.isInitialized) {
@@ -320,25 +321,55 @@ class UnifiedAWSAuth {
 
         try {
             console.log('🚀 Starting real AWS Cognito confirmation...');
+            console.log('📧 Email:', email);
+            console.log('🔑 Code:', confirmationCode);
             
             const params = {
                 ClientId: this.clientId,
-                Username: email,
+                Username: email.trim().toLowerCase(),
                 ConfirmationCode: confirmationCode.trim()
             };
 
-            console.log('📤 Sending confirmation request to AWS Cognito...');
-            await this.cognitoIdentityServiceProvider.confirmSignUp(params).promise();
+            console.log('📤 Sending confirmation request to AWS Cognito with params:', JSON.stringify(params, null, 2));
             
-            console.log('✅ Confirmation successful');
+            const result = await this.cognitoIdentityServiceProvider.confirmSignUp(params).promise();
             
-            this.showNotification('✅ E-Mail erfolgreich bestätigt! Sie können sich jetzt anmelden.', 'success');
+            console.log('✅ Confirmation successful! Result:', result);
+            
+            // Speichere dass diese E-Mail bestätigt wurde
+            localStorage.setItem(`email_confirmed_${email.trim().toLowerCase()}`, 'true');
+            
+            // NICHT showNotification aufrufen - das macht handleVerification
             return { success: true };
             
         } catch (error) {
             console.error('❌ Confirmation error:', error);
+            console.error('❌ Error code:', error.code);
+            console.error('❌ Error message:', error.message);
             
-            return this.handleAuthError(error, 'Bestätigung');
+            // Spezifische Fehlermeldungen
+            let errorMessage = 'Bestätigung fehlgeschlagen. ';
+            
+            if (error.code === 'CodeMismatchException') {
+                errorMessage = 'Der eingegebene Code ist ungültig. Bitte prüfen Sie den Code.';
+            } else if (error.code === 'ExpiredCodeException') {
+                errorMessage = 'Der Code ist abgelaufen. Bitte fordern Sie einen neuen Code an.';
+            } else if (error.code === 'NotAuthorizedException') {
+                // Benutzer ist bereits bestätigt!
+                console.log('ℹ️ User might already be confirmed');
+                errorMessage = 'Benutzer ist bereits bestätigt. Sie können sich anmelden.';
+                // Trotzdem als "erfolgreich" behandeln
+                return { success: true, alreadyConfirmed: true };
+            } else if (error.code === 'UserNotFoundException') {
+                errorMessage = 'Benutzer nicht gefunden. Bitte registrieren Sie sich erneut.';
+            } else if (error.code === 'LimitExceededException') {
+                errorMessage = 'Zu viele Versuche. Bitte warten Sie einige Minuten.';
+            } else {
+                errorMessage += error.message || 'Unbekannter Fehler.';
+            }
+            
+            this.showNotification(errorMessage, 'error');
+            return { success: false, error: errorMessage, code: error.code };
         }
     }
 

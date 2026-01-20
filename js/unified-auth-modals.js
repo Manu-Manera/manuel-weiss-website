@@ -743,6 +743,7 @@ class UnifiedAuthModals {
 
     /**
      * Register Handler
+     * FIX: Passwort temporär speichern für Auto-Login nach Bestätigung
      */
     async handleRegister(event) {
         event.preventDefault();
@@ -774,6 +775,11 @@ class UnifiedAuthModals {
             const result = await window.awsAuth.registerWithAttributes(email, password, firstName, lastName);
             
             if (result.success) {
+                // Passwort temporär speichern für Auto-Login nach Bestätigung
+                // Wird nach erfolgreichem Login oder nach 10 Minuten gelöscht
+                sessionStorage.setItem('tempRegPassword', password);
+                setTimeout(() => sessionStorage.removeItem('tempRegPassword'), 600000); // 10 Min
+                
                 this.showVerification(email);
             }
         } catch (error) {
@@ -786,6 +792,7 @@ class UnifiedAuthModals {
 
     /**
      * Verification Handler
+     * FIX: Nach erfolgreicher Bestätigung automatisch einloggen wenn Passwort gespeichert
      */
     async handleVerification(event) {
         event.preventDefault();
@@ -803,6 +810,8 @@ class UnifiedAuthModals {
             return;
         }
         
+        console.log('🔐 Verification attempt for:', email, 'with code:', code);
+        
         const submitBtn = event.target.querySelector('button[type="submit"]');
         const originalContent = submitBtn.innerHTML;
         submitBtn.disabled = true;
@@ -811,14 +820,44 @@ class UnifiedAuthModals {
         try {
             const result = await window.awsAuth.confirmRegistration(email, code);
             
+            console.log('🔐 Confirmation result:', result);
+            
             if (result.success) {
+                this.showToast('✅ E-Mail erfolgreich bestätigt!', 'success');
+                
+                // Versuche automatisches Login wenn Passwort temporär gespeichert
+                const tempPassword = sessionStorage.getItem('tempRegPassword');
+                if (tempPassword) {
+                    console.log('🔐 Attempting auto-login after verification...');
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Anmelden...';
+                    
+                    // Kurz warten damit Cognito die Bestätigung verarbeiten kann
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    
+                    const loginResult = await window.awsAuth.login(email, tempPassword);
+                    sessionStorage.removeItem('tempRegPassword');
+                    
+                    if (loginResult.success) {
+                        this.closeModal();
+                        window.dispatchEvent(new CustomEvent('authStateChanged', { detail: { loggedIn: true } }));
+                        window.dispatchEvent(new CustomEvent('userLoggedIn', { detail: loginResult.user }));
+                        return;
+                    }
+                }
+                
+                // Fallback: Login-Modal anzeigen
                 this.closeModal();
                 setTimeout(() => {
                     this.showLogin();
+                    this.showToast('Bitte melden Sie sich jetzt an', 'info');
                 }, 500);
+            } else {
+                console.error('❌ Confirmation failed:', result);
+                this.showError(result.error || 'Bestätigung fehlgeschlagen');
             }
         } catch (error) {
-            console.error('Verification error:', error);
+            console.error('❌ Verification error:', error);
+            this.showError('Bestätigung fehlgeschlagen: ' + (error.message || 'Unbekannter Fehler'));
         } finally {
             submitBtn.disabled = false;
             submitBtn.innerHTML = originalContent;
@@ -911,6 +950,7 @@ class UnifiedAuthModals {
 
     /**
      * Code erneut senden
+     * FIX: Bessere Fehlerbehandlung und Feedback
      */
     async resendCode() {
         if (!window.awsAuth) {
@@ -925,10 +965,44 @@ class UnifiedAuthModals {
             return;
         }
         
+        console.log('📧 Resending code to:', email);
+        
+        // Button-Feedback
+        const resendLink = document.querySelector('#verificationModal .modal-footer a');
+        const originalText = resendLink?.textContent;
+        if (resendLink) {
+            resendLink.textContent = 'Wird gesendet...';
+            resendLink.style.pointerEvents = 'none';
+        }
+        
         try {
-            await window.awsAuth.resendConfirmationCode(email);
+            const result = await window.awsAuth.resendConfirmationCode(email);
+            console.log('✅ Resend result:', result);
+            this.showToast('Neuer Code wurde gesendet!', 'success');
         } catch (error) {
-            console.error('Resend code error:', error);
+            console.error('❌ Resend code error:', error);
+            
+            // Spezifische Fehlermeldungen
+            let errorMsg = 'Code konnte nicht gesendet werden. ';
+            if (error.code === 'LimitExceededException') {
+                errorMsg = 'Zu viele Versuche. Bitte warten Sie einige Minuten.';
+            } else if (error.code === 'NotAuthorizedException') {
+                errorMsg = 'Benutzer ist bereits bestätigt. Bitte versuchen Sie sich anzumelden.';
+                // Zeige Login Modal
+                setTimeout(() => this.showLogin(), 2000);
+            } else if (error.code === 'UserNotFoundException') {
+                errorMsg = 'Benutzer nicht gefunden. Bitte registrieren Sie sich erneut.';
+            } else {
+                errorMsg += error.message || 'Unbekannter Fehler.';
+            }
+            
+            this.showError(errorMsg);
+        } finally {
+            // Button zurücksetzen
+            if (resendLink) {
+                resendLink.textContent = originalText || 'Erneut senden';
+                resendLink.style.pointerEvents = 'auto';
+            }
         }
     }
 
