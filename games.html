@@ -38,9 +38,13 @@
             <div class="login-modal">
                 <h2><i class="fas fa-lock"></i> Anmeldung erforderlich</h2>
                 <p>Bitte melden Sie sich an, um Spiele zu spielen.</p>
-                <button class="btn-primary" onclick="window.location.href='index.html#contact'">
-                    <i class="fas fa-sign-in-alt"></i> Zur Anmeldung
+                <button class="btn-primary" onclick="openLoginModal()">
+                    <i class="fas fa-sign-in-alt"></i> Jetzt anmelden
                 </button>
+                <p style="margin-top: 15px; font-size: 14px; color: #666;">
+                    Noch kein Konto? 
+                    <a href="#" onclick="openRegisterModal(); return false;" style="color: #6366f1; text-decoration: underline;">Registrieren</a>
+                </p>
             </div>
         </div>
 
@@ -160,7 +164,39 @@
 
     <!-- Scripts -->
     <script src="js/unified-aws-auth.js"></script>
+    <script src="js/unified-auth-modals.js"></script>
     <script src="js/games.js"></script>
     <script src="js/chess-game-enhanced.js"></script>
+    
+    <script>
+        // Global functions for login/register modals
+        function openLoginModal() {
+            if (window.authModals) {
+                window.authModals.showLogin();
+            } else if (window.unifiedAuthModals) {
+                window.unifiedAuthModals.showLogin();
+            } else {
+                // Fallback: Redirect to main page with login trigger
+                window.location.href = 'index.html?login=true';
+            }
+        }
+        
+        function openRegisterModal() {
+            if (window.authModals) {
+                window.authModals.showRegister();
+            } else if (window.unifiedAuthModals) {
+                window.unifiedAuthModals.showRegister();
+            } else {
+                // Fallback: Redirect to main page with register trigger
+                window.location.href = 'index.html?register=true';
+            }
+        }
+        
+        // Listen for successful login to reload games
+        document.addEventListener('userLoggedIn', function() {
+            console.log('🎮 User logged in, reloading games...');
+            window.location.reload();
+        });
+    </script>
 </body>
 </html>
