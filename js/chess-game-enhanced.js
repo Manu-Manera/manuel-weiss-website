@@ -105,6 +105,7 @@ class ChessGameEnhanced {
                     const isWhite = piece === piece.toUpperCase();
                     pieceElement.className = `chess-piece chess-piece-3d ${isWhite ? 'white' : 'black'}`;
                     pieceElement.textContent = this.getPieceSymbol(piece);
+                    pieceElement.dataset.piece = piece; // Für CSS-Styling
                     
                     // Drag & Drop nur für Desktop
                     if (!isTouchDevice) {

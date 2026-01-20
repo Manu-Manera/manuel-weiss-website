@@ -2100,25 +2100,25 @@
     cursor: pointer;
 }
 
-/* Chess Board - Passt GARANTIERT auf den Bildschirm */
+/* Chess Board - QUADRATISCH und komplett sichtbar */
 .chess-board-wrapper-full {
-    flex: 1;
+    flex: 0 0 auto;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0;
-    min-height: 0;
+    padding: 0.5rem;
     background: #302e2b;
-    overflow: visible;
 }
 
 .chess-board-chesscom {
-    /* WICHTIG: Brett muss quadratisch sein und komplett sichtbar */
-    width: min(95vw, calc(100dvh - 350px)) !important;
-    height: min(95vw, calc(100dvh - 350px)) !important;
-    max-width: 400px !important;
-    max-height: 400px !important;
-    aspect-ratio: 1 / 1 !important;
+    /* Feste Größe basierend auf Viewport - QUADRATISCH! */
+    --board-size: min(92vw, 55vh, 380px);
+    width: var(--board-size) !important;
+    height: var(--board-size) !important;
+    min-width: var(--board-size) !important;
+    min-height: var(--board-size) !important;
+    max-width: var(--board-size) !important;
+    max-height: var(--board-size) !important;
     border: 2px solid #5d5955 !important;
     border-radius: 4px !important;
     display: grid !important;
@@ -2437,28 +2437,50 @@
 .chess-board-mobile .chess-piece-3d,
 .chess-board-chesscom .chess-piece,
 .chess-board-chesscom .chess-piece-3d {
-    font-size: clamp(1.5rem, 10vw, 3rem) !important;
     max-width: 100%;
     max-height: 100%;
     line-height: 1 !important;
 }
 
-/* Chess.com Style - Figuren GROSS und gut sichtbar */
+/* Chess.com Style - Felder */
 .chess-board-chesscom .chess-square {
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    padding: 2px !important;
+    padding: 0 !important;
+    overflow: hidden !important;
 }
 
+/* ALLE Figuren gleich groß - Bauern kleiner, Rest größer */
 .chess-board-chesscom .chess-piece,
 .chess-board-chesscom .chess-piece-3d {
-    font-size: min(10vw, 42px) !important;
+    font-size: calc(var(--board-size, 380px) / 8 * 0.85) !important;
     width: 100% !important;
     height: 100% !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
+    transform-origin: center center !important;
+}
+
+/* Bauern sind in Unicode größer - deshalb kleiner skalieren */
+.chess-board-chesscom .chess-piece-3d[data-piece="P"],
+.chess-board-chesscom .chess-piece-3d[data-piece="p"] {
+    transform: scale(0.9) !important;
+}
+
+/* Andere Figuren größer skalieren damit sie gleich groß wie Bauern aussehen */
+.chess-board-chesscom .chess-piece-3d[data-piece="K"],
+.chess-board-chesscom .chess-piece-3d[data-piece="k"],
+.chess-board-chesscom .chess-piece-3d[data-piece="Q"],
+.chess-board-chesscom .chess-piece-3d[data-piece="q"],
+.chess-board-chesscom .chess-piece-3d[data-piece="R"],
+.chess-board-chesscom .chess-piece-3d[data-piece="r"],
+.chess-board-chesscom .chess-piece-3d[data-piece="B"],
+.chess-board-chesscom .chess-piece-3d[data-piece="b"],
+.chess-board-chesscom .chess-piece-3d[data-piece="N"],
+.chess-board-chesscom .chess-piece-3d[data-piece="n"] {
+    transform: scale(1.15) !important;
 }
 
 /* Status Bar */
