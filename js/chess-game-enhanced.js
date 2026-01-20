@@ -1430,6 +1430,12 @@ class ChessGameEnhanced {
         this.opponentId = game.opponentId;
         this.opponentName = game.opponentName;
         
+        // MODAL ÖFFNEN!
+        const modal = document.getElementById('chessModal');
+        if (modal) {
+            modal.style.display = 'flex';
+        }
+        
         // UI aktualisieren
         this.renderBoard();
         this.updateGameStatus();
@@ -1441,7 +1447,13 @@ class ChessGameEnhanced {
             this.startTimer();
         }
         
-        this.showToast('Spiel geladen!', 'info');
+        // Gegner-Info aktualisieren
+        const opponentName = document.getElementById('chatOpponentName');
+        if (opponentName) {
+            opponentName.textContent = this.opponentName || (this.gameMode === 'computer' ? 'Computer' : 'Gegner');
+        }
+        
+        this.showToast('Spiel geladen!', 'success');
         console.log('📂 Spiel geladen:', gameId);
     }
 
