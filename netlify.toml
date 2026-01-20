@@ -1,33 +1,40 @@
 # Netlify Configuration
 # ═══════════════════════════════════════════════════════════════════════════
-# CREDITS SPAREN: Deploy Previews nutzen (kostenlos!)
+# CREDITS SPAREN SETUP:
 # 
-# WICHTIG: Im Netlify Dashboard folgende Schritte ausführen:
-# 1. Site configuration → Build & deploy → Continuous deployment
-# 2. "Build settings" → "Stop builds" klicken (stoppt Production-Deploys)
-# 3. Deploy Previews bleiben aktiv (über Pull Requests)
+# Production Branch = "production" (Platzhalter-Seite)
+#   → manuel-weiss.ch zeigt die Platzhalter-Seite
+#   → Wird selten/nie aktualisiert = minimale Credits
 #
-# Workflow:
-# - Änderungen auf einen Feature-Branch pushen
-# - Pull Request erstellen → Netlify erstellt kostenlose Preview-URL
-# - Testen auf der Preview-URL (z.B. deploy-preview-123--dein-site.netlify.app)
+# Entwicklung = "main" Branch
+#   → Pull Requests erstellen → Deploy Previews (KOSTENLOS!)
+#   → Test-URL: deploy-preview-[PR]--manuel-weiss.netlify.app
+#
+# NETLIFY DASHBOARD SETUP:
+# 1. Site configuration → Build & deploy → Branches and deploy contexts
+# 2. Production branch: "production" (NICHT main!)
+# 3. Deploy Previews: "Any pull request against your production branch"
 # ═══════════════════════════════════════════════════════════════════════════
 
 # ═══════════════════════════════════════════════════════════════════════════
-# BUILD SETTINGS
+# BUILD SETTINGS - Production (Platzhalter)
 # ═══════════════════════════════════════════════════════════════════════════
 [build]
   # Statische Website - kein Build-Befehl nötig
   command = ""
-  # Veröffentliche das Root-Verzeichnis
-  publish = "."
+  # Production = Platzhalter-Seite
+  publish = "production-placeholder"
+
+[build.environment]
+  NODE_ENV = "production"
+  SITE_ENV = "production-placeholder"
 
 # ═══════════════════════════════════════════════════════════════════════════
-# DEPLOY PREVIEWS - Kostenlos für Pull Requests!
+# DEPLOY PREVIEWS - KOSTENLOS! (für Pull Requests)
 # ═══════════════════════════════════════════════════════════════════════════
 [context.deploy-preview]
-  # Preview-spezifische Umgebung
   command = ""
+  # Preview = Volle Website aus Root-Verzeichnis
   publish = "."
 
 [context.deploy-preview.environment]
@@ -36,8 +43,16 @@
   CONTEXT = "deploy-preview"
 
 # ═══════════════════════════════════════════════════════════════════════════
-# BRANCH DEPLOYS - Für spezifische Branches
+# BRANCH DEPLOYS - Für main Branch
 # ═══════════════════════════════════════════════════════════════════════════
+[context.main]
+  command = ""
+  publish = "."
+
+[context.main.environment]
+  NODE_ENV = "preview"
+  SITE_ENV = "main-branch"
+
 [context.branch-deploy]
   command = ""
   publish = "."
@@ -45,11 +60,6 @@
 [context.branch-deploy.environment]
   NODE_ENV = "preview"
   SITE_ENV = "branch-deploy"
-
-# Environment Variables für Production (falls noch aktiv)
-[build.environment]
-  NODE_ENV = "preview"
-  SITE_ENV = "preview"
 
 # ═══════════════════════════════════════════════════════════════════════════
 # FUNCTIONS - Serverless Functions (für S3, API, etc.)
