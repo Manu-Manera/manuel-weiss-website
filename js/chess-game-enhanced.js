@@ -83,8 +83,9 @@ class ChessGameEnhanced {
         
         boardElement.innerHTML = '';
         
-        // Board Design anwenden
-        boardElement.className = `chess-board design-${this.boardDesign}`;
+        // Board Design anwenden - WICHTIG: chess-board-chesscom beibehalten!
+        const existingClasses = boardElement.classList.contains('chess-board-chesscom') ? 'chess-board-chesscom' : '';
+        boardElement.className = `chess-board chess-board-mobile ${existingClasses} design-${this.boardDesign}`.trim();
         
         // Prüfe ob Touch-Gerät
         const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
@@ -92,7 +93,9 @@ class ChessGameEnhanced {
         for (let row = 0; row < 8; row++) {
             for (let col = 0; col < 8; col++) {
                 const square = document.createElement('div');
-                square.className = `chess-square ${(row + col) % 2 === 0 ? 'light' : 'dark'}`;
+                // Verwende sowohl light/dark als auch white/black für Kompatibilität
+                const isLight = (row + col) % 2 === 0;
+                square.className = `chess-square ${isLight ? 'light white' : 'dark black'}`;
                 square.dataset.row = row;
                 square.dataset.col = col;
                 

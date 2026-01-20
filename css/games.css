@@ -2083,27 +2083,52 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0;
+    padding: 0.5rem;
     min-height: 0;
     background: #302e2b;
+    overflow: hidden;
 }
 
 .chess-board-chesscom {
-    width: 100vw !important;
-    max-width: 100vw !important;
-    height: auto !important;
+    width: min(calc(100vw - 1rem), calc(100dvh - 280px)) !important;
+    height: min(calc(100vw - 1rem), calc(100dvh - 280px)) !important;
+    max-width: 500px !important;
+    max-height: 500px !important;
     aspect-ratio: 1 !important;
-    max-height: calc(100dvh - 220px) !important;
-    border: none !important;
-    border-radius: 0 !important;
+    border: 2px solid #5d5955 !important;
+    border-radius: 4px !important;
 }
 
-/* Grünes Chess.com Brett */
-.chess-board-chesscom .chess-square.white {
+/* Grünes Chess.com Brett - alle Varianten */
+.chess-board-chesscom .chess-square.white,
+.chess-board-chesscom .chess-square.light {
     background: #ebecd0 !important;
 }
 
-.chess-board-chesscom .chess-square.black {
+.chess-board-chesscom .chess-square.black,
+.chess-board-chesscom .chess-square.dark {
+    background: #779556 !important;
+}
+
+/* Standard Design */
+.design-classic .chess-square.light,
+.design-classic .chess-square.white {
+    background: #f0d9b5 !important;
+}
+
+.design-classic .chess-square.dark,
+.design-classic .chess-square.black {
+    background: #b58863 !important;
+}
+
+/* Grünes Design (Standard für Chess.com Style) */
+.design-green .chess-square.light,
+.design-green .chess-square.white {
+    background: #ebecd0 !important;
+}
+
+.design-green .chess-square.dark,
+.design-green .chess-square.black {
     background: #779556 !important;
 }
 
