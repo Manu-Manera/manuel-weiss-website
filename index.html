@@ -55,10 +55,38 @@
                 <a href="#services" class="nav-link" data-de="Services" data-en="Services">Services</a>
                 <a href="#about" class="nav-link" data-de="Über mich" data-en="About">Über mich</a>
                 <a href="#contact" class="nav-link" data-de="Kontakt" data-en="Contact">Kontakt</a>
-                    <button class="lang-link-compact" data-lang="de" title="Deutsch">🇩🇪</button>
-                    <button class="lang-link-compact" data-lang="en" title="English">🇬🇧</button>
+                <button class="lang-link-compact" data-lang="de" title="Deutsch">🇩🇪</button>
+                <button class="lang-link-compact" data-lang="en" title="English">🇬🇧</button>
+                
+                <!-- Auth Button mit Dropdown -->
+                <div class="nav-user-container" id="navUserContainer">
+                    <button class="btn-auth" id="authButton" onclick="toggleUserMenu()">
+                        <i class="fas fa-user"></i>
+                        <span id="authButtonText">Anmelden</span>
+                    </button>
+                    <div class="user-dropdown" id="userDropdown" style="display: none;">
+                        <div class="user-dropdown-header">
+                            <i class="fas fa-user-circle"></i>
+                            <div class="user-info">
+                                <span class="user-name" id="dropdownUserName">Benutzer</span>
+                                <span class="user-email" id="dropdownUserEmail">email@example.com</span>
+                            </div>
+                        </div>
+                        <div class="user-dropdown-divider"></div>
+                        <a href="applications/" class="user-dropdown-item">
+                            <i class="fas fa-briefcase"></i> Bewerbungsmanager
+                        </a>
+                        <a href="games.html" class="user-dropdown-item">
+                            <i class="fas fa-chess"></i> Spiele
+                        </a>
+                        <div class="user-dropdown-divider"></div>
+                        <button class="user-dropdown-item logout-btn" onclick="handleLogout()">
+                            <i class="fas fa-sign-out-alt"></i> Abmelden
+                        </button>
+                    </div>
                 </div>
             </div>
+        </div>
             
         <!-- Mobile Fullscreen Menu -->
         <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
@@ -1901,7 +1929,307 @@
                 font-size: 1.3rem;
             }
         }
+        
+        /* ═══════════════════════════════════════════════════════════════════════════
+           AUTH BUTTON & USER DROPDOWN
+           ═══════════════════════════════════════════════════════════════════════════ */
+        .nav-user-container {
+            position: relative;
+            margin-left: 1rem;
+        }
+        
+        .btn-auth {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+        }
+        
+        .btn-auth:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+        }
+        
+        .btn-auth.logged-in {
+            background: linear-gradient(135deg, #10b981, #059669);
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+        }
+        
+        .btn-auth.logged-in:hover {
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+        }
+        
+        .user-dropdown {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            min-width: 280px;
+            z-index: 1000;
+            overflow: hidden;
+            animation: dropdownSlide 0.2s ease;
+        }
+        
+        @keyframes dropdownSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .user-dropdown-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.25rem;
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+        }
+        
+        .user-dropdown-header i {
+            font-size: 2.5rem;
+            color: #6366f1;
+        }
+        
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            color: #1f2937;
+            font-size: 1rem;
+        }
+        
+        .user-email {
+            font-size: 0.85rem;
+            color: #6b7280;
+        }
+        
+        .user-dropdown-divider {
+            height: 1px;
+            background: #e5e7eb;
+        }
+        
+        .user-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.875rem 1.25rem;
+            color: #374151;
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+        }
+        
+        .user-dropdown-item:hover {
+            background: #f3f4f6;
+            color: #6366f1;
+        }
+        
+        .user-dropdown-item i {
+            width: 20px;
+            text-align: center;
+            color: #9ca3af;
+        }
+        
+        .user-dropdown-item:hover i {
+            color: #6366f1;
+        }
+        
+        .logout-btn {
+            color: #ef4444;
+        }
+        
+        .logout-btn:hover {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+        
+        .logout-btn i {
+            color: #ef4444;
+        }
+        
+        @media (max-width: 768px) {
+            .nav-user-container {
+                margin-left: 0.5rem;
+            }
+            
+            .btn-auth {
+                padding: 0.5rem 1rem;
+                font-size: 0.85rem;
+            }
+            
+            .btn-auth span {
+                display: none;
+            }
+            
+            .user-dropdown {
+                right: -10px;
+                min-width: 260px;
+            }
+        }
     </style>
+
+    <!-- Auth Menu JavaScript -->
+    <script>
+        // Toggle User Menu
+        function toggleUserMenu() {
+            const dropdown = document.getElementById('userDropdown');
+            const authButton = document.getElementById('authButton');
+            
+            // Prüfe ob eingeloggt
+            const isLoggedIn = checkIfLoggedIn();
+            
+            if (!isLoggedIn) {
+                // Zeige Login Modal
+                if (window.authModals) {
+                    window.authModals.showLogin();
+                } else if (window.showLoginModal) {
+                    window.showLoginModal();
+                }
+                return;
+            }
+            
+            // Toggle Dropdown
+            if (dropdown) {
+                const isVisible = dropdown.style.display === 'block';
+                dropdown.style.display = isVisible ? 'none' : 'block';
+            }
+        }
+        
+        // Check if user is logged in
+        function checkIfLoggedIn() {
+            const session = localStorage.getItem('aws_auth_session');
+            if (session) {
+                try {
+                    const data = JSON.parse(session);
+                    return !!(data.accessToken && data.email);
+                } catch (e) {
+                    return false;
+                }
+            }
+            return false;
+        }
+        
+        // Handle Logout
+        async function handleLogout() {
+            try {
+                if (window.awsAuth) {
+                    await window.awsAuth.logout();
+                } else if (window.realUserAuth) {
+                    await window.realUserAuth.logout();
+                } else {
+                    // Fallback: Manuelles Logout
+                    localStorage.removeItem('aws_auth_session');
+                }
+                
+                // UI zurücksetzen
+                updateAuthUI(false);
+                
+                // Dropdown schließen
+                const dropdown = document.getElementById('userDropdown');
+                if (dropdown) dropdown.style.display = 'none';
+                
+                // Seite neu laden
+                setTimeout(() => window.location.reload(), 500);
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+        }
+        
+        // Update Auth UI
+        function updateAuthUI(isLoggedIn, userData = null) {
+            const authButton = document.getElementById('authButton');
+            const authButtonText = document.getElementById('authButtonText');
+            const dropdown = document.getElementById('userDropdown');
+            const userName = document.getElementById('dropdownUserName');
+            const userEmail = document.getElementById('dropdownUserEmail');
+            
+            if (isLoggedIn && userData) {
+                if (authButton) authButton.classList.add('logged-in');
+                if (authButtonText) authButtonText.textContent = userData.name || 'Profil';
+                if (userName) userName.textContent = userData.name || 'Benutzer';
+                if (userEmail) userEmail.textContent = userData.email || '';
+            } else {
+                if (authButton) authButton.classList.remove('logged-in');
+                if (authButtonText) authButtonText.textContent = 'Anmelden';
+                if (dropdown) dropdown.style.display = 'none';
+            }
+        }
+        
+        // Initialize Auth UI on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const session = localStorage.getItem('aws_auth_session');
+            if (session) {
+                try {
+                    const data = JSON.parse(session);
+                    if (data.accessToken && data.email) {
+                        // Extrahiere Name aus Token oder Session
+                        let name = data.firstName || data.name || '';
+                        if (!name && data.idToken) {
+                            try {
+                                const payload = JSON.parse(atob(data.idToken.split('.')[1]));
+                                name = payload.name || payload.given_name || payload.email?.split('@')[0] || '';
+                            } catch (e) {}
+                        }
+                        
+                        updateAuthUI(true, {
+                            name: name || data.email?.split('@')[0] || 'Profil',
+                            email: data.email
+                        });
+                    }
+                } catch (e) {
+                    console.error('Error parsing session:', e);
+                }
+            }
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(event) {
+                const container = document.getElementById('navUserContainer');
+                const dropdown = document.getElementById('userDropdown');
+                
+                if (container && dropdown && !container.contains(event.target)) {
+                    dropdown.style.display = 'none';
+                }
+            });
+        });
+        
+        // Listen for auth state changes
+        window.addEventListener('userLoggedIn', function(e) {
+            const user = e.detail?.user || e.detail;
+            updateAuthUI(true, {
+                name: user?.firstName || user?.name || user?.email?.split('@')[0] || 'Profil',
+                email: user?.email || ''
+            });
+        });
+        
+        window.addEventListener('authStateChanged', function(e) {
+            if (e.detail?.loggedIn === false) {
+                updateAuthUI(false);
+            }
+        });
+    </script>
 
     <!-- Enhanced Website Data Sync -->
     <script src="js/website-sync-enhanced.js?v=20250120"></script>
