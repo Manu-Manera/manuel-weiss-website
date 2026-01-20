@@ -2015,15 +2015,16 @@
     background: #81b64c;
 }
 
-/* Chat Input Overlay */
+/* Chat Input Overlay - DUNKEL */
 .chess-chat-input-overlay {
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
-    background: rgba(0,0,0,0.9);
+    background: #1a1a1a !important;
     padding: 1rem;
-    z-index: 100;
+    z-index: 9999;
+    border-top: 1px solid #333;
 }
 
 .chat-input-box {
@@ -2442,45 +2443,70 @@
     line-height: 1 !important;
 }
 
-/* Chess.com Style - Felder */
+/* Chess.com Style - Felder - KLICKBAR */
 .chess-board-chesscom .chess-square {
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     padding: 0 !important;
     overflow: hidden !important;
+    cursor: pointer !important;
+    position: relative !important;
 }
 
-/* ALLE Figuren gleich groß - Bauern kleiner, Rest größer */
+.chess-board-chesscom .chess-square.selected {
+    background: rgba(255, 255, 0, 0.5) !important;
+}
+
+.chess-board-chesscom .chess-square.possible-move::after {
+    content: '' !important;
+    position: absolute !important;
+    width: 30% !important;
+    height: 30% !important;
+    background: rgba(0, 0, 0, 0.2) !important;
+    border-radius: 50% !important;
+}
+
+.chess-board-chesscom .chess-square.possible-capture {
+    background: rgba(255, 0, 0, 0.3) !important;
+}
+
+/* ALLE Figuren - GROSS und EINHEITLICH */
 .chess-board-chesscom .chess-piece,
 .chess-board-chesscom .chess-piece-3d {
-    font-size: calc(var(--board-size, 380px) / 8 * 0.85) !important;
+    font-size: 38px !important;
     width: 100% !important;
     height: 100% !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    transform-origin: center center !important;
+    cursor: pointer !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
 }
 
-/* Bauern sind in Unicode größer - deshalb kleiner skalieren */
-.chess-board-chesscom .chess-piece-3d[data-piece="P"],
-.chess-board-chesscom .chess-piece-3d[data-piece="p"] {
-    transform: scale(0.9) !important;
+/* Weiße Figuren - KLAR WEISS */
+.chess-board-chesscom .chess-piece.white,
+.chess-board-chesscom .chess-piece-3d.white {
+    color: #fff !important;
+    text-shadow: 
+        -1px -1px 0 #000,
+        1px -1px 0 #000,
+        -1px 1px 0 #000,
+        1px 1px 0 #000,
+        0 2px 4px rgba(0,0,0,0.5) !important;
 }
 
-/* Andere Figuren größer skalieren damit sie gleich groß wie Bauern aussehen */
-.chess-board-chesscom .chess-piece-3d[data-piece="K"],
-.chess-board-chesscom .chess-piece-3d[data-piece="k"],
-.chess-board-chesscom .chess-piece-3d[data-piece="Q"],
-.chess-board-chesscom .chess-piece-3d[data-piece="q"],
-.chess-board-chesscom .chess-piece-3d[data-piece="R"],
-.chess-board-chesscom .chess-piece-3d[data-piece="r"],
-.chess-board-chesscom .chess-piece-3d[data-piece="B"],
-.chess-board-chesscom .chess-piece-3d[data-piece="b"],
-.chess-board-chesscom .chess-piece-3d[data-piece="N"],
-.chess-board-chesscom .chess-piece-3d[data-piece="n"] {
-    transform: scale(1.15) !important;
+/* Schwarze Figuren - KLAR SCHWARZ */
+.chess-board-chesscom .chess-piece.black,
+.chess-board-chesscom .chess-piece-3d.black {
+    color: #222 !important;
+    text-shadow: 
+        -1px -1px 0 #888,
+        1px -1px 0 #888,
+        -1px 1px 0 #888,
+        1px 1px 0 #888,
+        0 2px 4px rgba(0,0,0,0.3) !important;
 }
 
 /* Status Bar */
