@@ -1547,11 +1547,12 @@
 }
 
 .chess-piece.black {
-    color: #1e293b;
+    color: #4b5563; /* Grau - gut sichtbar auf dunklem Hintergrund */
     text-shadow: 
-        1px 1px 0 #475569,
-        2px 2px 0 #334155,
-        3px 3px 4px rgba(0, 0, 0, 0.3);
+        0 0 3px rgba(255, 255, 255, 0.4), /* Heller Glow für Sichtbarkeit */
+        -1px -1px 0 #1f2937,
+        1px 1px 0 #1f2937,
+        2px 2px 3px rgba(0, 0, 0, 0.6);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
