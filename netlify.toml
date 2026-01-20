@@ -3,23 +3,27 @@
 # NUR PREVIEW DEPLOYS - Production ist deaktiviert
 # ═══════════════════════════════════════════════════════════════════════════
 #
-# WICHTIG: Um Production-Deploys wirklich zu stoppen, gehe zu:
-# https://app.netlify.com → Site Settings → Build & Deploy → Continuous Deployment
-# → "Stop auto-publishing" aktivieren
+# Workflow:
+# 1. Änderungen pushen zu main → Kein Production Deploy
+# 2. Pull Request erstellen → Preview Deploy wird erstellt
+# 3. Preview testen unter: deploy-preview-{PR-Nummer}--manuel-weiss.netlify.app
+# 4. Wenn alles gut: PR mergen und "Unlock & Publish" im Netlify Dashboard
 #
-# Dann werden nur noch Deploy Previews (Pull Requests) erstellt.
 # ═══════════════════════════════════════════════════════════════════════════
 
 [build]
   command = ""
   publish = "."
-  # Production Deploys aktiviert
-  # ignore = "git log -1 --format='%s' | grep -qvE '^(Merge pull request|Preview:)'"
+  # Dieser ignore-Befehl stoppt ALLE Production Deploys
+  # exit 0 = Build überspringen, exit 1 = Build ausführen
+  ignore = "exit 0"
 
 # Preview Deploys (Pull Requests) - AKTIVIERT
+# Diese werden bei jedem Pull Request erstellt
 [context.deploy-preview]
   command = ""
   publish = "."
+  # Kein ignore = Preview Deploys werden immer erstellt
 
 # Branch Deploys - DEAKTIVIERT
 [context.branch-deploy]
@@ -35,6 +39,27 @@
     X-XSS-Protection = "1; mode=block"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Cache für statische Assets
+[[headers]]
+  for = "/js/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/css/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/applications/js/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/applications/css/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
 
 # SPA Redirect
 [[redirects]]
