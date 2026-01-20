@@ -924,18 +924,33 @@ class ChessGameEnhanced {
         
         document.getElementById('chessModal').style.display = 'flex';
         
+        // Update UI für neues Chess.com-Style Layout
+        const blackTimerName = document.getElementById('blackTimerName');
+        const chatOpponentName = document.getElementById('chatOpponentName');
+        const chatOpponentAvatar = document.getElementById('chatOpponentAvatar');
+        const chatOpponentStatus = document.getElementById('chatOpponentStatus');
+        const difficultySelector = document.getElementById('difficultySelector');
+        
         if (mode === 'computer') {
-            document.getElementById('blackPlayerName').textContent = 'Computer (Schwarz)';
-            document.getElementById('blackPlayerIcon').className = 'fas fa-robot';
-            document.getElementById('difficultySelector').style.display = 'block';
+            // Neues Layout: Timer und Chat-Bereich aktualisieren
+            if (blackTimerName) blackTimerName.textContent = 'Computer';
+            if (chatOpponentName) chatOpponentName.textContent = 'Computer';
+            if (chatOpponentAvatar) chatOpponentAvatar.innerHTML = '<i class="fas fa-robot"></i>';
+            if (chatOpponentStatus) chatOpponentStatus.textContent = 'KI-Gegner';
+            if (difficultySelector) difficultySelector.style.display = 'flex';
+            
             this.opponent = { name: 'Computer', type: 'computer' };
             this.opponentName = `Computer (${this.computerDifficulty})`;
             this.updateGameStatus();
             this.startTimer();
         } else {
-            document.getElementById('blackPlayerName').textContent = 'Gegner (Schwarz)';
-            document.getElementById('blackPlayerIcon').className = 'fas fa-user';
-            document.getElementById('difficultySelector').style.display = 'none';
+            // Gegen Spieler
+            if (blackTimerName) blackTimerName.textContent = 'Gegner';
+            if (chatOpponentName) chatOpponentName.textContent = 'Gegner';
+            if (chatOpponentAvatar) chatOpponentAvatar.innerHTML = '<i class="fas fa-user"></i>';
+            if (chatOpponentStatus) chatOpponentStatus.textContent = 'Wartet...';
+            if (difficultySelector) difficultySelector.style.display = 'none';
+            
             this.findOpponent();
         }
         
@@ -1233,24 +1248,44 @@ class ChessGameEnhanced {
     }
 
     renderTimer() {
-        const timerContainer = document.getElementById('gameTimerContainer');
-        if (!timerContainer) return;
+        // Neues Chess.com-Style Layout: Timer-Elemente direkt aktualisieren
+        const whiteTimerClock = document.getElementById('whiteTimerClock');
+        const blackTimerClock = document.getElementById('blackTimerClock');
+        const totalTimerDisplay = document.getElementById('totalTimerDisplay');
         
-        timerContainer.innerHTML = `
-            <div class="game-timer">
-                <span class="timer-label">Weiß</span>
-                <span class="timer-value ${this.currentPlayer === 'white' && this.gameState === 'playing' ? 'active' : ''}">${this.formatTime(this.whiteTime || 0)}</span>
-            </div>
-            <div class="timer-divider">⚔️</div>
-            <div class="game-timer">
-                <span class="timer-label">Schwarz</span>
-                <span class="timer-value ${this.currentPlayer === 'black' && this.gameState === 'playing' ? 'active' : ''}">${this.formatTime(this.blackTime || 0)}</span>
-            </div>
-            <div class="total-game-time">
-                <i class="fas fa-clock"></i>
-                <span>Gesamt: ${this.formatTime(this.totalGameTime || 0)}</span>
-            </div>
-        `;
+        if (whiteTimerClock) {
+            whiteTimerClock.textContent = this.formatTime(this.whiteTime || 0);
+            whiteTimerClock.parentElement?.classList.toggle('active', this.currentPlayer === 'white' && this.gameState === 'playing');
+        }
+        
+        if (blackTimerClock) {
+            blackTimerClock.textContent = this.formatTime(this.blackTime || 0);
+            blackTimerClock.parentElement?.classList.toggle('active', this.currentPlayer === 'black' && this.gameState === 'playing');
+        }
+        
+        if (totalTimerDisplay) {
+            totalTimerDisplay.textContent = `Gesamt: ${this.formatTime(this.totalGameTime || 0)}`;
+        }
+        
+        // Fallback für altes Layout (falls vorhanden)
+        const timerContainer = document.getElementById('gameTimerContainer');
+        if (timerContainer) {
+            timerContainer.innerHTML = `
+                <div class="game-timer">
+                    <span class="timer-label">Weiß</span>
+                    <span class="timer-value ${this.currentPlayer === 'white' && this.gameState === 'playing' ? 'active' : ''}">${this.formatTime(this.whiteTime || 0)}</span>
+                </div>
+                <div class="timer-divider">⚔️</div>
+                <div class="game-timer">
+                    <span class="timer-label">Schwarz</span>
+                    <span class="timer-value ${this.currentPlayer === 'black' && this.gameState === 'playing' ? 'active' : ''}">${this.formatTime(this.blackTime || 0)}</span>
+                </div>
+                <div class="total-game-time">
+                    <i class="fas fa-clock"></i>
+                    <span>Gesamt: ${this.formatTime(this.totalGameTime || 0)}</span>
+                </div>
+            `;
+        }
     }
 
     formatTime(seconds) {
