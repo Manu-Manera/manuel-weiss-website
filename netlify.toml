@@ -1,29 +1,27 @@
 # Netlify Configuration
 # ═══════════════════════════════════════════════════════════════════════════
-# CREDITS SPAREN SETUP:
+# EINFACHES SETUP:
 # 
-# Production Branch = "production" (Platzhalter-Seite)
-#   → manuel-weiss.ch zeigt die Platzhalter-Seite
-#   → Wird selten/nie aktualisiert = minimale Credits
-#
-# Entwicklung = "main" Branch
-#   → Pull Requests erstellen → Deploy Previews (KOSTENLOS!)
-#   → Test-URL: deploy-preview-[PR]--manuel-weiss.netlify.app
+# Production Branch = "main"
+#   → manuel-weiss.ch zeigt die aktuelle Website vom main Branch
+#   → Automatisch deployt bei jedem Push zu main
 #
 # NETLIFY DASHBOARD SETUP:
 # 1. Site configuration → Build & deploy → Branches and deploy contexts
-# 2. Production branch: "production" (NICHT main!)
-# 3. Deploy Previews: "Any pull request against your production branch"
+# 2. Production branch: "main"
+# 3. Branch deploys: "All" oder "None" (optional)
 # ═══════════════════════════════════════════════════════════════════════════
 
 # ═══════════════════════════════════════════════════════════════════════════
-# BUILD SETTINGS - Production (Volle Website)
+# BUILD SETTINGS - Production (main Branch)
 # ═══════════════════════════════════════════════════════════════════════════
 [build]
   # Statische Website - kein Build-Befehl nötig
   command = ""
-  # Production = Volle Website
+  # Production = Volle Website vom Root-Verzeichnis
   publish = "."
+  # Production Branch ist MAIN
+  base = ""
 
 [build.environment]
   NODE_ENV = "production"
