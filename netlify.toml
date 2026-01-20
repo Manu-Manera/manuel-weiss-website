@@ -1,39 +1,19 @@
 # Netlify Configuration
 # ═══════════════════════════════════════════════════════════════════════════
-# PREVIEW-FIRST DEPLOYMENT
+# AUTOMATISCHES DEPLOYMENT - Jeder Push zu main wird deployed
 # ═══════════════════════════════════════════════════════════════════════════
 #
 # Workflow:
-# 1. Änderungen zu main pushen → Kein Production Deploy
-# 2. Änderungen werden automatisch zum "preview" Branch gesynct
-# 3. Preview ist verfügbar unter: preview--manuel-weiss.netlify.app
-# 4. Wenn gut → Manuell "Publish" im Netlify Dashboard
+# 1. Änderungen committen und pushen
+# 2. Netlify deployed automatisch
+# 3. Website ist unter manuel-weiss.ch verfügbar
 #
 # ═══════════════════════════════════════════════════════════════════════════
 
 [build]
   command = ""
   publish = "."
-  # Production Deploys überspringen - nur manuell publishen
-  ignore = "exit 0"
-
-# TEST BRANCH - Automatisch deployen
-# URL: test--manuel-weiss.netlify.app
-[context.test]
-  command = ""
-  publish = "."
-  # Kein ignore = Branch wird immer deployed
-
-# Deploy Previews (Pull Requests) - AKTIVIERT
-[context.deploy-preview]
-  command = ""
-  publish = "."
-
-# Andere Branch Deploys - DEAKTIVIERT
-[context.branch-deploy]
-  command = ""
-  publish = "."
-  ignore = "exit 0"
+  # KEIN ignore = Alle Deploys werden ausgeführt
 
 # Headers für Performance & Security
 [[headers]]
@@ -44,26 +24,36 @@
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
 
-# Cache für statische Assets - Immer neu laden
+# Cache für JS/CSS - Immer neu laden (kein Caching-Problem)
+[[headers]]
+  for = "/*.js"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+[[headers]]
+  for = "/*.css"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
 [[headers]]
   for = "/js/*"
   [headers.values]
-    Cache-Control = "public, max-age=0, must-revalidate"
+    Cache-Control = "no-cache, no-store, must-revalidate"
 
 [[headers]]
   for = "/css/*"
   [headers.values]
-    Cache-Control = "public, max-age=0, must-revalidate"
+    Cache-Control = "no-cache, no-store, must-revalidate"
 
 [[headers]]
   for = "/applications/js/*"
   [headers.values]
-    Cache-Control = "public, max-age=0, must-revalidate"
+    Cache-Control = "no-cache, no-store, must-revalidate"
 
 [[headers]]
   for = "/applications/css/*"
   [headers.values]
-    Cache-Control = "public, max-age=0, must-revalidate"
+    Cache-Control = "no-cache, no-store, must-revalidate"
 
 # SPA Redirect
 [[redirects]]
