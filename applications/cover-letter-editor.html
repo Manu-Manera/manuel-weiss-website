@@ -481,6 +481,31 @@
                     </div>
                 </div>
 
+                <!-- Header & Adress-Einstellungen - WICHTIG: Ganz oben! -->
+                <div class="design-section" style="background: rgba(99,102,241,0.05); border-radius: 8px; padding: 12px; margin: -8px -8px 16px -8px;">
+                    <label style="color: var(--cl-primary);">📍 Kopfbereich & Adressen</label>
+                    <div class="header-settings">
+                        <div class="slider-group" style="margin-bottom: 8px;">
+                            <span style="font-size: 0.75rem; min-width: 100px;">Header-Abstand</span>
+                            <input type="range" id="headerTopMarginSlider" min="0" max="30" value="0" step="1">
+                            <span id="headerTopMarginValue">0mm</span>
+                        </div>
+                        <div class="slider-group" style="margin-bottom: 8px;">
+                            <span style="font-size: 0.75rem; min-width: 100px;">Text-Kontrast</span>
+                            <select id="headerContrastSelect" class="design-select" style="flex: 1;">
+                                <option value="auto">Automatisch</option>
+                                <option value="light">Hell auf Dunkel</option>
+                                <option value="dark">Dunkel auf Hell</option>
+                            </select>
+                        </div>
+                        <div class="slider-group">
+                            <span style="font-size: 0.75rem; min-width: 100px;">Empfänger-Abstand</span>
+                            <input type="range" id="recipientTopMarginSlider" min="0" max="50" value="20" step="1">
+                            <span id="recipientTopMarginValue">20mm</span>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Font Size -->
                 <div class="design-section">
                     <label>Schriftgröße</label>
@@ -505,35 +530,6 @@
                     <div class="slider-group">
                         <input type="range" id="marginSlider" min="15" max="35" value="25" step="1">
                         <span id="marginValue">25mm</span>
-                    </div>
-                </div>
-
-                <!-- Header Settings -->
-                <div class="design-section">
-                    <label>Header-Einstellungen</label>
-                    <div class="header-settings">
-                        <div class="slider-group">
-                            <span style="font-size: 0.75rem; min-width: 80px;">Abstand oben</span>
-                            <input type="range" id="headerTopMarginSlider" min="0" max="30" value="0" step="1">
-                            <span id="headerTopMarginValue">0mm</span>
-                        </div>
-                        <div class="slider-group" style="margin-top: 8px;">
-                            <span style="font-size: 0.75rem; min-width: 80px;">Text-Kontrast</span>
-                            <select id="headerContrastSelect" class="design-select" style="flex: 1;">
-                                <option value="auto">Automatisch</option>
-                                <option value="light">Hell auf Dunkel</option>
-                                <option value="dark">Dunkel auf Hell</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Company Address Settings -->
-                <div class="design-section">
-                    <label>Firmenadresse-Abstand</label>
-                    <div class="slider-group">
-                        <input type="range" id="recipientTopMarginSlider" min="10" max="50" value="25" step="1">
-                        <span id="recipientTopMarginValue">25mm</span>
                     </div>
                 </div>
 

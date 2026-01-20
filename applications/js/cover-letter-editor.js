@@ -72,7 +72,144 @@ class CoverLetterEditor {
         // Set initial date
         this.setCurrentDate();
         
+        // Prüfe ob ein Anschreiben zum Bearbeiten geladen werden soll
+        await this.checkEditParameter();
+        
         console.log('✅ Cover Letter Editor ready');
+    }
+    
+    async checkEditParameter() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const editId = urlParams.get('edit');
+        
+        if (editId) {
+            console.log('📝 Lade Anschreiben zum Bearbeiten:', editId);
+            await this.loadCoverLetterForEdit(editId);
+        }
+    }
+    
+    async loadCoverLetterForEdit(id) {
+        try {
+            // Suche in localStorage
+            let letter = null;
+            const drafts = JSON.parse(localStorage.getItem('cover_letter_drafts') || '[]');
+            letter = drafts.find(d => d.id === id);
+            
+            // Falls nicht gefunden, versuche Cloud
+            if (!letter && window.cloudDataService) {
+                const cloudLetters = await window.cloudDataService.getCoverLetters(true);
+                letter = cloudLetters?.find(d => d.id === id);
+            }
+            
+            if (!letter) {
+                this.showToast('Anschreiben nicht gefunden', 'error');
+                return;
+            }
+            
+            // Speichere Referenzen für Versionierung
+            this.currentCoverLetterId = letter.id;
+            this.currentVersion = letter.version || '1.0';
+            this.currentCreatedAt = letter.createdAt;
+            
+            // Formulardaten füllen
+            if (letter.jobData) {
+                const fields = {
+                    'jobTitle': letter.jobData.jobTitle || letter.jobData.position || letter.jobData.title || '',
+                    'companyName': letter.jobData.companyName || letter.jobData.company || '',
+                    'companyAddress': letter.jobData.companyAddress || '',
+                    'industry': letter.jobData.industry || '',
+                    'contactPerson': letter.jobData.contactPerson || '',
+                    'jobDescription': letter.jobData.jobDescription || '',
+                    'countrySelect': letter.jobData.country || 'CH'
+                };
+                
+                Object.entries(fields).forEach(([id, value]) => {
+                    const el = document.getElementById(id);
+                    if (el && value) el.value = value;
+                });
+                
+                // Firmenadresse-Feld anzeigen wenn vorhanden
+                if (letter.jobData.companyAddress) {
+                    const addressGroup = document.getElementById('companyAddressGroup');
+                    if (addressGroup) addressGroup.style.display = 'block';
+                }
+            }
+            
+            // Optionen laden
+            if (letter.options) {
+                this.options = { ...this.options, ...letter.options };
+                this.updateOptionButtons();
+            }
+            
+            // Design laden
+            if (letter.design) {
+                this.design = { ...this.design, ...letter.design };
+                this.updateDesignControls();
+            }
+            
+            // Inhalt anzeigen
+            if (letter.content) {
+                this.generatedContent = letter.content;
+                this.displayGeneratedLetter(letter.content, letter.jobData || {});
+            }
+            
+            this.showToast(`Anschreiben v${this.currentVersion} geladen - wird als v${this.getNextVersion()} gespeichert`, 'success');
+            
+        } catch (error) {
+            console.error('Fehler beim Laden:', error);
+            this.showToast('Fehler beim Laden des Anschreibens', 'error');
+        }
+    }
+    
+    getNextVersion() {
+        if (!this.currentVersion) return '1.0';
+        const parts = this.currentVersion.split('.');
+        return `${parts[0]}.${(parseInt(parts[1] || 0) + 1)}`;
+    }
+    
+    updateOptionButtons() {
+        // Aktualisiere die Option-Buttons basierend auf this.options
+        Object.entries(this.options).forEach(([option, value]) => {
+            document.querySelectorAll(`.option-btn[data-option="${option}"]`).forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.value === value);
+            });
+        });
+    }
+    
+    updateDesignControls() {
+        // Style Buttons
+        document.querySelectorAll('.style-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.style === this.design.style);
+        });
+        
+        // Color
+        document.querySelectorAll('.color-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.color === this.design.color);
+        });
+        
+        // Font
+        const fontSelect = document.getElementById('fontSelect');
+        if (fontSelect) fontSelect.value = this.design.font;
+        
+        // Sliders
+        const sliders = {
+            'fontSizeSlider': ['fontSize', 'pt'],
+            'lineHeightSlider': ['lineHeight', ''],
+            'marginSlider': ['margin', 'mm'],
+            'paragraphSpacingSlider': ['paragraphSpacing', 'px'],
+            'signatureSpacingSlider': ['signatureGap', 'px'],
+            'headerTopMarginSlider': ['headerTopMargin', 'mm'],
+            'recipientTopMarginSlider': ['recipientTopMargin', 'mm']
+        };
+        
+        Object.entries(sliders).forEach(([sliderId, [key, unit]]) => {
+            const slider = document.getElementById(sliderId);
+            const valueEl = document.getElementById(sliderId.replace('Slider', 'Value'));
+            if (slider && this.design[key] !== undefined) {
+                slider.value = this.design[key];
+                if (valueEl) valueEl.textContent = this.design[key] + unit;
+            }
+        });
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -872,9 +1009,28 @@ ${description.substring(0, 2000)}`;
                 currentAddress.includes('Musterstraße') ||
                 currentAddress === addressEl.dataset?.placeholder;
             if (isPlaceholder) {
-                const address = this.profileData.address || this.profileData.location || '';
-                if (address) {
-                    addressEl.textContent = address;
+                // Baue Adresse aus einzelnen Feldern zusammen
+                const street = this.profileData.street || this.profileData.strasse || '';
+                const houseNumber = this.profileData.houseNumber || this.profileData.hausnummer || '';
+                const postalCode = this.profileData.postalCode || this.profileData.plz || this.profileData.zip || '';
+                const city = this.profileData.city || this.profileData.ort || this.profileData.stadt || '';
+                
+                let fullAddress = '';
+                if (street || houseNumber) {
+                    fullAddress = `${street} ${houseNumber}`.trim();
+                }
+                if (postalCode || city) {
+                    if (fullAddress) fullAddress += ', ';
+                    fullAddress += `${postalCode} ${city}`.trim();
+                }
+                
+                // Fallback auf kombinierte Adressfelder
+                if (!fullAddress) {
+                    fullAddress = this.profileData.address || this.profileData.location || '';
+                }
+                
+                if (fullAddress) {
+                    addressEl.textContent = fullAddress;
                 }
             }
         }
@@ -972,12 +1128,23 @@ ${description.substring(0, 2000)}`;
     }
 
     collectJobData() {
+        const jobTitle = document.getElementById('jobTitle')?.value || '';
+        const companyName = document.getElementById('companyName')?.value || '';
+        const companyAddress = document.getElementById('companyAddress')?.value || '';
+        
         return {
-            jobTitle: document.getElementById('jobTitle')?.value || '',
-            companyName: document.getElementById('companyName')?.value || '',
+            // Primäre Keys
+            jobTitle: jobTitle,
+            companyName: companyName,
+            companyAddress: companyAddress,
             industry: document.getElementById('industry')?.value || '',
             contactPerson: document.getElementById('contactPerson')?.value || '',
-            jobDescription: document.getElementById('jobDescription')?.value || ''
+            jobDescription: document.getElementById('jobDescription')?.value || '',
+            country: document.getElementById('countrySelect')?.value || 'CH',
+            // Kompatibilitäts-Keys für Dashboard
+            position: jobTitle,
+            company: companyName,
+            title: jobTitle
         };
     }
 
@@ -1534,6 +1701,37 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
             }
         }
         
+        // Firmenadresse setzen
+        const addressDisplay = document.getElementById('companyAddressDisplay');
+        if (addressDisplay) {
+            const currentAddress = addressDisplay.textContent.trim();
+            if (!currentAddress || currentAddress === 'Straße, PLZ Ort' || currentAddress.includes('Musterstraße')) {
+                // Baue Firmenadresse aus einzelnen Feldern zusammen
+                const street = jobData.companyStreet || jobData.street || '';
+                const houseNumber = jobData.companyHouseNumber || jobData.houseNumber || '';
+                const postalCode = jobData.companyPostalCode || jobData.postalCode || jobData.companyZip || '';
+                const city = jobData.companyCity || jobData.city || '';
+                
+                let fullAddress = '';
+                if (street || houseNumber) {
+                    fullAddress = `${street} ${houseNumber}`.trim();
+                }
+                if (postalCode || city) {
+                    if (fullAddress) fullAddress += ', ';
+                    fullAddress += `${postalCode} ${city}`.trim();
+                }
+                
+                // Fallback auf kombiniertes Adressfeld
+                if (!fullAddress) {
+                    fullAddress = jobData.companyAddress || '';
+                }
+                
+                if (fullAddress) {
+                    addressDisplay.textContent = fullAddress;
+                }
+            }
+        }
+        
         const contactDisplay = document.getElementById('contactPersonDisplay');
         if (contactDisplay) {
             // Nur setzen wenn leer oder Platzhalter
@@ -2059,15 +2257,29 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
         
         const jobData = this.collectJobData();
         const content = this.getFinalLetterContent();
+        const now = new Date().toISOString();
+        
+        // Versionierung: Version erhöhen wenn ID bereits existiert
+        let version = '1.0';
+        if (this.currentCoverLetterId && this.currentVersion) {
+            const parts = this.currentVersion.split('.');
+            version = `${parts[0]}.${(parseInt(parts[1] || 0) + 1)}`;
+        }
+        
         const data = {
             id: this.currentCoverLetterId || `cl_${Date.now().toString(36)}`,
             content: content,
             jobData: jobData,
             options: this.options,
             design: this.design,
-            createdAt: new Date().toISOString()
+            version: version,
+            createdAt: this.currentCreatedAt || now,
+            updatedAt: now
         };
+        
         this.currentCoverLetterId = data.id;
+        this.currentVersion = version;
+        this.currentCreatedAt = data.createdAt;
         
         try {
             // Save to cloud if available
@@ -2075,12 +2287,17 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
                 await window.cloudDataService.saveCoverLetter(data);
             }
             
-            // Also save to localStorage
+            // localStorage: Update oder Hinzufügen
             const stored = JSON.parse(localStorage.getItem('cover_letter_drafts') || '[]');
-            stored.push(data);
+            const existingIndex = stored.findIndex(cl => cl.id === data.id);
+            if (existingIndex >= 0) {
+                stored[existingIndex] = data;
+            } else {
+                stored.unshift(data); // Neues vorne einfügen
+            }
             localStorage.setItem('cover_letter_drafts', JSON.stringify(stored));
             
-            this.showToast('Anschreiben gespeichert!', 'success');
+            this.showToast(`Anschreiben v${version} gespeichert!`, 'success');
             this.loadCoverLetterOptions();
         } catch (error) {
             console.error('Save error:', error);
@@ -2094,6 +2311,80 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
             return;
         }
         
+        // Zeige Vorschau-Modal
+        this.showPDFPreview();
+    }
+    
+    showPDFPreview() {
+        const letter = document.getElementById('generatedLetter');
+        if (!letter) return;
+        
+        // Clone für Vorschau
+        const previewClone = letter.cloneNode(true);
+        previewClone.id = 'pdfPreviewClone';
+        
+        // Textarea durch div ersetzen
+        const textarea = previewClone.querySelector('textarea');
+        if (textarea) {
+            const div = document.createElement('div');
+            div.innerHTML = textarea.value.replace(/\n/g, '<br>');
+            div.style.whiteSpace = 'pre-wrap';
+            div.style.fontFamily = 'inherit';
+            div.style.fontSize = 'inherit';
+            div.style.lineHeight = 'inherit';
+            textarea.parentNode.replaceChild(div, textarea);
+        }
+        
+        // Input-Felder durch Spans ersetzen
+        previewClone.querySelectorAll('input[type="text"]').forEach(input => {
+            const span = document.createElement('span');
+            span.textContent = input.value;
+            span.style.fontFamily = 'inherit';
+            span.style.fontSize = 'inherit';
+            input.parentNode.replaceChild(span, input);
+        });
+        
+        const jobData = this.collectJobData();
+        const modal = document.createElement('div');
+        modal.className = 'pdf-preview-modal';
+        modal.innerHTML = `
+            <div class="pdf-preview-content">
+                <div class="pdf-preview-header">
+                    <h3><i class="fas fa-file-pdf"></i> PDF Vorschau</h3>
+                    <button onclick="this.closest('.pdf-preview-modal').remove()" class="btn-close" style="background: rgba(255,255,255,0.2); border: none; color: white; width: 32px; height: 32px; border-radius: 50%; cursor: pointer;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="pdf-preview-body">
+                    <div class="pdf-preview-page" id="pdfPreviewPage"></div>
+                </div>
+                <div class="pdf-preview-footer">
+                    <button onclick="this.closest('.pdf-preview-modal').remove()" class="btn-glass" style="background: rgba(100,116,139,0.8);">
+                        <i class="fas fa-times"></i> Abbrechen
+                    </button>
+                    <button onclick="window.coverLetterEditor.downloadPDF(); this.closest('.pdf-preview-modal').remove();" class="btn-glass btn-primary">
+                        <i class="fas fa-download"></i> PDF herunterladen
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        // Clone in Vorschau einfügen
+        const previewPage = document.getElementById('pdfPreviewPage');
+        if (previewPage) {
+            previewClone.style.width = '210mm';
+            previewClone.style.minHeight = '297mm';
+            previewClone.style.maxHeight = 'none';
+            previewClone.style.overflow = 'visible';
+            previewClone.style.margin = '0';
+            previewClone.style.boxShadow = 'none';
+            previewPage.appendChild(previewClone);
+        }
+    }
+    
+    async downloadPDF() {
         this.showToast('PDF wird erstellt...', 'info');
         
         try {
@@ -3243,12 +3534,24 @@ WICHTIG: Maximal 10 Einträge. Priorität 10 = Must-Have, 7-9 = Sehr wichtig, 4-
                 }
             });
             
-            // Languages
+            // Languages - normalisiere zu einheitlichem Format {name, level}
             ['languages', 'sprachen', 'sprachkenntnisse'].forEach(key => {
                 if (resume[key] && Array.isArray(resume[key])) {
                     resume[key].forEach(l => {
-                        if (typeof l === 'string') skills.languages.push(l);
-                        else if (l) skills.languages.push(l);
+                        if (typeof l === 'string') {
+                            // Parse strings wie "Deutsch (Muttersprache)" oder "English - C1"
+                            const match = l.match(/^([^(\-:]+)[\s]*[\(\-:]\s*(.+?)[\)]?$/);
+                            if (match) {
+                                skills.languages.push({ name: match[1].trim(), level: match[2].trim() });
+                            } else {
+                                skills.languages.push({ name: l.trim(), level: '' });
+                            }
+                        } else if (l && (l.name || l.language || l.sprache)) {
+                            skills.languages.push({ 
+                                name: (l.name || l.language || l.sprache || '').trim(), 
+                                level: (l.level || l.niveau || l.proficiency || '').trim() 
+                            });
+                        }
                     });
                 }
             });
@@ -3313,7 +3616,24 @@ WICHTIG: Maximal 10 Einträge. Priorität 10 = Must-Have, 7-9 = Sehr wichtig, 4-
             }
             if (this.profileData.experience) skills.experience.push(...this.profileData.experience);
             if (this.profileData.education) skills.education.push(...this.profileData.education);
-            if (this.profileData.languages) skills.languages.push(...this.profileData.languages);
+            // Normalisiere Sprachen aus Profil
+            if (this.profileData.languages && Array.isArray(this.profileData.languages)) {
+                this.profileData.languages.forEach(l => {
+                    if (typeof l === 'string') {
+                        const match = l.match(/^([^(\-:]+)[\s]*[\(\-:]\s*(.+?)[\)]?$/);
+                        if (match) {
+                            skills.languages.push({ name: match[1].trim(), level: match[2].trim() });
+                        } else {
+                            skills.languages.push({ name: l.trim(), level: '' });
+                        }
+                    } else if (l && (l.name || l.language || l.sprache)) {
+                        skills.languages.push({ 
+                            name: (l.name || l.language || l.sprache || '').trim(), 
+                            level: (l.level || l.niveau || l.proficiency || '').trim() 
+                        });
+                    }
+                });
+            }
             
             skills.sources.push('profileData');
         }
@@ -3425,7 +3745,20 @@ WICHTIG: Maximal 10 Einträge. Priorität 10 = Must-Have, 7-9 = Sehr wichtig, 4-
         // Deduplizieren und bereinigen
         skills.technical = [...new Set(skills.technical.filter(s => s && typeof s === 'string' && s.length > 1))];
         skills.soft = [...new Set(skills.soft.filter(s => s && typeof s === 'string' && s.length > 1))];
-        skills.languages = [...new Set(skills.languages.filter(Boolean))];
+        
+        // Sprachen deduplizieren basierend auf Name (case-insensitive)
+        const langMap = new Map();
+        skills.languages.forEach(l => {
+            if (l && l.name) {
+                const key = l.name.toLowerCase().trim();
+                // Bevorzuge Einträge mit Level
+                if (!langMap.has(key) || (l.level && !langMap.get(key).level)) {
+                    langMap.set(key, l);
+                }
+            }
+        });
+        skills.languages = Array.from(langMap.values());
+        
         skills.certifications = [...new Set(skills.certifications.filter(Boolean))];
         
         // Entferne Duplikate aus Experience basierend auf Position + Company
@@ -3515,9 +3848,11 @@ WICHTIG: Maximal 10 Einträge. Priorität 10 = Must-Have, 7-9 = Sehr wichtig, 4-
                 <div class="skills-section">
                     <h5><i class="fas fa-globe"></i> Sprachen (${userSkills.languages.length})</h5>
                     <div class="skills-tags">
-                        ${userSkills.languages.map(lang => `
-                            <span class="skill-tag language">${typeof lang === 'object' ? `${lang.name || lang.language} (${lang.level || ''})` : lang}</span>
-                        `).join('')}
+                        ${userSkills.languages.map(lang => {
+                            const name = typeof lang === 'object' ? (lang.name || lang.language || '') : lang;
+                            const level = typeof lang === 'object' ? (lang.level || '') : '';
+                            return `<span class="skill-tag language">${name}${level ? ` (${level})` : ''}</span>`;
+                        }).join('')}
                     </div>
                 </div>
                 ` : ''}
