@@ -665,8 +665,8 @@ ${description.substring(0, 2000)}`;
                     attempts++;
                 }
                 
-                if (window.unifiedProfileService.isInitialized) {
-                    const unifiedProfile = await window.unifiedProfileService.getProfileData();
+                if (window.unifiedProfileService.isInitialized && window.unifiedProfileService.profile) {
+                    const unifiedProfile = window.unifiedProfileService.profile;
                     // Filter "Test User" Daten
                     if (unifiedProfile && unifiedProfile.firstName && 
                         unifiedProfile.firstName !== 'Test' && 
@@ -808,14 +808,12 @@ ${description.substring(0, 2000)}`;
     updateSenderInfo() {
         // Versuche Profil zu laden, falls noch nicht vorhanden
         if (!this.profileData) {
-            // Versuche UnifiedProfileService
-            if (window.unifiedProfileService?.isInitialized) {
-                window.unifiedProfileService.getProfileData().then(profile => {
-                    if (profile && profile.firstName && profile.firstName !== 'Test') {
-                        this.profileData = profile;
-                        this.updateSenderInfo(); // Rekursiv aufrufen mit neuem Profil
-                    }
-                }).catch(() => {});
+            // Versuche UnifiedProfileService - direkt auf das Profil zugreifen
+            if (window.unifiedProfileService?.isInitialized && window.unifiedProfileService.profile) {
+                const profile = window.unifiedProfileService.profile;
+                if (profile && profile.firstName && profile.firstName !== 'Test') {
+                    this.profileData = profile;
+                }
             }
             // Wenn immer noch kein Profil, versuche es später nochmal
             if (!this.profileData) {
