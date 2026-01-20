@@ -2192,9 +2192,9 @@
 
 .chess-board-mobile {
     width: 100% !important;
-    /* Garantiert dass das Brett in den verfügbaren Platz passt - mehr Platz für Chat */
-    max-width: min(calc(100vw - 1rem), calc(100dvh - 400px), 450px) !important;
-    max-height: min(calc(100vw - 1rem), calc(100dvh - 400px), 450px) !important;
+    /* Garantiert dass das Brett in den verfügbaren Platz passt - VIEL mehr Platz */
+    max-width: min(calc(100vw - 2rem), calc(100dvh - 520px), 380px) !important;
+    max-height: min(calc(100vw - 2rem), calc(100dvh - 520px), 380px) !important;
     aspect-ratio: 1 !important;
     margin: 0 auto;
     border-radius: 4px;
