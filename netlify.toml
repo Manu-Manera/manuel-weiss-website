@@ -17,17 +17,17 @@
 # ═══════════════════════════════════════════════════════════════════════════
 
 # ═══════════════════════════════════════════════════════════════════════════
-# BUILD SETTINGS - Production (Platzhalter)
+# BUILD SETTINGS - Production (Volle Website)
 # ═══════════════════════════════════════════════════════════════════════════
 [build]
   # Statische Website - kein Build-Befehl nötig
   command = ""
-  # Production = Platzhalter-Seite
-  publish = "production-placeholder"
+  # Production = Volle Website
+  publish = "."
 
 [build.environment]
   NODE_ENV = "production"
-  SITE_ENV = "production-placeholder"
+  SITE_ENV = "production"
 
 # ═══════════════════════════════════════════════════════════════════════════
 # DEPLOY PREVIEWS - KOSTENLOS! (für Pull Requests)
