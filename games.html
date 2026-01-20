@@ -96,14 +96,67 @@
             <!-- Saved Games -->
             <div id="savedGamesContainer"></div>
 
-            <!-- Online Players -->
+            <!-- Online Players - ERWEITERT -->
             <div class="online-players-section">
                 <h2><i class="fas fa-users"></i> Online-Spieler (<span id="onlineCount">0</span>)</h2>
                 <div id="onlinePlayersList" class="online-players-list">
-                    <div class="no-players-message">
+                    <div class="no-players-message" id="noPlayersMessage">
                         <i class="fas fa-user-slash"></i>
                         <p>Aktuell sind keine anderen Spieler online.</p>
                         <small>Spiele gegen den Computer oder warte auf andere Spieler.</small>
+                    </div>
+                    <!-- Spieler werden hier dynamisch eingefügt -->
+                </div>
+            </div>
+
+            <!-- Einladungs-Modal -->
+            <div id="inviteModal" class="invite-modal" style="display: none;">
+                <div class="invite-modal-content">
+                    <button class="invite-modal-close" onclick="closeInviteModal()">&times;</button>
+                    <h3><i class="fas fa-chess-knight"></i> Spieler einladen</h3>
+                    <div class="invite-player-info">
+                        <div class="invite-avatar" id="invitePlayerAvatar">👤</div>
+                        <div class="invite-player-name" id="invitePlayerName">Spieler</div>
+                        <div class="invite-player-status" id="invitePlayerStatus">Online</div>
+                    </div>
+                    <div class="invite-game-select">
+                        <label>Spiel auswählen:</label>
+                        <div class="invite-game-options">
+                            <button class="invite-game-btn active" data-game="chess" onclick="selectInviteGame('chess')">
+                                <i class="fas fa-chess"></i> Schach
+                            </button>
+                            <button class="invite-game-btn" data-game="tictactoe" onclick="selectInviteGame('tictactoe')">
+                                <i class="fas fa-hashtag"></i> Tic-Tac-Toe
+                            </button>
+                            <button class="invite-game-btn" data-game="connect4" onclick="selectInviteGame('connect4')">
+                                <i class="fas fa-grip-vertical"></i> 4 Gewinnt
+                            </button>
+                        </div>
+                    </div>
+                    <button class="btn-send-invite" onclick="sendGameInvite()">
+                        <i class="fas fa-paper-plane"></i> Einladung senden
+                    </button>
+                </div>
+            </div>
+
+            <!-- Eingehende Einladung Modal -->
+            <div id="incomingInviteModal" class="invite-modal incoming-invite" style="display: none;">
+                <div class="invite-modal-content">
+                    <h3><i class="fas fa-envelope"></i> Spieleinladung!</h3>
+                    <div class="invite-player-info">
+                        <div class="invite-avatar" id="incomingInviteAvatar">👤</div>
+                        <div class="invite-player-name" id="incomingInviteName">Spieler</div>
+                        <div class="invite-game-type" id="incomingInviteGame">
+                            <i class="fas fa-chess"></i> Schach
+                        </div>
+                    </div>
+                    <div class="invite-actions">
+                        <button class="btn-accept-invite" onclick="acceptInvite()">
+                            <i class="fas fa-check"></i> Annehmen
+                        </button>
+                        <button class="btn-decline-invite" onclick="declineInvite()">
+                            <i class="fas fa-times"></i> Ablehnen
+                        </button>
                     </div>
                 </div>
             </div>
@@ -772,6 +825,280 @@
                     }
                 });
             }, 1000); // Warte bis Auth-System initialisiert
+        });
+        
+        // =====================================================
+        // ONLINE SPIELER & EINLADUNGSSYSTEM
+        // =====================================================
+        
+        let selectedInvitePlayer = null;
+        let selectedInviteGame = 'chess';
+        let pendingInvite = null;
+        
+        // Simulierte Online-Spieler (in Produktion durch echtes Backend ersetzen)
+        const onlinePlayers = [
+            { id: 'player1', name: 'ChessMaster42', avatar: '🎯', status: 'online', inGame: false },
+            { id: 'player2', name: 'StrategyKing', avatar: '👑', status: 'online', inGame: true, currentGame: 'chess' },
+            { id: 'player3', name: 'GamePro99', avatar: '🎮', status: 'online', inGame: false },
+        ];
+        
+        // Online-Spieler-Liste rendern
+        function renderOnlinePlayers() {
+            const listEl = document.getElementById('onlinePlayersList');
+            const countEl = document.getElementById('onlineCount');
+            const noPlayersMsg = document.getElementById('noPlayersMessage');
+            const chessCountEl = document.getElementById('chessPlayersCount');
+            
+            if (!listEl) return;
+            
+            // Eigene ID (simuliert)
+            const myId = getCurrentUserId();
+            
+            // Filtere eigenen User raus
+            const otherPlayers = onlinePlayers.filter(p => p.id !== myId);
+            
+            if (countEl) countEl.textContent = otherPlayers.length;
+            if (chessCountEl) chessCountEl.textContent = otherPlayers.filter(p => !p.inGame).length;
+            
+            if (otherPlayers.length === 0) {
+                if (noPlayersMsg) noPlayersMsg.style.display = 'flex';
+                return;
+            }
+            
+            if (noPlayersMsg) noPlayersMsg.style.display = 'none';
+            
+            // Entferne alte Player-Cards (behalte noPlayersMessage)
+            listEl.querySelectorAll('.online-player-card').forEach(el => el.remove());
+            
+            otherPlayers.forEach(player => {
+                const card = document.createElement('div');
+                card.className = `online-player-card ${player.inGame ? 'in-game' : ''}`;
+                card.innerHTML = `
+                    <div class="player-avatar">
+                        ${player.avatar}
+                        <span class="player-status-dot ${player.inGame ? 'in-game' : ''}"></span>
+                    </div>
+                    <div class="player-info">
+                        <div class="player-name">${player.name}</div>
+                        <div class="player-status-text ${player.inGame ? 'in-game' : 'online'}">
+                            ${player.inGame ? `Spielt gerade ${getGameName(player.currentGame)}` : '🟢 Online - Verfügbar'}
+                        </div>
+                    </div>
+                    <button class="player-invite-btn" 
+                            onclick="openInviteModal('${player.id}')" 
+                            ${player.inGame ? 'disabled title="Spieler ist gerade in einem Spiel"' : ''}>
+                        <i class="fas fa-gamepad"></i>
+                        ${player.inGame ? 'Im Spiel' : 'Einladen'}
+                    </button>
+                `;
+                
+                if (!player.inGame) {
+                    card.onclick = (e) => {
+                        if (!e.target.classList.contains('player-invite-btn')) {
+                            openInviteModal(player.id);
+                        }
+                    };
+                }
+                
+                listEl.appendChild(card);
+            });
+        }
+        
+        function getCurrentUserId() {
+            const session = localStorage.getItem('aws_auth_session');
+            if (session) {
+                try {
+                    const data = JSON.parse(session);
+                    return data.email || 'current-user';
+                } catch (e) {}
+            }
+            return 'current-user';
+        }
+        
+        function getGameName(gameId) {
+            const names = {
+                'chess': 'Schach',
+                'tictactoe': 'Tic-Tac-Toe',
+                'connect4': '4 Gewinnt'
+            };
+            return names[gameId] || gameId;
+        }
+        
+        function getGameIcon(gameId) {
+            const icons = {
+                'chess': 'fa-chess',
+                'tictactoe': 'fa-hashtag',
+                'connect4': 'fa-grip-vertical'
+            };
+            return icons[gameId] || 'fa-gamepad';
+        }
+        
+        // Einladungs-Modal öffnen
+        function openInviteModal(playerId) {
+            const player = onlinePlayers.find(p => p.id === playerId);
+            if (!player || player.inGame) return;
+            
+            selectedInvitePlayer = player;
+            selectedInviteGame = 'chess';
+            
+            document.getElementById('invitePlayerAvatar').textContent = player.avatar;
+            document.getElementById('invitePlayerName').textContent = player.name;
+            document.getElementById('invitePlayerStatus').textContent = '🟢 Online';
+            
+            // Reset game selection
+            document.querySelectorAll('.invite-game-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.game === 'chess');
+            });
+            
+            document.getElementById('inviteModal').style.display = 'flex';
+        }
+        
+        function closeInviteModal() {
+            document.getElementById('inviteModal').style.display = 'none';
+            selectedInvitePlayer = null;
+        }
+        
+        function selectInviteGame(gameId) {
+            selectedInviteGame = gameId;
+            document.querySelectorAll('.invite-game-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.game === gameId);
+            });
+        }
+        
+        function sendGameInvite() {
+            if (!selectedInvitePlayer) return;
+            
+            console.log(`📨 Einladung gesendet an ${selectedInvitePlayer.name} für ${selectedInviteGame}`);
+            
+            // Simuliere Einladung senden
+            showToast(`Einladung an ${selectedInvitePlayer.name} gesendet!`, 'success');
+            closeInviteModal();
+            
+            // Simuliere Antwort nach 2-5 Sekunden (für Demo)
+            const responseTime = 2000 + Math.random() * 3000;
+            setTimeout(() => {
+                // 70% Chance dass angenommen wird
+                if (Math.random() < 0.7) {
+                    showToast(`${selectedInvitePlayer.name} hat die Einladung angenommen!`, 'success');
+                    // Starte das Spiel
+                    startMultiplayerGame(selectedInviteGame, selectedInvitePlayer);
+                } else {
+                    showToast(`${selectedInvitePlayer.name} hat leider abgelehnt.`, 'info');
+                }
+            }, responseTime);
+        }
+        
+        // Eingehende Einladung anzeigen
+        function showIncomingInvite(fromPlayer, gameType) {
+            pendingInvite = { from: fromPlayer, game: gameType };
+            
+            document.getElementById('incomingInviteAvatar').textContent = fromPlayer.avatar;
+            document.getElementById('incomingInviteName').textContent = fromPlayer.name;
+            document.getElementById('incomingInviteGame').innerHTML = 
+                `<i class="fas ${getGameIcon(gameType)}"></i> ${getGameName(gameType)}`;
+            
+            document.getElementById('incomingInviteModal').style.display = 'flex';
+            
+            // Sound abspielen (optional)
+            try {
+                const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2teleih6rtzRc0s2X6LOx4JYMl2');
+                audio.volume = 0.3;
+                audio.play().catch(() => {});
+            } catch (e) {}
+        }
+        
+        function acceptInvite() {
+            if (!pendingInvite) return;
+            
+            console.log(`✅ Einladung von ${pendingInvite.from.name} angenommen`);
+            document.getElementById('incomingInviteModal').style.display = 'none';
+            
+            startMultiplayerGame(pendingInvite.game, pendingInvite.from);
+            pendingInvite = null;
+        }
+        
+        function declineInvite() {
+            if (!pendingInvite) return;
+            
+            console.log(`❌ Einladung von ${pendingInvite.from.name} abgelehnt`);
+            document.getElementById('incomingInviteModal').style.display = 'none';
+            showToast('Einladung abgelehnt', 'info');
+            pendingInvite = null;
+        }
+        
+        function startMultiplayerGame(gameType, opponent) {
+            console.log(`🎮 Starte ${gameType} gegen ${opponent.name}`);
+            
+            // Markiere Spieler als "im Spiel"
+            const player = onlinePlayers.find(p => p.id === opponent.id);
+            if (player) {
+                player.inGame = true;
+                player.currentGame = gameType;
+            }
+            
+            switch (gameType) {
+                case 'chess':
+                    if (window.chessGame) {
+                        window.chessGame.opponentName = opponent.name;
+                        window.chessGame.opponentId = opponent.id;
+                    }
+                    startChessGame('player');
+                    break;
+                case 'tictactoe':
+                    startTicTacToe('player');
+                    break;
+                case 'connect4':
+                    startConnectFour('player');
+                    break;
+            }
+            
+            renderOnlinePlayers();
+        }
+        
+        function showToast(message, type = 'info') {
+            // Verwende existierende Toast-Funktion oder erstelle eine
+            if (window.chessGame && window.chessGame.showToast) {
+                window.chessGame.showToast(message, type);
+            } else {
+                // Fallback
+                const toast = document.createElement('div');
+                toast.className = `game-toast toast-${type}`;
+                toast.textContent = message;
+                toast.style.cssText = `
+                    position: fixed;
+                    bottom: 100px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#6366f1'};
+                    color: white;
+                    padding: 1rem 2rem;
+                    border-radius: 12px;
+                    z-index: 10001;
+                    font-weight: 500;
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+                    animation: toastIn 0.3s ease;
+                `;
+                document.body.appendChild(toast);
+                setTimeout(() => {
+                    toast.style.animation = 'toastOut 0.3s ease forwards';
+                    setTimeout(() => toast.remove(), 300);
+                }, 3000);
+            }
+        }
+        
+        // Simuliere eingehende Einladung für Demo (nach 10 Sekunden)
+        setTimeout(() => {
+            // Nur wenn eingeloggt und nicht schon in einem Spiel
+            const isLoggedIn = localStorage.getItem('aws_auth_session');
+            if (isLoggedIn && document.getElementById('chessModal')?.style.display !== 'flex') {
+                // Zeige Demo-Einladung
+                // showIncomingInvite(onlinePlayers[0], 'chess');
+            }
+        }, 10000);
+        
+        // Initialisiere Online-Spieler beim Laden
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(renderOnlinePlayers, 1500);
         });
     </script>
 </body>
