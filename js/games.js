@@ -169,26 +169,131 @@ class GamesManager {
         const container = document.getElementById('onlinePlayersList');
         const countEl = document.getElementById('onlineCount');
         
-        // Da wir kein echtes Backend haben, zeigen wir realistisch keine Spieler
-        this.onlinePlayers = [];
+        // Registriere aktuellen Benutzer als online
+        this.registerUserOnline();
+        
+        // Lade Online-Spieler aus localStorage (simuliertes Real-Time)
+        this.onlinePlayers = this.getOnlinePlayersFromStorage();
+        
+        // Filtere den aktuellen Benutzer aus der Anzeige
+        const otherPlayers = this.onlinePlayers.filter(p => 
+            p.id !== this.currentUser?.id && p.email !== this.currentUser?.email
+        );
         
         if (countEl) {
-            countEl.textContent = '0';
+            countEl.textContent = otherPlayers.length.toString();
         }
         
         if (container) {
-            container.innerHTML = `
-                <div class="no-players-message">
-                    <i class="fas fa-user-slash"></i>
-                    <p>Aktuell sind keine anderen Spieler online.</p>
-                    <small>Spiele gegen den Computer oder lade Freunde ein!</small>
-                </div>
-            `;
+            if (otherPlayers.length > 0) {
+                container.innerHTML = otherPlayers.map(player => `
+                    <div class="online-player" data-player-id="${player.id}">
+                        <span class="status-dot"></span>
+                        <span class="player-name">${player.name || player.email?.split('@')[0] || 'Spieler'}</span>
+                        <button class="btn-challenge-small" onclick="challengePlayer('${player.id}')" title="Herausfordern">
+                            <i class="fas fa-chess"></i>
+                        </button>
+                    </div>
+                `).join('');
+            } else {
+                container.innerHTML = `
+                    <div class="no-players-message">
+                        <i class="fas fa-user-clock"></i>
+                        <p>Du bist aktuell der einzige Online-Spieler.</p>
+                        <small>Lade Freunde ein oder spiele gegen den Computer!</small>
+                    </div>
+                `;
+            }
         }
         
         // Spieler-Count für Schach
         const chessCount = document.getElementById('chessPlayersCount');
-        if (chessCount) chessCount.textContent = '0';
+        if (chessCount) chessCount.textContent = (otherPlayers.length + 1).toString(); // +1 für dich selbst
+        
+        // Aktualisiere alle 10 Sekunden
+        if (!this.onlinePlayersInterval) {
+            this.onlinePlayersInterval = setInterval(() => {
+                this.loadOnlinePlayers();
+            }, 10000);
+        }
+    }
+    
+    registerUserOnline() {
+        if (!this.currentUser || !this.isOnline) return;
+        
+        const onlineKey = 'games_online_players';
+        let players = [];
+        
+        try {
+            players = JSON.parse(localStorage.getItem(onlineKey) || '[]');
+        } catch (e) {
+            players = [];
+        }
+        
+        // Entferne alte Einträge (älter als 30 Sekunden)
+        const now = Date.now();
+        players = players.filter(p => now - p.lastSeen < 30000);
+        
+        // Aktualisiere oder füge aktuellen Benutzer hinzu
+        const existingIndex = players.findIndex(p => 
+            p.id === this.currentUser.id || p.email === this.currentUser.email
+        );
+        
+        const playerData = {
+            id: this.currentUser.id || this.currentUser.email,
+            email: this.currentUser.email,
+            name: this.currentUser.name || this.currentUser.email?.split('@')[0],
+            lastSeen: now,
+            status: 'online'
+        };
+        
+        if (existingIndex >= 0) {
+            players[existingIndex] = playerData;
+        } else {
+            players.push(playerData);
+        }
+        
+        localStorage.setItem(onlineKey, JSON.stringify(players));
+    }
+    
+    getOnlinePlayersFromStorage() {
+        const onlineKey = 'games_online_players';
+        try {
+            const players = JSON.parse(localStorage.getItem(onlineKey) || '[]');
+            const now = Date.now();
+            // Nur Spieler die in den letzten 30 Sekunden aktiv waren
+            return players.filter(p => now - p.lastSeen < 30000);
+        } catch (e) {
+            return [];
+        }
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// CHALLENGE PLAYER
+// ═══════════════════════════════════════════════════════════════════════════
+
+function challengePlayer(playerId) {
+    if (!window.gamesManager?.isAuthenticated) {
+        alert('Bitte melden Sie sich zuerst an.');
+        return;
+    }
+    
+    // Finde Spieler-Info
+    const players = window.gamesManager.onlinePlayers || [];
+    const player = players.find(p => p.id === playerId);
+    const playerName = player?.name || player?.email?.split('@')[0] || 'Spieler';
+    
+    // Da wir kein echtes Real-Time-System haben, starten wir ein simuliertes Spiel
+    const confirmed = confirm(`Möchtest du ${playerName} zu einem Schachspiel herausfordern?\n\n(Da kein Real-Time-Server verfügbar ist, wird ein lokales Spiel gestartet)`);
+    
+    if (confirmed) {
+        // Starte Schach gegen "Spieler" (simuliert)
+        if (window.chessGame) {
+            window.chessGame.startNewGame('player', playerName);
+        } else {
+            startChessGame('player');
+        }
     }
 }
 

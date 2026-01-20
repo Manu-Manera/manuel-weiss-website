@@ -100,6 +100,30 @@
     transform: translateY(-2px);
 }
 
+.btn-challenge-small {
+    background: rgba(255, 255, 255, 0.3);
+    border: none;
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: auto;
+}
+
+.btn-challenge-small:hover {
+    background: #10b981;
+    transform: scale(1.1);
+}
+
+.online-player .player-name {
+    flex: 1;
+}
+
 .online-player .status-dot {
     width: 10px;
     height: 10px;
@@ -2160,18 +2184,36 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0.5rem;
+    padding: 0.25rem;
     min-height: 0; /* Important for flex shrinking */
+    overflow: hidden;
 }
 
 .chess-board-mobile {
     width: 100% !important;
-    max-width: min(calc(100vw - 1rem), calc(100vh - 300px)) !important;
+    /* Garantiert dass das Brett in den verfügbaren Platz passt */
+    max-width: min(calc(100vw - 0.5rem), calc(100dvh - 320px), 500px) !important;
+    max-height: min(calc(100vw - 0.5rem), calc(100dvh - 320px), 500px) !important;
     aspect-ratio: 1 !important;
     margin: 0 auto;
     border-radius: 4px;
     overflow: hidden;
     border: 2px solid #3d3a37;
+}
+
+/* Sicherstellen dass Figuren in die Felder passen */
+.chess-board-mobile .chess-square {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chess-board-mobile .chess-piece,
+.chess-board-mobile .chess-piece-3d {
+    font-size: clamp(1rem, 10vw, 2.5rem) !important;
+    max-width: 100%;
+    max-height: 100%;
 }
 
 /* Status Bar */
@@ -2260,10 +2302,38 @@
     cursor: pointer;
 }
 
-/* Mobile Responsive */
+/* Mobile Responsive - Kleine Bildschirme */
 @media screen and (max-width: 480px) {
     .chess-board-mobile {
-        max-width: min(calc(100vw - 0.5rem), calc(100vh - 280px)) !important;
+        max-width: min(calc(100vw - 0.25rem), calc(100dvh - 260px)) !important;
+        max-height: min(calc(100vw - 0.25rem), calc(100dvh - 260px)) !important;
+        border-width: 1px;
+    }
+    
+    .chess-board-wrapper {
+        padding: 0.125rem;
+    }
+    
+    .chess-app-header {
+        padding: 0.5rem 0.75rem;
+    }
+    
+    .chess-timer-bar {
+        padding: 0.35rem 0.5rem;
+    }
+    
+    .chess-chat-section {
+        max-height: 60px;
+    }
+    
+    .chat-opponent-info {
+        padding: 0.5rem 0.75rem;
+    }
+    
+    .chat-avatar {
+        width: 32px;
+        height: 32px;
+        font-size: 0.9rem;
     }
     
     .chess-controls-bar {
@@ -2273,21 +2343,37 @@
     
     .chess-control-btn {
         padding: 0.5rem 0.25rem;
-        font-size: 0.65rem;
+        font-size: 0.6rem;
     }
     
     .chess-control-btn i {
-        font-size: 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .chess-control-btn span {
+        display: none; /* Verstecke Text auf kleinen Bildschirmen */
     }
     
     .timer-clock {
-        font-size: 1rem;
-        padding: 0.25rem 0.5rem;
-        min-width: 50px;
+        font-size: 0.9rem;
+        padding: 0.2rem 0.4rem;
+        min-width: 45px;
+    }
+    
+    .timer-name {
+        font-size: 0.6rem;
     }
     
     .chat-messages {
-        max-height: 80px;
+        max-height: 60px;
+    }
+    
+    .chess-status-bar {
+        padding: 0.35rem 0.5rem;
+    }
+    
+    .game-status-text {
+        font-size: 0.8rem;
     }
 }
 
