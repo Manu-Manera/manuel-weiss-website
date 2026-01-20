@@ -1,21 +1,46 @@
 # Netlify Configuration
 # ═══════════════════════════════════════════════════════════════════════════
-# AUTOMATISCHES DEPLOYMENT - Jeder Push zu main wird deployed
-# ═══════════════════════════════════════════════════════════════════════════
-#
-# Workflow:
-# 1. Änderungen committen und pushen
-# 2. Netlify deployed automatisch
-# 3. Website ist unter manuel-weiss.ch verfügbar
-#
+# Komplette Konfiguration für Production UND lokale Entwicklung
 # ═══════════════════════════════════════════════════════════════════════════
 
+# ═══════════════════════════════════════════════════════════════════════════
+# BUILD SETTINGS - Für Production Deploys
+# ═══════════════════════════════════════════════════════════════════════════
 [build]
+  # Statische Website - kein Build-Befehl nötig
   command = ""
+  # Veröffentliche das Root-Verzeichnis
   publish = "."
-  # KEIN ignore = Alle Deploys werden ausgeführt
 
-# Headers für Performance & Security
+# ═══════════════════════════════════════════════════════════════════════════
+# FUNCTIONS - Serverless Functions (für S3, API, etc.)
+# ═══════════════════════════════════════════════════════════════════════════
+[functions]
+  # Verzeichnis mit Netlify Functions
+  directory = "netlify/functions"
+
+# ═══════════════════════════════════════════════════════════════════════════
+# DEV SETTINGS - Für lokale Entwicklung mit "netlify dev"
+# ═══════════════════════════════════════════════════════════════════════════
+[dev]
+  # Port für den lokalen Server
+  port = 8888
+  # Statische Website
+  publish = "."
+  # Browser automatisch öffnen
+  autoLaunch = true
+  # Framework-Erkennung: statische Seite
+  framework = "#static"
+
+# Environment für lokale Entwicklung
+[context.dev.environment]
+  NODE_ENV = "development"
+
+# ═══════════════════════════════════════════════════════════════════════════
+# HEADERS - Sicherheit & Caching
+# ═══════════════════════════════════════════════════════════════════════════
+
+# Sicherheits-Headers für alle Seiten
 [[headers]]
   for = "/*"
   [headers.values]
@@ -24,38 +49,49 @@
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
 
-# Cache für JS/CSS - Immer neu laden (kein Caching-Problem)
+# Kein Caching für JS-Dateien (immer neueste Version)
 [[headers]]
   for = "/*.js"
   [headers.values]
     Cache-Control = "no-cache, no-store, must-revalidate"
 
 [[headers]]
+  for = "/js/*.js"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+[[headers]]
+  for = "/applications/js/*.js"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+# Kein Caching für CSS-Dateien
+[[headers]]
   for = "/*.css"
   [headers.values]
     Cache-Control = "no-cache, no-store, must-revalidate"
 
 [[headers]]
-  for = "/js/*"
+  for = "/css/*.css"
   [headers.values]
     Cache-Control = "no-cache, no-store, must-revalidate"
 
 [[headers]]
-  for = "/css/*"
+  for = "/applications/css/*.css"
   [headers.values]
     Cache-Control = "no-cache, no-store, must-revalidate"
 
+# Kein Caching für HTML-Dateien
 [[headers]]
-  for = "/applications/js/*"
+  for = "/*.html"
   [headers.values]
     Cache-Control = "no-cache, no-store, must-revalidate"
 
-[[headers]]
-  for = "/applications/css/*"
-  [headers.values]
-    Cache-Control = "no-cache, no-store, must-revalidate"
+# ═══════════════════════════════════════════════════════════════════════════
+# REDIRECTS - SPA Routing
+# ═══════════════════════════════════════════════════════════════════════════
 
-# SPA Redirect
+# Fallback für SPA-Routing (wenn Datei nicht existiert)
 [[redirects]]
   from = "/*"
   to = "/index.html"
