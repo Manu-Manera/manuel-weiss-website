@@ -30,6 +30,22 @@ class ChessGameEnhanced {
         this.pendingPromotion = null;
         this.promotionResolve = null;
         this.boardDesign = localStorage.getItem('chess_board_design') || 'classic';
+        
+        // Spieluhr
+        this.gameStartTime = null;
+        this.totalGameTime = 0; // in Sekunden
+        this.whiteTime = 0;
+        this.blackTime = 0;
+        this.timerInterval = null;
+        this.lastMoveTime = null;
+        
+        // Spielspeicherung
+        this.gameId = null;
+        this.opponentId = null;
+        this.opponentName = null;
+        this.opponentOnline = false;
+        this.savedGames = JSON.parse(localStorage.getItem('chess_saved_games') || '[]');
+        
         this.init();
     }
 
@@ -38,6 +54,7 @@ class ChessGameEnhanced {
         this.initializeBoard();
         this.renderBoard();
         this.setupEventListeners();
+        this.renderSavedGames();
     }
 
     initializeBoard() {
@@ -333,6 +350,9 @@ class ChessGameEnhanced {
         // Switch player
         this.currentPlayer = this.currentPlayer === 'white' ? 'black' : 'white';
         this.updateGameStatus();
+        
+        // Timer und Autosave nach Zug
+        this.onMoveComplete();
         
         if (this.gameMode === 'player') {
             this.sendMoveToOpponent({ fromRow, fromCol, toRow, toCol, promotion: moveData.promotion });
@@ -888,9 +908,19 @@ class ChessGameEnhanced {
         this.currentPlayer = 'white';
         this.selectedSquare = null;
         this.moveHistory = [];
+        
+        // Neue Spieluhr
+        this.gameId = this.generateGameId();
+        this.whiteTime = 0;
+        this.blackTime = 0;
+        this.totalGameTime = 0;
+        this.gameStartTime = Date.now();
+        this.stopTimer(); // Alten Timer stoppen falls vorhanden
+        
         this.initializeBoard();
         this.renderBoard();
         this.updateGameStatus();
+        this.renderTimer();
         
         document.getElementById('chessModal').style.display = 'flex';
         
@@ -899,13 +929,18 @@ class ChessGameEnhanced {
             document.getElementById('blackPlayerIcon').className = 'fas fa-robot';
             document.getElementById('difficultySelector').style.display = 'block';
             this.opponent = { name: 'Computer', type: 'computer' };
+            this.opponentName = `Computer (${this.computerDifficulty})`;
             this.updateGameStatus();
+            this.startTimer();
         } else {
             document.getElementById('blackPlayerName').textContent = 'Gegner (Schwarz)';
             document.getElementById('blackPlayerIcon').className = 'fas fa-user';
             document.getElementById('difficultySelector').style.display = 'none';
             this.findOpponent();
         }
+        
+        // Initiales Auto-Save
+        this.saveGame(false);
     }
 
     findOpponent() {
@@ -1150,6 +1185,367 @@ class ChessGameEnhanced {
             undoButton.disabled = this.moveHistory.length === 0 || this.isComputerThinking;
         }
     }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // SPIELUHR / GAME TIMER
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    startTimer() {
+        if (this.timerInterval) return;
+        
+        this.gameStartTime = this.gameStartTime || Date.now();
+        this.lastMoveTime = Date.now();
+        
+        this.timerInterval = setInterval(() => {
+            this.updateTimer();
+        }, 1000);
+        
+        this.renderTimer();
+    }
+
+    stopTimer() {
+        if (this.timerInterval) {
+            clearInterval(this.timerInterval);
+            this.timerInterval = null;
+        }
+    }
+
+    updateTimer() {
+        const now = Date.now();
+        const elapsed = Math.floor((now - this.lastMoveTime) / 1000);
+        
+        // Aktualisiere Zeit für aktuellen Spieler
+        if (this.currentPlayer === 'white') {
+            this.whiteTime = (this.whiteTime || 0) + 1;
+        } else {
+            this.blackTime = (this.blackTime || 0) + 1;
+        }
+        
+        // Gesamtspielzeit
+        this.totalGameTime = Math.floor((now - this.gameStartTime) / 1000);
+        
+        this.renderTimer();
+    }
+
+    onMoveComplete() {
+        this.lastMoveTime = Date.now();
+        this.autoSaveGame();
+    }
+
+    renderTimer() {
+        const timerContainer = document.getElementById('gameTimerContainer');
+        if (!timerContainer) return;
+        
+        timerContainer.innerHTML = `
+            <div class="game-timer">
+                <span class="timer-label">Weiß</span>
+                <span class="timer-value ${this.currentPlayer === 'white' && this.gameState === 'playing' ? 'active' : ''}">${this.formatTime(this.whiteTime || 0)}</span>
+            </div>
+            <div class="timer-divider">⚔️</div>
+            <div class="game-timer">
+                <span class="timer-label">Schwarz</span>
+                <span class="timer-value ${this.currentPlayer === 'black' && this.gameState === 'playing' ? 'active' : ''}">${this.formatTime(this.blackTime || 0)}</span>
+            </div>
+            <div class="total-game-time">
+                <i class="fas fa-clock"></i>
+                <span>Gesamt: ${this.formatTime(this.totalGameTime || 0)}</span>
+            </div>
+        `;
+    }
+
+    formatTime(seconds) {
+        const hrs = Math.floor(seconds / 3600);
+        const mins = Math.floor((seconds % 3600) / 60);
+        const secs = seconds % 60;
+        
+        if (hrs > 0) {
+            return `${hrs}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // SPIELSPEICHERUNG / GAME PERSISTENCE
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    generateGameId() {
+        return 'game_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    }
+
+    saveGame(manual = false) {
+        if (!this.gameId) {
+            this.gameId = this.generateGameId();
+        }
+        
+        const gameData = {
+            id: this.gameId,
+            board: JSON.parse(JSON.stringify(this.board)),
+            currentPlayer: this.currentPlayer,
+            gameState: this.gameState,
+            gameMode: this.gameMode,
+            computerDifficulty: this.computerDifficulty,
+            moveHistory: this.moveHistory,
+            castlingRights: this.castlingRights,
+            enPassantTarget: this.enPassantTarget,
+            halfMoveClock: this.halfMoveClock,
+            fullMoveNumber: this.fullMoveNumber,
+            kingPositions: this.kingPositions,
+            whiteTime: this.whiteTime,
+            blackTime: this.blackTime,
+            totalGameTime: this.totalGameTime,
+            gameStartTime: this.gameStartTime,
+            opponentId: this.opponentId,
+            opponentName: this.opponentName || (this.gameMode === 'computer' ? `Computer (${this.computerDifficulty})` : 'Spieler'),
+            savedAt: Date.now(),
+            lastMove: this.moveHistory.length > 0 ? this.moveHistory[this.moveHistory.length - 1] : null
+        };
+        
+        // Aktualisiere oder füge hinzu
+        const existingIndex = this.savedGames.findIndex(g => g.id === this.gameId);
+        if (existingIndex >= 0) {
+            this.savedGames[existingIndex] = gameData;
+        } else {
+            this.savedGames.unshift(gameData); // Neueste zuerst
+        }
+        
+        // Maximal 10 Spiele speichern
+        if (this.savedGames.length > 10) {
+            this.savedGames = this.savedGames.slice(0, 10);
+        }
+        
+        localStorage.setItem('chess_saved_games', JSON.stringify(this.savedGames));
+        
+        if (manual) {
+            this.showToast('Spiel gespeichert!', 'success');
+        }
+        
+        this.renderSavedGames();
+        console.log('💾 Spiel gespeichert:', this.gameId);
+    }
+
+    autoSaveGame() {
+        // Automatisches Speichern nach jedem Zug
+        if (this.gameState === 'playing') {
+            this.saveGame(false);
+        }
+    }
+
+    loadGame(gameId) {
+        const game = this.savedGames.find(g => g.id === gameId);
+        if (!game) {
+            console.error('Spiel nicht gefunden:', gameId);
+            return;
+        }
+        
+        // Wiederherstellen des Spielstands
+        this.gameId = game.id;
+        this.board = JSON.parse(JSON.stringify(game.board));
+        this.currentPlayer = game.currentPlayer;
+        this.gameState = game.gameState;
+        this.gameMode = game.gameMode;
+        this.computerDifficulty = game.computerDifficulty || 'medium';
+        this.moveHistory = game.moveHistory || [];
+        this.castlingRights = game.castlingRights;
+        this.enPassantTarget = game.enPassantTarget;
+        this.halfMoveClock = game.halfMoveClock;
+        this.fullMoveNumber = game.fullMoveNumber;
+        this.kingPositions = game.kingPositions;
+        this.whiteTime = game.whiteTime || 0;
+        this.blackTime = game.blackTime || 0;
+        this.totalGameTime = game.totalGameTime || 0;
+        this.gameStartTime = game.gameStartTime;
+        this.opponentId = game.opponentId;
+        this.opponentName = game.opponentName;
+        
+        // UI aktualisieren
+        this.renderBoard();
+        this.updateGameStatus();
+        this.updateMoveHistory();
+        this.renderTimer();
+        
+        // Timer starten wenn Spiel läuft
+        if (this.gameState === 'playing') {
+            this.startTimer();
+        }
+        
+        this.showToast('Spiel geladen!', 'info');
+        console.log('📂 Spiel geladen:', gameId);
+    }
+
+    deleteGame(gameId) {
+        this.savedGames = this.savedGames.filter(g => g.id !== gameId);
+        localStorage.setItem('chess_saved_games', JSON.stringify(this.savedGames));
+        this.renderSavedGames();
+        this.showToast('Spiel gelöscht', 'info');
+    }
+
+    renderSavedGames() {
+        const container = document.getElementById('savedGamesContainer');
+        if (!container) return;
+        
+        if (this.savedGames.length === 0) {
+            container.innerHTML = `
+                <div class="saved-games-section">
+                    <h3><i class="fas fa-save"></i> Gespeicherte Spiele</h3>
+                    <div class="no-saved-games">
+                        <p>Keine gespeicherten Spiele vorhanden.</p>
+                    </div>
+                </div>
+            `;
+            return;
+        }
+        
+        container.innerHTML = `
+            <div class="saved-games-section">
+                <h3><i class="fas fa-save"></i> Gespeicherte Spiele (${this.savedGames.length})</h3>
+                <div class="saved-games-list">
+                    ${this.savedGames.map(game => `
+                        <div class="saved-game-item" data-game-id="${game.id}">
+                            <div class="saved-game-info">
+                                <span class="saved-game-title">
+                                    ${game.gameMode === 'computer' ? '🤖' : '👥'} 
+                                    vs. ${game.opponentName || 'Unbekannt'}
+                                </span>
+                                <div class="saved-game-meta">
+                                    <span><i class="fas fa-chess"></i> ${game.moveHistory?.length || 0} Züge</span>
+                                    <span><i class="fas fa-clock"></i> ${this.formatTime(game.totalGameTime || 0)}</span>
+                                    <span><i class="fas fa-calendar"></i> ${this.formatDate(game.savedAt)}</span>
+                                </div>
+                            </div>
+                            <div class="saved-game-opponent">
+                                <span class="opponent-status ${this.isOpponentOnline(game.opponentId) ? 'online' : ''}"></span>
+                            </div>
+                            <div class="saved-game-actions">
+                                <button class="btn-continue-game" onclick="window.chessGame.loadGame('${game.id}')">
+                                    <i class="fas fa-play"></i> Fortsetzen
+                                </button>
+                                <button class="btn-delete-game" onclick="window.chessGame.deleteGame('${game.id}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+    }
+
+    formatDate(timestamp) {
+        if (!timestamp) return 'Unbekannt';
+        const date = new Date(timestamp);
+        const now = new Date();
+        const diff = now - date;
+        
+        // Weniger als 1 Minute
+        if (diff < 60000) return 'Gerade eben';
+        // Weniger als 1 Stunde
+        if (diff < 3600000) return `Vor ${Math.floor(diff / 60000)} Min.`;
+        // Weniger als 24 Stunden
+        if (diff < 86400000) return `Vor ${Math.floor(diff / 3600000)} Std.`;
+        // Weniger als 7 Tage
+        if (diff < 604800000) return `Vor ${Math.floor(diff / 86400000)} Tagen`;
+        
+        return date.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    }
+
+    isOpponentOnline(opponentId) {
+        // Hier könnte eine WebSocket-Verbindung prüfen, ob der Gegner online ist
+        // Für jetzt simulieren wir das
+        if (!opponentId) return false;
+        
+        // Prüfe im localStorage nach Online-Status
+        const onlinePlayers = JSON.parse(localStorage.getItem('chess_online_players') || '[]');
+        return onlinePlayers.includes(opponentId);
+    }
+
+    setOnlineStatus(isOnline) {
+        const userId = this.getCurrentUserId();
+        if (!userId) return;
+        
+        let onlinePlayers = JSON.parse(localStorage.getItem('chess_online_players') || '[]');
+        
+        if (isOnline) {
+            if (!onlinePlayers.includes(userId)) {
+                onlinePlayers.push(userId);
+            }
+        } else {
+            onlinePlayers = onlinePlayers.filter(id => id !== userId);
+        }
+        
+        localStorage.setItem('chess_online_players', JSON.stringify(onlinePlayers));
+        this.updateOnlinePlayersDisplay();
+    }
+
+    getCurrentUserId() {
+        // Versuche User-ID aus verschiedenen Quellen
+        if (window.unifiedAWSAuth?.currentUser?.username) {
+            return window.unifiedAWSAuth.currentUser.username;
+        }
+        if (window.awsAuth?.currentUser?.username) {
+            return window.awsAuth.currentUser.username;
+        }
+        // Fallback: localStorage
+        return localStorage.getItem('chess_user_id') || null;
+    }
+
+    updateOnlinePlayersDisplay() {
+        const container = document.getElementById('onlinePlayersList');
+        if (!container) return;
+        
+        const onlinePlayers = JSON.parse(localStorage.getItem('chess_online_players') || '[]');
+        const currentUser = this.getCurrentUserId();
+        
+        if (onlinePlayers.length === 0) {
+            container.innerHTML = '<p style="color: rgba(255,255,255,0.6); font-style: italic;">Keine Spieler online</p>';
+            return;
+        }
+        
+        container.innerHTML = onlinePlayers.map(playerId => `
+            <div class="online-player ${playerId === currentUser ? 'is-you' : ''}">
+                <span class="status-dot"></span>
+                <span>${playerId === currentUser ? 'Du' : playerId}</span>
+                ${playerId !== currentUser ? `
+                    <button class="btn-challenge" onclick="window.chessGame.challengePlayer('${playerId}')" title="Herausfordern">
+                        <i class="fas fa-chess-knight"></i>
+                    </button>
+                ` : ''}
+            </div>
+        `).join('');
+    }
+
+    challengePlayer(opponentId) {
+        this.opponentId = opponentId;
+        this.opponentName = opponentId;
+        this.startNewGame('player');
+        this.showToast(`Spiel gegen ${opponentId} gestartet!`, 'success');
+    }
+
+    showToast(message, type = 'info') {
+        // Einfache Toast-Benachrichtigung
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#6366f1'};
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            z-index: 10000;
+            animation: slideUp 0.3s ease;
+        `;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.style.animation = 'fadeOut 0.3s ease';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+
 }
 
 // Replace old chess game
@@ -1160,3 +1556,17 @@ if (window.chessGame) {
         window.chessGame = new ChessGameEnhanced();
     });
 }
+
+// Toast Animation Styles
+const toastStyles = document.createElement('style');
+toastStyles.textContent = `
+    @keyframes slideUp {
+        from { transform: translate(-50%, 100%); opacity: 0; }
+        to { transform: translate(-50%, 0); opacity: 1; }
+    }
+    @keyframes fadeOut {
+        from { opacity: 1; }
+        to { opacity: 0; }
+    }
+`;
+document.head.appendChild(toastStyles);

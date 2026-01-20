@@ -265,9 +265,18 @@ function offerDraw() {
     }
 }
 
+function saveCurrentGame() {
+    if (window.chessGame) {
+        window.chessGame.saveGame(true);
+    }
+}
+
 function closeChessGame() {
     document.getElementById('chessModal').style.display = 'none';
     if (window.chessGame) {
+        // Timer stoppen und Spiel speichern vor dem Schließen
+        window.chessGame.stopTimer();
+        window.chessGame.saveGame(false);
         window.chessGame.cleanup();
     }
 }

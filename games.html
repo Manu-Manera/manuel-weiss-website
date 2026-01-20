@@ -68,6 +68,9 @@
                 <p class="status-hint">Wenn du offline bist, kannst du nur gegen den Computer spielen</p>
             </div>
 
+            <!-- Saved Games -->
+            <div id="savedGamesContainer"></div>
+
             <!-- Online Players -->
             <div class="online-players-section">
                 <h2><i class="fas fa-users"></i> Online-Spieler (<span id="onlineCount">0</span>)</h2>
@@ -233,16 +236,37 @@
                         </select>
                     </div>
                 </div>
+                
+                <!-- Spieluhr / Game Timer -->
+                <div id="gameTimerContainer" class="game-timer-container">
+                    <div class="game-timer">
+                        <span class="timer-label">Weiß</span>
+                        <span class="timer-value">0:00</span>
+                    </div>
+                    <div class="timer-divider">⚔️</div>
+                    <div class="game-timer">
+                        <span class="timer-label">Schwarz</span>
+                        <span class="timer-value">0:00</span>
+                    </div>
+                    <div class="total-game-time">
+                        <i class="fas fa-clock"></i>
+                        <span>Gesamt: 0:00</span>
+                    </div>
+                </div>
+                
                 <div id="chessBoard" class="chess-board"></div>
                 <div class="chess-controls">
                     <button class="btn-secondary" id="undoButton" onclick="undoMove()" disabled>
                         <i class="fas fa-undo"></i> Rückgängig
                     </button>
+                    <button class="btn-secondary" onclick="saveCurrentGame()">
+                        <i class="fas fa-save"></i> Speichern
+                    </button>
                     <button class="btn-secondary" onclick="resignGame()">
                         <i class="fas fa-flag"></i> Aufgeben
                     </button>
                     <button class="btn-secondary" onclick="offerDraw()">
-                        <i class="fas fa-handshake"></i> Remis anbieten
+                        <i class="fas fa-handshake"></i> Remis
                     </button>
                 </div>
                 <div class="move-history-container">

@@ -903,25 +903,61 @@
         padding: 1rem;
     }
     
-    /* Chess Board - Mobile */
+    /* Chess Board - Mobile: Garantiert vollständig sichtbar */
     .chess-board {
-        width: 100%;
-        max-width: 100%;
+        width: calc(100vw - 2rem); /* Volle Breite minus Padding */
+        max-width: min(100%, 90vh - 200px); /* Nicht größer als Viewport minus UI */
         aspect-ratio: 1;
+        margin: 0 auto;
     }
     
     .chess-square {
-        min-height: 40px;
-        min-width: 40px;
+        min-height: unset;
+        min-width: unset;
     }
     
     .chess-piece {
-        font-size: 2rem;
-        min-height: 40px;
-        min-width: 40px;
+        font-size: clamp(1.5rem, 9vw, 2.5rem); /* Einheitliche Größe für alle Figuren */
+        min-height: unset;
+        min-width: unset;
+        width: 100%;
+        height: 100%;
         display: flex;
         align-items: center;
         justify-content: center;
+    }
+    
+    .chess-piece-3d {
+        font-size: clamp(1.5rem, 9vw, 2.5rem);
+    }
+    
+    /* Game Timer - Mobile */
+    .game-timer-container {
+        flex-direction: column;
+        gap: 0.75rem;
+        padding: 0.75rem;
+    }
+    
+    .game-timer .timer-value {
+        font-size: 1.2rem;
+        min-width: 80px;
+        padding: 0.4rem 0.8rem;
+    }
+    
+    .total-game-time {
+        font-size: 0.8rem;
+    }
+    
+    /* Saved Games - Mobile */
+    .saved-game-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+    
+    .saved-game-actions {
+        width: 100%;
+        justify-content: flex-end;
     }
     
     /* Player Info - Mobile */
@@ -1070,17 +1106,22 @@
         font-size: 2.5rem;
     }
     
-    .chess-square {
-        min-height: 35px;
-        min-width: 35px;
-    }
-    
-    .chess-piece {
-        font-size: 1.5rem;
-    }
-    
+    /* Schachbrett: Garantiert vollständig sichtbar auf kleinen Handys */
     .chess-board {
-        padding: 0.25rem;
+        width: calc(100vw - 1rem);
+        max-width: min(100%, 70vh); /* Passt in den sichtbaren Bereich */
+        padding: 0;
+        border-width: 2px;
+    }
+    
+    .chess-square {
+        min-height: unset;
+        min-width: unset;
+    }
+    
+    .chess-piece,
+    .chess-piece-3d {
+        font-size: clamp(1.2rem, 10vw, 1.8rem); /* Einheitlich für alle Figuren */
     }
     
     .move-history-container {
@@ -1094,6 +1135,21 @@
     
     .promotion-piece .piece-symbol {
         font-size: 1.5rem;
+    }
+    
+    /* Game Timer - Sehr klein */
+    .game-timer-container {
+        padding: 0.5rem;
+        gap: 0.5rem;
+    }
+    
+    .game-timer .timer-value {
+        font-size: 1rem;
+        min-width: 70px;
+    }
+    
+    .game-timer .timer-label {
+        font-size: 0.65rem;
     }
 }
 
@@ -1436,7 +1492,8 @@
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .chess-piece-3d {
-    font-size: 2.5rem;
+    font-size: clamp(1.8rem, 8vw, 3.2rem); /* Responsive, einheitliche Größe für ALLE Figuren */
+    line-height: 1;
     text-shadow: 
         2px 2px 0 rgba(0, 0, 0, 0.3),
         3px 3px 2px rgba(0, 0, 0, 0.2),
@@ -1444,6 +1501,12 @@
     filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
     transform: perspective(100px) rotateX(5deg);
     transition: transform 0.2s, filter 0.2s;
+    /* Zentriert in der Zelle */
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .chess-piece-3d:hover {
@@ -1465,6 +1528,211 @@
         1px 1px 0 #475569,
         2px 2px 0 #334155,
         3px 3px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   GAME TIMER / SPIELUHR
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.game-timer-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+    border-radius: 12px;
+    border: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+.game-timer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.game-timer .timer-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.game-timer .timer-value {
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    background: white;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    min-width: 100px;
+    text-align: center;
+}
+
+.game-timer .timer-value.active {
+    background: var(--primary);
+    color: white;
+    animation: timerPulse 1s infinite;
+}
+
+@keyframes timerPulse {
+    0%, 100% { box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3); }
+    50% { box-shadow: 0 2px 15px rgba(99, 102, 241, 0.6); }
+}
+
+.timer-divider {
+    font-size: 1.5rem;
+    color: var(--text-secondary);
+    font-weight: 300;
+}
+
+.total-game-time {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.total-game-time i {
+    color: var(--primary);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SAVED GAMES / GESPEICHERTE SPIELE
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.saved-games-section {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.saved-games-section h3 {
+    color: white;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.saved-games-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.saved-game-item {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 1rem 1.25rem;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s;
+}
+
+.saved-game-item:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateX(5px);
+}
+
+.saved-game-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.saved-game-title {
+    color: white;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.saved-game-meta {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.8rem;
+    display: flex;
+    gap: 1rem;
+}
+
+.saved-game-meta span {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.saved-game-opponent {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.opponent-status {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #94a3b8;
+}
+
+.opponent-status.online {
+    background: #10b981;
+    animation: pulse 2s infinite;
+}
+
+.saved-game-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-continue-game {
+    background: white;
+    color: var(--primary);
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.85rem;
+}
+
+.btn-continue-game:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.btn-delete-game {
+    background: rgba(239, 68, 68, 0.2);
+    color: white;
+    border: 1px solid rgba(239, 68, 68, 0.5);
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-delete-game:hover {
+    background: rgba(239, 68, 68, 0.4);
+}
+
+.no-saved-games {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.6);
+    padding: 2rem;
+    font-style: italic;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
