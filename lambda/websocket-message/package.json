@@ -1,0 +1,11 @@
+{
+  "name": "game-ws-message",
+  "version": "1.0.0",
+  "description": "WebSocket Message Handler for Games",
+  "main": "index.js",
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.400.0",
+    "@aws-sdk/lib-dynamodb": "^3.400.0",
+    "@aws-sdk/client-apigatewaymanagementapi": "^3.400.0"
+  }
+}

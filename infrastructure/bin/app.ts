@@ -8,6 +8,7 @@ import { AuthStack } from '../lib/auth-stack';
 import { ObservabilityStack } from '../lib/observability-stack';
 import { SecurityStack } from '../lib/security-stack';
 import { WebsiteApiStack } from '../lib/website-api-stack';
+import { WebSocketStack } from '../lib/websocket-stack';
 
 const app = new cdk.App();
 
@@ -76,11 +77,12 @@ new cdk.CfnOutput(apiStack, 'ApiGatewayUrl', {
   description: 'API Gateway URL'
 });
 
-// WebSocket API removed - using SSE instead
-// new cdk.CfnOutput(apiStack, 'WebSocketUrl', {
-//   value: apiStack.webSocketApi.apiEndpoint,
-//   description: 'WebSocket API URL'
-// });
+// WebSocket Stack für Echtzeit-Multiplayer-Spiele
+const webSocketStack = new WebSocketStack(app, `${projectName}-websocket-${environment}`, {
+  env,
+  environment,
+  description: 'WebSocket API für Multiplayer-Spiele'
+});
 
 new cdk.CfnOutput(dataStack, 'DynamoDbTableName', {
   value: dataStack.signalsTable.tableName,

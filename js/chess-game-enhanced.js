@@ -1039,12 +1039,62 @@ class ChessGameEnhanced {
 
     sendMoveToOpponent(move) {
         console.log('📤 Sending move to opponent:', move);
+        
+        // WebSocket verwenden wenn verfügbar
+        if (window.gameWebSocket?.isConnected && this.wsGameId) {
+            window.gameWebSocket.sendMove(this.wsGameId, move);
+        }
     }
 
-    receiveMoveFromOpponent(move) {
+    receiveOpponentMove(move) {
+        // Wird vom WebSocket aufgerufen
         console.log('📥 Received move from opponent:', move);
         this.makeMove(move.fromRow, move.fromCol, move.toRow, move.toCol, move.promotion);
         this.renderBoard();
+        this.updateGameStatus();
+        
+        // Sound abspielen
+        this.playMoveSound();
+    }
+    
+    receiveMoveFromOpponent(move) {
+        // Legacy-Alias
+        this.receiveOpponentMove(move);
+    }
+    
+    // Chat-Nachricht über WebSocket senden
+    sendChatViaWebSocket(message) {
+        if (window.gameWebSocket?.isConnected && this.wsGameId) {
+            window.gameWebSocket.sendChatMessage(this.wsGameId, message);
+            return true;
+        }
+        return false;
+    }
+    
+    // Spiel verlassen
+    leaveMultiplayerGame() {
+        if (window.gameWebSocket?.isConnected && this.wsGameId) {
+            window.gameWebSocket.leaveGame(this.wsGameId);
+            this.wsGameId = null;
+        }
+    }
+    
+    playMoveSound() {
+        try {
+            // Einfacher Ton für Zug
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.frequency.value = 440;
+            gain.gain.value = 0.1;
+            osc.start();
+            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+            osc.stop(ctx.currentTime + 0.1);
+        } catch (e) {
+            // Audio nicht verfügbar
+        }
     }
 
     resign() {

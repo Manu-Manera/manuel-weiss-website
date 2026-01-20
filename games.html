@@ -11,6 +11,8 @@
     <link rel="stylesheet" href="css/games.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- WebSocket Service für Echtzeit-Multiplayer -->
+    <script src="js/game-websocket.js"></script>
 </head>
 <body>
     <!-- Navigation -->
@@ -828,19 +830,170 @@
         });
         
         // =====================================================
-        // ONLINE SPIELER & EINLADUNGSSYSTEM
+        // ONLINE SPIELER & EINLADUNGSSYSTEM (MIT WEBSOCKET)
         // =====================================================
         
         let selectedInvitePlayer = null;
         let selectedInviteGame = 'chess';
         let pendingInvite = null;
+        let useWebSocket = false; // Wird auf true gesetzt wenn WebSocket verfügbar
         
-        // Simulierte Online-Spieler (in Produktion durch echtes Backend ersetzen)
-        const onlinePlayers = [
+        // Fallback: Simulierte Online-Spieler (wenn WebSocket nicht verfügbar)
+        let onlinePlayers = [
             { id: 'player1', name: 'ChessMaster42', avatar: '🎯', status: 'online', inGame: false },
             { id: 'player2', name: 'StrategyKing', avatar: '👑', status: 'online', inGame: true, currentGame: 'chess' },
             { id: 'player3', name: 'GamePro99', avatar: '🎮', status: 'online', inGame: false },
         ];
+        
+        // WebSocket initialisieren wenn verfügbar
+        function initWebSocket() {
+            if (!window.gameWebSocket) {
+                console.log('⚠️ WebSocket Service nicht verfügbar, verwende Simulation');
+                return;
+            }
+            
+            // Prüfe ob WebSocket URL konfiguriert ist
+            const wsUrl = localStorage.getItem('game_websocket_url');
+            if (!wsUrl || wsUrl.includes('YOUR_WEBSOCKET_ID')) {
+                console.log('ℹ️ WebSocket URL nicht konfiguriert, verwende Simulation');
+                console.log('   Setze localStorage.game_websocket_url nach dem AWS Deploy');
+                return;
+            }
+            
+            // User Info holen
+            const session = localStorage.getItem('aws_auth_session');
+            if (!session) {
+                console.log('⚠️ Nicht eingeloggt, WebSocket nicht verbinden');
+                return;
+            }
+            
+            let userId, userName;
+            try {
+                const data = JSON.parse(session);
+                userId = data.email || 'user-' + Date.now();
+                userName = data.firstName || data.name || data.email?.split('@')[0] || 'Spieler';
+            } catch (e) {
+                return;
+            }
+            
+            // WebSocket Events registrieren
+            window.gameWebSocket
+                .on('onConnect', () => {
+                    console.log('✅ WebSocket verbunden!');
+                    useWebSocket = true;
+                    // Online-Spieler abrufen
+                    window.gameWebSocket.getOnlinePlayers();
+                })
+                .on('onDisconnect', () => {
+                    console.log('🔌 WebSocket getrennt');
+                    useWebSocket = false;
+                })
+                .on('onOnlinePlayers', (data) => {
+                    console.log('👥 Online Players:', data);
+                    onlinePlayers = data.players.map(p => ({
+                        id: p.id,
+                        name: p.name,
+                        avatar: getAvatarForName(p.name),
+                        status: p.status === 'in_game' ? 'in_game' : 'online',
+                        inGame: p.status === 'in_game',
+                        currentGame: p.currentGame
+                    }));
+                    renderOnlinePlayers();
+                })
+                .on('onGameInvite', (data) => {
+                    console.log('📨 Einladung erhalten:', data);
+                    const fromPlayer = {
+                        id: data.from.id,
+                        name: data.from.name,
+                        avatar: getAvatarForName(data.from.name)
+                    };
+                    pendingInvite = {
+                        inviteId: data.inviteId,
+                        from: fromPlayer,
+                        game: data.gameType
+                    };
+                    showIncomingInvite(fromPlayer, data.gameType);
+                })
+                .on('onInviteSent', (data) => {
+                    console.log('✅ Einladung gesendet:', data);
+                    showToast(`Einladung an ${data.to.name} gesendet!`, 'success');
+                })
+                .on('onInviteDeclined', (data) => {
+                    showToast(`${data.by.name} hat die Einladung abgelehnt.`, 'info');
+                })
+                .on('onInviteError', (data) => {
+                    showToast(data.message || 'Fehler beim Einladen', 'error');
+                })
+                .on('onGameStart', (data) => {
+                    console.log('🎮 Spiel startet:', data);
+                    startMultiplayerGameFromWS(data);
+                })
+                .on('onGameMove', (data) => {
+                    console.log('♟️ Zug empfangen:', data);
+                    if (window.chessGame && data.gameType === 'chess') {
+                        window.chessGame.receiveOpponentMove(data.move);
+                    }
+                })
+                .on('onChatMessage', (data) => {
+                    console.log('💬 Chat:', data);
+                    addReceivedMessage(data.message, data.from.name);
+                })
+                .on('onOpponentDisconnected', (data) => {
+                    showToast(`${data.player.name} hat die Verbindung verloren`, 'warning');
+                })
+                .on('onOpponentLeft', (data) => {
+                    showToast(`${data.player.name} hat das Spiel verlassen`, 'info');
+                });
+            
+            // Verbinden
+            window.gameWebSocket.connect(userId, userName)
+                .then(() => {
+                    console.log('🎮 WebSocket bereit für Multiplayer!');
+                })
+                .catch((err) => {
+                    console.error('❌ WebSocket Verbindung fehlgeschlagen:', err);
+                    useWebSocket = false;
+                });
+        }
+        
+        function getAvatarForName(name) {
+            const avatars = ['🎯', '👑', '🎮', '⭐', '🚀', '💎', '🔥', '⚡'];
+            let hash = 0;
+            for (let i = 0; i < name.length; i++) {
+                hash = name.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            return avatars[Math.abs(hash) % avatars.length];
+        }
+        
+        function startMultiplayerGameFromWS(data) {
+            // Schließe Einladungs-Modal falls offen
+            document.getElementById('incomingInviteModal').style.display = 'none';
+            
+            switch (data.gameType) {
+                case 'chess':
+                    if (window.chessGame) {
+                        window.chessGame.opponentName = data.opponent.name;
+                        window.chessGame.opponentId = data.opponent.id;
+                        window.chessGame.playerColor = data.yourColor;
+                        window.chessGame.wsGameId = data.gameId;
+                    }
+                    startChessGame('player');
+                    break;
+                case 'tictactoe':
+                    startTicTacToe('player');
+                    break;
+                case 'connect4':
+                    startConnectFour('player');
+                    break;
+            }
+        }
+        
+        // Periodisch Online-Spieler aktualisieren
+        setInterval(() => {
+            if (useWebSocket && window.gameWebSocket?.isConnected) {
+                window.gameWebSocket.getOnlinePlayers();
+            }
+        }, 10000); // Alle 10 Sekunden
         
         // Online-Spieler-Liste rendern
         function renderOnlinePlayers() {
@@ -970,7 +1123,15 @@
             
             console.log(`📨 Einladung gesendet an ${selectedInvitePlayer.name} für ${selectedInviteGame}`);
             
-            // Simuliere Einladung senden
+            // WebSocket verwenden wenn verfügbar
+            if (useWebSocket && window.gameWebSocket?.isConnected) {
+                window.gameWebSocket.invitePlayer(selectedInvitePlayer.id, selectedInviteGame);
+                closeInviteModal();
+                // Toast wird vom onInviteSent Event gezeigt
+                return;
+            }
+            
+            // Fallback: Simulation
             showToast(`Einladung an ${selectedInvitePlayer.name} gesendet!`, 'success');
             closeInviteModal();
             
@@ -1013,7 +1174,19 @@
             console.log(`✅ Einladung von ${pendingInvite.from.name} angenommen`);
             document.getElementById('incomingInviteModal').style.display = 'none';
             
-            startMultiplayerGame(pendingInvite.game, pendingInvite.from);
+            // WebSocket verwenden wenn verfügbar
+            if (useWebSocket && window.gameWebSocket?.isConnected && pendingInvite.inviteId) {
+                window.gameWebSocket.acceptInvite(
+                    pendingInvite.inviteId,
+                    pendingInvite.from.id,
+                    pendingInvite.game
+                );
+                // Spiel wird vom onGameStart Event gestartet
+            } else {
+                // Fallback: Simulation
+                startMultiplayerGame(pendingInvite.game, pendingInvite.from);
+            }
+            
             pendingInvite = null;
         }
         
@@ -1022,6 +1195,15 @@
             
             console.log(`❌ Einladung von ${pendingInvite.from.name} abgelehnt`);
             document.getElementById('incomingInviteModal').style.display = 'none';
+            
+            // WebSocket verwenden wenn verfügbar
+            if (useWebSocket && window.gameWebSocket?.isConnected && pendingInvite.inviteId) {
+                window.gameWebSocket.declineInvite(
+                    pendingInvite.inviteId,
+                    pendingInvite.from.id
+                );
+            }
+            
             showToast('Einladung abgelehnt', 'info');
             pendingInvite = null;
         }
@@ -1098,7 +1280,11 @@
         
         // Initialisiere Online-Spieler beim Laden
         document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(renderOnlinePlayers, 1500);
+            // WebSocket initialisieren (wenn verfügbar)
+            setTimeout(() => {
+                initWebSocket();
+                renderOnlinePlayers();
+            }, 1500);
         });
     </script>
 </body>
