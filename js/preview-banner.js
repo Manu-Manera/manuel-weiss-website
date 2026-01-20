@@ -1,13 +1,22 @@
 /**
  * Preview/Test Environment Banner
- * Zeigt einen Banner an, um die Test-Umgebung zu kennzeichnen
+ * Zeigt einen Banner an bei Deploy Previews (kostenlos!)
+ * Erkennt automatisch ob es ein Deploy Preview ist
  */
 
 (function() {
     'use strict';
     
-    // Prüfe ob Preview-Banner angezeigt werden soll
-    const isPreview = true; // Auf false setzen um Banner zu deaktivieren
+    // Automatische Erkennung: Deploy Preview URLs haben das Format:
+    // deploy-preview-[nummer]--[site].netlify.app
+    const isDeployPreview = window.location.hostname.includes('deploy-preview-') ||
+                            window.location.hostname.includes('--') && window.location.hostname.includes('netlify.app');
+    
+    // Oder manuell aktivieren für localhost
+    const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    
+    // Banner nur bei Deploy Previews oder localhost anzeigen
+    const isPreview = isDeployPreview || isLocalhost;
     const showBanner = localStorage.getItem('hidePreviewBanner') !== 'true';
     
     if (!isPreview || !showBanner) return;
