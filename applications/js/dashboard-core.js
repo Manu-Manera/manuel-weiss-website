@@ -1945,25 +1945,29 @@ async function loadCoverLetters() {
             const position = cl.jobData?.title || cl.jobData?.position || 'Position';
             const preview = cl.content?.substring(0, 150) + '...' || '';
             
+            const version = cl.version ? ` v${cl.version}` : '';
             return `
                 <div class="cover-letter-item" data-id="${cl.id}">
                     <div class="cover-letter-info">
-                        <h4>${position}</h4>
+                        <h4>${position}${version}</h4>
                         <p class="company">${company}</p>
                         <p class="date">${date}</p>
                         <p class="preview">${preview}</p>
                     </div>
                     <div class="cover-letter-actions">
-                        <button onclick="viewCoverLetter('${cl.id}')" class="btn-icon" title="Ansehen">
+                        <button onclick="viewCoverLetter('${cl.id}')" class="btn-glass btn-icon" title="Ansehen">
                             <i class="fas fa-eye"></i>
                         </button>
-                        <button onclick="copyCoverLetter('${cl.id}')" class="btn-icon" title="Kopieren">
+                        <button onclick="editCoverLetter('${cl.id}')" class="btn-glass btn-icon" title="Bearbeiten">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button onclick="copyCoverLetter('${cl.id}')" class="btn-glass btn-icon" title="Kopieren">
                             <i class="fas fa-copy"></i>
                         </button>
-                        <button onclick="downloadCoverLetter('${cl.id}')" class="btn-icon" title="Herunterladen">
+                        <button onclick="downloadCoverLetter('${cl.id}')" class="btn-glass btn-icon" title="Herunterladen">
                             <i class="fas fa-download"></i>
                         </button>
-                        <button onclick="deleteCoverLetter('${cl.id}')" class="btn-icon btn-danger" title="Löschen">
+                        <button onclick="deleteCoverLetter('${cl.id}')" class="btn-glass btn-icon btn-danger" title="Löschen">
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>

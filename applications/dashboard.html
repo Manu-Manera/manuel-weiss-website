@@ -1848,30 +1848,57 @@ Ihre Aufgaben:
         // und wird als window.loadCoverLetters exportiert
         // Die lokale Funktion wurde entfernt, um Konflikte zu vermeiden
         
-        // View cover letter in modal
-        window.viewCoverLetter = function(id) {
+        // Helper: Cover Letter finden (localStorage + Cloud)
+        async function findCoverLetter(id) {
+            // Erst localStorage
             const drafts = JSON.parse(localStorage.getItem('cover_letter_drafts') || '[]');
-            const draft = drafts.find(d => d.id === id);
-            if (!draft) return;
+            let draft = drafts.find(d => d.id === id);
+            
+            // Falls nicht gefunden, versuche Cloud
+            if (!draft && window.cloudDataService) {
+                try {
+                    const cloudLetters = await window.cloudDataService.getCoverLetters(true);
+                    draft = cloudLetters?.find(d => d.id === id);
+                } catch (e) {
+                    console.warn('Cloud-Suche fehlgeschlagen:', e);
+                }
+            }
+            return draft;
+        }
+        
+        // View cover letter in modal
+        window.viewCoverLetter = async function(id) {
+            const draft = await findCoverLetter(id);
+            if (!draft) {
+                showToast('Anschreiben nicht gefunden', 'error');
+                return;
+            }
+            
+            const position = draft.jobData?.jobTitle || draft.jobData?.position || draft.jobData?.title || 'Anschreiben';
+            const company = draft.jobData?.companyName || draft.jobData?.company || '';
+            const version = draft.version ? ` (v${draft.version})` : '';
             
             const modal = document.createElement('div');
             modal.className = 'cover-letter-modal';
             modal.innerHTML = `
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h3>${draft.jobData?.position || 'Anschreiben'} - ${draft.jobData?.company || ''}</h3>
+                        <h3>${position} - ${company}${version}</h3>
                         <button onclick="this.closest('.cover-letter-modal').remove()" class="btn-close">
                             <i class="fas fa-times"></i>
                         </button>
                     </div>
                     <div class="modal-body">
-                        <pre style="white-space: pre-wrap; font-family: inherit;">${draft.content}</pre>
+                        <pre style="white-space: pre-wrap; font-family: inherit;">${draft.content || 'Kein Inhalt'}</pre>
                     </div>
                     <div class="modal-footer">
-                        <button onclick="copyCoverLetter('${id}'); this.closest('.cover-letter-modal').remove();" class="btn-secondary">
+                        <button onclick="editCoverLetter('${id}')" class="btn-glass">
+                            <i class="fas fa-edit"></i> Bearbeiten
+                        </button>
+                        <button onclick="copyCoverLetter('${id}')" class="btn-glass">
                             <i class="fas fa-copy"></i> Kopieren
                         </button>
-                        <button onclick="downloadCoverLetter('${id}'); this.closest('.cover-letter-modal').remove();" class="btn-primary">
+                        <button onclick="downloadCoverLetter('${id}')" class="btn-glass btn-primary">
                             <i class="fas fa-download"></i> Herunterladen
                         </button>
                     </div>
@@ -1880,28 +1907,42 @@ Ihre Aufgaben:
             document.body.appendChild(modal);
         };
         
+        // Edit cover letter - öffnet Designer mit Versionierung
+        window.editCoverLetter = function(id) {
+            // Zur Bearbeitungsseite mit ID weiterleiten
+            window.location.href = `cover-letter-editor.html?edit=${id}`;
+        };
+        
         // Copy cover letter
-        window.copyCoverLetter = function(id) {
-            const drafts = JSON.parse(localStorage.getItem('cover_letter_drafts') || '[]');
-            const draft = drafts.find(d => d.id === id);
-            if (!draft) return;
+        window.copyCoverLetter = async function(id) {
+            const draft = await findCoverLetter(id);
+            if (!draft) {
+                showToast('Anschreiben nicht gefunden', 'error');
+                return;
+            }
             
-            navigator.clipboard.writeText(draft.content).then(() => {
+            try {
+                await navigator.clipboard.writeText(draft.content || '');
                 showToast('Anschreiben kopiert!', 'success');
-            });
+            } catch (e) {
+                showToast('Kopieren fehlgeschlagen', 'error');
+            }
         };
         
         // Download cover letter
-        window.downloadCoverLetter = function(id) {
-            const drafts = JSON.parse(localStorage.getItem('cover_letter_drafts') || '[]');
-            const draft = drafts.find(d => d.id === id);
-            if (!draft) return;
+        window.downloadCoverLetter = async function(id) {
+            const draft = await findCoverLetter(id);
+            if (!draft) {
+                showToast('Anschreiben nicht gefunden', 'error');
+                return;
+            }
             
-            const blob = new Blob([draft.content], { type: 'text/plain' });
+            const company = draft.jobData?.companyName || draft.jobData?.company || 'Bewerbung';
+            const blob = new Blob([draft.content || ''], { type: 'text/plain' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `Anschreiben_${draft.jobData?.company || 'Bewerbung'}_${new Date(draft.createdAt).toISOString().split('T')[0]}.txt`;
+            a.download = `Anschreiben_${company.replace(/\s+/g, '_')}_${new Date(draft.createdAt || Date.now()).toISOString().split('T')[0]}.txt`;
             a.click();
             URL.revokeObjectURL(url);
             showToast('Anschreiben heruntergeladen', 'success');
