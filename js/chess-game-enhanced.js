@@ -247,6 +247,40 @@ class ChessGameEnhanced {
         }
     }
 
+    // ===== TOUCH HANDLERS FÜR MOBILE =====
+    handleTouchStart(e, row, col) {
+        // Speichere Touch-Startposition für spätere Verwendung
+        this.touchStartSquare = { row, col };
+        this.touchStartTime = Date.now();
+        
+        // Sofort Feld auswählen (wie Click)
+        this.handleSquareClick(row, col);
+    }
+
+    handleTouchEnd(e, row, col) {
+        // Wenn der Touch auf einem anderen Feld endet als er gestartet hat
+        // = Zieh-Bewegung (Drag)
+        if (this.touchStartSquare && 
+            (this.touchStartSquare.row !== row || this.touchStartSquare.col !== col)) {
+            
+            // Versuche Zug von Start zu End
+            if (this.selectedSquare) {
+                const fromRow = this.selectedSquare.row;
+                const fromCol = this.selectedSquare.col;
+                
+                if (this.makeMove(fromRow, fromCol, row, col)) {
+                    this.selectedSquare = null;
+                    this.renderBoard();
+                    if (this.gameMode === 'computer' && this.currentPlayer === 'black') {
+                        setTimeout(() => this.computerMove(), 500);
+                    }
+                }
+            }
+        }
+        
+        this.touchStartSquare = null;
+    }
+
     highlightSquare(row, col) {
         const square = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
         if (square) square.classList.add('selected');
