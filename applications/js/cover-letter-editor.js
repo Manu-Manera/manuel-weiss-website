@@ -1049,9 +1049,31 @@ ${description.substring(0, 2000)}`;
     async generateWithAI(jobData, apiKey) {
         const prompt = this.buildPrompt(jobData);
         
-        // Verwende GPT-5.2 für beste Qualität
+        // GPT-5.2 - bestes Modell für komplexe Aufgaben
         const model = 'gpt-5.2';
-        const maxTokens = this.options.length === 'short' ? 600 : this.options.length === 'medium' ? 1000 : 1400;
+        const maxTokens = this.options.length === 'short' ? 800 : this.options.length === 'medium' ? 1200 : 1600;
+        
+        console.log('🤖 Sende Anfrage an OpenAI mit Modell:', model);
+        console.log('📝 Prompt-Länge:', prompt.length, 'Zeichen');
+        
+        const requestBody = {
+            model: model,
+            reasoning_effort: 'low', // Schneller, aber immer noch intelligent
+            verbosity: 'medium',
+            messages: [
+                {
+                    role: 'system',
+                    content: 'Du bist ein professioneller Bewerbungsberater und Experte für überzeugende Bewerbungsanschreiben. Du erstellst personalisierte, spezifische und authentische Anschreiben, die genau auf die Stellenbeschreibung eingehen. Du verwendest konkrete Beispiele, messbare Ergebnisse und vermeidest Floskeln. Antworte NUR mit dem Anschreiben-Text, keine zusätzlichen Erklärungen.'
+                },
+                {
+                    role: 'user',
+                    content: prompt
+                }
+            ],
+            max_completion_tokens: maxTokens
+        };
+        
+        console.log('📤 Request Body:', JSON.stringify(requestBody, null, 2).substring(0, 500) + '...');
         
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
@@ -1059,51 +1081,54 @@ ${description.substring(0, 2000)}`;
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${apiKey}`
             },
-            body: JSON.stringify({
-                model: model,
-                reasoning_effort: 'medium',
-                messages: [
-                    {
-                        role: 'system',
-                        content: 'Du bist ein professioneller Bewerbungsberater und Experte für überzeugende Bewerbungsanschreiben. Du erstellst personalisierte, spezifische und authentische Anschreiben, die genau auf die Stellenbeschreibung eingehen. Du verwendest konkrete Beispiele, messbare Ergebnisse und vermeidest Floskeln.'
-                    },
-                    {
-                        role: 'user',
-                        content: prompt
-                    }
-                ],
-                max_completion_tokens: maxTokens
-            })
+            body: JSON.stringify(requestBody)
         });
         
         if (!response.ok) {
-            throw new Error(`API Error: ${response.status}`);
+            const errorData = await response.json().catch(() => ({}));
+            console.error('❌ OpenAI API Fehler:', response.status, errorData);
+            throw new Error(`API Error: ${response.status} - ${errorData.error?.message || 'Unbekannter Fehler'}`);
         }
         
         const data = await response.json();
-        return data.choices[0].message.content;
+        console.log('✅ OpenAI Antwort erhalten, Tokens verwendet:', data.usage);
+        
+        const content = data.choices?.[0]?.message?.content;
+        if (!content) {
+            throw new Error('Keine Antwort von OpenAI erhalten');
+        }
+        
+        return content;
     }
 
     async callOpenAI(messages, apiKey, opts = {}) {
+        const requestBody = {
+            model: opts.model || 'gpt-5.2',
+            reasoning_effort: opts.reasoningEffort || 'low',
+            verbosity: opts.verbosity || 'medium',
+            messages,
+            max_completion_tokens: opts.maxTokens ?? 1500
+        };
+        
+        console.log('📤 callOpenAI Request:', requestBody.model, 'reasoning:', requestBody.reasoning_effort);
+        
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${apiKey}`
             },
-            body: JSON.stringify({
-                model: opts.model || 'gpt-5.2',
-                reasoning_effort: opts.reasoningEffort || 'low',
-                messages,
-                max_completion_tokens: opts.maxTokens ?? 1000
-            })
+            body: JSON.stringify(requestBody)
         });
+        
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({}));
-            console.error('OpenAI API Error:', errorData);
+            console.error('❌ OpenAI API Error:', response.status, errorData);
             throw new Error(`API Error: ${response.status} - ${errorData.error?.message || 'Unknown'}`);
         }
+        
         const data = await response.json();
+        console.log('✅ callOpenAI Response:', data.usage);
         return data.choices?.[0]?.message?.content || '';
     }
 
@@ -2725,6 +2750,9 @@ Gib nur den Einleitungsabsatz zurück.`;
             return;
         }
         
+        // Speichere API Key für spätere Nutzung
+        this.currentApiKey = apiKey;
+        
         // Modal öffnen
         const modal = document.getElementById('skillGapModal');
         if (modal) {
@@ -2737,30 +2765,204 @@ Gib nur den Einleitungsabsatz zurück.`;
             const requirements = await this.extractRequirements(jobDescription, apiKey);
             console.log('📋 Anforderungen extrahiert:', requirements);
             
-            // Schritt 2: User-Skills sammeln
-            this.updateSkillGapStep(2);
-            const userSkills = await this.collectAllUserSkills();
-            console.log('👤 User-Skills gesammelt:', userSkills);
+            // Speichere Anforderungen für spätere Nutzung
+            this.currentRequirements = requirements;
             
-            // Schritt 3: Matching durchführen
-            this.updateSkillGapStep(3);
-            const matchResults = await this.matchSkillsToRequirements(requirements, userSkills, apiKey);
-            console.log('⚖️ Matching-Ergebnisse:', matchResults);
-            
-            // Ergebnisse anzeigen
-            this.displaySkillGapResults(matchResults);
-            
-            // Generate Button aktivieren
-            const generateBtn = document.getElementById('skillGapGenerateBtn');
-            if (generateBtn) {
-                generateBtn.disabled = false;
-                generateBtn.onclick = () => this.generateSkillGapCoverLetter(matchResults, apiKey);
-            }
+            // Zeige Anforderungs-Editor an
+            this.displayRequirementsEditor(requirements);
             
         } catch (error) {
             console.error('❌ Skill Gap Analyse fehlgeschlagen:', error);
             this.showToast('Fehler bei der Analyse: ' + error.message, 'error');
             this.closeSkillGapModal();
+        }
+    }
+    
+    displayRequirementsEditor(requirements) {
+        const content = document.getElementById('skillGapStepContent');
+        if (!content) return;
+        
+        content.innerHTML = `
+            <div class="requirements-editor">
+                <h4><i class="fas fa-list-ol"></i> Anforderungen der Stelle</h4>
+                <p class="help-text">Priorisierung: 10 = sehr wichtig, 1 = weniger wichtig. Per Drag & Drop sortierbar.</p>
+                
+                <div id="requirementsList" class="requirements-list">
+                    ${requirements.map((req, index) => `
+                        <div class="requirement-item" draggable="true" data-index="${index}">
+                            <div class="drag-handle"><i class="fas fa-grip-vertical"></i></div>
+                            <div class="requirement-content">
+                                <div class="requirement-text">${req.requirement}</div>
+                                <div class="requirement-meta">
+                                    <span class="category-badge ${req.category}">${this.getCategoryLabel(req.category)}</span>
+                                    <span class="keywords">${req.keywords?.join(', ') || ''}</span>
+                                </div>
+                            </div>
+                            <div class="priority-control">
+                                <label>Priorität</label>
+                                <input type="number" class="priority-input" value="${req.priority || (10 - index)}" min="1" max="10" data-index="${index}">
+                                <span class="priority-value">/10</span>
+                            </div>
+                            <button class="btn-remove" title="Entfernen" onclick="window.coverLetterEditor.removeRequirement(${index})">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    `).join('')}
+                </div>
+                
+                <div class="add-requirement">
+                    <input type="text" id="newRequirementInput" placeholder="Neue Anforderung hinzufügen...">
+                    <select id="newRequirementCategory">
+                        <option value="hard_skill">Hard Skill</option>
+                        <option value="soft_skill">Soft Skill</option>
+                        <option value="experience">Erfahrung</option>
+                        <option value="qualification">Qualifikation</option>
+                    </select>
+                    <button class="btn-add" onclick="window.coverLetterEditor.addRequirement()">
+                        <i class="fas fa-plus"></i> Hinzufügen
+                    </button>
+                </div>
+                
+                <div class="requirements-actions">
+                    <button class="btn-secondary" onclick="window.coverLetterEditor.closeSkillGapModal()">
+                        <i class="fas fa-times"></i> Abbrechen
+                    </button>
+                    <button class="btn-primary" onclick="window.coverLetterEditor.continueToSkillsAnalysis()">
+                        <i class="fas fa-arrow-right"></i> Weiter zur Skill-Analyse
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        // Drag & Drop initialisieren
+        this.initRequirementsDragDrop();
+    }
+    
+    getCategoryLabel(category) {
+        const labels = {
+            'hard_skill': '🛠️ Hard Skill',
+            'soft_skill': '💬 Soft Skill',
+            'experience': '📋 Erfahrung',
+            'qualification': '🎓 Qualifikation'
+        };
+        return labels[category] || category;
+    }
+    
+    initRequirementsDragDrop() {
+        const list = document.getElementById('requirementsList');
+        if (!list) return;
+        
+        let draggedItem = null;
+        
+        list.querySelectorAll('.requirement-item').forEach(item => {
+            item.addEventListener('dragstart', (e) => {
+                draggedItem = item;
+                item.classList.add('dragging');
+            });
+            
+            item.addEventListener('dragend', () => {
+                item.classList.remove('dragging');
+                this.updateRequirementsOrder();
+            });
+            
+            item.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                if (draggedItem === item) return;
+                
+                const rect = item.getBoundingClientRect();
+                const midY = rect.top + rect.height / 2;
+                
+                if (e.clientY < midY) {
+                    item.parentNode.insertBefore(draggedItem, item);
+                } else {
+                    item.parentNode.insertBefore(draggedItem, item.nextSibling);
+                }
+            });
+        });
+        
+        // Priority Input Change Handler
+        list.querySelectorAll('.priority-input').forEach(input => {
+            input.addEventListener('change', (e) => {
+                const index = parseInt(e.target.dataset.index);
+                const value = Math.max(1, Math.min(10, parseInt(e.target.value) || 5));
+                e.target.value = value;
+                if (this.currentRequirements[index]) {
+                    this.currentRequirements[index].priority = value;
+                }
+            });
+        });
+    }
+    
+    updateRequirementsOrder() {
+        const list = document.getElementById('requirementsList');
+        if (!list) return;
+        
+        const newOrder = [];
+        list.querySelectorAll('.requirement-item').forEach((item, newIndex) => {
+            const oldIndex = parseInt(item.dataset.index);
+            if (this.currentRequirements[oldIndex]) {
+                const req = { ...this.currentRequirements[oldIndex] };
+                req.priority = parseInt(item.querySelector('.priority-input').value) || (10 - newIndex);
+                newOrder.push(req);
+            }
+            item.dataset.index = newIndex;
+            item.querySelector('.priority-input').dataset.index = newIndex;
+        });
+        
+        this.currentRequirements = newOrder;
+        console.log('📋 Anforderungen neu sortiert:', this.currentRequirements);
+    }
+    
+    removeRequirement(index) {
+        if (!this.currentRequirements) return;
+        this.currentRequirements.splice(index, 1);
+        this.displayRequirementsEditor(this.currentRequirements);
+    }
+    
+    addRequirement() {
+        const input = document.getElementById('newRequirementInput');
+        const categorySelect = document.getElementById('newRequirementCategory');
+        
+        if (!input?.value.trim()) return;
+        
+        const newReq = {
+            requirement: input.value.trim(),
+            category: categorySelect?.value || 'hard_skill',
+            priority: 5,
+            keywords: input.value.trim().toLowerCase().split(/\s+/).filter(w => w.length > 3)
+        };
+        
+        if (!this.currentRequirements) this.currentRequirements = [];
+        this.currentRequirements.push(newReq);
+        
+        input.value = '';
+        this.displayRequirementsEditor(this.currentRequirements);
+    }
+    
+    async continueToSkillsAnalysis() {
+        if (!this.currentRequirements || this.currentRequirements.length === 0) {
+            this.showToast('Mindestens eine Anforderung erforderlich', 'warning');
+            return;
+        }
+        
+        // Sortiere nach Priorität (höchste zuerst)
+        this.currentRequirements.sort((a, b) => (b.priority || 0) - (a.priority || 0));
+        
+        try {
+            // Schritt 2: User-Skills sammeln
+            this.updateSkillGapStep(2);
+            const userSkills = await this.collectAllUserSkills();
+            console.log('👤 User-Skills gesammelt:', userSkills);
+            
+            // Speichere für spätere Nutzung
+            this.currentUserSkills = userSkills;
+            
+            // Zeige Skills-Editor an
+            this.displaySkillsEditor(userSkills);
+            
+        } catch (error) {
+            console.error('❌ Skills-Sammlung fehlgeschlagen:', error);
+            this.showToast('Fehler: ' + error.message, 'error');
         }
     }
 
@@ -2802,102 +3004,436 @@ ${jobDescription}
 
 AUFGABE:
 1. Identifiziere die wichtigsten Anforderungen (Hard Skills, Soft Skills, Erfahrung, Qualifikationen)
-2. Ranke sie nach Wichtigkeit (1 = wichtigste)
+2. Bewerte jede Anforderung auf einer Skala von 1-10 (10 = ABSOLUT WICHTIG für die Stelle, 1 = Nice-to-have)
 3. Kategorisiere jede Anforderung
+4. Die Reihenfolge soll der Erwähnung in der Stellenanzeige entsprechen
 
 Antworte ausschließlich mit einem JSON-Array in diesem Format:
 [
   {
-    "rank": 1,
-    "requirement": "Kurze Beschreibung der Anforderung",
+    "priority": 10,
+    "requirement": "Kurze, präzise Beschreibung der Anforderung",
     "category": "hard_skill|soft_skill|experience|qualification",
-    "keywords": ["keyword1", "keyword2"]
+    "keywords": ["keyword1", "keyword2", "keyword3"]
   }
 ]
 
-Maximal 10 Einträge.`;
+WICHTIG: Maximal 10 Einträge. Priorität 10 = Must-Have, 7-9 = Sehr wichtig, 4-6 = Wichtig, 1-3 = Nice-to-have.`;
 
         const response = await this.callOpenAI([
-            { role: 'system', content: 'Du bist ein Experte für Stellenanalysen. Antworte nur mit validem JSON.' },
+            { role: 'system', content: 'Du bist ein Experte für Stellenanalysen und HR. Antworte nur mit validem JSON ohne Erklärungen.' },
             { role: 'user', content: prompt }
-        ], apiKey, { maxTokens: 2000 });
+        ], apiKey, { maxTokens: 2000, reasoningEffort: 'low' });
 
         try {
             // Clean JSON
             const cleaned = response.replace(/```json\n?|\n?```/g, '').trim();
-            return JSON.parse(cleaned);
+            const requirements = JSON.parse(cleaned);
+            
+            // Stelle sicher, dass jede Anforderung eine Priorität hat
+            return requirements.map((req, index) => ({
+                ...req,
+                priority: req.priority || (10 - index),
+                keywords: req.keywords || []
+            }));
         } catch (e) {
-            console.error('JSON Parse Error:', e);
+            console.error('JSON Parse Error:', e, response);
             throw new Error('Konnte Anforderungen nicht extrahieren');
         }
     }
 
     async collectAllUserSkills() {
+        console.log('🔍 Sammle alle User-Skills...');
+        
         const skills = {
             technical: [],
             soft: [],
             experience: [],
             education: [],
+            languages: [],
+            certifications: [],
             coaching: {},
-            fachlicheEntwicklung: null
+            fachlicheEntwicklung: null,
+            sources: [] // Dokumentiert Quellen
         };
 
-        // 1. Aus allen Lebensläufen
-        try {
-            const resumes = JSON.parse(localStorage.getItem('user_resumes') || '[]');
-            resumes.forEach(resume => {
-                if (resume.skills?.technical) skills.technical.push(...resume.skills.technical);
-                if (resume.skills?.soft) skills.soft.push(...resume.skills.soft);
-                if (resume.experience) skills.experience.push(...resume.experience);
-                if (resume.education) skills.education.push(...resume.education);
-            });
-        } catch (e) {}
+        // 1. Aus allen Lebensläufen (verschiedene localStorage Keys)
+        const resumeKeys = ['user_resumes', 'resumes', 'cv_data', 'saved_resumes'];
+        for (const key of resumeKeys) {
+            try {
+                const data = localStorage.getItem(key);
+                if (data) {
+                    const resumes = JSON.parse(data);
+                    const resumeArray = Array.isArray(resumes) ? resumes : [resumes];
+                    
+                    resumeArray.forEach(resume => {
+                        // Skills
+                        if (resume.skills) {
+                            if (Array.isArray(resume.skills)) {
+                                skills.technical.push(...resume.skills);
+                            } else {
+                                if (resume.skills.technical) skills.technical.push(...resume.skills.technical);
+                                if (resume.skills.soft) skills.soft.push(...resume.skills.soft);
+                            }
+                        }
+                        if (resume.technicalSkills) skills.technical.push(...resume.technicalSkills);
+                        if (resume.softSkills) skills.soft.push(...resume.softSkills);
+                        
+                        // Experience
+                        if (resume.experience) skills.experience.push(...resume.experience);
+                        if (resume.workExperience) skills.experience.push(...resume.workExperience);
+                        
+                        // Education
+                        if (resume.education) skills.education.push(...resume.education);
+                        
+                        // Languages
+                        if (resume.languages) skills.languages.push(...resume.languages);
+                        
+                        // Certifications
+                        if (resume.certifications) skills.certifications.push(...resume.certifications);
+                    });
+                    
+                    skills.sources.push(`localStorage: ${key}`);
+                }
+            } catch (e) {
+                console.warn(`Fehler beim Laden von ${key}:`, e);
+            }
+        }
 
-        // 2. Aus Profildaten
+        // 2. Aus Profildaten (this.profileData)
         if (this.profileData) {
+            console.log('📝 Profildaten gefunden:', Object.keys(this.profileData));
+            
             if (this.profileData.skills) {
                 if (Array.isArray(this.profileData.skills)) {
                     skills.technical.push(...this.profileData.skills);
-                } else if (this.profileData.skills.technical) {
-                    skills.technical.push(...this.profileData.skills.technical);
+                } else if (typeof this.profileData.skills === 'object') {
+                    if (this.profileData.skills.technical) skills.technical.push(...this.profileData.skills.technical);
+                    if (this.profileData.skills.soft) skills.soft.push(...this.profileData.skills.soft);
                 }
             }
             if (this.profileData.experience) skills.experience.push(...this.profileData.experience);
             if (this.profileData.education) skills.education.push(...this.profileData.education);
+            if (this.profileData.languages) skills.languages.push(...this.profileData.languages);
+            
+            skills.sources.push('profileData');
         }
-
-        // 3. Aus Coaching
+        
+        // 3. Aus globalem Bewerberprofil
         try {
-            const coaching = JSON.parse(localStorage.getItem('coaching_workflow_data') || '{}');
-            if (coaching.naturalTalents) skills.coaching.naturalTalents = coaching.naturalTalents;
-            if (coaching.acquiredSkills) skills.coaching.acquiredSkills = coaching.acquiredSkills;
-            if (coaching.uniqueStrengths) skills.coaching.uniqueStrengths = coaching.uniqueStrengths;
+            const profileKeys = ['applicant_profile', 'user_profile', 'bewerber_profil'];
+            for (const key of profileKeys) {
+                const profileData = localStorage.getItem(key);
+                if (profileData) {
+                    const profile = JSON.parse(profileData);
+                    if (profile.skills) {
+                        if (Array.isArray(profile.skills)) {
+                            skills.technical.push(...profile.skills);
+                        } else {
+                            if (profile.skills.technical) skills.technical.push(...profile.skills.technical);
+                            if (profile.skills.soft) skills.soft.push(...profile.skills.soft);
+                        }
+                    }
+                    if (profile.experience) skills.experience.push(...profile.experience);
+                    skills.sources.push(`localStorage: ${key}`);
+                }
+            }
         } catch (e) {}
 
-        // 4. Aus fachlicher Entwicklung
+        // 4. Aus Coaching
+        try {
+            const coachingKeys = ['coaching_workflow_data', 'coaching_results', 'ai_coach_data'];
+            for (const key of coachingKeys) {
+                const data = localStorage.getItem(key);
+                if (data) {
+                    const coaching = JSON.parse(data);
+                    if (coaching.naturalTalents) {
+                        skills.coaching.naturalTalents = coaching.naturalTalents;
+                        if (Array.isArray(coaching.naturalTalents)) {
+                            skills.soft.push(...coaching.naturalTalents);
+                        }
+                    }
+                    if (coaching.acquiredSkills) {
+                        skills.coaching.acquiredSkills = coaching.acquiredSkills;
+                        if (Array.isArray(coaching.acquiredSkills)) {
+                            skills.technical.push(...coaching.acquiredSkills);
+                        }
+                    }
+                    if (coaching.uniqueStrengths) {
+                        skills.coaching.uniqueStrengths = coaching.uniqueStrengths;
+                    }
+                    skills.sources.push(`localStorage: ${key}`);
+                }
+            }
+        } catch (e) {}
+
+        // 5. Aus fachlicher Entwicklung
         try {
             for (let i = 1; i <= 7; i++) {
                 const stepData = localStorage.getItem(`fachlicheEntwicklungStep${i}`);
                 if (stepData) {
                     if (!skills.fachlicheEntwicklung) skills.fachlicheEntwicklung = {};
-                    skills.fachlicheEntwicklung[`step${i}`] = JSON.parse(stepData);
+                    const parsed = JSON.parse(stepData);
+                    skills.fachlicheEntwicklung[`step${i}`] = parsed;
+                    
+                    // Extrahiere relevante Skills aus den Steps
+                    if (parsed.selectedSkills) skills.technical.push(...parsed.selectedSkills);
+                    if (parsed.learningGoals) skills.technical.push(...parsed.learningGoals);
+                }
+            }
+            if (skills.fachlicheEntwicklung) {
+                skills.sources.push('fachlicheEntwicklung');
+            }
+        } catch (e) {}
+
+        // 6. Aus Persönlichkeitsentwicklung
+        try {
+            const persData = localStorage.getItem('persoenlichkeitsentwicklung_progress');
+            if (persData) {
+                const persoenlichkeit = JSON.parse(persData);
+                if (persoenlichkeit.completedMethods) {
+                    skills.persoenlichkeit = persoenlichkeit;
+                    // Extrahiere Soft Skills aus abgeschlossenen Methoden
+                    const methodSkills = {
+                        'emotional-intelligence': 'Emotionale Intelligenz',
+                        'communication': 'Kommunikation',
+                        'leadership': 'Führung',
+                        'time-management': 'Zeitmanagement',
+                        'stress-management': 'Stressmanagement',
+                        'conflict-resolution': 'Konfliktlösung'
+                    };
+                    Object.keys(persoenlichkeit.completedMethods || {}).forEach(method => {
+                        if (methodSkills[method]) {
+                            skills.soft.push(methodSkills[method]);
+                        }
+                    });
+                }
+                skills.sources.push('persoenlichkeitsentwicklung');
+            }
+        } catch (e) {}
+        
+        // 7. Aus Training/Fitness (falls vorhanden und relevant)
+        try {
+            const trainingData = localStorage.getItem('training_achievements');
+            if (trainingData) {
+                const achievements = JSON.parse(trainingData);
+                if (achievements.length > 0) {
+                    skills.soft.push('Disziplin', 'Durchhaltevermögen');
                 }
             }
         } catch (e) {}
 
-        // 5. Aus Persönlichkeitsentwicklung
-        try {
-            const persoenlichkeit = JSON.parse(localStorage.getItem('persoenlichkeitsentwicklung_progress') || '{}');
-            if (persoenlichkeit.completedMethods) {
-                skills.persoenlichkeit = persoenlichkeit;
+        // Deduplizieren und bereinigen
+        skills.technical = [...new Set(skills.technical.filter(s => s && typeof s === 'string' && s.length > 1))];
+        skills.soft = [...new Set(skills.soft.filter(s => s && typeof s === 'string' && s.length > 1))];
+        skills.languages = [...new Set(skills.languages.filter(Boolean))];
+        skills.certifications = [...new Set(skills.certifications.filter(Boolean))];
+        
+        // Entferne Duplikate aus Experience basierend auf Position + Company
+        const expMap = new Map();
+        skills.experience.forEach(exp => {
+            if (exp) {
+                const key = `${exp.position || exp.title}@${exp.company}`;
+                if (!expMap.has(key)) {
+                    expMap.set(key, exp);
+                }
             }
-        } catch (e) {}
-
-        // Deduplizieren
-        skills.technical = [...new Set(skills.technical.filter(Boolean))];
-        skills.soft = [...new Set(skills.soft.filter(Boolean))];
+        });
+        skills.experience = Array.from(expMap.values());
+        
+        console.log('✅ Skills gesammelt:', {
+            technical: skills.technical.length,
+            soft: skills.soft.length,
+            experience: skills.experience.length,
+            sources: skills.sources
+        });
 
         return skills;
+    }
+    
+    displaySkillsEditor(userSkills) {
+        const content = document.getElementById('skillGapStepContent');
+        if (!content) return;
+        
+        content.innerHTML = `
+            <div class="skills-editor">
+                <h4><i class="fas fa-user-cog"></i> Deine gefundenen Skills</h4>
+                <p class="help-text">Überprüfe und ergänze deine Skills. Diese werden für das Matching verwendet und können im Profil gespeichert werden.</p>
+                
+                <div class="skills-sources">
+                    <small><i class="fas fa-info-circle"></i> Quellen: ${userSkills.sources?.join(', ') || 'Keine Quellen'}</small>
+                </div>
+                
+                <div class="skills-section">
+                    <h5><i class="fas fa-code"></i> Technische Skills (${userSkills.technical.length})</h5>
+                    <div class="skills-tags" id="technicalSkillsTags">
+                        ${userSkills.technical.map((skill, i) => `
+                            <span class="skill-tag technical" data-skill="${skill}">
+                                ${skill}
+                                <button class="remove-skill" onclick="window.coverLetterEditor.removeSkill('technical', ${i})">&times;</button>
+                            </span>
+                        `).join('') || '<span class="no-skills">Keine gefunden</span>'}
+                    </div>
+                    <div class="add-skill-row">
+                        <input type="text" id="newTechnicalSkill" placeholder="Neuen Skill hinzufügen...">
+                        <button class="btn-add-small" onclick="window.coverLetterEditor.addSkill('technical')">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="skills-section">
+                    <h5><i class="fas fa-comments"></i> Soft Skills (${userSkills.soft.length})</h5>
+                    <div class="skills-tags" id="softSkillsTags">
+                        ${userSkills.soft.map((skill, i) => `
+                            <span class="skill-tag soft" data-skill="${skill}">
+                                ${skill}
+                                <button class="remove-skill" onclick="window.coverLetterEditor.removeSkill('soft', ${i})">&times;</button>
+                            </span>
+                        `).join('') || '<span class="no-skills">Keine gefunden</span>'}
+                    </div>
+                    <div class="add-skill-row">
+                        <input type="text" id="newSoftSkill" placeholder="Neuen Soft Skill hinzufügen...">
+                        <button class="btn-add-small" onclick="window.coverLetterEditor.addSkill('soft')">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="skills-section">
+                    <h5><i class="fas fa-briefcase"></i> Berufserfahrung (${userSkills.experience.length})</h5>
+                    <div class="experience-list">
+                        ${userSkills.experience.map(exp => `
+                            <div class="experience-item">
+                                <strong>${exp.position || exp.title || 'Position'}</strong> bei ${exp.company || 'Unternehmen'}
+                                <small>${exp.startDate || ''} - ${exp.endDate || 'heute'}</small>
+                            </div>
+                        `).join('') || '<span class="no-skills">Keine gefunden</span>'}
+                    </div>
+                </div>
+                
+                ${userSkills.languages.length > 0 ? `
+                <div class="skills-section">
+                    <h5><i class="fas fa-globe"></i> Sprachen (${userSkills.languages.length})</h5>
+                    <div class="skills-tags">
+                        ${userSkills.languages.map(lang => `
+                            <span class="skill-tag language">${typeof lang === 'object' ? `${lang.name || lang.language} (${lang.level || ''})` : lang}</span>
+                        `).join('')}
+                    </div>
+                </div>
+                ` : ''}
+                
+                <div class="skills-actions">
+                    <label class="save-profile-checkbox">
+                        <input type="checkbox" id="saveSkillsToProfile" checked>
+                        <span>Skills im Bewerberprofil speichern</span>
+                    </label>
+                </div>
+                
+                <div class="requirements-actions">
+                    <button class="btn-secondary" onclick="window.coverLetterEditor.displayRequirementsEditor(window.coverLetterEditor.currentRequirements)">
+                        <i class="fas fa-arrow-left"></i> Zurück
+                    </button>
+                    <button class="btn-primary" onclick="window.coverLetterEditor.continueToMatching()">
+                        <i class="fas fa-magic"></i> Matching durchführen
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+    
+    removeSkill(type, index) {
+        if (!this.currentUserSkills || !this.currentUserSkills[type]) return;
+        this.currentUserSkills[type].splice(index, 1);
+        this.displaySkillsEditor(this.currentUserSkills);
+    }
+    
+    addSkill(type) {
+        const inputId = type === 'technical' ? 'newTechnicalSkill' : 'newSoftSkill';
+        const input = document.getElementById(inputId);
+        if (!input?.value.trim()) return;
+        
+        if (!this.currentUserSkills) this.currentUserSkills = { technical: [], soft: [], experience: [], education: [], languages: [], sources: [] };
+        if (!this.currentUserSkills[type]) this.currentUserSkills[type] = [];
+        
+        // Füge Skill hinzu wenn nicht schon vorhanden
+        const newSkill = input.value.trim();
+        if (!this.currentUserSkills[type].includes(newSkill)) {
+            this.currentUserSkills[type].push(newSkill);
+        }
+        
+        input.value = '';
+        this.displaySkillsEditor(this.currentUserSkills);
+    }
+    
+    async continueToMatching() {
+        // Skills im Profil speichern wenn gewünscht
+        const saveCheckbox = document.getElementById('saveSkillsToProfile');
+        if (saveCheckbox?.checked && this.currentUserSkills) {
+            this.saveSkillsToProfile(this.currentUserSkills);
+        }
+        
+        try {
+            // Schritt 3: Matching durchführen
+            this.updateSkillGapStep(3);
+            const matchResults = await this.matchSkillsToRequirements(
+                this.currentRequirements, 
+                this.currentUserSkills, 
+                this.currentApiKey
+            );
+            console.log('⚖️ Matching-Ergebnisse:', matchResults);
+            
+            // Ergebnisse anzeigen
+            this.displaySkillGapResults(matchResults);
+            
+            // Generate Button aktivieren
+            const generateBtn = document.getElementById('skillGapGenerateBtn');
+            if (generateBtn) {
+                generateBtn.disabled = false;
+                generateBtn.onclick = () => this.generateSkillGapCoverLetter(matchResults, this.currentApiKey);
+            }
+            
+        } catch (error) {
+            console.error('❌ Matching fehlgeschlagen:', error);
+            this.showToast('Fehler beim Matching: ' + error.message, 'error');
+        }
+    }
+    
+    saveSkillsToProfile(skills) {
+        try {
+            // Lade bestehendes Profil
+            let profile = {};
+            try {
+                profile = JSON.parse(localStorage.getItem('applicant_profile') || '{}');
+            } catch (e) {}
+            
+            // Merge Skills
+            profile.skills = profile.skills || { technical: [], soft: [] };
+            
+            if (skills.technical) {
+                profile.skills.technical = [...new Set([
+                    ...(profile.skills.technical || []),
+                    ...skills.technical
+                ])];
+            }
+            
+            if (skills.soft) {
+                profile.skills.soft = [...new Set([
+                    ...(profile.skills.soft || []),
+                    ...skills.soft
+                ])];
+            }
+            
+            profile.lastUpdated = new Date().toISOString();
+            
+            // Speichern
+            localStorage.setItem('applicant_profile', JSON.stringify(profile));
+            console.log('✅ Skills im Bewerberprofil gespeichert:', profile.skills);
+            this.showToast('Skills im Profil gespeichert', 'success');
+            
+        } catch (error) {
+            console.error('Fehler beim Speichern der Skills:', error);
+        }
     }
 
     async matchSkillsToRequirements(requirements, userSkills, apiKey) {
