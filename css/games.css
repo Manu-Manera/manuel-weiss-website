@@ -1290,3 +1290,455 @@
         font-size: 2rem;
     }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ONLINE STATUS TOGGLE
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.online-status-section {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.status-toggle-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.status-label {
+    color: white;
+    font-weight: 500;
+}
+
+.status-toggle {
+    position: relative;
+    width: 50px;
+    height: 26px;
+}
+
+.status-toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 26px;
+    transition: 0.3s;
+}
+
+.toggle-slider::before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background: white;
+    border-radius: 50%;
+    transition: 0.3s;
+}
+
+.status-toggle input:checked + .toggle-slider {
+    background: #10b981;
+}
+
+.status-toggle input:checked + .toggle-slider::before {
+    transform: translateX(24px);
+}
+
+.status-text {
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 12px;
+}
+
+.status-text.online {
+    color: #10b981;
+    background: rgba(16, 185, 129, 0.2);
+}
+
+.status-text.offline {
+    color: #94a3b8;
+    background: rgba(148, 163, 184, 0.2);
+}
+
+.status-hint {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+}
+
+.no-players-message {
+    text-align: center;
+    padding: 2rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.no-players-message i {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.no-players-message p {
+    margin-bottom: 0.5rem;
+}
+
+.no-players-message small {
+    font-size: 0.8rem;
+    opacity: 0.7;
+}
+
+/* Board Design Selector */
+.board-design-selector {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.board-design-selector label {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.board-design-selector select {
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    cursor: pointer;
+}
+
+.board-design-selector select option {
+    background: #1e293b;
+    color: white;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   3D CHESS PIECES
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.chess-piece-3d {
+    font-size: 2.5rem;
+    text-shadow: 
+        2px 2px 0 rgba(0, 0, 0, 0.3),
+        3px 3px 2px rgba(0, 0, 0, 0.2),
+        4px 4px 4px rgba(0, 0, 0, 0.1);
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
+    transform: perspective(100px) rotateX(5deg);
+    transition: transform 0.2s, filter 0.2s;
+}
+
+.chess-piece-3d:hover {
+    transform: perspective(100px) rotateX(5deg) scale(1.1);
+    filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.4));
+}
+
+.chess-piece.white {
+    color: #f8fafc;
+    text-shadow: 
+        1px 1px 0 #cbd5e1,
+        2px 2px 0 #94a3b8,
+        3px 3px 4px rgba(0, 0, 0, 0.3);
+}
+
+.chess-piece.black {
+    color: #1e293b;
+    text-shadow: 
+        1px 1px 0 #475569,
+        2px 2px 0 #334155,
+        3px 3px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CHESS BOARD DESIGNS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Classic */
+.chess-board.design-classic .chess-square.light {
+    background: #f0d9b5;
+}
+.chess-board.design-classic .chess-square.dark {
+    background: #b58863;
+}
+
+/* Wood */
+.chess-board.design-wood .chess-square.light {
+    background: linear-gradient(135deg, #deb887 0%, #d2b48c 50%, #c4a573 100%);
+}
+.chess-board.design-wood .chess-square.dark {
+    background: linear-gradient(135deg, #8b4513 0%, #a0522d 50%, #8b4513 100%);
+}
+.chess-board.design-wood {
+    border: 8px solid #5c3a21;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Marble */
+.chess-board.design-marble .chess-square.light {
+    background: linear-gradient(45deg, #f5f5f5 0%, #e8e8e8 25%, #f0f0f0 50%, #e5e5e5 75%, #f5f5f5 100%);
+}
+.chess-board.design-marble .chess-square.dark {
+    background: linear-gradient(45deg, #4a5568 0%, #3d4550 25%, #4a5568 50%, #3d4550 75%, #4a5568 100%);
+}
+.chess-board.design-marble {
+    border: 8px solid #718096;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+/* Modern */
+.chess-board.design-modern .chess-square.light {
+    background: #e2e8f0;
+}
+.chess-board.design-modern .chess-square.dark {
+    background: #6366f1;
+}
+.chess-board.design-modern {
+    border: 4px solid #4f46e5;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+/* Neon */
+.chess-board.design-neon .chess-square.light {
+    background: #1a1a2e;
+}
+.chess-board.design-neon .chess-square.dark {
+    background: #16213e;
+}
+.chess-board.design-neon .chess-square.light {
+    box-shadow: inset 0 0 10px rgba(0, 255, 255, 0.1);
+}
+.chess-board.design-neon .chess-square.dark {
+    box-shadow: inset 0 0 10px rgba(255, 0, 255, 0.1);
+}
+.chess-board.design-neon .chess-square.selected {
+    box-shadow: 0 0 20px #00ffff, inset 0 0 20px rgba(0, 255, 255, 0.3) !important;
+}
+.chess-board.design-neon .chess-square.valid-move::after {
+    background: #ff00ff;
+    box-shadow: 0 0 10px #ff00ff;
+}
+.chess-board.design-neon {
+    border: 2px solid #00ffff;
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.3), 0 0 60px rgba(255, 0, 255, 0.2);
+}
+.chess-board.design-neon .chess-piece {
+    filter: drop-shadow(0 0 8px currentColor);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TIC TAC TOE
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.ttt-modal {
+    max-width: 450px !important;
+}
+
+.ttt-board {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    max-width: 300px;
+    margin: 1.5rem auto;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 16px;
+}
+
+.ttt-cell {
+    aspect-ratio: 1;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 2px solid transparent;
+}
+
+.ttt-cell:hover:not(.filled) {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+}
+
+.ttt-cell.filled {
+    cursor: default;
+}
+
+.ttt-cell.winning {
+    background: rgba(16, 185, 129, 0.3) !important;
+    border-color: #10b981;
+    animation: winPulse 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes winPulse {
+    from { transform: scale(1); }
+    to { transform: scale(1.05); }
+}
+
+.ttt-x {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #ef4444;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.ttt-o {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #3b82f6;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   VIER GEWINNT (Connect Four)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.c4-modal {
+    max-width: 500px !important;
+}
+
+.c4-board {
+    background: linear-gradient(180deg, #1e40af 0%, #1e3a8a 100%);
+    border-radius: 16px;
+    padding: 1rem;
+    margin: 1rem auto;
+    max-width: 400px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.c4-column-hints {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.c4-column-hint {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    padding: 4px;
+}
+
+.c4-column-hint:hover {
+    color: white;
+    transform: translateY(3px);
+}
+
+.c4-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+}
+
+.c4-cell {
+    aspect-ratio: 1;
+    background: #1e3a8a;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 4px;
+}
+
+.c4-piece {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: #0f172a;
+    transition: all 0.3s;
+}
+
+.c4-piece.red {
+    background: radial-gradient(circle at 30% 30%, #fca5a5, #ef4444 40%, #b91c1c);
+    box-shadow: inset 0 -5px 10px rgba(0, 0, 0, 0.3), 0 3px 6px rgba(0, 0, 0, 0.3);
+}
+
+.c4-piece.yellow {
+    background: radial-gradient(circle at 30% 30%, #fef08a, #eab308 40%, #a16207);
+    box-shadow: inset 0 -5px 10px rgba(0, 0, 0, 0.3), 0 3px 6px rgba(0, 0, 0, 0.3);
+}
+
+.c4-piece.dropping {
+    animation: dropPiece 0.4s ease-out;
+}
+
+@keyframes dropPiece {
+    0% {
+        transform: translateY(-300%);
+        opacity: 0;
+    }
+    60% {
+        transform: translateY(10%);
+    }
+    80% {
+        transform: translateY(-5%);
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Game Status */
+.game-status {
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: white;
+    padding: 0.75rem 1rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    margin-bottom: 1rem;
+}
+
+.game-controls {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+/* Games Grid Update */
+.games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .ttt-board {
+        max-width: 250px;
+    }
+    
+    .ttt-x, .ttt-o {
+        font-size: 2.5rem;
+    }
+    
+    .c4-board {
+        max-width: 100%;
+    }
+}

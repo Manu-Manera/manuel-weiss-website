@@ -27,8 +27,9 @@ class ChessGameEnhanced {
         this.draggedPiece = null;
         this.dragStartSquare = null;
         this.kingPositions = { white: { row: 7, col: 4 }, black: { row: 0, col: 4 } };
-        this.pendingPromotion = null; // {fromRow, fromCol, toRow, toCol, piece}
+        this.pendingPromotion = null;
         this.promotionResolve = null;
+        this.boardDesign = localStorage.getItem('chess_board_design') || 'classic';
         this.init();
     }
 
@@ -65,6 +66,9 @@ class ChessGameEnhanced {
         
         boardElement.innerHTML = '';
         
+        // Board Design anwenden
+        boardElement.className = `chess-board design-${this.boardDesign}`;
+        
         // Prüfe ob Touch-Gerät
         const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
         
@@ -78,7 +82,8 @@ class ChessGameEnhanced {
                 const piece = this.board[row][col];
                 if (piece) {
                     const pieceElement = document.createElement('div');
-                    pieceElement.className = 'chess-piece';
+                    const isWhite = piece === piece.toUpperCase();
+                    pieceElement.className = `chess-piece chess-piece-3d ${isWhite ? 'white' : 'black'}`;
                     pieceElement.textContent = this.getPieceSymbol(piece);
                     
                     // Drag & Drop nur für Desktop
@@ -128,6 +133,13 @@ class ChessGameEnhanced {
             'k': '♚', 'q': '♛', 'r': '♜', 'b': '♝', 'n': '♞', 'p': '♟'
         };
         return symbols[piece] || '';
+    }
+
+    setBoardDesign(design) {
+        this.boardDesign = design;
+        localStorage.setItem('chess_board_design', design);
+        this.renderBoard();
+        console.log('🎨 Board design changed to:', design);
     }
 
     // Drag & Drop Handlers
