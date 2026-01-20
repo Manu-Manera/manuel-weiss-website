@@ -197,6 +197,49 @@
             console.log('🎮 User logged in, reloading games...');
             window.location.reload();
         });
+        
+        // Auch auf authStateChanged Event hören
+        window.addEventListener('authStateChanged', function(e) {
+            console.log('🎮 Auth state changed:', e.detail);
+            if (e.detail?.loggedIn) {
+                // Kurze Verzögerung, dann neu laden
+                setTimeout(() => window.location.reload(), 500);
+            }
+        });
+        
+        // Prüfe ob bereits eingeloggt beim Laden
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                // Prüfe verschiedene Auth-Quellen
+                const authSession = localStorage.getItem('aws_auth_session');
+                let isLoggedIn = false;
+                
+                if (authSession) {
+                    try {
+                        const session = JSON.parse(authSession);
+                        isLoggedIn = !!(session.accessToken && session.email);
+                    } catch (e) {}
+                }
+                
+                if (window.unifiedAWSAuth && window.unifiedAWSAuth.isUserLoggedIn()) {
+                    isLoggedIn = true;
+                }
+                
+                // Wenn eingeloggt aber Overlay noch sichtbar, verstecken
+                const overlay = document.getElementById('loginOverlay');
+                const content = document.getElementById('gamesContent');
+                if (isLoggedIn && overlay && overlay.style.display !== 'none') {
+                    console.log('🎮 User bereits eingeloggt, verstecke Overlay');
+                    overlay.style.display = 'none';
+                    if (content) content.style.display = 'block';
+                    // Initialisiere Games Manager neu wenn nötig
+                    if (window.gamesManager && !window.gamesManager.isAuthenticated) {
+                        window.gamesManager.isAuthenticated = true;
+                        window.gamesManager.simulateOnlinePlayers();
+                    }
+                }
+            }, 1000); // Warte bis Auth-System initialisiert
+        });
     </script>
 </body>
 </html>
