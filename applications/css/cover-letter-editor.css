@@ -598,6 +598,7 @@
 
 .letter-recipient {
     margin-bottom: 1.5rem;
+    margin-top: var(--recipient-top-margin, 25mm);
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
@@ -605,6 +606,12 @@
 
 .letter-recipient span {
     font-size: 0.95em;
+}
+
+.letter-recipient .company-address {
+    white-space: pre-line;
+    color: var(--cl-text);
+    font-size: 0.9em;
 }
 
 .letter-subject {
@@ -957,8 +964,25 @@
     color: var(--header-text-color, #ffffff);
     padding: 1.5rem;
     margin: calc(var(--letter-margin, 25mm) * -1);
+    margin-top: calc(var(--header-top-margin, 0mm) - var(--letter-margin, 25mm));
     margin-bottom: 2rem;
     border-radius: 0;
+}
+
+.generated-letter.style-modern .letter-sender span {
+    color: var(--header-text-color, #ffffff) !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+.generated-letter.style-modern .letter-sender span:first-child {
+    color: var(--header-text-color, #ffffff) !important;
+    font-weight: 700;
+    font-size: 1.2em;
+}
+
+.generated-letter.style-modern .letter-date {
+    color: var(--header-text-color, #ffffff) !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
 }
 
 .generated-letter.style-modern .letter-sender-name {
@@ -968,6 +992,19 @@
 
 .generated-letter.style-modern .letter-sender-contact {
     color: rgba(255,255,255,0.9);
+}
+
+/* Header Contrast Classes */
+.generated-letter.header-contrast-light .letter-header .letter-sender span,
+.generated-letter.header-contrast-light .letter-header .letter-date {
+    color: #ffffff !important;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+}
+
+.generated-letter.header-contrast-dark .letter-header .letter-sender span,
+.generated-letter.header-contrast-dark .letter-header .letter-date {
+    color: #1e293b !important;
+    text-shadow: none;
 }
 
 /* Classic Style */

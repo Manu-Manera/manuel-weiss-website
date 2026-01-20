@@ -23,7 +23,10 @@ class CoverLetterEditor {
             margin: 25,
             paragraphSpacing: 10,
             signatureGap: 32,
-            signatureImage: ''
+            signatureImage: '',
+            headerTopMargin: 0,
+            headerContrast: 'auto',
+            recipientTopMargin: 25
         };
         
         this.isGenerating = false;
@@ -60,6 +63,8 @@ class CoverLetterEditor {
         this.setupVersions();
         this.setupCoverLetterSelection();
         this.setupSignatureExtended();
+        this.setupHeaderControls();
+        this.setupCompanyAddressSearch();
         
         // Load user profile
         await this.loadUserProfile();
@@ -1604,11 +1609,19 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
         letter.style.setProperty('--letter-accent', this.design.color);
         letter.style.setProperty('--letter-paragraph-gap', `${this.design.paragraphSpacing}px`);
         letter.style.setProperty('--letter-signature-gap', `${this.design.signatureGap}px`);
+        letter.style.setProperty('--header-top-margin', `${this.design.headerTopMargin || 0}mm`);
+        letter.style.setProperty('--recipient-top-margin', `${this.design.recipientTopMargin || 25}mm`);
         
         letter.style.fontFamily = `'${this.design.font}', sans-serif`;
         letter.style.fontSize = `${this.design.fontSize}pt`;
         letter.style.lineHeight = this.design.lineHeight;
         letter.style.padding = `${this.design.margin}mm`;
+        
+        // Header Contrast anwenden
+        letter.classList.remove('header-contrast-light', 'header-contrast-dark', 'header-contrast-auto');
+        if (this.design.headerContrast && this.design.headerContrast !== 'auto') {
+            letter.classList.add(`header-contrast-${this.design.headerContrast}`);
+        }
         
         // Style-spezifische Anpassungen
         this.applyLetterStyle(letter);
@@ -2075,14 +2088,109 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
         }
     }
 
-    exportToPDF() {
+    async exportToPDF() {
         if (!this.generatedContent) {
             this.showToast('Kein Anschreiben zum Exportieren', 'error');
             return;
         }
-        this.replaceLetterContentForExport(() => window.print());
         
-        this.showToast('PDF-Export gestartet', 'success');
+        this.showToast('PDF wird erstellt...', 'info');
+        
+        try {
+            // html2pdf.js laden falls nicht vorhanden
+            if (typeof html2pdf === 'undefined') {
+                await this.loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js');
+            }
+            
+            const letter = document.getElementById('generatedLetter');
+            if (!letter) {
+                this.showToast('Anschreiben nicht gefunden', 'error');
+                return;
+            }
+            
+            // Clone für Export erstellen
+            const clone = letter.cloneNode(true);
+            clone.style.position = 'absolute';
+            clone.style.left = '-9999px';
+            clone.style.width = '210mm';
+            clone.style.minHeight = '297mm';
+            clone.style.maxHeight = 'none';
+            clone.style.overflow = 'visible';
+            clone.style.padding = `${this.design.margin}mm`;
+            clone.style.fontFamily = this.design.font;
+            clone.style.fontSize = `${this.design.fontSize}pt`;
+            clone.style.lineHeight = this.design.lineHeight;
+            clone.style.background = 'white';
+            
+            // Textarea durch div ersetzen
+            const textarea = clone.querySelector('textarea');
+            if (textarea) {
+                const div = document.createElement('div');
+                div.innerHTML = textarea.value.replace(/\n/g, '<br>');
+                div.style.whiteSpace = 'pre-wrap';
+                textarea.parentNode.replaceChild(div, textarea);
+            }
+            
+            // Input-Felder durch Spans ersetzen
+            clone.querySelectorAll('input[type="text"]').forEach(input => {
+                const span = document.createElement('span');
+                span.textContent = input.value;
+                span.style.cssText = window.getComputedStyle(input).cssText;
+                span.style.border = 'none';
+                span.style.background = 'transparent';
+                input.parentNode.replaceChild(span, input);
+            });
+            
+            document.body.appendChild(clone);
+            
+            const jobData = this.collectJobData();
+            const filename = `Anschreiben_${(jobData.companyName || 'Bewerbung').replace(/\s+/g, '_')}_${new Date().toISOString().slice(0,10)}.pdf`;
+            
+            const opt = {
+                margin: 0,
+                filename: filename,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { 
+                    scale: 2,
+                    useCORS: true,
+                    letterRendering: true,
+                    width: 794, // A4 bei 96 DPI
+                    height: 1123
+                },
+                jsPDF: { 
+                    unit: 'mm', 
+                    format: 'a4', 
+                    orientation: 'portrait',
+                    compress: true
+                },
+                pagebreak: { mode: 'avoid-all' }
+            };
+            
+            await html2pdf().set(opt).from(clone).save();
+            
+            document.body.removeChild(clone);
+            this.showToast('PDF erfolgreich erstellt!', 'success');
+            
+        } catch (error) {
+            console.error('PDF Export Error:', error);
+            // Fallback zu Print
+            this.replaceLetterContentForExport(() => window.print());
+            this.showToast('Druckdialog geöffnet (Fallback)', 'warning');
+        }
+    }
+    
+    loadScript(src) {
+        return new Promise((resolve, reject) => {
+            if (document.querySelector(`script[src="${src}"]`)) {
+                resolve();
+                return;
+            }
+            const script = document.createElement('script');
+            script.src = src;
+            script.onload = resolve;
+            script.onerror = reject;
+            document.head.appendChild(script);
+        });
     }
 
     exportToText() {
@@ -3055,47 +3163,140 @@ WICHTIG: Maximal 10 Einträge. Priorität 10 = Must-Have, 7-9 = Sehr wichtig, 4-
             sources: [] // Dokumentiert Quellen
         };
 
+        // Helper: Skills aus einem Lebenslauf extrahieren
+        const extractSkillsFromResume = (resume, sourceName) => {
+            if (!resume) return;
+            
+            // Skills direkt
+            if (resume.skills) {
+                if (Array.isArray(resume.skills)) {
+                    resume.skills.forEach(s => {
+                        if (typeof s === 'string') skills.technical.push(s);
+                        else if (s && s.name) skills.technical.push(s.name);
+                    });
+                } else if (typeof resume.skills === 'object') {
+                    if (resume.skills.technical) {
+                        resume.skills.technical.forEach(s => {
+                            if (typeof s === 'string') skills.technical.push(s);
+                            else if (s && s.name) skills.technical.push(s.name);
+                        });
+                    }
+                    if (resume.skills.soft) {
+                        resume.skills.soft.forEach(s => {
+                            if (typeof s === 'string') skills.soft.push(s);
+                            else if (s && s.name) skills.soft.push(s.name);
+                        });
+                    }
+                }
+            }
+            
+            // Alternative Skill-Keys
+            ['technicalSkills', 'technical_skills', 'hardSkills', 'hard_skills'].forEach(key => {
+                if (resume[key] && Array.isArray(resume[key])) {
+                    resume[key].forEach(s => {
+                        if (typeof s === 'string') skills.technical.push(s);
+                        else if (s && (s.name || s.skill)) skills.technical.push(s.name || s.skill);
+                    });
+                }
+            });
+            
+            ['softSkills', 'soft_skills'].forEach(key => {
+                if (resume[key] && Array.isArray(resume[key])) {
+                    resume[key].forEach(s => {
+                        if (typeof s === 'string') skills.soft.push(s);
+                        else if (s && (s.name || s.skill)) skills.soft.push(s.name || s.skill);
+                    });
+                }
+            });
+            
+            // Experience - extrahiere auch Skills aus Beschreibungen
+            ['experience', 'workExperience', 'work_experience', 'berufserfahrung'].forEach(key => {
+                if (resume[key] && Array.isArray(resume[key])) {
+                    resume[key].forEach(exp => {
+                        skills.experience.push(exp);
+                        // Extrahiere Skills aus Beschreibung wenn vorhanden
+                        if (exp.description || exp.beschreibung || exp.tasks) {
+                            const desc = exp.description || exp.beschreibung || (exp.tasks?.join(' ') || '');
+                            // Extrahiere typische Skill-Begriffe
+                            const skillPatterns = [
+                                /(?:Erfahrung mit|Kenntnisse in|Arbeit mit|Einsatz von)\s+([A-Za-z0-9\-\+#\.]+)/gi,
+                                /(?:SAP|Microsoft|AWS|Azure|Google|Python|Java|SQL|Excel|PowerPoint|Word|JavaScript|TypeScript|React|Angular|Vue|Node|Django|Flask)/gi
+                            ];
+                            skillPatterns.forEach(pattern => {
+                                const matches = desc.match(pattern);
+                                if (matches) {
+                                    matches.forEach(m => {
+                                        const cleaned = m.replace(/Erfahrung mit|Kenntnisse in|Arbeit mit|Einsatz von/gi, '').trim();
+                                        if (cleaned.length > 1) skills.technical.push(cleaned);
+                                    });
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+            
+            // Education
+            ['education', 'ausbildung', 'bildung'].forEach(key => {
+                if (resume[key] && Array.isArray(resume[key])) {
+                    skills.education.push(...resume[key]);
+                }
+            });
+            
+            // Languages
+            ['languages', 'sprachen', 'sprachkenntnisse'].forEach(key => {
+                if (resume[key] && Array.isArray(resume[key])) {
+                    resume[key].forEach(l => {
+                        if (typeof l === 'string') skills.languages.push(l);
+                        else if (l) skills.languages.push(l);
+                    });
+                }
+            });
+            
+            // Certifications
+            ['certifications', 'certificates', 'zertifikate', 'weiterbildungen'].forEach(key => {
+                if (resume[key] && Array.isArray(resume[key])) {
+                    skills.certifications.push(...resume[key]);
+                }
+            });
+            
+            skills.sources.push(sourceName);
+        };
+
         // 1. Aus allen Lebensläufen (verschiedene localStorage Keys)
-        const resumeKeys = ['user_resumes', 'resumes', 'cv_data', 'saved_resumes'];
+        const resumeKeys = [
+            'user_resumes', 'resumes', 'cv_data', 'saved_resumes', 
+            'resume_data', 'lebenslauf_data', 'parsed_resume',
+            'ocr_resume_data', 'extracted_resume'
+        ];
+        
         for (const key of resumeKeys) {
             try {
                 const data = localStorage.getItem(key);
                 if (data) {
-                    const resumes = JSON.parse(data);
-                    const resumeArray = Array.isArray(resumes) ? resumes : [resumes];
-                    
-                    resumeArray.forEach(resume => {
-                        // Skills
-                        if (resume.skills) {
-                            if (Array.isArray(resume.skills)) {
-                                skills.technical.push(...resume.skills);
-                            } else {
-                                if (resume.skills.technical) skills.technical.push(...resume.skills.technical);
-                                if (resume.skills.soft) skills.soft.push(...resume.skills.soft);
-                            }
-                        }
-                        if (resume.technicalSkills) skills.technical.push(...resume.technicalSkills);
-                        if (resume.softSkills) skills.soft.push(...resume.softSkills);
-                        
-                        // Experience
-                        if (resume.experience) skills.experience.push(...resume.experience);
-                        if (resume.workExperience) skills.experience.push(...resume.workExperience);
-                        
-                        // Education
-                        if (resume.education) skills.education.push(...resume.education);
-                        
-                        // Languages
-                        if (resume.languages) skills.languages.push(...resume.languages);
-                        
-                        // Certifications
-                        if (resume.certifications) skills.certifications.push(...resume.certifications);
+                    const parsed = JSON.parse(data);
+                    const resumeArray = Array.isArray(parsed) ? parsed : [parsed];
+                    resumeArray.forEach((resume, idx) => {
+                        extractSkillsFromResume(resume, `localStorage: ${key}[${idx}]`);
                     });
-                    
-                    skills.sources.push(`localStorage: ${key}`);
                 }
             } catch (e) {
                 console.warn(`Fehler beim Laden von ${key}:`, e);
             }
+        }
+        
+        // 1b. Aus Cloud-Daten (falls verfügbar)
+        try {
+            if (window.cloudDataService) {
+                const cloudResumes = await window.cloudDataService.getResumes?.();
+                if (cloudResumes && Array.isArray(cloudResumes)) {
+                    cloudResumes.forEach((resume, idx) => {
+                        extractSkillsFromResume(resume, `cloud: resume[${idx}]`);
+                    });
+                }
+            }
+        } catch (e) {
+            console.warn('Cloud-Lebensläufe konnten nicht geladen werden:', e);
         }
 
         // 2. Aus Profildaten (this.profileData)
@@ -3854,6 +4055,174 @@ Gib NUR den Anschreiben-Text zurück, KEINE Meta-Informationen.`;
             }
         } catch (error) {
             console.warn('Signatur konnte nicht geladen werden:', error);
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // HEADER CONTROLS
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    setupHeaderControls() {
+        // Header Top Margin
+        const headerTopMarginSlider = document.getElementById('headerTopMarginSlider');
+        const headerTopMarginValue = document.getElementById('headerTopMarginValue');
+        if (headerTopMarginSlider) {
+            headerTopMarginSlider.addEventListener('input', () => {
+                const value = headerTopMarginSlider.value;
+                this.design.headerTopMargin = parseInt(value);
+                if (headerTopMarginValue) headerTopMarginValue.textContent = `${value}mm`;
+                this.applyDesign();
+            });
+        }
+        
+        // Header Contrast
+        const headerContrastSelect = document.getElementById('headerContrastSelect');
+        if (headerContrastSelect) {
+            headerContrastSelect.addEventListener('change', () => {
+                this.design.headerContrast = headerContrastSelect.value;
+                this.applyDesign();
+            });
+        }
+        
+        // Recipient Top Margin
+        const recipientTopMarginSlider = document.getElementById('recipientTopMarginSlider');
+        const recipientTopMarginValue = document.getElementById('recipientTopMarginValue');
+        if (recipientTopMarginSlider) {
+            recipientTopMarginSlider.addEventListener('input', () => {
+                const value = recipientTopMarginSlider.value;
+                this.design.recipientTopMargin = parseInt(value);
+                if (recipientTopMarginValue) recipientTopMarginValue.textContent = `${value}mm`;
+                this.applyDesign();
+            });
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // COMPANY ADDRESS SEARCH
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    setupCompanyAddressSearch() {
+        const searchBtn = document.getElementById('searchCompanyAddressBtn');
+        const companyInput = document.getElementById('companyName');
+        
+        if (searchBtn) {
+            searchBtn.addEventListener('click', () => this.searchCompanyAddress());
+        }
+        
+        // Auto-search when company name changes (debounced)
+        if (companyInput) {
+            let debounceTimer;
+            companyInput.addEventListener('blur', () => {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    if (companyInput.value.length >= 3) {
+                        this.searchCompanyAddress();
+                    }
+                }, 500);
+            });
+        }
+    }
+
+    async searchCompanyAddress() {
+        const companyName = document.getElementById('companyName')?.value;
+        if (!companyName || companyName.length < 2) {
+            this.showToast('Bitte geben Sie einen Firmennamen ein', 'warning');
+            return;
+        }
+        
+        const addressGroup = document.getElementById('companyAddressGroup');
+        const addressField = document.getElementById('companyAddress');
+        const searchBtn = document.getElementById('searchCompanyAddressBtn');
+        
+        if (searchBtn) {
+            searchBtn.disabled = true;
+            searchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Suche...';
+        }
+        
+        try {
+            // Versuche Adresse über verschiedene Quellen zu finden
+            let address = await this.findCompanyAddressWithAI(companyName);
+            
+            if (address) {
+                if (addressField) {
+                    addressField.value = address;
+                }
+                if (addressGroup) {
+                    addressGroup.style.display = 'block';
+                }
+                
+                // Update display in letter
+                const companyAddressDisplay = document.getElementById('companyAddressDisplay');
+                if (companyAddressDisplay) {
+                    companyAddressDisplay.textContent = address;
+                }
+                
+                this.showToast('Firmenadresse gefunden!', 'success');
+            } else {
+                if (addressGroup) {
+                    addressGroup.style.display = 'block';
+                }
+                this.showToast('Keine Adresse gefunden - bitte manuell eingeben', 'warning');
+            }
+        } catch (error) {
+            console.error('Fehler bei Adresssuche:', error);
+            if (addressGroup) {
+                addressGroup.style.display = 'block';
+            }
+            this.showToast('Adresssuche fehlgeschlagen - bitte manuell eingeben', 'warning');
+        } finally {
+            if (searchBtn) {
+                searchBtn.disabled = false;
+                searchBtn.innerHTML = '<i class="fas fa-search"></i> Adresse recherchieren';
+            }
+        }
+    }
+
+    async findCompanyAddressWithAI(companyName) {
+        const apiKey = await this.getAPIKey();
+        if (!apiKey) {
+            console.warn('Kein API-Key für Adresssuche verfügbar');
+            return null;
+        }
+        
+        try {
+            const country = document.getElementById('countrySelect')?.value || 'CH';
+            const countryNames = { DE: 'Deutschland', CH: 'Schweiz', AT: 'Österreich', US: 'USA' };
+            
+            const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${apiKey}`
+                },
+                body: JSON.stringify({
+                    model: 'gpt-4o-mini',
+                    messages: [{
+                        role: 'user',
+                        content: `Gib mir die Hauptsitz-Adresse von "${companyName}" in ${countryNames[country] || 'der Schweiz'}. 
+                        Antworte NUR mit der Adresse im Format:
+                        Straße Nr
+                        PLZ Ort
+                        
+                        Falls du die Adresse nicht sicher weißt, antworte mit "NICHT_GEFUNDEN".`
+                    }],
+                    max_tokens: 100,
+                    temperature: 0.1
+                })
+            });
+            
+            if (!response.ok) return null;
+            
+            const data = await response.json();
+            const address = data.choices?.[0]?.message?.content?.trim();
+            
+            if (address && !address.includes('NICHT_GEFUNDEN') && address.length > 5) {
+                return address;
+            }
+            return null;
+        } catch (error) {
+            console.error('AI Adresssuche Fehler:', error);
+            return null;
         }
     }
 }
