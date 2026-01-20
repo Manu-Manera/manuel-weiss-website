@@ -3124,123 +3124,396 @@ function generateResumePreview(resume, photo, template, designSettings) {
 
 /**
  * Generiert das komplette Bewerbungsmappe-PDF
+ * Verbesserte Version mit echtem PDF-Merge
  */
 async function generatePortfolioPDF() {
-    showToast('PDF wird erstellt...', 'info');
+    showToast('Bewerbungsmappe wird erstellt...', 'info');
     
-    const settings = getPortfolioSettings();
-    const data = await collectPortfolioData(settings);
-    
-    // Template und Farbe
-    const accentColor = document.getElementById('accentColor')?.value || '#2563eb';
-    const fontFamily = document.getElementById('fontFamily')?.value || 'Inter';
-    
-    // Prüfe ob html2pdf verfügbar ist
-    if (typeof html2pdf === 'undefined') {
-        // Lade html2pdf dynamisch
-        const script = document.createElement('script');
-        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
-        script.onload = () => createPortfolioPDF(data, accentColor, fontFamily);
-        document.head.appendChild(script);
-    } else {
-        createPortfolioPDF(data, accentColor, fontFamily);
+    try {
+        const settings = getPortfolioSettings();
+        const data = await collectPortfolioData(settings);
+        
+        // Lade PDF-Bibliotheken
+        await loadPDFLibraries();
+        
+        const { PDFDocument, rgb, StandardFonts } = PDFLib;
+        const mergedPdf = await PDFDocument.create();
+        
+        // Metadaten
+        const applicantName = data.resume?.personalInfo 
+            ? `${data.resume.personalInfo.firstName || ''} ${data.resume.personalInfo.lastName || ''}`.trim()
+            : 'Bewerber';
+        const position = data.coverLetter?.position || 'Position';
+        const company = data.coverLetter?.company || 'Unternehmen';
+        
+        mergedPdf.setTitle(`Bewerbung - ${applicantName} - ${position}`);
+        mergedPdf.setAuthor(applicantName);
+        mergedPdf.setSubject(`Bewerbung für ${position} bei ${company}`);
+        mergedPdf.setKeywords(['Bewerbung', 'Bewerbungsmappe', position, company]);
+        mergedPdf.setCreationDate(new Date());
+        
+        const font = await mergedPdf.embedFont(StandardFonts.Helvetica);
+        const fontBold = await mergedPdf.embedFont(StandardFonts.HelveticaBold);
+        
+        let totalPages = 0;
+        const bookmarks = [];
+        
+        // === 1. DECKBLATT (optional) ===
+        if (settings.includeCoverPage) {
+            const coverPage = mergedPdf.addPage([595.28, 841.89]); // A4
+            const { width, height } = coverPage.getSize();
+            const accentColor = hexToRgb(document.getElementById('accentColor')?.value || '#2563eb');
+            
+            // Titel
+            coverPage.drawText('BEWERBUNG', {
+                x: 50,
+                y: height - 200,
+                size: 36,
+                font: fontBold,
+                color: rgb(accentColor.r / 255, accentColor.g / 255, accentColor.b / 255)
+            });
+            
+            // Position
+            coverPage.drawText(`als ${position}`, {
+                x: 50,
+                y: height - 250,
+                size: 18,
+                font: font,
+                color: rgb(0.3, 0.3, 0.3)
+            });
+            
+            // Bei Firma
+            coverPage.drawText(`bei ${company}`, {
+                x: 50,
+                y: height - 280,
+                size: 14,
+                font: font,
+                color: rgb(0.5, 0.5, 0.5)
+            });
+            
+            // Bewerber
+            coverPage.drawText(applicantName, {
+                x: 50,
+                y: height - 400,
+                size: 24,
+                font: fontBold,
+                color: rgb(0.1, 0.1, 0.1)
+            });
+            
+            // Datum
+            const today = new Date().toLocaleDateString('de-DE', { 
+                year: 'numeric', month: 'long', day: 'numeric' 
+            });
+            coverPage.drawText(today, {
+                x: 50,
+                y: 80,
+                size: 12,
+                font: font,
+                color: rgb(0.5, 0.5, 0.5)
+            });
+            
+            totalPages++;
+            bookmarks.push({ title: 'Deckblatt', page: totalPages });
+        }
+        
+        // === 2. INHALTSVERZEICHNIS (optional) ===
+        if (settings.includeTableOfContents) {
+            // Platzhalter - wird am Ende aktualisiert
+            const tocPage = mergedPdf.addPage([595.28, 841.89]);
+            totalPages++;
+        }
+        
+        // === 3. ANSCHREIBEN ===
+        if (data.coverLetter?.content) {
+            bookmarks.push({ title: 'Anschreiben', page: totalPages + 1 });
+            
+            // Versuche bestehendes PDF zu laden oder generiere neues
+            let coverLetterPdf;
+            try {
+                if (data.coverLetter.pdfData) {
+                    coverLetterPdf = await PDFDocument.load(data.coverLetter.pdfData);
+                } else {
+                    // Generiere PDF aus Content
+                    coverLetterPdf = await generateCoverLetterPDF(data.coverLetter, font, fontBold);
+                }
+                
+                const pages = await mergedPdf.copyPages(coverLetterPdf, coverLetterPdf.getPageIndices());
+                pages.forEach(page => {
+                    mergedPdf.addPage(page);
+                    totalPages++;
+                });
+            } catch (e) {
+                console.warn('Anschreiben konnte nicht als PDF geladen werden, erstelle neu');
+                const clPage = mergedPdf.addPage([595.28, 841.89]);
+                const lines = splitTextIntoLines(data.coverLetter.content, 80);
+                let y = 750;
+                for (const line of lines) {
+                    if (y < 50) {
+                        const newPage = mergedPdf.addPage([595.28, 841.89]);
+                        y = 750;
+                        totalPages++;
+                    }
+                    clPage.drawText(line, { x: 50, y, size: 11, font });
+                    y -= 16;
+                }
+                totalPages++;
+            }
+        }
+        
+        // === 4. LEBENSLAUF ===
+        if (data.resume) {
+            bookmarks.push({ title: 'Lebenslauf', page: totalPages + 1 });
+            
+            try {
+                if (data.resume.pdfData) {
+                    const resumePdf = await PDFDocument.load(data.resume.pdfData);
+                    const pages = await mergedPdf.copyPages(resumePdf, resumePdf.getPageIndices());
+                    pages.forEach(page => {
+                        mergedPdf.addPage(page);
+                        totalPages++;
+                    });
+                } else {
+                    // Erstelle vereinfachten Lebenslauf
+                    const resumePage = await createResumePages(mergedPdf, data.resume, font, fontBold);
+                    totalPages += resumePage;
+                }
+            } catch (e) {
+                console.warn('Lebenslauf Fehler:', e);
+            }
+        }
+        
+        // === 5. ZEUGNISSE / ANLAGEN ===
+        if (data.certificates && data.certificates.length > 0) {
+            bookmarks.push({ title: 'Anlagen', page: totalPages + 1 });
+            
+            for (const cert of data.certificates) {
+                try {
+                    let certData;
+                    
+                    // Verschiedene Datenquellen prüfen
+                    if (cert.pdfData) {
+                        certData = cert.pdfData;
+                    } else if (cert.data) {
+                        certData = cert.data;
+                    } else if (cert.url && cert.url.startsWith('data:application/pdf')) {
+                        // Base64 PDF
+                        const base64 = cert.url.split(',')[1];
+                        certData = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
+                    } else if (cert.base64) {
+                        certData = Uint8Array.from(atob(cert.base64), c => c.charCodeAt(0));
+                    }
+                    
+                    if (certData) {
+                        const certPdf = await PDFDocument.load(certData);
+                        const pages = await mergedPdf.copyPages(certPdf, certPdf.getPageIndices());
+                        pages.forEach(page => {
+                            mergedPdf.addPage(page);
+                            totalPages++;
+                        });
+                        console.log(`✅ Zeugnis hinzugefügt: ${cert.name || cert.fileName}`);
+                    }
+                } catch (e) {
+                    console.warn(`Zeugnis konnte nicht hinzugefügt werden: ${cert.name}`, e);
+                }
+            }
+        }
+        
+        // === SEITENZAHLEN HINZUFÜGEN ===
+        if (settings.addPageNumbers) {
+            const pages = mergedPdf.getPages();
+            const startPage = settings.includeCoverPage ? 1 : 0;
+            
+            for (let i = startPage; i < pages.length; i++) {
+                const page = pages[i];
+                const { width, height } = page.getSize();
+                const text = `Seite ${i + 1 - startPage} von ${pages.length - startPage}`;
+                const textWidth = font.widthOfTextAtSize(text, 10);
+                
+                page.drawText(text, {
+                    x: (width - textWidth) / 2,
+                    y: 25,
+                    size: 10,
+                    font,
+                    color: rgb(0.5, 0.5, 0.5)
+                });
+            }
+        }
+        
+        // === PDF SPEICHERN ===
+        const pdfBytes = await mergedPdf.save();
+        
+        // Download
+        const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+        const url = URL.createObjectURL(blob);
+        const filename = `Bewerbungsmappe_${applicantName.replace(/\s+/g, '_')}_${company.replace(/\s+/g, '_')}.pdf`;
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        showToast(`Bewerbungsmappe erstellt! (${totalPages} Seiten, ${(pdfBytes.byteLength / 1024).toFixed(0)} KB)`, 'success');
+        console.log(`✅ Bewerbungsmappe: ${totalPages} Seiten, ${(pdfBytes.byteLength / 1024).toFixed(0)} KB`);
+        
+    } catch (error) {
+        console.error('Portfolio PDF Error:', error);
+        showToast('Fehler beim Erstellen der Bewerbungsmappe', 'error');
+        
+        // Fallback zur alten Methode
+        createPortfolioPDFLegacy();
     }
 }
 
-function createPortfolioPDF(data, accentColor, fontFamily) {
-    // Erstelle HTML-Dokument für PDF
-    const container = document.createElement('div');
-    container.style.fontFamily = `${fontFamily}, sans-serif`;
-    container.style.padding = '20px';
-    container.style.background = 'white';
-    
-    // Anschreiben
-    if (data.coverLetter) {
-        const page = document.createElement('div');
-        page.style.pageBreakAfter = 'always';
-        page.innerHTML = `
-            <div style="white-space: pre-wrap; font-size: 12pt; line-height: 1.6;">
-                ${data.coverLetter.content || ''}
-            </div>
-        `;
-        container.appendChild(page);
+async function loadPDFLibraries() {
+    // pdf-lib laden falls nicht vorhanden
+    if (!window.PDFLib) {
+        await new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = 'https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js';
+            script.onload = resolve;
+            script.onerror = reject;
+            document.head.appendChild(script);
+        });
     }
+}
+
+function hexToRgb(hex) {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+    } : { r: 0, g: 0, b: 0 };
+}
+
+function splitTextIntoLines(text, maxChars) {
+    const words = text.split(/\s+/);
+    const lines = [];
+    let currentLine = '';
     
-    // Lebenslauf
-    if (data.resume) {
-        const page = document.createElement('div');
-        page.style.pageBreakAfter = 'always';
-        
-        const personal = data.resume.personalInfo || {};
-        const name = `${personal.firstName || ''} ${personal.lastName || ''}`.trim();
-        
-        let photoHTML = '';
-        if (data.photo) {
-            photoHTML = `<img src="${data.photo.dataUrl || data.photo.url}" style="width: 100px; height: 130px; object-fit: cover; border-radius: 8px; float: right; margin-left: 20px;">`;
+    for (const word of words) {
+        if ((currentLine + ' ' + word).length > maxChars) {
+            if (currentLine) lines.push(currentLine.trim());
+            currentLine = word;
+        } else {
+            currentLine += ' ' + word;
         }
-        
-        page.innerHTML = `
-            ${photoHTML}
-            <h1 style="color: ${accentColor}; margin-bottom: 5px;">${name}</h1>
-            <p style="color: #666; margin-bottom: 20px;">${personal.title || ''}</p>
-            
-            <table style="margin-bottom: 20px;">
-                <tr><td style="color: #888; padding-right: 20px;">E-Mail:</td><td>${personal.email || ''}</td></tr>
-                <tr><td style="color: #888; padding-right: 20px;">Telefon:</td><td>${personal.phone || ''}</td></tr>
-                <tr><td style="color: #888; padding-right: 20px;">Adresse:</td><td>${personal.address || personal.location || ''}</td></tr>
-            </table>
-            
-            ${personal.summary ? `<div style="margin-bottom: 20px; clear: both;"><h3 style="color: ${accentColor};">Profil</h3><p>${personal.summary}</p></div>` : ''}
-            
-            ${data.resume.experience?.length ? `
-                <h3 style="color: ${accentColor};">Berufserfahrung</h3>
-                ${data.resume.experience.map(exp => `
-                    <div style="margin-bottom: 15px;">
-                        <strong>${exp.position || ''}</strong> bei ${exp.company || ''}<br>
-                        <span style="color: #888; font-size: 0.9em;">${exp.startDate || ''} - ${exp.endDate || 'heute'}</span>
-                        ${exp.description ? `<p style="margin-top: 5px;">${exp.description}</p>` : ''}
-                    </div>
-                `).join('')}
-            ` : ''}
-            
-            ${data.resume.education?.length ? `
-                <h3 style="color: ${accentColor};">Ausbildung</h3>
-                ${data.resume.education.map(edu => `
-                    <div style="margin-bottom: 10px;">
-                        <strong>${edu.degree || ''}</strong> - ${edu.institution || ''}<br>
-                        <span style="color: #888; font-size: 0.9em;">${edu.startDate || ''} - ${edu.endDate || ''}</span>
-                    </div>
-                `).join('')}
-            ` : ''}
-        `;
-        container.appendChild(page);
+    }
+    if (currentLine) lines.push(currentLine.trim());
+    
+    return lines;
+}
+
+async function generateCoverLetterPDF(coverLetter, font, fontBold) {
+    const { PDFDocument, rgb } = PDFLib;
+    const doc = await PDFDocument.create();
+    const page = doc.addPage([595.28, 841.89]);
+    const { height } = page.getSize();
+    
+    let y = height - 50;
+    const lines = splitTextIntoLines(coverLetter.content || '', 85);
+    
+    for (const line of lines) {
+        if (y < 50) {
+            const newPage = doc.addPage([595.28, 841.89]);
+            y = height - 50;
+        }
+        page.drawText(line, { x: 50, y, size: 11, font, color: rgb(0, 0, 0) });
+        y -= 16;
     }
     
-    // Anlagen-Seite
-    if (data.certificates.length > 0) {
-        const page = document.createElement('div');
-        page.innerHTML = `
-            <h2 style="color: ${accentColor};">Anlagen</h2>
-            <p>Folgende Dokumente sind dieser Bewerbung beigefügt:</p>
-            <ul>
-                ${data.certificates.map(c => `<li>${c.name || c.fileName || 'Dokument'}</li>`).join('')}
-            </ul>
-        `;
-        container.appendChild(page);
-    }
+    return doc;
+}
+
+async function createResumePages(pdfDoc, resumeData, font, fontBold) {
+    const { rgb } = PDFLib;
+    const page = pdfDoc.addPage([595.28, 841.89]);
+    const { width, height } = page.getSize();
     
-    // PDF generieren
-    const opt = {
-        margin: 10,
-        filename: 'Bewerbungsmappe.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    };
+    let y = height - 50;
+    const personal = resumeData.personalInfo || {};
+    const name = `${personal.firstName || ''} ${personal.lastName || ''}`.trim();
     
-    html2pdf().set(opt).from(container).save().then(() => {
-        showToast('Bewerbungsmappe als PDF heruntergeladen!', 'success');
+    // Name
+    page.drawText(name || 'Lebenslauf', {
+        x: 50, y, size: 24, font: fontBold, color: rgb(0.1, 0.1, 0.1)
     });
+    y -= 30;
+    
+    // Kontaktdaten
+    if (personal.email) {
+        page.drawText(`E-Mail: ${personal.email}`, { x: 50, y, size: 10, font, color: rgb(0.4, 0.4, 0.4) });
+        y -= 14;
+    }
+    if (personal.phone) {
+        page.drawText(`Telefon: ${personal.phone}`, { x: 50, y, size: 10, font, color: rgb(0.4, 0.4, 0.4) });
+        y -= 14;
+    }
+    
+    y -= 20;
+    
+    // Erfahrung
+    if (resumeData.experience?.length) {
+        page.drawText('BERUFSERFAHRUNG', { x: 50, y, size: 12, font: fontBold, color: rgb(0.2, 0.4, 0.8) });
+        y -= 20;
+        
+        for (const exp of resumeData.experience) {
+            page.drawText(`${exp.position || ''} - ${exp.company || ''}`, { x: 50, y, size: 11, font: fontBold });
+            y -= 14;
+            page.drawText(`${exp.startDate || ''} - ${exp.endDate || 'heute'}`, { x: 50, y, size: 9, font, color: rgb(0.5, 0.5, 0.5) });
+            y -= 20;
+        }
+    }
+    
+    y -= 10;
+    
+    // Ausbildung
+    if (resumeData.education?.length) {
+        page.drawText('AUSBILDUNG', { x: 50, y, size: 12, font: fontBold, color: rgb(0.2, 0.4, 0.8) });
+        y -= 20;
+        
+        for (const edu of resumeData.education) {
+            page.drawText(`${edu.degree || ''} - ${edu.institution || ''}`, { x: 50, y, size: 11, font: fontBold });
+            y -= 14;
+            page.drawText(`${edu.startDate || ''} - ${edu.endDate || ''}`, { x: 50, y, size: 9, font, color: rgb(0.5, 0.5, 0.5) });
+            y -= 20;
+        }
+    }
+    
+    return 1; // Anzahl der erstellten Seiten
+}
+
+function createPortfolioPDFLegacy() {
+    // Alte Fallback-Methode mit html2pdf
+    console.log('⚠️ Verwende Legacy-PDF-Export');
+    
+    if (typeof html2pdf === 'undefined') {
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+        script.onload = () => {
+            showToast('Bitte erneut versuchen', 'info');
+        };
+        document.head.appendChild(script);
+        return;
+    }
+    
+    const previewContainer = document.getElementById('portfolioPreview');
+    if (previewContainer) {
+        html2pdf()
+            .set({
+                margin: 10,
+                filename: 'Bewerbungsmappe.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            })
+            .from(previewContainer)
+            .save()
+            .then(() => showToast('Bewerbungsmappe erstellt (Legacy)', 'success'));
+    }
 }
 
 // Export neue Funktionen

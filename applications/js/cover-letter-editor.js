@@ -2311,8 +2311,200 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
             return;
         }
         
-        // Zeige Vorschau-Modal
-        this.showPDFPreview();
+        // Option: Vorschau oder Direkt-Download
+        const usePreview = true;
+        
+        if (usePreview) {
+            this.showPDFPreview();
+        } else {
+            await this.downloadPDF();
+        }
+    }
+    
+    async generatePDFBytes() {
+        // Neuer verbesserter PDF-Export mit jsPDF (Vektor-Text)
+        try {
+            // Lade pdfService wenn nicht vorhanden
+            if (!window.pdfService) {
+                await this.loadScript('js/pdf-service.js');
+            }
+            
+            const jobData = this.collectJobData();
+            const doc = await window.pdfService.createDocument({
+                title: `Anschreiben - ${jobData.companyName || 'Bewerbung'}`,
+                author: this.profileData?.firstName + ' ' + this.profileData?.lastName,
+                subject: `Bewerbung für ${jobData.position || 'Position'}`,
+                keywords: ['Bewerbung', 'Anschreiben', jobData.companyName, jobData.position].filter(Boolean)
+            });
+            
+            const margin = this.design.margin || 25;
+            const pageWidth = 210;
+            const pageHeight = 297;
+            const contentWidth = pageWidth - (margin * 2);
+            let y = margin;
+            
+            // Schriftart und -größe
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(this.design.fontSize || 11);
+            
+            // === HEADER (Absender) ===
+            const senderName = document.getElementById('senderName')?.textContent || '';
+            const senderAddress = document.getElementById('senderAddress')?.textContent || '';
+            const senderContact = document.getElementById('senderContact')?.textContent || '';
+            
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'bold');
+            doc.text(senderName, margin, y);
+            y += 5;
+            
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(100, 100, 100);
+            if (senderAddress) {
+                doc.text(senderAddress, margin, y);
+                y += 4;
+            }
+            if (senderContact) {
+                doc.text(senderContact, margin, y);
+                y += 4;
+            }
+            
+            // Datum rechts
+            const dateText = document.getElementById('letterDate')?.textContent || new Date().toLocaleDateString('de-DE');
+            doc.text(dateText, pageWidth - margin, margin, { align: 'right' });
+            
+            y += 15;
+            
+            // === EMPFÄNGER ===
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(11);
+            
+            const companyName = document.getElementById('companyNameDisplay')?.textContent || jobData.companyName || '';
+            const companyAddress = document.getElementById('companyAddressDisplay')?.textContent || '';
+            const contactPerson = document.getElementById('contactPersonDisplay')?.textContent || '';
+            
+            if (companyName) {
+                doc.setFont('helvetica', 'bold');
+                doc.text(companyName, margin, y);
+                y += 5;
+            }
+            doc.setFont('helvetica', 'normal');
+            if (contactPerson) {
+                doc.text(contactPerson, margin, y);
+                y += 5;
+            }
+            if (companyAddress) {
+                doc.text(companyAddress, margin, y);
+                y += 5;
+            }
+            
+            y += 15;
+            
+            // === BETREFF ===
+            const subject = document.getElementById('subjectLine')?.value || `Bewerbung als ${jobData.position}`;
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(11);
+            doc.text(`Betreff: ${subject}`, margin, y);
+            y += 10;
+            
+            // === ANREDE ===
+            const salutation = document.getElementById('greetingSalutation')?.value || 'Sehr geehrte Damen und Herren,';
+            doc.setFont('helvetica', 'normal');
+            doc.text(salutation, margin, y);
+            y += 8;
+            
+            // === HAUPTTEXT ===
+            const letterText = document.getElementById('letterText')?.value || this.generatedContent || '';
+            const fontSize = this.design.fontSize || 11;
+            const lineHeight = this.design.lineHeight || 1.5;
+            
+            doc.setFontSize(fontSize);
+            const lines = doc.splitTextToSize(letterText, contentWidth);
+            
+            for (const line of lines) {
+                if (y > pageHeight - margin - 40) {
+                    doc.addPage();
+                    y = margin;
+                }
+                doc.text(line, margin, y);
+                y += fontSize * 0.352778 * lineHeight;
+            }
+            
+            y += 5;
+            
+            // === GRUSSFORMEL ===
+            const greeting = document.getElementById('greetingText')?.value || 'Mit freundlichen Grüßen';
+            doc.text(greeting, margin, y);
+            y += 15;
+            
+            // === UNTERSCHRIFT ===
+            const signatureImg = document.getElementById('signatureImage');
+            if (signatureImg && signatureImg.src && signatureImg.style.display !== 'none') {
+                try {
+                    doc.addImage(signatureImg.src, 'PNG', margin, y, 50, 20);
+                    y += 25;
+                } catch (e) {
+                    console.warn('Unterschrift konnte nicht hinzugefügt werden');
+                }
+            }
+            
+            // Name unter Unterschrift
+            const signatureName = document.getElementById('signatureName')?.value || 
+                                 document.getElementById('signatureName')?.textContent || 
+                                 senderName;
+            doc.text(signatureName, margin, y);
+            
+            return doc.output('arraybuffer');
+            
+        } catch (error) {
+            console.error('Fehler bei PDF-Generierung:', error);
+            // Fallback zu html2pdf
+            return this.generatePDFBytesLegacy();
+        }
+    }
+    
+    async generatePDFBytesLegacy() {
+        // Fallback: html2pdf-basierter Export
+        if (typeof html2pdf === 'undefined') {
+            await this.loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js');
+        }
+        
+        const letter = document.getElementById('generatedLetter');
+        if (!letter) throw new Error('Letter element not found');
+        
+        const clone = letter.cloneNode(true);
+        clone.style.position = 'absolute';
+        clone.style.left = '-9999px';
+        clone.style.width = '210mm';
+        clone.style.minHeight = '297mm';
+        clone.style.background = 'white';
+        
+        // Input/Textarea ersetzen
+        clone.querySelectorAll('textarea').forEach(ta => {
+            const div = document.createElement('div');
+            div.innerHTML = ta.value.replace(/\n/g, '<br>');
+            div.style.whiteSpace = 'pre-wrap';
+            ta.replaceWith(div);
+        });
+        clone.querySelectorAll('input[type="text"]').forEach(input => {
+            const span = document.createElement('span');
+            span.textContent = input.value;
+            input.replaceWith(span);
+        });
+        
+        document.body.appendChild(clone);
+        
+        const opt = {
+            margin: 0,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+        
+        const pdfBytes = await html2pdf().set(opt).from(clone).outputPdf('arraybuffer');
+        document.body.removeChild(clone);
+        
+        return pdfBytes;
     }
     
     showPDFPreview() {
@@ -2388,85 +2580,51 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
         this.showToast('PDF wird erstellt...', 'info');
         
         try {
-            // html2pdf.js laden falls nicht vorhanden
-            if (typeof html2pdf === 'undefined') {
-                await this.loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js');
-            }
-            
-            const letter = document.getElementById('generatedLetter');
-            if (!letter) {
-                this.showToast('Anschreiben nicht gefunden', 'error');
-                return;
-            }
-            
-            // Clone für Export erstellen
-            const clone = letter.cloneNode(true);
-            clone.style.position = 'absolute';
-            clone.style.left = '-9999px';
-            clone.style.width = '210mm';
-            clone.style.minHeight = '297mm';
-            clone.style.maxHeight = 'none';
-            clone.style.overflow = 'visible';
-            clone.style.padding = `${this.design.margin}mm`;
-            clone.style.fontFamily = this.design.font;
-            clone.style.fontSize = `${this.design.fontSize}pt`;
-            clone.style.lineHeight = this.design.lineHeight;
-            clone.style.background = 'white';
-            
-            // Textarea durch div ersetzen
-            const textarea = clone.querySelector('textarea');
-            if (textarea) {
-                const div = document.createElement('div');
-                div.innerHTML = textarea.value.replace(/\n/g, '<br>');
-                div.style.whiteSpace = 'pre-wrap';
-                textarea.parentNode.replaceChild(div, textarea);
-            }
-            
-            // Input-Felder durch Spans ersetzen
-            clone.querySelectorAll('input[type="text"]').forEach(input => {
-                const span = document.createElement('span');
-                span.textContent = input.value;
-                span.style.cssText = window.getComputedStyle(input).cssText;
-                span.style.border = 'none';
-                span.style.background = 'transparent';
-                input.parentNode.replaceChild(span, input);
-            });
-            
-            document.body.appendChild(clone);
+            const pdfBytes = await this.generatePDFBytes();
             
             const jobData = this.collectJobData();
             const filename = `Anschreiben_${(jobData.companyName || 'Bewerbung').replace(/\s+/g, '_')}_${new Date().toISOString().slice(0,10)}.pdf`;
             
-            const opt = {
-                margin: 0,
-                filename: filename,
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { 
-                    scale: 2,
-                    useCORS: true,
-                    letterRendering: true,
-                    width: 794, // A4 bei 96 DPI
-                    height: 1123
-                },
-                jsPDF: { 
-                    unit: 'mm', 
-                    format: 'a4', 
-                    orientation: 'portrait',
-                    compress: true
-                },
-                pagebreak: { mode: 'avoid-all' }
-            };
+            // Download
+            const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
             
-            await html2pdf().set(opt).from(clone).save();
-            
-            document.body.removeChild(clone);
             this.showToast('PDF erfolgreich erstellt!', 'success');
+            console.log(`✅ PDF exportiert: ${filename} (${(pdfBytes.byteLength / 1024).toFixed(1)} KB)`);
             
         } catch (error) {
             console.error('PDF Export Error:', error);
             // Fallback zu Print
-            this.replaceLetterContentForExport(() => window.print());
             this.showToast('Druckdialog geöffnet (Fallback)', 'warning');
+            window.print();
+        }
+    }
+    
+    async downloadPDFWithPreview() {
+        try {
+            const pdfBytes = await this.generatePDFBytes();
+            const jobData = this.collectJobData();
+            const filename = `Anschreiben_${(jobData.companyName || 'Bewerbung').replace(/\s+/g, '_')}_${new Date().toISOString().slice(0,10)}.pdf`;
+            
+            if (window.pdfService) {
+                window.pdfService.showPreview(pdfBytes, { 
+                    title: `Anschreiben - ${jobData.companyName}`,
+                    filename 
+                });
+            } else {
+                // Direkter Download
+                this.downloadPDF();
+            }
+        } catch (error) {
+            console.error('Preview Error:', error);
+            this.downloadPDF();
         }
     }
     

@@ -3872,90 +3872,378 @@ class DesignEditor {
             return;
         }
         
-        // Zeige Loading-Status
+        // Zeige Optionen-Dialog
+        this.showExportOptionsDialog();
+    }
+    
+    showExportOptionsDialog() {
+        // Entferne altes Modal falls vorhanden
+        const existingModal = document.querySelector('.pdf-export-options-modal');
+        if (existingModal) existingModal.remove();
+        
+        const resumeData = this.getResumeData();
+        const defaultFilename = `Lebenslauf_${resumeData.firstName || 'Vorname'}_${resumeData.lastName || 'Nachname'}`.replace(/\s+/g, '_');
+        
+        const modal = document.createElement('div');
+        modal.className = 'pdf-export-options-modal';
+        modal.innerHTML = `
+            <div class="export-options-content">
+                <div class="export-options-header">
+                    <h3><i class="fas fa-file-pdf"></i> PDF Export Optionen</h3>
+                    <button class="btn-close" onclick="this.closest('.pdf-export-options-modal').remove()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="export-options-body">
+                    <div class="option-group">
+                        <label>Dateiname</label>
+                        <input type="text" id="pdfFilename" value="${defaultFilename}" class="option-input">
+                    </div>
+                    <div class="option-group">
+                        <label>Qualität</label>
+                        <select id="pdfQuality" class="option-select">
+                            <option value="high">Hoch (beste Qualität, größere Datei)</option>
+                            <option value="medium" selected>Standard (ausgewogen)</option>
+                            <option value="low">Komprimiert (kleine Dateigröße)</option>
+                        </select>
+                    </div>
+                    <div class="option-group">
+                        <label>Format</label>
+                        <select id="pdfFormat" class="option-select">
+                            <option value="a4" selected>A4 (210 × 297 mm)</option>
+                            <option value="letter">US Letter (216 × 279 mm)</option>
+                        </select>
+                    </div>
+                    <div class="option-group checkbox-group">
+                        <label>
+                            <input type="checkbox" id="pdfPageNumbers">
+                            <span>Seitenzahlen hinzufügen</span>
+                        </label>
+                    </div>
+                    <div class="option-group checkbox-group">
+                        <label>
+                            <input type="checkbox" id="pdfMetadata" checked>
+                            <span>Dokument-Metadaten einbetten</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="export-options-footer">
+                    <button class="btn-secondary" onclick="this.closest('.pdf-export-options-modal').remove()">
+                        <i class="fas fa-times"></i> Abbrechen
+                    </button>
+                    <button class="btn-secondary" onclick="window.designEditor.previewPDF()">
+                        <i class="fas fa-eye"></i> Vorschau
+                    </button>
+                    <button class="btn-primary" onclick="window.designEditor.downloadPDFWithOptions()">
+                        <i class="fas fa-download"></i> Exportieren
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        // Styles
+        const styles = document.createElement('style');
+        styles.textContent = `
+            .pdf-export-options-modal {
+                position: fixed;
+                top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0,0,0,0.7);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10000;
+                padding: 20px;
+            }
+            .export-options-content {
+                background: white;
+                border-radius: 16px;
+                max-width: 480px;
+                width: 100%;
+                box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+                overflow: hidden;
+            }
+            .export-options-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 1.25rem 1.5rem;
+                background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+                color: white;
+            }
+            .export-options-header h3 {
+                margin: 0;
+                font-size: 1.1rem;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+            .export-options-header .btn-close {
+                background: rgba(255,255,255,0.2);
+                border: none;
+                color: white;
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                cursor: pointer;
+            }
+            .export-options-body {
+                padding: 1.5rem;
+            }
+            .option-group {
+                margin-bottom: 1rem;
+            }
+            .option-group label {
+                display: block;
+                font-weight: 500;
+                margin-bottom: 0.5rem;
+                color: #374151;
+            }
+            .option-input, .option-select {
+                width: 100%;
+                padding: 0.75rem;
+                border: 1px solid #e5e7eb;
+                border-radius: 8px;
+                font-size: 0.95rem;
+            }
+            .checkbox-group label {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                cursor: pointer;
+            }
+            .checkbox-group input[type="checkbox"] {
+                width: 18px;
+                height: 18px;
+            }
+            .export-options-footer {
+                display: flex;
+                justify-content: flex-end;
+                gap: 0.75rem;
+                padding: 1rem 1.5rem;
+                background: #f9fafb;
+                border-top: 1px solid #e5e7eb;
+            }
+            .export-options-footer button {
+                padding: 0.6rem 1.2rem;
+                border-radius: 8px;
+                font-size: 0.9rem;
+                font-weight: 500;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+            .btn-secondary {
+                background: #f3f4f6;
+                border: 1px solid #e5e7eb;
+                color: #374151;
+            }
+            .btn-primary {
+                background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+                border: none;
+                color: white;
+            }
+        `;
+        modal.appendChild(styles);
+        document.body.appendChild(modal);
+    }
+    
+    async downloadPDFWithOptions() {
+        const filename = document.getElementById('pdfFilename')?.value || 'Lebenslauf';
+        const quality = document.getElementById('pdfQuality')?.value || 'medium';
+        const format = document.getElementById('pdfFormat')?.value || 'a4';
+        const addPageNumbers = document.getElementById('pdfPageNumbers')?.checked || false;
+        const addMetadata = document.getElementById('pdfMetadata')?.checked || true;
+        
+        // Modal schließen
+        document.querySelector('.pdf-export-options-modal')?.remove();
+        
         this.showNotification('PDF wird generiert...', 'info');
         
         try {
-            // Prüfe ob html2pdf verfügbar ist, sonst lade es
-            if (typeof html2pdf === 'undefined') {
-                console.log('📥 Lade html2pdf Bibliothek...');
-                try {
-                    await this.loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js');
-                    console.log('✅ html2pdf geladen');
-                    // Warte länger nach dem Laden
-                    await new Promise(resolve => setTimeout(resolve, 500));
-                } catch (loadError) {
-                    console.warn('⚠️ CDN nicht erreichbar, versuche Druckdialog:', loadError);
-                    throw new Error('Bibliothek konnte nicht geladen werden');
-                }
+            const pdfBytes = await this.generateResumePDF({
+                quality,
+                format,
+                addPageNumbers,
+                addMetadata
+            });
+            
+            // Download
+            const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${filename}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            this.showNotification(`PDF exportiert! (${(pdfBytes.byteLength / 1024).toFixed(0)} KB)`, 'success');
+        } catch (error) {
+            console.error('PDF Export Fehler:', error);
+            this.showNotification('Fehler beim Export, versuche Fallback...', 'warning');
+            this.exportToPDFLegacy();
+        }
+    }
+    
+    async previewPDF() {
+        this.showNotification('Vorschau wird erstellt...', 'info');
+        
+        try {
+            const pdfBytes = await this.generateResumePDF({
+                quality: 'medium',
+                format: 'a4'
+            });
+            
+            const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+            const url = URL.createObjectURL(blob);
+            
+            // Öffne in neuem Tab
+            window.open(url, '_blank');
+            
+            this.showNotification('Vorschau geöffnet', 'success');
+        } catch (error) {
+            console.error('Vorschau Fehler:', error);
+            this.showNotification('Vorschau konnte nicht erstellt werden', 'error');
+        }
+    }
+    
+    async generateResumePDF(options = {}) {
+        const preview = document.getElementById('resumePreview');
+        if (!preview) throw new Error('Preview nicht gefunden');
+        
+        const { quality = 'medium', format = 'a4', addPageNumbers = false, addMetadata = true } = options;
+        
+        // Qualitätseinstellungen
+        const qualitySettings = {
+            high: { scale: 3, imageQuality: 0.98 },
+            medium: { scale: 2, imageQuality: 0.92 },
+            low: { scale: 1.5, imageQuality: 0.8 }
+        };
+        const settings = qualitySettings[quality] || qualitySettings.medium;
+        
+        // Lade html2pdf
+        if (typeof html2pdf === 'undefined') {
+            await this.loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js');
+            await new Promise(resolve => setTimeout(resolve, 300));
+        }
+        
+        // Clone für Export
+        const clone = preview.cloneNode(true);
+        clone.style.position = 'absolute';
+        clone.style.left = '-9999px';
+        clone.style.width = '210mm';
+        clone.style.minHeight = '297mm';
+        clone.style.backgroundColor = this.settings.backgroundColor || '#ffffff';
+        document.body.appendChild(clone);
+        
+        const opt = {
+            margin: [0, 0, 0, 0],
+            image: { type: 'jpeg', quality: settings.imageQuality },
+            html2canvas: {
+                scale: settings.scale,
+                useCORS: true,
+                letterRendering: true,
+                logging: false,
+                backgroundColor: this.settings.backgroundColor || '#ffffff'
+            },
+            jsPDF: {
+                unit: 'mm',
+                format: format,
+                orientation: 'portrait',
+                compress: true
+            },
+            pagebreak: { mode: ['css', 'legacy'], avoid: ['img', '.section'] }
+        };
+        
+        try {
+            const pdfBytes = await html2pdf().set(opt).from(clone).outputPdf('arraybuffer');
+            document.body.removeChild(clone);
+            
+            // Nachbearbeitung mit pdf-lib für Metadaten und Seitenzahlen
+            if (addMetadata || addPageNumbers) {
+                return await this.postProcessPDF(pdfBytes, { addPageNumbers, addMetadata });
             }
             
-            // Warte kurz bis die Bibliothek verfügbar ist
+            return pdfBytes;
+        } catch (error) {
+            if (document.body.contains(clone)) document.body.removeChild(clone);
+            throw error;
+        }
+    }
+    
+    async postProcessPDF(pdfBytes, options) {
+        // Lade pdf-lib
+        if (!window.PDFLib) {
+            await this.loadScript('https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js');
             await new Promise(resolve => setTimeout(resolve, 200));
+        }
+        
+        const { PDFDocument, rgb, StandardFonts } = PDFLib;
+        const pdfDoc = await PDFDocument.load(pdfBytes);
+        
+        // Metadaten
+        if (options.addMetadata) {
+            const resumeData = this.getResumeData();
+            pdfDoc.setTitle(`Lebenslauf - ${resumeData.firstName} ${resumeData.lastName}`);
+            pdfDoc.setAuthor(`${resumeData.firstName} ${resumeData.lastName}`);
+            pdfDoc.setSubject('Lebenslauf / Curriculum Vitae');
+            pdfDoc.setKeywords(['Lebenslauf', 'CV', 'Bewerbung', resumeData.firstName, resumeData.lastName]);
+            pdfDoc.setCreationDate(new Date());
+        }
+        
+        // Seitenzahlen
+        if (options.addPageNumbers) {
+            const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+            const pages = pdfDoc.getPages();
             
+            pages.forEach((page, i) => {
+                const { width } = page.getSize();
+                const text = `Seite ${i + 1} von ${pages.length}`;
+                const textWidth = font.widthOfTextAtSize(text, 9);
+                
+                page.drawText(text, {
+                    x: (width - textWidth) / 2,
+                    y: 20,
+                    size: 9,
+                    font,
+                    color: rgb(0.5, 0.5, 0.5)
+                });
+            });
+        }
+        
+        return pdfDoc.save();
+    }
+    
+    async exportToPDFLegacy() {
+        // Fallback: Original-Methode mit html2pdf
+        const preview = document.getElementById('resumePreview');
+        if (!preview) return;
+        
+        this.showNotification('PDF wird generiert (Legacy)...', 'info');
+        
+        try {
             if (typeof html2pdf === 'undefined') {
-                throw new Error('html2pdf nicht verfügbar');
+                await this.loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js');
+                await new Promise(resolve => setTimeout(resolve, 500));
             }
             
-            // Bereite Preview für Export vor - klone das Element für bessere Qualität
             const resumeData = this.getResumeData();
             const filename = `Lebenslauf_${resumeData.firstName || 'Vorname'}_${resumeData.lastName || 'Nachname'}.pdf`.replace(/\s+/g, '_');
             
-            // Erstelle einen Klon des Previews für den Export
-            const clone = preview.cloneNode(true);
-            clone.style.position = 'absolute';
-            clone.style.left = '-9999px';
-            clone.style.top = '0';
-            clone.style.width = '210mm';
-            clone.style.minHeight = '297mm';
-            clone.style.backgroundColor = this.settings.backgroundColor || '#ffffff';
-            document.body.appendChild(clone);
-            
-            // Konfiguration für PDF - verbesserte Einstellungen
             const opt = {
-                margin: [0, 0, 0, 0],
+                margin: 0,
                 filename: filename,
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { 
-                    scale: 2,
-                    useCORS: true,
-                    letterRendering: true,
-                    logging: false,
-                    allowTaint: false,
-                    backgroundColor: this.settings.backgroundColor || '#ffffff',
-                    windowWidth: 794, // A4 width in pixels at 96 DPI
-                    windowHeight: 1123, // A4 height in pixels at 96 DPI
-                    scrollX: 0,
-                    scrollY: 0
-                },
-                jsPDF: { 
-                    unit: 'mm', 
-                    format: 'a4', 
-                    orientation: 'portrait',
-                    compress: true
-                },
-                pagebreak: { mode: ['css', 'legacy'], avoid: ['img', '.resume-preview-section'] }
+                image: { type: 'jpeg', quality: 0.95 },
+                html2canvas: { scale: 2, useCORS: true },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
             
-            try {
-                // Export vom Klon
-                await html2pdf().set(opt).from(clone).save();
-                
-                // Entferne Klon nach Export
-                document.body.removeChild(clone);
-                
-                this.showNotification('PDF erfolgreich exportiert!', 'success');
-            } catch (exportError) {
-                // Entferne Klon auch bei Fehler
-                if (document.body.contains(clone)) {
-                    document.body.removeChild(clone);
-                }
-                throw exportError;
-            }
+            await html2pdf().set(opt).from(preview).save();
+            this.showNotification('PDF exportiert!', 'success');
         } catch (error) {
-            console.error('PDF Export Fehler:', error);
-            // Fallback zu Print-Dialog mit speziellem Print-CSS
-            this.showNotification('Öffne Druckdialog für PDF-Export...', 'info');
+            console.error('Legacy PDF Fehler:', error);
             this.openPrintDialog();
         }
     }
