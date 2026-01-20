@@ -296,44 +296,59 @@
 
                     <!-- Generated Letter -->
                     <div id="generatedLetter" class="generated-letter" style="display: none;">
-                        <!-- Letter Header -->
-                        <div class="letter-header">
-                            <div class="letter-sender">
-                                <span id="senderName" contenteditable="true" class="editable-field" data-placeholder="Ihr Name">Ihr Name</span>
-                                <span id="senderAddress" contenteditable="true" class="editable-field" data-placeholder="Ihre Adresse">Ihre Adresse</span>
-                                <span id="senderContact" contenteditable="true" class="editable-field" data-placeholder="Ihre Kontaktdaten">E-Mail | Telefon</span>
+                        <!-- Page Container with Page Break Indicator -->
+                        <div class="letter-page-container">
+                            <!-- Letter Header -->
+                            <div class="letter-header">
+                                <div class="letter-sender">
+                                    <!-- Mehrzeiliger Adressblock -->
+                                    <span id="senderName" contenteditable="true" class="editable-field sender-name" data-placeholder="Vorname Nachname">Vorname Nachname</span>
+                                    <span id="senderStreet" contenteditable="true" class="editable-field sender-street" data-placeholder="Straße Hausnummer">Straße Hausnummer</span>
+                                    <span id="senderCity" contenteditable="true" class="editable-field sender-city" data-placeholder="PLZ Ort">PLZ Ort</span>
+                                    <span id="senderContact" contenteditable="true" class="editable-field sender-contact" data-placeholder="E-Mail | Telefon">E-Mail | Telefon</span>
+                                </div>
+                                <div class="letter-date-container">
+                                    <span id="letterLocation" contenteditable="true" class="editable-field letter-location" data-placeholder=""><!-- Ort, optional --></span>
+                                    <span id="letterDate" contenteditable="true" class="editable-field"></span>
+                                </div>
                             </div>
-                            <div class="letter-date" id="letterDate"></div>
-                        </div>
 
-                        <!-- Letter Recipient (Company Address) -->
-                        <div class="letter-recipient">
-                            <span id="companyNameDisplay" contenteditable="true" class="editable-field" placeholder="Firmenname"></span>
-                            <span id="companyAddressDisplay" contenteditable="true" class="editable-field company-address" placeholder="Straße, PLZ Ort"></span>
-                            <span id="contactPersonDisplay" contenteditable="true" class="editable-field" placeholder="Personalabteilung / z.Hd. Ansprechpartner"></span>
-                        </div>
+                            <!-- Letter Recipient (Company Address) - Mehrzeilig -->
+                            <div class="letter-recipient">
+                                <span id="companyNameDisplay" contenteditable="true" class="editable-field company-name" placeholder="Firmenname inkl. Rechtsform">Firmenname GmbH</span>
+                                <span id="companyStreetDisplay" contenteditable="true" class="editable-field company-street" placeholder="Straße Hausnummer">Straße Hausnummer</span>
+                                <span id="companyLocationDisplay" contenteditable="true" class="editable-field company-location" placeholder="Land - PLZ Ort">CH - 8000 Zürich</span>
+                                <span id="contactPersonDisplay" contenteditable="true" class="editable-field contact-person" placeholder="z.Hd. Ansprechpartner"></span>
+                            </div>
 
-                        <!-- Letter Subject -->
-                        <div class="letter-subject">
-                            <strong>Betreff:</strong> <input type="text" id="subjectLine" class="subject-input" placeholder="Betreff">
-                        </div>
+                            <!-- Letter Subject -->
+                            <div class="letter-subject">
+                                <span class="subject-label">Betreff:</span> 
+                                <input type="text" id="subjectLine" class="subject-input" placeholder="Bewerbung als...">
+                            </div>
 
-                        <!-- Letter Salutation (Anrede) -->
-                        <div class="letter-salutation">
-                            <input type="text" id="greetingSalutation" value="Sehr geehrte Damen und Herren," class="greeting-salutation-input" placeholder="Anrede (z.B. Sehr geehrte Damen und Herren,)">
-                        </div>
+                            <!-- Letter Salutation (Anrede) - wird von KI generiert -->
+                            <div class="letter-salutation">
+                                <input type="text" id="greetingSalutation" value="" class="greeting-salutation-input" placeholder="Anrede wird von KI generiert...">
+                            </div>
 
-                        <!-- Letter Body -->
-                        <div class="letter-body">
-                            <textarea id="letterText" placeholder="Ihr Anschreiben wird hier angezeigt..."></textarea>
-                        </div>
+                            <!-- Letter Body - ohne Scrollbar -->
+                            <div class="letter-body" id="letterBody">
+                                <div id="letterText" class="letter-text-content" contenteditable="true" data-placeholder="Ihr Anschreiben wird hier angezeigt..."></div>
+                            </div>
 
-                        <!-- Letter Footer -->
-                        <div class="letter-footer">
-                            <input type="text" id="greetingText" value="Mit freundlichen Grüßen" class="greeting-input" placeholder="Grußformel">
-                            <div class="signature-container" id="signatureContainer">
-                                <img id="signatureImage" alt="Unterschrift" class="signature-image" style="display:none; cursor: move; user-select: none;" draggable="false">
-                                <input type="text" id="signatureName" class="signature-name-input" placeholder="Ihr Name">
+                            <!-- Page Break Indicator -->
+                            <div class="page-break-indicator" id="pageBreakIndicator">
+                                <span>--- Seitenumbruch (Seite 2) ---</span>
+                            </div>
+
+                            <!-- Letter Footer -->
+                            <div class="letter-footer">
+                                <input type="text" id="greetingText" value="Mit freundlichen Grüßen" class="greeting-input" placeholder="Grußformel">
+                                <div class="signature-container" id="signatureContainer">
+                                    <img id="signatureImage" alt="Unterschrift" class="signature-image" style="display:none; cursor: move; user-select: none;" draggable="false">
+                                    <input type="text" id="signatureName" class="signature-name-input" placeholder="Ihr Name">
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -355,12 +370,36 @@
                         <button class="toolbar-btn" onclick="improveSelected()" title="Auswahl verbessern">
                             <i class="fas fa-magic"></i>
                         </button>
-                        <button class="toolbar-btn" onclick="regenerateSubject()" title="Betreff neu generieren">
-                            <i class="fas fa-heading"></i>
-                        </button>
-                        <button class="toolbar-btn" onclick="regenerateIntro()" title="Einleitung neu generieren">
-                            <i class="fas fa-paragraph"></i>
-                        </button>
+                        <div class="toolbar-divider"></div>
+                        <!-- Übersetzungs-Dropdown -->
+                        <div class="translate-dropdown">
+                            <button class="toolbar-btn translate-btn" id="translateBtn" title="Anschreiben übersetzen">
+                                <i class="fas fa-language"></i>
+                                <span>Übersetzen</span>
+                                <i class="fas fa-chevron-down" style="font-size: 0.7rem; margin-left: 4px;"></i>
+                            </button>
+                            <div class="translate-dropdown-menu" id="translateMenu">
+                                <div class="translate-menu-header">In Sprache übersetzen:</div>
+                                <button data-lang="en" data-country="UK">🇬🇧 English (UK)</button>
+                                <button data-lang="en" data-country="US">🇺🇸 English (US)</button>
+                                <button data-lang="de" data-country="DE">🇩🇪 Deutsch</button>
+                                <button data-lang="de" data-country="CH">🇨🇭 Deutsch (CH)</button>
+                                <button data-lang="de" data-country="AT">🇦🇹 Deutsch (AT)</button>
+                                <button data-lang="fr" data-country="FR">🇫🇷 Français</button>
+                                <button data-lang="it" data-country="IT">🇮🇹 Italiano</button>
+                                <button data-lang="es" data-country="ES">🇪🇸 Español</button>
+                                <button data-lang="pt" data-country="PT">🇵🇹 Português</button>
+                                <button data-lang="nl" data-country="NL">🇳🇱 Nederlands</button>
+                                <button data-lang="pl" data-country="PL">🇵🇱 Polski</button>
+                                <button data-lang="sv" data-country="SE">🇸🇪 Svenska</button>
+                                <button data-lang="da" data-country="DK">🇩🇰 Dansk</button>
+                                <button data-lang="no" data-country="NO">🇳🇴 Norsk</button>
+                                <button data-lang="fi" data-country="FI">🇫🇮 Suomi</button>
+                                <button data-lang="cs" data-country="CZ">🇨🇿 Čeština</button>
+                                <button data-lang="hu" data-country="HU">🇭🇺 Magyar</button>
+                                <button data-lang="el" data-country="GR">🇬🇷 Ελληνικά</button>
+                            </div>
+                        </div>
                     </div>
                     <div class="toolbar-right">
                         <span class="word-count">
@@ -491,17 +530,91 @@
                             <span id="headerTopMarginValue">0mm</span>
                         </div>
                         <div class="slider-group" style="margin-bottom: 8px;">
-                            <span style="font-size: 0.75rem; min-width: 100px;">Text-Kontrast</span>
-                            <select id="headerContrastSelect" class="design-select" style="flex: 1;">
-                                <option value="auto">Automatisch</option>
-                                <option value="light">Hell auf Dunkel</option>
-                                <option value="dark">Dunkel auf Hell</option>
-                            </select>
-                        </div>
-                        <div class="slider-group">
                             <span style="font-size: 0.75rem; min-width: 100px;">Empfänger-Abstand</span>
                             <input type="range" id="recipientTopMarginSlider" min="0" max="50" value="20" step="1">
                             <span id="recipientTopMarginValue">20mm</span>
+                        </div>
+                        <div class="slider-group" style="margin-bottom: 8px;">
+                            <span style="font-size: 0.75rem; min-width: 100px;">Betreff-Abstand oben</span>
+                            <input type="range" id="subjectMarginTopSlider" min="5" max="30" value="15" step="1">
+                            <span id="subjectMarginTopValue">15mm</span>
+                        </div>
+                        <div class="slider-group">
+                            <span style="font-size: 0.75rem; min-width: 100px;">Betreff-Abstand unten</span>
+                            <input type="range" id="subjectMarginBottomSlider" min="5" max="25" value="10" step="1">
+                            <span id="subjectMarginBottomValue">10mm</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Datum-Einstellungen -->
+                <div class="design-section" style="background: rgba(16,185,129,0.05); border-radius: 8px; padding: 12px; margin: -8px -8px 16px -8px;">
+                    <label style="color: #10b981;">📅 Datum</label>
+                    <div class="date-settings">
+                        <div class="slider-group" style="margin-bottom: 8px;">
+                            <span style="font-size: 0.75rem; min-width: 100px;">Format</span>
+                            <select id="dateFormatSelect" class="design-select" style="flex: 1;">
+                                <option value="de-long">20. Januar 2026</option>
+                                <option value="de-short">20.01.2026</option>
+                                <option value="ch">20. Januar 2026</option>
+                                <option value="at">20. Jänner 2026</option>
+                                <option value="en-uk">20 January 2026</option>
+                                <option value="en-us">January 20, 2026</option>
+                                <option value="fr">20 janvier 2026</option>
+                                <option value="nl">20 januari 2026</option>
+                                <option value="iso">2026-01-20</option>
+                            </select>
+                        </div>
+                        <div class="slider-group" style="margin-bottom: 8px;">
+                            <span style="font-size: 0.75rem; min-width: 100px;">Position</span>
+                            <select id="datePositionSelect" class="design-select" style="flex: 1;">
+                                <option value="top-right">Oben rechts (DE/CH/AT)</option>
+                                <option value="top-left">Oben links</option>
+                                <option value="below-sender">Unter Absender</option>
+                                <option value="above-recipient">Über Empfänger</option>
+                            </select>
+                        </div>
+                        <div class="slider-group">
+                            <span style="font-size: 0.75rem; min-width: 100px;">Datum-Höhe</span>
+                            <input type="range" id="dateTopOffsetSlider" min="0" max="50" value="0" step="1">
+                            <span id="dateTopOffsetValue">0mm</span>
+                        </div>
+                        <div class="slider-group" style="margin-top: 8px;">
+                            <label style="font-size: 0.75rem; display: flex; align-items: center; gap: 6px;">
+                                <input type="checkbox" id="dateIncludeLocation" style="width: auto;">
+                                <span>Ort vor Datum (z.B. "Zürich, 20.01.2026")</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Text-Formatierung -->
+                <div class="design-section" style="background: rgba(245,158,11,0.05); border-radius: 8px; padding: 12px; margin: -8px -8px 16px -8px;">
+                    <label style="color: #f59e0b;">✏️ Text-Formatierung</label>
+                    <div class="text-format-settings">
+                        <div class="format-option" style="margin-bottom: 8px;">
+                            <label style="font-size: 0.75rem; display: flex; align-items: center; gap: 6px;">
+                                <input type="checkbox" id="senderNameBold" checked style="width: auto;">
+                                <span>Absender-Name fett</span>
+                            </label>
+                        </div>
+                        <div class="format-option" style="margin-bottom: 8px;">
+                            <label style="font-size: 0.75rem; display: flex; align-items: center; gap: 6px;">
+                                <input type="checkbox" id="companyNameBold" style="width: auto;">
+                                <span>Firmenname fett</span>
+                            </label>
+                        </div>
+                        <div class="format-option" style="margin-bottom: 8px;">
+                            <label style="font-size: 0.75rem; display: flex; align-items: center; gap: 6px;">
+                                <input type="checkbox" id="subjectBold" checked style="width: auto;">
+                                <span>Betreff fett</span>
+                            </label>
+                        </div>
+                        <div class="format-option">
+                            <label style="font-size: 0.75rem; display: flex; align-items: center; gap: 6px;">
+                                <input type="checkbox" id="signatureNameBold" style="width: auto;">
+                                <span>Unterschrift-Name fett</span>
+                            </label>
                         </div>
                     </div>
                 </div>
