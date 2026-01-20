@@ -1,31 +1,12 @@
 # Netlify Configuration
 # ═══════════════════════════════════════════════════════════════════════════
-# EINFACHES SETUP:
-# 
-# Production Branch = "main"
-#   → manuel-weiss.ch zeigt die aktuelle Website vom main Branch
-#   → Automatisch deployt bei jedem Push zu main
-#
-# NETLIFY DASHBOARD SETUP:
-# 1. Site configuration → Build & deploy → Branches and deploy contexts
-# 2. Production branch: "main"
-# 3. Branch deploys: "All" oder "None" (optional)
-# ═══════════════════════════════════════════════════════════════════════════
 
-# ═══════════════════════════════════════════════════════════════════════════
-# BUILD SETTINGS - Production (main Branch)
-# ═══════════════════════════════════════════════════════════════════════════
 [build]
-  # Statische Website - kein Build-Befehl nötig
   command = ""
-  # Production = Volle Website vom Root-Verzeichnis
   publish = "."
-  # Production Branch ist MAIN
-  base = ""
 
 [build.environment]
   NODE_ENV = "production"
-  SITE_ENV = "production"
 
 # ═══════════════════════════════════════════════════════════════════════════
 # DEPLOY PREVIEWS - KOSTENLOS! (für Pull Requests)
