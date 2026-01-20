@@ -169,6 +169,12 @@ class GamesManager {
         const container = document.getElementById('onlinePlayersList');
         const countEl = document.getElementById('onlineCount');
         
+        // Prüfe ob WebSocket aktiv ist (dann übernimmt games.html das Rendering)
+        if (window.gameWebSocket?.isConnected) {
+            console.log('🔌 WebSocket aktiv - Online-Spieler werden dort gerendert');
+            return;
+        }
+        
         // Registriere aktuellen Benutzer als online
         this.registerUserOnline();
         
@@ -176,9 +182,20 @@ class GamesManager {
         this.onlinePlayers = this.getOnlinePlayersFromStorage();
         
         // Filtere den aktuellen Benutzer aus der Anzeige
-        const otherPlayers = this.onlinePlayers.filter(p => 
+        let otherPlayers = this.onlinePlayers.filter(p => 
             p.id !== this.currentUser?.id && p.email !== this.currentUser?.email
         );
+        
+        // DEMO: Wenn keine echten Spieler, zeige simulierte Spieler
+        // (bis WebSocket deployed ist)
+        if (otherPlayers.length === 0) {
+            const demoPlayers = [
+                { id: 'demo1', name: 'ChessMaster42', avatar: '🎯', status: 'online', inGame: false },
+                { id: 'demo2', name: 'StrategyKing', avatar: '👑', status: 'online', inGame: true, currentGame: 'chess' },
+                { id: 'demo3', name: 'GamePro99', avatar: '🎮', status: 'online', inGame: false },
+            ];
+            otherPlayers = demoPlayers;
+        }
         
         if (countEl) {
             countEl.textContent = otherPlayers.length.toString();
@@ -187,11 +204,22 @@ class GamesManager {
         if (container) {
             if (otherPlayers.length > 0) {
                 container.innerHTML = otherPlayers.map(player => `
-                    <div class="online-player" data-player-id="${player.id}">
-                        <span class="status-dot"></span>
-                        <span class="player-name">${player.name || player.email?.split('@')[0] || 'Spieler'}</span>
-                        <button class="btn-challenge-small" onclick="challengePlayer('${player.id}')" title="Herausfordern">
-                            <i class="fas fa-chess"></i>
+                    <div class="online-player-card ${player.inGame ? 'in-game' : ''}" data-player-id="${player.id}">
+                        <div class="player-avatar">
+                            ${player.avatar || '👤'}
+                            <span class="player-status-dot ${player.inGame ? 'in-game' : ''}"></span>
+                        </div>
+                        <div class="player-info">
+                            <div class="player-name">${player.name || player.email?.split('@')[0] || 'Spieler'}</div>
+                            <div class="player-status-text ${player.inGame ? 'in-game' : 'online'}">
+                                ${player.inGame ? '🟡 Im Spiel' : '🟢 Online - Verfügbar'}
+                            </div>
+                        </div>
+                        <button class="player-invite-btn" 
+                                onclick="${player.id.startsWith('demo') ? 'openInviteModal' : 'challengePlayer'}('${player.id}')" 
+                                ${player.inGame ? 'disabled title="Spieler ist gerade in einem Spiel"' : ''}>
+                            <i class="fas fa-gamepad"></i>
+                            ${player.inGame ? 'Im Spiel' : 'Einladen'}
                         </button>
                     </div>
                 `).join('');
