@@ -94,7 +94,18 @@ class GamesManager {
             authButton.onclick = () => this.logout();
         } else {
             authButtonText.textContent = 'Anmelden';
-            authButton.onclick = () => window.location.href = 'index.html#contact';
+            authButton.onclick = () => {
+                // Öffne Login-Modal
+                if (window.authModals) {
+                    window.authModals.showLogin();
+                } else if (window.unifiedAuthModals) {
+                    window.unifiedAuthModals.showLogin();
+                } else if (typeof openLoginModal === 'function') {
+                    openLoginModal();
+                } else {
+                    window.location.href = 'index.html?login=true';
+                }
+            };
         }
     }
 
