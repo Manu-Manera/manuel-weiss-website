@@ -116,6 +116,16 @@
                         <div class="form-group">
                             <label>Unternehmen *</label>
                             <input type="text" name="companyName" id="companyName" placeholder="z.B. TechCorp GmbH" required>
+                            <button type="button" class="btn-secondary btn-inline" id="searchCompanyAddressBtn">
+                                <i class="fas fa-search"></i> Adresse recherchieren
+                            </button>
+                        </div>
+                        <div class="form-group" id="companyAddressGroup" style="display: none;">
+                            <label>Firmenadresse</label>
+                            <textarea name="companyAddress" id="companyAddress" rows="3" placeholder="Straße, PLZ Ort"></textarea>
+                            <small style="display: block; margin-top: 0.25rem; color: var(--cl-text-muted); font-size: 0.75rem;">
+                                Automatisch gefunden - Bitte überprüfen und ggf. anpassen
+                            </small>
                         </div>
                         <div class="form-group">
                             <label>Branche</label>
@@ -299,7 +309,8 @@
                         <!-- Letter Recipient (Company Address) -->
                         <div class="letter-recipient">
                             <span id="companyNameDisplay" contenteditable="true" class="editable-field" placeholder="Firmenname"></span>
-                            <span id="contactPersonDisplay" contenteditable="true" class="editable-field" placeholder="z.Hd. Ansprechpartner"></span>
+                            <span id="companyAddressDisplay" contenteditable="true" class="editable-field company-address" placeholder="Straße, PLZ Ort"></span>
+                            <span id="contactPersonDisplay" contenteditable="true" class="editable-field" placeholder="Personalabteilung / z.Hd. Ansprechpartner"></span>
                         </div>
 
                         <!-- Letter Subject -->
@@ -494,6 +505,35 @@
                     <div class="slider-group">
                         <input type="range" id="marginSlider" min="15" max="35" value="25" step="1">
                         <span id="marginValue">25mm</span>
+                    </div>
+                </div>
+
+                <!-- Header Settings -->
+                <div class="design-section">
+                    <label>Header-Einstellungen</label>
+                    <div class="header-settings">
+                        <div class="slider-group">
+                            <span style="font-size: 0.75rem; min-width: 80px;">Abstand oben</span>
+                            <input type="range" id="headerTopMarginSlider" min="0" max="30" value="0" step="1">
+                            <span id="headerTopMarginValue">0mm</span>
+                        </div>
+                        <div class="slider-group" style="margin-top: 8px;">
+                            <span style="font-size: 0.75rem; min-width: 80px;">Text-Kontrast</span>
+                            <select id="headerContrastSelect" class="design-select" style="flex: 1;">
+                                <option value="auto">Automatisch</option>
+                                <option value="light">Hell auf Dunkel</option>
+                                <option value="dark">Dunkel auf Hell</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Company Address Settings -->
+                <div class="design-section">
+                    <label>Firmenadresse-Abstand</label>
+                    <div class="slider-group">
+                        <input type="range" id="recipientTopMarginSlider" min="10" max="50" value="25" step="1">
+                        <span id="recipientTopMarginValue">25mm</span>
                     </div>
                 </div>
 
@@ -742,8 +782,8 @@
     <script src="../js/cloud-data-service.js?v=20260114c"></script>
     <script src="../js/workflow-api.js?v=20260114c"></script>
     <script src="../js/unified-profile-service.js?v=20260115"></script>
-    <script src="js/cover-letter-editor.js?v=20260115editable"></script>
-    <script src="js/inline-ai-coach.js?v=20260115fix"></script>
+    <script src="js/cover-letter-editor.js?v=20260120"></script>
+    <!-- KI-Schreibassistent entfernt auf Benutzerwunsch -->
     <!-- Job-Match-Analyzer entfernt wegen Absturz-Problemen -->
     <script src="js/industry-templates.js?v=20260115"></script>
     <script src="js/split-view-editor.js?v=20260115"></script>
