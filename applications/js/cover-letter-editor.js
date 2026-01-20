@@ -832,13 +832,17 @@ ${description.substring(0, 2000)}`;
         const lastName = this.profileData.lastName || this.profileData.name?.split(' ').slice(1).join(' ') || '';
         const fullName = `${firstName} ${lastName}`.trim() || 'Ihr Name';
         
-        // Name - IMMER setzen wenn "Max Mustermann" oder leer
+        // Name - IMMER setzen wenn Platzhalter oder leer
         if (nameEl) {
             const currentName = nameEl.textContent.trim();
-            if (!currentName || currentName === 'Max Mustermann' || currentName === 'Ihr Name' || currentName === 'Muster') {
-                if (fullName && fullName !== 'Ihr Name') {
-                    nameEl.textContent = fullName;
-                }
+            const isPlaceholder = !currentName || 
+                currentName === 'Max Mustermann' || 
+                currentName === 'Ihr Name' || 
+                currentName === 'Muster' ||
+                currentName.includes('Mustermann') ||
+                currentName === nameEl.dataset.placeholder;
+            if (isPlaceholder && fullName && fullName !== 'Ihr Name') {
+                nameEl.textContent = fullName;
             }
         }
         
@@ -855,27 +859,38 @@ ${description.substring(0, 2000)}`;
             }
         }
         
-        // Adresse - nur setzen wenn leer oder Platzhalter
+        // Adresse - setzen wenn Platzhalter
         if (addressEl) {
             const currentAddress = addressEl.textContent.trim();
-            if (!currentAddress || currentAddress === 'Musterstraße 1, 12345 Musterstadt' || currentAddress === 'Ihre Adresse') {
+            const isPlaceholder = !currentAddress || 
+                currentAddress === 'Musterstraße 1, 12345 Musterstadt' || 
+                currentAddress === 'Ihre Adresse' ||
+                currentAddress.includes('Musterstraße') ||
+                currentAddress === addressEl.dataset?.placeholder;
+            if (isPlaceholder) {
                 const address = this.profileData.address || this.profileData.location || '';
                 if (address) {
                     addressEl.textContent = address;
-                } else {
-                    addressEl.textContent = 'Ihre Adresse';
                 }
             }
         }
         
-        // Kontakt - nur setzen wenn leer oder Platzhalter
+        // Kontakt - setzen wenn Platzhalter
         if (contactEl) {
             const currentContact = contactEl.textContent.trim();
-            if (!currentContact || currentContact === 'max@example.com | +49 123 456789' || currentContact === 'Ihre Kontaktdaten') {
+            const isPlaceholder = !currentContact || 
+                currentContact === 'max@example.com | +49 123 456789' || 
+                currentContact === 'Ihre Kontaktdaten' ||
+                currentContact === 'E-Mail | Telefon' ||
+                currentContact.includes('example.com') ||
+                currentContact === contactEl.dataset?.placeholder;
+            if (isPlaceholder) {
                 const email = this.profileData.email || '';
                 const phone = this.profileData.phone || '';
                 const contactText = [email, phone].filter(Boolean).join(' | ');
-                contactEl.textContent = contactText || 'Ihre Kontaktdaten';
+                if (contactText) {
+                    contactEl.textContent = contactText;
+                }
             }
         }
     }
