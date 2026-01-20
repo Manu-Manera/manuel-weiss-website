@@ -54,14 +54,17 @@ const DashboardState = {
 // ═══════════════════════════════════════════════════════════════════════════
 
 async function initDashboard() {
+    const startTime = performance.now();
     console.log('🚀 Initializing Bewerbungsmanager Dashboard...');
+    
+    // Zeige Loading-State sofort
+    showDashboardLoading(true);
     
     // UnifiedProfileService Listener für automatische Updates
     if (window.unifiedProfileService) {
         window.unifiedProfileService.onProfileChange((profile) => {
             if (profile && profile.firstName && profile.firstName !== 'Test') {
                 console.log('📊 Dashboard: UnifiedProfileService Update erhalten');
-                // Update DashboardState mit den neuen Daten
                 DashboardState.profile = {
                     ...DashboardState.profile,
                     firstName: profile.firstName || DashboardState.profile.firstName,
@@ -73,29 +76,26 @@ async function initDashboard() {
                     summary: profile.summary || DashboardState.profile.summary,
                     skills: profile.skills?.length > 0 ? profile.skills : DashboardState.profile.skills
                 };
-                // Update UI
                 updateProfileForm();
                 prefillQuickApplyFromProfile();
             }
         });
     }
     
-    // Load saved data (inkl. AWS-Profil - asynchron)
-    await loadSavedState();
-    
-    // Setup mobile menu
+    // Setup UI sofort (sync operations)
     setupMobileMenu();
-    
-    // Setup authentication
     setupAuth();
     
-    // Update UI
+    // PARALLEL: Alle asynchronen Operationen gleichzeitig starten
+    await Promise.all([
+        loadSavedState(),
+        updateDashboardStats()
+    ]);
+    
+    // UI nach Datenladung aktualisieren
     updateStatsBar();
     updateApplicationsList();
     updateProfileForm();
-    
-    // Dashboard Stats aktualisieren (Anschreiben, Lebensläufe, etc.)
-    await updateDashboardStats();
     
     // Check URL hash for tab
     const hash = window.location.hash.replace('#', '');
@@ -108,11 +108,62 @@ async function initDashboard() {
         await initQuickApply();
     }
     
-    // Nochmals Quick-Apply-Felder füllen (falls initQuickApply sie zurückgesetzt hat)
+    // Nochmals Quick-Apply-Felder füllen
     setTimeout(() => prefillQuickApplyFromProfile(), 500);
     
+    // Loading-State entfernen
+    showDashboardLoading(false);
+    
     DashboardState.initialized = true;
-    console.log('✅ Dashboard initialized');
+    const duration = Math.round(performance.now() - startTime);
+    console.log(`✅ Dashboard initialized in ${duration}ms`);
+    
+    // Melde dem Parent-Frame dass wir fertig sind (für Iframe-Embedding)
+    if (window.parent !== window) {
+        window.parent.postMessage({ type: 'dashboard-initialized', duration }, '*');
+    }
+}
+
+/**
+ * Zeigt/Versteckt den Loading-State für das Dashboard
+ */
+function showDashboardLoading(show) {
+    // Füge Loading-Overlay hinzu wenn nicht vorhanden
+    let loadingOverlay = document.getElementById('dashboardLoadingOverlay');
+    
+    if (show) {
+        if (!loadingOverlay) {
+            loadingOverlay = document.createElement('div');
+            loadingOverlay.id = 'dashboardLoadingOverlay';
+            loadingOverlay.innerHTML = `
+                <div class="loading-spinner-container">
+                    <div class="loading-spinner"></div>
+                    <p>Lade Bewerbungsmanager...</p>
+                </div>
+            `;
+            loadingOverlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(255,255,255,0.9);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 9999;
+                flex-direction: column;
+            `;
+            document.body.appendChild(loadingOverlay);
+        }
+        loadingOverlay.style.display = 'flex';
+    } else if (loadingOverlay) {
+        loadingOverlay.style.opacity = '0';
+        loadingOverlay.style.transition = 'opacity 0.3s';
+        setTimeout(() => {
+            if (loadingOverlay) loadingOverlay.remove();
+        }, 300);
+    }
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -430,86 +481,75 @@ function updateStatsBar() {
 
 /**
  * Aktualisiert alle Dashboard-Statistiken (Anschreiben, Lebensläufe, Zeugnisse, Fotos, etc.)
+ * OPTIMIERT: Alle API-Calls werden PARALLEL ausgeführt für schnellere Ladezeiten
  */
 async function updateDashboardStats() {
+    const startTime = performance.now();
+    console.log('📊 Lade Dashboard Stats (parallel)...');
+    
     try {
-        // Anschreiben
-        let coverLetters = [];
-        if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
-            coverLetters = await window.cloudDataService.getCoverLetters(true);
-        } else {
-            const local = localStorage.getItem('cover_letter_drafts');
-            coverLetters = local ? JSON.parse(local) : [];
-        }
-        const statCoverLetters = document.getElementById('statCoverLetters');
-        if (statCoverLetters) {
-            statCoverLetters.textContent = coverLetters.length;
-        }
+        const isLoggedIn = window.cloudDataService && window.cloudDataService.isUserLoggedIn();
         
-        // Lebensläufe
-        let resumes = [];
-        if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
-            resumes = await window.cloudDataService.getResumes(true);
-        } else {
-            const local = localStorage.getItem('user_resumes');
-            resumes = local ? JSON.parse(local) : [];
-        }
-        const statResumes = document.getElementById('statResumes');
-        if (statResumes) {
-            statResumes.textContent = resumes.length;
-        }
+        // PARALLEL: Alle Daten gleichzeitig laden mit Promise.all
+        const [coverLetters, resumes, documents, photos, portfolios] = await Promise.all([
+            // Anschreiben
+            isLoggedIn 
+                ? window.cloudDataService.getCoverLetters(false).catch(() => [])
+                : Promise.resolve(JSON.parse(localStorage.getItem('cover_letter_drafts') || '[]')),
+            
+            // Lebensläufe
+            isLoggedIn 
+                ? window.cloudDataService.getResumes(false).catch(() => [])
+                : Promise.resolve(JSON.parse(localStorage.getItem('user_resumes') || '[]')),
+            
+            // Zeugnisse/Dokumente
+            isLoggedIn 
+                ? window.cloudDataService.getDocuments(false).catch(() => [])
+                : Promise.resolve(JSON.parse(localStorage.getItem('user_certificates') || '[]')),
+            
+            // Fotos
+            isLoggedIn 
+                ? window.cloudDataService.getPhotos(false).catch(() => [])
+                : Promise.resolve(JSON.parse(localStorage.getItem('user_photos') || '[]')),
+            
+            // Bewerbungsmappen
+            isLoggedIn && window.cloudDataService.getPortfolios
+                ? window.cloudDataService.getPortfolios(false).catch(() => [])
+                : Promise.resolve(JSON.parse(localStorage.getItem('user_portfolios') || '[]'))
+        ]);
         
-        // Zeugnisse/Dokumente
-        let documents = [];
-        if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
-            documents = await window.cloudDataService.getDocuments(true);
-        } else {
-            const local = localStorage.getItem('user_certificates');
-            documents = local ? JSON.parse(local) : [];
-        }
-        const statDocuments = document.getElementById('statDocuments');
-        if (statDocuments) {
-            statDocuments.textContent = documents.length;
-        }
+        // UI Updates (schnell, da synchron)
+        const updates = [
+            ['statCoverLetters', coverLetters?.length || 0],
+            ['statResumes', resumes?.length || 0],
+            ['statDocuments', documents?.length || 0],
+            ['statPhotos', photos?.length || 0],
+            ['statPortfolios', portfolios?.length || 0],
+            ['statTotal', DashboardState.stats.total || 0]
+        ];
         
-        // Fotos
-        let photos = [];
-        if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
-            photos = await window.cloudDataService.getPhotos(true);
-        } else {
-            const local = localStorage.getItem('user_photos');
-            photos = local ? JSON.parse(local) : [];
-        }
-        const statPhotos = document.getElementById('statPhotos');
-        if (statPhotos) {
-            statPhotos.textContent = photos.length;
-        }
+        updates.forEach(([id, value]) => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = value;
+        });
         
-        // Bewerbungsmappen
-        let portfolios = [];
-        if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
-            portfolios = await window.cloudDataService.getPortfolios?.(true) || [];
-        } else {
-            const local = localStorage.getItem('user_portfolios');
-            portfolios = local ? JSON.parse(local) : [];
-        }
-        const statPortfolios = document.getElementById('statPortfolios');
-        if (statPortfolios) {
-            statPortfolios.textContent = portfolios.length;
-        }
+        // Cache für spätere Tab-Nutzung speichern
+        DashboardState._cachedData = {
+            coverLetters: coverLetters || [],
+            resumes: resumes || [],
+            documents: documents || [],
+            photos: photos || [],
+            portfolios: portfolios || [],
+            timestamp: Date.now()
+        };
         
-        // Aktive Bewerbungen
-        const statTotal = document.getElementById('statTotal');
-        if (statTotal) {
-            statTotal.textContent = DashboardState.stats.total || 0;
-        }
-        
-        console.log('✅ Dashboard Stats aktualisiert:', {
-            coverLetters: coverLetters.length,
-            resumes: resumes.length,
-            documents: documents.length,
-            photos: photos.length,
-            portfolios: portfolios.length
+        const duration = Math.round(performance.now() - startTime);
+        console.log(`✅ Dashboard Stats geladen in ${duration}ms:`, {
+            coverLetters: coverLetters?.length || 0,
+            resumes: resumes?.length || 0,
+            documents: documents?.length || 0,
+            photos: photos?.length || 0,
+            portfolios: portfolios?.length || 0
         });
     } catch (error) {
         console.error('Fehler beim Aktualisieren der Dashboard-Stats:', error);
@@ -1865,10 +1905,14 @@ async function loadCoverLetters() {
     try {
         let coverLetters = [];
         
-        // Versuche Cloud-Service zu nutzen (mit forceRefresh für aktuelle Daten)
-        if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
+        // OPTIMIERT: Nutze gecachte Daten wenn vorhanden (< 30 Sekunden alt)
+        const cache = DashboardState._cachedData;
+        if (cache?.coverLetters && (Date.now() - cache.timestamp) < 30000) {
+            coverLetters = cache.coverLetters;
+            console.log('📦 Anschreiben aus Cache geladen');
+        } else if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
             try {
-                coverLetters = await window.cloudDataService.getCoverLetters(true); // forceRefresh
+                coverLetters = await window.cloudDataService.getCoverLetters(false); // Cache nutzen
             } catch (error) {
                 console.warn('Cloud-Laden fehlgeschlagen, verwende localStorage:', error);
                 const local = localStorage.getItem('cover_letter_drafts');
@@ -1929,11 +1973,6 @@ async function loadCoverLetters() {
         
         console.log(`✅ ${coverLetters.length} Anschreiben geladen`);
         
-        // Stats aktualisieren
-        if (typeof updateDashboardStats === 'function') {
-            await updateDashboardStats();
-        }
-        
     } catch (error) {
         console.error('Fehler beim Laden der Anschreiben:', error);
     }
@@ -1955,10 +1994,14 @@ async function loadResumes() {
     try {
         let resumes = [];
         
-        // Versuche Cloud-Service zu nutzen (mit forceRefresh für aktuelle Daten)
-        if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
+        // OPTIMIERT: Nutze gecachte Daten wenn vorhanden (< 30 Sekunden alt)
+        const cache = DashboardState._cachedData;
+        if (cache?.resumes && (Date.now() - cache.timestamp) < 30000) {
+            resumes = cache.resumes;
+            console.log('📦 Lebensläufe aus Cache geladen');
+        } else if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
             try {
-                resumes = await window.cloudDataService.getResumes(true); // forceRefresh
+                resumes = await window.cloudDataService.getResumes(false); // Cache nutzen
             } catch (error) {
                 console.warn('Cloud-Laden fehlgeschlagen, verwende localStorage:', error);
                 const local = localStorage.getItem('user_resumes');
@@ -2057,9 +2100,13 @@ async function loadCertificates() {
     try {
         let documents = [];
         
-        // Versuche Cloud-Service zu nutzen
-        if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
-            documents = await window.cloudDataService.getDocuments();
+        // OPTIMIERT: Nutze gecachte Daten wenn vorhanden (< 30 Sekunden alt)
+        const cache = DashboardState._cachedData;
+        if (cache?.documents && (Date.now() - cache.timestamp) < 30000) {
+            documents = cache.documents;
+            console.log('📦 Zeugnisse aus Cache geladen');
+        } else if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
+            documents = await window.cloudDataService.getDocuments(false);
         } else {
             // Fallback: localStorage
             const local = localStorage.getItem('user_certificates');
@@ -2789,28 +2836,33 @@ window.loadDesignFromEditors = function() {
 
 /**
  * Lädt verfügbare Dokumente für die Auswahlmenüs
+ * OPTIMIERT: Nutzt Cache und lädt parallel
  */
 async function loadPortfolioOptions() {
-    // Anschreiben laden
-    let coverLetters = [];
-    if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
-        coverLetters = await window.cloudDataService.getCoverLetters();
-    } else {
-        coverLetters = JSON.parse(localStorage.getItem('cover_letter_drafts') || '[]');
-    }
+    const isLoggedIn = window.cloudDataService && window.cloudDataService.isUserLoggedIn();
+    const cache = DashboardState._cachedData;
+    const cacheValid = cache && (Date.now() - cache.timestamp) < 30000;
     
+    // PARALLEL: Alle Daten gleichzeitig laden (oder aus Cache)
+    const [coverLetters, resumes, documents] = await Promise.all([
+        cacheValid && cache.coverLetters
+            ? Promise.resolve(cache.coverLetters)
+            : (isLoggedIn ? window.cloudDataService.getCoverLetters(false).catch(() => []) : Promise.resolve(JSON.parse(localStorage.getItem('cover_letter_drafts') || '[]'))),
+        
+        cacheValid && cache.resumes
+            ? Promise.resolve(cache.resumes)
+            : (isLoggedIn ? window.cloudDataService.getResumes(false).catch(() => []) : Promise.resolve(JSON.parse(localStorage.getItem('user_resumes') || '[]'))),
+        
+        cacheValid && cache.documents
+            ? Promise.resolve(cache.documents)
+            : (isLoggedIn ? window.cloudDataService.getDocuments(false).catch(() => []) : Promise.resolve(JSON.parse(localStorage.getItem('user_certificates') || '[]')))
+    ]);
+    
+    // UI Updates (sync - schnell)
     const coverSelect = document.getElementById('selectCoverLetter');
     if (coverSelect) {
         coverSelect.innerHTML = '<option value="">-- Anschreiben wählen --</option>' +
             coverLetters.map(cl => `<option value="${cl.id}">${cl.jobData?.title || cl.jobData?.company || 'Anschreiben'} (${new Date(cl.createdAt).toLocaleDateString('de-DE')})</option>`).join('');
-    }
-    
-    // Lebensläufe laden
-    let resumes = [];
-    if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
-        resumes = await window.cloudDataService.getResumes();
-    } else {
-        resumes = JSON.parse(localStorage.getItem('user_resumes') || '[]');
     }
     
     const resumeSelect = document.getElementById('selectResume');
@@ -2819,26 +2871,17 @@ async function loadPortfolioOptions() {
             resumes.map(r => `<option value="${r.id}">${r.personalInfo?.firstName || ''} ${r.personalInfo?.lastName || 'Lebenslauf'}</option>`).join('');
     }
     
-    // Fotos laden
+    // Fotos laden (aus lokalem Storage - schnell)
     const photos = JSON.parse(localStorage.getItem('user_photos') || '[]');
     const photoSelect = document.getElementById('selectPhoto');
     if (photoSelect) {
         photoSelect.innerHTML = '<option value="">-- Foto wählen --</option>' +
             photos.map((p, i) => `<option value="${p.id}">Foto ${i + 1} (${new Date(p.createdAt).toLocaleDateString('de-DE')})</option>`).join('');
         
-        // Automatisch das ausgewählte Foto vorauswählen
         const selectedId = localStorage.getItem('selected_photo_id');
         if (selectedId) {
             photoSelect.value = selectedId;
         }
-    }
-    
-    // Zeugnisse laden
-    let documents = [];
-    if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
-        documents = await window.cloudDataService.getDocuments();
-    } else {
-        documents = JSON.parse(localStorage.getItem('user_certificates') || '[]');
     }
     
     const certList = document.getElementById('certificatesList');
