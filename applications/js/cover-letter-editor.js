@@ -59,6 +59,7 @@ class CoverLetterEditor {
         this.setupBlocksEditor();
         this.setupVersions();
         this.setupCoverLetterSelection();
+        this.setupSignatureExtended();
         
         // Load user profile
         await this.loadUserProfile();
@@ -2700,6 +2701,625 @@ Gib nur den Einleitungsabsatz zurück.`;
         } catch (error) {
             console.warn('CV Design sync failed:', error);
             this.showToast('CV-Design konnte nicht übernommen werden', 'error');
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // SKILL GAP ANALYSE
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    async startSkillGapAnalysis() {
+        console.log('🎯 Starte Skill Gap Analyse...');
+        
+        // Validiere Eingaben
+        const jobDescription = document.getElementById('jobDescription')?.value;
+        if (!jobDescription || jobDescription.length < 50) {
+            this.showToast('Bitte geben Sie eine ausführliche Stellenbeschreibung ein', 'warning');
+            return;
+        }
+        
+        // API Key prüfen
+        const apiKey = await this.getAPIKey();
+        if (!apiKey) {
+            this.showToast('Kein API-Key gefunden. Bitte im Admin Panel konfigurieren.', 'error');
+            return;
+        }
+        
+        // Modal öffnen
+        const modal = document.getElementById('skillGapModal');
+        if (modal) {
+            modal.style.display = 'flex';
+        }
+        
+        try {
+            // Schritt 1: Anforderungen extrahieren
+            this.updateSkillGapStep(1);
+            const requirements = await this.extractRequirements(jobDescription, apiKey);
+            console.log('📋 Anforderungen extrahiert:', requirements);
+            
+            // Schritt 2: User-Skills sammeln
+            this.updateSkillGapStep(2);
+            const userSkills = await this.collectAllUserSkills();
+            console.log('👤 User-Skills gesammelt:', userSkills);
+            
+            // Schritt 3: Matching durchführen
+            this.updateSkillGapStep(3);
+            const matchResults = await this.matchSkillsToRequirements(requirements, userSkills, apiKey);
+            console.log('⚖️ Matching-Ergebnisse:', matchResults);
+            
+            // Ergebnisse anzeigen
+            this.displaySkillGapResults(matchResults);
+            
+            // Generate Button aktivieren
+            const generateBtn = document.getElementById('skillGapGenerateBtn');
+            if (generateBtn) {
+                generateBtn.disabled = false;
+                generateBtn.onclick = () => this.generateSkillGapCoverLetter(matchResults, apiKey);
+            }
+            
+        } catch (error) {
+            console.error('❌ Skill Gap Analyse fehlgeschlagen:', error);
+            this.showToast('Fehler bei der Analyse: ' + error.message, 'error');
+            this.closeSkillGapModal();
+        }
+    }
+
+    updateSkillGapStep(step) {
+        const steps = document.querySelectorAll('.skill-gap-steps .step');
+        steps.forEach((s, i) => {
+            s.classList.remove('active', 'completed');
+            if (i + 1 < step) {
+                s.classList.add('completed');
+            } else if (i + 1 === step) {
+                s.classList.add('active');
+            }
+        });
+        
+        const content = document.getElementById('skillGapStepContent');
+        if (content) {
+            const stepTexts = [
+                'Analysiere Stellenbeschreibung...',
+                'Sammle deine Skills aus allen Quellen...',
+                'Führe Matching durch...',
+                'Generiere personalisiertes Anschreiben...'
+            ];
+            content.innerHTML = `
+                <div class="loading-state">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>${stepTexts[step - 1]}</p>
+                </div>
+            `;
+        }
+    }
+
+    async extractRequirements(jobDescription, apiKey) {
+        const prompt = `Analysiere die folgende Stellenbeschreibung und extrahiere die TOP 10 wichtigsten Anforderungen.
+
+STELLENBESCHREIBUNG:
+"""
+${jobDescription}
+"""
+
+AUFGABE:
+1. Identifiziere die wichtigsten Anforderungen (Hard Skills, Soft Skills, Erfahrung, Qualifikationen)
+2. Ranke sie nach Wichtigkeit (1 = wichtigste)
+3. Kategorisiere jede Anforderung
+
+Antworte ausschließlich mit einem JSON-Array in diesem Format:
+[
+  {
+    "rank": 1,
+    "requirement": "Kurze Beschreibung der Anforderung",
+    "category": "hard_skill|soft_skill|experience|qualification",
+    "keywords": ["keyword1", "keyword2"]
+  }
+]
+
+Maximal 10 Einträge.`;
+
+        const response = await this.callOpenAI([
+            { role: 'system', content: 'Du bist ein Experte für Stellenanalysen. Antworte nur mit validem JSON.' },
+            { role: 'user', content: prompt }
+        ], apiKey, { maxTokens: 2000 });
+
+        try {
+            // Clean JSON
+            const cleaned = response.replace(/```json\n?|\n?```/g, '').trim();
+            return JSON.parse(cleaned);
+        } catch (e) {
+            console.error('JSON Parse Error:', e);
+            throw new Error('Konnte Anforderungen nicht extrahieren');
+        }
+    }
+
+    async collectAllUserSkills() {
+        const skills = {
+            technical: [],
+            soft: [],
+            experience: [],
+            education: [],
+            coaching: {},
+            fachlicheEntwicklung: null
+        };
+
+        // 1. Aus allen Lebensläufen
+        try {
+            const resumes = JSON.parse(localStorage.getItem('user_resumes') || '[]');
+            resumes.forEach(resume => {
+                if (resume.skills?.technical) skills.technical.push(...resume.skills.technical);
+                if (resume.skills?.soft) skills.soft.push(...resume.skills.soft);
+                if (resume.experience) skills.experience.push(...resume.experience);
+                if (resume.education) skills.education.push(...resume.education);
+            });
+        } catch (e) {}
+
+        // 2. Aus Profildaten
+        if (this.profileData) {
+            if (this.profileData.skills) {
+                if (Array.isArray(this.profileData.skills)) {
+                    skills.technical.push(...this.profileData.skills);
+                } else if (this.profileData.skills.technical) {
+                    skills.technical.push(...this.profileData.skills.technical);
+                }
+            }
+            if (this.profileData.experience) skills.experience.push(...this.profileData.experience);
+            if (this.profileData.education) skills.education.push(...this.profileData.education);
+        }
+
+        // 3. Aus Coaching
+        try {
+            const coaching = JSON.parse(localStorage.getItem('coaching_workflow_data') || '{}');
+            if (coaching.naturalTalents) skills.coaching.naturalTalents = coaching.naturalTalents;
+            if (coaching.acquiredSkills) skills.coaching.acquiredSkills = coaching.acquiredSkills;
+            if (coaching.uniqueStrengths) skills.coaching.uniqueStrengths = coaching.uniqueStrengths;
+        } catch (e) {}
+
+        // 4. Aus fachlicher Entwicklung
+        try {
+            for (let i = 1; i <= 7; i++) {
+                const stepData = localStorage.getItem(`fachlicheEntwicklungStep${i}`);
+                if (stepData) {
+                    if (!skills.fachlicheEntwicklung) skills.fachlicheEntwicklung = {};
+                    skills.fachlicheEntwicklung[`step${i}`] = JSON.parse(stepData);
+                }
+            }
+        } catch (e) {}
+
+        // 5. Aus Persönlichkeitsentwicklung
+        try {
+            const persoenlichkeit = JSON.parse(localStorage.getItem('persoenlichkeitsentwicklung_progress') || '{}');
+            if (persoenlichkeit.completedMethods) {
+                skills.persoenlichkeit = persoenlichkeit;
+            }
+        } catch (e) {}
+
+        // Deduplizieren
+        skills.technical = [...new Set(skills.technical.filter(Boolean))];
+        skills.soft = [...new Set(skills.soft.filter(Boolean))];
+
+        return skills;
+    }
+
+    async matchSkillsToRequirements(requirements, userSkills, apiKey) {
+        const skillSummary = `
+TECHNISCHE SKILLS: ${userSkills.technical.join(', ') || 'Keine angegeben'}
+
+SOFT SKILLS: ${userSkills.soft.join(', ') || 'Keine angegeben'}
+
+BERUFSERFAHRUNG:
+${userSkills.experience.map(exp => 
+    `- ${exp.position || exp.title} bei ${exp.company} (${exp.startDate || ''} - ${exp.endDate || 'heute'}): ${exp.description || exp.responsibilities?.join(', ') || ''}`
+).join('\n') || 'Keine angegeben'}
+
+AUSBILDUNG:
+${userSkills.education.map(edu => 
+    `- ${edu.degree} in ${edu.field || edu.fieldOfStudy} bei ${edu.institution} (${edu.graduationDate || edu.endDate || ''})`
+).join('\n') || 'Keine angegeben'}
+
+COACHING-ERGEBNISSE:
+- Natürliche Talente: ${userSkills.coaching?.naturalTalents || 'Nicht definiert'}
+- Erworbene Fähigkeiten: ${userSkills.coaching?.acquiredSkills || 'Nicht definiert'}
+- Einzigartige Stärken: ${userSkills.coaching?.uniqueStrengths || 'Nicht definiert'}
+`;
+
+        const prompt = `Führe ein detailliertes Skill-Matching durch.
+
+ANFORDERUNGEN DER STELLE:
+${requirements.map(r => `${r.rank}. ${r.requirement} (${r.category})`).join('\n')}
+
+PROFIL DES BEWERBERS:
+${skillSummary}
+
+AUFGABE:
+1. Matche jede Anforderung mit den Skills des Bewerbers
+2. Finde konkrete Beispiele aus der Erfahrung, die zur Anforderung passen
+3. Bewerte die Übereinstimmung (0-100%)
+4. Formuliere einen spezifischen Satz für das Anschreiben
+
+Antworte als JSON-Array:
+[
+  {
+    "requirement": "Anforderung",
+    "matchedSkills": ["skill1", "skill2"],
+    "experience": "Konkretes Beispiel aus der Erfahrung oder null",
+    "matchScore": 85,
+    "coverLetterSentence": "Ein spezifischer, überzeugender Satz für das Anschreiben, der die Erfahrung mit der Anforderung verbindet."
+  }
+]`;
+
+        const response = await this.callOpenAI([
+            { role: 'system', content: 'Du bist ein Experte für Bewerbungsmatching. Antworte nur mit validem JSON.' },
+            { role: 'user', content: prompt }
+        ], apiKey, { maxTokens: 4000 });
+
+        try {
+            const cleaned = response.replace(/```json\n?|\n?```/g, '').trim();
+            return JSON.parse(cleaned);
+        } catch (e) {
+            console.error('JSON Parse Error:', e);
+            throw new Error('Konnte Matching nicht durchführen');
+        }
+    }
+
+    displaySkillGapResults(results) {
+        const resultsDiv = document.getElementById('skillGapResults');
+        const tableDiv = document.getElementById('skillGapTable');
+        
+        if (!resultsDiv || !tableDiv) return;
+        
+        let html = `
+            <div class="skill-gap-row header">
+                <div>Anforderung</div>
+                <div>Deine Skills</div>
+                <div>Match</div>
+            </div>
+        `;
+        
+        results.forEach(result => {
+            const score = result.matchScore;
+            const badgeClass = score >= 70 ? 'high' : score >= 40 ? 'medium' : 'low';
+            
+            html += `
+                <div class="skill-gap-row">
+                    <div class="requirement">${result.requirement}</div>
+                    <div class="user-skill">${result.matchedSkills?.join(', ') || result.experience || 'Keine direkten Skills'}</div>
+                    <div class="match-score">
+                        <span class="match-badge ${badgeClass}">${score}%</span>
+                    </div>
+                </div>
+            `;
+        });
+        
+        tableDiv.innerHTML = html;
+        resultsDiv.style.display = 'block';
+        
+        // Step 4 markieren als aktiv
+        this.updateSkillGapStep(4);
+        
+        // Loading entfernen
+        const content = document.getElementById('skillGapStepContent');
+        if (content) {
+            content.innerHTML = '<p style="text-align: center; color: var(--cl-success);"><i class="fas fa-check-circle"></i> Analyse abgeschlossen!</p>';
+        }
+    }
+
+    async generateSkillGapCoverLetter(matchResults, apiKey) {
+        const jobData = this.collectJobData();
+        const country = document.getElementById('countrySelect')?.value || 'DE';
+        
+        // Filtere nur gute Matches (>40%)
+        const goodMatches = matchResults.filter(m => m.matchScore >= 40);
+        
+        const countryBestPractices = {
+            DE: 'Deutschland: Formelle Anrede, "Sie"-Form, strukturiert, Bezug auf Unternehmenskultur',
+            CH: 'Schweiz: Höflich-distanziert, "Sie"-Form, Präzision betonen, Bezug auf Qualität',
+            AT: 'Österreich: Freundlich-formell, "Sie"-Form, traditioneller Aufbau',
+            US: 'USA: Direkter, selbstbewusster Ton, "I"-Aussagen, messbare Erfolge'
+        };
+
+        const prompt = `Erstelle ein überzeugendes Anschreiben basierend auf der Skill-Gap-Analyse.
+
+POSITION: ${jobData.jobTitle}
+UNTERNEHMEN: ${jobData.companyName}
+LAND: ${country} - ${countryBestPractices[country]}
+ANSPRECHPERSON: ${jobData.contactPerson || 'Nicht bekannt'}
+
+SKILL-MATCHES (sortiert nach Übereinstimmung):
+${goodMatches.map(m => `
+- Anforderung: ${m.requirement}
+- Match: ${m.matchScore}%
+- Vorgeschlagener Satz: "${m.coverLetterSentence}"
+`).join('\n')}
+
+AUFGABE:
+1. Erstelle eine passende Einleitung (ohne "hiermit bewerbe ich mich")
+2. Integriere JEDEN der vorgeschlagenen Sätze für die Skill-Matches in einen fließenden Text
+3. Die Sätze sollen natürlich ineinander übergehen
+4. Füge konkrete Zahlen/Ergebnisse hinzu wo möglich
+5. Erstelle einen motivierenden Schluss
+6. Beachte die Landesbestpractices für ${country}
+
+FORMAT:
+- ${this.options.length === 'short' ? 'ca. 150 Wörter' : this.options.length === 'medium' ? 'ca. 250 Wörter' : 'ca. 350 Wörter'}
+- Tonalität: ${this.options.tone}
+- Absätze mit Leerzeile trennen
+
+Gib NUR den Anschreiben-Text zurück, KEINE Meta-Informationen.`;
+
+        try {
+            this.closeSkillGapModal();
+            this.showLoading();
+            
+            const content = await this.callOpenAI([
+                { role: 'system', content: 'Du bist ein professioneller Bewerbungsberater. Erstelle authentische, spezifische Anschreiben.' },
+                { role: 'user', content: prompt }
+            ], apiKey, { maxTokens: 2000 });
+            
+            this.displayGeneratedLetter(content, jobData);
+            this.showToast('Skill-Gap-Anschreiben erfolgreich generiert!', 'success');
+            
+        } catch (error) {
+            console.error('Fehler beim Generieren:', error);
+            this.showToast('Fehler beim Generieren des Anschreibens', 'error');
+        } finally {
+            this.hideLoading();
+        }
+    }
+
+    closeSkillGapModal() {
+        const modal = document.getElementById('skillGapModal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+        // Reset
+        const resultsDiv = document.getElementById('skillGapResults');
+        if (resultsDiv) resultsDiv.style.display = 'none';
+        
+        const generateBtn = document.getElementById('skillGapGenerateBtn');
+        if (generateBtn) generateBtn.disabled = true;
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // SIGNATURE EXTENDED
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    setupSignatureExtended() {
+        this.setupSignatureTabs();
+        this.setupSignatureCanvas();
+        this.setupSignatureGenerator();
+        this.loadSavedSignature();
+    }
+
+    setupSignatureTabs() {
+        const tabs = document.querySelectorAll('.signature-section .signature-tab');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active from all tabs
+                tabs.forEach(t => {
+                    t.classList.remove('active');
+                    t.style.background = 'transparent';
+                    t.style.color = 'var(--cl-text-muted)';
+                });
+                
+                // Set active
+                tab.classList.add('active');
+                tab.style.background = 'var(--cl-primary)';
+                tab.style.color = 'white';
+                
+                // Show corresponding content
+                const tabName = tab.dataset.tab;
+                document.querySelectorAll('.signature-tab-content').forEach(content => {
+                    content.style.display = 'none';
+                });
+                
+                const content = document.getElementById(`signatureTab${tabName.charAt(0).toUpperCase() + tabName.slice(1)}`);
+                if (content) content.style.display = 'block';
+            });
+        });
+    }
+
+    setupSignatureCanvas() {
+        const canvas = document.getElementById('signatureCanvas');
+        if (!canvas) return;
+        
+        const ctx = canvas.getContext('2d');
+        let isDrawing = false;
+        let lastX = 0;
+        let lastY = 0;
+        
+        // Canvas Setup
+        ctx.strokeStyle = '#1e293b';
+        ctx.lineWidth = 2;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        
+        const getCoords = (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            
+            if (e.touches) {
+                return {
+                    x: (e.touches[0].clientX - rect.left) * scaleX,
+                    y: (e.touches[0].clientY - rect.top) * scaleY
+                };
+            }
+            return {
+                x: (e.clientX - rect.left) * scaleX,
+                y: (e.clientY - rect.top) * scaleY
+            };
+        };
+        
+        const startDrawing = (e) => {
+            e.preventDefault();
+            isDrawing = true;
+            const coords = getCoords(e);
+            lastX = coords.x;
+            lastY = coords.y;
+        };
+        
+        const draw = (e) => {
+            if (!isDrawing) return;
+            e.preventDefault();
+            
+            const coords = getCoords(e);
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(coords.x, coords.y);
+            ctx.stroke();
+            
+            lastX = coords.x;
+            lastY = coords.y;
+        };
+        
+        const stopDrawing = () => {
+            isDrawing = false;
+        };
+        
+        // Mouse events
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseout', stopDrawing);
+        
+        // Touch events
+        canvas.addEventListener('touchstart', startDrawing);
+        canvas.addEventListener('touchmove', draw);
+        canvas.addEventListener('touchend', stopDrawing);
+        
+        // Clear button
+        const clearBtn = document.getElementById('clearSignatureCanvas');
+        if (clearBtn) {
+            clearBtn.addEventListener('click', () => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            });
+        }
+        
+        // Use drawn signature
+        const useBtn = document.getElementById('useDrawnSignature');
+        if (useBtn) {
+            useBtn.addEventListener('click', () => {
+                const dataUrl = canvas.toDataURL('image/png');
+                this.setSignatureImage(dataUrl);
+                this.showToast('Gezeichnete Unterschrift übernommen', 'success');
+            });
+        }
+    }
+
+    setupSignatureGenerator() {
+        const nameInput = document.getElementById('signatureNameInput');
+        const styleSelect = document.getElementById('signatureStyleSelect');
+        const preview = document.getElementById('signatureGeneratePreview');
+        const useBtn = document.getElementById('useGeneratedSignature');
+        
+        if (!nameInput || !styleSelect || !preview) return;
+        
+        // Pre-fill with user name
+        if (this.profileData?.firstName) {
+            nameInput.value = `${this.profileData.firstName} ${this.profileData.lastName || ''}`.trim();
+        }
+        
+        const updatePreview = () => {
+            const name = nameInput.value || 'Ihr Name';
+            const font = styleSelect.value;
+            preview.innerHTML = `<span style="font-family: ${font}; font-size: 28px; color: #1e293b;">${name}</span>`;
+        };
+        
+        nameInput.addEventListener('input', updatePreview);
+        styleSelect.addEventListener('change', updatePreview);
+        
+        // Initial preview
+        updatePreview();
+        
+        // Use generated signature
+        if (useBtn) {
+            useBtn.addEventListener('click', async () => {
+                const name = nameInput.value;
+                const font = styleSelect.value;
+                
+                // Create canvas to convert to image
+                const canvas = document.createElement('canvas');
+                canvas.width = 300;
+                canvas.height = 80;
+                const ctx = canvas.getContext('2d');
+                
+                // Load font first
+                const fontFamily = font.replace(/'/g, '').split(',')[0].trim();
+                try {
+                    await document.fonts.load(`28px ${fontFamily}`);
+                } catch (e) {}
+                
+                ctx.font = `28px ${font}`;
+                ctx.fillStyle = '#1e293b';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(name, 10, 40);
+                
+                const dataUrl = canvas.toDataURL('image/png');
+                this.setSignatureImage(dataUrl);
+                this.showToast('Generierte Unterschrift übernommen', 'success');
+            });
+        }
+    }
+
+    setSignatureImage(dataUrl) {
+        this.design.signatureImage = dataUrl;
+        
+        // Update preview in design panel
+        const previewContainer = document.getElementById('signaturePreview');
+        if (previewContainer) {
+            previewContainer.innerHTML = `<img src="${dataUrl}" alt="Unterschrift" style="max-height: 60px;">`;
+        }
+        
+        // Update signature in letter
+        this.applyDesign();
+        
+        // Check if should save to profile
+        const saveToProfile = document.getElementById('saveSignatureToProfile');
+        if (saveToProfile?.checked) {
+            this.saveSignatureToProfile(dataUrl);
+        }
+    }
+
+    async saveSignatureToProfile(dataUrl) {
+        try {
+            // Save to localStorage
+            localStorage.setItem('user_signature', dataUrl);
+            
+            // Try to save to cloud
+            if (window.cloudDataService) {
+                const profile = await window.cloudDataService.getProfile(false) || {};
+                profile.signature = dataUrl;
+                await window.cloudDataService.saveProfile(profile);
+                console.log('✅ Signatur im Cloud-Profil gespeichert');
+            }
+            
+            this.showToast('Signatur im Profil gespeichert', 'success');
+        } catch (error) {
+            console.warn('Signatur konnte nicht im Profil gespeichert werden:', error);
+        }
+    }
+
+    async loadSavedSignature() {
+        try {
+            // Try localStorage first
+            let signature = localStorage.getItem('user_signature');
+            
+            // Try cloud
+            if (!signature && window.cloudDataService) {
+                const profile = await window.cloudDataService.getProfile(false);
+                signature = profile?.signature;
+            }
+            
+            if (signature) {
+                this.design.signatureImage = signature;
+                const previewContainer = document.getElementById('signaturePreview');
+                if (previewContainer) {
+                    previewContainer.innerHTML = `<img src="${signature}" alt="Unterschrift" style="max-height: 60px;">`;
+                }
+                console.log('✅ Gespeicherte Signatur geladen');
+            }
+        } catch (error) {
+            console.warn('Signatur konnte nicht geladen werden:', error);
         }
     }
 }
