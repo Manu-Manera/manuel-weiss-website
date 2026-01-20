@@ -13,8 +13,8 @@
 [build]
   command = ""
   publish = "."
-  # Ignore-Pattern: Nur bei PR/Preview deployen
-  ignore = "git log -1 --format='%s' | grep -qvE '^(Merge pull request|Preview:)'"
+  # Production Deploys aktiviert
+  # ignore = "git log -1 --format='%s' | grep -qvE '^(Merge pull request|Preview:)'"
 
 # Preview Deploys (Pull Requests) - AKTIVIERT
 [context.deploy-preview]
