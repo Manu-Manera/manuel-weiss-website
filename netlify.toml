@@ -1,31 +1,35 @@
 # Netlify Configuration
 # ═══════════════════════════════════════════════════════════════════════════
-# NUR PREVIEW DEPLOYS - Production ist deaktiviert
+# PREVIEW-FIRST DEPLOYMENT
 # ═══════════════════════════════════════════════════════════════════════════
 #
 # Workflow:
-# 1. Änderungen pushen zu main → Kein Production Deploy
-# 2. Pull Request erstellen → Preview Deploy wird erstellt
-# 3. Preview testen unter: deploy-preview-{PR-Nummer}--manuel-weiss.netlify.app
-# 4. Wenn alles gut: PR mergen und "Unlock & Publish" im Netlify Dashboard
+# 1. Änderungen zu main pushen → Kein Production Deploy
+# 2. Änderungen werden automatisch zum "preview" Branch gesynct
+# 3. Preview ist verfügbar unter: preview--manuel-weiss.netlify.app
+# 4. Wenn gut → Manuell "Publish" im Netlify Dashboard
 #
 # ═══════════════════════════════════════════════════════════════════════════
 
 [build]
   command = ""
   publish = "."
-  # Dieser ignore-Befehl stoppt ALLE Production Deploys
-  # exit 0 = Build überspringen, exit 1 = Build ausführen
+  # Production Deploys überspringen - nur manuell publishen
   ignore = "exit 0"
 
-# Preview Deploys (Pull Requests) - AKTIVIERT
-# Diese werden bei jedem Pull Request erstellt
+# TEST BRANCH - Automatisch deployen
+# URL: test--manuel-weiss.netlify.app
+[context.test]
+  command = ""
+  publish = "."
+  # Kein ignore = Branch wird immer deployed
+
+# Deploy Previews (Pull Requests) - AKTIVIERT
 [context.deploy-preview]
   command = ""
   publish = "."
-  # Kein ignore = Preview Deploys werden immer erstellt
 
-# Branch Deploys - DEAKTIVIERT
+# Andere Branch Deploys - DEAKTIVIERT
 [context.branch-deploy]
   command = ""
   publish = "."
@@ -40,7 +44,7 @@
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
 
-# Cache für statische Assets
+# Cache für statische Assets - Immer neu laden
 [[headers]]
   for = "/js/*"
   [headers.values]
