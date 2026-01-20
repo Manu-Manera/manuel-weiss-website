@@ -235,13 +235,15 @@
         <div class="chess-app-container">
             <!-- Header Bar (minimalistisch wie Chess.com) -->
             <div class="chess-app-header">
-                <button class="chess-back-btn" onclick="closeChessGame()">
-                    <i class="fas fa-arrow-left"></i>
+                <button class="chess-back-btn" onclick="closeChessGame()" type="button">
+                    <i class="fas fa-arrow-left"></i> Zurück
                 </button>
                 <div class="chess-app-title">
                     <i class="fas fa-chess-pawn"></i> Schach
                 </div>
-                <div class="chess-header-spacer"></div>
+                <button class="chess-close-btn" onclick="closeChessGame()" type="button" title="Schließen">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
             
             <!-- Opponent Section mit Sprechblase (wie Chess.com) -->

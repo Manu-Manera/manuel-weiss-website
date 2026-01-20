@@ -1864,16 +1864,40 @@
     padding: 0.5rem 1rem;
     background: #272522;
     flex-shrink: 0;
-    height: 44px;
+    height: 50px;
+    z-index: 100;
 }
 
 .chess-back-btn {
-    background: none;
+    background: rgba(255,255,255,0.1);
+    border: none;
+    color: white;
+    font-size: 1.4rem;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background 0.2s;
+}
+
+.chess-back-btn:hover,
+.chess-back-btn:active {
+    background: rgba(255,255,255,0.2);
+}
+
+.chess-close-btn {
+    background: rgba(231, 76, 60, 0.8);
     border: none;
     color: white;
     font-size: 1.2rem;
-    padding: 0.5rem;
+    padding: 0.5rem 0.75rem;
     cursor: pointer;
+    border-radius: 8px;
+    transition: background 0.2s;
+}
+
+.chess-close-btn:hover,
+.chess-close-btn:active {
+    background: #e74c3c;
 }
 
 .chess-app-title {
