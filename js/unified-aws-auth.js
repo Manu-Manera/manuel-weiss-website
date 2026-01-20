@@ -47,51 +47,111 @@ class UnifiedAWSAuth {
 
     /**
      * Initialisierung des Auth-Systems
+     * FIX: Verhindert mehrfache Initialisierung, aber erlaubt es auf verschiedenen Seiten
+     * Token wird aus localStorage geteilt zwischen allen Seiten
      */
     async init() {
+        // WICHTIG: Verhindere mehrfache Initialisierung auf derselben Seite
+        if (this.isInitialized) {
+            console.log('ℹ️ Auth-System bereits initialisiert auf dieser Seite');
+            // Aber prüfe Session trotzdem (für Token-Updates von anderen Tabs)
+            this.checkCurrentUser();
+            return;
+        }
+        
+        // Markiere als initialisiert (verhindert parallele Initialisierung)
+        this.isInitialized = true;
+        
         try {
             console.log('🚀 Initializing Unified AWS Auth System...');
             
-            // AWS SDK laden
+            // ZUERST: Session aus localStorage prüfen (schnell, nicht-blockierend)
+            // Token wird zwischen allen Seiten geteilt
+            const session = localStorage.getItem(window.AWS_AUTH_CONFIG.token.storageKey);
+            if (session) {
+                try {
+                    this.currentUser = JSON.parse(session);
+                    console.log('✅ Session aus localStorage geladen (geteilt zwischen Seiten)');
+                    // UI sofort aktualisieren
+                    this.updateUI(true);
+                } catch (e) {
+                    console.warn('⚠️ Session Parse-Fehler:', e);
+                }
+            }
+            
+            // AWS SDK laden mit Timeout (nur wenn noch nicht geladen)
             if (typeof AWS === 'undefined') {
                 console.log('📦 Loading AWS SDK...');
-                await this.loadAWSSDK();
-                console.log('✅ AWS SDK loaded successfully');
+                try {
+                    await Promise.race([
+                        this.loadAWSSDK(),
+                        new Promise((_, reject) => 
+                            setTimeout(() => reject(new Error('AWS SDK load timeout')), 10000)
+                        )
+                    ]);
+                    console.log('✅ AWS SDK loaded successfully');
+                } catch (error) {
+                    console.error('❌ AWS SDK load failed:', error);
+                    // Weiter ohne SDK - Fallback auf localStorage
+                    this.checkCurrentUser();
+                    return;
+                }
+            } else {
+                console.log('✅ AWS SDK bereits geladen');
             }
             
             // Kurz warten für vollständige Verfügbarkeit
-            await new Promise(resolve => setTimeout(resolve, 500));
+            await new Promise(resolve => setTimeout(resolve, 300));
             
             // AWS konfigurieren
-            AWS.config.region = this.region;
-            console.log('🌍 AWS region configured:', this.region);
+            if (typeof AWS !== 'undefined') {
+                AWS.config.region = this.region;
+                console.log('🌍 AWS region configured:', this.region);
+                
+                // Cognito Identity Service Provider initialisieren (nur wenn noch nicht vorhanden)
+                if (!this.cognitoIdentityServiceProvider) {
+                    this.cognitoIdentityServiceProvider = new AWS.CognitoIdentityServiceProvider({
+                        region: this.region
+                    });
+                    console.log('🔐 Cognito Identity Service Provider initialized');
+                }
+            }
             
-            // Cognito Identity Service Provider initialisieren
-            this.cognitoIdentityServiceProvider = new AWS.CognitoIdentityServiceProvider({
-                region: this.region
-            });
-            console.log('🔐 Cognito Identity Service Provider initialized');
+            // Aktuelle Session prüfen (nicht-blockierend)
+            // Token wird aus localStorage geladen (geteilt zwischen Seiten)
+            try {
+                this.checkCurrentUser();
+            } catch (error) {
+                console.warn('⚠️ checkCurrentUser failed:', error);
+            }
             
-            this.isInitialized = true;
+            // Event Listeners einrichten (nur einmal pro Seite)
+            if (!this._eventListenersSetup) {
+                this.setupEventListeners();
+                this._eventListenersSetup = true;
+            }
             
-            // Aktuelle Session prüfen
-            this.checkCurrentUser();
-            
-            // Event Listeners einrichten
-            this.setupEventListeners();
-            
-            // Session Monitoring
-            this.setupSessionMonitoring();
+            // Session Monitoring (nur einmal pro Seite)
+            if (!this._sessionMonitoringSetup) {
+                this.setupSessionMonitoring();
+                this._sessionMonitoringSetup = true;
+            }
             
             console.log('✅ Unified AWS Auth System initialized successfully');
         } catch (error) {
             console.error('❌ Unified AWS Auth System initialization failed:', error);
-            this.showNotification('AWS SDK konnte nicht geladen werden. Bitte Seite neu laden.', 'error');
+            // Fallback: Nur localStorage verwenden
+            try {
+                this.checkCurrentUser();
+            } catch (e) {
+                console.warn('⚠️ Fallback checkCurrentUser failed:', e);
+            }
         }
     }
 
     /**
      * AWS SDK laden
+     * FIX: Timeout hinzufügen um endloses Laden zu verhindern
      */
     async loadAWSSDK() {
         return new Promise((resolve, reject) => {
@@ -100,13 +160,38 @@ class UnifiedAWSAuth {
                 return;
             }
             
+            // Prüfe ob SDK bereits geladen wird
+            const existingScript = document.querySelector('script[src*="aws-sdk"]');
+            if (existingScript) {
+                // Warte auf bestehendes Script
+                let attempts = 0;
+                const checkInterval = setInterval(() => {
+                    if (typeof AWS !== 'undefined') {
+                        clearInterval(checkInterval);
+                        resolve();
+                    } else if (attempts++ > 50) { // 5 Sekunden Timeout
+                        clearInterval(checkInterval);
+                        reject(new Error('AWS SDK load timeout'));
+                    }
+                }, 100);
+                return;
+            }
+            
+            // Timeout für Script-Laden
+            const timeout = setTimeout(() => {
+                console.error('❌ AWS SDK load timeout');
+                reject(new Error('AWS SDK load timeout'));
+            }, 10000); // 10 Sekunden Timeout
+            
             const script = document.createElement('script');
             script.src = 'https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js';
             script.onload = () => {
+                clearTimeout(timeout);
                 console.log('✅ AWS SDK loaded');
                 resolve();
             };
             script.onerror = () => {
+                clearTimeout(timeout);
                 console.error('❌ Failed to load AWS SDK');
                 reject(new Error('Failed to load AWS SDK'));
             };
@@ -1032,11 +1117,24 @@ class UnifiedAWSAuth {
 
     /**
      * Benachrichtigung anzeigen
+     * FIX: Keine störenden Notifications mehr - nur bei echten Fehlern
      */
     showNotification(message, type = 'info') {
-        // Bei Erfolg: Zeige nur den animierten Haken
+        // IGNORIERE alle "System wird initialisiert" Meldungen
+        if (message.includes('System wird') || message.includes('initialisiert') || message.includes('warten')) {
+            console.log('ℹ️', message);
+            return;
+        }
+        
+        // Bei Erfolg: Zeige nur den animierten Haken (wenn verfügbar)
         if (type === 'success' && window.showSuccessCheck) {
             window.showSuccessCheck({ duration: 1500 });
+            return;
+        }
+        
+        // NUR bei echten Fehlern anzeigen
+        if (type !== 'error') {
+            console.log('ℹ️', message);
             return;
         }
         
@@ -1048,12 +1146,12 @@ class UnifiedAWSAuth {
             }
         });
         
-        // Notification-Element erstellen
+        // Notification-Element erstellen (NUR für Fehler)
         const notification = document.createElement('div');
         notification.className = `aws-auth-notification aws-auth-notification-${type}`;
         notification.innerHTML = `
             <div class="notification-content">
-                <i class="fas fa-${type === 'error' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
+                <i class="fas fa-exclamation-circle"></i>
                 <span>${message}</span>
             </div>
         `;
@@ -1063,7 +1161,7 @@ class UnifiedAWSAuth {
             position: fixed;
             top: 20px;
             right: 20px;
-            background: ${type === 'error' ? '#ef4444' : type === 'warning' ? '#f59e0b' : '#3b82f6'};
+            background: #ef4444;
             color: white;
             padding: 12px 20px;
             border-radius: 8px;
@@ -1076,8 +1174,7 @@ class UnifiedAWSAuth {
         
         document.body.appendChild(notification);
         
-        // Nach 8 Sekunden für Fehlermeldungen entfernen, 5 Sekunden für andere
-        const duration = type === 'error' ? 8000 : 5000;
+        // Nach 5 Sekunden entfernen
         setTimeout(() => {
             notification.style.animation = 'slideOutNotification 0.3s ease-in';
             setTimeout(() => {
@@ -1085,7 +1182,7 @@ class UnifiedAWSAuth {
                     notification.parentNode.removeChild(notification);
                 }
             }, 300);
-        }, duration);
+        }, 5000);
     }
 }
 
@@ -1093,8 +1190,16 @@ class UnifiedAWSAuth {
 // INITIALISIERUNG
 // ============================================================================
 
-// Globale Instanz erstellen
-window.awsAuth = new UnifiedAWSAuth();
+// WICHTIG: Nur EINE Instanz erstellen - verhindert mehrfache Initialisierung
+if (!window.awsAuth) {
+    window.awsAuth = new UnifiedAWSAuth();
+} else {
+    console.log('✅ awsAuth bereits initialisiert, verwende bestehende Instanz');
+    // Stelle sicher, dass UI aktualisiert wird
+    if (window.awsAuth.isInitialized) {
+        window.awsAuth.updateUI(window.awsAuth.isLoggedIn());
+    }
+}
 
 // WICHTIG: Alias für Kompatibilität mit user-profile.js und anderen Modulen
 window.realUserAuth = window.awsAuth;

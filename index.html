@@ -57,34 +57,6 @@
                 <a href="#contact" class="nav-link" data-de="Kontakt" data-en="Contact">Kontakt</a>
                 <button class="lang-link-compact" data-lang="de" title="Deutsch">🇩🇪</button>
                 <button class="lang-link-compact" data-lang="en" title="English">🇬🇧</button>
-                
-                <!-- Auth Button mit Dropdown -->
-                <div class="nav-user-container" id="navUserContainer">
-                    <button class="btn-auth" id="authButton" onclick="toggleUserMenu()">
-                        <i class="fas fa-user"></i>
-                        <span id="authButtonText">Anmelden</span>
-                    </button>
-                    <div class="user-dropdown" id="userDropdown" style="display: none;">
-                        <div class="user-dropdown-header">
-                            <i class="fas fa-user-circle"></i>
-                            <div class="user-info">
-                                <span class="user-name" id="dropdownUserName">Benutzer</span>
-                                <span class="user-email" id="dropdownUserEmail">email@example.com</span>
-                            </div>
-                        </div>
-                        <div class="user-dropdown-divider"></div>
-                        <a href="applications/" class="user-dropdown-item">
-                            <i class="fas fa-briefcase"></i> Bewerbungsmanager
-                        </a>
-                        <a href="games.html" class="user-dropdown-item">
-                            <i class="fas fa-chess"></i> Spiele
-                        </a>
-                        <div class="user-dropdown-divider"></div>
-                        <button class="user-dropdown-item logout-btn" onclick="handleLogout()">
-                            <i class="fas fa-sign-out-alt"></i> Abmelden
-                        </button>
-                    </div>
-                </div>
             </div>
         </div>
             
@@ -2270,8 +2242,33 @@
     </script>
     <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
     <script src="js/aws-app-config.js"></script>
-    <script src="js/aws-profile-api.js?v=20250116"></script>
-    <script src="js/real-user-auth-system.js?v=20250116"></script>
+    <!-- UNIFIED AUTH SYSTEM - MUSS VOR allen anderen Auth-Skripten geladen werden -->
+    <script src="js/unified-aws-auth.js?v=20260117"></script>
+    <script src="js/unified-auth-modals.js?v=20260117"></script>
+    <!-- CLOUD DATA SERVICE - Für Lebensläufe und Anschreiben -->
+    <script src="js/cloud-data-service.js?v=20260117"></script>
+    <!-- DEBUG: Lebensläufe wiederherstellen (nur in Entwicklung) -->
+    <script src="js/debug-restore-resumes.js?v=20260117"></script>
+    <!-- Legacy Auth ENTFERNT - unified-aws-auth.js ersetzt es vollständig -->
+    <!-- Alias für Kompatibilität mit alten Scripts -->
+    <script>
+        // Warte auf unified-aws-auth.js Initialisierung und erstelle Alias
+        (function() {
+            let attempts = 0;
+            const checkAuth = setInterval(() => {
+                if (window.awsAuth) {
+                    // Alias für Kompatibilität mit alten Scripts
+                    if (!window.realUserAuth) {
+                        window.realUserAuth = window.awsAuth;
+                        console.log('✅ Alias erstellt: realUserAuth = awsAuth');
+                    }
+                    clearInterval(checkAuth);
+                } else if (attempts++ > 50) {
+                    clearInterval(checkAuth);
+                }
+            }, 100);
+        })();
+    </script>
     <script src="js/beraterprofil.js"></script>
     
     <!-- Menü-Funktionen -->

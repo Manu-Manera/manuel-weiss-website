@@ -1053,8 +1053,12 @@ class UnifiedAuthModals {
     }
 }
 
-// Globale Instanz erstellen
-window.authModals = new UnifiedAuthModals();
+// WICHTIG: Nur EINE Instanz erstellen - verhindert mehrfache Initialisierung
+if (!window.authModals) {
+    window.authModals = new UnifiedAuthModals();
+} else {
+    console.log('✅ authModals bereits initialisiert, verwende bestehende Instanz');
+}
 
 // Globale Helper-Funktionen für Rückwärtskompatibilität
 window.showLoginModal = () => window.authModals.showLogin();

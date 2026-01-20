@@ -1,6 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
-import * as apigatewayv2 from 'aws-cdk-lib/aws-apigatewayv2';
-import * as apigatewayv2_integrations from 'aws-cdk-lib/aws-apigatewayv2-integrations';
+import * as apigatewayv2 from '@aws-cdk/aws-apigatewayv2-alpha';
+import * as apigatewayv2_integrations from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -8,6 +8,7 @@ import { Construct } from 'constructs';
 
 export interface WebSocketStackProps extends cdk.StackProps {
   environment?: string;
+  description?: string;
 }
 
 /**
@@ -87,7 +88,7 @@ export class WebSocketStack extends cdk.Stack {
       functionName: `game-ws-connect-${environment}`,
       runtime: lambda.Runtime.NODEJS_18_X,
       handler: 'index.handler',
-      code: lambda.Code.fromAsset('lambda/websocket-connect'),
+      code: lambda.Code.fromAsset('../lambda/websocket-connect'),
       environment: lambdaEnvironment,
       timeout: cdk.Duration.seconds(10),
       memorySize: 256,
@@ -98,7 +99,7 @@ export class WebSocketStack extends cdk.Stack {
       functionName: `game-ws-disconnect-${environment}`,
       runtime: lambda.Runtime.NODEJS_18_X,
       handler: 'index.handler',
-      code: lambda.Code.fromAsset('lambda/websocket-disconnect'),
+      code: lambda.Code.fromAsset('../lambda/websocket-disconnect'),
       environment: lambdaEnvironment,
       timeout: cdk.Duration.seconds(10),
       memorySize: 256,
@@ -109,7 +110,7 @@ export class WebSocketStack extends cdk.Stack {
       functionName: `game-ws-message-${environment}`,
       runtime: lambda.Runtime.NODEJS_18_X,
       handler: 'index.handler',
-      code: lambda.Code.fromAsset('lambda/websocket-message'),
+      code: lambda.Code.fromAsset('../lambda/websocket-message'),
       environment: lambdaEnvironment,
       timeout: cdk.Duration.seconds(30),
       memorySize: 512,

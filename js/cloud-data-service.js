@@ -42,6 +42,62 @@ class CloudDataService {
     }
 
     /**
+     * Holt die aktuelle User-ID
+     * WICHTIG: Für korrekte Datenabfrage aus DynamoDB
+     */
+    getCurrentUserId() {
+        // 1. awsAuth
+        if (window.awsAuth && window.awsAuth.isLoggedIn()) {
+            const user = window.awsAuth.getCurrentUser();
+            if (user?.id) {
+                console.log('🔑 User-ID von awsAuth:', user.id);
+                return user.id;
+            }
+        }
+        
+        // 2. realUserAuth
+        if (window.realUserAuth && window.realUserAuth.isLoggedIn()) {
+            const user = window.realUserAuth.getCurrentUser();
+            if (user?.id) {
+                console.log('🔑 User-ID von realUserAuth:', user.id);
+                return user.id;
+            }
+        }
+        
+        // 3. localStorage Session
+        const session = localStorage.getItem('aws_auth_session');
+        if (session) {
+            try {
+                const parsed = JSON.parse(session);
+                if (parsed.id) {
+                    console.log('🔑 User-ID von localStorage:', parsed.id);
+                    return parsed.id;
+                }
+                // Versuche aus idToken zu extrahieren
+                if (parsed.idToken) {
+                    try {
+                        const parts = parsed.idToken.split('.');
+                        if (parts.length === 3) {
+                            const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
+                            if (payload.sub) {
+                                console.log('🔑 User-ID aus Token extrahiert:', payload.sub);
+                                return payload.sub;
+                            }
+                        }
+                    } catch (e) {
+                        console.warn('⚠️ Konnte User-ID nicht aus Token extrahieren:', e);
+                    }
+                }
+            } catch (e) {
+                console.warn('⚠️ Konnte Session nicht parsen:', e);
+            }
+        }
+        
+        console.error('❌ Keine User-ID gefunden!');
+        return null;
+    }
+
+    /**
      * Holt das Auth Token
      */
     async getAuthToken() {
@@ -193,27 +249,81 @@ class CloudDataService {
     
     /**
      * Alle Lebensläufe laden
+     * WICHTIG: Lädt IMMER zuerst aus localStorage, dann aus Cloud (verhindert Datenverlust)
      */
     async getResumes(forceRefresh = false) {
-        if (!forceRefresh && this.cache.resumes && this.cacheExpiry.resumes > Date.now()) {
-            return this.cache.resumes;
+        // WICHTIG: ZUERST localStorage laden (Backup)
+        const localResumes = localStorage.getItem('user_resumes');
+        let localData = [];
+        if (localResumes) {
+            try {
+                localData = JSON.parse(localResumes);
+                console.log('📦 Lebensläufe aus localStorage gefunden:', localData.length);
+            } catch (e) {
+                console.warn('⚠️ localStorage Parse-Fehler:', e);
+            }
         }
 
+        // Cache prüfen
+        if (!forceRefresh && this.cache.resumes && this.cacheExpiry.resumes > Date.now()) {
+            console.log('✅ Lebensläufe aus Cache geladen:', this.cache.resumes.length);
+            // Merge mit localStorage (localStorage hat Priorität)
+            const merged = this.mergeResumes(localData, this.cache.resumes);
+            return merged;
+        }
+
+        // User-ID prüfen
+        const userId = this.getCurrentUserId();
+        if (!userId) {
+            console.warn('⚠️ Keine User-ID - verwende nur localStorage');
+            return localData;
+        }
+
+        // Cloud-Laden versuchen
         try {
+            console.log('📡 Lade Lebensläufe aus Cloud für User-ID:', userId);
             const resumes = await this.apiRequest('/resumes');
-            if (resumes) {
-                this.cache.resumes = resumes;
+            if (resumes && Array.isArray(resumes) && resumes.length > 0) {
+                // Merge: Cloud + localStorage (Cloud hat Priorität, aber localStorage behält alte Daten)
+                const merged = this.mergeResumes(localData, resumes);
+                
+                // Cache aktualisieren
+                this.cache.resumes = merged;
                 this.cacheExpiry.resumes = Date.now() + this.CACHE_DURATION;
-                console.log('✅ Lebensläufe aus Cloud geladen:', resumes.length);
-                return resumes;
+                
+                // localStorage aktualisieren (Backup)
+                localStorage.setItem('user_resumes', JSON.stringify(merged));
+                
+                console.log('✅ Lebensläufe aus Cloud geladen und gemerged:', merged.length);
+                return merged;
+            } else {
+                console.warn('⚠️ Cloud gibt keine Lebensläufe zurück, verwende localStorage');
             }
         } catch (error) {
-            console.warn('Cloud-Laden fehlgeschlagen, verwende localStorage');
+            console.error('❌ Cloud-Laden fehlgeschlagen:', error);
+            console.log('📦 Verwende localStorage als Fallback');
         }
         
-        // Fallback: localStorage
-        const local = localStorage.getItem('user_resumes');
-        return local ? JSON.parse(local) : [];
+        // Fallback: localStorage (immer verfügbar)
+        return localData;
+    }
+
+    /**
+     * Merge Lebensläufe (verhindert Datenverlust)
+     */
+    mergeResumes(localResumes, cloudResumes) {
+        const merged = [...cloudResumes];
+        const cloudIds = new Set(cloudResumes.map(r => r.id));
+        
+        // Füge lokale hinzu, die nicht in Cloud sind
+        localResumes.forEach(local => {
+            if (!cloudIds.has(local.id)) {
+                console.log('📦 Füge lokalen Lebenslauf hinzu:', local.id);
+                merged.push(local);
+            }
+        });
+        
+        return merged;
     }
 
     /**
@@ -247,28 +357,55 @@ class CloudDataService {
 
     /**
      * Lebenslauf speichern
+     * WICHTIG: Speichert IMMER zuerst lokal, dann in Cloud (verhindert Datenverlust)
      */
     async saveResume(resumeData) {
-        // Lokal speichern
+        console.log('💾 Speichere Lebenslauf:', resumeData.id);
+        
+        // WICHTIG: ZUERST lokal speichern (Backup)
         let resumes = JSON.parse(localStorage.getItem('user_resumes') || '[]');
         const existingIndex = resumes.findIndex(r => r.id === resumeData.id);
         if (existingIndex >= 0) {
-            resumes[existingIndex] = resumeData;
+            console.log('📝 Aktualisiere bestehenden Lebenslauf:', resumeData.id);
+            resumes[existingIndex] = { ...resumes[existingIndex], ...resumeData, updatedAt: new Date().toISOString() };
         } else {
-            resumes.push(resumeData);
+            console.log('➕ Füge neuen Lebenslauf hinzu:', resumeData.id);
+            resumes.push({ ...resumeData, createdAt: resumeData.createdAt || new Date().toISOString(), updatedAt: new Date().toISOString() });
         }
         localStorage.setItem('user_resumes', JSON.stringify(resumes));
+        console.log('✅ Lebenslauf lokal gespeichert (Backup)');
         
-        try {
-            const result = await this.apiRequest('/resumes', 'POST', resumeData);
-            if (result?.success) {
-                this.cache.resumes = result.resumes;
-                this.cacheExpiry.resumes = Date.now() + this.CACHE_DURATION;
-                console.log('✅ Lebenslauf in Cloud gespeichert');
-                return result;
+        // Cache aktualisieren
+        this.cache.resumes = resumes;
+        this.cacheExpiry.resumes = Date.now() + this.CACHE_DURATION;
+        
+        // Dann in Cloud speichern (wenn eingeloggt)
+        if (this.isUserLoggedIn()) {
+            try {
+                const userId = this.getCurrentUserId();
+                if (!userId) {
+                    console.warn('⚠️ Keine User-ID - nur lokal gespeichert');
+                    return { success: true, local: true, resume: resumeData };
+                }
+                
+                console.log('📡 Speichere in Cloud für User-ID:', userId);
+                const result = await this.apiRequest('/resumes', 'POST', resumeData);
+                if (result?.success) {
+                    // Merge Cloud-Ergebnis mit lokalem
+                    const merged = this.mergeResumes(resumes, result.resumes || []);
+                    this.cache.resumes = merged;
+                    this.cacheExpiry.resumes = Date.now() + this.CACHE_DURATION;
+                    // localStorage auch mit Cloud-Daten aktualisieren
+                    localStorage.setItem('user_resumes', JSON.stringify(merged));
+                    console.log('✅ Lebenslauf in Cloud gespeichert');
+                    return result;
+                }
+            } catch (error) {
+                console.error('❌ Cloud-Speichern fehlgeschlagen:', error);
+                console.log('✅ Lebenslauf bleibt lokal gespeichert (Backup)');
             }
-        } catch (error) {
-            console.warn('Cloud-Speichern fehlgeschlagen:', error);
+        } else {
+            console.log('ℹ️ User nicht eingeloggt - nur lokal gespeichert');
         }
         
         return { success: true, local: true, resume: resumeData };
