@@ -55,12 +55,27 @@
                 <p>Spiele gegen andere Online-Spieler</p>
             </div>
 
+            <!-- Online Status Toggle -->
+            <div class="online-status-section">
+                <div class="status-toggle-container">
+                    <span class="status-label">Mein Status:</span>
+                    <label class="status-toggle">
+                        <input type="checkbox" id="onlineStatusToggle" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <span id="statusText" class="status-text online">Online</span>
+                </div>
+                <p class="status-hint">Wenn du offline bist, kannst du nur gegen den Computer spielen</p>
+            </div>
+
             <!-- Online Players -->
             <div class="online-players-section">
-                <h2><i class="fas fa-users"></i> Online-Spieler</h2>
+                <h2><i class="fas fa-users"></i> Online-Spieler (<span id="onlineCount">0</span>)</h2>
                 <div id="onlinePlayersList" class="online-players-list">
-                    <div class="loading-spinner">
-                        <i class="fas fa-spinner fa-spin"></i> Lade Online-Spieler...
+                    <div class="no-players-message">
+                        <i class="fas fa-user-slash"></i>
+                        <p>Aktuell sind keine anderen Spieler online.</p>
+                        <small>Spiele gegen den Computer oder warte auf andere Spieler.</small>
                     </div>
                 </div>
             </div>
@@ -85,29 +100,107 @@
                             <i class="fas fa-robot"></i> Gegen Computer
                         </button>
                     </div>
-                    <div class="drag-drop-hint">
-                        <i class="fas fa-info-circle"></i>
-                        <span>Tipp: Figuren können per Drag & Drop oder Klick bewegt werden</span>
+                    <!-- Board Design Selector -->
+                    <div class="board-design-selector">
+                        <label>Brett-Design:</label>
+                        <select id="chessBoardDesign" onchange="changeBoardDesign(this.value)">
+                            <option value="classic">Klassisch</option>
+                            <option value="wood">Holz</option>
+                            <option value="marble">Marmor</option>
+                            <option value="modern">Modern</option>
+                            <option value="neon">Neon</option>
+                        </select>
                     </div>
                 </div>
 
-                <!-- Tic-Tac-Toe Game (Placeholder) -->
+                <!-- Tic-Tac-Toe Game -->
                 <div class="game-card" id="tictactoeCard">
                     <div class="game-icon">
-                        <i class="fas fa-times"></i>
+                        <i class="fas fa-hashtag"></i>
                     </div>
                     <h3>Tic-Tac-Toe</h3>
-                    <p>Klassisches Tic-Tac-Toe (Coming Soon)</p>
+                    <p>Klassisches 3-Gewinnt Spiel</p>
                     <div class="game-stats">
-                        <span><i class="fas fa-users"></i> <span id="tictactoePlayersCount">0</span> Spieler online</span>
+                        <span><i class="fas fa-trophy"></i> Schnell & Spaßig</span>
                     </div>
-                    <button class="btn-game" disabled>
-                        <i class="fas fa-clock"></i> Bald verfügbar
-                    </button>
+                    <div class="game-options">
+                        <button class="btn-game" onclick="startTicTacToe('player')">
+                            <i class="fas fa-users"></i> Gegen Spieler
+                        </button>
+                        <button class="btn-game btn-game-secondary" onclick="startTicTacToe('computer')">
+                            <i class="fas fa-robot"></i> Gegen Computer
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Vier Gewinnt -->
+                <div class="game-card" id="connectFourCard">
+                    <div class="game-icon">
+                        <i class="fas fa-grip-vertical"></i>
+                    </div>
+                    <h3>Vier Gewinnt</h3>
+                    <p>Verbinde 4 Steine in einer Reihe</p>
+                    <div class="game-stats">
+                        <span><i class="fas fa-brain"></i> Strategisch</span>
+                    </div>
+                    <div class="game-options">
+                        <button class="btn-game" onclick="startConnectFour('player')">
+                            <i class="fas fa-users"></i> Gegen Spieler
+                        </button>
+                        <button class="btn-game btn-game-secondary" onclick="startConnectFour('computer')">
+                            <i class="fas fa-robot"></i> Gegen Computer
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     </main>
+
+    <!-- Tic-Tac-Toe Modal -->
+    <div id="tictactoeModal" class="game-modal" style="display: none;">
+        <div class="game-modal-content ttt-modal">
+            <div class="game-modal-header">
+                <h2><i class="fas fa-hashtag"></i> Tic-Tac-Toe</h2>
+                <button class="close-modal" onclick="closeTicTacToe()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="game-modal-body">
+                <div id="tttStatus" class="game-status">Du bist X - Du beginnst!</div>
+                <div id="tttBoard" class="ttt-board">
+                    <!-- 3x3 Grid wird dynamisch generiert -->
+                </div>
+                <div class="game-controls">
+                    <button class="btn-game" onclick="restartTicTacToe()">
+                        <i class="fas fa-redo"></i> Neues Spiel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vier Gewinnt Modal -->
+    <div id="connectFourModal" class="game-modal" style="display: none;">
+        <div class="game-modal-content c4-modal">
+            <div class="game-modal-header">
+                <h2><i class="fas fa-grip-vertical"></i> Vier Gewinnt</h2>
+                <button class="close-modal" onclick="closeConnectFour()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="game-modal-body">
+                <div id="c4Status" class="game-status">Du bist Rot - Du beginnst!</div>
+                <div id="c4Board" class="c4-board">
+                    <!-- 7x6 Grid wird dynamisch generiert -->
+                </div>
+                <div class="game-controls">
+                    <button class="btn-game" onclick="restartConnectFour()">
+                        <i class="fas fa-redo"></i> Neues Spiel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Chess Game Modal -->
     <div id="chessModal" class="game-modal" style="display: none;">
