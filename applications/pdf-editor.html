@@ -774,6 +774,22 @@
                         <i class="fas fa-plus-circle"></i>
                         <span>Neues PDF</span>
                     </button>
+                    <button class="tool-btn" onclick="showCompressModal()" title="PDF-Dateigröße reduzieren">
+                        <i class="fas fa-compress-alt"></i>
+                        <span>Komprimieren</span>
+                    </button>
+                    <button class="tool-btn" onclick="showWatermarkModal()" title="Wasserzeichen hinzufügen">
+                        <i class="fas fa-tint"></i>
+                        <span>Wasserzeichen</span>
+                    </button>
+                    <button class="tool-btn" onclick="extractSelectedPages()" title="Ausgewählte Seiten als neue PDF extrahieren">
+                        <i class="fas fa-file-export"></i>
+                        <span>Extrahieren</span>
+                    </button>
+                    <button class="tool-btn" onclick="makeAllPagesSameSize()" title="Alle Seiten auf gleiche Größe bringen">
+                        <i class="fas fa-equals"></i>
+                        <span>Vereinheitlichen</span>
+                    </button>
                 </div>
             </div>
             
@@ -905,6 +921,130 @@
             <div class="modal-footer">
                 <button class="btn btn-secondary" onclick="closeModal('splitModal')">Abbrechen</button>
                 <button class="btn btn-primary" onclick="applySplit()">Aufteilen</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Compress Modal -->
+    <div class="modal-overlay" id="compressModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2><i class="fas fa-compress-alt"></i> PDF komprimieren</h2>
+                <button class="modal-close" onclick="closeModal('compressModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Komprimierungsstufe</label>
+                    <select id="compressionLevel">
+                        <option value="low">Leicht (hohe Qualität)</option>
+                        <option value="medium" selected>Standard (ausgewogen)</option>
+                        <option value="high">Stark (kleine Dateigröße)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="compressImages" checked>
+                        Bilder komprimieren
+                    </label>
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 1rem;">
+                    <i class="fas fa-info-circle"></i> 
+                    Höhere Komprimierung kann die Bildqualität reduzieren.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('compressModal')">Abbrechen</button>
+                <button class="btn btn-primary" onclick="applyCompression()">Komprimieren</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Watermark Modal -->
+    <div class="modal-overlay" id="watermarkModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2><i class="fas fa-tint"></i> Wasserzeichen hinzufügen</h2>
+                <button class="modal-close" onclick="closeModal('watermarkModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Wasserzeichen-Text</label>
+                    <input type="text" id="watermarkText" value="VERTRAULICH" placeholder="z.B. ENTWURF, KOPIE">
+                </div>
+                <div class="form-group">
+                    <label>Schriftgröße</label>
+                    <input type="range" id="watermarkSize" min="20" max="100" value="60">
+                    <span id="watermarkSizeValue">60pt</span>
+                </div>
+                <div class="form-group">
+                    <label>Transparenz</label>
+                    <input type="range" id="watermarkOpacity" min="5" max="50" value="15">
+                    <span id="watermarkOpacityValue">15%</span>
+                </div>
+                <div class="form-group">
+                    <label>Drehung</label>
+                    <select id="watermarkRotation">
+                        <option value="-45" selected>Diagonal (-45°)</option>
+                        <option value="45">Diagonal (45°)</option>
+                        <option value="0">Horizontal</option>
+                        <option value="-90">Vertikal</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Farbe</label>
+                    <input type="color" id="watermarkColor" value="#808080">
+                </div>
+                <div class="form-group">
+                    <label>Anwenden auf</label>
+                    <select id="watermarkScope">
+                        <option value="all">Alle Seiten</option>
+                        <option value="selected">Nur ausgewählte Seiten</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('watermarkModal')">Abbrechen</button>
+                <button class="btn btn-primary" onclick="applyWatermark()">Hinzufügen</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Unify Size Modal -->
+    <div class="modal-overlay" id="unifySizeModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2><i class="fas fa-equals"></i> Seitengröße vereinheitlichen</h2>
+                <button class="modal-close" onclick="closeModal('unifySizeModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Zielformat</label>
+                    <select id="unifyFormat">
+                        <option value="a4" selected>A4 (210 × 297 mm)</option>
+                        <option value="a3">A3 (297 × 420 mm)</option>
+                        <option value="a5">A5 (148 × 210 mm)</option>
+                        <option value="letter">US Letter (215.9 × 279.4 mm)</option>
+                        <option value="largest">Größte vorhandene Seite</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Skalierungsmodus</label>
+                    <select id="unifyMode">
+                        <option value="fit" selected>Einpassen (Seitenverhältnis beibehalten)</option>
+                        <option value="fill">Ausfüllen (kann beschneiden)</option>
+                        <option value="center">Zentrieren (ohne Skalierung)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="unifyAddBorder">
+                        Weißen Rand hinzufügen (5mm)
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('unifySizeModal')">Abbrechen</button>
+                <button class="btn btn-primary" onclick="applyUnifySize()">Anwenden</button>
             </div>
         </div>
     </div>
@@ -1597,6 +1737,321 @@
                 toast.style.animation = 'slideIn 0.3s ease reverse';
                 setTimeout(() => toast.remove(), 300);
             }, 3000);
+        }
+        
+        // ═══════════════════════════════════════════════════════════════════════════
+        // NEUE FUNKTIONEN: Komprimierung, Wasserzeichen, Extraktion, Vereinheitlichung
+        // ═══════════════════════════════════════════════════════════════════════════
+        
+        // Komprimierung Modal
+        function showCompressModal() {
+            if (state.pages.length === 0) {
+                toast('Keine PDFs zum Komprimieren', 'info');
+                return;
+            }
+            openModal('compressModal');
+        }
+        
+        // Slider Event Listeners
+        document.getElementById('watermarkSize')?.addEventListener('input', (e) => {
+            document.getElementById('watermarkSizeValue').textContent = e.target.value + 'pt';
+        });
+        
+        document.getElementById('watermarkOpacity')?.addEventListener('input', (e) => {
+            document.getElementById('watermarkOpacityValue').textContent = e.target.value + '%';
+        });
+        
+        async function applyCompression() {
+            closeModal('compressModal');
+            showLoading('Komprimiere PDF...');
+            
+            const level = document.getElementById('compressionLevel').value;
+            const compressImages = document.getElementById('compressImages').checked;
+            
+            try {
+                const { PDFDocument } = PDFLib;
+                
+                // Berechne aktuelle Größe
+                let totalOriginalSize = 0;
+                for (const file of state.files) {
+                    totalOriginalSize += file.data.byteLength;
+                }
+                
+                // Erstelle komprimiertes PDF
+                const mergedDoc = await PDFDocument.create();
+                
+                for (const [fileId, file] of state.files.entries()) {
+                    const srcDoc = await PDFDocument.load(file.data);
+                    const pageIndices = srcDoc.getPageIndices();
+                    const copiedPages = await mergedDoc.copyPages(srcDoc, pageIndices);
+                    copiedPages.forEach(page => mergedDoc.addPage(page));
+                }
+                
+                // Speichern mit Komprimierung
+                const qualitySettings = {
+                    low: { useObjectStreams: true, objectsPerTick: 200 },
+                    medium: { useObjectStreams: true, objectsPerTick: 100 },
+                    high: { useObjectStreams: true, objectsPerTick: 50 }
+                };
+                
+                const compressedBytes = await mergedDoc.save(qualitySettings[level] || qualitySettings.medium);
+                
+                const reduction = ((totalOriginalSize - compressedBytes.byteLength) / totalOriginalSize * 100).toFixed(1);
+                
+                // Download
+                downloadBlob(new Blob([compressedBytes], { type: 'application/pdf' }), 'Komprimiert.pdf');
+                
+                toast(`PDF komprimiert! (${reduction}% kleiner)`, 'success');
+            } catch (error) {
+                console.error('Compress error:', error);
+                toast('Fehler beim Komprimieren', 'error');
+            }
+            
+            hideLoading();
+        }
+        
+        // Wasserzeichen Modal
+        function showWatermarkModal() {
+            if (state.pages.length === 0) {
+                toast('Keine PDFs vorhanden', 'info');
+                return;
+            }
+            openModal('watermarkModal');
+        }
+        
+        async function applyWatermark() {
+            closeModal('watermarkModal');
+            showLoading('Füge Wasserzeichen hinzu...');
+            
+            const text = document.getElementById('watermarkText').value || 'VERTRAULICH';
+            const fontSize = parseInt(document.getElementById('watermarkSize').value) || 60;
+            const opacity = parseInt(document.getElementById('watermarkOpacity').value) / 100 || 0.15;
+            const rotation = parseInt(document.getElementById('watermarkRotation').value) || -45;
+            const colorHex = document.getElementById('watermarkColor').value || '#808080';
+            const scope = document.getElementById('watermarkScope').value;
+            
+            // Hex zu RGB
+            const r = parseInt(colorHex.slice(1, 3), 16) / 255;
+            const g = parseInt(colorHex.slice(3, 5), 16) / 255;
+            const b = parseInt(colorHex.slice(5, 7), 16) / 255;
+            
+            try {
+                const { PDFDocument, rgb, degrees, StandardFonts } = PDFLib;
+                const mergedDoc = await PDFDocument.create();
+                const font = await mergedDoc.embedFont(StandardFonts.HelveticaBold);
+                
+                // Alle Seiten kopieren
+                for (const file of state.files) {
+                    const srcDoc = await PDFDocument.load(file.data);
+                    const pageIndices = srcDoc.getPageIndices();
+                    const copiedPages = await mergedDoc.copyPages(srcDoc, pageIndices);
+                    copiedPages.forEach(page => mergedDoc.addPage(page));
+                }
+                
+                // Wasserzeichen auf Seiten anwenden
+                const pages = mergedDoc.getPages();
+                
+                for (let i = 0; i < pages.length; i++) {
+                    // Prüfen ob diese Seite bearbeitet werden soll
+                    if (scope === 'selected') {
+                        const pageId = state.pages[i]?.id;
+                        if (!state.selectedPages.has(pageId)) continue;
+                    }
+                    
+                    const page = pages[i];
+                    const { width, height } = page.getSize();
+                    const textWidth = font.widthOfTextAtSize(text, fontSize);
+                    
+                    page.drawText(text, {
+                        x: (width - textWidth) / 2,
+                        y: height / 2,
+                        size: fontSize,
+                        font,
+                        color: rgb(r, g, b),
+                        rotate: degrees(rotation),
+                        opacity: opacity
+                    });
+                }
+                
+                const pdfBytes = await mergedDoc.save();
+                downloadBlob(new Blob([pdfBytes], { type: 'application/pdf' }), 'Mit_Wasserzeichen.pdf');
+                
+                toast('Wasserzeichen hinzugefügt!', 'success');
+            } catch (error) {
+                console.error('Watermark error:', error);
+                toast('Fehler beim Hinzufügen des Wasserzeichens', 'error');
+            }
+            
+            hideLoading();
+        }
+        
+        // Seiten extrahieren
+        async function extractSelectedPages() {
+            if (state.selectedPages.size === 0) {
+                toast('Bitte wählen Sie Seiten aus', 'info');
+                return;
+            }
+            
+            showLoading('Extrahiere Seiten...');
+            
+            try {
+                const { PDFDocument } = PDFLib;
+                const newDoc = await PDFDocument.create();
+                
+                // Sammle ausgewählte Seiten
+                const selectedPageObjects = state.pages.filter(p => state.selectedPages.has(p.id));
+                
+                // Gruppiere nach Datei
+                const fileGroups = new Map();
+                for (const page of selectedPageObjects) {
+                    if (!fileGroups.has(page.fileId)) {
+                        fileGroups.set(page.fileId, []);
+                    }
+                    fileGroups.get(page.fileId).push(page);
+                }
+                
+                // Kopiere Seiten
+                for (const [fileId, pages] of fileGroups) {
+                    const file = state.files.find(f => f.id === fileId);
+                    if (!file) continue;
+                    
+                    const srcDoc = await PDFDocument.load(file.data);
+                    
+                    for (const page of pages) {
+                        const [copiedPage] = await newDoc.copyPages(srcDoc, [page.pageNum - 1]);
+                        
+                        if (page.rotation) {
+                            const currentRotation = copiedPage.getRotation().angle;
+                            copiedPage.setRotation(PDFLib.degrees(currentRotation + page.rotation));
+                        }
+                        
+                        newDoc.addPage(copiedPage);
+                    }
+                }
+                
+                const pdfBytes = await newDoc.save();
+                downloadBlob(new Blob([pdfBytes], { type: 'application/pdf' }), `Extrahiert_${selectedPageObjects.length}_Seiten.pdf`);
+                
+                toast(`${selectedPageObjects.length} Seite(n) extrahiert!`, 'success');
+            } catch (error) {
+                console.error('Extract error:', error);
+                toast('Fehler beim Extrahieren', 'error');
+            }
+            
+            hideLoading();
+        }
+        
+        // Seitengrößen vereinheitlichen
+        function makeAllPagesSameSize() {
+            if (state.pages.length === 0) {
+                toast('Keine Seiten vorhanden', 'info');
+                return;
+            }
+            openModal('unifySizeModal');
+        }
+        
+        async function applyUnifySize() {
+            closeModal('unifySizeModal');
+            showLoading('Vereinheitliche Seitengrößen...');
+            
+            const format = document.getElementById('unifyFormat').value;
+            const mode = document.getElementById('unifyMode').value;
+            const addBorder = document.getElementById('unifyAddBorder').checked;
+            
+            // Zielgröße berechnen (in Punkten)
+            const formats = {
+                a4: { width: 595.276, height: 841.890 },
+                a3: { width: 841.890, height: 1190.551 },
+                a5: { width: 419.528, height: 595.276 },
+                letter: { width: 612, height: 792 }
+            };
+            
+            try {
+                const { PDFDocument } = PDFLib;
+                
+                let targetWidth, targetHeight;
+                
+                if (format === 'largest') {
+                    // Finde die größte Seite
+                    targetWidth = 0;
+                    targetHeight = 0;
+                    
+                    for (const file of state.files) {
+                        const srcDoc = await PDFDocument.load(file.data);
+                        const pages = srcDoc.getPages();
+                        for (const page of pages) {
+                            const { width, height } = page.getSize();
+                            if (width > targetWidth) targetWidth = width;
+                            if (height > targetHeight) targetHeight = height;
+                        }
+                    }
+                } else {
+                    targetWidth = formats[format].width;
+                    targetHeight = formats[format].height;
+                }
+                
+                // Rand hinzufügen wenn gewünscht (5mm = 14.17 Punkte)
+                const borderSize = addBorder ? 14.17 : 0;
+                const contentWidth = targetWidth - (borderSize * 2);
+                const contentHeight = targetHeight - (borderSize * 2);
+                
+                const newDoc = await PDFDocument.create();
+                
+                for (const file of state.files) {
+                    const srcDoc = await PDFDocument.load(file.data);
+                    const pageIndices = srcDoc.getPageIndices();
+                    
+                    for (const idx of pageIndices) {
+                        const [copiedPage] = await newDoc.copyPages(srcDoc, [idx]);
+                        const { width: srcWidth, height: srcHeight } = copiedPage.getSize();
+                        
+                        // Neue Seite mit Zielgröße erstellen
+                        const newPage = newDoc.addPage([targetWidth, targetHeight]);
+                        
+                        // Embed die alte Seite
+                        const embeddedPage = await newDoc.embedPage(copiedPage);
+                        
+                        // Berechne Skalierung und Position
+                        let scale = 1;
+                        let x = borderSize;
+                        let y = borderSize;
+                        
+                        if (mode === 'fit') {
+                            const scaleX = contentWidth / srcWidth;
+                            const scaleY = contentHeight / srcHeight;
+                            scale = Math.min(scaleX, scaleY);
+                            x = borderSize + (contentWidth - srcWidth * scale) / 2;
+                            y = borderSize + (contentHeight - srcHeight * scale) / 2;
+                        } else if (mode === 'fill') {
+                            const scaleX = contentWidth / srcWidth;
+                            const scaleY = contentHeight / srcHeight;
+                            scale = Math.max(scaleX, scaleY);
+                            x = borderSize + (contentWidth - srcWidth * scale) / 2;
+                            y = borderSize + (contentHeight - srcHeight * scale) / 2;
+                        } else { // center
+                            x = (targetWidth - srcWidth) / 2;
+                            y = (targetHeight - srcHeight) / 2;
+                        }
+                        
+                        newPage.drawPage(embeddedPage, {
+                            x: x,
+                            y: y,
+                            width: srcWidth * scale,
+                            height: srcHeight * scale
+                        });
+                    }
+                }
+                
+                const pdfBytes = await newDoc.save();
+                downloadBlob(new Blob([pdfBytes], { type: 'application/pdf' }), 'Vereinheitlicht.pdf');
+                
+                toast('Seitengrößen vereinheitlicht!', 'success');
+            } catch (error) {
+                console.error('Unify error:', error);
+                toast('Fehler beim Vereinheitlichen', 'error');
+            }
+            
+            hideLoading();
         }
     </script>
 </body>
