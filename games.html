@@ -205,76 +205,121 @@
         </div>
     </div>
 
-    <!-- Chess Game Modal -->
-    <div id="chessModal" class="game-modal" style="display: none;">
-        <div class="game-modal-content">
-            <div class="game-modal-header">
-                <h2><i class="fas fa-chess"></i> Schach</h2>
-                <button class="close-modal" onclick="closeChessGame()">
-                    <i class="fas fa-times"></i>
+    <!-- Chess Game Modal - Chess.com Style -->
+    <div id="chessModal" class="game-modal chess-modal-fullscreen" style="display: none;">
+        <div class="chess-app-container">
+            <!-- Header Bar -->
+            <div class="chess-app-header">
+                <button class="chess-back-btn" onclick="closeChessGame()">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <div class="chess-app-title">
+                    <i class="fas fa-chess"></i> Schach
+                </div>
+                <div class="chess-header-actions">
+                    <button class="chess-header-btn" onclick="toggleSettings()" title="Einstellungen">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Chat Section (oben) -->
+            <div class="chess-chat-section" id="chessChatSection">
+                <div class="chat-opponent-info">
+                    <div class="chat-avatar" id="chatOpponentAvatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="chat-opponent-details">
+                        <span class="chat-opponent-name" id="chatOpponentName">Computer</span>
+                        <span class="chat-opponent-status" id="chatOpponentStatus">Spielt gerade</span>
+                    </div>
+                    <div class="chat-actions">
+                        <button class="chat-action-btn" id="voiceChatBtn" onclick="toggleVoiceChat()" title="Sprachchat">
+                            <i class="fas fa-microphone"></i>
+                        </button>
+                        <button class="chat-action-btn" onclick="toggleChat()" title="Chat ein/ausblenden">
+                            <i class="fas fa-comment"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="chat-messages-container" id="chatMessagesContainer" style="display: none;">
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="chat-system-message">Spiel gestartet. Viel Erfolg! 🎯</div>
+                    </div>
+                    <div class="chat-input-container">
+                        <input type="text" id="chatInput" placeholder="Nachricht schreiben..." onkeypress="if(event.key==='Enter')sendChatMessage()">
+                        <button class="chat-send-btn" onclick="sendChatMessage()">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+                <!-- Voice Chat UI -->
+                <div class="voice-chat-container" id="voiceChatContainer" style="display: none;">
+                    <div class="voice-chat-status">
+                        <i class="fas fa-microphone-alt voice-icon"></i>
+                        <span id="voiceChatStatus">Sprachchat aktiv</span>
+                    </div>
+                    <div class="voice-chat-controls">
+                        <button class="voice-btn mute-btn" id="muteMicBtn" onclick="toggleMuteMic()">
+                            <i class="fas fa-microphone"></i>
+                        </button>
+                        <button class="voice-btn leave-btn" onclick="leaveVoiceChat()">
+                            <i class="fas fa-phone-slash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Game Timer (kompakt) -->
+            <div class="chess-timer-bar">
+                <div class="timer-player black-timer">
+                    <span class="timer-name" id="blackTimerName">Gegner</span>
+                    <span class="timer-clock" id="blackTimerClock">0:00</span>
+                </div>
+                <div class="timer-total">
+                    <i class="fas fa-clock"></i>
+                    <span id="totalTimerDisplay">Gesamt: 0:00</span>
+                </div>
+                <div class="timer-player white-timer">
+                    <span class="timer-name" id="whiteTimerName">Du</span>
+                    <span class="timer-clock" id="whiteTimerClock">0:00</span>
+                </div>
+            </div>
+            
+            <!-- Chess Board (volle Breite) -->
+            <div class="chess-board-wrapper">
+                <div id="chessBoard" class="chess-board chess-board-mobile"></div>
+            </div>
+            
+            <!-- Game Status -->
+            <div class="chess-status-bar">
+                <div class="game-status-text" id="gameStatus">Weiß ist am Zug</div>
+            </div>
+            
+            <!-- Control Buttons (Chess.com Style) -->
+            <div class="chess-controls-bar">
+                <button class="chess-control-btn" id="undoButton" onclick="undoMove()" disabled>
+                    <i class="fas fa-undo"></i>
+                    <span>Rückgängig</span>
+                </button>
+                <button class="chess-control-btn" onclick="saveCurrentGame()">
+                    <i class="fas fa-save"></i>
+                    <span>Speichern</span>
+                </button>
+                <button class="chess-control-btn danger" onclick="resignGame()">
+                    <i class="fas fa-flag"></i>
+                    <span>Aufgeben</span>
                 </button>
             </div>
-            <div class="chess-game-container">
-                <div class="chess-info">
-                    <div class="player-info">
-                        <div class="player white">
-                            <i class="fas fa-user"></i>
-                            <span id="whitePlayerName">Du (Weiß)</span>
-                        </div>
-                        <div class="game-status" id="gameStatus">Warte auf Gegner...</div>
-                        <div class="player black">
-                            <i id="blackPlayerIcon" class="fas fa-user"></i>
-                            <span id="blackPlayerName">Gegner (Schwarz)</span>
-                        </div>
-                    </div>
-                    <div class="difficulty-selector" id="difficultySelector" style="display: none;">
-                        <label>Schwierigkeit:</label>
-                        <select id="difficultySelect" onchange="updateDifficulty()">
-                            <option value="easy">Leicht</option>
-                            <option value="medium" selected>Mittel</option>
-                            <option value="hard">Schwer</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <!-- Spieluhr / Game Timer -->
-                <div id="gameTimerContainer" class="game-timer-container">
-                    <div class="game-timer">
-                        <span class="timer-label">Weiß</span>
-                        <span class="timer-value">0:00</span>
-                    </div>
-                    <div class="timer-divider">⚔️</div>
-                    <div class="game-timer">
-                        <span class="timer-label">Schwarz</span>
-                        <span class="timer-value">0:00</span>
-                    </div>
-                    <div class="total-game-time">
-                        <i class="fas fa-clock"></i>
-                        <span>Gesamt: 0:00</span>
-                    </div>
-                </div>
-                
-                <div id="chessBoard" class="chess-board"></div>
-                <div class="chess-controls">
-                    <button class="btn-secondary" id="undoButton" onclick="undoMove()" disabled>
-                        <i class="fas fa-undo"></i> Rückgängig
-                    </button>
-                    <button class="btn-secondary" onclick="saveCurrentGame()">
-                        <i class="fas fa-save"></i> Speichern
-                    </button>
-                    <button class="btn-secondary" onclick="resignGame()">
-                        <i class="fas fa-flag"></i> Aufgeben
-                    </button>
-                    <button class="btn-secondary" onclick="offerDraw()">
-                        <i class="fas fa-handshake"></i> Remis
-                    </button>
-                </div>
-                <div class="move-history-container">
-                    <h3>Zug-Historie</h3>
-                    <div id="moveHistory" class="move-history">
-                        <!-- Züge werden hier angezeigt -->
-                    </div>
-                </div>
+            
+            <!-- Difficulty Selector (für Computer) -->
+            <div class="chess-difficulty-bar" id="difficultySelector" style="display: none;">
+                <label>Schwierigkeit:</label>
+                <select id="difficultySelect" onchange="updateDifficulty()">
+                    <option value="easy">Leicht</option>
+                    <option value="medium" selected>Mittel</option>
+                    <option value="hard">Schwer</option>
+                </select>
             </div>
         </div>
     </div>
@@ -284,6 +329,207 @@
     <script src="js/unified-auth-modals.js"></script>
     <script src="js/games.js"></script>
     <script src="js/chess-game-enhanced.js"></script>
+    
+    <script>
+        // ═══════════════════════════════════════════════════════════════════════════
+        // CHESS CHAT & VOICE CHAT FUNCTIONS
+        // ═══════════════════════════════════════════════════════════════════════════
+        
+        let chatOpen = false;
+        let voiceChatActive = false;
+        let isMuted = false;
+        let localStream = null;
+        
+        // Toggle Chat
+        function toggleChat() {
+            chatOpen = !chatOpen;
+            const container = document.getElementById('chatMessagesContainer');
+            const btn = document.querySelector('.chat-action-btn[onclick="toggleChat()"]');
+            
+            if (chatOpen) {
+                container.style.display = 'flex';
+                btn.classList.add('active');
+                // Scroll to bottom
+                const messages = document.getElementById('chatMessages');
+                messages.scrollTop = messages.scrollHeight;
+            } else {
+                container.style.display = 'none';
+                btn.classList.remove('active');
+            }
+        }
+        
+        // Send Chat Message
+        function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            const messagesDiv = document.getElementById('chatMessages');
+            
+            // Add sent message
+            const msgEl = document.createElement('div');
+            msgEl.className = 'chat-message sent';
+            msgEl.textContent = message;
+            messagesDiv.appendChild(msgEl);
+            
+            // Clear input
+            input.value = '';
+            
+            // Scroll to bottom
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            
+            // Simulate opponent response (for demo)
+            if (window.chessGame && window.chessGame.gameMode === 'computer') {
+                setTimeout(() => {
+                    const responses = [
+                        'Guter Zug! 👍',
+                        'Interessant...',
+                        'Lass mich nachdenken... 🤔',
+                        'Schönes Spiel!',
+                        '♟️ Auf geht\'s!'
+                    ];
+                    const response = responses[Math.floor(Math.random() * responses.length)];
+                    addReceivedMessage(response);
+                }, 1000 + Math.random() * 2000);
+            }
+        }
+        
+        function addReceivedMessage(text) {
+            const messagesDiv = document.getElementById('chatMessages');
+            const msgEl = document.createElement('div');
+            msgEl.className = 'chat-message received';
+            msgEl.textContent = text;
+            messagesDiv.appendChild(msgEl);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            
+            // Open chat if closed
+            if (!chatOpen) {
+                const container = document.getElementById('chatMessagesContainer');
+                container.style.display = 'flex';
+                chatOpen = true;
+                document.querySelector('.chat-action-btn[onclick="toggleChat()"]').classList.add('active');
+            }
+        }
+        
+        // Voice Chat Functions
+        async function toggleVoiceChat() {
+            const btn = document.getElementById('voiceChatBtn');
+            const container = document.getElementById('voiceChatContainer');
+            
+            if (!voiceChatActive) {
+                // Start voice chat
+                try {
+                    // Request microphone permission
+                    localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    
+                    voiceChatActive = true;
+                    btn.classList.add('active');
+                    container.style.display = 'flex';
+                    
+                    // Add system message
+                    addSystemMessage('🎤 Du bist dem Sprachchat beigetreten');
+                    
+                } catch (err) {
+                    console.error('Mikrofon-Zugriff verweigert:', err);
+                    alert('Bitte erlaube den Mikrofon-Zugriff für Sprachchat.');
+                }
+            } else {
+                leaveVoiceChat();
+            }
+        }
+        
+        function toggleMuteMic() {
+            isMuted = !isMuted;
+            const btn = document.getElementById('muteMicBtn');
+            
+            if (localStream) {
+                localStream.getAudioTracks().forEach(track => {
+                    track.enabled = !isMuted;
+                });
+            }
+            
+            if (isMuted) {
+                btn.classList.add('muted');
+                btn.innerHTML = '<i class="fas fa-microphone-slash"></i>';
+            } else {
+                btn.classList.remove('muted');
+                btn.innerHTML = '<i class="fas fa-microphone"></i>';
+            }
+        }
+        
+        function leaveVoiceChat() {
+            voiceChatActive = false;
+            isMuted = false;
+            
+            // Stop microphone
+            if (localStream) {
+                localStream.getTracks().forEach(track => track.stop());
+                localStream = null;
+            }
+            
+            const btn = document.getElementById('voiceChatBtn');
+            const container = document.getElementById('voiceChatContainer');
+            const muteBtn = document.getElementById('muteMicBtn');
+            
+            btn.classList.remove('active');
+            container.style.display = 'none';
+            muteBtn.classList.remove('muted');
+            muteBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+            
+            addSystemMessage('📴 Du hast den Sprachchat verlassen');
+        }
+        
+        function addSystemMessage(text) {
+            const messagesDiv = document.getElementById('chatMessages');
+            const msgEl = document.createElement('div');
+            msgEl.className = 'chat-system-message';
+            msgEl.textContent = text;
+            messagesDiv.appendChild(msgEl);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+        
+        // Update opponent info based on game mode
+        function updateOpponentInfo(name, isOnline, isComputer) {
+            const avatar = document.getElementById('chatOpponentAvatar');
+            const nameEl = document.getElementById('chatOpponentName');
+            const statusEl = document.getElementById('chatOpponentStatus');
+            const blackName = document.getElementById('blackTimerName');
+            
+            nameEl.textContent = name;
+            blackName.textContent = name;
+            
+            if (isComputer) {
+                avatar.innerHTML = '<i class="fas fa-robot"></i>';
+                avatar.style.background = 'linear-gradient(135deg, #6366f1, #8b5cf6)';
+                statusEl.textContent = 'Computer-Gegner';
+                statusEl.style.color = '#8b5cf6';
+            } else {
+                avatar.innerHTML = name.charAt(0).toUpperCase();
+                avatar.style.background = 'linear-gradient(135deg, #10b981, #34d399)';
+                statusEl.textContent = isOnline ? 'Online' : 'Offline';
+                statusEl.style.color = isOnline ? '#10b981' : '#94a3b8';
+            }
+        }
+        
+        // Settings toggle (placeholder)
+        function toggleSettings() {
+            alert('Einstellungen: Brett-Design, Sound, etc. werden hier angezeigt.');
+        }
+        
+        // Override close function to clean up voice chat
+        const originalCloseChessGame = window.closeChessGame;
+        window.closeChessGame = function() {
+            if (voiceChatActive) {
+                leaveVoiceChat();
+            }
+            if (typeof originalCloseChessGame === 'function') {
+                originalCloseChessGame();
+            } else {
+                document.getElementById('chessModal').style.display = 'none';
+            }
+        };
+    </script>
     
     <script>
         // Global functions for login/register modals
