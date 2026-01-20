@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="css/split-view.css?v=20260115">
     <link rel="stylesheet" href="css/collaboration.css?v=20260115">
     <link rel="manifest" href="../manifest.json">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@300;400;500;600;700&family=Lato:wght@300;400;700&family=Montserrat:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700&family=Nunito:wght@300;400;500;600;700&family=Source+Sans+Pro:wght@300;400;600;700&family=Source+Code+Pro:wght@400;500;600&family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Quicksand:wght@300;400;500;600;700&family=DM+Sans:wght@400;500;700&family=Cormorant+Garamond:wght@400;500;600;700&family=Libre+Baskerville:wght@400;700&family=Crimson+Pro:wght@400;500;600;700&family=Cinzel:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@300;400;500;600;700&family=Lato:wght@300;400;700&family=Montserrat:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700&family=Nunito:wght@300;400;500;600;700&family=Source+Sans+Pro:wght@300;400;600;700&family=Source+Code+Pro:wght@400;500;600&family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Quicksand:wght@300;400;500;600;700&family=DM+Sans:wght@400;500;700&family=Cormorant+Garamond:wght@400;500;600;700&family=Libre+Baskerville:wght@400;700&family=Crimson+Pro:wght@400;500;600;700&family=Cinzel:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Fira+Code:wght@400;500;600&family=Dancing+Script:wght@400;500;600;700&family=Great+Vibes&family=Pacifico&family=Satisfy&family=Allura&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -219,10 +219,32 @@
                     </div>
                 </div>
 
-                <!-- Generate Button -->
-                <button id="generateBtn" class="btn-generate" onclick="if(window.coverLetterEditor){window.coverLetterEditor.generateCoverLetter();} else {console.error('CoverLetterEditor nicht initialisiert');}">
-                    <i class="fas fa-magic"></i> Anschreiben generieren
-                </button>
+                <!-- Branchen-Template Section -->
+                <div class="sidebar-section">
+                    <h3><i class="fas fa-industry"></i> Branchen-Template</h3>
+                    <select id="industryTemplateSelect" class="form-select">
+                        <option value="">Standard</option>
+                        <option value="IT">IT / Software</option>
+                        <option value="Finance">Finanzen / Banking</option>
+                        <option value="Consulting">Beratung</option>
+                        <option value="Healthcare">Gesundheitswesen</option>
+                    </select>
+                </div>
+
+                <!-- Generate Buttons -->
+                <div class="sidebar-section generate-section">
+                    <button id="generateBtn" class="btn-generate" onclick="if(window.coverLetterEditor){window.coverLetterEditor.generateCoverLetter();} else {console.error('CoverLetterEditor nicht initialisiert');}">
+                        <i class="fas fa-magic"></i> Anschreiben generieren
+                    </button>
+                    
+                    <button id="skillGapBtn" class="btn-skill-gap" onclick="if(window.coverLetterEditor){window.coverLetterEditor.startSkillGapAnalysis();} else {console.error('CoverLetterEditor nicht initialisiert');}">
+                        <i class="fas fa-chart-bar"></i> Skill Gap Analyse
+                    </button>
+                    <p class="skill-gap-hint">
+                        <i class="fas fa-info-circle"></i>
+                        Analysiert Anforderungen vs. deine Skills und erstellt ein maßgeschneidertes Anschreiben
+                    </p>
+                </div>
             </aside>
 
             <!-- Main Editor Area -->
@@ -493,14 +515,76 @@
                     </div>
                 </div>
 
-                <!-- Signature Upload -->
-                <div class="design-section">
+                <!-- Signature Section -->
+                <div class="design-section signature-section">
                     <label>Signatur (optional)</label>
-                    <input type="file" id="signatureUpload" accept="image/*">
-                    <small style="display: block; margin-top: 0.25rem; color: var(--cl-text-muted); font-size: 0.75rem;">
-                        Unterschrift wird automatisch extrahiert und kann per Drag & Drop positioniert werden
-                    </small>
-                    <button type="button" class="btn-secondary" id="removeSignatureBtn" style="margin-top:0.5rem;">Signatur entfernen</button>
+                    
+                    <!-- Signature Tabs -->
+                    <div class="signature-method-tabs">
+                        <button type="button" class="signature-tab active" data-tab="upload">
+                            <i class="fas fa-upload"></i> Hochladen
+                        </button>
+                        <button type="button" class="signature-tab" data-tab="draw">
+                            <i class="fas fa-pen"></i> Zeichnen
+                        </button>
+                        <button type="button" class="signature-tab" data-tab="generate">
+                            <i class="fas fa-magic"></i> Generieren
+                        </button>
+                    </div>
+                    
+                    <!-- Upload Tab -->
+                    <div id="signatureTabUpload" class="signature-tab-content">
+                        <input type="file" id="signatureUpload" accept="image/*">
+                        <small style="display: block; margin-top: 0.25rem; color: var(--cl-text-muted); font-size: 0.75rem;">
+                            PNG mit transparentem Hintergrund empfohlen
+                        </small>
+                    </div>
+                    
+                    <!-- Draw Tab -->
+                    <div id="signatureTabDraw" class="signature-tab-content" style="display: none;">
+                        <div class="signature-canvas-container">
+                            <canvas id="signatureCanvas" width="280" height="100"></canvas>
+                            <button type="button" class="clear-signature-btn" id="clearSignatureCanvas" title="Löschen">
+                                <i class="fas fa-eraser"></i>
+                            </button>
+                        </div>
+                        <button type="button" class="btn-secondary btn-block" id="useDrawnSignature">
+                            <i class="fas fa-check"></i> Unterschrift übernehmen
+                        </button>
+                    </div>
+                    
+                    <!-- Generate Tab -->
+                    <div id="signatureTabGenerate" class="signature-tab-content" style="display: none;">
+                        <input type="text" id="signatureNameInput" class="form-input" placeholder="Ihr Name">
+                        <select id="signatureStyleSelect" class="form-select" style="margin-top: 8px;">
+                            <option value="'Dancing Script', cursive">Elegant</option>
+                            <option value="'Great Vibes', cursive">Vibes</option>
+                            <option value="'Pacifico', cursive">Pacifico</option>
+                            <option value="'Satisfy', cursive">Satisfy</option>
+                            <option value="'Allura', cursive">Allura</option>
+                        </select>
+                        <div id="signatureGeneratePreview" class="signature-preview"></div>
+                        <button type="button" class="btn-secondary btn-block" id="useGeneratedSignature" style="margin-top: 8px;">
+                            <i class="fas fa-check"></i> Unterschrift übernehmen
+                        </button>
+                    </div>
+                    
+                    <!-- Signature Preview -->
+                    <div id="signaturePreviewContainer" class="signature-preview-container" style="margin-top: 12px;">
+                        <div id="signaturePreview"></div>
+                    </div>
+                    
+                    <button type="button" class="btn-secondary" id="removeSignatureBtn" style="margin-top:0.5rem;">
+                        <i class="fas fa-trash"></i> Signatur entfernen
+                    </button>
+                    
+                    <!-- Save to Profile -->
+                    <div class="save-signature-option" style="margin-top: 8px;">
+                        <label class="checkbox-label" style="display: flex; align-items: center; gap: 8px; font-size: 0.8rem; cursor: pointer;">
+                            <input type="checkbox" id="saveSignatureToProfile">
+                            <span>Im Profil speichern</span>
+                        </label>
+                    </div>
                 </div>
 
                 <!-- Match CV Design -->
@@ -586,6 +670,66 @@
                 </div>
                 <div id="coverLetterVersionsList" class="resume-versions-list"></div>
                 <div id="coverLetterVersionDiff" class="resume-version-diff"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Skill Gap Analyse Modal -->
+    <div id="skillGapModal" class="skill-gap-modal" style="display: none;">
+        <div class="skill-gap-content">
+            <div class="skill-gap-header">
+                <h2><i class="fas fa-chart-bar"></i> Skill Gap Analyse</h2>
+                <button type="button" class="close-btn" onclick="window.coverLetterEditor?.closeSkillGapModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="skill-gap-body">
+                <!-- Progress Steps -->
+                <div class="skill-gap-steps">
+                    <div class="step active" data-step="1">
+                        <div class="step-icon"><i class="fas fa-search"></i></div>
+                        <span>Anforderungen analysieren</span>
+                    </div>
+                    <div class="step" data-step="2">
+                        <div class="step-icon"><i class="fas fa-user"></i></div>
+                        <span>Skills sammeln</span>
+                    </div>
+                    <div class="step" data-step="3">
+                        <div class="step-icon"><i class="fas fa-balance-scale"></i></div>
+                        <span>Matching</span>
+                    </div>
+                    <div class="step" data-step="4">
+                        <div class="step-icon"><i class="fas fa-file-alt"></i></div>
+                        <span>Anschreiben</span>
+                    </div>
+                </div>
+                
+                <!-- Step Content -->
+                <div id="skillGapStepContent" class="skill-gap-step-content">
+                    <!-- Dynamic content here -->
+                    <div class="loading-state">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Analysiere Stellenbeschreibung...</p>
+                    </div>
+                </div>
+                
+                <!-- Results Preview -->
+                <div id="skillGapResults" class="skill-gap-results" style="display: none;">
+                    <h3>Anforderungen vs. Deine Skills</h3>
+                    <div id="skillGapTable" class="skill-gap-table">
+                        <!-- Dynamic table -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="skill-gap-footer">
+                <button type="button" class="btn-secondary" onclick="window.coverLetterEditor?.closeSkillGapModal()">
+                    Abbrechen
+                </button>
+                <button type="button" class="btn-primary" id="skillGapGenerateBtn" disabled>
+                    <i class="fas fa-magic"></i> Anschreiben generieren
+                </button>
             </div>
         </div>
     </div>
