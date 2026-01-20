@@ -346,6 +346,19 @@
                     <option value="hard">Schwer</option>
                 </select>
             </div>
+            
+            <!-- Chat Area (unten) -->
+            <div class="chess-chat-area" id="chessChatArea" style="display: none;">
+                <div class="chat-messages" id="chatMessages">
+                    <div class="chat-message system">Spiel gestartet. Viel Erfolg! 🎯</div>
+                </div>
+                <div class="chat-input-area">
+                    <input type="text" id="chatInput" placeholder="Nachricht eingeben..." onkeypress="if(event.key==='Enter')sendChatMessage()">
+                    <button class="chat-send-btn" onclick="sendChatMessage()">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -368,18 +381,18 @@
         // Toggle Chat
         function toggleChat() {
             chatOpen = !chatOpen;
-            const container = document.getElementById('chatMessagesContainer');
+            const chatArea = document.getElementById('chessChatArea');
             const btn = document.querySelector('.chat-action-btn[onclick="toggleChat()"]');
             
             if (chatOpen) {
-                container.style.display = 'flex';
-                btn.classList.add('active');
+                chatArea.style.display = 'flex';
+                if (btn) btn.classList.add('active');
                 // Scroll to bottom
                 const messages = document.getElementById('chatMessages');
-                messages.scrollTop = messages.scrollHeight;
+                if (messages) messages.scrollTop = messages.scrollHeight;
             } else {
-                container.style.display = 'none';
-                btn.classList.remove('active');
+                chatArea.style.display = 'none';
+                if (btn) btn.classList.remove('active');
             }
         }
         
@@ -394,7 +407,7 @@
             
             // Add sent message
             const msgEl = document.createElement('div');
-            msgEl.className = 'chat-message sent';
+            msgEl.className = 'chat-message self';
             msgEl.textContent = message;
             messagesDiv.appendChild(msgEl);
             
