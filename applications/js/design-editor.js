@@ -4471,16 +4471,73 @@ class DesignEditor {
         const fontFamily = this.settings.fontFamily || 'Inter';
         const googleFontsUrl = this.getGoogleFontsUrl(fontFamily);
         
+        // Debug: Logge Settings
+        console.log('📐 PDF Margins:', {
+            top: `${this.settings.marginTop || 20}mm`,
+            right: `${this.settings.marginRight || 20}mm`,
+            bottom: `${this.settings.marginBottom || 20}mm`,
+            left: `${this.settings.marginLeft || 20}mm`
+        });
+        console.log('📝 Font Size:', this.settings.fontSize || 11, 'pt');
+        
         // Erstelle vollständiges HTML-Dokument
         const html = `
 <!DOCTYPE html>
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Lebenslauf PDF Export</title>
     ${googleFontsUrl ? `<link href="${googleFontsUrl}" rel="stylesheet">` : ''}
     <style>
+        /* Basis-Styles - KEINE Skalierung */
+        html {
+            font-size: ${this.settings.fontSize || 11}pt !important;
+            -webkit-text-size-adjust: 100% !important;
+            -moz-text-size-adjust: 100% !important;
+            -ms-text-size-adjust: 100% !important;
+        }
+        
+        body {
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 210mm !important;
+            max-width: 210mm !important;
+            min-width: 210mm !important;
+            background: ${this.settings.backgroundColor || '#ffffff'} !important;
+            font-family: ${this.settings.fontFamily || "'Inter', sans-serif"} !important;
+            font-size: ${this.settings.fontSize || 11}pt !important;
+            line-height: ${this.settings.lineHeight || 1.5} !important;
+            color: ${this.settings.textColor || '#1e293b'} !important;
+        }
+        
+        /* Sicherstellen, dass der Lebenslauf als durchgängiges Dokument gerendert wird */
+        .design-resume-preview {
+            width: 210mm !important;
+            max-width: 210mm !important;
+            min-width: 210mm !important;
+            min-height: auto !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            background: ${this.settings.backgroundColor || '#ffffff'} !important;
+            font-family: ${this.settings.fontFamily || "'Inter', sans-serif"} !important;
+            font-size: ${this.settings.fontSize || 11}pt !important;
+            line-height: ${this.settings.lineHeight || 1.5} !important;
+            color: ${this.settings.textColor || '#1e293b'} !important;
+        }
+        
+        /* Erste Seite - Oben Abstand sicherstellen */
+        .design-resume-preview > *:first-child {
+            margin-top: 0 !important;
+            padding-top: 0 !important;
+        }
+        
+        /* Letzte Seite - Unten Abstand entfernen */
+        .design-resume-preview > *:last-child {
+            margin-bottom: 0 !important;
+            padding-bottom: 0 !important;
+        }
+        
         ${css}
         
         /* Print-spezifische Styles - Seitenränder werden von Puppeteer gehandhabt */
@@ -4494,12 +4551,16 @@ class DesignEditor {
                 margin: 0 !important;
                 padding: 0 !important;
                 width: 210mm !important;
+                max-width: 210mm !important;
+                min-width: 210mm !important;
             }
             
             .design-resume-preview {
                 margin: 0 !important;
                 padding: 0 !important;
                 width: 210mm !important;
+                max-width: 210mm !important;
+                min-width: 210mm !important;
                 box-shadow: none !important;
             }
             
@@ -4540,29 +4601,6 @@ class DesignEditor {
             }
         }
         
-        body {
-            margin: 0 !important;
-            padding: 0 !important;
-            width: 210mm !important;
-            background: ${this.settings.backgroundColor || '#ffffff'} !important;
-            font-family: ${this.settings.fontFamily || "'Inter', sans-serif"} !important;
-            font-size: ${this.settings.fontSize || 11}pt !important;
-            line-height: ${this.settings.lineHeight || 1.5} !important;
-            color: ${this.settings.textColor || '#1e293b'} !important;
-        }
-        
-        /* Sicherstellen, dass der Lebenslauf als durchgängiges Dokument gerendert wird */
-        .design-resume-preview {
-            width: 210mm !important;
-            min-height: auto !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            background: ${this.settings.backgroundColor || '#ffffff'} !important;
-            font-family: ${this.settings.fontFamily || "'Inter', sans-serif"} !important;
-            font-size: ${this.settings.fontSize || 11}pt !important;
-            line-height: ${this.settings.lineHeight || 1.5} !important;
-            color: ${this.settings.textColor || '#1e293b'} !important;
-        }
     </style>
 </head>
 <body>
