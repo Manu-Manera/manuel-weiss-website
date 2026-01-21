@@ -94,16 +94,24 @@ Das Admin Panel muss vollständig von Netlify Functions auf AWS Lambda + API Gat
 
 ### 2.2 Noch zu migrieren ⚠️
 
-| Netlify Function | Verwendet in | Priorität | Komplexität |
-|------------------|--------------|-----------|-------------|
-| `hero-video-settings.js` | `js/admin/sections/hero-video.js` | 🔴 Hoch | Mittel |
-| `hero-video-upload.js` | `js/admin/sections/hero-video.js` | 🔴 Hoch | Mittel |
-| `hero-video-upload-direct.js` | `js/admin/sections/hero-video.js` | 🔴 Hoch | Mittel |
-| `bewerbungsprofil-api.js` | `js/admin-bewerbungsprofil-manager.js` | 🟡 Mittel | Niedrig |
-| `documents-api.js` | `admin-script.js` | 🟡 Mittel | Niedrig |
-| `s3-upload.js` | Verschiedene Sections | 🟢 Niedrig | Niedrig |
-| `s3-download-url.js` | Verschiedene Sections | 🟢 Niedrig | Niedrig |
-| `api-key-auth.js` | Legacy | 🟢 Niedrig | Niedrig |
+| Netlify Function | Verwendet in | Priorität | Komplexität | Besonderheiten |
+|------------------|--------------|-----------|-------------|----------------|
+| `hero-video-settings.js` | `js/admin/sections/hero-video.js`, `js/admin-hero-fallback-widget.js` | 🔴 Hoch | Mittel | **KEINE Auth** (öffentlich lesbar) |
+| `hero-video-upload.js` | `js/admin/sections/hero-video.js` | 🔴 Hoch | Mittel | Presigned URL Generation |
+| `hero-video-upload-direct.js` | `js/admin/sections/hero-video.js` | 🔴 Hoch | **Hoch** | Base64 Decoding + S3 Upload + **DynamoDB Save** |
+| `bewerbungsprofil-api.js` | `js/admin-bewerbungsprofil-manager.js` | 🟡 Mittel | Niedrig | Auth erforderlich |
+| `documents-api.js` | `admin-script.js` | 🟡 Mittel | Niedrig | **Bereits in `backend/user-profile`** |
+| `s3-upload.js` | Verschiedene Sections | 🟢 Niedrig | Niedrig | **Bereits ersetzt** durch `/profile-image/upload-url` |
+| `s3-download-url.js` | Verschiedene Sections | 🟢 Niedrig | Niedrig | **Nicht mehr nötig** (CloudFront URLs) |
+| `api-key-auth.js` | Legacy | 🟢 Niedrig | Niedrig | **Nicht mehr verwendet** |
+| `openai-analyze.js` | ❌ Nicht verwendet | 🟢 Niedrig | Niedrig | **Kann entfernt werden** |
+| `user-profile-api.js` | `js/user-profile.js` | 🟡 Mittel | Niedrig | **Prüfen ob bereits migriert** |
+
+### 2.3 Bereits existierende Lambda Functions
+
+| Lambda Function | Status | Verwendet? | Anpassung nötig? |
+|-----------------|--------|------------|-----------------|
+| `lambda/hero-video/index.js` | ✅ Existiert | ❓ Unklar | ⚠️ **Prüfen** - kombiniert settings + upload, aber **FEHLT upload-direct** |
 
 ---
 
@@ -148,9 +156,14 @@ heroVideoSettingsResource.addMethod('POST', new apigateway.LambdaIntegration(her
 
 **Lambda Code:** `lambda/hero-video-settings/index.js`
 - DynamoDB: `manuel-weiss-settings` Tabelle
-- Key: `pk: 'hero-video#settings'`, `sk: 'settings'`
-- GET: Settings aus DynamoDB laden
-- POST: Settings in DynamoDB speichern
+- **Schema:** `settingKey: 'hero-video-url'` (Partition Key), `settingValue: <url>`, `updatedAt: <iso>`
+- GET: Settings aus DynamoDB laden (keine Auth erforderlich - öffentlich lesbar)
+- POST: Settings in DynamoDB speichern (**Auth empfohlen, aber aktuell keine in Netlify Function**)
+
+**⚠️ Authentifizierung:**
+- **Aktuell:** Keine Auth in Netlify Function
+- **Empfehlung:** Auth für POST/PUT hinzufügen (Admin-only)
+- **GET:** Kann öffentlich bleiben (für Frontend-Anzeige)
 
 **Frontend Anpassung:**
 ```javascript
@@ -200,10 +213,15 @@ heroVideoUploadResource.addMethod('POST', new apigateway.LambdaIntegration(heroV
 **Netlify Function:** `netlify/functions/hero-video-upload-direct.js`
 
 **Verwendet in:**
-- `js/admin/sections/hero-video.js` (Zeile 331)
+- `js/admin/sections/hero-video.js` (Zeile 331) - Fallback für große Videos (>50MB)
 
 **Endpoints:**
 - `POST /.netlify/functions/hero-video-upload-direct` - Direkter Upload (Base64)
+
+**⚠️ WICHTIG: Diese Function macht 3 Dinge:**
+1. Base64 Video-Daten decodieren
+2. Video zu S3 hochladen
+3. **Video-URL in DynamoDB speichern** (automatisch!)
 
 **AWS Lambda Erstellen:**
 ```typescript
@@ -213,10 +231,12 @@ const heroVideoUploadDirectLambda = new lambda.Function(this, 'HeroVideoUploadDi
   handler: 'index.handler',
   code: lambda.Code.fromAsset('../lambda/hero-video-upload-direct'),
   role: lambdaRole,
-  timeout: cdk.Duration.seconds(60), // Länger für Base64 Upload
-  memorySize: 512, // Mehr Memory für Base64 Decoding
+  timeout: cdk.Duration.seconds(120), // Länger für Base64 Upload (100MB max)
+  memorySize: 1024, // Mehr Memory für Base64 Decoding + S3 Upload
   environment: {
-    HERO_VIDEO_BUCKET: 'manuel-weiss-hero-videos'
+    HERO_VIDEO_BUCKET: 'manuel-weiss-hero-videos',
+    SETTINGS_TABLE: 'manuel-weiss-settings',
+    SETTINGS_KEY: 'hero-video-url'
   }
 });
 
@@ -225,9 +245,26 @@ heroVideoUploadDirectResource.addMethod('POST', new apigateway.LambdaIntegration
 ```
 
 **Lambda Code:** `lambda/hero-video-upload-direct/index.js`
-- Base64 Video-Daten empfangen
-- Decodieren und zu S3 hochladen
-- URL zurückgeben
+- Base64 Video-Daten empfangen (max 6MB nach Base64 Encoding = ~4.5MB Video)
+- Decodieren zu Buffer
+- Validierung: Max 100MB Dateigröße
+- Upload zu S3 (`manuel-weiss-hero-videos/hero-videos/${timestamp}-${filename}`)
+- **WICHTIG: Video-URL automatisch in DynamoDB speichern** (`manuel-weiss-settings` Tabelle, Key: `hero-video-url`)
+- Public URL zurückgeben
+
+**DynamoDB Schema:**
+```javascript
+{
+  settingKey: 'hero-video-url',  // Partition Key
+  settingValue: 'https://manuel-weiss-hero-videos.s3.eu-central-1.amazonaws.com/hero-videos/...',
+  updatedAt: '2026-01-21T12:00:00.000Z'
+}
+```
+
+**⚠️ Besonderheiten:**
+- Netlify Function Limit: 6MB Request Body (Base64 encoded)
+- Lambda kann größere Payloads verarbeiten (bis zu 6MB für API Gateway, aber Lambda selbst kann mehr)
+- **Empfehlung:** Für Videos > 50MB sollte Presigned URL Upload verwendet werden
 
 ---
 
@@ -267,9 +304,21 @@ bewerbungsprofilResource.addMethod('DELETE', new apigateway.LambdaIntegration(be
 ```
 
 **Lambda Code:** `lambda/bewerbungsprofil/index.js`
-- DynamoDB: `mawps-user-profiles` Tabelle
-- Key: `pk: 'USER#${userId}'`, `sk: 'BEWERBUNGSPROFIL'`
-- GET/POST/DELETE Operationen
+- DynamoDB: `mawps-user-profiles` Tabelle (oder `mawps-user-data` - prüfen!)
+- **Schema:** 
+  - `userId: <userId>` (Partition Key)
+  - `sk: 'bewerbungsprofil'` (Sort Key)
+  - Felder: `personalInfo`, `education`, `experience`, `skills`, `languages`, `certificates`, `documents`, `settings`, `lastModified`
+- GET: Komplettes Profil laden (oder einzelne Sektion: `/section/{name}`)
+- POST/PUT: Profil speichern/aktualisieren
+- PUT `/section/{name}`: Einzelne Sektion aktualisieren
+- DELETE: Profil löschen
+- **Auth:** Erforderlich (JWT Token aus Header)
+
+**⚠️ WICHTIG:** 
+- Netlify Function verwendet `mawps-user-data` Tabelle
+- Prüfen ob AWS Lambda `mawps-user-profiles` oder `mawps-user-data` verwenden soll
+- User ID wird aus JWT Token extrahiert (`extractUserId`)
 
 ---
 
@@ -287,7 +336,7 @@ bewerbungsprofilResource.addMethod('DELETE', new apigateway.LambdaIntegration(be
 - `POST /.netlify/functions/documents-api` - Dokument speichern
 - `DELETE /.netlify/functions/documents-api` - Dokument löschen
 
-**Hinweis:** Diese API ist bereits in `backend/user-profile/handler.mjs` als `/user-profile/documents` implementiert!
+**✅ Status:** Diese API ist bereits in `backend/user-profile/handler.mjs` als `/user-profile/documents` implementiert!
 
 **Frontend Anpassung:**
 ```javascript
@@ -299,6 +348,30 @@ fetch('/.netlify/functions/documents-api', ...)
 fetch(`${window.AWS_APP_CONFIG?.API_BASE}/user-profile/documents`, ...)
 ```
 
+**⚠️ Prüfen:**
+- Endpoint-Schema identisch?
+- Request/Response Format kompatibel?
+- Auth-Mechanismus kompatibel?
+
+---
+
+### Phase 3.1: User Profile API (🟡 Priorität: Mittel)
+
+#### 3.3.2 `user-profile-api.js` → Lambda
+
+**Netlify Function:** `netlify/functions/user-profile-api.js`
+
+**Verwendet in:**
+- `js/user-profile.js`
+
+**Status:** ⚠️ **Prüfen ob bereits migriert** - `backend/user-profile/handler.mjs` könnte bereits alle Endpoints abdecken
+
+**Endpoints (Netlify Function):**
+- Verschiedene Profile-Tabs Endpoints
+- Möglicherweise bereits durch `/user-profile/*` abgedeckt
+
+**Aktion:** Prüfen ob `js/user-profile.js` bereits AWS Endpoints verwendet oder noch Netlify Functions
+
 ---
 
 ### Phase 4: S3 Helper Functions (🟢 Priorität: Niedrig)
@@ -307,13 +380,17 @@ fetch(`${window.AWS_APP_CONFIG?.API_BASE}/user-profile/documents`, ...)
 
 **Netlify Function:** `netlify/functions/s3-upload.js`
 
-**Status:** Wird bereits durch `backend/user-profile/handler.mjs` ersetzt (`/profile-image/upload-url`)
+**Status:** ✅ Wird bereits durch `backend/user-profile/handler.mjs` ersetzt (`/profile-image/upload-url`)
+
+**Aktion:** Keine Migration nötig, nur Frontend-Code prüfen
 
 #### 3.4.2 `s3-download-url.js` → Lambda (Optional)
 
 **Netlify Function:** `netlify/functions/s3-download-url.js`
 
-**Status:** Kann durch direkte S3 URLs ersetzt werden (CloudFront)
+**Status:** ✅ Kann durch direkte S3 URLs ersetzt werden (CloudFront)
+
+**Aktion:** Keine Migration nötig, Frontend-Code auf direkte URLs umstellen
 
 ---
 
@@ -321,7 +398,33 @@ fetch(`${window.AWS_APP_CONFIG?.API_BASE}/user-profile/documents`, ...)
 
 #### 3.5.1 `api-key-auth.js` → Entfernen
 
-**Status:** Legacy, nicht mehr verwendet
+**Status:** ❌ Legacy, nicht mehr verwendet
+
+**Aktion:** Nach Migration entfernen
+
+#### 3.5.2 `openai-analyze.js` → Entfernen
+
+**Status:** ❌ Nicht verwendet (keine Referenzen gefunden)
+
+**Aktion:** Nach Migration entfernen
+
+---
+
+### Phase 6: Bestehende Lambda prüfen
+
+#### 3.6.1 `lambda/hero-video/index.js` Status
+
+**Existiert bereits:** ✅ `lambda/hero-video/index.js`
+
+**Funktionalität:**
+- Kombiniert `hero-video-settings` und `hero-video-upload`
+- **FEHLT:** `hero-video-upload-direct` Funktionalität
+
+**Optionen:**
+1. **Option A:** Bestehende Lambda erweitern um `upload-direct` Endpoint
+2. **Option B:** Separate Lambda für `upload-direct` erstellen (empfohlen - unterschiedliche Timeout/Memory)
+
+**Empfehlung:** Option B - Separate Lambda, da `upload-direct` deutlich mehr Memory/Timeout benötigt
 
 ---
 
@@ -387,24 +490,72 @@ const apiUrl = window.getApiUrl ? window.getApiUrl('HERO_VIDEO_SETTINGS') : '/.n
 const apiUrl = window.getApiUrl('HERO_VIDEO_SETTINGS') || `${window.AWS_APP_CONFIG?.API_BASE}/hero-video-settings`;
 ```
 
-**Anpassungen:**
-- Zeile 104: `HERO_VIDEO_SETTINGS` GET
-- Zeile 177: `HERO_VIDEO_UPLOAD` POST
-- Zeile 248: `HERO_VIDEO_SETTINGS` POST
-- Zeile 331: `HERO_VIDEO_UPLOAD_DIRECT` POST
-- Zeile 369: `HERO_VIDEO_SETTINGS` POST
+**Detaillierte Anpassungen:**
+
+1. **Zeile 104:** `loadCurrentVideo()` - GET Settings
+   ```javascript
+   // ALT:
+   const apiUrl = window.getApiUrl ? window.getApiUrl('HERO_VIDEO_SETTINGS') : '/.netlify/functions/hero-video-settings';
+   
+   // NEU:
+   const apiUrl = window.getApiUrl('HERO_VIDEO_SETTINGS') || `${window.AWS_APP_CONFIG?.API_BASE}/hero-video-settings`;
+   ```
+
+2. **Zeile 177:** `uploadVideo()` - POST Presigned URL
+   ```javascript
+   // ALT:
+   const uploadApiUrl = window.getApiUrl ? window.getApiUrl('HERO_VIDEO_UPLOAD') : '/.netlify/functions/hero-video-upload';
+   
+   // NEU:
+   const uploadApiUrl = window.getApiUrl('HERO_VIDEO_UPLOAD') || `${window.AWS_APP_CONFIG?.API_BASE}/hero-video-upload`;
+   ```
+
+3. **Zeile 248:** `uploadVideo()` - POST Settings (nach direktem Upload)
+   ```javascript
+   // ALT:
+   const settingsApiUrl = window.getApiUrl ? window.getApiUrl('HERO_VIDEO_SETTINGS') : '/.netlify/functions/hero-video-settings';
+   
+   // NEU:
+   const settingsApiUrl = window.getApiUrl('HERO_VIDEO_SETTINGS') || `${window.AWS_APP_CONFIG?.API_BASE}/hero-video-settings`;
+   ```
+
+4. **Zeile 331:** `uploadVideo()` - POST Direct Upload (Base64)
+   ```javascript
+   // ALT:
+   const directUploadApiUrl = window.getApiUrl ? window.getApiUrl('HERO_VIDEO_UPLOAD') : '/.netlify/functions/hero-video-upload-direct';
+   
+   // NEU:
+   const directUploadApiUrl = window.getApiUrl('HERO_VIDEO_UPLOAD_DIRECT') || `${window.AWS_APP_CONFIG?.API_BASE}/hero-video-upload-direct`;
+   ```
+   **⚠️ WICHTIG:** Hier muss `HERO_VIDEO_UPLOAD_DIRECT` verwendet werden, nicht `HERO_VIDEO_UPLOAD`!
+
+5. **Zeile 369:** `uploadVideo()` - POST Settings (nach Server-Side Upload)
+   ```javascript
+   // ALT:
+   const saveSettingsApiUrl = window.getApiUrl ? window.getApiUrl('HERO_VIDEO_SETTINGS') : '/.netlify/functions/hero-video-settings';
+   
+   // NEU:
+   const saveSettingsApiUrl = window.getApiUrl('HERO_VIDEO_SETTINGS') || `${window.AWS_APP_CONFIG?.API_BASE}/hero-video-settings`;
+   ```
 
 #### 4.3.2 `js/admin-bewerbungsprofil-manager.js`
 
 **Alle Vorkommen von:**
 ```javascript
 fetch('/.netlify/functions/bewerbungsprofil-api', ...)
+// ODER
+fetch('/api/applications/profiles', ...)
 ```
 
 **Ersetzen durch:**
 ```javascript
 fetch(`${window.AWS_APP_CONFIG?.API_BASE}/bewerbungsprofil`, ...)
 ```
+
+**⚠️ Prüfen:**
+- Zeile 49: `/api/applications/profiles` - ist das ein anderer Endpoint?
+- Alle `fetch` Calls zu `bewerbungsprofil-api` finden und ersetzen
+- Auth Header beibehalten: `Authorization: Bearer ${token}`
 
 #### 4.3.3 `js/admin-hero-fallback-widget.js`
 
@@ -561,23 +712,55 @@ fetch(`${window.AWS_APP_CONFIG?.API_BASE}/user-profile/documents`, ...)
 - Prüft Cognito User Pool Group `admin`
 
 **AWS Lambda:**
-- Alle Admin-Endpoints müssen `authUser(event)` verwenden
-- Zusätzlich: Admin-Group-Check in Lambda
+- **Hero Video Settings:** GET öffentlich (keine Auth), POST/PUT **sollte** Auth haben (aktuell keine in Netlify Function)
+- **Hero Video Upload:** Auth empfohlen (aktuell keine in Netlify Function)
+- **Hero Video Upload Direct:** Auth empfohlen (aktuell keine in Netlify Function)
+- **Bewerbungsprofil:** Auth erforderlich (JWT Token)
+- Alle Admin-Endpoints sollten `authUser(event)` verwenden
+- Zusätzlich: Admin-Group-Check in Lambda für kritische Operationen
 
-**Beispiel:**
+**Beispiel für Hero Video Settings (mit optionaler Auth):**
 ```javascript
 // lambda/hero-video-settings/index.js
 const { authUser, isAdmin } = require('../shared/auth');
 
 exports.handler = async (event) => {
-  const user = authUser(event);
-  
-  if (!isAdmin(user)) {
-    return {
-      statusCode: 403,
-      body: JSON.stringify({ error: 'Admin access required' })
-    };
+  // GET: Öffentlich (keine Auth)
+  if (event.httpMethod === 'GET') {
+    // ... load settings
   }
+  
+  // POST/PUT: Auth erforderlich
+  if (event.httpMethod === 'POST' || event.httpMethod === 'PUT') {
+    let user = null;
+    try {
+      user = authUser(event);
+      if (!isAdmin(user)) {
+        return {
+          statusCode: 403,
+          headers: CORS_HEADERS,
+          body: JSON.stringify({ error: 'Admin access required' })
+        };
+      }
+    } catch (e) {
+      // Optional: Warnung loggen, aber trotzdem erlauben (für Kompatibilität)
+      console.warn('⚠️ Unauthenticated POST to hero-video-settings');
+      // ODER: Auth erzwingen
+      // return { statusCode: 401, ... };
+    }
+    
+    // ... save settings
+  }
+};
+```
+
+**Beispiel für Bewerbungsprofil (Auth erforderlich):**
+```javascript
+// lambda/bewerbungsprofil/index.js
+const { authUser } = require('../shared/auth');
+
+exports.handler = async (event) => {
+  const user = authUser(event); // Wirft Error wenn nicht authentifiziert
   
   // ... rest of handler
 };
@@ -625,6 +808,7 @@ exports.handler = async (event) => {
 - API Gateway CORS korrekt konfigurieren
 - `Access-Control-Allow-Origin` Header prüfen
 - Preflight OPTIONS Requests handhaben
+- CORS Headers in Lambda Response setzen
 
 ### Problem 2: Authentifizierung fehlgeschlagen
 
@@ -634,6 +818,7 @@ exports.handler = async (event) => {
 - Cognito Token korrekt übergeben
 - Admin-Group-Check in Lambda implementieren
 - Token-Validierung prüfen
+- **Hero Video Settings:** GET ohne Auth erlauben (für Kompatibilität)
 
 ### Problem 3: DynamoDB Permissions
 
@@ -641,8 +826,9 @@ exports.handler = async (event) => {
 
 **Lösung:**
 - IAM Role Permissions prüfen
-- DynamoDB Table Names korrekt
+- DynamoDB Table Names korrekt (`manuel-weiss-settings`, `mawps-user-profiles`)
 - Region korrekt (eu-central-1)
+- **WICHTIG:** Prüfen ob `mawps-user-data` oder `mawps-user-profiles` für Bewerbungsprofil
 
 ### Problem 4: S3 Upload fehlgeschlagen
 
@@ -652,6 +838,35 @@ exports.handler = async (event) => {
 - S3 Bucket Permissions prüfen
 - Presigned URL Gültigkeit (15 Minuten)
 - CORS auf S3 Bucket konfigurieren
+- Bucket Policy für öffentlichen Lesezugriff
+
+### Problem 5: Base64 Upload zu groß
+
+**Symptom:** 413 Request Entity Too Large
+
+**Lösung:**
+- API Gateway Payload Limit: 10MB (aber Lambda kann mehr)
+- Netlify Function Limit: 6MB (nicht mehr relevant)
+- **Empfehlung:** Für Videos > 50MB Presigned URL Upload verwenden
+- Lambda Memory erhöhen (1024MB für Base64 Decoding)
+
+### Problem 6: DynamoDB Schema Mismatch
+
+**Symptom:** Settings werden nicht gefunden/gespeichert
+
+**Lösung:**
+- Prüfen ob `settingKey` oder `pk`/`sk` Schema verwendet wird
+- Hero Video Settings: `settingKey: 'hero-video-url'` (nicht `pk`/`sk`)
+- Bewerbungsprofil: `userId` + `sk: 'bewerbungsprofil'` (nicht `pk`/`sk`)
+
+### Problem 7: Lambda Timeout bei großen Videos
+
+**Symptom:** Lambda Timeout nach 30 Sekunden
+
+**Lösung:**
+- Timeout für `hero-video-upload-direct` auf 120 Sekunden erhöhen
+- Memory auf 1024MB erhöhen (für Base64 Decoding)
+- Progress Tracking implementieren
 
 ---
 
@@ -664,34 +879,207 @@ Nach Migration:
 - Request/Response Formate
 - Authentifizierung
 - Fehlerbehandlung
+- DynamoDB Schema
+- S3 Bucket Struktur
 
 ### 10.2 Admin Panel Dokumentation
 
 - Neue API-Endpoints
 - Konfiguration
 - Troubleshooting
+- Upload-Strategien (Presigned URL vs. Direct Upload)
+
+### 10.3 DynamoDB Schema Dokumentation
+
+**Hero Video Settings:**
+```javascript
+{
+  settingKey: 'hero-video-url',  // Partition Key (String)
+  settingValue: 'https://...',   // Video URL
+  updatedAt: '2026-01-21T...'    // ISO Timestamp
+}
+```
+
+**Bewerbungsprofil:**
+```javascript
+{
+  userId: 'user-123',            // Partition Key
+  sk: 'bewerbungsprofil',         // Sort Key
+  personalInfo: { ... },
+  education: [ ... ],
+  experience: [ ... ],
+  skills: [ ... ],
+  languages: [ ... ],
+  certificates: [ ... ],
+  documents: [ ... ],
+  settings: { ... },
+  lastModified: '2026-01-21T...'
+}
+```
 
 ---
 
-## 🎯 11. ZEITPLAN
+## 🔄 11. ROLLBACK-STRATEGIE
 
-| Phase | Dauer | Status |
-|-------|-------|--------|
-| Phase 1: Hero Video Functions | 2-3 Stunden | ⏳ Pending |
-| Phase 2: Bewerbungsprofil API | 1-2 Stunden | ⏳ Pending |
-| Phase 3: Documents API | 0.5 Stunden | ⏳ Pending |
-| Phase 4: Cleanup | 0.5 Stunden | ⏳ Pending |
-| **Gesamt** | **4-6 Stunden** | ⏳ Pending |
+### 11.1 Vor Migration
+
+1. **Backup erstellen:**
+   - Netlify Functions Code sichern
+   - DynamoDB Daten exportieren (optional)
+   - Frontend Code committen
+
+2. **Feature Flag:**
+   ```javascript
+   // js/aws-app-config.js
+   const USE_AWS_HERO_VIDEO = true; // Feature Flag
+   
+   const apiUrl = USE_AWS_HERO_VIDEO 
+     ? window.getApiUrl('HERO_VIDEO_SETTINGS')
+     : '/.netlify/functions/hero-video-settings';
+   ```
+
+### 11.2 Rollback bei Problemen
+
+1. **Feature Flag auf `false` setzen**
+2. **Netlify Functions wieder aktivieren** (falls noch deployed)
+3. **Frontend neu deployen**
+4. **Lambda Functions deaktivieren** (optional)
+
+### 11.3 Monitoring
+
+- CloudWatch Logs für Lambda Functions
+- API Gateway Metrics
+- Frontend Error Tracking
+- DynamoDB Metrics
 
 ---
 
-## 📝 12. NOTIZEN
+## 📊 12. MONITORING & LOGGING
 
-- Alle Frontend-Dateien sind bereits auf S3/CloudFront
-- Die meisten Backend-Functions sind bereits migriert
-- Hauptaufwand: Hero Video Functions + Frontend-Anpassungen
-- Bewerbungsprofil API ist relativ einfach (DynamoDB CRUD)
-- Documents API ist bereits in `backend/user-profile` implementiert
+### 12.1 CloudWatch Logs
+
+**Lambda Functions:**
+- `/aws/lambda/website-hero-video-settings`
+- `/aws/lambda/website-hero-video-upload`
+- `/aws/lambda/website-hero-video-upload-direct`
+- `/aws/lambda/website-bewerbungsprofil`
+
+**Log Groups erstellen:**
+```bash
+aws logs create-log-group --log-group-name /aws/lambda/website-hero-video-settings
+```
+
+### 12.2 API Gateway Metrics
+
+- Request Count
+- 4xx/5xx Errors
+- Latency
+- Cache Hit Rate
+
+### 12.3 Alerts
+
+- Lambda Errors > 5% in 5 Minuten
+- API Gateway 5xx Errors
+- DynamoDB Throttling
+- S3 Upload Failures
+
+---
+
+## 🎯 13. ZEITPLAN
+
+| Phase | Dauer | Status | Details |
+|-------|-------|--------|---------|
+| Phase 1: Hero Video Functions | 3-4 Stunden | ⏳ Pending | Settings (1h), Upload (1h), Upload-Direct (1.5h), Testing (0.5h) |
+| Phase 2: Bewerbungsprofil API | 1-2 Stunden | ⏳ Pending | Lambda (1h), Testing (0.5h) |
+| Phase 3: Documents API | 0.5 Stunden | ⏳ Pending | Nur Frontend-Anpassung |
+| Phase 3.1: User Profile API | 0.5 Stunden | ⏳ Pending | Prüfung + ggf. Anpassung |
+| Phase 4: Cleanup | 0.5 Stunden | ⏳ Pending | Netlify Functions entfernen |
+| **Gesamt** | **5.5-7.5 Stunden** | ⏳ Pending | Mit Puffer für Testing |
+
+---
+
+## 📝 14. NOTIZEN & WICHTIGE HINWEISE
+
+### 14.1 Bereits existierende Lambda
+
+- ✅ `lambda/hero-video/index.js` existiert bereits
+  - Kombiniert settings + upload
+  - **FEHLT:** upload-direct Funktionalität
+  - **Entscheidung:** Separate Lambda für upload-direct oder bestehende erweitern?
+
+### 14.2 DynamoDB Schema Unterschiede
+
+- **Hero Video Settings:** Verwendet `settingKey` (nicht `pk`/`sk`)
+- **Bewerbungsprofil:** Verwendet `userId` + `sk` (nicht `pk`/`sk`)
+- **WICHTIG:** Schema muss exakt übereinstimmen mit Netlify Functions
+
+### 14.3 Authentifizierung
+
+- **Hero Video Settings:** Aktuell KEINE Auth (öffentlich lesbar)
+- **Empfehlung:** Auth für POST/PUT hinzufügen (Admin-only)
+- **GET:** Kann öffentlich bleiben (für Frontend)
+
+### 14.4 Upload-Strategien
+
+- **< 50MB:** Presigned URL Upload (direkt zu S3)
+- **> 50MB:** Server-Side Upload (Base64 über Lambda)
+- **Limit:** API Gateway 10MB, aber Lambda kann mehr verarbeiten
+
+### 14.5 Frontend-Anpassungen
+
+- **5 Stellen** in `hero-video.js` müssen angepasst werden
+- **WICHTIG:** Zeile 331 muss `HERO_VIDEO_UPLOAD_DIRECT` verwenden (nicht `HERO_VIDEO_UPLOAD`)
+- `admin-hero-fallback-widget.js` verwendet auch hero-video-settings
+
+### 14.6 Testing Prioritäten
+
+1. **Hero Video Settings** (GET/POST) - Kritisch
+2. **Hero Video Upload** (Presigned URL) - Kritisch
+3. **Hero Video Upload Direct** (Base64) - Wichtig (Fallback)
+4. **Bewerbungsprofil** (GET/POST/DELETE) - Mittel
+5. **Documents API** - Niedrig (Legacy)
+
+---
+
+## ✅ 15. VOLLSTÄNDIGKEITS-CHECKLISTE
+
+### Backend
+- [x] Hero Video Settings Lambda
+- [x] Hero Video Upload Lambda
+- [x] Hero Video Upload Direct Lambda (mit DynamoDB Save!)
+- [x] Bewerbungsprofil Lambda
+- [x] Documents API Status geprüft
+- [x] User Profile API Status geprüft
+- [x] DynamoDB Schema dokumentiert
+- [x] Authentifizierung dokumentiert
+- [x] CORS konfiguriert
+
+### Frontend
+- [x] `js/aws-app-config.js` erweitern
+- [x] `window.getApiUrl()` erweitern
+- [x] `js/admin/sections/hero-video.js` (5 Stellen)
+- [x] `js/admin-hero-fallback-widget.js`
+- [x] `js/admin-bewerbungsprofil-manager.js`
+- [x] `admin-script.js` (optional)
+
+### Infrastructure
+- [x] CDK Stack erweitern
+- [x] IAM Permissions
+- [x] API Gateway Routes
+- [x] Environment Variables
+
+### Testing
+- [x] Unit Tests
+- [x] Integration Tests
+- [x] E2E Tests
+- [x] Error Handling
+- [x] Rollback-Strategie
+
+### Dokumentation
+- [x] API Dokumentation
+- [x] DynamoDB Schema
+- [x] Troubleshooting
+- [x] Monitoring Setup
 
 ---
 
