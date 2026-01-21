@@ -440,26 +440,18 @@ export const handler = async (event) => {
     // WICHTIG: Spezifischere Routen müssen VOR allgemeineren geprüft werden!
     
     // GET /api-settings/key - Vollständigen API-Key für KI-Generierung laden
-    // WICHTIG: Für globale Settings auch ohne Auth verfügbar!
+    // GET /api-settings/key - Vollständigen API-Key für KI-Generierung laden
+    // ACHTUNG: Dieser Endpoint gibt den echten Key zurück! Nur für eingeloggte User.
     // MUSS VOR /api-settings geprüft werden!
     if (httpMethod === 'GET' && route.includes('/api-settings/key')) {
       console.log('🔑 API-Settings/Key Endpoint aufgerufen');
+      const user = authUser(event); // Authentifizierung erforderlich
       const queryParams = event.queryStringParameters || {};
       const provider = queryParams.provider || 'openai';
       
-      // Auth ist optional - globale Settings sind für alle verfügbar
-      let user = null;
-      try {
-        user = authUser(event);
-        console.log('✅ User authentifiziert');
-      } catch (e) {
-        console.log('ℹ️ Keine Authentifizierung - verwende globale Settings (erlaubt für PDF-Export)');
-      }
-      
-      // Lade globalen API Key (funktioniert auch ohne Auth)
       const keyData = await getFullApiKey(provider);
       
-      if (!keyData || !keyData.apiKey) {
+      if (!keyData) {
         return json(404, { 
           error: 'API Key not configured', 
           message: `Kein ${provider} API-Key konfiguriert. Bitte im Admin Panel einrichten.`,
@@ -467,8 +459,8 @@ export const handler = async (event) => {
         }, hdr);
       }
       
-      // Vollständigen Key zurückgeben (auch ohne Auth für globale Settings!)
-      console.log(`✅ Vollständiger API-Key für ${provider} zurückgegeben (Länge: ${keyData.apiKey?.length || 0}, Global: true, Auth: ${user ? 'Ja' : 'Nein'})`);
+      // Vollständigen Key zurückgeben (NUR für eingeloggte User!)
+      console.log(`✅ Vollständiger API-Key für ${provider} zurückgegeben (Länge: ${keyData.apiKey?.length || 0})`);
       return json(200, {
         provider,
         apiKey: keyData.apiKey,

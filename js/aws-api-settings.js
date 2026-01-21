@@ -185,74 +185,48 @@ class AWSAPISettingsService {
     /**
      * Vollständigen (unverschlüsselten) API Key für einen Provider holen
      * ACHTUNG: Nur für Server-seitige Operationen verwenden!
-     * Versucht zuerst mit Auth, dann ohne Auth (für globale Settings)
      */
     async getFullApiKey(provider) {
-        // Versuche zuerst mit Auth (wenn eingeloggt)
-        if (this.isUserLoggedIn()) {
-            try {
-                const token = await this.getAuthToken();
-                
-                // AWS API Gateway: Sub-Pfad /api-settings/key
-                const response = await fetch(`${this.apiEndpoint}/api-settings/key?provider=${provider}`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log(`✅ Vollständiger API Key für ${provider} geladen (mit Auth)`);
-                    // Extrahiere den Key-String aus dem Response-Objekt
-                    const apiKey = data.apiKey || data.key || data[provider] || data;
-                    // Stelle sicher, dass wir einen String zurückgeben
-                    if (typeof apiKey === 'string' && apiKey.startsWith('sk-')) {
-                        return apiKey;
-                    }
-                    // Falls data selbst ein String ist (direkter Key)
-                    if (typeof data === 'string' && data.startsWith('sk-')) {
-                        return data;
-                    }
-                }
-            } catch (error) {
-                console.warn(`⚠️ Fehler beim Laden mit Auth, versuche ohne Auth:`, error.message);
-            }
+        if (!this.isUserLoggedIn()) {
+            console.log('⚠️ User nicht eingeloggt - keine API Keys verfügbar');
+            return null;
         }
-        
-        // Fallback: Versuche ohne Auth (für globale Settings)
+
         try {
-            console.log(`🔄 Versuche globalen API Key für ${provider} ohne Auth zu laden...`);
-            const response = await fetch(`${this.apiEndpoint}/api-settings/key?provider=${provider}`, {
+            const token = await this.getAuthToken();
+            
+            // Netlify Functions: Query-Param "action=key" statt Sub-Pfad
+            const response = await fetch(`${this.apiEndpoint}/api-settings?action=key&provider=${provider}`, {
                 method: 'GET',
                 headers: {
+                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 }
             });
 
-            if (response.ok) {
-                const data = await response.json();
-                console.log(`✅ Vollständiger API Key für ${provider} geladen (ohne Auth - global)`);
-                // Extrahiere den Key-String aus dem Response-Objekt
-                const apiKey = data.apiKey || data.key || data[provider] || data;
-                // Stelle sicher, dass wir einen String zurückgeben
-                if (typeof apiKey === 'string' && apiKey.startsWith('sk-')) {
-                    return apiKey;
-                }
-                // Falls data selbst ein String ist (direkter Key)
-                if (typeof data === 'string' && data.startsWith('sk-')) {
-                    return data;
-                }
-            } else {
-                console.warn(`⚠️ API Key Endpoint ohne Auth nicht verfügbar (Status: ${response.status})`);
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message || 'Fehler beim Laden des API Keys');
             }
+
+            const data = await response.json();
+            console.log(`✅ Vollständiger API Key für ${provider} geladen`);
+            // Extrahiere den Key-String aus dem Response-Objekt
+            const apiKey = data.apiKey || data.key || data[provider] || data;
+            // Stelle sicher, dass wir einen String zurückgeben
+            if (typeof apiKey === 'string') {
+                return apiKey;
+            }
+            // Falls data selbst ein String ist (direkter Key)
+            if (typeof data === 'string') {
+                return data;
+            }
+            console.warn('⚠️ API Key Format unerwartet:', data);
+            return null;
         } catch (error) {
-            console.warn(`⚠️ Fehler beim Laden ohne Auth:`, error.message);
+            console.error(`❌ Fehler beim Laden des vollständigen API Keys für ${provider}:`, error);
+            throw error;
         }
-        
-        console.log('⚠️ User nicht eingeloggt - keine API Keys verfügbar');
-        return null;
     }
 
     /**
