@@ -90,7 +90,15 @@ window.AWS_APP_CONFIG = Object.assign({}, window.AWS_APP_CONFIG || {}, {
   getEndpointUrl: function(endpoint) {
     if (this.API_BASE && this.API_BASE.length > 0) {
       // AWS API Gateway
-      return this.API_BASE + (this.ENDPOINTS[endpoint] || endpoint);
+      const endpointPath = this.ENDPOINTS[endpoint];
+      if (!endpointPath) {
+        console.error('❌ Endpoint nicht gefunden:', endpoint);
+        return null;
+      }
+      // Stelle sicher, dass API_BASE mit / endet und endpointPath mit / beginnt
+      const base = this.API_BASE.endsWith('/') ? this.API_BASE.slice(0, -1) : this.API_BASE;
+      const path = endpointPath.startsWith('/') ? endpointPath : '/' + endpointPath;
+      return base + path;
     } else {
       // Netlify Functions Fallback
       const netlifyMap = {

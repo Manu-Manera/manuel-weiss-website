@@ -1,0 +1,20 @@
+#!/usr/bin/env node
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+require("source-map-support/register");
+const cdk = require("aws-cdk-lib");
+const websocket_stack_1 = require("../lib/websocket-stack");
+const app = new cdk.App();
+// Environment configuration
+const env = {
+    account: process.env.CDK_DEFAULT_ACCOUNT,
+    region: process.env.CDK_DEFAULT_REGION || 'eu-central-1'
+};
+// WebSocket Stack für Echtzeit-Multiplayer-Spiele
+new websocket_stack_1.WebSocketStack(app, 'game-websocket-prod', {
+    env,
+    environment: 'production',
+    description: 'WebSocket API für Multiplayer-Spiele'
+});
+app.synth();
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoid2Vic29ja2V0LWFwcC5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIndlYnNvY2tldC1hcHAudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7O0FBQ0EsdUNBQXFDO0FBQ3JDLG1DQUFtQztBQUNuQyw0REFBd0Q7QUFFeEQsTUFBTSxHQUFHLEdBQUcsSUFBSSxHQUFHLENBQUMsR0FBRyxFQUFFLENBQUM7QUFFMUIsNEJBQTRCO0FBQzVCLE1BQU0sR0FBRyxHQUFHO0lBQ1YsT0FBTyxFQUFFLE9BQU8sQ0FBQyxHQUFHLENBQUMsbUJBQW1CO0lBQ3hDLE1BQU0sRUFBRSxPQUFPLENBQUMsR0FBRyxDQUFDLGtCQUFrQixJQUFJLGNBQWM7Q0FDekQsQ0FBQztBQUVGLGtEQUFrRDtBQUNsRCxJQUFJLGdDQUFjLENBQUMsR0FBRyxFQUFFLHFCQUFxQixFQUFFO0lBQzdDLEdBQUc7SUFDSCxXQUFXLEVBQUUsWUFBWTtJQUN6QixXQUFXLEVBQUUsc0NBQXNDO0NBQ3BELENBQUMsQ0FBQztBQUVILEdBQUcsQ0FBQyxLQUFLLEVBQUUsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbIiMhL3Vzci9iaW4vZW52IG5vZGVcbmltcG9ydCAnc291cmNlLW1hcC1zdXBwb3J0L3JlZ2lzdGVyJztcbmltcG9ydCAqIGFzIGNkayBmcm9tICdhd3MtY2RrLWxpYic7XG5pbXBvcnQgeyBXZWJTb2NrZXRTdGFjayB9IGZyb20gJy4uL2xpYi93ZWJzb2NrZXQtc3RhY2snO1xuXG5jb25zdCBhcHAgPSBuZXcgY2RrLkFwcCgpO1xuXG4vLyBFbnZpcm9ubWVudCBjb25maWd1cmF0aW9uXG5jb25zdCBlbnYgPSB7XG4gIGFjY291bnQ6IHByb2Nlc3MuZW52LkNES19ERUZBVUxUX0FDQ09VTlQsXG4gIHJlZ2lvbjogcHJvY2Vzcy5lbnYuQ0RLX0RFRkFVTFRfUkVHSU9OIHx8ICdldS1jZW50cmFsLTEnXG59O1xuXG4vLyBXZWJTb2NrZXQgU3RhY2sgZsO8ciBFY2h0emVpdC1NdWx0aXBsYXllci1TcGllbGVcbm5ldyBXZWJTb2NrZXRTdGFjayhhcHAsICdnYW1lLXdlYnNvY2tldC1wcm9kJywge1xuICBlbnYsXG4gIGVudmlyb25tZW50OiAncHJvZHVjdGlvbicsXG4gIGRlc2NyaXB0aW9uOiAnV2ViU29ja2V0IEFQSSBmw7xyIE11bHRpcGxheWVyLVNwaWVsZSdcbn0pO1xuXG5hcHAuc3ludGgoKTtcbiJdfQ==

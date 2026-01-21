@@ -1,0 +1,31 @@
+#!/usr/bin/env node
+"use strict";
+/**
+ * CDK App für Website API Stack
+ * Deployt nur den Website API Stack (ersetzt Netlify Functions)
+ * Unabhängig vom AI Investment System
+ *
+ * Deployment:
+ *   cd infrastructure
+ *   npx cdk deploy -a "npx ts-node bin/website-api.ts"
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+require("source-map-support/register");
+const cdk = require("aws-cdk-lib");
+const website_api_stack_1 = require("../lib/website-api-stack");
+const app = new cdk.App();
+// Environment configuration
+const env = {
+    account: process.env.CDK_DEFAULT_ACCOUNT,
+    region: process.env.CDK_DEFAULT_REGION || 'eu-central-1'
+};
+// Website API Stack
+const websiteApiStack = new website_api_stack_1.WebsiteApiStack(app, 'manuel-weiss-website-api', {
+    env,
+    description: 'Website API für manuel-weiss.ch (ersetzt Netlify Functions)'
+});
+// Tags
+cdk.Tags.of(app).add('Project', 'manuel-weiss-website');
+cdk.Tags.of(app).add('Purpose', 'Netlify-zu-AWS-Migration');
+cdk.Tags.of(app).add('ManagedBy', 'CDK');
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoid2Vic2l0ZS1hcGkuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJ3ZWJzaXRlLWFwaS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUNBOzs7Ozs7OztHQVFHOztBQUVILHVDQUFxQztBQUNyQyxtQ0FBbUM7QUFDbkMsZ0VBQTJEO0FBRTNELE1BQU0sR0FBRyxHQUFHLElBQUksR0FBRyxDQUFDLEdBQUcsRUFBRSxDQUFDO0FBRTFCLDRCQUE0QjtBQUM1QixNQUFNLEdBQUcsR0FBRztJQUNWLE9BQU8sRUFBRSxPQUFPLENBQUMsR0FBRyxDQUFDLG1CQUFtQjtJQUN4QyxNQUFNLEVBQUUsT0FBTyxDQUFDLEdBQUcsQ0FBQyxrQkFBa0IsSUFBSSxjQUFjO0NBQ3pELENBQUM7QUFFRixvQkFBb0I7QUFDcEIsTUFBTSxlQUFlLEdBQUcsSUFBSSxtQ0FBZSxDQUFDLEdBQUcsRUFBRSwwQkFBMEIsRUFBRTtJQUMzRSxHQUFHO0lBQ0gsV0FBVyxFQUFFLDZEQUE2RDtDQUMzRSxDQUFDLENBQUM7QUFFSCxPQUFPO0FBQ1AsR0FBRyxDQUFDLElBQUksQ0FBQyxFQUFFLENBQUMsR0FBRyxDQUFDLENBQUMsR0FBRyxDQUFDLFNBQVMsRUFBRSxzQkFBc0IsQ0FBQyxDQUFDO0FBQ3hELEdBQUcsQ0FBQyxJQUFJLENBQUMsRUFBRSxDQUFDLEdBQUcsQ0FBQyxDQUFDLEdBQUcsQ0FBQyxTQUFTLEVBQUUsMEJBQTBCLENBQUMsQ0FBQztBQUM1RCxHQUFHLENBQUMsSUFBSSxDQUFDLEVBQUUsQ0FBQyxHQUFHLENBQUMsQ0FBQyxHQUFHLENBQUMsV0FBVyxFQUFFLEtBQUssQ0FBQyxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiIyEvdXNyL2Jpbi9lbnYgbm9kZVxuLyoqXG4gKiBDREsgQXBwIGbDvHIgV2Vic2l0ZSBBUEkgU3RhY2tcbiAqIERlcGxveXQgbnVyIGRlbiBXZWJzaXRlIEFQSSBTdGFjayAoZXJzZXR6dCBOZXRsaWZ5IEZ1bmN0aW9ucylcbiAqIFVuYWJow6RuZ2lnIHZvbSBBSSBJbnZlc3RtZW50IFN5c3RlbVxuICogXG4gKiBEZXBsb3ltZW50OlxuICogICBjZCBpbmZyYXN0cnVjdHVyZVxuICogICBucHggY2RrIGRlcGxveSAtYSBcIm5weCB0cy1ub2RlIGJpbi93ZWJzaXRlLWFwaS50c1wiXG4gKi9cblxuaW1wb3J0ICdzb3VyY2UtbWFwLXN1cHBvcnQvcmVnaXN0ZXInO1xuaW1wb3J0ICogYXMgY2RrIGZyb20gJ2F3cy1jZGstbGliJztcbmltcG9ydCB7IFdlYnNpdGVBcGlTdGFjayB9IGZyb20gJy4uL2xpYi93ZWJzaXRlLWFwaS1zdGFjayc7XG5cbmNvbnN0IGFwcCA9IG5ldyBjZGsuQXBwKCk7XG5cbi8vIEVudmlyb25tZW50IGNvbmZpZ3VyYXRpb25cbmNvbnN0IGVudiA9IHtcbiAgYWNjb3VudDogcHJvY2Vzcy5lbnYuQ0RLX0RFRkFVTFRfQUNDT1VOVCxcbiAgcmVnaW9uOiBwcm9jZXNzLmVudi5DREtfREVGQVVMVF9SRUdJT04gfHwgJ2V1LWNlbnRyYWwtMSdcbn07XG5cbi8vIFdlYnNpdGUgQVBJIFN0YWNrXG5jb25zdCB3ZWJzaXRlQXBpU3RhY2sgPSBuZXcgV2Vic2l0ZUFwaVN0YWNrKGFwcCwgJ21hbnVlbC13ZWlzcy13ZWJzaXRlLWFwaScsIHtcbiAgZW52LFxuICBkZXNjcmlwdGlvbjogJ1dlYnNpdGUgQVBJIGbDvHIgbWFudWVsLXdlaXNzLmNoIChlcnNldHp0IE5ldGxpZnkgRnVuY3Rpb25zKSdcbn0pO1xuXG4vLyBUYWdzXG5jZGsuVGFncy5vZihhcHApLmFkZCgnUHJvamVjdCcsICdtYW51ZWwtd2Vpc3Mtd2Vic2l0ZScpO1xuY2RrLlRhZ3Mub2YoYXBwKS5hZGQoJ1B1cnBvc2UnLCAnTmV0bGlmeS16dS1BV1MtTWlncmF0aW9uJyk7XG5jZGsuVGFncy5vZihhcHApLmFkZCgnTWFuYWdlZEJ5JywgJ0NESycpO1xuIl19

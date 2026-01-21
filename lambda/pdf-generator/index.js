@@ -75,10 +75,11 @@ exports.handler = async (event) => {
         await page.waitForTimeout(1000);
 
         // Generate PDF
+        // WICHTIG: preferCSSPageSize muss false sein, damit Puppeteer Margins korrekt anwendet
         const pdfOptions = {
             format: options.format || 'A4',
             printBackground: options.printBackground !== false, // Default: true
-            preferCSSPageSize: options.preferCSSPageSize !== false, // Default: true
+            preferCSSPageSize: options.preferCSSPageSize !== undefined ? options.preferCSSPageSize : false, // WICHTIG: false für korrekte Margins
             margin: options.margin || {
                 top: '20mm',
                 right: '20mm',

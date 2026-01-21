@@ -837,6 +837,32 @@
                             </div>
                         </div>
                     </div>
+                    
+                    <div class="design-section">
+                        <div class="design-section-title"><i class="fas fa-file-pdf"></i> Seitenumbrüche</div>
+                        <div class="design-form-group">
+                            <label>
+                                <input type="checkbox" id="enableManualPageBreaks"> Manuelle Seitenumbrüche aktivieren
+                            </label>
+                            <small style="color: var(--design-text-muted); font-size: 0.75rem; display: block; margin-top: 0.5rem;">
+                                Erlaubt das Setzen von Seitenumbrüchen vor bestimmten Abschnitten
+                            </small>
+                        </div>
+                        <div id="manualPageBreaksControls" style="display: none;">
+                            <div class="design-form-group">
+                                <label>Seitenumbruch vor Abschnitt:</label>
+                                <select id="pageBreakSection" class="design-select">
+                                    <option value="">Kein Seitenumbruch</option>
+                                    <option value="experience">Berufserfahrung</option>
+                                    <option value="education">Ausbildung</option>
+                                    <option value="skills">Fähigkeiten</option>
+                                    <option value="projects">Projekte</option>
+                                    <option value="languages">Sprachen</option>
+                                    <option value="references">Referenzen</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 
                 <!-- Sections Panel (Drag & Drop) -->
