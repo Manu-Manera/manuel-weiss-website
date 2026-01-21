@@ -4366,6 +4366,12 @@ function resetDesignSettings() {
     }
 }
 
+// Export functions globally for onclick handlers
+window.openDesignEditor = openDesignEditor;
+window.closeDesignEditor = closeDesignEditor;
+window.saveDesignSettings = saveDesignSettings;
+window.resetDesignSettings = resetDesignSettings;
+
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('designEditorModal') || document.querySelector('.design-editor-container')) {
