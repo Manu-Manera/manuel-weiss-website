@@ -130,22 +130,40 @@ exports.handler = async (event) => {
     }
     
     try {
-        // Get user ID from Cognito authorizer or X-User-Id header
+        const { httpMethod, path, queryStringParameters } = event;
+        
+        // Route: /api-settings/key?provider=openai - Vollständigen (entschlüsselten) Key abrufen
+        // Unterstützt sowohl User-spezifische als auch globale API Keys
+        if (httpMethod === 'GET' && path && path.includes('/key')) {
+            const provider = queryStringParameters?.provider || 'openai';
+            const isGlobalRequest = queryStringParameters?.global === 'true';
+            
+            // Für globale Keys ist kein User-Login erforderlich
+            if (isGlobalRequest) {
+                console.log(`📥 Anfrage für globalen ${provider} API-Key (ohne Auth)`);
+                return await getFullApiKey(null, provider, true);
+            }
+            
+            // Für User-spezifische Keys ist Login erforderlich
+            const userId = event.requestContext?.authorizer?.claims?.sub 
+                || event.headers?.['x-user-id'] 
+                || event.headers?.['X-User-Id'];
+            
+            if (!userId) {
+                return response(401, { error: 'Nicht autorisiert - Bitte anmelden' });
+            }
+            
+            console.log(`📥 Anfrage für vollständigen ${provider} API-Key (User: ${userId})`);
+            return await getFullApiKey(userId, provider, false);
+        }
+        
+        // Für alle anderen Endpoints ist Login erforderlich
         const userId = event.requestContext?.authorizer?.claims?.sub 
             || event.headers?.['x-user-id'] 
             || event.headers?.['X-User-Id'];
         
         if (!userId) {
             return response(401, { error: 'Nicht autorisiert - Bitte anmelden' });
-        }
-        
-        const { httpMethod, path, queryStringParameters } = event;
-        
-        // Route: /api-settings/key?provider=openai - Vollständigen (entschlüsselten) Key abrufen
-        if (httpMethod === 'GET' && path && path.includes('/key')) {
-            const provider = queryStringParameters?.provider || 'openai';
-            console.log(`📥 Anfrage für vollständigen ${provider} API-Key`);
-            return await getFullApiKey(userId, provider);
         }
         
         switch (httpMethod) {
