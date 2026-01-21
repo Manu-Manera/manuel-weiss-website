@@ -3866,10 +3866,15 @@ class DesignEditor {
     }
 
     async exportToPDF() {
-        const preview = document.getElementById('resumePreview');
+        // Prüfe ob Design Editor Preview vorhanden ist
+        const preview = document.querySelector('.design-resume-preview');
         if (!preview) {
-            this.showNotification('Keine Vorschau zum Exportieren vorhanden', 'error');
-            return;
+            // Fallback: Prüfe resumePreview
+            const fallbackPreview = document.getElementById('resumePreview');
+            if (!fallbackPreview) {
+                this.showNotification('Keine Vorschau zum Exportieren vorhanden. Bitte Design Editor öffnen.', 'error');
+                return;
+            }
         }
         
         // Zeige Optionen-Dialog
@@ -3934,8 +3939,11 @@ class DesignEditor {
                     <button class="btn-secondary" onclick="window.designEditor.previewPDF()">
                         <i class="fas fa-eye"></i> Vorschau
                     </button>
-                    <button class="btn-primary" onclick="window.designEditor.downloadPDFWithOptions()">
-                        <i class="fas fa-download"></i> Exportieren
+                    <button class="btn-secondary" onclick="window.designEditor.downloadPDFWithOptions(); this.closest('.pdf-export-options-modal').remove();">
+                        <i class="fas fa-download"></i> Direkt exportieren
+                    </button>
+                    <button class="btn-primary" onclick="window.designEditor.downloadPDFWithOptions(); this.closest('.pdf-export-options-modal').remove();">
+                        <i class="fas fa-file-pdf"></i> Exportieren & Vorschau
                     </button>
                 </div>
             </div>
@@ -4055,9 +4063,6 @@ class DesignEditor {
         const addPageNumbers = document.getElementById('pdfPageNumbers')?.checked || false;
         const addMetadata = document.getElementById('pdfMetadata')?.checked || true;
         
-        // Modal schließen
-        document.querySelector('.pdf-export-options-modal')?.remove();
-        
         this.showNotification('PDF wird generiert...', 'info');
         
         try {
@@ -4077,13 +4082,23 @@ class DesignEditor {
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
-            URL.revokeObjectURL(url);
+            
+            // Zeige auch Vorschau
+            setTimeout(() => {
+                this.showPDFPreviewModal(pdfBytes);
+            }, 500);
             
             this.showNotification(`PDF exportiert! (${(pdfBytes.byteLength / 1024).toFixed(0)} KB)`, 'success');
         } catch (error) {
             console.error('PDF Export Fehler:', error);
-            this.showNotification('Fehler beim Export, versuche Fallback...', 'warning');
-            this.exportToPDFLegacy();
+            this.showNotification('Fehler beim Export: ' + error.message, 'error');
+            // Versuche Fallback
+            try {
+                this.exportToPDFLegacy();
+            } catch (fallbackError) {
+                console.error('Fallback Fehler:', fallbackError);
+                this.showNotification('Export fehlgeschlagen. Bitte versuchen Sie es erneut.', 'error');
+            }
         }
     }
     
@@ -4091,27 +4106,262 @@ class DesignEditor {
         this.showNotification('Vorschau wird erstellt...', 'info');
         
         try {
+            // Hole Export-Optionen aus dem Dialog (falls vorhanden)
+            const quality = document.getElementById('pdfQuality')?.value || 'medium';
+            const format = document.getElementById('pdfFormat')?.value || 'a4';
+            const addPageNumbers = document.getElementById('pdfPageNumbers')?.checked || false;
+            const addMetadata = document.getElementById('pdfMetadata')?.checked || true;
+            
             const pdfBytes = await this.generateResumePDF({
-                quality: 'medium',
-                format: 'a4'
+                quality,
+                format,
+                addPageNumbers,
+                addMetadata
             });
             
-            const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-            const url = URL.createObjectURL(blob);
+            // Zeige PDF-Vorschau Modal
+            this.showPDFPreviewModal(pdfBytes);
             
-            // Öffne in neuem Tab
-            window.open(url, '_blank');
-            
-            this.showNotification('Vorschau geöffnet', 'success');
+            this.showNotification('Vorschau erstellt', 'success');
         } catch (error) {
             console.error('Vorschau Fehler:', error);
-            this.showNotification('Vorschau konnte nicht erstellt werden', 'error');
+            this.showNotification('Vorschau konnte nicht erstellt werden: ' + error.message, 'error');
+        }
+    }
+    
+    showPDFPreviewModal(pdfBytes) {
+        // Entferne altes Modal falls vorhanden
+        const existingModal = document.querySelector('.pdf-preview-modal');
+        if (existingModal) {
+            const oldUrl = existingModal.dataset.pdfUrl;
+            if (oldUrl) URL.revokeObjectURL(oldUrl);
+            existingModal.remove();
+        }
+        
+        // Erstelle Blob URL für PDF
+        const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+        const pdfUrl = URL.createObjectURL(blob);
+        
+        const resumeData = this.getResumeData();
+        const filename = document.getElementById('pdfFilename')?.value || 
+            `Lebenslauf_${resumeData.firstName || 'Vorname'}_${resumeData.lastName || 'Nachname'}`.replace(/\s+/g, '_');
+        
+        const modal = document.createElement('div');
+        modal.className = 'pdf-preview-modal';
+        modal.dataset.pdfUrl = pdfUrl; // Speichere URL für Cleanup
+        modal.innerHTML = `
+            <div class="pdf-preview-content">
+                <div class="pdf-preview-header">
+                    <h3><i class="fas fa-file-pdf"></i> PDF Vorschau</h3>
+                    <button class="btn-close" style="background: rgba(255,255,255,0.2); border: none; color: white; width: 32px; height: 32px; border-radius: 50%; cursor: pointer;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="pdf-preview-body">
+                    <iframe src="${pdfUrl}" style="width: 100%; height: 100%; border: none; background: #f0f0f0;"></iframe>
+                </div>
+                <div class="pdf-preview-footer">
+                    <button class="btn-glass btn-cancel" style="background: rgba(100,116,139,0.8);">
+                        <i class="fas fa-times"></i> Abbrechen
+                    </button>
+                    <button class="btn-glass btn-print" style="background: rgba(59,130,246,0.8);">
+                        <i class="fas fa-print"></i> Drucken
+                    </button>
+                    <button class="btn-glass btn-primary btn-download">
+                        <i class="fas fa-download"></i> PDF herunterladen
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        // Event-Listener für Buttons
+        const closeBtn = modal.querySelector('.btn-close');
+        const cancelBtn = modal.querySelector('.btn-cancel');
+        const printBtn = modal.querySelector('.btn-print');
+        const downloadBtn = modal.querySelector('.btn-download');
+        
+        const closeModal = () => {
+            modal.remove();
+            URL.revokeObjectURL(pdfUrl);
+        };
+        
+        closeBtn?.addEventListener('click', closeModal);
+        cancelBtn?.addEventListener('click', closeModal);
+        
+        printBtn?.addEventListener('click', () => {
+            this.printPDF(pdfUrl);
+        });
+        
+        downloadBtn?.addEventListener('click', () => {
+            this.downloadPDFFromPreview(pdfUrl, filename);
+            closeModal();
+        });
+        
+        // Schließen beim Klick außerhalb
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+        
+        // Styles für das Modal
+        const styles = document.createElement('style');
+        styles.textContent = `
+            .pdf-preview-modal {
+                position: fixed;
+                top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0, 0, 0, 0.85);
+                z-index: 10000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 20px;
+                animation: fadeIn 0.2s ease;
+            }
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+            .pdf-preview-content {
+                background: #1e293b;
+                border-radius: 12px;
+                width: 100%;
+                max-width: 1200px;
+                height: 90vh;
+                max-height: 900px;
+                display: flex;
+                flex-direction: column;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+                overflow: hidden;
+            }
+            .pdf-preview-header {
+                padding: 20px 24px;
+                background: rgba(30, 41, 59, 0.8);
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+            .pdf-preview-header h3 {
+                margin: 0;
+                color: white;
+                font-size: 1.2rem;
+                font-weight: 600;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .pdf-preview-body {
+                flex: 1;
+                overflow: hidden;
+                background: #0f172a;
+                position: relative;
+            }
+            .pdf-preview-footer {
+                padding: 16px 24px;
+                background: rgba(30, 41, 59, 0.8);
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+                display: flex;
+                gap: 12px;
+                justify-content: flex-end;
+            }
+            .btn-glass {
+                padding: 10px 20px;
+                border: none;
+                border-radius: 8px;
+                color: white;
+                font-weight: 500;
+                cursor: pointer;
+                transition: all 0.2s;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                backdrop-filter: blur(10px);
+            }
+            .btn-glass:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            }
+            .btn-glass.btn-primary {
+                background: rgba(34, 197, 94, 0.8) !important;
+            }
+            @media (max-width: 768px) {
+                .pdf-preview-content {
+                    height: 100vh;
+                    max-height: 100vh;
+                    border-radius: 0;
+                }
+                .pdf-preview-footer {
+                    flex-direction: column;
+                }
+                .btn-glass {
+                    width: 100%;
+                    justify-content: center;
+                }
+            }
+        `;
+        
+        document.head.appendChild(styles);
+        document.body.appendChild(modal);
+        
+        // Cleanup beim Schließen
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.remove();
+                URL.revokeObjectURL(pdfUrl);
+            }
+        });
+    }
+    
+    printPDF(pdfUrl) {
+        try {
+            const printWindow = window.open(pdfUrl, '_blank');
+            if (printWindow) {
+                printWindow.onload = () => {
+                    setTimeout(() => {
+                        printWindow.print();
+                    }, 500);
+                };
+            } else {
+                this.showNotification('Pop-up-Blocker verhindert Drucken. Bitte erlauben Sie Pop-ups.', 'warning');
+            }
+        } catch (error) {
+            console.error('Druck-Fehler:', error);
+            this.showNotification('Fehler beim Drucken', 'error');
+        }
+    }
+    
+    downloadPDFFromPreview(pdfUrl, filename) {
+        try {
+            const a = document.createElement('a');
+            a.href = pdfUrl;
+            a.download = `${filename}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            
+            this.showNotification(`PDF exportiert! (${filename}.pdf)`, 'success');
+        } catch (error) {
+            console.error('Download-Fehler:', error);
+            this.showNotification('Fehler beim Download', 'error');
         }
     }
     
     async generateResumePDF(options = {}) {
-        const preview = document.getElementById('resumePreview');
-        if (!preview) throw new Error('Preview nicht gefunden');
+        // Suche nach der Design-Editor Preview
+        const preview = document.querySelector('.design-resume-preview');
+        if (!preview) {
+            // Fallback: Suche nach resumePreview (für Kompatibilität)
+            const fallbackPreview = document.getElementById('resumePreview');
+            if (!fallbackPreview) {
+                throw new Error('Preview nicht gefunden. Bitte Design Editor öffnen.');
+            }
+            return this.generateResumePDFFromElement(fallbackPreview, options);
+        }
+        return this.generateResumePDFFromElement(preview, options);
+    }
+    
+    async generateResumePDFFromElement(preview, options = {}) {
         
         const { quality = 'medium', format = 'a4', addPageNumbers = false, addMetadata = true } = options;
         
@@ -4129,14 +4379,27 @@ class DesignEditor {
             await new Promise(resolve => setTimeout(resolve, 300));
         }
         
-        // Clone für Export
+        // Clone für Export - mit allen Styles
         const clone = preview.cloneNode(true);
         clone.style.position = 'absolute';
         clone.style.left = '-9999px';
-        clone.style.width = '210mm';
-        clone.style.minHeight = '297mm';
+        clone.style.width = format === 'letter' ? '216mm' : '210mm';
+        clone.style.minHeight = format === 'letter' ? '279mm' : '297mm';
         clone.style.backgroundColor = this.settings.backgroundColor || '#ffffff';
+        clone.style.padding = '20mm';
+        clone.style.boxSizing = 'border-box';
+        
+        // Stelle sicher, dass alle Styles übernommen werden
+        const computedStyle = window.getComputedStyle(preview);
+        clone.style.fontFamily = computedStyle.fontFamily;
+        clone.style.fontSize = computedStyle.fontSize;
+        clone.style.color = computedStyle.color;
+        clone.style.lineHeight = computedStyle.lineHeight;
+        
         document.body.appendChild(clone);
+        
+        // Warte kurz, damit der Clone gerendert wird
+        await new Promise(resolve => setTimeout(resolve, 100));
         
         const opt = {
             margin: [0, 0, 0, 0],
@@ -4146,7 +4409,9 @@ class DesignEditor {
                 useCORS: true,
                 letterRendering: true,
                 logging: false,
-                backgroundColor: this.settings.backgroundColor || '#ffffff'
+                backgroundColor: this.settings.backgroundColor || '#ffffff',
+                allowTaint: false,
+                removeContainer: false
             },
             jsPDF: {
                 unit: 'mm',
@@ -4154,7 +4419,7 @@ class DesignEditor {
                 orientation: 'portrait',
                 compress: true
             },
-            pagebreak: { mode: ['css', 'legacy'], avoid: ['img', '.section'] }
+            pagebreak: { mode: ['css', 'legacy'], avoid: ['img', '.section', '.resume-section'] }
         };
         
         try {
@@ -4218,8 +4483,11 @@ class DesignEditor {
     
     async exportToPDFLegacy() {
         // Fallback: Original-Methode mit html2pdf
-        const preview = document.getElementById('resumePreview');
-        if (!preview) return;
+        const preview = document.querySelector('.design-resume-preview') || document.getElementById('resumePreview');
+        if (!preview) {
+            this.showNotification('Preview nicht gefunden für Legacy-Export', 'error');
+            return;
+        }
         
         this.showNotification('PDF wird generiert (Legacy)...', 'info');
         
