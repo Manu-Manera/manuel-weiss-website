@@ -4449,17 +4449,23 @@ class DesignEditor {
         // Generiere PDF
         console.log('🔄 Generiere PDF mit pdfmake...');
         const pdfDocGenerator = pdfMake.createPdf(docDefinition);
+        
+        // pdfmake verwendet Callbacks, wrappen in Promise
         const pdfBlob = await new Promise((resolve, reject) => {
-            pdfDocGenerator.getBlob((blob) => {
-                if (blob) {
-                    resolve(blob);
-                } else {
-                    reject(new Error('PDF-Generierung fehlgeschlagen'));
-                }
-            });
+            try {
+                pdfDocGenerator.getBlob((blob) => {
+                    if (blob && blob.size > 0) {
+                        console.log('✅ PDF generiert:', blob.size, 'Bytes');
+                        resolve(blob);
+                    } else {
+                        reject(new Error('PDF-Generierung fehlgeschlagen: Leeres PDF'));
+                    }
+                });
+            } catch (error) {
+                reject(new Error(`PDF-Generierung fehlgeschlagen: ${error.message}`));
+            }
         });
         
-        console.log('✅ PDF generiert:', pdfBlob.size, 'Bytes');
         return pdfBlob;
     }
     
@@ -4518,48 +4524,67 @@ class DesignEditor {
         Array.from(element.children).forEach(child => {
             const childContent = this.processHTMLElement(child);
             if (childContent) {
-                content.push(childContent);
+                // Wenn Array (mehrere Elemente), spread sie
+                if (Array.isArray(childContent)) {
+                    content.push(...childContent);
+                } else {
+                    content.push(childContent);
+                }
             }
         });
         
-        // Falls keine Kinder, nimm Text-Content
-        if (content.length === 0 && element.textContent.trim()) {
-            content.push({ text: element.textContent.trim(), style: 'normal' });
+        // Falls keine Kinder, nimm Text-Content direkt
+        if (content.length === 0) {
+            const text = element.textContent.trim();
+            if (text) {
+                // Teile in Zeilen auf für bessere Formatierung
+                const lines = text.split('\n').filter(line => line.trim());
+                if (lines.length > 0) {
+                    content.push(...lines.map(line => ({ text: line.trim(), style: 'normal', margin: [0, 0, 0, 3] })));
+                }
+            }
         }
         
-        return content;
+        return content.length > 0 ? content : [{ text: 'Kein Inhalt gefunden', style: 'normal', italics: true }];
     }
     
     processHTMLElement(element) {
         const tagName = element.tagName.toLowerCase();
         const text = element.textContent.trim();
-        
-        // Ignoriere leere Elemente
-        if (!text && !element.querySelector('img')) {
-            return null;
-        }
+        const innerHTML = element.innerHTML.trim();
         
         // Überschriften
-        if (tagName === 'h1' || tagName === 'h2' || tagName === 'h3') {
-            return {
-                text: text,
-                style: tagName === 'h1' ? 'header' : 'subheader',
-                margin: [0, 10, 0, 5]
-            };
+        if (tagName === 'h1' || tagName === 'h2' || tagName === 'h3' || tagName === 'h4') {
+            if (text) {
+                return {
+                    text: text,
+                    style: tagName === 'h1' ? 'header' : 'subheader',
+                    margin: [0, tagName === 'h1' ? 15 : 10, 0, 5],
+                    bold: true
+                };
+            }
         }
         
         // Absätze
         if (tagName === 'p') {
-            return { text: text, style: 'normal', margin: [0, 0, 0, 5] };
+            if (text) {
+                return { text: text, style: 'normal', margin: [0, 0, 0, 5] };
+            }
         }
         
         // Listen
         if (tagName === 'ul' || tagName === 'ol') {
-            const items = Array.from(element.querySelectorAll('li')).map(li => li.textContent.trim()).filter(t => t);
-            return {
-                ul: items,
-                margin: [0, 5, 0, 10]
-            };
+            const items = Array.from(element.querySelectorAll('li')).map(li => {
+                const liText = li.textContent.trim();
+                return liText || null;
+            }).filter(item => item !== null);
+            
+            if (items.length > 0) {
+                return {
+                    [tagName === 'ul' ? 'ul' : 'ol']: items,
+                    margin: [0, 5, 0, 10]
+                };
+            }
         }
         
         // Divs mit Klassen (Sections)
@@ -4567,23 +4592,40 @@ class DesignEditor {
             const classList = element.classList;
             
             // Section Header
-            if (classList.contains('resume-preview-header') || classList.contains('resume-preview-section-title')) {
-                return {
-                    text: text,
-                    style: 'subheader',
-                    margin: [0, 15, 0, 5]
-                };
+            if (classList.contains('resume-preview-header') || classList.contains('resume-preview-section-title') || 
+                classList.contains('section-title') || classList.contains('resume-header')) {
+                if (text) {
+                    return {
+                        text: text,
+                        style: 'subheader',
+                        margin: [0, 15, 0, 8],
+                        bold: true
+                    };
+                }
             }
             
-            // Section Content
-            if (classList.contains('resume-preview-section') || classList.contains('resume-preview-item')) {
+            // Section Content - rekursiv verarbeiten
+            if (classList.contains('resume-preview-section') || classList.contains('resume-preview-item') ||
+                classList.contains('section') || classList.contains('resume-section')) {
                 const sectionContent = [];
                 Array.from(element.children).forEach(child => {
                     const childContent = this.processHTMLElement(child);
                     if (childContent) {
-                        sectionContent.push(childContent);
+                        if (Array.isArray(childContent)) {
+                            sectionContent.push(...childContent);
+                        } else {
+                            sectionContent.push(childContent);
+                        }
                     }
                 });
+                
+                // Falls keine Kinder, aber Text vorhanden
+                if (sectionContent.length === 0 && text) {
+                    const lines = text.split('\n').filter(line => line.trim());
+                    lines.forEach(line => {
+                        sectionContent.push({ text: line.trim(), style: 'normal', margin: [0, 0, 0, 3] });
+                    });
+                }
                 
                 if (sectionContent.length > 0) {
                     return {
@@ -4598,7 +4640,11 @@ class DesignEditor {
             Array.from(element.children).forEach(child => {
                 const childContent = this.processHTMLElement(child);
                 if (childContent) {
-                    divContent.push(childContent);
+                    if (Array.isArray(childContent)) {
+                        divContent.push(...childContent);
+                    } else {
+                        divContent.push(childContent);
+                    }
                 }
             });
             
@@ -4606,26 +4652,49 @@ class DesignEditor {
                 return { stack: divContent, margin: [0, 0, 0, 5] };
             }
             
-            // Falls nur Text
+            // Falls nur Text (keine Kinder)
+            if (text && element.children.length === 0) {
+                const lines = text.split('\n').filter(line => line.trim());
+                if (lines.length === 1) {
+                    return { text: lines[0], style: 'normal', margin: [0, 0, 0, 5] };
+                } else if (lines.length > 1) {
+                    return lines.map(line => ({ text: line.trim(), style: 'normal', margin: [0, 0, 0, 3] }));
+                }
+            }
+        }
+        
+        // Span, Strong, Em, etc.
+        if (tagName === 'span' || tagName === 'strong' || tagName === 'b' || tagName === 'em' || tagName === 'i') {
             if (text) {
-                return { text: text, style: 'normal', margin: [0, 0, 0, 5] };
+                return {
+                    text: text,
+                    style: 'normal',
+                    bold: tagName === 'strong' || tagName === 'b',
+                    italics: tagName === 'em' || tagName === 'i',
+                    margin: [0, 0, 0, 0]
+                };
             }
         }
         
-        // Bilder
-        if (tagName === 'img') {
-            const src = element.src;
-            if (src && !src.startsWith('data:')) {
-                // Externe Bilder werden nicht unterstützt in pdfmake ohne Base64
-                return null;
-            }
-            // Base64 Bilder können eingebettet werden
-            return null; // Für jetzt ignorieren, kann später erweitert werden
-        }
-        
-        // Standard: Text extrahieren
-        if (text) {
+        // Standard: Text extrahieren (falls vorhanden)
+        if (text && element.children.length === 0) {
             return { text: text, style: 'normal', margin: [0, 0, 0, 5] };
+        }
+        
+        // Rekursiv durch Kinder gehen, falls vorhanden
+        if (element.children.length > 0) {
+            const childContent = [];
+            Array.from(element.children).forEach(child => {
+                const processed = this.processHTMLElement(child);
+                if (processed) {
+                    if (Array.isArray(processed)) {
+                        childContent.push(...processed);
+                    } else {
+                        childContent.push(processed);
+                    }
+                }
+            });
+            return childContent.length > 0 ? childContent : null;
         }
         
         return null;
