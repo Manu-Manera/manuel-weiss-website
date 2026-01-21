@@ -4936,7 +4936,7 @@ class DesignEditor {
                 min-height: auto !important;
                 max-width: 210mm !important;
                 margin: 0 !important;
-                padding: 0 !important; /* Puppeteer handhabt Margins */
+                /* WICHTIG: Padding wird NACH dem extrahierten CSS explizit gesetzt - hier NICHT setzen! */
                 background: ${this.settings.backgroundColor || '#ffffff'} !important;
                 font-family: ${this.settings.fontFamily || "'Inter', sans-serif"} !important;
                 font-size: ${this.settings.fontSize || 11}pt !important;
