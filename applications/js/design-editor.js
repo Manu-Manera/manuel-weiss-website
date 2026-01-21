@@ -4974,6 +4974,59 @@ class DesignEditor {
         return result;
     }
     
+    replaceCSSVariablesInElement(element) {
+        // Ersetze CSS-Variablen in inline styles und style-Attributen
+        const replacements = {
+            '--resume-font': this.settings.fontFamily || "'Inter', sans-serif",
+            '--resume-font-size': (this.settings.fontSize || 11) + 'pt',
+            '--resume-heading-size': (this.settings.headingSize || 14) + 'pt',
+            '--resume-line-height': String(this.settings.lineHeight || 1.5),
+            '--resume-accent-color': this.settings.accentColor || '#6366f1',
+            '--resume-text-color': this.settings.textColor || '#1e293b',
+            '--resume-muted-color': this.settings.mutedColor || '#64748b',
+            '--resume-bg-color': this.settings.backgroundColor || '#ffffff',
+            '--resume-border-color': this.settings.borderColor || '#e2e8f0',
+            '--resume-margin': `${this.settings.marginTop || 20}mm ${this.settings.marginRight || 20}mm ${this.settings.marginBottom || 20}mm ${this.settings.marginLeft || 20}mm`,
+            '--resume-section-gap': (this.settings.sectionGap || 24) + 'px',
+            '--resume-item-gap': (this.settings.itemGap || 12) + 'px',
+            '--resume-paragraph-gap': (this.settings.paragraphGap || 6) + 'px',
+        };
+        
+        // Ersetze in style-Attributen
+        const allElements = element.querySelectorAll('*');
+        allElements.forEach(el => {
+            if (el.style) {
+                const styleText = el.getAttribute('style') || '';
+                let newStyleText = styleText;
+                
+                for (const [varName, value] of Object.entries(replacements)) {
+                    // Ersetze var(--variable-name) und var(--variable-name, fallback)
+                    const regex = new RegExp(`var\\(${varName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?:,\\s*[^)]+)?\\)`, 'g');
+                    newStyleText = newStyleText.replace(regex, value);
+                }
+                
+                if (newStyleText !== styleText) {
+                    el.setAttribute('style', newStyleText);
+                }
+            }
+        });
+        
+        // Ersetze auch im Element selbst
+        if (element.style) {
+            const styleText = element.getAttribute('style') || '';
+            let newStyleText = styleText;
+            
+            for (const [varName, value] of Object.entries(replacements)) {
+                const regex = new RegExp(`var\\(${varName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?:,\\s*[^)]+)?\\)`, 'g');
+                newStyleText = newStyleText.replace(regex, value);
+            }
+            
+            if (newStyleText !== styleText) {
+                element.setAttribute('style', newStyleText);
+            }
+        }
+    }
+    
     replaceCalcExpressions(cssText) {
         // Ersetze calc() Ausdrücke mit CSS-Variablen durch berechnete Werte
         const fontSize = this.settings.fontSize || 11;
