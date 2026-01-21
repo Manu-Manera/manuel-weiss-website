@@ -32,16 +32,16 @@
     ],
     "Tags": [
      {
+      "Key": "Environment",
+      "Value": "production"
+     },
+     {
       "Key": "ManagedBy",
       "Value": "CDK"
      },
      {
       "Key": "Project",
       "Value": "manuel-weiss-website"
-     },
-     {
-      "Key": "Purpose",
-      "Value": "Netlify-zu-AWS-Migration"
      }
     ]
    },
@@ -116,16 +116,16 @@
     "Name": "Manuel Weiss Website API",
     "Tags": [
      {
+      "Key": "Environment",
+      "Value": "production"
+     },
+     {
       "Key": "ManagedBy",
       "Value": "CDK"
      },
      {
       "Key": "Project",
       "Value": "manuel-weiss-website"
-     },
-     {
-      "Key": "Purpose",
-      "Value": "Netlify-zu-AWS-Migration"
      }
     ]
    },
@@ -133,7 +133,7 @@
     "aws:cdk:path": "manuel-weiss-website-api/WebsiteAPI/Resource"
    }
   },
-  "WebsiteAPIDeploymentABEB40231deb9e3145e18ec88cb45cf14094a505": {
+  "WebsiteAPIDeploymentABEB4023bdf304053831821ab8e3f1cc308f87fd": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
     "Description": "API für manuel-weiss.ch (ersetzt Netlify Functions)",
@@ -165,6 +165,18 @@
     "WebsiteAPIcvtargetOPTIONS3FBEF25B",
     "WebsiteAPIcvtargetPOSTC6D74A16",
     "WebsiteAPIcvtargetB62FFCEB",
+    "WebsiteAPIherovideosettingsGET230AEB0A",
+    "WebsiteAPIherovideosettingsOPTIONSE31FB835",
+    "WebsiteAPIherovideosettingsPOST09EB6052",
+    "WebsiteAPIherovideosettingsPUT44CB66DC",
+    "WebsiteAPIherovideosettings4F65C464",
+    "WebsiteAPIherovideouploaddirectOPTIONSEC98F940",
+    "WebsiteAPIherovideouploaddirectPOST4C197967",
+    "WebsiteAPIherovideouploaddirect9E3FB3F0",
+    "WebsiteAPIherovideouploadGET94A16E6D",
+    "WebsiteAPIherovideouploadOPTIONS6E2D054A",
+    "WebsiteAPIherovideouploadPOST56B491D5",
+    "WebsiteAPIherovideouploadAEEAA219",
     "WebsiteAPIherovideoOPTIONS9A11FD4C",
     "WebsiteAPIherovideo6D9A046D",
     "WebsiteAPIherovideosettingsGET011C2806",
@@ -247,7 +259,7 @@
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
     "DeploymentId": {
-     "Ref": "WebsiteAPIDeploymentABEB40231deb9e3145e18ec88cb45cf14094a505"
+     "Ref": "WebsiteAPIDeploymentABEB4023bdf304053831821ab8e3f1cc308f87fd"
     },
     "MethodSettings": [
      {
@@ -264,16 +276,16 @@
     "StageName": "v1",
     "Tags": [
      {
+      "Key": "Environment",
+      "Value": "production"
+     },
+     {
       "Key": "ManagedBy",
       "Value": "CDK"
      },
      {
       "Key": "Project",
       "Value": "manuel-weiss-website"
-     },
-     {
-      "Key": "Purpose",
-      "Value": "Netlify-zu-AWS-Migration"
      }
     ]
    },
@@ -6045,6 +6057,16 @@
       ]
      }
     },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "200"
+     }
+    ],
     "ResourceId": {
      "Ref": "WebsiteAPIpdfgenerator9E50582A"
     },
@@ -6054,6 +6076,780 @@
    },
    "Metadata": {
     "aws:cdk:path": "manuel-weiss-website-api/WebsiteAPI/Default/pdf-generator/POST/Resource"
+   }
+  },
+  "WebsiteAPIherovideosettings4F65C464": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "WebsiteAPI5DE54201",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "hero-video-settings",
+    "RestApiId": {
+     "Ref": "WebsiteAPI5DE54201"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "manuel-weiss-website-api/WebsiteAPI/Default/hero-video-settings/Resource"
+   }
+  },
+  "WebsiteAPIherovideosettingsOPTIONSE31FB835": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization,X-User-Id,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'",
+        "method.response.header.Access-Control-Allow-Origin": "'https://manuel-weiss.ch'",
+        "method.response.header.Vary": "'Origin'",
+        "method.response.header.Access-Control-Allow-Methods": "'GET,POST,PUT,DELETE,OPTIONS'",
+        "method.response.header.Access-Control-Allow-Credentials": "'true'"
+       },
+       "ResponseTemplates": {
+        "application/json": "#set($origin = $input.params().header.get(\"Origin\"))\n#if($origin == \"\")\n  #set($origin = $input.params().header.get(\"origin\"))\n#end\n#if($origin == \"https://www.manuel-weiss.ch\" || $origin == \"https://mawps.netlify.app\" || $origin == \"http://localhost:3000\" || $origin == \"http://localhost:5500\" || $origin == \"http://127.0.0.1:5500\")\n  #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin)\n#end"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Vary": true,
+       "method.response.header.Access-Control-Allow-Methods": true,
+       "method.response.header.Access-Control-Allow-Credentials": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "WebsiteAPIherovideosettings4F65C464"
+    },
+    "RestApiId": {
+     "Ref": "WebsiteAPI5DE54201"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "manuel-weiss-website-api/WebsiteAPI/Default/hero-video-settings/OPTIONS/Resource"
+   }
+  },
+  "WebsiteAPIherovideosettingsGETApiPermissionmanuelweisswebsiteapiWebsiteAPIB87C94C7GETherovideosettings799E9C8D": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "HeroVideoSettingsFunctionFAFECE67",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:eu-central-1:038333965110:",
+       {
+        "Ref": "WebsiteAPI5DE54201"
+       },
+       "/",
+       {
+        "Ref": "WebsiteAPIDeploymentStagev1E4D7146D"
+       },
+       "/GET/hero-video-settings"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "manuel-weiss-website-api/WebsiteAPI/Default/hero-video-settings/GET/ApiPermission.manuelweisswebsiteapiWebsiteAPIB87C94C7.GET..hero-video-settings"
+   }
+  },
+  "WebsiteAPIherovideosettingsGETApiPermissionTestmanuelweisswebsiteapiWebsiteAPIB87C94C7GETherovideosettings23557880": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "HeroVideoSettingsFunctionFAFECE67",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:eu-central-1:038333965110:",
+       {
+        "Ref": "WebsiteAPI5DE54201"
+       },
+       "/test-invoke-stage/GET/hero-video-settings"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "manuel-weiss-website-api/WebsiteAPI/Default/hero-video-settings/GET/ApiPermission.Test.manuelweisswebsiteapiWebsiteAPIB87C94C7.GET..hero-video-settings"
+   }
+  },
+  "WebsiteAPIherovideosettingsGET230AEB0A": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "GET",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "HeroVideoSettingsFunctionFAFECE67",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "WebsiteAPIherovideosettings4F65C464"
+    },
+    "RestApiId": {
+     "Ref": "WebsiteAPI5DE54201"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "manuel-weiss-website-api/WebsiteAPI/Default/hero-video-settings/GET/Resource"
+   }
+  },
+  "WebsiteAPIherovideosettingsPOSTApiPermissionmanuelweisswebsiteapiWebsiteAPIB87C94C7POSTherovideosettings69C0A5BA": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "HeroVideoSettingsFunctionFAFECE67",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:eu-central-1:038333965110:",
+       {
+        "Ref": "WebsiteAPI5DE54201"
+       },
+       "/",
+       {
+        "Ref": "WebsiteAPIDeploymentStagev1E4D7146D"
+       },
+       "/POST/hero-video-settings"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "manuel-weiss-website-api/WebsiteAPI/Default/hero-video-settings/POST/ApiPermission.manuelweisswebsiteapiWebsiteAPIB87C94C7.POST..hero-video-settings"
+   }
+  },
+  "WebsiteAPIherovideosettingsPOSTApiPermissionTestmanuelweisswebsiteapiWebsiteAPIB87C94C7POSTherovideosettings723C580B": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "HeroVideoSettingsFunctionFAFECE67",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:eu-central-1:038333965110:",
+       {
+        "Ref": "WebsiteAPI5DE54201"
+       },
+       "/test-invoke-stage/POST/hero-video-settings"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "manuel-weiss-website-api/WebsiteAPI/Default/hero-video-settings/POST/ApiPermission.Test.manuelweisswebsiteapiWebsiteAPIB87C94C7.POST..hero-video-settings"
+   }
+  },
+  "WebsiteAPIherovideosettingsPOST09EB6052": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "POST",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "HeroVideoSettingsFunctionFAFECE67",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "WebsiteAPIherovideosettings4F65C464"
+    },
+    "RestApiId": {
+     "Ref": "WebsiteAPI5DE54201"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "manuel-weiss-website-api/WebsiteAPI/Default/hero-video-settings/POST/Resource"
+   }
+  },
+  "WebsiteAPIherovideosettingsPUTApiPermissionmanuelweisswebsiteapiWebsiteAPIB87C94C7PUTherovideosettings3CF1BB34": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "HeroVideoSettingsFunctionFAFECE67",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:eu-central-1:038333965110:",
+       {
+        "Ref": "WebsiteAPI5DE54201"
+       },
+       "/",
+       {
+        "Ref": "WebsiteAPIDeploymentStagev1E4D7146D"
+       },
+       "/PUT/hero-video-settings"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "manuel-weiss-website-api/WebsiteAPI/Default/hero-video-settings/PUT/ApiPermission.manuelweisswebsiteapiWebsiteAPIB87C94C7.PUT..hero-video-settings"
+   }
+  },
+  "WebsiteAPIherovideosettingsPUTApiPermissionTestmanuelweisswebsiteapiWebsiteAPIB87C94C7PUTherovideosettings2812974B": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "HeroVideoSettingsFunctionFAFECE67",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:eu-central-1:038333965110:",
+       {
+        "Ref": "WebsiteAPI5DE54201"
+       },
+       "/test-invoke-stage/PUT/hero-video-settings"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "manuel-weiss-website-api/WebsiteAPI/Default/hero-video-settings/PUT/ApiPermission.Test.manuelweisswebsiteapiWebsiteAPIB87C94C7.PUT..hero-video-settings"
+   }
+  },
+  "WebsiteAPIherovideosettingsPUT44CB66DC": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "PUT",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "HeroVideoSettingsFunctionFAFECE67",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "WebsiteAPIherovideosettings4F65C464"
+    },
+    "RestApiId": {
+     "Ref": "WebsiteAPI5DE54201"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "manuel-weiss-website-api/WebsiteAPI/Default/hero-video-settings/PUT/Resource"
+   }
+  },
+  "WebsiteAPIherovideouploadAEEAA219": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "WebsiteAPI5DE54201",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "hero-video-upload",
+    "RestApiId": {
+     "Ref": "WebsiteAPI5DE54201"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "manuel-weiss-website-api/WebsiteAPI/Default/hero-video-upload/Resource"
+   }
+  },
+  "WebsiteAPIherovideouploadOPTIONS6E2D054A": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization,X-User-Id,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'",
+        "method.response.header.Access-Control-Allow-Origin": "'https://manuel-weiss.ch'",
+        "method.response.header.Vary": "'Origin'",
+        "method.response.header.Access-Control-Allow-Methods": "'GET,POST,PUT,DELETE,OPTIONS'",
+        "method.response.header.Access-Control-Allow-Credentials": "'true'"
+       },
+       "ResponseTemplates": {
+        "application/json": "#set($origin = $input.params().header.get(\"Origin\"))\n#if($origin == \"\")\n  #set($origin = $input.params().header.get(\"origin\"))\n#end\n#if($origin == \"https://www.manuel-weiss.ch\" || $origin == \"https://mawps.netlify.app\" || $origin == \"http://localhost:3000\" || $origin == \"http://localhost:5500\" || $origin == \"http://127.0.0.1:5500\")\n  #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin)\n#end"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Vary": true,
+       "method.response.header.Access-Control-Allow-Methods": true,
+       "method.response.header.Access-Control-Allow-Credentials": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "WebsiteAPIherovideouploadAEEAA219"
+    },
+    "RestApiId": {
+     "Ref": "WebsiteAPI5DE54201"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "manuel-weiss-website-api/WebsiteAPI/Default/hero-video-upload/OPTIONS/Resource"
+   }
+  },
+  "WebsiteAPIherovideouploadPOSTApiPermissionmanuelweisswebsiteapiWebsiteAPIB87C94C7POSTherovideouploadA5658DE7": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "HeroVideoUploadFunctionE95EBBE3",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:eu-central-1:038333965110:",
+       {
+        "Ref": "WebsiteAPI5DE54201"
+       },
+       "/",
+       {
+        "Ref": "WebsiteAPIDeploymentStagev1E4D7146D"
+       },
+       "/POST/hero-video-upload"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "manuel-weiss-website-api/WebsiteAPI/Default/hero-video-upload/POST/ApiPermission.manuelweisswebsiteapiWebsiteAPIB87C94C7.POST..hero-video-upload"
+   }
+  },
+  "WebsiteAPIherovideouploadPOSTApiPermissionTestmanuelweisswebsiteapiWebsiteAPIB87C94C7POSTherovideouploadABEF9471": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "HeroVideoUploadFunctionE95EBBE3",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:eu-central-1:038333965110:",
+       {
+        "Ref": "WebsiteAPI5DE54201"
+       },
+       "/test-invoke-stage/POST/hero-video-upload"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "manuel-weiss-website-api/WebsiteAPI/Default/hero-video-upload/POST/ApiPermission.Test.manuelweisswebsiteapiWebsiteAPIB87C94C7.POST..hero-video-upload"
+   }
+  },
+  "WebsiteAPIherovideouploadPOST56B491D5": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "POST",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "HeroVideoUploadFunctionE95EBBE3",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "WebsiteAPIherovideouploadAEEAA219"
+    },
+    "RestApiId": {
+     "Ref": "WebsiteAPI5DE54201"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "manuel-weiss-website-api/WebsiteAPI/Default/hero-video-upload/POST/Resource"
+   }
+  },
+  "WebsiteAPIherovideouploadGETApiPermissionmanuelweisswebsiteapiWebsiteAPIB87C94C7GETherovideoupload94CDA6CC": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "HeroVideoUploadFunctionE95EBBE3",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:eu-central-1:038333965110:",
+       {
+        "Ref": "WebsiteAPI5DE54201"
+       },
+       "/",
+       {
+        "Ref": "WebsiteAPIDeploymentStagev1E4D7146D"
+       },
+       "/GET/hero-video-upload"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "manuel-weiss-website-api/WebsiteAPI/Default/hero-video-upload/GET/ApiPermission.manuelweisswebsiteapiWebsiteAPIB87C94C7.GET..hero-video-upload"
+   }
+  },
+  "WebsiteAPIherovideouploadGETApiPermissionTestmanuelweisswebsiteapiWebsiteAPIB87C94C7GETherovideouploadDD0BB284": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "HeroVideoUploadFunctionE95EBBE3",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:eu-central-1:038333965110:",
+       {
+        "Ref": "WebsiteAPI5DE54201"
+       },
+       "/test-invoke-stage/GET/hero-video-upload"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "manuel-weiss-website-api/WebsiteAPI/Default/hero-video-upload/GET/ApiPermission.Test.manuelweisswebsiteapiWebsiteAPIB87C94C7.GET..hero-video-upload"
+   }
+  },
+  "WebsiteAPIherovideouploadGET94A16E6D": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "GET",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "HeroVideoUploadFunctionE95EBBE3",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "WebsiteAPIherovideouploadAEEAA219"
+    },
+    "RestApiId": {
+     "Ref": "WebsiteAPI5DE54201"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "manuel-weiss-website-api/WebsiteAPI/Default/hero-video-upload/GET/Resource"
+   }
+  },
+  "WebsiteAPIherovideouploaddirect9E3FB3F0": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "WebsiteAPI5DE54201",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "hero-video-upload-direct",
+    "RestApiId": {
+     "Ref": "WebsiteAPI5DE54201"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "manuel-weiss-website-api/WebsiteAPI/Default/hero-video-upload-direct/Resource"
+   }
+  },
+  "WebsiteAPIherovideouploaddirectOPTIONSEC98F940": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization,X-User-Id,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'",
+        "method.response.header.Access-Control-Allow-Origin": "'https://manuel-weiss.ch'",
+        "method.response.header.Vary": "'Origin'",
+        "method.response.header.Access-Control-Allow-Methods": "'GET,POST,PUT,DELETE,OPTIONS'",
+        "method.response.header.Access-Control-Allow-Credentials": "'true'"
+       },
+       "ResponseTemplates": {
+        "application/json": "#set($origin = $input.params().header.get(\"Origin\"))\n#if($origin == \"\")\n  #set($origin = $input.params().header.get(\"origin\"))\n#end\n#if($origin == \"https://www.manuel-weiss.ch\" || $origin == \"https://mawps.netlify.app\" || $origin == \"http://localhost:3000\" || $origin == \"http://localhost:5500\" || $origin == \"http://127.0.0.1:5500\")\n  #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin)\n#end"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Vary": true,
+       "method.response.header.Access-Control-Allow-Methods": true,
+       "method.response.header.Access-Control-Allow-Credentials": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "WebsiteAPIherovideouploaddirect9E3FB3F0"
+    },
+    "RestApiId": {
+     "Ref": "WebsiteAPI5DE54201"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "manuel-weiss-website-api/WebsiteAPI/Default/hero-video-upload-direct/OPTIONS/Resource"
+   }
+  },
+  "WebsiteAPIherovideouploaddirectPOSTApiPermissionmanuelweisswebsiteapiWebsiteAPIB87C94C7POSTherovideouploaddirect53F98256": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "HeroVideoUploadDirectFunction2C31461B",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:eu-central-1:038333965110:",
+       {
+        "Ref": "WebsiteAPI5DE54201"
+       },
+       "/",
+       {
+        "Ref": "WebsiteAPIDeploymentStagev1E4D7146D"
+       },
+       "/POST/hero-video-upload-direct"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "manuel-weiss-website-api/WebsiteAPI/Default/hero-video-upload-direct/POST/ApiPermission.manuelweisswebsiteapiWebsiteAPIB87C94C7.POST..hero-video-upload-direct"
+   }
+  },
+  "WebsiteAPIherovideouploaddirectPOSTApiPermissionTestmanuelweisswebsiteapiWebsiteAPIB87C94C7POSTherovideouploaddirect7E79DB81": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "HeroVideoUploadDirectFunction2C31461B",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:eu-central-1:038333965110:",
+       {
+        "Ref": "WebsiteAPI5DE54201"
+       },
+       "/test-invoke-stage/POST/hero-video-upload-direct"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "manuel-weiss-website-api/WebsiteAPI/Default/hero-video-upload-direct/POST/ApiPermission.Test.manuelweisswebsiteapiWebsiteAPIB87C94C7.POST..hero-video-upload-direct"
+   }
+  },
+  "WebsiteAPIherovideouploaddirectPOST4C197967": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "POST",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "HeroVideoUploadDirectFunction2C31461B",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "WebsiteAPIherovideouploaddirect9E3FB3F0"
+    },
+    "RestApiId": {
+     "Ref": "WebsiteAPI5DE54201"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "manuel-weiss-website-api/WebsiteAPI/Default/hero-video-upload-direct/POST/Resource"
    }
   },
   "UserDataFunction1C09A9EE": {
@@ -6080,16 +6876,16 @@
     "Runtime": "nodejs18.x",
     "Tags": [
      {
+      "Key": "Environment",
+      "Value": "production"
+     },
+     {
       "Key": "ManagedBy",
       "Value": "CDK"
      },
      {
       "Key": "Project",
       "Value": "manuel-weiss-website"
-     },
-     {
-      "Key": "Purpose",
-      "Value": "Netlify-zu-AWS-Migration"
      }
     ],
     "Timeout": 30
@@ -6129,16 +6925,16 @@
     "Runtime": "nodejs18.x",
     "Tags": [
      {
+      "Key": "Environment",
+      "Value": "production"
+     },
+     {
       "Key": "ManagedBy",
       "Value": "CDK"
      },
      {
       "Key": "Project",
       "Value": "manuel-weiss-website"
-     },
-     {
-      "Key": "Purpose",
-      "Value": "Netlify-zu-AWS-Migration"
      }
     ],
     "Timeout": 30
@@ -6179,16 +6975,16 @@
     "Runtime": "nodejs18.x",
     "Tags": [
      {
+      "Key": "Environment",
+      "Value": "production"
+     },
+     {
       "Key": "ManagedBy",
       "Value": "CDK"
      },
      {
       "Key": "Project",
       "Value": "manuel-weiss-website"
-     },
-     {
-      "Key": "Purpose",
-      "Value": "Netlify-zu-AWS-Migration"
      }
     ],
     "Timeout": 30
@@ -6223,16 +7019,16 @@
     "Runtime": "nodejs18.x",
     "Tags": [
      {
+      "Key": "Environment",
+      "Value": "production"
+     },
+     {
       "Key": "ManagedBy",
       "Value": "CDK"
      },
      {
       "Key": "Project",
       "Value": "manuel-weiss-website"
-     },
-     {
-      "Key": "Purpose",
-      "Value": "Netlify-zu-AWS-Migration"
      }
     ],
     "Timeout": 60
@@ -6267,16 +7063,16 @@
     "Runtime": "nodejs18.x",
     "Tags": [
      {
+      "Key": "Environment",
+      "Value": "production"
+     },
+     {
       "Key": "ManagedBy",
       "Value": "CDK"
      },
      {
       "Key": "Project",
       "Value": "manuel-weiss-website"
-     },
-     {
-      "Key": "Purpose",
-      "Value": "Netlify-zu-AWS-Migration"
      }
     ],
     "Timeout": 30
@@ -6311,16 +7107,16 @@
     "Runtime": "nodejs18.x",
     "Tags": [
      {
+      "Key": "Environment",
+      "Value": "production"
+     },
+     {
       "Key": "ManagedBy",
       "Value": "CDK"
      },
      {
       "Key": "Project",
       "Value": "manuel-weiss-website"
-     },
-     {
-      "Key": "Purpose",
-      "Value": "Netlify-zu-AWS-Migration"
      }
     ],
     "Timeout": 120
@@ -6355,16 +7151,16 @@
     "Runtime": "nodejs18.x",
     "Tags": [
      {
+      "Key": "Environment",
+      "Value": "production"
+     },
+     {
       "Key": "ManagedBy",
       "Value": "CDK"
      },
      {
       "Key": "Project",
       "Value": "manuel-weiss-website"
-     },
-     {
-      "Key": "Purpose",
-      "Value": "Netlify-zu-AWS-Migration"
      }
     ],
     "Timeout": 120
@@ -6399,16 +7195,16 @@
     "Runtime": "nodejs18.x",
     "Tags": [
      {
+      "Key": "Environment",
+      "Value": "production"
+     },
+     {
       "Key": "ManagedBy",
       "Value": "CDK"
      },
      {
       "Key": "Project",
       "Value": "manuel-weiss-website"
-     },
-     {
-      "Key": "Purpose",
-      "Value": "Netlify-zu-AWS-Migration"
      }
     ],
     "Timeout": 60
@@ -6443,16 +7239,16 @@
     "Runtime": "nodejs18.x",
     "Tags": [
      {
+      "Key": "Environment",
+      "Value": "production"
+     },
+     {
       "Key": "ManagedBy",
       "Value": "CDK"
      },
      {
       "Key": "Project",
       "Value": "manuel-weiss-website"
-     },
-     {
-      "Key": "Purpose",
-      "Value": "Netlify-zu-AWS-Migration"
      }
     ],
     "Timeout": 60
@@ -6487,16 +7283,16 @@
     "Runtime": "nodejs18.x",
     "Tags": [
      {
+      "Key": "Environment",
+      "Value": "production"
+     },
+     {
       "Key": "ManagedBy",
       "Value": "CDK"
      },
      {
       "Key": "Project",
       "Value": "manuel-weiss-website"
-     },
-     {
-      "Key": "Purpose",
-      "Value": "Netlify-zu-AWS-Migration"
      }
     ],
     "Timeout": 30
@@ -6517,7 +7313,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-038333965110-eu-central-1",
-     "S3Key": "1d7a034c6eea0f25986b33987a721a18fc67d6ec85b2c6e721b701bb5058fe32.zip"
+     "S3Key": "d3fe61e6ecf00ca8c37cb4f2171a42c7b783230bbc2f9d68450eeaffdd69eda4.zip"
     },
     "Environment": {
      "Variables": {
@@ -6537,16 +7333,16 @@
     "Runtime": "nodejs18.x",
     "Tags": [
      {
+      "Key": "Environment",
+      "Value": "production"
+     },
+     {
       "Key": "ManagedBy",
       "Value": "CDK"
      },
      {
       "Key": "Project",
       "Value": "manuel-weiss-website"
-     },
-     {
-      "Key": "Purpose",
-      "Value": "Netlify-zu-AWS-Migration"
      }
     ],
     "Timeout": 30
@@ -6557,7 +7353,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "manuel-weiss-website-api/ApiSettingsFunction/Resource",
-    "aws:asset:path": "asset.1d7a034c6eea0f25986b33987a721a18fc67d6ec85b2c6e721b701bb5058fe32",
+    "aws:asset:path": "asset.d3fe61e6ecf00ca8c37cb4f2171a42c7b783230bbc2f9d68450eeaffdd69eda4",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }
@@ -6587,16 +7383,16 @@
     "Runtime": "nodejs18.x",
     "Tags": [
      {
+      "Key": "Environment",
+      "Value": "production"
+     },
+     {
       "Key": "ManagedBy",
       "Value": "CDK"
      },
      {
       "Key": "Project",
       "Value": "manuel-weiss-website"
-     },
-     {
-      "Key": "Purpose",
-      "Value": "Netlify-zu-AWS-Migration"
      }
     ],
     "Timeout": 30
@@ -6636,16 +7432,16 @@
     "Runtime": "nodejs18.x",
     "Tags": [
      {
+      "Key": "Environment",
+      "Value": "production"
+     },
+     {
       "Key": "ManagedBy",
       "Value": "CDK"
      },
      {
       "Key": "Project",
       "Value": "manuel-weiss-website"
-     },
-     {
-      "Key": "Purpose",
-      "Value": "Netlify-zu-AWS-Migration"
      }
     ],
     "Timeout": 30
@@ -6666,7 +7462,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-038333965110-eu-central-1",
-     "S3Key": "0cd999899de17f47fc93068724681d158aa0d5b6e1ef575a0b959ceb752b683d.zip"
+     "S3Key": "5a09ce6c4a71a506c4d08c1682d903b1044191c6f13a3ae6032cfbe06b5b2657.zip"
     },
     "Environment": {
      "Variables": {
@@ -6685,19 +7481,19 @@
     "Runtime": "nodejs18.x",
     "Tags": [
      {
+      "Key": "Environment",
+      "Value": "production"
+     },
+     {
       "Key": "ManagedBy",
       "Value": "CDK"
      },
      {
       "Key": "Project",
       "Value": "manuel-weiss-website"
-     },
-     {
-      "Key": "Purpose",
-      "Value": "Netlify-zu-AWS-Migration"
      }
     ],
-    "Timeout": 60
+    "Timeout": 120
    },
    "DependsOn": [
     "WebsiteLambdaRoleDefaultPolicyDA4C46DC",
@@ -6705,7 +7501,157 @@
    ],
    "Metadata": {
     "aws:cdk:path": "manuel-weiss-website-api/PdfGeneratorFunction/Resource",
-    "aws:asset:path": "asset.0cd999899de17f47fc93068724681d158aa0d5b6e1ef575a0b959ceb752b683d",
+    "aws:asset:path": "asset.5a09ce6c4a71a506c4d08c1682d903b1044191c6f13a3ae6032cfbe06b5b2657",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "HeroVideoSettingsFunctionFAFECE67": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-038333965110-eu-central-1",
+     "S3Key": "e4ea57efad51184802c45b1e7db69709f89f4a869d1b7f7102367339d2113d09.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "SETTINGS_TABLE": "manuel-weiss-settings",
+      "HERO_VIDEO_BUCKET": "manuel-weiss-hero-videos"
+     }
+    },
+    "FunctionName": "website-hero-video-settings",
+    "Handler": "index.handler",
+    "MemorySize": 256,
+    "Role": {
+     "Fn::GetAtt": [
+      "WebsiteLambdaRole06E6525E",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x",
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "production"
+     },
+     {
+      "Key": "ManagedBy",
+      "Value": "CDK"
+     },
+     {
+      "Key": "Project",
+      "Value": "manuel-weiss-website"
+     }
+    ],
+    "Timeout": 30
+   },
+   "DependsOn": [
+    "WebsiteLambdaRoleDefaultPolicyDA4C46DC",
+    "WebsiteLambdaRole06E6525E"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "manuel-weiss-website-api/HeroVideoSettingsFunction/Resource",
+    "aws:asset:path": "asset.e4ea57efad51184802c45b1e7db69709f89f4a869d1b7f7102367339d2113d09",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "HeroVideoUploadFunctionE95EBBE3": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-038333965110-eu-central-1",
+     "S3Key": "c458529a1537c58db6e890a755fb5bbb74a461d957e11ec9fc0b162f0be7ba3e.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "HERO_VIDEO_BUCKET": "manuel-weiss-hero-videos"
+     }
+    },
+    "FunctionName": "website-hero-video-upload",
+    "Handler": "index.handler",
+    "MemorySize": 256,
+    "Role": {
+     "Fn::GetAtt": [
+      "WebsiteLambdaRole06E6525E",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x",
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "production"
+     },
+     {
+      "Key": "ManagedBy",
+      "Value": "CDK"
+     },
+     {
+      "Key": "Project",
+      "Value": "manuel-weiss-website"
+     }
+    ],
+    "Timeout": 30
+   },
+   "DependsOn": [
+    "WebsiteLambdaRoleDefaultPolicyDA4C46DC",
+    "WebsiteLambdaRole06E6525E"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "manuel-weiss-website-api/HeroVideoUploadFunction/Resource",
+    "aws:asset:path": "asset.c458529a1537c58db6e890a755fb5bbb74a461d957e11ec9fc0b162f0be7ba3e",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "HeroVideoUploadDirectFunction2C31461B": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-038333965110-eu-central-1",
+     "S3Key": "d98352ab935f44eb95c0c05cf00f9aad4f2896a3b974866b0b3fe0084f822c74.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "HERO_VIDEO_BUCKET": "manuel-weiss-hero-videos",
+      "SETTINGS_TABLE": "manuel-weiss-settings",
+      "SETTINGS_KEY": "hero-video-url"
+     }
+    },
+    "FunctionName": "website-hero-video-upload-direct",
+    "Handler": "index.handler",
+    "MemorySize": 1024,
+    "Role": {
+     "Fn::GetAtt": [
+      "WebsiteLambdaRole06E6525E",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x",
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "production"
+     },
+     {
+      "Key": "ManagedBy",
+      "Value": "CDK"
+     },
+     {
+      "Key": "Project",
+      "Value": "manuel-weiss-website"
+     }
+    ],
+    "Timeout": 120
+   },
+   "DependsOn": [
+    "WebsiteLambdaRoleDefaultPolicyDA4C46DC",
+    "WebsiteLambdaRole06E6525E"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "manuel-weiss-website-api/HeroVideoUploadDirectFunction/Resource",
+    "aws:asset:path": "asset.d98352ab935f44eb95c0c05cf00f9aad4f2896a3b974866b0b3fe0084f822c74",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }
@@ -6773,6 +7719,29 @@
    "Description": "Website API Gateway ID",
    "Value": {
     "Ref": "WebsiteAPI5DE54201"
+   }
+  },
+  "WebsiteApiEndpoint": {
+   "Description": "Website API URL - Ersetze /.netlify/functions/ mit dieser URL",
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "WebsiteAPI5DE54201"
+      },
+      ".execute-api.eu-central-1.",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "WebsiteAPIDeploymentStagev1E4D7146D"
+      },
+      "/"
+     ]
+    ]
    }
   }
  },

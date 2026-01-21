@@ -316,8 +316,8 @@ export class WebsiteApiStack extends cdk.Stack {
       memorySize: 256,
       environment: {
         SETTINGS_TABLE: 'manuel-weiss-settings',
-        HERO_VIDEO_BUCKET: 'manuel-weiss-hero-videos',
-        AWS_REGION: 'eu-central-1'
+        HERO_VIDEO_BUCKET: 'manuel-weiss-hero-videos'
+        // AWS_REGION wird automatisch von Lambda gesetzt
       }
     });
 
@@ -331,8 +331,8 @@ export class WebsiteApiStack extends cdk.Stack {
       timeout: cdk.Duration.seconds(30),
       memorySize: 256,
       environment: {
-        HERO_VIDEO_BUCKET: 'manuel-weiss-hero-videos',
-        AWS_REGION: 'eu-central-1'
+        HERO_VIDEO_BUCKET: 'manuel-weiss-hero-videos'
+        // AWS_REGION wird automatisch von Lambda gesetzt
       }
     });
 
@@ -348,8 +348,8 @@ export class WebsiteApiStack extends cdk.Stack {
       environment: {
         HERO_VIDEO_BUCKET: 'manuel-weiss-hero-videos',
         SETTINGS_TABLE: 'manuel-weiss-settings',
-        SETTINGS_KEY: 'hero-video-url',
-        AWS_REGION: 'eu-central-1'
+        SETTINGS_KEY: 'hero-video-url'
+        // AWS_REGION wird automatisch von Lambda gesetzt
       }
     });
 

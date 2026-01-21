@@ -39,36 +39,38 @@ const authStack = new AuthStack(app, `${projectName}-auth-${environment}`, {
   description: 'Authentication and authorization for AI Investment System'
 });
 
-const computeStack = new ComputeStack(app, `${projectName}-compute-${environment}`, {
-  env,
-  description: 'Compute resources for AI Investment System',
-  dataStack,
-  authStack,
-  kmsKey: securityStack.kmsKey
-});
+// ComputeStack temporär auskommentiert wegen fehlendem Asset (nicht Teil der Website-Migration)
+// const computeStack = new ComputeStack(app, `${projectName}-compute-${environment}`, {
+//   env,
+//   description: 'Compute resources for AI Investment System',
+//   dataStack,
+//   authStack,
+//   kmsKey: securityStack.kmsKey
+// });
+const computeStack = null; // Temporär deaktiviert
 
 const apiStack = new ApiStack(app, `${projectName}-api-${environment}`, {
   env,
   description: 'API Gateway for AI Investment System',
-  computeStack,
+  computeStack: null, // Temporär deaktiviert
   authStack
 });
 
 const observabilityStack = new ObservabilityStack(app, `${projectName}-observability-${environment}`, {
   env,
   description: 'Monitoring and observability for AI Investment System',
-  computeStack,
+  computeStack: null, // Temporär deaktiviert
   apiStack
 });
 
 // Add dependencies
 dataStack.addDependency(securityStack);
-computeStack.addDependency(dataStack);
-computeStack.addDependency(authStack);
-computeStack.addDependency(securityStack);
-apiStack.addDependency(computeStack);
+// computeStack.addDependency(dataStack);
+// computeStack.addDependency(authStack);
+// computeStack.addDependency(securityStack);
+// apiStack.addDependency(computeStack);
 apiStack.addDependency(authStack);
-observabilityStack.addDependency(computeStack);
+// observabilityStack.addDependency(computeStack);
 observabilityStack.addDependency(apiStack);
 
 // Outputs
