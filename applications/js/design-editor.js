@@ -4091,14 +4091,21 @@ class DesignEditor {
             this.showNotification(`PDF exportiert! (${(pdfBytes.byteLength / 1024).toFixed(0)} KB)`, 'success');
         } catch (error) {
             console.error('PDF Export Fehler:', error);
-            this.showNotification('Fehler beim Export: ' + error.message, 'error');
-            // Versuche Fallback
-            try {
-                this.exportToPDFLegacy();
-            } catch (fallbackError) {
-                console.error('Fallback Fehler:', fallbackError);
-                this.showNotification('Export fehlgeschlagen. Bitte versuchen Sie es erneut.', 'error');
+            console.error('Error Stack:', error.stack);
+            
+            // Detaillierte Fehlermeldung
+            let errorMessage = 'Fehler beim PDF-Export: ';
+            if (error.message) {
+                errorMessage += error.message;
+            } else {
+                errorMessage += 'Unbekannter Fehler';
             }
+            
+            this.showNotification(errorMessage, 'error');
+            
+            // KEIN Fallback zu Legacy/Print-Dialog mehr - das verursacht das Problem
+            // Stattdessen: Bitte Benutzer, es erneut zu versuchen oder Support zu kontaktieren
+            console.error('PDF Export komplett fehlgeschlagen. Bitte Design Editor schließen und erneut öffnen.');
         }
     }
     
@@ -4515,7 +4522,13 @@ class DesignEditor {
         };
         
         try {
+            console.log('🔄 Starte PDF-Generierung mit html2pdf...');
+            console.log('📄 Seitenformat:', format, pageFormat);
+            console.log('📏 Content-Breite:', contentWidth, 'mm');
+            
             const pdfBytes = await html2pdf().set(opt).from(clone).outputPdf('arraybuffer');
+            
+            console.log('✅ PDF generiert:', pdfBytes.byteLength, 'Bytes');
             
             // Cleanup
             document.body.removeChild(container);
@@ -4524,16 +4537,28 @@ class DesignEditor {
             
             // Nachbearbeitung mit pdf-lib für Metadaten und Seitenzahlen
             if (addMetadata || addPageNumbers) {
+                console.log('🔄 Nachbearbeitung mit pdf-lib...');
                 return await this.postProcessPDF(pdfBytes, { addPageNumbers, addMetadata });
             }
             
             return pdfBytes;
         } catch (error) {
+            console.error('❌ PDF-Generierung fehlgeschlagen:', error);
+            console.error('Error Details:', {
+                message: error.message,
+                stack: error.stack,
+                name: error.name
+            });
+            
             // Cleanup auch bei Fehler
             if (document.body.contains(container)) document.body.removeChild(container);
             const styleEl = document.getElementById('pdf-export-print-styles');
             if (styleEl) styleEl.remove();
-            throw error;
+            
+            // Detaillierte Fehlermeldung
+            let detailedError = new Error(`PDF-Generierung fehlgeschlagen: ${error.message || 'Unbekannter Fehler'}`);
+            detailedError.originalError = error;
+            throw detailedError;
         }
     }
     
@@ -4580,81 +4605,8 @@ class DesignEditor {
         return pdfDoc.save();
     }
     
-    async exportToPDFLegacy() {
-        // Fallback: Original-Methode mit html2pdf
-        const preview = document.querySelector('.design-resume-preview') || document.getElementById('resumePreview');
-        if (!preview) {
-            this.showNotification('Preview nicht gefunden für Legacy-Export', 'error');
-            return;
-        }
-        
-        this.showNotification('PDF wird generiert (Legacy)...', 'info');
-        
-        try {
-            if (typeof html2pdf === 'undefined') {
-                await this.loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js');
-                await new Promise(resolve => setTimeout(resolve, 500));
-            }
-            
-            const resumeData = this.getResumeData();
-            const filename = `Lebenslauf_${resumeData.firstName || 'Vorname'}_${resumeData.lastName || 'Nachname'}.pdf`.replace(/\s+/g, '_');
-            
-            const opt = {
-                margin: 0,
-                filename: filename,
-                image: { type: 'jpeg', quality: 0.95 },
-                html2canvas: { scale: 2, useCORS: true },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-            
-            await html2pdf().set(opt).from(preview).save();
-            this.showNotification('PDF exportiert!', 'success');
-        } catch (error) {
-            console.error('Legacy PDF Fehler:', error);
-            this.openPrintDialog();
-        }
-    }
-    
-    openPrintDialog() {
-        // Füge temporäres Print-CSS hinzu
-        const printStyle = document.createElement('style');
-        printStyle.id = 'temp-print-styles';
-        printStyle.textContent = `
-            @media print {
-                body * {
-                    visibility: hidden;
-                }
-                #resumePreview, #resumePreview * {
-                    visibility: visible !important;
-                }
-                #resumePreview {
-                    position: absolute;
-                    left: 0;
-                    top: 0;
-                    width: 210mm !important;
-                    min-height: 297mm !important;
-                    margin: 0 !important;
-                    padding: 20mm !important;
-                    box-sizing: border-box !important;
-                    background: white !important;
-                    -webkit-print-color-adjust: exact !important;
-                    print-color-adjust: exact !important;
-                }
-                .design-sidebar, .mobile-design-toggle, .fab-design-toggle {
-                    display: none !important;
-                }
-            }
-        `;
-        document.head.appendChild(printStyle);
-        
-        window.print();
-        
-        // Entferne Print-CSS nach dem Drucken
-        setTimeout(() => {
-            const tempStyle = document.getElementById('temp-print-styles');
-            if (tempStyle) tempStyle.remove();
-        }, 1000);
-    }
+    // Legacy-Funktionen entfernt - verwenden nur noch die neue generateResumePDFFromElement Methode
+    // Der Browser-Druckdialog wird nicht mehr verwendet, da er falsche Seitengrößen verwendet
     
     loadScript(src) {
         return new Promise((resolve, reject) => {
