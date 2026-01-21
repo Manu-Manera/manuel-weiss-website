@@ -1,0 +1,1179 @@
+/**
+ * Ikigai Smart Workflow Styles
+ * Moderne, responsive Styles für den Ikigai Smart Workflow
+ */
+
+/* ===== MODERNE HERO SECTION ===== */
+.hero-enhanced {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-enhanced::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><defs><pattern id="stars" width="400" height="400" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1.5" fill="rgba(255,255,255,0.8)"/><circle cx="150" cy="80" r="1" fill="rgba(255,255,255,0.6)"/><circle cx="250" cy="120" r="2" fill="rgba(255,255,255,0.9)"/><circle cx="350" cy="60" r="1.2" fill="rgba(255,255,255,0.7)"/><circle cx="80" cy="180" r="0.8" fill="rgba(255,255,255,0.5)"/><circle cx="200" cy="200" r="1.8" fill="rgba(255,255,255,0.8)"/><circle cx="320" cy="180" r="1.1" fill="rgba(255,255,255,0.6)"/><circle cx="120" cy="280" r="1.3" fill="rgba(255,255,255,0.7)"/><circle cx="280" cy="320" r="0.9" fill="rgba(255,255,255,0.5)"/><circle cx="360" cy="280" r="1.6" fill="rgba(255,255,255,0.8)"/><circle cx="40" cy="320" r="1.4" fill="rgba(255,255,255,0.6)"/><circle cx="180" cy="360" r="0.7" fill="rgba(255,255,255,0.4)"/><circle cx="300" cy="40" r="1.7" fill="rgba(255,255,255,0.9)"/><circle cx="100" cy="40" r="1.1" fill="rgba(255,255,255,0.6)"/><circle cx="220" cy="40" r="0.9" fill="rgba(255,255,255,0.5)"/><circle cx="380" cy="120" r="1.3" fill="rgba(255,255,255,0.7)"/><circle cx="60" cy="120" r="1.5" fill="rgba(255,255,255,0.8)"/><circle cx="140" cy="140" r="0.8" fill="rgba(255,255,255,0.4)"/><circle cx="260" cy="160" r="1.2" fill="rgba(255,255,255,0.6)"/><circle cx="340" cy="200" r="1.4" fill="rgba(255,255,255,0.7)"/><circle cx="20" cy="240" r="1.0" fill="rgba(255,255,255,0.5)"/><circle cx="160" cy="240" r="1.6" fill="rgba(255,255,255,0.8)"/><circle cx="240" cy="240" r="0.7" fill="rgba(255,255,255,0.4)"/><circle cx="320" cy="240" r="1.3" fill="rgba(255,255,255,0.7)"/><circle cx="80" cy="300" r="1.1" fill="rgba(255,255,255,0.6)"/><circle cx="200" cy="300" r="1.5" fill="rgba(255,255,255,0.8)"/><circle cx="280" cy="300" r="0.9" fill="rgba(255,255,255,0.5)"/><circle cx="360" cy="300" r="1.2" fill="rgba(255,255,255,0.6)"/><circle cx="40" cy="360" r="1.4" fill="rgba(255,255,255,0.7)"/><circle cx="120" cy="360" r="0.8" fill="rgba(255,255,255,0.4)"/><circle cx="240" cy="360" r="1.6" fill="rgba(255,255,255,0.8)"/><circle cx="320" cy="360" r="1.0" fill="rgba(255,255,255,0.5)"/></pattern></defs><rect width="400" height="400" fill="url(%23stars)"/></svg>');
+    opacity: 0.6;
+    animation: starsTwinkle 8s ease-in-out infinite, starsFloat 15s linear infinite;
+}
+
+.hero-content-enhanced {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    position: relative;
+    z-index: 2;
+    text-align: center;
+}
+
+.hero-title-enhanced {
+    font-size: 4rem;
+    font-weight: 900;
+    color: white;
+    margin-bottom: 1.5rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    background: linear-gradient(45deg, #fff, #f0f8ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.hero-title-enhanced::before {
+    content: '🎯';
+    display: inline-block;
+    margin-right: 0.5rem;
+    font-size: 4rem;
+    filter: hue-rotate(45deg) saturate(1.5) brightness(1.2);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+        filter: hue-rotate(45deg) saturate(1.5) brightness(1.2);
+    }
+    50% {
+        transform: scale(1.1);
+        filter: hue-rotate(90deg) saturate(2) brightness(1.4);
+    }
+}
+
+.hero-subtitle-enhanced {
+    font-size: 1.5rem;
+    color: white;
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    line-height: 1.6;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.hero-description-enhanced {
+    font-size: 1.2rem;
+    color: rgba(255,255,255,0.9);
+    margin-bottom: 3rem;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.hero-features-enhanced {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 15px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.feature-item:hover {
+    transform: translateY(-5px);
+    background: rgba(255,255,255,0.15);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.feature-item i {
+    font-size: 1.5rem;
+    color: #4ade80;
+    margin-right: 1rem;
+}
+
+.feature-item span {
+    color: white;
+    font-weight: 500;
+    font-size: 1.1rem;
+}
+
+.hero-actions-enhanced {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn-primary-enhanced {
+    background: linear-gradient(45deg, #4ade80, #22c55e);
+    color: white;
+    border: none;
+    padding: 1rem 2.5rem;
+    border-radius: 50px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 25px rgba(74, 222, 128, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-primary-enhanced:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(74, 222, 128, 0.4);
+    background: linear-gradient(45deg, #22c55e, #16a34a);
+}
+
+.btn-secondary-enhanced {
+    background: rgba(255,255,255,0.1);
+    color: white;
+    border: 2px solid rgba(255,255,255,0.3);
+    padding: 1rem 2.5rem;
+    border-radius: 50px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-secondary-enhanced:hover {
+    background: rgba(255,255,255,0.2);
+    border-color: rgba(255,255,255,0.5);
+    transform: translateY(-3px);
+}
+
+/* ===== MODERNE METHOD EXPLANATION ===== */
+.method-explanation {
+    padding: 5rem 0;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    position: relative;
+}
+
+.method-explanation::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1" fill="rgba(0,0,0,0.05)"/></pattern></defs><rect width="100" height="100" fill="url(%23dots)"/></svg>');
+    opacity: 0.5;
+}
+
+.explanation-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    position: relative;
+    z-index: 2;
+}
+
+.explanation-content {
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.explanation-content h2 {
+    font-size: 3rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.explanation-content p {
+    font-size: 1.3rem;
+    color: #64748b;
+    line-height: 1.8;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.ikigai-visual {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 3rem;
+}
+
+/* ===== MODERNE WORKFLOW STEPS ===== */
+.workflow-steps {
+    padding: 5rem 0;
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.workflow-steps::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse"><path d="M 50 0 L 0 0 0 50" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+    opacity: 0.3;
+}
+
+.steps-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    position: relative;
+    z-index: 2;
+}
+
+.steps-container h2 {
+    font-size: 3rem;
+    font-weight: 800;
+    color: white;
+    text-align: center;
+    margin-bottom: 3rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.steps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.step-card-enhanced {
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 20px;
+    padding: 2.5rem;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    display: block;
+    text-decoration: none !important;
+    color: inherit !important;
+    cursor: pointer;
+}
+
+.step-card-enhanced::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.step-card-enhanced:hover::before {
+    opacity: 1;
+}
+
+.step-card-enhanced:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    border-color: rgba(255,255,255,0.4);
+    text-decoration: none;
+    color: inherit;
+}
+
+/* Klickbare Kacheln */
+.step-card-link {
+    text-decoration: none !important;
+    color: inherit !important;
+    display: block;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.step-card-link:hover {
+    text-decoration: none !important;
+    color: inherit !important;
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    border-color: rgba(255,255,255,0.4);
+}
+
+.step-card-link:hover .step-number-enhanced {
+    transform: scale(1.1);
+    box-shadow: 0 8px 25px rgba(74, 222, 128, 0.4);
+}
+
+.step-card-link:hover h4 {
+    color: #4ade80 !important;
+    text-shadow: 0 0 10px rgba(74, 222, 128, 0.3);
+}
+
+.step-card-link:visited {
+    color: inherit !important;
+    text-decoration: none !important;
+}
+
+.step-card-link:active {
+    color: inherit !important;
+    text-decoration: none !important;
+}
+
+.step-number-enhanced {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(45deg, #4ade80, #22c55e);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 8px 25px rgba(74, 222, 128, 0.3);
+}
+
+.step-card-enhanced h4 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 1rem;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
+
+.step-card-enhanced p {
+    color: rgba(255,255,255,0.8);
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+}
+
+/* Start-Button CSS entfernt - Kacheln sind jetzt direkt klickbar */
+
+/* ===== STERNE-ANIMATION KEYFRAMES ===== */
+@keyframes starsTwinkle {
+    0%, 100% { 
+        opacity: 0.3; 
+        transform: scale(1);
+    }
+    25% { 
+        opacity: 0.8; 
+        transform: scale(1.1);
+    }
+    50% { 
+        opacity: 0.4; 
+        transform: scale(0.9);
+    }
+    75% { 
+        opacity: 0.9; 
+        transform: scale(1.05);
+    }
+}
+
+@keyframes starsFloat {
+    0% { 
+        transform: translateY(0px) translateX(0px);
+    }
+    25% { 
+        transform: translateY(-10px) translateX(5px);
+    }
+    50% { 
+        transform: translateY(-5px) translateX(-3px);
+    }
+    75% { 
+        transform: translateY(-15px) translateX(8px);
+    }
+    100% { 
+        transform: translateY(0px) translateX(0px);
+    }
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 768px) {
+    .hero-title-enhanced {
+        font-size: 2.5rem;
+    }
+    
+    .hero-subtitle-enhanced {
+        font-size: 1.2rem;
+    }
+    
+    .hero-features-enhanced {
+        grid-template-columns: 1fr;
+    }
+    
+    .hero-actions-enhanced {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .explanation-content h2 {
+        font-size: 2rem;
+    }
+    
+    .steps-container h2 {
+        font-size: 2rem;
+    }
+    
+    .steps-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .step-card-enhanced {
+        padding: 2rem;
+    }
+}
+
+/* Base Styles */
+.ikigai-smart-workflow {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+}
+
+/* Button Hover Effects */
+.ikigai-smart-workflow button {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.ikigai-smart-workflow button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.ikigai-smart-workflow button:hover::before {
+    left: 100%;
+}
+
+.ikigai-smart-workflow button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.ikigai-smart-workflow button:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+/* Textarea Hover Effects */
+.ikigai-smart-workflow textarea {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+.ikigai-smart-workflow textarea:hover {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.ikigai-smart-workflow textarea:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+    outline: none;
+}
+
+/* Card Hover Effects */
+.ikigai-smart-workflow .video-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.ikigai-smart-workflow .video-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.ikigai-smart-workflow .video-card:hover::before {
+    opacity: 1;
+}
+
+.ikigai-smart-workflow .video-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+}
+
+/* Progress Bar Animation */
+.ikigai-smart-workflow #progress-bar {
+    position: relative;
+    overflow: hidden;
+}
+
+.ikigai-smart-workflow #progress-bar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background-image: linear-gradient(
+        -45deg,
+        rgba(255, 255, 255, .2) 25%,
+        transparent 25%,
+        transparent 50%,
+        rgba(255, 255, 255, .2) 50%,
+        rgba(255, 255, 255, .2) 75%,
+        transparent 75%,
+        transparent
+    );
+    background-size: 50px 50px;
+    transition: all 0.3s ease;
+}
+
+/* Removed animations for cleaner design */
+
+/* Tip Box Animations */
+.ikigai-smart-workflow .tip-box {
+    position: relative;
+    overflow: hidden;
+}
+
+.ikigai-smart-workflow .tip-box::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.6s;
+}
+
+.ikigai-smart-workflow .tip-box:hover::before {
+    left: 100%;
+}
+
+/* Step Content Animations */
+.ikigai-smart-workflow .step-content {
+    transition: all 0.3s ease;
+}
+
+/* Removed fadeInUp animation */
+
+/* Result Card Animations */
+.ikigai-smart-workflow .result-card {
+    transition: all 0.3s ease;
+}
+
+.ikigai-smart-workflow .result-card:nth-child(1) { animation-delay: 0.1s; }
+.ikigai-smart-workflow .result-card:nth-child(2) { animation-delay: 0.2s; }
+.ikigai-smart-workflow .result-card:nth-child(3) { animation-delay: 0.3s; }
+.ikigai-smart-workflow .result-card:nth-child(4) { animation-delay: 0.4s; }
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* YouTube Video Container */
+.ikigai-smart-workflow .youtube-container {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.ikigai-smart-workflow .youtube-container:hover {
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    transform: translateY(-2px);
+}
+
+.ikigai-smart-workflow .youtube-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .ikigai-smart-workflow {
+        padding: 1rem;
+    }
+    
+    .ikigai-smart-workflow .video-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .ikigai-smart-workflow .result-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    .ikigai-smart-workflow {
+        background: #1a1a1a;
+        color: #ffffff;
+    }
+    
+    .ikigai-smart-workflow .card {
+        background: #2d2d2d;
+        border-color: #404040;
+    }
+}
+
+/* Accessibility */
+.ikigai-smart-workflow button:focus,
+.ikigai-smart-workflow textarea:focus {
+    outline: 2px solid #667eea;
+    outline-offset: 2px;
+}
+
+/* Loading Animation */
+.ikigai-smart-workflow .loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(102, 126, 234, 0.3);
+    border-radius: 50%;
+    border-top-color: #667eea;
+    transition: all 0.3s ease;
+}
+
+/* Removed spin animation */
+
+/* Success Animation */
+.ikigai-smart-workflow .success-checkmark {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: block;
+    stroke-width: 2;
+    stroke: #4CAF50;
+    stroke-miterlimit: 10;
+    margin: 10% auto;
+    box-shadow: inset 0px 0px 0px #4CAF50;
+    transition: all 0.3s ease;
+}
+
+.ikigai-smart-workflow .success-checkmark circle {
+    stroke-dasharray: 166;
+    stroke-dashoffset: 166;
+    stroke-width: 2;
+    stroke-miterlimit: 10;
+    stroke: #4CAF50;
+    fill: none;
+    transition: all 0.3s ease;
+}
+
+.ikigai-smart-workflow .success-checkmark path {
+    transform-origin: 50% 50%;
+    stroke-dasharray: 48;
+    stroke-dashoffset: 48;
+    transition: all 0.3s ease;
+}
+
+/* Removed all keyframe animations */
+
+/* KOMPLETT NEUES IKIGAI DIAGRAMM - MODERNES VENN-LAYOUT */
+.ikigai-diagram-enhanced {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    height: 700px;
+    margin: 3rem auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border-radius: 24px;
+    padding: 2rem;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.ikigai-flower-enhanced {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    max-width: 700px;
+    max-height: 600px;
+    margin: 0 auto;
+}
+
+/* Hauptbereiche - Kreise mit klarer Überlappung */
+.ikigai-petal-enhanced {
+    position: absolute;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-weight: 700;
+    color: white !important;
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.4);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    border: 4px solid rgba(255,255,255,0.6);
+    z-index: 2;
+    padding: 1.5rem 1rem;
+    box-sizing: border-box;
+    overflow: visible;
+    backdrop-filter: blur(4px);
+    opacity: 0.9;
+}
+
+.ikigai-petal-enhanced:hover {
+    transform: scale(1.08);
+    box-shadow: 0 12px 35px rgba(0,0,0,0.25);
+    z-index: 10;
+    border-color: rgba(255,255,255,0.8);
+}
+
+.petal-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    position: relative;
+    z-index: 3;
+}
+
+.petal-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    display: block;
+    filter: drop-shadow(0 3px 6px rgba(0,0,0,0.4));
+}
+
+.petal-label {
+    font-size: 1.5rem;
+    font-weight: 900;
+    margin-bottom: 0.6rem;
+    line-height: 1.2;
+    display: block;
+    word-wrap: break-word;
+    hyphens: auto;
+    max-width: 95%;
+    text-align: center;
+}
+
+.petal-description {
+    font-size: 1rem;
+    opacity: 1;
+    font-weight: 700;
+    display: block;
+    margin-top: 0.4rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 0.9rem;
+}
+
+/* Positionierung - Kreise weiter auseinander, nur leichte Überlappung am Rand */
+/* KORRIGIERTES IKIGAI VENN-DIAGRAMM LAYOUT */
+/* Die 4 Kreise überlappen sich in der Mitte */
+.petal-passion {
+    background: linear-gradient(135deg, #ff6b9d 0%, #ff4757 100%);
+    top: 10%;
+    left: 20%;
+    z-index: 4;
+}
+
+.petal-mission {
+    background: linear-gradient(135deg, #4ecdc4 0%, #00d2d3 100%);
+    top: 10%;
+    right: 20%;
+    z-index: 3;
+}
+
+.petal-profession {
+    background: linear-gradient(135deg, #f9ca24 0%, #f0932b 100%);
+    bottom: 10%;
+    left: 35%;
+    z-index: 4;
+}
+
+.petal-vocation {
+    background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+    bottom: 10%;
+    right: 35%;
+    z-index: 3;
+}
+
+/* Schnittbereiche - deutlich kleiner und nur sichtbar bei Hover */
+.intersection-area {
+    position: absolute;
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-weight: 700;
+    color: white !important;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: 3px solid rgba(255,255,255,0.6);
+    backdrop-filter: blur(15px);
+    z-index: 6;
+    padding: 0.8rem;
+    box-sizing: border-box;
+    background: rgba(255,255,255,0.3);
+    opacity: 0.85;
+}
+
+.intersection-area:hover {
+    transform: scale(1.25);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    border-color: rgba(255,255,255,1);
+    z-index: 25;
+    opacity: 1;
+}
+
+.intersection-label {
+    font-size: 0.8rem;
+    margin: 0 0 0.2rem 0;
+    font-weight: 800;
+    line-height: 1.1;
+    display: block;
+}
+
+.intersection-description {
+    font-size: 0.7rem;
+    margin: 0;
+    opacity: 0.95;
+    font-weight: 600;
+    line-height: 1.1;
+    display: block;
+}
+
+/* Positionierung der Schnittbereiche - genau in der Mitte zwischen den Kreisen */
+/* SCHNITTBEREICHE - versteckt für saubereres Design */
+.intersection-passion-mission,
+.intersection-mission-profession,
+.intersection-profession-vocation,
+.intersection-vocation-passion {
+    display: none !important;
+}
+
+/* Zentrum - Ikigai - prominent und klar */
+.ikigai-center-enhanced {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 140px;
+    height: 140px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white !important;
+    text-align: center;
+    z-index: 50;
+    box-shadow: 0 15px 45px rgba(102,126,234,0.6), 0 0 0 8px rgba(255,255,255,0.9);
+    border: none;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    font-weight: 700;
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
+    padding: 1rem;
+    box-sizing: border-box;
+}
+
+.ikigai-center-enhanced:hover {
+    transform: translate(-50%, -50%) scale(1.18);
+    box-shadow: 0 18px 45px rgba(102,126,234,0.6), inset 0 2px 10px rgba(255,255,255,0.3);
+    border-color: rgba(255,255,255,1);
+}
+
+.center-icon {
+    font-size: 2.8rem;
+    margin-bottom: 0.6rem;
+    display: block;
+    filter: drop-shadow(0 3px 6px rgba(0,0,0,0.4));
+}
+
+.ikigai-center-enhanced h3 {
+    font-size: 1.2rem;
+    font-weight: 900;
+    margin-bottom: 0.3rem;
+    display: block;
+    line-height: 1.2;
+}
+
+.ikigai-center-enhanced p {
+    font-size: 0.75rem;
+    opacity: 0.95;
+    line-height: 1.3;
+    color: white !important;
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.6);
+    display: block;
+    margin: 0;
+}
+
+/* Responsive für Enhanced Diagram */
+@media (max-width: 768px) {
+    .ikigai-diagram-enhanced {
+        height: 700px;
+        max-width: 700px;
+        padding: 2rem;
+    }
+    
+    .ikigai-flower-enhanced {
+        max-width: 600px;
+        max-height: 600px;
+    }
+    
+    .ikigai-petal-enhanced {
+        width: 220px;
+        height: 220px;
+        padding: 1.5rem 1rem;
+    }
+    
+    .petal-icon {
+        font-size: 2.5rem;
+        margin-bottom: 0.8rem;
+    }
+    
+    .petal-label {
+        font-size: 1.2rem;
+    }
+    
+    .petal-description {
+        font-size: 0.85rem;
+    }
+    
+    .intersection-area {
+        width: 110px;
+        height: 110px;
+        padding: 0.6rem;
+    }
+    
+    .intersection-label {
+        font-size: 0.75rem;
+    }
+    
+    .intersection-description {
+        font-size: 0.65rem;
+    }
+    
+    .ikigai-center-enhanced {
+        width: 140px;
+        height: 140px;
+        padding: 1rem;
+    }
+    
+    .center-icon {
+        font-size: 2.3rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .ikigai-center-enhanced h3 {
+        font-size: 1.05rem;
+    }
+    
+    .ikigai-center-enhanced p {
+        font-size: 0.7rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .ikigai-diagram-enhanced {
+        height: 600px;
+        max-width: 600px;
+        padding: 1.5rem;
+    }
+    
+    .ikigai-flower-enhanced {
+        max-width: 500px;
+        max-height: 500px;
+    }
+    
+    .ikigai-petal-enhanced {
+        width: 170px;
+        height: 170px;
+        padding: 1.2rem 0.8rem;
+    }
+    
+    .petal-icon {
+        font-size: 2rem;
+        margin-bottom: 0.6rem;
+    }
+    
+    .petal-label {
+        font-size: 1rem;
+    }
+    
+    .petal-description {
+        font-size: 0.75rem;
+    }
+    
+    .intersection-area {
+        width: 85px;
+        height: 85px;
+        padding: 0.5rem;
+    }
+    
+    .intersection-label {
+        font-size: 0.65rem;
+    }
+    
+    .intersection-description {
+        font-size: 0.55rem;
+    }
+    
+    .ikigai-center-enhanced {
+        width: 110px;
+        height: 110px;
+        padding: 0.8rem;
+    }
+    
+    .center-icon {
+        font-size: 1.8rem;
+        margin-bottom: 0.4rem;
+    }
+    
+    .ikigai-center-enhanced h3 {
+        font-size: 0.9rem;
+    }
+    
+    .ikigai-center-enhanced p {
+        font-size: 0.65rem;
+    }
+}
+
+/* Enhanced Hero Styles */
+.hero-description-enhanced {
+    font-size: 1.1rem;
+    color: rgba(255,255,255,0.9);
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    margin-bottom: 2rem;
+    font-weight: 300;
+    line-height: 1.5;
+}
+
+.hero-features-enhanced {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.8rem 1.2rem;
+    background: rgba(255,255,255,0.1);
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.2);
+    transition: all 0.3s ease;
+}
+
+.feature-item:hover {
+    background: rgba(255,255,255,0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+}
+
+.feature-item i {
+    color: #4CAF50;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.feature-item span {
+    color: white;
+    font-weight: 500;
+    font-size: 1rem;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+/* Intersection Areas - Styles sind bereits oben definiert */
+
+/* Responsive Hero Features */
+@media (max-width: 768px) {
+    .hero-features-enhanced {
+        grid-template-columns: 1fr;
+        gap: 0.8rem;
+    }
+    
+    .feature-item {
+        padding: 0.6rem 1rem;
+    }
+    
+    .feature-item span {
+        font-size: 0.9rem;
+    }
+}
