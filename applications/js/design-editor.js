@@ -4369,6 +4369,32 @@ class DesignEditor {
     }
     
     async generateResumePDFFromElement(preview, options = {}) {
+        // Prüfe ob Preview-Element existiert und Inhalt hat
+        if (!preview) {
+            throw new Error('Preview-Element nicht gefunden. Bitte Design Editor öffnen und Vorschau aktualisieren.');
+        }
+        
+        // Prüfe ob Preview Inhalt hat
+        const hasContent = preview.children.length > 0 || preview.textContent.trim().length > 0 || preview.innerHTML.trim().length > 0;
+        if (!hasContent) {
+            console.warn('⚠️ Preview-Element ist leer. Versuche Preview zu aktualisieren...');
+            this.updatePreview();
+            // Warte kurz und prüfe erneut
+            await new Promise(resolve => setTimeout(resolve, 500));
+            const updatedPreview = document.querySelector('.design-resume-preview');
+            if (!updatedPreview || (!updatedPreview.children.length && !updatedPreview.textContent.trim().length)) {
+                throw new Error('Preview-Element ist leer. Bitte Lebenslauf-Daten eingeben und Design Editor erneut öffnen.');
+            }
+            // Verwende aktualisiertes Preview
+            preview = updatedPreview;
+        }
+        
+        console.log('📄 Preview-Element gefunden:', {
+            hasChildren: preview.children.length > 0,
+            textLength: preview.textContent.trim().length,
+            innerHTMLLength: preview.innerHTML.trim().length,
+            element: preview
+        });
         
         const { quality = 'medium', format = 'a4', addPageNumbers = false, addMetadata = true } = options;
         
@@ -4439,6 +4465,21 @@ class DesignEditor {
         
         // Clone für Export - komplett neu stylen für PDF
         const clone = preview.cloneNode(true);
+        
+        // Debug: Prüfe Clone-Inhalt
+        console.log('📋 Clone erstellt:', {
+            hasChildren: clone.children.length > 0,
+            textLength: clone.textContent.trim().length,
+            innerHTMLLength: clone.innerHTML.trim().length,
+            computedDisplay: window.getComputedStyle(clone).display,
+            computedVisibility: window.getComputedStyle(clone).visibility,
+            computedOpacity: window.getComputedStyle(clone).opacity
+        });
+        
+        // Stelle sicher, dass Clone sichtbar ist
+        clone.style.display = 'block';
+        clone.style.visibility = 'visible';
+        clone.style.opacity = '1';
         
         // Container für den Clone erstellen
         const container = document.createElement('div');
@@ -4533,7 +4574,20 @@ class DesignEditor {
         document.body.appendChild(container);
         
         // Warte, damit der Clone vollständig gerendert wird
-        await new Promise(resolve => setTimeout(resolve, 200));
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        // Debug: Prüfe Clone nach Wartezeit
+        console.log('📋 Clone nach Wartezeit:', {
+            hasChildren: clone.children.length > 0,
+            textLength: clone.textContent.trim().length,
+            isInDOM: document.body.contains(clone),
+            computedDisplay: window.getComputedStyle(clone).display
+        });
+        
+        // Prüfe ob Clone wirklich Inhalt hat
+        if (!clone.children.length && !clone.textContent.trim().length) {
+            throw new Error('Preview-Element hat keinen Inhalt. Bitte Lebenslauf-Daten eingeben.');
+        }
         
         // Optimierte Optionen basierend auf Best Practices aus GitHub-Repositories
         // (pdfme, react-print-pdf, html2pdf.js Best Practices)
