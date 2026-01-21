@@ -4502,6 +4502,18 @@ class DesignEditor {
         // WICHTIG: Ersetze ALLE CSS-Variablen im geklonten HTML durch tatsächliche Werte
         this.replaceCSSVariablesInElement(clone);
         
+        // WICHTIG: Setze Padding direkt als inline-Style, damit es garantiert angewendet wird
+        if (clone.classList.contains('design-resume-preview')) {
+            clone.style.paddingTop = `${marginTop}mm`;
+            clone.style.paddingRight = `${marginRight}mm`;
+            clone.style.paddingBottom = `${marginBottom}mm`;
+            clone.style.paddingLeft = `${marginLeft}mm`;
+            clone.style.boxSizing = 'border-box';
+            clone.style.width = `calc(210mm - ${marginLeft}mm - ${marginRight}mm)`;
+            clone.style.maxWidth = `calc(210mm - ${marginLeft}mm - ${marginRight}mm)`;
+            clone.style.minWidth = `calc(210mm - ${marginLeft}mm - ${marginRight}mm)`;
+        }
+        
         // Extrahiere alle CSS-Styles (inkl. Google Fonts)
         const css = this.extractAllCSS();
         
