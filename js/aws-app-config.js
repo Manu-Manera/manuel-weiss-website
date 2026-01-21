@@ -11,17 +11,17 @@
 
 // API Base URL - wird nach CDK Deploy gesetzt
 // Temporär auf Netlify Functions bis Migration abgeschlossen
-const USE_AWS_API = false; // Auf true setzen nach CDK Deploy
+const USE_AWS_API = true; // ✅ Auf true gesetzt nach erfolgreichem CDK Deploy
 
 window.AWS_APP_CONFIG = Object.assign({}, window.AWS_APP_CONFIG || {}, {
   // ========================================
   // API KONFIGURATION
   // ========================================
   
-  // Nach CDK Deploy: API Gateway URL eintragen
+  // ✅ API Gateway URL nach CDK Deploy eingetragen (2026-01-21)
   // Format: https://xxxxxxxxxx.execute-api.eu-central-1.amazonaws.com/v1
   API_BASE: USE_AWS_API 
-    ? 'https://NACH-CDK-DEPLOY-EINTRAGEN.execute-api.eu-central-1.amazonaws.com/v1'
+    ? 'https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1'
     : '', // Leer = Netlify Functions als Fallback
   
   // Alle API Endpoints
