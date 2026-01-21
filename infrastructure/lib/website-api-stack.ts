@@ -420,7 +420,26 @@ export class WebsiteApiStack extends cdk.Stack {
 
     // /pdf-generator (Puppeteer PDF-Generierung)
     const pdfGeneratorResource = this.api.root.addResource('pdf-generator');
-    pdfGeneratorResource.addMethod('POST', new apigateway.LambdaIntegration(pdfGeneratorLambda));
+    const pdfGeneratorIntegration = new apigateway.LambdaIntegration(pdfGeneratorLambda, {
+      integrationResponses: [{
+        statusCode: '200',
+        responseParameters: {
+          'method.response.header.Access-Control-Allow-Origin': "'*'",
+          'method.response.header.Access-Control-Allow-Headers': "'Content-Type,Authorization,X-User-Id'",
+          'method.response.header.Access-Control-Allow-Methods': "'GET,POST,OPTIONS'",
+        }
+      }]
+    });
+    pdfGeneratorResource.addMethod('POST', pdfGeneratorIntegration, {
+      methodResponses: [{
+        statusCode: '200',
+        responseParameters: {
+          'method.response.header.Access-Control-Allow-Origin': true,
+          'method.response.header.Access-Control-Allow-Headers': true,
+          'method.response.header.Access-Control-Allow-Methods': true,
+        }
+      }]
+    });
 
     // ========================================
     // OUTPUTS
