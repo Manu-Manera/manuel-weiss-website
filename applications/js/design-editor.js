@@ -4468,158 +4468,34 @@ class DesignEditor {
         // Extrahiere HTML-Inhalt für GPT-5.2
         const content = clone.outerHTML;
         
-        // Hole OpenAI API Key - PRIORITÄT: Admin Panel
+        // Hole OpenAI API Key
         let openaiApiKey = null;
         try {
-            // 1. GlobalAPIManager (Admin Panel - höchste Priorität)
-            if (window.GlobalAPIManager) {
-                try {
-                    openaiApiKey = window.GlobalAPIManager.getAPIKey('openai');
-                    if (openaiApiKey && typeof openaiApiKey === 'string' && openaiApiKey.length > 0 && !openaiApiKey.includes('...') && !openaiApiKey.includes('••••') && openaiApiKey.startsWith('sk-')) {
-                        console.log('✅ API-Key über GlobalAPIManager geladen');
-                    } else {
-                        openaiApiKey = null;
-                    }
-                } catch (e) {
-                    console.warn('⚠️ GlobalAPIManager Fehler:', e);
-                }
+            // Versuche verschiedene Methoden, um den API Key zu holen
+            if (window.awsAPISettings) {
+                openaiApiKey = await window.awsAPISettings.getFullApiKey('openai');
             }
-            
-            // 2. Admin Panel: global_api_keys (direkt aus localStorage)
-            if (!openaiApiKey) {
-                try {
-                    const globalKeys = JSON.parse(localStorage.getItem('global_api_keys') || '{}');
-                    if (globalKeys.openai?.key && typeof globalKeys.openai.key === 'string' && globalKeys.openai.key.startsWith('sk-') && !globalKeys.openai.key.includes('...') && !globalKeys.openai.key.includes('••••')) {
-                        openaiApiKey = globalKeys.openai.key;
-                        console.log('✅ API-Key aus global_api_keys geladen');
-                    }
-                } catch (e) {
-                    console.warn('⚠️ global_api_keys Fehler:', e);
-                }
-            }
-            
-            // 3. Versuche über globalApiManager (Alternative)
             if (!openaiApiKey && window.globalApiManager) {
-                try {
-                    openaiApiKey = await window.globalApiManager.getApiKey('openai');
-                    if (openaiApiKey && typeof openaiApiKey === 'string' && !openaiApiKey.includes('...') && openaiApiKey.startsWith('sk-')) {
-                        console.log('✅ API-Key über globalApiManager geladen');
-                    } else {
-                        openaiApiKey = null;
-                    }
-                } catch (e) {
-                    console.warn('⚠️ globalApiManager Fehler:', e);
-                }
+                openaiApiKey = await window.globalApiManager.getApiKey('openai');
             }
-            
-            // 4. Versuche über aws-api-settings (AWS DynamoDB)
-            if (!openaiApiKey && window.awsAPISettings) {
-                try {
-                    openaiApiKey = await window.awsAPISettings.getFullApiKey('openai');
-                    if (openaiApiKey && typeof openaiApiKey === 'string' && !openaiApiKey.includes('...') && openaiApiKey.startsWith('sk-')) {
-                        console.log('✅ API-Key über awsAPISettings geladen');
-                    } else {
-                        openaiApiKey = null;
-                    }
-                } catch (e) {
-                    console.warn('⚠️ awsAPISettings Fehler:', e);
-                }
-            }
-            
-            // 5. Admin Panel: admin_state (State Manager)
             if (!openaiApiKey) {
-                try {
-                    const stateManagerData = localStorage.getItem('admin_state');
-                    if (stateManagerData) {
-                        const state = JSON.parse(stateManagerData);
-                        if (state.services?.openai?.key && typeof state.services.openai.key === 'string' && !state.services.openai.key.includes('...') && state.services.openai.key.startsWith('sk-')) {
-                            openaiApiKey = state.services.openai.key;
-                            console.log('✅ API-Key aus admin_state.services geladen');
-                        } else if (state.apiKeys?.openai?.apiKey && typeof state.apiKeys.openai.apiKey === 'string' && !state.apiKeys.openai.apiKey.includes('...') && state.apiKeys.openai.apiKey.startsWith('sk-')) {
-                            openaiApiKey = state.apiKeys.openai.apiKey;
-                            console.log('✅ API-Key aus admin_state.apiKeys geladen');
-                        }
-                    }
-                } catch (e) {
-                    console.warn('⚠️ admin_state Fehler:', e);
-                }
-            }
-            
-            // 6. Admin Panel: admin-api-settings
-            if (!openaiApiKey) {
-                try {
-                    const adminSettings = JSON.parse(localStorage.getItem('admin-api-settings') || '{}');
-                    if (adminSettings.openai?.apiKey && typeof adminSettings.openai.apiKey === 'string' && adminSettings.openai.apiKey.startsWith('sk-') && !adminSettings.openai.apiKey.includes('...')) {
-                        openaiApiKey = adminSettings.openai.apiKey;
-                        console.log('✅ API-Key aus admin-api-settings geladen');
-                    }
-                } catch (e) {
-                    console.warn('⚠️ admin-api-settings Fehler:', e);
-                }
-            }
-            
-            // 7. Versuche über API (zentrale Konfiguration)
-            if (!openaiApiKey) {
-                try {
-                    const apiUrl = window.getApiUrl ? window.getApiUrl('API_SETTINGS') + '/key?provider=openai' : '/.netlify/functions/api-settings/key?provider=openai';
-                    const response = await fetch(apiUrl, {
-                        headers: {
-                            'X-User-Id': window.getUserId ? window.getUserId() : ''
-                        }
-                    });
-                    if (response.ok) {
-                        const data = await response.json();
-                        if (data.apiKey && data.apiKey.startsWith('sk-')) {
-                            openaiApiKey = data.apiKey;
-                            console.log('✅ API-Key über API geladen');
-                        }
-                    }
-                } catch (e) {
-                    console.warn('⚠️ API-Settings nicht erreichbar:', e);
-                }
-            }
-            
-            // 7. Fallback: Direkte localStorage Keys
-            if (!openaiApiKey) {
+                // Fallback: localStorage
                 const localKeys = ['openai_api_key', 'admin_openai_api_key', 'ki_api_settings'];
                 for (const key of localKeys) {
                     const value = localStorage.getItem(key);
                     if (value && value.startsWith('sk-')) {
-                        // Prüfe ob es JSON ist
-                        try {
-                            const parsed = JSON.parse(value);
-                            if (parsed.apiKey && parsed.apiKey.startsWith('sk-')) {
-                                openaiApiKey = parsed.apiKey;
-                                console.log(`✅ API-Key aus ${key} (JSON) geladen`);
-                                break;
-                            }
-                        } catch (e) {
-                            // Nicht JSON, direkt verwenden
-                            openaiApiKey = value;
-                            console.log(`✅ API-Key aus ${key} geladen`);
-                            break;
-                        }
+                        openaiApiKey = value;
+                        break;
                     }
                 }
             }
         } catch (e) {
-            console.error('❌ Fehler beim Laden des OpenAI API Keys:', e);
+            console.warn('⚠️ OpenAI API Key konnte nicht geladen werden:', e);
         }
         
         if (!openaiApiKey) {
-            console.error('❌ Alle API-Key-Quellen durchsucht - keine gefunden');
-            console.log('🔍 Debug: localStorage Keys:', {
-                global_api_keys: localStorage.getItem('global_api_keys') ? 'vorhanden' : 'nicht vorhanden',
-                admin_state: localStorage.getItem('admin_state') ? 'vorhanden' : 'nicht vorhanden',
-                admin_api_settings: localStorage.getItem('admin-api-settings') ? 'vorhanden' : 'nicht vorhanden',
-                openai_api_key: localStorage.getItem('openai_api_key') ? 'vorhanden' : 'nicht vorhanden',
-                GlobalAPIManager: window.GlobalAPIManager ? 'vorhanden' : 'nicht vorhanden',
-                awsAPISettings: window.awsAPISettings ? 'vorhanden' : 'nicht vorhanden'
-            });
-            throw new Error('OpenAI API Key nicht gefunden. Bitte konfigurieren Sie den API Key im Admin Panel unter "API Keys".');
+            throw new Error('OpenAI API Key nicht gefunden. Bitte konfigurieren Sie den API Key in den Einstellungen.');
         }
-        
-        console.log('🔑 OpenAI API Key geladen:', openaiApiKey.substring(0, 10) + '...');
         
         // Rufe GPT-5.2 Lambda API auf
         const apiUrl = window.getApiUrl('PDF_GENERATOR');
