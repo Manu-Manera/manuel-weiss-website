@@ -4482,14 +4482,20 @@ class DesignEditor {
         clone.style.opacity = '1';
         
         // Container für den Clone erstellen
+        // WICHTIG: Container muss sichtbar sein für html2canvas, aber außerhalb des Viewports
         const container = document.createElement('div');
-        container.style.position = 'absolute';
-        container.style.left = '-9999px';
+        container.style.position = 'fixed';
+        container.style.left = '0';
         container.style.top = '0';
         container.style.width = `${pageFormat.width}mm`;
         container.style.height = 'auto';
         container.style.backgroundColor = this.settings.backgroundColor || '#ffffff';
         container.style.overflow = 'visible';
+        container.style.zIndex = '-9999';
+        container.style.pointerEvents = 'none';
+        // Stelle sicher, dass Container sichtbar ist (nicht display: none)
+        container.style.visibility = 'visible';
+        container.style.opacity = '1';
         
         // Clone komplett neu stylen - entferne alle responsive/transform Styles
         clone.style.position = 'relative';
@@ -4601,13 +4607,38 @@ class DesignEditor {
                 scale: settings.scale,
                 useCORS: true,
                 letterRendering: true, // Bessere Textqualität
-                logging: false,
+                logging: true, // Aktiviert für Debugging
                 backgroundColor: this.settings.backgroundColor || '#ffffff',
                 allowTaint: false,
                 removeContainer: false,
                 width: pageFormat.width * 3.779527559, // mm zu px (1mm = 3.779527559px bei 96dpi)
                 height: null, // Auto height - lässt html2canvas die Höhe berechnen
                 windowWidth: pageFormat.width * 3.779527559,
+                // WICHTIG: Stelle sicher, dass html2canvas den Container findet
+                onclone: async (clonedDoc, element) => {
+                    console.log('🔍 html2canvas onclone:', {
+                        elementExists: !!element,
+                        elementTag: element?.tagName,
+                        elementDisplay: element ? window.getComputedStyle(element).display : 'none',
+                        elementVisibility: element ? window.getComputedStyle(element).visibility : 'hidden',
+                        elementOpacity: element ? window.getComputedStyle(element).opacity : '0',
+                        elementWidth: element ? window.getComputedStyle(element).width : '0',
+                        elementHeight: element ? window.getComputedStyle(element).height : '0',
+                        hasChildren: element?.children?.length > 0,
+                        textLength: element?.textContent?.trim().length || 0
+                    });
+                    
+                    // Stelle sicher, dass das Element im Clone sichtbar ist
+                    if (element) {
+                        element.style.display = 'block';
+                        element.style.visibility = 'visible';
+                        element.style.opacity = '1';
+                        element.style.position = 'relative';
+                        element.style.width = `${pageFormat.width}mm`;
+                        element.style.height = 'auto';
+                    }
+                    
+                    // Stelle sicher, dass alle Bilder geladen sind
                 // Best Practice: Bessere Rendering-Qualität
                 // onclone wird von html2canvas unterstützt und kann async sein
                 onclone: async (clonedDoc) => {
