@@ -4398,6 +4398,243 @@ class DesignEditor {
         
         const { quality = 'medium', format = 'a4', addPageNumbers = false, addMetadata = true } = options;
         
+        // Verwende pdfmake statt html2pdf für zuverlässigere PDF-Generierung
+        return await this.generateResumePDFWithPdfMake(preview, { quality, format, addPageNumbers, addMetadata });
+    }
+    
+    async generateResumePDFWithPdfMake(preview, options) {
+        const { format = 'a4', addPageNumbers = false, addMetadata = true } = options;
+        
+        // Lade pdfmake Bibliothek
+        if (!window.pdfMake) {
+            console.log('📦 Lade pdfmake Bibliothek...');
+            const pdfmakeCDNs = [
+                'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js',
+                'https://unpkg.com/pdfmake@0.2.7/build/pdfmake.min.js',
+                'https://cdn.jsdelivr.net/npm/pdfmake@0.2.7/build/pdfmake.min.js'
+            ];
+            
+            const vfsCDNs = [
+                'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.min.js',
+                'https://unpkg.com/pdfmake@0.2.7/build/vfs_fonts.min.js',
+                'https://cdn.jsdelivr.net/npm/pdfmake@0.2.7/build/vfs_fonts.min.js'
+            ];
+            
+            let loaded = false;
+            for (let i = 0; i < pdfmakeCDNs.length; i++) {
+                try {
+                    await this.loadScript(pdfmakeCDNs[i]);
+                    await this.loadScript(vfsCDNs[i]);
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                    
+                    if (window.pdfMake) {
+                        console.log('✅ pdfmake geladen von:', pdfmakeCDNs[i]);
+                        loaded = true;
+                        break;
+                    }
+                } catch (error) {
+                    console.warn(`⚠️ Fehler beim Laden von ${pdfmakeCDNs[i]}:`, error);
+                    continue;
+                }
+            }
+            
+            if (!loaded || !window.pdfMake) {
+                throw new Error('pdfmake Bibliothek konnte nicht geladen werden. Bitte Seite neu laden.');
+            }
+        }
+        
+        // Konvertiere HTML zu pdfmake Document Definition
+        const docDefinition = this.convertHTMLToPdfMake(preview, format, addPageNumbers);
+        
+        // Generiere PDF
+        console.log('🔄 Generiere PDF mit pdfmake...');
+        const pdfDocGenerator = pdfMake.createPdf(docDefinition);
+        const pdfBlob = await new Promise((resolve, reject) => {
+            pdfDocGenerator.getBlob((blob) => {
+                if (blob) {
+                    resolve(blob);
+                } else {
+                    reject(new Error('PDF-Generierung fehlgeschlagen'));
+                }
+            });
+        });
+        
+        console.log('✅ PDF generiert:', pdfBlob.size, 'Bytes');
+        return pdfBlob;
+    }
+    
+    convertHTMLToPdfMake(element, format, addPageNumbers) {
+        const pageSize = format === 'letter' ? { width: 612, height: 792 } : { width: 595, height: 842 }; // A4 in points
+        const margin = 40; // 40 points = ~14mm
+        
+        // Extrahiere Text und Struktur aus HTML
+        const content = this.extractContentFromHTML(element);
+        
+        const docDefinition = {
+            pageSize: format === 'letter' ? 'LETTER' : 'A4',
+            pageMargins: [margin, margin, margin, margin],
+            content: content,
+            defaultStyle: {
+                font: 'Roboto',
+                fontSize: 10,
+                lineHeight: 1.4
+            },
+            styles: {
+                header: {
+                    fontSize: 18,
+                    bold: true,
+                    margin: [0, 0, 0, 10]
+                },
+                subheader: {
+                    fontSize: 14,
+                    bold: true,
+                    margin: [0, 10, 0, 5]
+                },
+                normal: {
+                    fontSize: 10,
+                    margin: [0, 0, 0, 5]
+                }
+            }
+        };
+        
+        if (addPageNumbers) {
+            docDefinition.footer = (currentPage, pageCount) => {
+                return {
+                    text: `Seite ${currentPage} von ${pageCount}`,
+                    alignment: 'center',
+                    fontSize: 8,
+                    margin: [0, 10, 0, 0]
+                };
+            };
+        }
+        
+        return docDefinition;
+    }
+    
+    extractContentFromHTML(element) {
+        const content = [];
+        
+        // Durchlaufe alle direkten Kinder
+        Array.from(element.children).forEach(child => {
+            const childContent = this.processHTMLElement(child);
+            if (childContent) {
+                content.push(childContent);
+            }
+        });
+        
+        // Falls keine Kinder, nimm Text-Content
+        if (content.length === 0 && element.textContent.trim()) {
+            content.push({ text: element.textContent.trim(), style: 'normal' });
+        }
+        
+        return content;
+    }
+    
+    processHTMLElement(element) {
+        const tagName = element.tagName.toLowerCase();
+        const text = element.textContent.trim();
+        
+        // Ignoriere leere Elemente
+        if (!text && !element.querySelector('img')) {
+            return null;
+        }
+        
+        // Überschriften
+        if (tagName === 'h1' || tagName === 'h2' || tagName === 'h3') {
+            return {
+                text: text,
+                style: tagName === 'h1' ? 'header' : 'subheader',
+                margin: [0, 10, 0, 5]
+            };
+        }
+        
+        // Absätze
+        if (tagName === 'p') {
+            return { text: text, style: 'normal', margin: [0, 0, 0, 5] };
+        }
+        
+        // Listen
+        if (tagName === 'ul' || tagName === 'ol') {
+            const items = Array.from(element.querySelectorAll('li')).map(li => li.textContent.trim()).filter(t => t);
+            return {
+                ul: items,
+                margin: [0, 5, 0, 10]
+            };
+        }
+        
+        // Divs mit Klassen (Sections)
+        if (tagName === 'div') {
+            const classList = element.classList;
+            
+            // Section Header
+            if (classList.contains('resume-preview-header') || classList.contains('resume-preview-section-title')) {
+                return {
+                    text: text,
+                    style: 'subheader',
+                    margin: [0, 15, 0, 5]
+                };
+            }
+            
+            // Section Content
+            if (classList.contains('resume-preview-section') || classList.contains('resume-preview-item')) {
+                const sectionContent = [];
+                Array.from(element.children).forEach(child => {
+                    const childContent = this.processHTMLElement(child);
+                    if (childContent) {
+                        sectionContent.push(childContent);
+                    }
+                });
+                
+                if (sectionContent.length > 0) {
+                    return {
+                        stack: sectionContent,
+                        margin: [0, 0, 0, 10]
+                    };
+                }
+            }
+            
+            // Normale Divs - rekursiv verarbeiten
+            const divContent = [];
+            Array.from(element.children).forEach(child => {
+                const childContent = this.processHTMLElement(child);
+                if (childContent) {
+                    divContent.push(childContent);
+                }
+            });
+            
+            if (divContent.length > 0) {
+                return { stack: divContent, margin: [0, 0, 0, 5] };
+            }
+            
+            // Falls nur Text
+            if (text) {
+                return { text: text, style: 'normal', margin: [0, 0, 0, 5] };
+            }
+        }
+        
+        // Bilder
+        if (tagName === 'img') {
+            const src = element.src;
+            if (src && !src.startsWith('data:')) {
+                // Externe Bilder werden nicht unterstützt in pdfmake ohne Base64
+                return null;
+            }
+            // Base64 Bilder können eingebettet werden
+            return null; // Für jetzt ignorieren, kann später erweitert werden
+        }
+        
+        // Standard: Text extrahieren
+        if (text) {
+            return { text: text, style: 'normal', margin: [0, 0, 0, 5] };
+        }
+        
+        return null;
+    }
+    
+    // Legacy html2pdf Methode (als Fallback)
+    async generateResumePDFLegacy(preview, options) {
+        const { quality = 'medium', format = 'a4' } = options;
+        
         // Qualitätseinstellungen
         const qualitySettings = {
             high: { scale: 3, imageQuality: 0.98 },
