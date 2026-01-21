@@ -4389,9 +4389,23 @@ class DesignEditor {
         const contentWidth = pageFormat.width - (2 * pageFormat.margin); // 170mm für A4
         
         // Lade html2pdf
-        if (typeof html2pdf === 'undefined') {
+        if (typeof window.html2pdf === 'undefined' && typeof html2pdf === 'undefined') {
+            console.log('📦 Lade html2pdf Bibliothek...');
             await this.loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js');
-            await new Promise(resolve => setTimeout(resolve, 300));
+            // Warte länger, damit die Bibliothek vollständig initialisiert ist
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            // Prüfe ob html2pdf jetzt verfügbar ist
+            if (typeof window.html2pdf === 'undefined' && typeof html2pdf === 'undefined') {
+                throw new Error('html2pdf Bibliothek konnte nicht geladen werden. Bitte Seite neu laden.');
+            }
+            console.log('✅ html2pdf geladen');
+        }
+        
+        // Verwende window.html2pdf falls verfügbar, sonst html2pdf
+        const html2pdfFn = window.html2pdf || html2pdf;
+        if (!html2pdfFn) {
+            throw new Error('html2pdf Funktion nicht verfügbar');
         }
         
         // Clone für Export - komplett neu stylen für PDF
@@ -4525,8 +4539,13 @@ class DesignEditor {
             console.log('🔄 Starte PDF-Generierung mit html2pdf...');
             console.log('📄 Seitenformat:', format, pageFormat);
             console.log('📏 Content-Breite:', contentWidth, 'mm');
+            console.log('🔧 html2pdf verfügbar:', typeof html2pdfFn);
             
-            const pdfBytes = await html2pdf().set(opt).from(clone).outputPdf('arraybuffer');
+            if (!html2pdfFn || typeof html2pdfFn !== 'function') {
+                throw new Error('html2pdf Funktion ist nicht verfügbar. Bitte Seite neu laden.');
+            }
+            
+            const pdfBytes = await html2pdfFn().set(opt).from(clone).outputPdf('arraybuffer');
             
             console.log('✅ PDF generiert:', pdfBytes.byteLength, 'Bytes');
             
