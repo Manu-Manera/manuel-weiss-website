@@ -4534,6 +4534,9 @@ class DesignEditor {
             box-sizing: border-box !important;
         }
         
+        ${css}
+        
+        /* WICHTIG: Diese Styles müssen NACH dem extrahierten CSS kommen, damit sie nicht überschrieben werden */
         /* Erste Seite - Oben Abstand sicherstellen */
         .design-resume-preview > *:first-child {
             margin-top: 0 !important;
@@ -4546,7 +4549,18 @@ class DesignEditor {
             padding-bottom: 0 !important;
         }
         
-        ${css}
+        /* Überschreibe alle Padding/Margin-Regeln aus extrahiertem CSS - FINALE Definition */
+        .design-resume-preview {
+            width: calc(210mm - ${marginLeft}mm - ${marginRight}mm) !important;
+            max-width: calc(210mm - ${marginLeft}mm - ${marginRight}mm) !important;
+            min-width: calc(210mm - ${marginLeft}mm - ${marginRight}mm) !important;
+            margin: 0 auto !important;
+            padding-top: ${marginTop}mm !important;
+            padding-right: ${marginRight}mm !important;
+            padding-bottom: ${marginBottom}mm !important;
+            padding-left: ${marginLeft}mm !important;
+            box-sizing: border-box !important;
+        }
         
         /* Print-spezifische Styles - Seitenränder werden von Puppeteer gehandhabt */
         @media print {
@@ -4565,12 +4579,21 @@ class DesignEditor {
             
             .design-resume-preview {
                 margin: 0 auto !important;
-                padding: ${marginTop}mm ${marginRight}mm ${marginBottom}mm ${marginLeft}mm !important;
+                padding-top: ${marginTop}mm !important;
+                padding-right: ${marginRight}mm !important;
+                padding-bottom: ${marginBottom}mm !important;
+                padding-left: ${marginLeft}mm !important;
                 width: calc(210mm - ${marginLeft}mm - ${marginRight}mm) !important;
                 max-width: calc(210mm - ${marginLeft}mm - ${marginRight}mm) !important;
                 min-width: calc(210mm - ${marginLeft}mm - ${marginRight}mm) !important;
                 box-shadow: none !important;
                 box-sizing: border-box !important;
+            }
+            
+            /* Überschreibe alle Padding/Margin-Regeln auch im Print-Modus */
+            body {
+                padding: 0 !important;
+                margin: 0 !important;
             }
             
             /* Durchgängiges Dokument - keine automatischen Seitenumbrüche */
