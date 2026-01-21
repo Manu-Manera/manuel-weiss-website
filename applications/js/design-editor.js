@@ -4457,18 +4457,31 @@ class DesignEditor {
         // WICHTIG: Verwende die Settings direkt, nicht die computed styles!
         // Die computed styles sind in px (für Bildschirm), aber für PDF brauchen wir mm
         // Die Settings enthalten bereits die korrekten mm-Werte
-        const marginTop = this.settings.marginTop || 20;
-        const marginRight = this.settings.marginRight || 20;
-        const marginBottom = this.settings.marginBottom || 20;
-        const marginLeft = this.settings.marginLeft || 20;
-        const fontSize = this.settings.fontSize || 11;
+        
+        // Stelle sicher, dass Settings geladen sind
+        if (!this.settings || Object.keys(this.settings).length === 0) {
+            this.settings = this.loadSettings();
+        }
+        
+        // Extrahiere Margin-Werte - stelle sicher, dass sie Zahlen sind
+        const marginTop = Number(this.settings.marginTop) || 20;
+        const marginRight = Number(this.settings.marginRight) || 20;
+        const marginBottom = Number(this.settings.marginBottom) || 20;
+        const marginLeft = Number(this.settings.marginLeft) || 20;
+        const fontSize = Number(this.settings.fontSize) || 11;
         const fontFamily = this.settings.fontFamily || 'Inter';
-        const lineHeight = this.settings.lineHeight || 1.5;
+        const lineHeight = Number(this.settings.lineHeight) || 1.5;
         const textColor = this.settings.textColor || '#1e293b';
         const backgroundColor = this.settings.backgroundColor || '#ffffff';
         
         console.log('📐 PDF Settings direkt aus Editor:', {
-            margins: { top: marginTop, right: marginRight, bottom: marginBottom, left: marginLeft },
+            rawSettings: {
+                marginTop: this.settings.marginTop,
+                marginRight: this.settings.marginRight,
+                marginBottom: this.settings.marginBottom,
+                marginLeft: this.settings.marginLeft
+            },
+            parsedMargins: { top: marginTop, right: marginRight, bottom: marginBottom, left: marginLeft },
             fontSize: fontSize,
             fontFamily: fontFamily,
             lineHeight: lineHeight
