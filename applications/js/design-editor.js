@@ -4642,7 +4642,7 @@ class DesignEditor {
         if (tagName === 'p') {
             if (text) {
                 // Prüfe ob muted/sekundärer Text
-                const isMuted = classList.contains('muted') || classList.contains('text-muted') || 
+                const isMuted = element.classList.contains('muted') || element.classList.contains('text-muted') || 
                                element.style.color?.includes('64748b') || element.style.opacity === '0.7';
                 return { 
                     text: text, 
