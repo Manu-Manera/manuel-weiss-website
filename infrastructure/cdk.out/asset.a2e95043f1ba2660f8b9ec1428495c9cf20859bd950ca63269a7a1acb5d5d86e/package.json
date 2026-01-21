@@ -1,0 +1,10 @@
+{
+  "name": "user-data-lambda",
+  "version": "1.0.0",
+  "description": "AWS Lambda for user data storage",
+  "main": "index.js",
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.0.0",
+    "@aws-sdk/util-dynamodb": "^3.0.0"
+  }
+}

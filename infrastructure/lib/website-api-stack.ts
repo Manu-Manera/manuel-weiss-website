@@ -315,6 +315,24 @@ export class WebsiteApiStack extends cdk.Stack {
     documentsResource.addMethod('POST', new apigateway.LambdaIntegration(userDataLambda));
     documentsResource.addMethod('DELETE', new apigateway.LambdaIntegration(userDataLambda));
     
+    // /user-data/cover-letters
+    const coverLettersResource = userDataResource.addResource('cover-letters');
+    coverLettersResource.addMethod('GET', new apigateway.LambdaIntegration(userDataLambda));
+    coverLettersResource.addMethod('POST', new apigateway.LambdaIntegration(userDataLambda));
+    coverLettersResource.addMethod('DELETE', new apigateway.LambdaIntegration(userDataLambda));
+    
+    // /user-data/applications
+    const applicationsResource = userDataResource.addResource('applications');
+    applicationsResource.addMethod('GET', new apigateway.LambdaIntegration(userDataLambda));
+    applicationsResource.addMethod('POST', new apigateway.LambdaIntegration(userDataLambda));
+    applicationsResource.addMethod('DELETE', new apigateway.LambdaIntegration(userDataLambda));
+    
+    // /user-data/photos
+    const photosResource = userDataResource.addResource('photos');
+    photosResource.addMethod('GET', new apigateway.LambdaIntegration(userDataLambda));
+    photosResource.addMethod('POST', new apigateway.LambdaIntegration(userDataLambda));
+    photosResource.addMethod('DELETE', new apigateway.LambdaIntegration(userDataLambda));
+    
     // /user-data/workflows/{proxy+}
     const workflowsResource = userDataResource.addResource('workflows');
     const workflowProxy = workflowsResource.addProxy({
