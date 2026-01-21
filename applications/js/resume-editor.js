@@ -203,27 +203,6 @@ async function saveField(fieldName, value) {
     }
 }
 
-// Save resume function (can be called from buttons)
-async function saveResume() {
-    const form = document.getElementById('resumeForm');
-    if (!form) {
-        console.error('Resume form not found');
-        showNotification('Fehler: Formular nicht gefunden', 'error');
-        return;
-    }
-    
-    // Validate form first
-    if (!form.checkValidity()) {
-        form.reportValidity();
-        showNotification('Bitte füllen Sie alle erforderlichen Felder aus', 'error');
-        return;
-    }
-    
-    // Trigger form submit which will be handled by the event listener below
-    const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
-    form.dispatchEvent(submitEvent);
-}
-
 // Save resume (full save)
 document.getElementById('resumeForm').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -3501,7 +3480,27 @@ function previewStyle() {
     previewWindow.document.close();
 }
 
+// Globale saveResume() Funktion für Button-Aufrufe
+async function saveResume() {
+    try {
+        const form = document.getElementById('resumeForm');
+        if (!form) {
+            console.error('Resume-Formular nicht gefunden');
+            showNotification('Fehler: Formular nicht gefunden', 'error');
+            return;
+        }
+        
+        // Formular-Submit-Event triggern (nutzt bestehenden Event-Listener)
+        const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
+        form.dispatchEvent(submitEvent);
+    } catch (error) {
+        console.error('Error in saveResume():', error);
+        showNotification(`Fehler beim Speichern: ${error.message}`, 'error');
+    }
+}
+
 // Global Funktionen für HTML onclick
+window.saveResume = saveResume;
 window.exportToPDF = exportToPDF;
 window.exportToPlainText = exportToPlainText;
 window.openStyleEditor = openStyleEditor;
@@ -3514,7 +3513,6 @@ window.closeResumeVersions = closeResumeVersions;
 window.saveResumeVersion = saveResumeVersion;
 window.loadResumeVersion = loadResumeVersion;
 window.deleteResumeVersion = deleteResumeVersion;
-window.saveResume = saveResume;
 
 // Exportiere Skill-Funktionen global für OCR-Verarbeitung
 window.addTechnicalSkillWithRating = addTechnicalSkillWithRating;

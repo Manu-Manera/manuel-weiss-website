@@ -4366,7 +4366,7 @@ function resetDesignSettings() {
     }
 }
 
-// Export functions globally for onclick handlers
+// Exportiere alle Design-Editor-Funktionen global für HTML onclick
 window.openDesignEditor = openDesignEditor;
 window.closeDesignEditor = closeDesignEditor;
 window.saveDesignSettings = saveDesignSettings;
