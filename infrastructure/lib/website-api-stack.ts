@@ -286,17 +286,18 @@ export class WebsiteApiStack extends cdk.Stack {
       }
     });
 
-    // PDF Generator Lambda (Puppeteer für komplexe CSS-Features)
+    // PDF Generator Lambda (GPT-5.2 + Puppeteer für präzise PDF-Generierung)
     const pdfGeneratorLambda = new lambda.Function(this, 'PdfGeneratorFunction', {
       functionName: 'website-pdf-generator',
       runtime: lambda.Runtime.NODEJS_18_X,
       handler: 'index.handler',
-      code: lambda.Code.fromAsset('../lambda/pdf-generator'),
+      code: lambda.Code.fromAsset('../lambda/pdf-generator-gpt52'),
       role: lambdaRole,
-      timeout: cdk.Duration.seconds(60), // Längerer Timeout für PDF-Generierung
+      timeout: cdk.Duration.seconds(120), // Längerer Timeout für GPT-5.2 + PDF-Generierung
       memorySize: 2048, // Mehr Memory für Puppeteer/Chrome
       environment: {
         NODE_ENV: 'production'
+        // OPENAI_API_KEY wird nicht als Umgebungsvariable gesetzt, sondern vom Frontend übergeben
       }
     });
 

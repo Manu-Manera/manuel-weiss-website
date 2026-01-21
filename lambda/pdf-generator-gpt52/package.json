@@ -1,0 +1,13 @@
+{
+  "name": "pdf-generator-gpt52",
+  "version": "1.0.0",
+  "description": "PDF Generator Lambda Function using GPT-5.2 and Puppeteer",
+  "main": "index.js",
+  "dependencies": {
+    "puppeteer-core": "^21.5.0",
+    "@sparticuz/chromium": "^119.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

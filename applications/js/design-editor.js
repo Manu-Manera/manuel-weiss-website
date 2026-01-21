@@ -4452,49 +4452,12 @@ class DesignEditor {
     async generateResumePDFWithPuppeteer(preview, options) {
         const { format = 'A4', addPageNumbers = false } = options;
         
-        console.log('🔄 Generiere PDF mit Puppeteer (AWS Lambda)...');
-        
-        // WICHTIG: Verwende die Settings direkt, nicht die computed styles!
-        // Die computed styles sind in px (für Bildschirm), aber für PDF brauchen wir mm
-        // Die Settings enthalten bereits die korrekten mm-Werte
+        console.log('🔄 Generiere PDF mit GPT-5.2 + Puppeteer (AWS Lambda)...');
         
         // Stelle sicher, dass Settings geladen sind
         if (!this.settings || Object.keys(this.settings).length === 0) {
             this.settings = this.loadSettings();
         }
-        
-        // Extrahiere Margin-Werte - stelle sicher, dass sie Zahlen sind
-        const marginTop = Number(this.settings.marginTop) || 20;
-        const marginRight = Number(this.settings.marginRight) || 20;
-        const marginBottom = Number(this.settings.marginBottom) || 20;
-        const marginLeft = Number(this.settings.marginLeft) || 20;
-        const fontSize = Number(this.settings.fontSize) || 11;
-        const fontFamily = this.settings.fontFamily || 'Inter';
-        const lineHeight = Number(this.settings.lineHeight) || 1.5;
-        const textColor = this.settings.textColor || '#1e293b';
-        const backgroundColor = this.settings.backgroundColor || '#ffffff';
-        
-        console.log('📐 PDF Settings direkt aus Editor:', {
-            rawSettings: {
-                marginTop: this.settings.marginTop,
-                marginRight: this.settings.marginRight,
-                marginBottom: this.settings.marginBottom,
-                marginLeft: this.settings.marginLeft
-            },
-            parsedMargins: { top: marginTop, right: marginRight, bottom: marginBottom, left: marginLeft },
-            fontSize: fontSize,
-            fontFamily: fontFamily,
-            lineHeight: lineHeight
-        });
-        
-        // Debug: Log die Padding-Werte die verwendet werden
-        console.log('🔍 Padding-Werte für PDF:', {
-            paddingTop: `${marginTop}mm`,
-            paddingRight: `${marginRight}mm`,
-            paddingBottom: `${marginBottom}mm`,
-            paddingLeft: `${marginLeft}mm`,
-            width: `calc(210mm - ${marginLeft}mm - ${marginRight}mm)`
-        });
         
         // Klone das Preview-Element
         const clone = preview.cloneNode(true);
@@ -4502,192 +4465,56 @@ class DesignEditor {
         // WICHTIG: Ersetze ALLE CSS-Variablen im geklonten HTML durch tatsächliche Werte
         this.replaceCSSVariablesInElement(clone);
         
-        // WICHTIG: Setze Padding direkt als inline-Style, damit es garantiert angewendet wird
-        if (clone.classList.contains('design-resume-preview')) {
-            clone.style.paddingTop = `${marginTop}mm`;
-            clone.style.paddingRight = `${marginRight}mm`;
-            clone.style.paddingBottom = `${marginBottom}mm`;
-            clone.style.paddingLeft = `${marginLeft}mm`;
-            clone.style.boxSizing = 'border-box';
-            clone.style.width = `calc(210mm - ${marginLeft}mm - ${marginRight}mm)`;
-            clone.style.maxWidth = `calc(210mm - ${marginLeft}mm - ${marginRight}mm)`;
-            clone.style.minWidth = `calc(210mm - ${marginLeft}mm - ${marginRight}mm)`;
+        // Extrahiere HTML-Inhalt für GPT-5.2
+        const content = clone.outerHTML;
+        
+        // Hole OpenAI API Key
+        let openaiApiKey = null;
+        try {
+            // Versuche verschiedene Methoden, um den API Key zu holen
+            if (window.awsAPISettings) {
+                openaiApiKey = await window.awsAPISettings.getFullApiKey('openai');
+            }
+            if (!openaiApiKey && window.globalApiManager) {
+                openaiApiKey = await window.globalApiManager.getApiKey('openai');
+            }
+            if (!openaiApiKey) {
+                // Fallback: localStorage
+                const localKeys = ['openai_api_key', 'admin_openai_api_key', 'ki_api_settings'];
+                for (const key of localKeys) {
+                    const value = localStorage.getItem(key);
+                    if (value && value.startsWith('sk-')) {
+                        openaiApiKey = value;
+                        break;
+                    }
+                }
+            }
+        } catch (e) {
+            console.warn('⚠️ OpenAI API Key konnte nicht geladen werden:', e);
         }
         
-        // Extrahiere alle CSS-Styles (inkl. Google Fonts)
-        const css = this.extractAllCSS();
-        
-        // Google Fonts URL basierend auf gewählter Schriftart
-        const googleFontsUrl = this.getGoogleFontsUrl(fontFamily);
-        
-        // Erstelle vollständiges HTML-Dokument
-        const html = `
-<!DOCTYPE html>
-<html lang="de">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Lebenslauf PDF Export</title>
-    ${googleFontsUrl ? `<link href="${googleFontsUrl}" rel="stylesheet">` : ''}
-    <style>
-        /* Basis-Styles - KEINE Skalierung - Verwende Settings direkt */
-        html {
-            font-size: ${fontSize}pt !important;
-            -webkit-text-size-adjust: 100% !important;
-            -moz-text-size-adjust: 100% !important;
-            -ms-text-size-adjust: 100% !important;
+        if (!openaiApiKey) {
+            throw new Error('OpenAI API Key nicht gefunden. Bitte konfigurieren Sie den API Key in den Einstellungen.');
         }
         
-        body {
-            margin: 0 !important;
-            padding: 0 !important;
-            width: 210mm !important;
-            max-width: 210mm !important;
-            min-width: 210mm !important;
-            background: ${backgroundColor} !important;
-            font-family: ${fontFamily}, sans-serif !important;
-            font-size: ${fontSize}pt !important;
-            line-height: ${lineHeight} !important;
-            color: ${textColor} !important;
-        }
-        
-        /* Sicherstellen, dass der Lebenslauf als durchgängiges Dokument gerendert wird */
-        /* WICHTIG: Verwende Settings direkt */
-        .design-resume-preview {
-            min-height: auto !important;
-            margin: 0 auto !important;
-            background: ${backgroundColor} !important;
-            font-family: ${fontFamily}, sans-serif !important;
-            font-size: ${fontSize}pt !important;
-            line-height: ${lineHeight} !important;
-            color: ${textColor} !important;
-            box-sizing: border-box !important;
-        }
-        
-        ${css}
-        
-        /* WICHTIG: Diese Styles müssen NACH dem extrahierten CSS kommen, damit sie nicht überschrieben werden */
-        /* Erste Seite - Oben Abstand sicherstellen */
-        .design-resume-preview > *:first-child {
-            margin-top: 0 !important;
-            padding-top: 0 !important;
-        }
-        
-        /* Letzte Seite - Unten Abstand entfernen */
-        .design-resume-preview > *:last-child {
-            margin-bottom: 0 !important;
-            padding-bottom: 0 !important;
-        }
-        
-        /* Überschreibe alle Padding/Margin-Regeln aus extrahiertem CSS - FINALE Definition */
-        /* Verwende Settings direkt in mm */
-        /* WICHTIG: Diese Regeln müssen NACH dem extrahierten CSS kommen - KEIN padding: 0 Reset! */
-        .design-resume-preview {
-            margin: 0 auto !important;
-            /* Setze Padding direkt - KEIN Reset, da extractAllCSS kein padding: 0 mehr setzt */
-            padding-top: ${marginTop}mm !important;
-            padding-right: ${marginRight}mm !important;
-            padding-bottom: ${marginBottom}mm !important;
-            padding-left: ${marginLeft}mm !important;
-            box-sizing: border-box !important;
-        }
-        
-        /* Berechne Breite basierend auf Padding */
-        .design-resume-preview {
-            width: calc(210mm - ${marginLeft}mm - ${marginRight}mm) !important;
-            max-width: calc(210mm - ${marginLeft}mm - ${marginRight}mm) !important;
-            min-width: calc(210mm - ${marginLeft}mm - ${marginRight}mm) !important;
-        }
-        
-        /* Print-spezifische Styles - Seitenränder werden von Puppeteer gehandhabt */
-        @media print {
-            @page {
-                size: ${format};
-                margin: 0 !important;
-            }
-            
-            body {
-                margin: 0 !important;
-                padding: 0 !important;
-                width: 210mm !important;
-                max-width: 210mm !important;
-                min-width: 210mm !important;
-            }
-            
-            .design-resume-preview {
-                margin: 0 auto !important;
-                padding-top: ${marginTop}mm !important;
-                padding-right: ${marginRight}mm !important;
-                padding-bottom: ${marginBottom}mm !important;
-                padding-left: ${marginLeft}mm !important;
-                box-shadow: none !important;
-                box-sizing: border-box !important;
-            }
-            
-            /* Berechne Breite basierend auf Padding - auch im Print-Modus */
-            .design-resume-preview {
-                width: calc(210mm - ${marginLeft}mm - ${marginRight}mm) !important;
-                max-width: calc(210mm - ${marginLeft}mm - ${marginRight}mm) !important;
-                min-width: calc(210mm - ${marginLeft}mm - ${marginRight}mm) !important;
-            }
-            
-            /* Überschreibe alle Padding/Margin-Regeln auch im Print-Modus */
-            body {
-                padding: 0 !important;
-                margin: 0 !important;
-            }
-            
-            /* Durchgängiges Dokument - keine automatischen Seitenumbrüche */
-            .resume-preview-section {
-                page-break-inside: auto;
-                break-inside: auto;
-            }
-            
-            .resume-preview-item {
-                page-break-inside: auto;
-                break-inside: auto;
-            }
-            
-            /* Nur Header nicht trennen */
-            .resume-preview-header {
-                page-break-after: avoid;
-                break-after: avoid;
-            }
-            
-            /* Manuelle Seitenumbrüche */
-            .manual-page-break {
-                page-break-before: always;
-                break-before: page;
-                margin-top: 0;
-                padding-top: 0;
-            }
-            
-            .manual-page-break-before {
-                page-break-before: always;
-                break-before: page;
-            }
-            
-            /* Vermeide Seitenumbrüche nur bei sehr kleinen Elementen */
-            .resume-preview-section:has(.resume-preview-item:only-child) {
-                page-break-inside: avoid;
-                break-inside: avoid;
-            }
-        }
-        
-    </style>
-</head>
-<body>
-    ${clone.outerHTML}
-</body>
-</html>`;
-        
-        // Rufe Puppeteer Lambda API auf
+        // Rufe GPT-5.2 Lambda API auf
         const apiUrl = window.getApiUrl('PDF_GENERATOR');
         if (!apiUrl) {
             throw new Error('PDF Generator API URL nicht gefunden. Bitte aws-app-config.js prüfen.');
         }
         
-        console.log('📡 Sende Anfrage an:', apiUrl);
+        console.log('📡 Sende Anfrage an GPT-5.2 Lambda:', apiUrl);
+        console.log('📐 Settings:', {
+            marginTop: this.settings.marginTop,
+            marginRight: this.settings.marginRight,
+            marginBottom: this.settings.marginBottom,
+            marginLeft: this.settings.marginLeft,
+            fontSize: this.settings.fontSize,
+            fontFamily: this.settings.fontFamily,
+            lineHeight: this.settings.lineHeight,
+            textColor: this.settings.textColor,
+            backgroundColor: this.settings.backgroundColor
+        });
         
         // Hole Auth Token falls vorhanden
         let authToken = null;
@@ -4712,7 +4539,19 @@ class DesignEditor {
                 ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {})
             },
             body: JSON.stringify({
-                html: html,
+                content: content, // HTML-Inhalt für GPT-5.2
+                settings: {
+                    marginTop: Number(this.settings.marginTop) || 20,
+                    marginRight: Number(this.settings.marginRight) || 20,
+                    marginBottom: Number(this.settings.marginBottom) || 20,
+                    marginLeft: Number(this.settings.marginLeft) || 20,
+                    fontSize: Number(this.settings.fontSize) || 11,
+                    fontFamily: this.settings.fontFamily || 'Inter',
+                    lineHeight: Number(this.settings.lineHeight) || 1.5,
+                    textColor: this.settings.textColor || '#1e293b',
+                    backgroundColor: this.settings.backgroundColor || '#ffffff'
+                },
+                openaiApiKey: openaiApiKey, // API Key für GPT-5.2
                 options: {
                     format: format,
                     printBackground: true,
@@ -4758,7 +4597,7 @@ class DesignEditor {
                 bytes[i] = binaryString.charCodeAt(i);
             }
             const blob = new Blob([bytes], { type: 'application/pdf' });
-            console.log('✅ PDF generiert:', blob.size, 'Bytes');
+            console.log('✅ PDF generiert mit GPT-5.2:', blob.size, 'Bytes');
             return blob;
         } else {
             // Fallback: Versuche JSON zu parsen (falls API anders antwortet)
