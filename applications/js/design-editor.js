@@ -4494,8 +4494,8 @@ class DesignEditor {
         // WICHTIG: Ersetze ALLE CSS-Variablen im geklonten HTML durch tatsächliche Werte
         this.replaceCSSVariablesInElement(clone);
         
-        // Wende alle Design-Editor-Settings direkt auf den Klon an (als Fallback)
-        this.applyDesignSettingsToElement(clone, true); // true = PDF-Export-Modus
+        // WICHTIG: NICHT applyDesignSettingsToElement aufrufen, da es das Padding auf 0 setzen würde!
+        // Die computed styles aus der Vorschau haben bereits die korrekten Werte
         
         // Extrahiere alle CSS-Styles (inkl. Google Fonts)
         const css = this.extractAllCSS();
@@ -4627,15 +4627,19 @@ class DesignEditor {
             
             .design-resume-preview {
                 margin: 0 auto !important;
-                padding-top: ${marginTop}mm !important;
-                padding-right: ${marginRight}mm !important;
-                padding-bottom: ${marginBottom}mm !important;
-                padding-left: ${marginLeft}mm !important;
-                width: calc(210mm - ${marginLeft}mm - ${marginRight}mm) !important;
-                max-width: calc(210mm - ${marginLeft}mm - ${marginRight}mm) !important;
-                min-width: calc(210mm - ${marginLeft}mm - ${marginRight}mm) !important;
+                padding-top: ${marginTop} !important;
+                padding-right: ${marginRight} !important;
+                padding-bottom: ${marginBottom} !important;
+                padding-left: ${marginLeft} !important;
                 box-shadow: none !important;
                 box-sizing: border-box !important;
+            }
+            
+            /* Berechne Breite basierend auf Padding - auch im Print-Modus */
+            .design-resume-preview {
+                width: calc(210mm - ${parseFloat(marginLeft.replace('mm', '')) || 0}mm - ${parseFloat(marginRight.replace('mm', '')) || 0}mm) !important;
+                max-width: calc(210mm - ${parseFloat(marginLeft.replace('mm', '')) || 0}mm - ${parseFloat(marginRight.replace('mm', '')) || 0}mm) !important;
+                min-width: calc(210mm - ${parseFloat(marginLeft.replace('mm', '')) || 0}mm - ${parseFloat(marginRight.replace('mm', '')) || 0}mm) !important;
             }
             
             /* Überschreibe alle Padding/Margin-Regeln auch im Print-Modus */
