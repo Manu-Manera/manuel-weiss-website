@@ -4555,19 +4555,30 @@ class DesignEditor {
                 height: null, // Auto height - lässt html2canvas die Höhe berechnen
                 windowWidth: pageFormat.width * 3.779527559,
                 // Best Practice: Bessere Rendering-Qualität
-                onclone: (clonedDoc) => {
+                // onclone wird von html2canvas unterstützt und kann async sein
+                onclone: async (clonedDoc) => {
                     // Stelle sicher, dass alle Bilder geladen sind
                     const images = clonedDoc.querySelectorAll('img');
-                    return Promise.all(
-                        Array.from(images).map(img => {
-                            if (img.complete) return Promise.resolve();
-                            return new Promise((resolve) => {
-                                img.onload = resolve;
-                                img.onerror = resolve; // Auch bei Fehler weitermachen
-                                setTimeout(resolve, 2000); // Timeout nach 2 Sekunden
-                            });
-                        })
-                    );
+                    const imagePromises = Array.from(images).map(img => {
+                        if (img.complete && img.naturalHeight !== 0) {
+                            return Promise.resolve();
+                        }
+                        return new Promise((resolve) => {
+                            // Wenn Bild bereits geladen ist
+                            if (img.complete) {
+                                resolve();
+                                return;
+                            }
+                            // Warte auf Laden oder Fehler
+                            img.onload = () => resolve();
+                            img.onerror = () => resolve(); // Auch bei Fehler weitermachen
+                            // Timeout nach 2 Sekunden
+                            setTimeout(() => resolve(), 2000);
+                        });
+                    });
+                    
+                    // Warte auf alle Bilder (oder Timeout)
+                    await Promise.all(imagePromises);
                 }
             },
             jsPDF: {
