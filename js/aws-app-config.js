@@ -64,7 +64,10 @@ window.AWS_APP_CONFIG = Object.assign({}, window.AWS_APP_CONFIG || {}, {
     SNOWFLAKE_HIGHSCORES: '/snowflake-highscores',
     
     // Contact
-    CONTACT_EMAIL: '/contact-email'
+    CONTACT_EMAIL: '/contact-email',
+    
+    // PDF Generator (Puppeteer)
+    PDF_GENERATOR: '/pdf-generator'
   },
   
   // ========================================
@@ -108,7 +111,8 @@ window.AWS_APP_CONFIG = Object.assign({}, window.AWS_APP_CONFIG || {}, {
         'PROFILE_IMAGE_UPLOAD': '/.netlify/functions/s3-upload',
         'S3_UPLOAD': '/.netlify/functions/s3-upload',
         'SNOWFLAKE_HIGHSCORES': '/.netlify/functions/snowflake-highscores',
-        'CONTACT_EMAIL': '/.netlify/functions/send-contact-email'
+        'CONTACT_EMAIL': '/.netlify/functions/send-contact-email',
+        'PDF_GENERATOR': '/.netlify/functions/pdf-generator'
       };
       return netlifyMap[endpoint] || `/.netlify/functions/${endpoint.toLowerCase().replace(/_/g, '-')}`;
     }

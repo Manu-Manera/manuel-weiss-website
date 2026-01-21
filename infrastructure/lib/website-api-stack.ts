@@ -286,6 +286,20 @@ export class WebsiteApiStack extends cdk.Stack {
       }
     });
 
+    // PDF Generator Lambda (Puppeteer für komplexe CSS-Features)
+    const pdfGeneratorLambda = new lambda.Function(this, 'PdfGeneratorFunction', {
+      functionName: 'website-pdf-generator',
+      runtime: lambda.Runtime.NODEJS_18_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromAsset('../lambda/pdf-generator'),
+      role: lambdaRole,
+      timeout: cdk.Duration.seconds(60), // Längerer Timeout für PDF-Generierung
+      memorySize: 2048, // Mehr Memory für Puppeteer/Chrome
+      environment: {
+        NODE_ENV: 'production'
+      }
+    });
+
     // ========================================
     // API ROUTES
     // ========================================
@@ -403,6 +417,10 @@ export class WebsiteApiStack extends cdk.Stack {
     const profileImageResource = this.api.root.addResource('profile-image');
     const uploadUrlResource = profileImageResource.addResource('upload-url');
     uploadUrlResource.addMethod('POST', new apigateway.LambdaIntegration(profileImageLambda));
+
+    // /pdf-generator (Puppeteer PDF-Generierung)
+    const pdfGeneratorResource = this.api.root.addResource('pdf-generator');
+    pdfGeneratorResource.addMethod('POST', new apigateway.LambdaIntegration(pdfGeneratorLambda));
 
     // ========================================
     // OUTPUTS

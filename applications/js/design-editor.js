@@ -4396,773 +4396,282 @@ class DesignEditor {
             element: preview
         });
         
-        const { quality = 'medium', format = 'a4', addPageNumbers = false, addMetadata = true } = options;
+        const { format = 'A4', addPageNumbers = false } = options;
         
-        // Verwende pdfmake statt html2pdf für zuverlässigere PDF-Generierung
-        return await this.generateResumePDFWithPdfMake(preview, { quality, format, addPageNumbers, addMetadata });
+        // Verwende Puppeteer für vollständige CSS-Unterstützung
+        return await this.generateResumePDFWithPuppeteer(preview, { format, addPageNumbers });
     }
     
-    async generateResumePDFWithPdfMake(preview, options) {
-        const { format = 'a4', addPageNumbers = false, addMetadata = true } = options;
+    async generateResumePDFWithPuppeteer(preview, options) {
+        const { format = 'A4', addPageNumbers = false } = options;
         
-        // Lade pdfmake Bibliothek
-        if (!window.pdfMake) {
-            console.log('📦 Lade pdfmake Bibliothek...');
-            const pdfmakeCDNs = [
-                'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js',
-                'https://unpkg.com/pdfmake@0.2.7/build/pdfmake.min.js',
-                'https://cdn.jsdelivr.net/npm/pdfmake@0.2.7/build/pdfmake.min.js'
-            ];
-            
-            const vfsCDNs = [
-                'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.min.js',
-                'https://unpkg.com/pdfmake@0.2.7/build/vfs_fonts.min.js',
-                'https://cdn.jsdelivr.net/npm/pdfmake@0.2.7/build/vfs_fonts.min.js'
-            ];
-            
-            let loaded = false;
-            for (let i = 0; i < pdfmakeCDNs.length; i++) {
-                try {
-                    await this.loadScript(pdfmakeCDNs[i]);
-                    await this.loadScript(vfsCDNs[i]);
-                    await new Promise(resolve => setTimeout(resolve, 500));
-                    
-                    if (window.pdfMake) {
-                        console.log('✅ pdfmake geladen von:', pdfmakeCDNs[i]);
-                        loaded = true;
-                        break;
-                    }
-                } catch (error) {
-                    console.warn(`⚠️ Fehler beim Laden von ${pdfmakeCDNs[i]}:`, error);
-                    continue;
-                }
+        console.log('🔄 Generiere PDF mit Puppeteer (AWS Lambda)...');
+        
+        // Extrahiere alle CSS-Styles
+        const css = this.extractAllCSS();
+        
+        // Erstelle vollständiges HTML-Dokument
+        const html = `
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lebenslauf PDF Export</title>
+    <style>
+        ${css}
+        
+        /* Print-spezifische Styles */
+        @media print {
+            @page {
+                size: ${format};
+                margin: ${this.settings.marginTop || 20}mm ${this.settings.marginRight || 20}mm ${this.settings.marginBottom || 20}mm ${this.settings.marginLeft || 20}mm;
             }
             
-            if (!loaded || !window.pdfMake) {
-                throw new Error('pdfmake Bibliothek konnte nicht geladen werden. Bitte Seite neu laden.');
+            .resume-preview-section {
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
+            
+            .resume-preview-item {
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
+            
+            .resume-preview-header {
+                page-break-after: avoid;
+                break-after: avoid;
             }
         }
         
-        // Konvertiere HTML zu pdfmake Document Definition
-        const docDefinition = this.convertHTMLToPdfMake(preview, format, addPageNumbers);
+        body {
+            margin: 0;
+            padding: 0;
+            background: ${this.settings.backgroundColor || '#ffffff'};
+            font-family: ${this.settings.fontFamily || "'Inter', sans-serif"};
+            font-size: ${this.settings.fontSize || 11}pt;
+            line-height: ${this.settings.lineHeight || 1.5};
+            color: ${this.settings.textColor || '#1e293b'};
+        }
+    </style>
+</head>
+<body>
+    ${preview.outerHTML}
+</body>
+</html>`;
         
-        // Generiere PDF
-        console.log('🔄 Generiere PDF mit pdfmake...');
-        const pdfDocGenerator = pdfMake.createPdf(docDefinition);
+        // Rufe Puppeteer Lambda API auf
+        const apiUrl = window.getApiUrl('PDF_GENERATOR');
+        if (!apiUrl) {
+            throw new Error('PDF Generator API URL nicht gefunden. Bitte aws-app-config.js prüfen.');
+        }
         
-        // pdfmake verwendet Callbacks, wrappen in Promise
-        const pdfBlob = await new Promise((resolve, reject) => {
-            try {
-                pdfDocGenerator.getBlob((blob) => {
-                    if (blob && blob.size > 0) {
-                        console.log('✅ PDF generiert:', blob.size, 'Bytes');
-                        resolve(blob);
-                    } else {
-                        reject(new Error('PDF-Generierung fehlgeschlagen: Leeres PDF'));
+        console.log('📡 Sende Anfrage an:', apiUrl);
+        
+        // Hole Auth Token falls vorhanden
+        let authToken = null;
+        try {
+            if (window.UnifiedAWSAuth && window.UnifiedAWSAuth.getInstance) {
+                const auth = window.UnifiedAWSAuth.getInstance();
+                if (auth && auth.getCurrentUser) {
+                    const user = await auth.getCurrentUser();
+                    if (user && user.signInUserSession) {
+                        authToken = user.signInUserSession.idToken.jwtToken;
                     }
-                });
-            } catch (error) {
-                reject(new Error(`PDF-Generierung fehlgeschlagen: ${error.message}`));
+                }
             }
-        });
+        } catch (e) {
+            console.warn('⚠️ Auth Token konnte nicht geladen werden:', e);
+        }
         
-        return pdfBlob;
-    }
-    
-    convertHTMLToPdfMake(element, format, addPageNumbers) {
-        const pageSize = format === 'letter' ? { width: 612, height: 792 } : { width: 595, height: 842 }; // A4 in points
-        
-        // Verwende Design-Einstellungen für Margins
-        const marginTop = (this.settings.marginTop || 20) * 0.352778; // mm zu points
-        const marginRight = (this.settings.marginRight || 20) * 0.352778;
-        const marginBottom = (this.settings.marginBottom || 20) * 0.352778;
-        const marginLeft = (this.settings.marginLeft || 20) * 0.352778;
-        
-        // Extrahiere Text und Struktur aus HTML
-        const content = this.extractContentFromHTML(element);
-        
-        // Mappe Schriftarten (pdfmake unterstützt: Roboto, Courier, Helvetica, Times)
-        const fontFamilyMap = {
-            "'Inter', sans-serif": 'Roboto',
-            "'Roboto', sans-serif": 'Roboto',
-            "'Open Sans', sans-serif": 'Roboto',
-            "'Lato', sans-serif": 'Roboto',
-            "'Montserrat', sans-serif": 'Roboto',
-            "'Nunito', sans-serif": 'Roboto',
-            "'Source Sans Pro', sans-serif": 'Roboto',
-            "'Merriweather', serif": 'Times',
-            "'Playfair Display', serif": 'Times',
-            "'Source Code Pro', monospace": 'Courier'
-        };
-        const pdfFont = fontFamilyMap[this.settings.fontFamily] || 'Roboto';
-        
-        // Design-Einstellungen
-        const baseFontSize = this.settings.fontSize || 11;
-        const headingSize = this.settings.headingSize || 14;
-        const lineHeight = this.settings.lineHeight || 1.5;
-        const paragraphGap = (this.settings.paragraphGap || 6) * 0.352778; // mm zu points
-        const sectionGap = (this.settings.sectionGap || 24) * 0.352778;
-        const itemGap = (this.settings.itemGap || 12) * 0.352778;
-        
-        // Farben
-        const accentColor = this.settings.accentColor || '#6366f1';
-        const textColor = this.settings.textColor || '#1e293b';
-        const mutedColor = this.settings.mutedColor || '#64748b';
-        const backgroundColor = this.settings.backgroundColor || '#ffffff';
-        
-        const docDefinition = {
-            pageSize: format === 'letter' ? 'LETTER' : 'A4',
-            pageMargins: [marginLeft, marginTop, marginRight, marginBottom],
-            background: backgroundColor !== '#ffffff' ? backgroundColor : undefined,
-            content: content,
-            defaultStyle: {
-                font: pdfFont,
-                fontSize: baseFontSize,
-                lineHeight: lineHeight,
-                color: textColor
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {})
             },
-            styles: {
-                header: {
-                    fontSize: headingSize + 4,
-                    bold: true,
-                    color: accentColor,
-                    margin: [0, 0, 0, sectionGap],
-                    alignment: this.settings.headerAlign || 'center'
-                },
-                subheader: {
-                    fontSize: headingSize,
-                    bold: true,
-                    color: accentColor,
-                    margin: [0, sectionGap * 0.5, 0, itemGap * 0.5]
-                },
-                normal: {
-                    fontSize: baseFontSize,
-                    lineHeight: lineHeight,
-                    color: textColor,
-                    margin: [0, 0, 0, paragraphGap]
-                },
-                muted: {
-                    fontSize: baseFontSize - 1,
-                    color: mutedColor,
-                    margin: [0, 0, 0, paragraphGap]
-                },
-                sectionTitle: {
-                    fontSize: headingSize,
-                    bold: true,
-                    color: accentColor,
-                    margin: [0, sectionGap, 0, itemGap]
-                },
-                itemTitle: {
-                    fontSize: baseFontSize + 1,
-                    bold: true,
-                    color: textColor,
-                    margin: [0, 0, 0, paragraphGap * 0.5]
-                },
-                itemText: {
-                    fontSize: baseFontSize,
-                    color: textColor,
-                    margin: [0, 0, 0, paragraphGap]
+            body: JSON.stringify({
+                html: html,
+                options: {
+                    format: format,
+                    printBackground: true,
+                    preferCSSPageSize: true,
+                    margin: {
+                        top: `${this.settings.marginTop || 20}mm`,
+                        right: `${this.settings.marginRight || 20}mm`,
+                        bottom: `${this.settings.marginBottom || 20}mm`,
+                        left: `${this.settings.marginLeft || 20}mm`
+                    },
+                    displayHeaderFooter: addPageNumbers,
+                    footerTemplate: addPageNumbers ? `
+                        <div style="font-size: 10px; text-align: center; width: 100%; padding: 0 20mm;">
+                            <span class="pageNumber"></span> / <span class="totalPages"></span>
+                        </div>
+                    ` : ''
                 }
-            }
-        };
-        
-        // Page Numbers
-        if (addPageNumbers || this.settings.showPageNumbers) {
-            const pageNumberFormat = this.settings.pageNumberFormat || 'Seite X von Y';
-            const position = this.settings.pageNumberPosition || 'bottom-center';
-            
-            docDefinition.footer = (currentPage, pageCount) => {
-                let pageText = pageNumberFormat
-                    .replace('X', currentPage)
-                    .replace('Y', pageCount);
-                
-                return {
-                    text: pageText,
-                    alignment: position.includes('left') ? 'left' : position.includes('right') ? 'right' : 'center',
-                    fontSize: baseFontSize - 2,
-                    color: mutedColor,
-                    margin: [0, 10, 0, 0]
-                };
-            };
-        }
-        
-        return docDefinition;
-    }
-    
-    extractContentFromHTML(element) {
-        const content = [];
-        
-        // Durchlaufe alle direkten Kinder
-        Array.from(element.children).forEach(child => {
-            const childContent = this.processHTMLElement(child);
-            if (childContent) {
-                // Wenn Array (mehrere Elemente), spread sie
-                if (Array.isArray(childContent)) {
-                    content.push(...childContent);
-                } else {
-                    content.push(childContent);
-                }
-            }
+            })
         });
         
-        // Falls keine Kinder, nimm Text-Content direkt
-        if (content.length === 0) {
-            const text = element.textContent.trim();
-            if (text) {
-                // Teile in Zeilen auf für bessere Formatierung
-                const lines = text.split('\n').filter(line => line.trim());
-                if (lines.length > 0) {
-                    content.push(...lines.map(line => ({ text: line.trim(), style: 'normal', margin: [0, 0, 0, 3] })));
-                }
+        if (!response.ok) {
+            const errorText = await response.text();
+            let errorData;
+            try {
+                errorData = JSON.parse(errorText);
+            } catch (e) {
+                errorData = { error: errorText };
             }
+            throw new Error(`PDF-Generierung fehlgeschlagen: ${errorData.error || errorData.message || 'Unbekannter Fehler'}`);
         }
         
-        return content.length > 0 ? content : [{ text: 'Kein Inhalt gefunden', style: 'normal', italics: true }];
+        // Konvertiere Base64 Response zu Blob
+        const responseData = await response.json();
+        if (responseData.body) {
+            // Base64 dekodieren
+            const binaryString = atob(responseData.body);
+            const bytes = new Uint8Array(binaryString.length);
+            for (let i = 0; i < binaryString.length; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+            const blob = new Blob([bytes], { type: 'application/pdf' });
+            console.log('✅ PDF generiert:', blob.size, 'Bytes');
+            return blob;
+        } else {
+            throw new Error('PDF-Generierung fehlgeschlagen: Keine Daten in Response');
+        }
     }
     
-    processHTMLElement(element) {
-        const tagName = element.tagName.toLowerCase();
-        const text = element.textContent.trim();
-        const innerHTML = element.innerHTML.trim();
+    extractAllCSS() {
+        const styles = [];
         
-        // Überschriften
-        if (tagName === 'h1' || tagName === 'h2' || tagName === 'h3' || tagName === 'h4') {
-            if (text) {
-                const isMainHeader = tagName === 'h1' || element.classList.contains('resume-preview-header');
-                return {
-                    text: text,
-                    style: isMainHeader ? 'header' : 'subheader',
-                    margin: [0, isMainHeader ? (this.settings.sectionGap || 24) * 0.352778 : (this.settings.itemGap || 12) * 0.352778, 0, (this.settings.itemGap || 12) * 0.352778],
-                    bold: true
-                };
-            }
+        // 1. Inline Styles aus Preview
+        const previewStyles = document.querySelector('.design-resume-preview')?.getAttribute('style') || '';
+        if (previewStyles) {
+            styles.push(`.design-resume-preview { ${previewStyles} }`);
         }
         
-        // Absätze
-        if (tagName === 'p') {
-            if (text) {
-                // Prüfe ob muted/sekundärer Text
-                const isMuted = element.classList.contains('muted') || element.classList.contains('text-muted') || 
-                               element.style.color?.includes('64748b') || element.style.opacity === '0.7';
-                return { 
-                    text: text, 
-                    style: isMuted ? 'muted' : 'normal', 
-                    margin: [0, 0, 0, (this.settings.paragraphGap || 6) * 0.352778] 
-                };
-            }
-        }
-        
-        // Listen
-        if (tagName === 'ul' || tagName === 'ol') {
-            const items = Array.from(element.querySelectorAll('li')).map(li => {
-                const liText = li.textContent.trim();
-                return liText || null;
-            }).filter(item => item !== null);
-            
-            if (items.length > 0) {
-                return {
-                    [tagName === 'ul' ? 'ul' : 'ol']: items,
-                    margin: [0, 5, 0, 10]
-                };
-            }
-        }
-        
-        // Divs mit Klassen (Sections)
-        if (tagName === 'div') {
-            const classList = element.classList;
-            
-            // Section Header
-            if (classList.contains('resume-preview-header') || classList.contains('resume-preview-section-title') || 
-                classList.contains('section-title') || classList.contains('resume-header')) {
-                if (text) {
-                    return {
-                        text: text,
-                        style: 'sectionTitle',
-                        margin: [0, (this.settings.sectionGap || 24) * 0.352778, 0, (this.settings.itemGap || 12) * 0.352778],
-                        bold: true
-                    };
+        // 2. Alle Stylesheets
+        Array.from(document.styleSheets).forEach(sheet => {
+            try {
+                // Prüfe ob Stylesheet von gleicher Origin ist
+                if (sheet.href && !sheet.href.startsWith(window.location.origin)) {
+                    // Cross-origin Stylesheet - versuche es trotzdem zu laden
+                    return;
                 }
-            }
-            
-            // Section Content - rekursiv verarbeiten
-            if (classList.contains('resume-preview-section') || classList.contains('resume-preview-item') ||
-                classList.contains('section') || classList.contains('resume-section')) {
-                const sectionContent = [];
-                Array.from(element.children).forEach(child => {
-                    const childContent = this.processHTMLElement(child);
-                    if (childContent) {
-                        if (Array.isArray(childContent)) {
-                            sectionContent.push(...childContent);
-                        } else {
-                            sectionContent.push(childContent);
-                        }
+                
+                Array.from(sheet.cssRules || []).forEach(rule => {
+                    try {
+                        styles.push(rule.cssText);
+                    } catch (e) {
+                        // Ignoriere Regeln, die nicht gelesen werden können
                     }
                 });
-                
-                // Falls keine Kinder, aber Text vorhanden
-                if (sectionContent.length === 0 && text) {
-                    const lines = text.split('\n').filter(line => line.trim());
-                    lines.forEach(line => {
-                        sectionContent.push({ text: line.trim(), style: 'normal', margin: [0, 0, 0, 3] });
-                    });
-                }
-                
-                if (sectionContent.length > 0) {
-                    return {
-                        stack: sectionContent,
-                        margin: [0, 0, 0, 10]
-                    };
-                }
+            } catch (e) {
+                // Cross-origin stylesheets können nicht gelesen werden
+                console.warn('⚠️ Stylesheet konnte nicht gelesen werden:', sheet.href || 'inline', e);
             }
-            
-            // Normale Divs - rekursiv verarbeiten
-            const divContent = [];
-            Array.from(element.children).forEach(child => {
-                const childContent = this.processHTMLElement(child);
-                if (childContent) {
-                    if (Array.isArray(childContent)) {
-                        divContent.push(...childContent);
-                    } else {
-                        divContent.push(childContent);
-                    }
-                }
-            });
-            
-            if (divContent.length > 0) {
-                return { stack: divContent, margin: [0, 0, 0, 5] };
-            }
-            
-            // Falls nur Text (keine Kinder)
-            if (text && element.children.length === 0) {
-                const lines = text.split('\n').filter(line => line.trim());
-                const paragraphGap = (this.settings.paragraphGap || 6) * 0.352778;
-                if (lines.length === 1) {
-                    return { text: lines[0], style: 'normal', margin: [0, 0, 0, paragraphGap] };
-                } else if (lines.length > 1) {
-                    return lines.map((line, idx) => ({ 
-                        text: line.trim(), 
-                        style: 'normal', 
-                        margin: [0, 0, 0, idx < lines.length - 1 ? paragraphGap * 0.5 : paragraphGap] 
-                    }));
-                }
-            }
-        }
-        
-        // Span, Strong, Em, etc.
-        if (tagName === 'span' || tagName === 'strong' || tagName === 'b' || tagName === 'em' || tagName === 'i') {
-            if (text) {
-                return {
-                    text: text,
-                    style: 'normal',
-                    bold: tagName === 'strong' || tagName === 'b',
-                    italics: tagName === 'em' || tagName === 'i',
-                    margin: [0, 0, 0, 0]
-                };
-            }
-        }
-        
-        // Standard: Text extrahieren (falls vorhanden)
-        if (text && element.children.length === 0) {
-            return { text: text, style: 'normal', margin: [0, 0, 0, 5] };
-        }
-        
-        // Rekursiv durch Kinder gehen, falls vorhanden
-        if (element.children.length > 0) {
-            const childContent = [];
-            Array.from(element.children).forEach(child => {
-                const processed = this.processHTMLElement(child);
-                if (processed) {
-                    if (Array.isArray(processed)) {
-                        childContent.push(...processed);
-                    } else {
-                        childContent.push(processed);
-                    }
-                }
-            });
-            return childContent.length > 0 ? childContent : null;
-        }
-        
-        return null;
-    }
-    
-    // Legacy html2pdf Methode (als Fallback)
-    async generateResumePDFLegacy(preview, options) {
-        const { quality = 'medium', format = 'a4' } = options;
-        
-        // Qualitätseinstellungen
-        const qualitySettings = {
-            high: { scale: 3, imageQuality: 0.98 },
-            medium: { scale: 2, imageQuality: 0.92 },
-            low: { scale: 1.5, imageQuality: 0.8 }
-        };
-        const settings = qualitySettings[quality] || qualitySettings.medium;
-        
-        // Seitenformat-Definitionen (in mm)
-        const pageFormats = {
-            a4: { width: 210, height: 297, margin: 20 },
-            letter: { width: 216, height: 279, margin: 20 }
-        };
-        const pageFormat = pageFormats[format] || pageFormats.a4;
-        const contentWidth = pageFormat.width - (2 * pageFormat.margin); // 170mm für A4
-        
-        // Lade html2pdf mit Fallback-CDN (Best Practice: Mehrere CDNs für Redundanz)
-        const html2pdfCDNs = [
-            'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js',
-            'https://unpkg.com/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js',
-            'https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js'
-        ];
-        
-        let html2pdfFn = window.html2pdf || (typeof html2pdf !== 'undefined' ? html2pdf : null);
-        
-        if (!html2pdfFn) {
-            console.log('📦 Lade html2pdf Bibliothek...');
-            
-            let lastError = null;
-            for (const cdnUrl of html2pdfCDNs) {
-                try {
-                    await this.loadScript(cdnUrl);
-                    // Warte, damit die Bibliothek vollständig initialisiert ist
-                    await new Promise(resolve => setTimeout(resolve, 500));
-                    
-                    // Prüfe ob html2pdf jetzt verfügbar ist
-                    html2pdfFn = window.html2pdf || (typeof html2pdf !== 'undefined' ? html2pdf : null);
-                    
-                    if (html2pdfFn) {
-                        console.log('✅ html2pdf geladen von:', cdnUrl);
-                        break;
-                    }
-                } catch (error) {
-                    console.warn(`⚠️ Fehler beim Laden von ${cdnUrl}:`, error);
-                    lastError = error;
-                    continue;
-                }
-            }
-            
-            // Finale Prüfung
-            if (!html2pdfFn) {
-                const errorMsg = lastError 
-                    ? `html2pdf Bibliothek konnte nicht geladen werden: ${lastError.message}` 
-                    : 'html2pdf Bibliothek konnte nicht geladen werden. Bitte Seite neu laden oder Netzwerkverbindung prüfen.';
-                throw new Error(errorMsg);
-            }
-        } else {
-            console.log('✅ html2pdf bereits verfügbar');
-        }
-        
-        // Finale Validierung
-        if (!html2pdfFn || typeof html2pdfFn !== 'function') {
-            throw new Error('html2pdf Funktion ist nicht verfügbar oder ungültig');
-        }
-        
-        // Clone für Export - komplett neu stylen für PDF
-        const clone = preview.cloneNode(true);
-        
-        // Debug: Prüfe Clone-Inhalt
-        console.log('📋 Clone erstellt:', {
-            hasChildren: clone.children.length > 0,
-            textLength: clone.textContent.trim().length,
-            innerHTMLLength: clone.innerHTML.trim().length,
-            computedDisplay: window.getComputedStyle(clone).display,
-            computedVisibility: window.getComputedStyle(clone).visibility,
-            computedOpacity: window.getComputedStyle(clone).opacity
         });
         
-        // Stelle sicher, dass Clone sichtbar ist
-        clone.style.display = 'block';
-        clone.style.visibility = 'visible';
-        clone.style.opacity = '1';
-        
-        // Container für den Clone erstellen
-        // WICHTIG: Container muss sichtbar sein für html2canvas, aber außerhalb des Viewports
-        const container = document.createElement('div');
-        container.style.position = 'fixed';
-        container.style.left = '0';
-        container.style.top = '0';
-        container.style.width = `${pageFormat.width}mm`;
-        container.style.height = 'auto';
-        container.style.backgroundColor = this.settings.backgroundColor || '#ffffff';
-        container.style.overflow = 'visible';
-        container.style.zIndex = '-9999';
-        container.style.pointerEvents = 'none';
-        // Stelle sicher, dass Container sichtbar ist (nicht display: none)
-        container.style.visibility = 'visible';
-        container.style.opacity = '1';
-        
-        // Clone komplett neu stylen - entferne alle responsive/transform Styles
-        clone.style.position = 'relative';
-        clone.style.left = '0';
-        clone.style.top = '0';
-        clone.style.width = `${pageFormat.width}mm`;
-        clone.style.minHeight = `${pageFormat.height}mm`;
-        clone.style.maxWidth = `${pageFormat.width}mm`;
-        clone.style.height = 'auto';
-        clone.style.margin = '0';
-        clone.style.padding = `${pageFormat.margin}mm`;
-        clone.style.boxSizing = 'border-box';
-        clone.style.backgroundColor = this.settings.backgroundColor || '#ffffff';
-        clone.style.transform = 'none';
-        clone.style.transformOrigin = 'top left';
-        clone.style.overflow = 'visible';
-        
-        // Stelle sicher, dass alle Styles übernommen werden
-        const computedStyle = window.getComputedStyle(preview);
-        clone.style.fontFamily = computedStyle.fontFamily;
-        clone.style.fontSize = computedStyle.fontSize;
-        clone.style.color = computedStyle.color;
-        clone.style.lineHeight = computedStyle.lineHeight;
-        
-        // Füge Print-CSS hinzu für korrekte Seitenumbrüche
-        const printStyle = document.createElement('style');
-        printStyle.id = 'pdf-export-print-styles';
-        printStyle.textContent = `
-            /* PDF Export Styles - Korrekte Seitenumbrüche */
-            .pdf-export-container * {
-                max-width: ${contentWidth}mm !important;
-                box-sizing: border-box !important;
+        // 3. Design Editor spezifische Styles
+        const designStyles = `
+            .design-resume-preview {
+                max-width: 210mm;
+                margin: 0 auto;
+                padding: ${this.settings.marginTop || 20}mm ${this.settings.marginRight || 20}mm ${this.settings.marginBottom || 20}mm ${this.settings.marginLeft || 20}mm;
+                background: ${this.settings.backgroundColor || '#ffffff'};
+                font-family: ${this.settings.fontFamily || "'Inter', sans-serif"};
+                font-size: ${this.settings.fontSize || 11}pt;
+                line-height: ${this.settings.lineHeight || 1.5};
+                color: ${this.settings.textColor || '#1e293b'};
             }
             
-            .pdf-export-container .resume-preview-columns {
-                max-width: ${pageFormat.width}mm !important;
-                margin-left: -${pageFormat.margin}mm !important;
-                margin-right: -${pageFormat.margin}mm !important;
+            .resume-preview-header {
+                color: ${this.settings.accentColor || '#6366f1'};
+                font-size: ${(this.settings.headingSize || 14) + 4}pt;
+                margin-bottom: ${this.settings.sectionGap || 24}px;
+                text-align: ${this.settings.headerAlign || 'center'};
             }
             
-            .pdf-export-container .resume-preview-column {
-                max-width: 100% !important;
+            .resume-preview-section-title {
+                color: ${this.settings.accentColor || '#6366f1'};
+                font-size: ${this.settings.headingSize || 14}pt;
+                margin-top: ${this.settings.sectionGap || 24}px;
+                margin-bottom: ${this.settings.itemGap || 12}px;
             }
             
-            .pdf-export-container .resume-preview-section {
-                page-break-inside: avoid;
-                break-inside: avoid;
+            .resume-preview-item {
+                margin-bottom: ${this.settings.itemGap || 12}px;
             }
             
-            .pdf-export-container .resume-preview-item {
-                page-break-inside: avoid;
-                break-inside: avoid;
-            }
-            
-            .pdf-export-container img {
-                max-width: ${contentWidth}mm !important;
-                height: auto !important;
-            }
-            
-            /* Verhindere ungewollte Umbrüche */
-            .pdf-export-container .resume-preview-header {
-                page-break-after: avoid;
-                break-after: avoid;
-            }
-            
-            .pdf-export-container .resume-preview-section-title {
-                page-break-after: avoid;
-                break-after: avoid;
-            }
-            
-            /* Erlaube Seitenumbrüche zwischen Sections */
-            .pdf-export-container .resume-preview-section + .resume-preview-section {
-                page-break-before: auto;
-                break-before: auto;
+            p {
+                margin-bottom: ${this.settings.paragraphGap || 6}px;
             }
         `;
+        styles.push(designStyles);
         
-        // Markiere Clone für Print-Styles
-        clone.classList.add('pdf-export-container');
-        container.appendChild(clone);
-        document.head.appendChild(printStyle);
-        document.body.appendChild(container);
-        
-        // Warte, damit der Clone vollständig gerendert wird
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
-        // Debug: Prüfe Clone nach Wartezeit
-        console.log('📋 Clone nach Wartezeit:', {
-            hasChildren: clone.children.length > 0,
-            textLength: clone.textContent.trim().length,
-            isInDOM: document.body.contains(clone),
-            computedDisplay: window.getComputedStyle(clone).display
-        });
-        
-        // Prüfe ob Clone wirklich Inhalt hat
-        if (!clone.children.length && !clone.textContent.trim().length) {
-            throw new Error('Preview-Element hat keinen Inhalt. Bitte Lebenslauf-Daten eingeben.');
-        }
-        
-        // Optimierte Optionen basierend auf Best Practices aus GitHub-Repositories
-        // (pdfme, react-print-pdf, html2pdf.js Best Practices)
-        const opt = {
-            margin: [0, 0, 0, 0],
-            image: { 
-                type: 'jpeg', 
-                quality: settings.imageQuality 
-            },
-            html2canvas: {
-                scale: settings.scale,
-                useCORS: true,
-                letterRendering: true, // Bessere Textqualität
-                logging: true, // Aktiviert für Debugging
-                backgroundColor: this.settings.backgroundColor || '#ffffff',
-                allowTaint: false,
-                removeContainer: false,
-                width: pageFormat.width * 3.779527559, // mm zu px (1mm = 3.779527559px bei 96dpi)
-                height: null, // Auto height - lässt html2canvas die Höhe berechnen
-                windowWidth: pageFormat.width * 3.779527559,
-                // WICHTIG: Stelle sicher, dass html2canvas den Container findet
-                // Best Practice: Bessere Rendering-Qualität
-                // onclone wird von html2canvas unterstützt und kann async sein
-                onclone: async (clonedDoc, element) => {
-                    console.log('🔍 html2canvas onclone:', {
-                        elementExists: !!element,
-                        elementTag: element?.tagName,
-                        elementDisplay: element ? window.getComputedStyle(element).display : 'none',
-                        elementVisibility: element ? window.getComputedStyle(element).visibility : 'hidden',
-                        elementOpacity: element ? window.getComputedStyle(element).opacity : '0',
-                        elementWidth: element ? window.getComputedStyle(element).width : '0',
-                        elementHeight: element ? window.getComputedStyle(element).height : '0',
-                        hasChildren: element?.children?.length > 0,
-                        textLength: element?.textContent?.trim().length || 0
-                    });
-                    
-                    // Stelle sicher, dass das Element im Clone sichtbar ist
-                    if (element) {
-                        element.style.display = 'block';
-                        element.style.visibility = 'visible';
-                        element.style.opacity = '1';
-                        element.style.position = 'relative';
-                        element.style.width = `${pageFormat.width}mm`;
-                        element.style.height = 'auto';
-                    }
-                    
-                    // Stelle sicher, dass alle Bilder geladen sind
-                    const images = clonedDoc.querySelectorAll('img');
-                    const imagePromises = Array.from(images).map(img => {
-                        if (img.complete && img.naturalHeight !== 0) {
-                            return Promise.resolve();
-                        }
-                        return new Promise((resolve) => {
-                            // Wenn Bild bereits geladen ist
-                            if (img.complete) {
-                                resolve();
-                                return;
-                            }
-                            // Warte auf Laden oder Fehler
-                            img.onload = () => resolve();
-                            img.onerror = () => resolve(); // Auch bei Fehler weitermachen
-                            // Timeout nach 2 Sekunden
-                            setTimeout(() => resolve(), 2000);
-                        });
-                    });
-                    
-                    // Warte auf alle Bilder (oder Timeout)
-                    await Promise.all(imagePromises);
-                }
-            },
-            jsPDF: {
-                unit: 'mm',
-                format: format,
-                orientation: 'portrait',
-                compress: true,
-                precision: 16 // Höhere Präzision für bessere Qualität
-            },
-            pagebreak: { 
-                mode: ['css', 'legacy'], 
-                avoid: ['.resume-preview-section', '.resume-preview-item', '.resume-preview-header', '.resume-preview-column'],
-                before: '.resume-preview-section',
-                after: '.resume-preview-section'
-            }
-        };
-        
-        try {
-            console.log('🔄 Starte PDF-Generierung mit html2pdf...');
-            console.log('📄 Seitenformat:', format, pageFormat);
-            console.log('📏 Content-Breite:', contentWidth, 'mm');
-            console.log('🔧 html2pdf verfügbar:', typeof html2pdfFn);
-            
-            if (!html2pdfFn || typeof html2pdfFn !== 'function') {
-                throw new Error('html2pdf Funktion ist nicht verfügbar. Bitte Seite neu laden.');
-            }
-            
-            const pdfBytes = await html2pdfFn().set(opt).from(clone).outputPdf('arraybuffer');
-            
-            console.log('✅ PDF generiert:', pdfBytes.byteLength, 'Bytes');
-            
-            // Cleanup
-            document.body.removeChild(container);
-            const styleEl = document.getElementById('pdf-export-print-styles');
-            if (styleEl) styleEl.remove();
-            
-            // Nachbearbeitung mit pdf-lib für Metadaten und Seitenzahlen
-            if (addMetadata || addPageNumbers) {
-                console.log('🔄 Nachbearbeitung mit pdf-lib...');
-                return await this.postProcessPDF(pdfBytes, { addPageNumbers, addMetadata });
-            }
-            
-            return pdfBytes;
-        } catch (error) {
-            console.error('❌ PDF-Generierung fehlgeschlagen:', error);
-            console.error('Error Details:', {
-                message: error.message,
-                stack: error.stack,
-                name: error.name
-            });
-            
-            // Cleanup auch bei Fehler
-            if (document.body.contains(container)) document.body.removeChild(container);
-            const styleEl = document.getElementById('pdf-export-print-styles');
-            if (styleEl) styleEl.remove();
-            
-            // Detaillierte Fehlermeldung
-            let detailedError = new Error(`PDF-Generierung fehlgeschlagen: ${error.message || 'Unbekannter Fehler'}`);
-            detailedError.originalError = error;
-            throw detailedError;
-        }
+        return styles.join('\n');
     }
     
-    async postProcessPDF(pdfBytes, options) {
-        // Lade pdf-lib
-        if (!window.PDFLib) {
-            await this.loadScript('https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js');
-            await new Promise(resolve => setTimeout(resolve, 200));
-        }
-        
-        const { PDFDocument, rgb, StandardFonts } = PDFLib;
-        const pdfDoc = await PDFDocument.load(pdfBytes);
-        
-        // Metadaten
-        if (options.addMetadata) {
-            const resumeData = this.getResumeData();
-            pdfDoc.setTitle(`Lebenslauf - ${resumeData.firstName} ${resumeData.lastName}`);
-            pdfDoc.setAuthor(`${resumeData.firstName} ${resumeData.lastName}`);
-            pdfDoc.setSubject('Lebenslauf / Curriculum Vitae');
-            pdfDoc.setKeywords(['Lebenslauf', 'CV', 'Bewerbung', resumeData.firstName, resumeData.lastName]);
-            pdfDoc.setCreationDate(new Date());
-        }
-        
-        // Seitenzahlen
-        if (options.addPageNumbers) {
-            const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-            const pages = pdfDoc.getPages();
-            
-            pages.forEach((page, i) => {
-                const { width } = page.getSize();
-                const text = `Seite ${i + 1} von ${pages.length}`;
-                const textWidth = font.widthOfTextAtSize(text, 9);
-                
-                page.drawText(text, {
-                    x: (width - textWidth) / 2,
-                    y: 20,
-                    size: 9,
-                    font,
-                    color: rgb(0.5, 0.5, 0.5)
-                });
-            });
-        }
-        
-        return pdfDoc.save();
-    }
+    // ALTE PDFMAKE/HTML2PDF METHODEN ENTFERNT - Jetzt wird Puppeteer verwendet
+    // Alle folgenden Methoden wurden entfernt:
+    // - convertHTMLToPdfMake
+    // - extractContentFromHTML  
+    // - processHTMLElement
+    // - generateResumePDFLegacy
+    // - postProcessPDF
+    
+    // Legacy-Funktionen entfernt - verwenden nur noch Puppeteer über AWS Lambda
     
     // Legacy-Funktionen entfernt - verwenden nur noch die neue generateResumePDFFromElement Methode
     // Der Browser-Druckdialog wird nicht mehr verwendet, da er falsche Seitengrößen verwendet
     
     loadScript(src) {
+        return new Promise((resolve, reject) => {
+            // Prüfe ob Script schon geladen
+            const existingScript = document.querySelector(`script[src="${src}"]`);
+            if (existingScript) {
+                console.log(`✅ Script bereits geladen: ${src}`);
+                // Warte kurz, damit sichergestellt ist, dass es initialisiert ist
+                setTimeout(() => resolve(), 100);
+                return;
+            }
+            
+            const script = document.createElement('script');
+            script.src = src;
+            script.crossOrigin = 'anonymous';
+            script.async = false;
+            
+            let resolved = false;
+            
+            script.onload = () => {
+                if (resolved) return;
+                resolved = true;
+                console.log(`✅ Script geladen: ${src}`);
+                setTimeout(() => resolve(), 200);
+            };
+            
+            script.onerror = (err) => {
+                if (resolved) return;
+                resolved = true;
+                console.error(`❌ Script Fehler: ${src}`, err);
+                reject(new Error(`Script konnte nicht geladen werden: ${src}`));
+            };
+            
+            setTimeout(() => {
+                if (!resolved) {
+                    resolved = true;
+                    reject(new Error(`Script-Lade-Timeout: ${src}`));
+                }
+            }, 10000);
+            
+            document.head.appendChild(script);
+        });
+    }
+    
+    // ═══════════════════════════════════════════════════════════════════════════
+    // NOTIFICATIONS
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    showNotification(message, type = 'info') {
         return new Promise((resolve, reject) => {
             // Prüfe ob Script schon geladen
             const existingScript = document.querySelector(`script[src="${src}"]`);
