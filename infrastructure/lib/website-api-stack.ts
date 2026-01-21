@@ -420,18 +420,9 @@ export class WebsiteApiStack extends cdk.Stack {
 
     // /pdf-generator (Puppeteer PDF-Generierung)
     const pdfGeneratorResource = this.api.root.addResource('pdf-generator');
-    const pdfGeneratorIntegration = new apigateway.LambdaIntegration(pdfGeneratorLambda, {
-      proxy: false,
-      integrationResponses: [{
-        statusCode: '200',
-        responseParameters: {
-          'method.response.header.Access-Control-Allow-Origin': 'integration.response.header.Access-Control-Allow-Origin',
-          'method.response.header.Access-Control-Allow-Headers': 'integration.response.header.Access-Control-Allow-Headers',
-          'method.response.header.Access-Control-Allow-Methods': 'integration.response.header.Access-Control-Allow-Methods',
-        }
-      }]
-    });
-    pdfGeneratorResource.addMethod('POST', pdfGeneratorIntegration, {
+    // Bei AWS_PROXY werden Header automatisch von Lambda propagiert
+    // Wir müssen sie nur in der Method-Response deklarieren
+    pdfGeneratorResource.addMethod('POST', new apigateway.LambdaIntegration(pdfGeneratorLambda), {
       methodResponses: [{
         statusCode: '200',
         responseParameters: {

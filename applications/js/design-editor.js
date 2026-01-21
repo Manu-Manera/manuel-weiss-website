@@ -4457,6 +4457,9 @@ class DesignEditor {
         // Klone das Preview-Element und wende alle computed styles an
         const clone = preview.cloneNode(true);
         
+        // WICHTIG: Ersetze ALLE CSS-Variablen im geklonten HTML durch tatsächliche Werte
+        this.replaceCSSVariablesInElement(clone);
+        
         // Wende alle Design-Editor-Settings direkt auf den Klon an
         // WICHTIG: Für PDF-Export Padding auf 0 setzen, da Puppeteer Margins handhabt
         this.applyDesignSettingsToElement(clone, true); // true = PDF-Export-Modus
@@ -4484,18 +4487,20 @@ class DesignEditor {
         @media print {
             @page {
                 size: ${format};
-                margin: 0;
+                margin: 0 !important;
             }
             
             body {
-                margin: 0;
-                padding: 0;
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 210mm !important;
             }
             
             .design-resume-preview {
-                margin: 0;
-                padding: 0;
-                box-shadow: none;
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 210mm !important;
+                box-shadow: none !important;
             }
             
             /* Durchgängiges Dokument - keine automatischen Seitenumbrüche */
@@ -4536,20 +4541,27 @@ class DesignEditor {
         }
         
         body {
-            margin: 0;
-            padding: 0;
-            width: 210mm;
-            background: ${this.settings.backgroundColor || '#ffffff'};
-            font-family: ${this.settings.fontFamily || "'Inter', sans-serif"};
-            font-size: ${this.settings.fontSize || 11}pt;
-            line-height: ${this.settings.lineHeight || 1.5};
-            color: ${this.settings.textColor || '#1e293b'};
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 210mm !important;
+            background: ${this.settings.backgroundColor || '#ffffff'} !important;
+            font-family: ${this.settings.fontFamily || "'Inter', sans-serif"} !important;
+            font-size: ${this.settings.fontSize || 11}pt !important;
+            line-height: ${this.settings.lineHeight || 1.5} !important;
+            color: ${this.settings.textColor || '#1e293b'} !important;
         }
         
         /* Sicherstellen, dass der Lebenslauf als durchgängiges Dokument gerendert wird */
         .design-resume-preview {
-            width: 210mm;
-            min-height: auto;
+            width: 210mm !important;
+            min-height: auto !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            background: ${this.settings.backgroundColor || '#ffffff'} !important;
+            font-family: ${this.settings.fontFamily || "'Inter', sans-serif"} !important;
+            font-size: ${this.settings.fontSize || 11}pt !important;
+            line-height: ${this.settings.lineHeight || 1.5} !important;
+            color: ${this.settings.textColor || '#1e293b'} !important;
         }
     </style>
 </head>
@@ -4678,65 +4690,86 @@ class DesignEditor {
         
         // Haupt-Container
         if (element.classList.contains('design-resume-preview')) {
-            element.style.fontFamily = fontFamily;
-            element.style.fontSize = fontSize + 'pt';
-            element.style.lineHeight = lineHeight;
-            element.style.color = textColor;
-            element.style.backgroundColor = backgroundColor;
+            element.style.setProperty('font-family', fontFamily, 'important');
+            element.style.setProperty('font-size', fontSize + 'pt', 'important');
+            element.style.setProperty('line-height', lineHeight, 'important');
+            element.style.setProperty('color', textColor, 'important');
+            element.style.setProperty('background-color', backgroundColor, 'important');
             // WICHTIG: Für PDF-Export KEIN Padding - Puppeteer handhabt Margins!
             if (isPDFExport) {
-                element.style.padding = '0';
+                element.style.setProperty('padding', '0', 'important');
+                element.style.setProperty('margin', '0', 'important');
             } else {
                 element.style.padding = `${marginTop}mm ${marginRight}mm ${marginBottom}mm ${marginLeft}mm`;
             }
         }
         
         // Header
+        const headerAlign = this.settings.headerAlign || 'center';
         const headers = element.querySelectorAll('.resume-preview-header, .resume-preview-name');
         headers.forEach(header => {
-            header.style.color = accentColor;
-            header.style.fontSize = (headingSize + 4) + 'pt';
-            header.style.marginBottom = sectionGap + 'px';
+            header.style.setProperty('color', accentColor, 'important');
+            header.style.setProperty('font-size', (headingSize + 4) + 'pt', 'important');
+            header.style.setProperty('margin-bottom', sectionGap + 'px', 'important');
+            header.style.setProperty('text-align', headerAlign, 'important');
         });
         
         // Section Titles
         const sectionTitles = element.querySelectorAll('.resume-preview-section-title');
         sectionTitles.forEach(title => {
-            title.style.color = accentColor;
-            title.style.fontSize = headingSize + 'pt';
-            title.style.marginTop = sectionGap + 'px';
-            title.style.marginBottom = itemGap + 'px';
+            title.style.setProperty('color', accentColor, 'important');
+            title.style.setProperty('font-size', headingSize + 'pt', 'important');
+            title.style.setProperty('margin-top', sectionGap + 'px', 'important');
+            title.style.setProperty('margin-bottom', itemGap + 'px', 'important');
         });
         
         // Items
         const items = element.querySelectorAll('.resume-preview-item');
         items.forEach(item => {
-            item.style.marginBottom = itemGap + 'px';
+            item.style.setProperty('margin-bottom', itemGap + 'px', 'important');
         });
         
         // Paragraphs
         const paragraphs = element.querySelectorAll('p');
         paragraphs.forEach(p => {
-            p.style.marginBottom = paragraphGap + 'px';
-            p.style.fontSize = fontSize + 'pt';
-            p.style.lineHeight = lineHeight;
-            p.style.color = textColor;
+            p.style.setProperty('margin-bottom', paragraphGap + 'px', 'important');
+            p.style.setProperty('font-size', fontSize + 'pt', 'important');
+            p.style.setProperty('line-height', lineHeight, 'important');
+            p.style.setProperty('color', textColor, 'important');
         });
         
         // Muted Text
         const mutedElements = element.querySelectorAll('.resume-preview-birthdate, .resume-preview-contact, .resume-preview-item-date, .resume-preview-item-subtitle');
         mutedElements.forEach(el => {
-            el.style.color = mutedColor;
+            el.style.setProperty('color', mutedColor, 'important');
+            el.style.setProperty('font-size', (fontSize * 0.9) + 'pt', 'important');
         });
         
         // Skills
         const skillElements = element.querySelectorAll('.resume-preview-skill, .resume-skill-bar-fill, .resume-skill-dot.filled, .resume-skill-numeric');
         skillElements.forEach(el => {
-            el.style.color = accentColor;
+            el.style.setProperty('color', accentColor, 'important');
             if (el.classList.contains('resume-skill-bar-fill')) {
-                el.style.background = accentColor;
+                el.style.setProperty('background', accentColor, 'important');
             }
         });
+        
+        // Two-Column Layout
+        if (this.settings.twoColumnLayout && this.settings.twoColumnLayout !== 'none') {
+            const columnsContainer = element.querySelector('.resume-preview-columns');
+            if (columnsContainer) {
+                columnsContainer.style.setProperty('display', 'flex', 'important');
+                columnsContainer.style.setProperty('gap', (this.settings.columnGap || 24) + 'px', 'important');
+                
+                const leftColumn = element.querySelector('.resume-preview-column-left');
+                const rightColumn = element.querySelector('.resume-preview-column-right');
+                if (leftColumn && rightColumn) {
+                    const columnWidth = this.settings.columnWidth || 50;
+                    leftColumn.style.setProperty('width', columnWidth + '%', 'important');
+                    rightColumn.style.setProperty('width', (100 - columnWidth) + '%', 'important');
+                }
+            }
+        }
     }
     
     getGoogleFontsUrl(fontFamily) {
@@ -4778,6 +4811,8 @@ class DesignEditor {
                         let cssText = rule.cssText;
                         // Ersetze CSS-Variablen durch tatsächliche Werte
                         cssText = this.replaceCSSVariables(cssText);
+                        // Ersetze auch calc() Ausdrücke mit CSS-Variablen
+                        cssText = this.replaceCalcExpressions(cssText);
                         styles.push(cssText);
                     } catch (e) {
                         // Ignoriere Regeln, die nicht gelesen werden können
@@ -4798,99 +4833,103 @@ class DesignEditor {
         
         const designStyles = `
             .design-resume-preview {
-                width: 210mm;
-                min-height: auto;
-                max-width: 210mm;
-                margin: 0;
+                width: 210mm !important;
+                min-height: auto !important;
+                max-width: 210mm !important;
+                margin: 0 !important;
                 padding: 0 !important; /* Puppeteer handhabt Margins */
-                background: ${this.settings.backgroundColor || '#ffffff'};
-                font-family: ${this.settings.fontFamily || "'Inter', sans-serif"};
-                font-size: ${this.settings.fontSize || 11}pt;
-                line-height: ${this.settings.lineHeight || 1.5};
-                color: ${this.settings.textColor || '#1e293b'};
-                box-shadow: none; /* Kein Schatten im PDF */
+                background: ${this.settings.backgroundColor || '#ffffff'} !important;
+                font-family: ${this.settings.fontFamily || "'Inter', sans-serif"} !important;
+                font-size: ${this.settings.fontSize || 11}pt !important;
+                line-height: ${this.settings.lineHeight || 1.5} !important;
+                color: ${this.settings.textColor || '#1e293b'} !important;
+                box-shadow: none !important; /* Kein Schatten im PDF */
             }
             
             /* Seitenränder für Spalten-Layout - KEINE negativen Margins mehr, da kein Padding */
             .resume-preview-columns {
-                margin-left: 0;
-                margin-right: 0;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+                display: ${this.settings.twoColumnLayout && this.settings.twoColumnLayout !== 'none' ? 'flex' : 'block'} !important;
+                gap: ${this.settings.columnGap || 24}px !important;
             }
             
             .resume-preview-column-left {
                 padding-left: 0 !important; /* Puppeteer Margins handhaben das */
+                width: ${this.settings.twoColumnLayout && this.settings.twoColumnLayout !== 'none' ? (this.settings.columnWidth || 50) + '%' : '100%'} !important;
             }
             
             .resume-preview-column-right {
                 padding-right: 0 !important; /* Puppeteer Margins handhaben das */
+                width: ${this.settings.twoColumnLayout && this.settings.twoColumnLayout !== 'none' ? (100 - (this.settings.columnWidth || 50)) + '%' : '100%'} !important;
             }
             
             .resume-preview-header {
-                color: ${this.settings.accentColor || '#6366f1'};
-                font-size: ${(this.settings.headingSize || 14) + 4}pt;
-                margin-bottom: ${this.settings.sectionGap || 24}px;
-                text-align: ${this.settings.headerAlign || 'center'};
+                color: ${this.settings.accentColor || '#6366f1'} !important;
+                font-size: ${(this.settings.headingSize || 14) + 4}pt !important;
+                margin-bottom: ${this.settings.sectionGap || 24}px !important;
+                text-align: ${this.settings.headerAlign || 'center'} !important;
             }
             
             .resume-preview-name {
-                color: ${this.settings.accentColor || '#6366f1'};
-                font-size: ${(this.settings.headingSize || 14) + 4}pt;
-                font-weight: 700;
+                color: ${this.settings.accentColor || '#6366f1'} !important;
+                font-size: ${(this.settings.headingSize || 14) + 4}pt !important;
+                font-weight: 700 !important;
             }
             
             .resume-preview-title {
-                font-size: ${this.settings.headingSize || 14}pt;
-                font-weight: 500;
-                color: ${this.settings.textColor || '#1e293b'};
+                font-size: ${this.settings.headingSize || 14}pt !important;
+                font-weight: 500 !important;
+                color: ${this.settings.textColor || '#1e293b'} !important;
             }
             
             .resume-preview-section-title {
-                color: ${this.settings.accentColor || '#6366f1'};
-                font-size: ${this.settings.headingSize || 14}pt;
-                font-weight: 600;
-                margin-top: ${this.settings.sectionGap || 24}px;
-                margin-bottom: ${this.settings.itemGap || 12}px;
+                color: ${this.settings.accentColor || '#6366f1'} !important;
+                font-size: ${this.settings.headingSize || 14}pt !important;
+                font-weight: 600 !important;
+                margin-top: ${this.settings.sectionGap || 24}px !important;
+                margin-bottom: ${this.settings.itemGap || 12}px !important;
             }
             
             .resume-preview-item {
-                margin-bottom: ${this.settings.itemGap || 12}px;
+                margin-bottom: ${this.settings.itemGap || 12}px !important;
             }
             
             .resume-preview-item-title {
-                font-weight: 600;
-                color: ${this.settings.textColor || '#1e293b'};
+                font-weight: 600 !important;
+                color: ${this.settings.textColor || '#1e293b'} !important;
             }
             
             .resume-preview-item-date,
             .resume-preview-item-subtitle,
             .resume-preview-birthdate,
             .resume-preview-contact {
-                color: ${this.settings.mutedColor || '#64748b'};
-                font-size: ${((this.settings.fontSize || 11) * 0.9)}pt;
+                color: ${this.settings.mutedColor || '#64748b'} !important;
+                font-size: ${((this.settings.fontSize || 11) * 0.9)}pt !important;
             }
             
             .resume-preview-item-description {
-                font-size: ${this.settings.fontSize || 11}pt;
-                line-height: ${this.settings.lineHeight || 1.5};
-                color: ${this.settings.textColor || '#1e293b'};
+                font-size: ${this.settings.fontSize || 11}pt !important;
+                line-height: ${this.settings.lineHeight || 1.5} !important;
+                color: ${this.settings.textColor || '#1e293b'} !important;
             }
             
             p {
-                margin-bottom: ${this.settings.paragraphGap || 6}px;
-                font-size: ${this.settings.fontSize || 11}pt;
-                line-height: ${this.settings.lineHeight || 1.5};
-                color: ${this.settings.textColor || '#1e293b'};
+                margin-bottom: ${this.settings.paragraphGap || 6}px !important;
+                font-size: ${this.settings.fontSize || 11}pt !important;
+                line-height: ${this.settings.lineHeight || 1.5} !important;
+                color: ${this.settings.textColor || '#1e293b'} !important;
             }
             
             .resume-preview-skill,
             .resume-skill-bar-fill,
             .resume-skill-dot.filled,
             .resume-skill-numeric {
-                color: ${this.settings.accentColor || '#6366f1'};
+                color: ${this.settings.accentColor || '#6366f1'} !important;
             }
             
             .resume-skill-bar-fill {
-                background: ${this.settings.accentColor || '#6366f1'};
+                background: ${this.settings.accentColor || '#6366f1'} !important;
             }
         `;
         styles.push(designStyles);
@@ -4916,9 +4955,15 @@ class DesignEditor {
             'var(--resume-muted-color)': this.settings.mutedColor || '#64748b',
             'var(--resume-bg-color, #ffffff)': this.settings.backgroundColor || '#ffffff',
             'var(--resume-bg-color)': this.settings.backgroundColor || '#ffffff',
+            'var(--resume-border-color, #e2e8f0)': this.settings.borderColor || '#e2e8f0',
+            'var(--resume-border-color)': this.settings.borderColor || '#e2e8f0',
             'var(--resume-margin, 20mm)': (this.settings.marginTop || 20) + 'mm',
             'var(--resume-section-gap, 1.5rem)': (this.settings.sectionGap || 24) + 'px',
             'var(--resume-section-gap)': (this.settings.sectionGap || 24) + 'px',
+            'var(--resume-item-gap, 12px)': (this.settings.itemGap || 12) + 'px',
+            'var(--resume-item-gap)': (this.settings.itemGap || 12) + 'px',
+            'var(--resume-paragraph-gap, 6px)': (this.settings.paragraphGap || 6) + 'px',
+            'var(--resume-paragraph-gap)': (this.settings.paragraphGap || 6) + 'px',
         };
         
         let result = cssText;
@@ -4927,6 +4972,28 @@ class DesignEditor {
         }
         
         return result;
+    }
+    
+    replaceCalcExpressions(cssText) {
+        // Ersetze calc() Ausdrücke mit CSS-Variablen durch berechnete Werte
+        const fontSize = this.settings.fontSize || 11;
+        const headingSize = this.settings.headingSize || 14;
+        
+        // Ersetze calc(var(--resume-font-size, 11pt) * 0.9) etc.
+        cssText = cssText.replace(/calc\(var\(--resume-font-size[^)]*\)\s*\*\s*([\d.]+)\)/g, (match, multiplier) => {
+            return (fontSize * parseFloat(multiplier)).toFixed(2) + 'pt';
+        });
+        
+        cssText = cssText.replace(/calc\(var\(--resume-heading-size[^)]*\)\s*\*\s*([\d.]+)\)/g, (match, multiplier) => {
+            return (headingSize * parseFloat(multiplier)).toFixed(2) + 'pt';
+        });
+        
+        // Ersetze calc(var(--resume-heading-size, 18pt) * 1.5) etc.
+        cssText = cssText.replace(/calc\(var\(--resume-heading-size[^)]*\)\s*\*\s*([\d.]+)\)/g, (match, multiplier) => {
+            return (headingSize * parseFloat(multiplier)).toFixed(2) + 'pt';
+        });
+        
+        return cssText;
     }
     
     // ALTE PDFMAKE/HTML2PDF METHODEN ENTFERNT - Jetzt wird Puppeteer verwendet
