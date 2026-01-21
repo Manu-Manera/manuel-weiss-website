@@ -4472,13 +4472,19 @@ class DesignEditor {
         const googleFontsUrl = this.getGoogleFontsUrl(fontFamily);
         
         // Debug: Logge Settings
-        console.log('📐 PDF Margins:', {
-            top: `${this.settings.marginTop || 20}mm`,
-            right: `${this.settings.marginRight || 20}mm`,
-            bottom: `${this.settings.marginBottom || 20}mm`,
-            left: `${this.settings.marginLeft || 20}mm`
+        const marginTop = this.settings.marginTop || 20;
+        const marginRight = this.settings.marginRight || 20;
+        const marginBottom = this.settings.marginBottom || 20;
+        const marginLeft = this.settings.marginLeft || 20;
+        const fontSize = this.settings.fontSize || 11;
+        
+        console.log('📐 PDF Settings:', {
+            margins: { top: marginTop, right: marginRight, bottom: marginBottom, left: marginLeft },
+            fontSize: fontSize,
+            fontFamily: this.settings.fontFamily,
+            headingSize: this.settings.headingSize,
+            lineHeight: this.settings.lineHeight
         });
-        console.log('📝 Font Size:', this.settings.fontSize || 11, 'pt');
         
         // Erstelle vollständiges HTML-Dokument
         const html = `
@@ -4512,18 +4518,20 @@ class DesignEditor {
         }
         
         /* Sicherstellen, dass der Lebenslauf als durchgängiges Dokument gerendert wird */
+        /* WICHTIG: Padding direkt setzen statt Puppeteer-Margins zu verwenden für bessere Kontrolle */
         .design-resume-preview {
-            width: 210mm !important;
-            max-width: 210mm !important;
-            min-width: 210mm !important;
+            width: calc(210mm - ${marginLeft}mm - ${marginRight}mm) !important;
+            max-width: calc(210mm - ${marginLeft}mm - ${marginRight}mm) !important;
+            min-width: calc(210mm - ${marginLeft}mm - ${marginRight}mm) !important;
             min-height: auto !important;
-            margin: 0 !important;
-            padding: 0 !important;
+            margin: 0 auto !important;
+            padding: ${marginTop}mm ${marginRight}mm ${marginBottom}mm ${marginLeft}mm !important;
             background: ${this.settings.backgroundColor || '#ffffff'} !important;
             font-family: ${this.settings.fontFamily || "'Inter', sans-serif"} !important;
-            font-size: ${this.settings.fontSize || 11}pt !important;
+            font-size: ${fontSize}pt !important;
             line-height: ${this.settings.lineHeight || 1.5} !important;
             color: ${this.settings.textColor || '#1e293b'} !important;
+            box-sizing: border-box !important;
         }
         
         /* Erste Seite - Oben Abstand sicherstellen */
@@ -4556,12 +4564,13 @@ class DesignEditor {
             }
             
             .design-resume-preview {
-                margin: 0 !important;
-                padding: 0 !important;
-                width: 210mm !important;
-                max-width: 210mm !important;
-                min-width: 210mm !important;
+                margin: 0 auto !important;
+                padding: ${marginTop}mm ${marginRight}mm ${marginBottom}mm ${marginLeft}mm !important;
+                width: calc(210mm - ${marginLeft}mm - ${marginRight}mm) !important;
+                max-width: calc(210mm - ${marginLeft}mm - ${marginRight}mm) !important;
+                min-width: calc(210mm - ${marginLeft}mm - ${marginRight}mm) !important;
                 box-shadow: none !important;
+                box-sizing: border-box !important;
             }
             
             /* Durchgängiges Dokument - keine automatischen Seitenumbrüche */
@@ -4643,12 +4652,12 @@ class DesignEditor {
                 options: {
                     format: format,
                     printBackground: true,
-                    preferCSSPageSize: false, // WICHTIG: false, damit Puppeteer Margins verwendet
+                    preferCSSPageSize: false,
                     margin: {
-                        top: `${this.settings.marginTop || 20}mm`,
-                        right: `${this.settings.marginRight || 20}mm`,
-                        bottom: `${this.settings.marginBottom || 20}mm`,
-                        left: `${this.settings.marginLeft || 20}mm`
+                        top: '0mm',
+                        right: '0mm',
+                        bottom: '0mm',
+                        left: '0mm'
                     },
                     displayHeaderFooter: addPageNumbers,
                     footerTemplate: addPageNumbers ? `
