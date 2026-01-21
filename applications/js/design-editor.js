@@ -4388,24 +4388,53 @@ class DesignEditor {
         const pageFormat = pageFormats[format] || pageFormats.a4;
         const contentWidth = pageFormat.width - (2 * pageFormat.margin); // 170mm für A4
         
-        // Lade html2pdf
-        if (typeof window.html2pdf === 'undefined' && typeof html2pdf === 'undefined') {
+        // Lade html2pdf mit Fallback-CDN (Best Practice: Mehrere CDNs für Redundanz)
+        const html2pdfCDNs = [
+            'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js',
+            'https://unpkg.com/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js',
+            'https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js'
+        ];
+        
+        let html2pdfFn = window.html2pdf || (typeof html2pdf !== 'undefined' ? html2pdf : null);
+        
+        if (!html2pdfFn) {
             console.log('📦 Lade html2pdf Bibliothek...');
-            await this.loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js');
-            // Warte länger, damit die Bibliothek vollständig initialisiert ist
-            await new Promise(resolve => setTimeout(resolve, 500));
             
-            // Prüfe ob html2pdf jetzt verfügbar ist
-            if (typeof window.html2pdf === 'undefined' && typeof html2pdf === 'undefined') {
-                throw new Error('html2pdf Bibliothek konnte nicht geladen werden. Bitte Seite neu laden.');
+            let lastError = null;
+            for (const cdnUrl of html2pdfCDNs) {
+                try {
+                    await this.loadScript(cdnUrl);
+                    // Warte, damit die Bibliothek vollständig initialisiert ist
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                    
+                    // Prüfe ob html2pdf jetzt verfügbar ist
+                    html2pdfFn = window.html2pdf || (typeof html2pdf !== 'undefined' ? html2pdf : null);
+                    
+                    if (html2pdfFn) {
+                        console.log('✅ html2pdf geladen von:', cdnUrl);
+                        break;
+                    }
+                } catch (error) {
+                    console.warn(`⚠️ Fehler beim Laden von ${cdnUrl}:`, error);
+                    lastError = error;
+                    continue;
+                }
             }
-            console.log('✅ html2pdf geladen');
+            
+            // Finale Prüfung
+            if (!html2pdfFn) {
+                const errorMsg = lastError 
+                    ? `html2pdf Bibliothek konnte nicht geladen werden: ${lastError.message}` 
+                    : 'html2pdf Bibliothek konnte nicht geladen werden. Bitte Seite neu laden oder Netzwerkverbindung prüfen.';
+                throw new Error(errorMsg);
+            }
+        } else {
+            console.log('✅ html2pdf bereits verfügbar');
         }
         
-        // Verwende window.html2pdf falls verfügbar, sonst html2pdf
-        const html2pdfFn = window.html2pdf || html2pdf;
-        if (!html2pdfFn) {
-            throw new Error('html2pdf Funktion nicht verfügbar');
+        // Finale Validierung
+        if (!html2pdfFn || typeof html2pdfFn !== 'function') {
+            throw new Error('html2pdf Funktion ist nicht verfügbar oder ungültig');
         }
         
         // Clone für Export - komplett neu stylen für PDF
@@ -4506,30 +4535,51 @@ class DesignEditor {
         // Warte, damit der Clone vollständig gerendert wird
         await new Promise(resolve => setTimeout(resolve, 200));
         
+        // Optimierte Optionen basierend auf Best Practices aus GitHub-Repositories
+        // (pdfme, react-print-pdf, html2pdf.js Best Practices)
         const opt = {
             margin: [0, 0, 0, 0],
-            image: { type: 'jpeg', quality: settings.imageQuality },
+            image: { 
+                type: 'jpeg', 
+                quality: settings.imageQuality 
+            },
             html2canvas: {
                 scale: settings.scale,
                 useCORS: true,
-                letterRendering: true,
+                letterRendering: true, // Bessere Textqualität
                 logging: false,
                 backgroundColor: this.settings.backgroundColor || '#ffffff',
                 allowTaint: false,
                 removeContainer: false,
                 width: pageFormat.width * 3.779527559, // mm zu px (1mm = 3.779527559px bei 96dpi)
-                height: null, // Auto height
-                windowWidth: pageFormat.width * 3.779527559
+                height: null, // Auto height - lässt html2canvas die Höhe berechnen
+                windowWidth: pageFormat.width * 3.779527559,
+                // Best Practice: Bessere Rendering-Qualität
+                onclone: (clonedDoc) => {
+                    // Stelle sicher, dass alle Bilder geladen sind
+                    const images = clonedDoc.querySelectorAll('img');
+                    return Promise.all(
+                        Array.from(images).map(img => {
+                            if (img.complete) return Promise.resolve();
+                            return new Promise((resolve) => {
+                                img.onload = resolve;
+                                img.onerror = resolve; // Auch bei Fehler weitermachen
+                                setTimeout(resolve, 2000); // Timeout nach 2 Sekunden
+                            });
+                        })
+                    );
+                }
             },
             jsPDF: {
                 unit: 'mm',
                 format: format,
                 orientation: 'portrait',
-                compress: true
+                compress: true,
+                precision: 16 // Höhere Präzision für bessere Qualität
             },
             pagebreak: { 
                 mode: ['css', 'legacy'], 
-                avoid: ['.resume-preview-section', '.resume-preview-item', '.resume-preview-header'],
+                avoid: ['.resume-preview-section', '.resume-preview-item', '.resume-preview-header', '.resume-preview-column'],
                 before: '.resume-preview-section',
                 after: '.resume-preview-section'
             }
@@ -4630,22 +4680,44 @@ class DesignEditor {
     loadScript(src) {
         return new Promise((resolve, reject) => {
             // Prüfe ob Script schon geladen
-            if (document.querySelector(`script[src="${src}"]`)) {
-                resolve();
+            const existingScript = document.querySelector(`script[src="${src}"]`);
+            if (existingScript) {
+                console.log(`✅ Script bereits geladen: ${src}`);
+                // Warte kurz, damit sichergestellt ist, dass es initialisiert ist
+                setTimeout(() => resolve(), 100);
                 return;
             }
             
             const script = document.createElement('script');
             script.src = src;
             script.crossOrigin = 'anonymous';
+            script.async = false; // Wichtig: synchron laden für html2pdf
+            
+            let resolved = false;
+            
             script.onload = () => {
+                if (resolved) return;
+                resolved = true;
                 console.log(`✅ Script geladen: ${src}`);
-                resolve();
+                // Warte zusätzlich, damit die Bibliothek vollständig initialisiert ist
+                setTimeout(() => resolve(), 200);
             };
+            
             script.onerror = (err) => {
+                if (resolved) return;
+                resolved = true;
                 console.error(`❌ Script Fehler: ${src}`, err);
-                reject(err);
+                reject(new Error(`Script konnte nicht geladen werden: ${src}`));
             };
+            
+            // Timeout nach 10 Sekunden
+            setTimeout(() => {
+                if (!resolved) {
+                    resolved = true;
+                    reject(new Error(`Script-Lade-Timeout: ${src}`));
+                }
+            }, 10000);
+            
             document.head.appendChild(script);
         });
     }
