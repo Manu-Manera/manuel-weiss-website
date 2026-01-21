@@ -4454,84 +4454,37 @@ class DesignEditor {
         
         console.log('🔄 Generiere PDF mit Puppeteer (AWS Lambda)...');
         
-        // WICHTIG: Extrahiere die computed styles direkt aus dem Preview-Element
-        // Das stellt sicher, dass das PDF genau das rendert, was in der Vorschau zu sehen ist
-        const computedStyles = window.getComputedStyle(preview);
-        const previewPadding = computedStyles.padding;
-        const previewPaddingTop = computedStyles.paddingTop;
-        const previewPaddingRight = computedStyles.paddingRight;
-        const previewPaddingBottom = computedStyles.paddingBottom;
-        const previewPaddingLeft = computedStyles.paddingLeft;
-        const previewFontSize = computedStyles.fontSize;
-        const previewFontFamily = computedStyles.fontFamily;
-        const previewLineHeight = computedStyles.lineHeight;
-        const previewColor = computedStyles.color;
-        const previewBackgroundColor = computedStyles.backgroundColor;
+        // WICHTIG: Verwende die Settings direkt, nicht die computed styles!
+        // Die computed styles sind in px (für Bildschirm), aber für PDF brauchen wir mm
+        // Die Settings enthalten bereits die korrekten mm-Werte
+        const marginTop = this.settings.marginTop || 20;
+        const marginRight = this.settings.marginRight || 20;
+        const marginBottom = this.settings.marginBottom || 20;
+        const marginLeft = this.settings.marginLeft || 20;
+        const fontSize = this.settings.fontSize || 11;
+        const fontFamily = this.settings.fontFamily || 'Inter';
+        const lineHeight = this.settings.lineHeight || 1.5;
+        const textColor = this.settings.textColor || '#1e293b';
+        const backgroundColor = this.settings.backgroundColor || '#ffffff';
         
-        console.log('📐 Computed Styles aus Vorschau:', {
-            padding: previewPadding,
-            paddingTop: previewPaddingTop,
-            paddingRight: previewPaddingRight,
-            paddingBottom: previewPaddingBottom,
-            paddingLeft: previewPaddingLeft,
-            fontSize: previewFontSize,
-            fontFamily: previewFontFamily,
-            lineHeight: previewLineHeight
+        console.log('📐 PDF Settings direkt aus Editor:', {
+            margins: { top: marginTop, right: marginRight, bottom: marginBottom, left: marginLeft },
+            fontSize: fontSize,
+            fontFamily: fontFamily,
+            lineHeight: lineHeight
         });
         
-        // Klone das Preview-Element und kopiere ALLE computed styles
+        // Klone das Preview-Element
         const clone = preview.cloneNode(true);
-        
-        // Kopiere alle computed styles direkt auf den Klon
-        clone.style.cssText = preview.style.cssText;
-        clone.style.padding = previewPadding;
-        clone.style.fontSize = previewFontSize;
-        clone.style.fontFamily = previewFontFamily;
-        clone.style.lineHeight = previewLineHeight;
-        clone.style.color = previewColor;
-        clone.style.backgroundColor = previewBackgroundColor;
         
         // WICHTIG: Ersetze ALLE CSS-Variablen im geklonten HTML durch tatsächliche Werte
         this.replaceCSSVariablesInElement(clone);
-        
-        // WICHTIG: NICHT applyDesignSettingsToElement aufrufen, da es das Padding auf 0 setzen würde!
-        // Die computed styles aus der Vorschau haben bereits die korrekten Werte
         
         // Extrahiere alle CSS-Styles (inkl. Google Fonts)
         const css = this.extractAllCSS();
         
         // Google Fonts URL basierend auf gewählter Schriftart
-        const fontFamily = previewFontFamily.split(',')[0].replace(/['"]/g, '').trim();
         const googleFontsUrl = this.getGoogleFontsUrl(fontFamily);
-        
-        // Verwende die computed styles aus der Vorschau
-        // Parse padding values (können in verschiedenen Einheiten sein: mm, px, etc.)
-        const parsePaddingValue = (value) => {
-            if (!value || value === '0px') return '0';
-            // Wenn bereits in mm, behalte es
-            if (value.includes('mm')) return value;
-            // Wenn in px, konvertiere zu mm (1px ≈ 0.264583mm)
-            if (value.includes('px')) {
-                const pxValue = parseFloat(value);
-                return `${(pxValue * 0.264583).toFixed(2)}mm`;
-            }
-            return value;
-        };
-        
-        const marginTop = parsePaddingValue(previewPaddingTop);
-        const marginRight = parsePaddingValue(previewPaddingRight);
-        const marginBottom = parsePaddingValue(previewPaddingBottom);
-        const marginLeft = parsePaddingValue(previewPaddingLeft);
-        
-        console.log('📐 PDF Settings aus Vorschau:', {
-            paddingTop: marginTop,
-            paddingRight: marginRight,
-            paddingBottom: marginBottom,
-            paddingLeft: marginLeft,
-            fontSize: previewFontSize,
-            fontFamily: previewFontFamily,
-            lineHeight: previewLineHeight
-        });
         
         // Erstelle vollständiges HTML-Dokument
         const html = `
@@ -4543,9 +4496,9 @@ class DesignEditor {
     <title>Lebenslauf PDF Export</title>
     ${googleFontsUrl ? `<link href="${googleFontsUrl}" rel="stylesheet">` : ''}
     <style>
-        /* Basis-Styles - KEINE Skalierung - Verwende Werte aus Vorschau */
+        /* Basis-Styles - KEINE Skalierung - Verwende Settings direkt */
         html {
-            font-size: ${previewFontSize} !important;
+            font-size: ${fontSize}pt !important;
             -webkit-text-size-adjust: 100% !important;
             -moz-text-size-adjust: 100% !important;
             -ms-text-size-adjust: 100% !important;
@@ -4557,23 +4510,23 @@ class DesignEditor {
             width: 210mm !important;
             max-width: 210mm !important;
             min-width: 210mm !important;
-            background: ${previewBackgroundColor} !important;
-            font-family: ${previewFontFamily} !important;
-            font-size: ${previewFontSize} !important;
-            line-height: ${previewLineHeight} !important;
-            color: ${previewColor} !important;
+            background: ${backgroundColor} !important;
+            font-family: ${fontFamily}, sans-serif !important;
+            font-size: ${fontSize}pt !important;
+            line-height: ${lineHeight} !important;
+            color: ${textColor} !important;
         }
         
         /* Sicherstellen, dass der Lebenslauf als durchgängiges Dokument gerendert wird */
-        /* WICHTIG: Verwende die exakten Werte aus der Vorschau */
+        /* WICHTIG: Verwende Settings direkt */
         .design-resume-preview {
             min-height: auto !important;
             margin: 0 auto !important;
-            background: ${previewBackgroundColor} !important;
-            font-family: ${previewFontFamily} !important;
-            font-size: ${previewFontSize} !important;
-            line-height: ${previewLineHeight} !important;
-            color: ${previewColor} !important;
+            background: ${backgroundColor} !important;
+            font-family: ${fontFamily}, sans-serif !important;
+            font-size: ${fontSize}pt !important;
+            line-height: ${lineHeight} !important;
+            color: ${textColor} !important;
             box-sizing: border-box !important;
         }
         
@@ -4593,21 +4546,21 @@ class DesignEditor {
         }
         
         /* Überschreibe alle Padding/Margin-Regeln aus extrahiertem CSS - FINALE Definition */
-        /* Verwende die exakten Werte aus der Vorschau */
+        /* Verwende Settings direkt in mm */
         .design-resume-preview {
             margin: 0 auto !important;
-            padding-top: ${marginTop} !important;
-            padding-right: ${marginRight} !important;
-            padding-bottom: ${marginBottom} !important;
-            padding-left: ${marginLeft} !important;
+            padding-top: ${marginTop}mm !important;
+            padding-right: ${marginRight}mm !important;
+            padding-bottom: ${marginBottom}mm !important;
+            padding-left: ${marginLeft}mm !important;
             box-sizing: border-box !important;
         }
         
         /* Berechne Breite basierend auf Padding */
         .design-resume-preview {
-            width: calc(210mm - ${parseFloat(marginLeft.replace('mm', '')) || 0}mm - ${parseFloat(marginRight.replace('mm', '')) || 0}mm) !important;
-            max-width: calc(210mm - ${parseFloat(marginLeft.replace('mm', '')) || 0}mm - ${parseFloat(marginRight.replace('mm', '')) || 0}mm) !important;
-            min-width: calc(210mm - ${parseFloat(marginLeft.replace('mm', '')) || 0}mm - ${parseFloat(marginRight.replace('mm', '')) || 0}mm) !important;
+            width: calc(210mm - ${marginLeft}mm - ${marginRight}mm) !important;
+            max-width: calc(210mm - ${marginLeft}mm - ${marginRight}mm) !important;
+            min-width: calc(210mm - ${marginLeft}mm - ${marginRight}mm) !important;
         }
         
         /* Print-spezifische Styles - Seitenränder werden von Puppeteer gehandhabt */
@@ -4627,19 +4580,19 @@ class DesignEditor {
             
             .design-resume-preview {
                 margin: 0 auto !important;
-                padding-top: ${marginTop} !important;
-                padding-right: ${marginRight} !important;
-                padding-bottom: ${marginBottom} !important;
-                padding-left: ${marginLeft} !important;
+                padding-top: ${marginTop}mm !important;
+                padding-right: ${marginRight}mm !important;
+                padding-bottom: ${marginBottom}mm !important;
+                padding-left: ${marginLeft}mm !important;
                 box-shadow: none !important;
                 box-sizing: border-box !important;
             }
             
             /* Berechne Breite basierend auf Padding - auch im Print-Modus */
             .design-resume-preview {
-                width: calc(210mm - ${parseFloat(marginLeft.replace('mm', '')) || 0}mm - ${parseFloat(marginRight.replace('mm', '')) || 0}mm) !important;
-                max-width: calc(210mm - ${parseFloat(marginLeft.replace('mm', '')) || 0}mm - ${parseFloat(marginRight.replace('mm', '')) || 0}mm) !important;
-                min-width: calc(210mm - ${parseFloat(marginLeft.replace('mm', '')) || 0}mm - ${parseFloat(marginRight.replace('mm', '')) || 0}mm) !important;
+                width: calc(210mm - ${marginLeft}mm - ${marginRight}mm) !important;
+                max-width: calc(210mm - ${marginLeft}mm - ${marginRight}mm) !important;
+                min-width: calc(210mm - ${marginLeft}mm - ${marginRight}mm) !important;
             }
             
             /* Überschreibe alle Padding/Margin-Regeln auch im Print-Modus */
