@@ -440,13 +440,21 @@ export const handler = async (event) => {
     // WICHTIG: Spezifischere Routen müssen VOR allgemeineren geprüft werden!
     
     // GET /api-settings/key - Vollständigen API-Key für KI-Generierung laden
-    // ACHTUNG: Dieser Endpoint gibt den echten Key zurück! Nur für eingeloggte User.
+    // WICHTIG: Für globale Settings auch ohne Auth verfügbar!
     // MUSS VOR /api-settings geprüft werden!
     if (httpMethod === 'GET' && route.includes('/api-settings/key')) {
       console.log('🔑 API-Settings/Key Endpoint aufgerufen');
-      const user = authUser(event); // Authentifizierung erforderlich
       const queryParams = event.queryStringParameters || {};
       const provider = queryParams.provider || 'openai';
+      
+      // Versuche Auth, aber nicht erforderlich für globale Settings
+      let user = null;
+      try {
+        user = authUser(event);
+        console.log('✅ User authentifiziert');
+      } catch (e) {
+        console.log('ℹ️ Keine Authentifizierung - verwende globale Settings');
+      }
       
       const keyData = await getFullApiKey(provider);
       
@@ -458,8 +466,8 @@ export const handler = async (event) => {
         }, hdr);
       }
       
-      // Vollständigen Key zurückgeben (NUR für eingeloggte User!)
-      console.log(`✅ Vollständiger API-Key für ${provider} zurückgegeben (Länge: ${keyData.apiKey?.length || 0})`);
+      // Vollständigen Key zurückgeben (auch ohne Auth für globale Settings!)
+      console.log(`✅ Vollständiger API-Key für ${provider} zurückgegeben (Länge: ${keyData.apiKey?.length || 0}, Global: ${!user ? 'Ja' : 'Nein'})`);
       return json(200, {
         provider,
         apiKey: keyData.apiKey,
