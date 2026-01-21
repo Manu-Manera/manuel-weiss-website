@@ -4487,6 +4487,15 @@ class DesignEditor {
             lineHeight: lineHeight
         });
         
+        // Debug: Log die Padding-Werte die verwendet werden
+        console.log('🔍 Padding-Werte für PDF:', {
+            paddingTop: `${marginTop}mm`,
+            paddingRight: `${marginRight}mm`,
+            paddingBottom: `${marginBottom}mm`,
+            paddingLeft: `${marginLeft}mm`,
+            width: `calc(210mm - ${marginLeft}mm - ${marginRight}mm)`
+        });
+        
         // Klone das Preview-Element
         const clone = preview.cloneNode(true);
         
@@ -4560,8 +4569,10 @@ class DesignEditor {
         
         /* Überschreibe alle Padding/Margin-Regeln aus extrahiertem CSS - FINALE Definition */
         /* Verwende Settings direkt in mm */
+        /* WICHTIG: Diese Regeln müssen NACH dem extrahierten CSS kommen und padding: 0 überschreiben */
         .design-resume-preview {
             margin: 0 auto !important;
+            padding: 0 !important; /* Reset zuerst */
             padding-top: ${marginTop}mm !important;
             padding-right: ${marginRight}mm !important;
             padding-bottom: ${marginBottom}mm !important;
