@@ -4471,44 +4471,116 @@ class DesignEditor {
     
     convertHTMLToPdfMake(element, format, addPageNumbers) {
         const pageSize = format === 'letter' ? { width: 612, height: 792 } : { width: 595, height: 842 }; // A4 in points
-        const margin = 40; // 40 points = ~14mm
+        
+        // Verwende Design-Einstellungen für Margins
+        const marginTop = (this.settings.marginTop || 20) * 0.352778; // mm zu points
+        const marginRight = (this.settings.marginRight || 20) * 0.352778;
+        const marginBottom = (this.settings.marginBottom || 20) * 0.352778;
+        const marginLeft = (this.settings.marginLeft || 20) * 0.352778;
         
         // Extrahiere Text und Struktur aus HTML
         const content = this.extractContentFromHTML(element);
         
+        // Mappe Schriftarten (pdfmake unterstützt: Roboto, Courier, Helvetica, Times)
+        const fontFamilyMap = {
+            "'Inter', sans-serif": 'Roboto',
+            "'Roboto', sans-serif": 'Roboto',
+            "'Open Sans', sans-serif": 'Roboto',
+            "'Lato', sans-serif": 'Roboto',
+            "'Montserrat', sans-serif": 'Roboto',
+            "'Nunito', sans-serif": 'Roboto',
+            "'Source Sans Pro', sans-serif": 'Roboto',
+            "'Merriweather', serif": 'Times',
+            "'Playfair Display', serif": 'Times',
+            "'Source Code Pro', monospace": 'Courier'
+        };
+        const pdfFont = fontFamilyMap[this.settings.fontFamily] || 'Roboto';
+        
+        // Design-Einstellungen
+        const baseFontSize = this.settings.fontSize || 11;
+        const headingSize = this.settings.headingSize || 14;
+        const lineHeight = this.settings.lineHeight || 1.5;
+        const paragraphGap = (this.settings.paragraphGap || 6) * 0.352778; // mm zu points
+        const sectionGap = (this.settings.sectionGap || 24) * 0.352778;
+        const itemGap = (this.settings.itemGap || 12) * 0.352778;
+        
+        // Farben
+        const accentColor = this.settings.accentColor || '#6366f1';
+        const textColor = this.settings.textColor || '#1e293b';
+        const mutedColor = this.settings.mutedColor || '#64748b';
+        const backgroundColor = this.settings.backgroundColor || '#ffffff';
+        
         const docDefinition = {
             pageSize: format === 'letter' ? 'LETTER' : 'A4',
-            pageMargins: [margin, margin, margin, margin],
+            pageMargins: [marginLeft, marginTop, marginRight, marginBottom],
+            background: backgroundColor !== '#ffffff' ? backgroundColor : undefined,
             content: content,
             defaultStyle: {
-                font: 'Roboto',
-                fontSize: 10,
-                lineHeight: 1.4
+                font: pdfFont,
+                fontSize: baseFontSize,
+                lineHeight: lineHeight,
+                color: textColor
             },
             styles: {
                 header: {
-                    fontSize: 18,
+                    fontSize: headingSize + 4,
                     bold: true,
-                    margin: [0, 0, 0, 10]
+                    color: accentColor,
+                    margin: [0, 0, 0, sectionGap],
+                    alignment: this.settings.headerAlign || 'center'
                 },
                 subheader: {
-                    fontSize: 14,
+                    fontSize: headingSize,
                     bold: true,
-                    margin: [0, 10, 0, 5]
+                    color: accentColor,
+                    margin: [0, sectionGap * 0.5, 0, itemGap * 0.5]
                 },
                 normal: {
-                    fontSize: 10,
-                    margin: [0, 0, 0, 5]
+                    fontSize: baseFontSize,
+                    lineHeight: lineHeight,
+                    color: textColor,
+                    margin: [0, 0, 0, paragraphGap]
+                },
+                muted: {
+                    fontSize: baseFontSize - 1,
+                    color: mutedColor,
+                    margin: [0, 0, 0, paragraphGap]
+                },
+                sectionTitle: {
+                    fontSize: headingSize,
+                    bold: true,
+                    color: accentColor,
+                    margin: [0, sectionGap, 0, itemGap]
+                },
+                itemTitle: {
+                    fontSize: baseFontSize + 1,
+                    bold: true,
+                    color: textColor,
+                    margin: [0, 0, 0, paragraphGap * 0.5]
+                },
+                itemText: {
+                    fontSize: baseFontSize,
+                    color: textColor,
+                    margin: [0, 0, 0, paragraphGap]
                 }
             }
         };
         
-        if (addPageNumbers) {
+        // Page Numbers
+        if (addPageNumbers || this.settings.showPageNumbers) {
+            const pageNumberFormat = this.settings.pageNumberFormat || 'Seite X von Y';
+            const position = this.settings.pageNumberPosition || 'bottom-center';
+            
             docDefinition.footer = (currentPage, pageCount) => {
+                let pageText = pageNumberFormat
+                    .replace('X', currentPage)
+                    .replace('Y', pageCount);
+                
                 return {
-                    text: `Seite ${currentPage} von ${pageCount}`,
-                    alignment: 'center',
-                    fontSize: 8,
+                    text: pageText,
+                    alignment: position.includes('left') ? 'left' : position.includes('right') ? 'right' : 'center',
+                    fontSize: baseFontSize - 2,
+                    color: mutedColor,
                     margin: [0, 10, 0, 0]
                 };
             };
@@ -4556,10 +4628,11 @@ class DesignEditor {
         // Überschriften
         if (tagName === 'h1' || tagName === 'h2' || tagName === 'h3' || tagName === 'h4') {
             if (text) {
+                const isMainHeader = tagName === 'h1' || element.classList.contains('resume-preview-header');
                 return {
                     text: text,
-                    style: tagName === 'h1' ? 'header' : 'subheader',
-                    margin: [0, tagName === 'h1' ? 15 : 10, 0, 5],
+                    style: isMainHeader ? 'header' : 'subheader',
+                    margin: [0, isMainHeader ? (this.settings.sectionGap || 24) * 0.352778 : (this.settings.itemGap || 12) * 0.352778, 0, (this.settings.itemGap || 12) * 0.352778],
                     bold: true
                 };
             }
@@ -4568,7 +4641,14 @@ class DesignEditor {
         // Absätze
         if (tagName === 'p') {
             if (text) {
-                return { text: text, style: 'normal', margin: [0, 0, 0, 5] };
+                // Prüfe ob muted/sekundärer Text
+                const isMuted = classList.contains('muted') || classList.contains('text-muted') || 
+                               element.style.color?.includes('64748b') || element.style.opacity === '0.7';
+                return { 
+                    text: text, 
+                    style: isMuted ? 'muted' : 'normal', 
+                    margin: [0, 0, 0, (this.settings.paragraphGap || 6) * 0.352778] 
+                };
             }
         }
         
@@ -4597,8 +4677,8 @@ class DesignEditor {
                 if (text) {
                     return {
                         text: text,
-                        style: 'subheader',
-                        margin: [0, 15, 0, 8],
+                        style: 'sectionTitle',
+                        margin: [0, (this.settings.sectionGap || 24) * 0.352778, 0, (this.settings.itemGap || 12) * 0.352778],
                         bold: true
                     };
                 }
@@ -4655,10 +4735,15 @@ class DesignEditor {
             // Falls nur Text (keine Kinder)
             if (text && element.children.length === 0) {
                 const lines = text.split('\n').filter(line => line.trim());
+                const paragraphGap = (this.settings.paragraphGap || 6) * 0.352778;
                 if (lines.length === 1) {
-                    return { text: lines[0], style: 'normal', margin: [0, 0, 0, 5] };
+                    return { text: lines[0], style: 'normal', margin: [0, 0, 0, paragraphGap] };
                 } else if (lines.length > 1) {
-                    return lines.map(line => ({ text: line.trim(), style: 'normal', margin: [0, 0, 0, 3] }));
+                    return lines.map((line, idx) => ({ 
+                        text: line.trim(), 
+                        style: 'normal', 
+                        margin: [0, 0, 0, idx < lines.length - 1 ? paragraphGap * 0.5 : paragraphGap] 
+                    }));
                 }
             }
         }
