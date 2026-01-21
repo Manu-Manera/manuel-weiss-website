@@ -4615,6 +4615,8 @@ class DesignEditor {
                 height: null, // Auto height - lässt html2canvas die Höhe berechnen
                 windowWidth: pageFormat.width * 3.779527559,
                 // WICHTIG: Stelle sicher, dass html2canvas den Container findet
+                // Best Practice: Bessere Rendering-Qualität
+                // onclone wird von html2canvas unterstützt und kann async sein
                 onclone: async (clonedDoc, element) => {
                     console.log('🔍 html2canvas onclone:', {
                         elementExists: !!element,
@@ -4638,10 +4640,6 @@ class DesignEditor {
                         element.style.height = 'auto';
                     }
                     
-                    // Stelle sicher, dass alle Bilder geladen sind
-                // Best Practice: Bessere Rendering-Qualität
-                // onclone wird von html2canvas unterstützt und kann async sein
-                onclone: async (clonedDoc) => {
                     // Stelle sicher, dass alle Bilder geladen sind
                     const images = clonedDoc.querySelectorAll('img');
                     const imagePromises = Array.from(images).map(img => {
