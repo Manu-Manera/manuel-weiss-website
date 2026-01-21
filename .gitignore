@@ -33,3 +33,7 @@ tmp/
 temp/
 *.tmp
 .netlify/
+
+# CDK Output
+infrastructure/cdk.out/
+infrastructure/cdk.out/**/*
