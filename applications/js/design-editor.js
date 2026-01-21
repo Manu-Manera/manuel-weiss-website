@@ -4569,10 +4569,10 @@ class DesignEditor {
         
         /* Überschreibe alle Padding/Margin-Regeln aus extrahiertem CSS - FINALE Definition */
         /* Verwende Settings direkt in mm */
-        /* WICHTIG: Diese Regeln müssen NACH dem extrahierten CSS kommen und padding: 0 überschreiben */
+        /* WICHTIG: Diese Regeln müssen NACH dem extrahierten CSS kommen - KEIN padding: 0 Reset! */
         .design-resume-preview {
             margin: 0 auto !important;
-            padding: 0 !important; /* Reset zuerst */
+            /* Setze Padding direkt - KEIN Reset, da extractAllCSS kein padding: 0 mehr setzt */
             padding-top: ${marginTop}mm !important;
             padding-right: ${marginRight}mm !important;
             padding-bottom: ${marginBottom}mm !important;
