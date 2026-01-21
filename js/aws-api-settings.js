@@ -193,8 +193,8 @@ class AWSAPISettingsService {
             try {
                 const token = await this.getAuthToken();
                 
-                // Netlify Functions: Query-Param "action=key" statt Sub-Pfad
-                const response = await fetch(`${this.apiEndpoint}/api-settings?action=key&provider=${provider}`, {
+                // AWS API Gateway: Sub-Pfad /api-settings/key
+                const response = await fetch(`${this.apiEndpoint}/api-settings/key?provider=${provider}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
