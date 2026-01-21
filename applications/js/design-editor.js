@@ -185,7 +185,7 @@ class DesignEditor {
             
             // Language Settings
             language: 'de', // 'de' or 'en'
-            translations: {} // Custom translations per field
+            translations: {}, // Custom translations per field
             resumeTitleSize: 10, // pt
             resumeTitleColor: '', // leer = mutedColor verwenden
             resumeTitleSpacing: 3, // letter-spacing in px
@@ -4330,16 +4330,42 @@ class DesignEditor {
 // ═══════════════════════════════════════════════════════════════════════════
 
 function openDesignEditor() {
+    console.log('🎨 openDesignEditor() aufgerufen');
     const modal = document.getElementById('designEditorModal');
-    if (modal) {
-        modal.classList.add('active');
-        document.body.style.overflow = 'hidden';
-        
-        if (!window.designEditor) {
-            window.designEditor = new DesignEditor();
-        } else {
-            window.designEditor.updatePreview();
-        }
+    
+    if (!modal) {
+        console.error('❌ designEditorModal nicht gefunden!');
+        // Versuche es nochmal nach kurzer Verzögerung (falls DOM noch nicht fertig)
+        setTimeout(() => {
+            const modalRetry = document.getElementById('designEditorModal');
+            if (modalRetry) {
+                console.log('✅ Modal beim zweiten Versuch gefunden');
+                modalRetry.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                
+                if (!window.designEditor) {
+                    window.designEditor = new DesignEditor();
+                } else {
+                    window.designEditor.updatePreview();
+                }
+            } else {
+                console.error('❌ Modal auch beim zweiten Versuch nicht gefunden');
+                alert('Design-Editor konnte nicht geöffnet werden. Bitte Seite neu laden.');
+            }
+        }, 100);
+        return;
+    }
+    
+    console.log('✅ Modal gefunden, öffne Design-Editor');
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    
+    if (!window.designEditor) {
+        console.log('🆕 Erstelle neuen DesignEditor');
+        window.designEditor = new DesignEditor();
+    } else {
+        console.log('🔄 Aktualisiere DesignEditor Preview');
+        window.designEditor.updatePreview();
     }
 }
 
@@ -4367,10 +4393,19 @@ function resetDesignSettings() {
 }
 
 // Exportiere alle Design-Editor-Funktionen global für HTML onclick
+// WICHTIG: Sofort exportieren, nicht erst nach DOMContentLoaded
 window.openDesignEditor = openDesignEditor;
 window.closeDesignEditor = closeDesignEditor;
 window.saveDesignSettings = saveDesignSettings;
 window.resetDesignSettings = resetDesignSettings;
+
+// Debug: Prüfe ob Funktionen verfügbar sind
+console.log('✅ Design-Editor-Funktionen exportiert:', {
+    openDesignEditor: typeof window.openDesignEditor,
+    closeDesignEditor: typeof window.closeDesignEditor,
+    saveDesignSettings: typeof window.saveDesignSettings,
+    resetDesignSettings: typeof window.resetDesignSettings
+});
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {

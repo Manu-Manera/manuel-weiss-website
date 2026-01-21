@@ -30,10 +30,7 @@ async function loadResume() {
         const resumeId = urlParams.get('id');
         const action = urlParams.get('action');
         
-        if (resumeId) {
-            // Zeige Loading-Status
-            showNotification('Lebenslauf wird geladen...', 'info');
-            
+            if (resumeId) {
             // Versuche aus Cloud zu laden
             let resumes = [];
             if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
@@ -44,7 +41,7 @@ async function loadResume() {
                     if (resume) {
                         resumeData = resume;
                         populateForm(resume);
-                        showNotification('Lebenslauf geladen', 'success');
+                        // Keine Benachrichtigung - wird automatisch beim Laden angezeigt
                         return;
                     }
                 }
@@ -60,7 +57,7 @@ async function loadResume() {
             if (resume) {
                 resumeData = resume;
                 populateForm(resume);
-                showNotification('Lebenslauf geladen', 'success');
+                // Keine Benachrichtigung - wird automatisch beim Laden angezeigt
                 
                 // PDF-Export-Modus?
                 if (action === 'pdf' || action === 'export') {
