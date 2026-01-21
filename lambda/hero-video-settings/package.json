@@ -1,0 +1,10 @@
+{
+  "name": "hero-video-settings-lambda",
+  "version": "1.0.0",
+  "description": "Hero Video Settings Lambda Function",
+  "main": "index.js",
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.0.0",
+    "@aws-sdk/util-dynamodb": "^3.0.0"
+  }
+}

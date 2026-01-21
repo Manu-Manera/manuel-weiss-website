@@ -302,6 +302,58 @@ export class WebsiteApiStack extends cdk.Stack {
     });
 
     // ========================================
+    // HERO VIDEO LAMBDAS (Phase 1 Migration)
+    // ========================================
+
+    // Hero Video Settings Lambda
+    const heroVideoSettingsLambda = new lambda.Function(this, 'HeroVideoSettingsFunction', {
+      functionName: 'website-hero-video-settings',
+      runtime: lambda.Runtime.NODEJS_18_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromAsset('../lambda/hero-video-settings'),
+      role: lambdaRole,
+      timeout: cdk.Duration.seconds(30),
+      memorySize: 256,
+      environment: {
+        SETTINGS_TABLE: 'manuel-weiss-settings',
+        HERO_VIDEO_BUCKET: 'manuel-weiss-hero-videos',
+        AWS_REGION: 'eu-central-1'
+      }
+    });
+
+    // Hero Video Upload Lambda
+    const heroVideoUploadLambda = new lambda.Function(this, 'HeroVideoUploadFunction', {
+      functionName: 'website-hero-video-upload',
+      runtime: lambda.Runtime.NODEJS_18_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromAsset('../lambda/hero-video-upload'),
+      role: lambdaRole,
+      timeout: cdk.Duration.seconds(30),
+      memorySize: 256,
+      environment: {
+        HERO_VIDEO_BUCKET: 'manuel-weiss-hero-videos',
+        AWS_REGION: 'eu-central-1'
+      }
+    });
+
+    // Hero Video Upload Direct Lambda
+    const heroVideoUploadDirectLambda = new lambda.Function(this, 'HeroVideoUploadDirectFunction', {
+      functionName: 'website-hero-video-upload-direct',
+      runtime: lambda.Runtime.NODEJS_18_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromAsset('../lambda/hero-video-upload-direct'),
+      role: lambdaRole,
+      timeout: cdk.Duration.seconds(120), // Länger für Base64 Upload (100MB max)
+      memorySize: 1024, // Mehr Memory für Base64 Decoding + S3 Upload
+      environment: {
+        HERO_VIDEO_BUCKET: 'manuel-weiss-hero-videos',
+        SETTINGS_TABLE: 'manuel-weiss-settings',
+        SETTINGS_KEY: 'hero-video-url',
+        AWS_REGION: 'eu-central-1'
+      }
+    });
+
+    // ========================================
     // API ROUTES
     // ========================================
 
@@ -433,6 +485,25 @@ export class WebsiteApiStack extends cdk.Stack {
         }
       }]
     });
+
+    // ========================================
+    // HERO VIDEO ROUTES (Phase 1 Migration)
+    // ========================================
+
+    // /hero-video-settings
+    const heroVideoSettingsResource = this.api.root.addResource('hero-video-settings');
+    heroVideoSettingsResource.addMethod('GET', new apigateway.LambdaIntegration(heroVideoSettingsLambda));
+    heroVideoSettingsResource.addMethod('POST', new apigateway.LambdaIntegration(heroVideoSettingsLambda));
+    heroVideoSettingsResource.addMethod('PUT', new apigateway.LambdaIntegration(heroVideoSettingsLambda));
+
+    // /hero-video-upload
+    const heroVideoUploadResource = this.api.root.addResource('hero-video-upload');
+    heroVideoUploadResource.addMethod('POST', new apigateway.LambdaIntegration(heroVideoUploadLambda));
+    heroVideoUploadResource.addMethod('GET', new apigateway.LambdaIntegration(heroVideoUploadLambda));
+
+    // /hero-video-upload-direct
+    const heroVideoUploadDirectResource = this.api.root.addResource('hero-video-upload-direct');
+    heroVideoUploadDirectResource.addMethod('POST', new apigateway.LambdaIntegration(heroVideoUploadDirectLambda));
 
     // ========================================
     // OUTPUTS

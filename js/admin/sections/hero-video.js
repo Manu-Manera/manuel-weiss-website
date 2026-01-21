@@ -99,10 +99,68 @@ class HeroVideoSection {
         console.log('✅ HeroVideoSection: Event-Listener erfolgreich gebunden');
     }
 
+    /**
+     * Helper: Auth-Token für API-Calls holen
+     */
+    async getAuthToken() {
+        // 1. Versuche awsAPISettings
+        if (window.awsAPISettings && typeof window.awsAPISettings.getAuthToken === 'function') {
+            try {
+                return await window.awsAPISettings.getAuthToken();
+            } catch (e) {
+                console.warn('⚠️ awsAPISettings.getAuthToken failed:', e);
+            }
+        }
+        
+        // 2. Versuche GlobalAuth
+        if (window.GlobalAuth?.getCurrentUser()?.idToken) {
+            return window.GlobalAuth.getCurrentUser().idToken;
+        }
+        
+        // 3. Versuche admin_auth_session
+        const adminSession = localStorage.getItem('admin_auth_session');
+        if (adminSession) {
+            try {
+                const session = JSON.parse(adminSession);
+                if (session.user?.idToken) return session.user.idToken;
+                if (session.user?.accessToken) return session.user.accessToken;
+            } catch (e) {
+                console.warn('⚠️ Error parsing admin_auth_session:', e);
+            }
+        }
+        
+        // 4. Fallback: aws_auth_session
+        const session = localStorage.getItem('aws_auth_session');
+        if (session) {
+            try {
+                const parsed = JSON.parse(session);
+                if (parsed.idToken) return parsed.idToken;
+            } catch (e) {
+                console.warn('⚠️ Error parsing aws_auth_session:', e);
+            }
+        }
+        
+        throw new Error('Kein gültiges Auth-Token gefunden');
+    }
+
     async loadCurrentVideo() {
         try {
             const apiUrl = window.getApiUrl ? window.getApiUrl('HERO_VIDEO_SETTINGS') : '/.netlify/functions/hero-video-settings';
-            const response = await fetch(apiUrl);
+            const token = await this.getAuthToken();
+            const response = await fetch(apiUrl, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            if (!response.ok) {
+                if (response.status === 401 || response.status === 403) {
+                    throw new Error('Nicht autorisiert. Bitte erneut anmelden.');
+                }
+                throw new Error(`Fehler beim Laden: ${response.status} ${response.statusText}`);
+            }
+            
             const data = await response.json();
 
             const infoP = document.getElementById('currentVideoInfo');
@@ -175,9 +233,13 @@ class HeroVideoSection {
                 
                 // Schritt 1: Hole Pre-Signed URL
                 const uploadApiUrl = window.getApiUrl ? window.getApiUrl('HERO_VIDEO_UPLOAD') : '/.netlify/functions/hero-video-upload';
+                const token = await this.getAuthToken();
                 const uploadUrlResponse = await fetch(uploadApiUrl, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
                     body: JSON.stringify({
                         fileName: file.name,
                         contentType: file.type || 'video/mp4'
@@ -246,9 +308,13 @@ class HeroVideoSection {
                     }
 
                     const settingsApiUrl = window.getApiUrl ? window.getApiUrl('HERO_VIDEO_SETTINGS') : '/.netlify/functions/hero-video-settings';
+                    const settingsToken = await this.getAuthToken();
                     const settingsResponse = await fetch(settingsApiUrl, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: {
+                            'Authorization': `Bearer ${settingsToken}`,
+                            'Content-Type': 'application/json'
+                        },
                         body: JSON.stringify({ videoUrl: publicUrl })
                     });
 
@@ -328,10 +394,14 @@ class HeroVideoSection {
                     if (progressFill) progressFill.style.width = '30%';
                     if (progressPercentage) progressPercentage.textContent = '30%';
 
-                    const directUploadApiUrl = window.getApiUrl ? window.getApiUrl('HERO_VIDEO_UPLOAD') : '/.netlify/functions/hero-video-upload-direct';
+                    const directUploadApiUrl = window.getApiUrl ? window.getApiUrl('HERO_VIDEO_UPLOAD_DIRECT') : '/.netlify/functions/hero-video-upload-direct';
+                    const directUploadToken = await this.getAuthToken();
                     const uploadResponse = await fetch(directUploadApiUrl, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: {
+                            'Authorization': `Bearer ${directUploadToken}`,
+                            'Content-Type': 'application/json'
+                        },
                         body: JSON.stringify({
                             fileData: fileData,
                             fileName: file.name,
@@ -367,9 +437,13 @@ class HeroVideoSection {
                     console.log('💾 Speichere Video-URL in Settings...');
                     try {
                         const saveSettingsApiUrl = window.getApiUrl ? window.getApiUrl('HERO_VIDEO_SETTINGS') : '/.netlify/functions/hero-video-settings';
+                        const saveSettingsToken = await this.getAuthToken();
                         const settingsResponse = await fetch(saveSettingsApiUrl, {
                             method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: {
+                                'Authorization': `Bearer ${saveSettingsToken}`,
+                                'Content-Type': 'application/json'
+                            },
                             body: JSON.stringify({ videoUrl: publicUrl })
                         });
                         if (!settingsResponse.ok) {

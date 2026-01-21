@@ -52,9 +52,10 @@ window.AWS_APP_CONFIG = Object.assign({}, window.AWS_APP_CONFIG || {}, {
     // API Settings
     API_SETTINGS: '/api-settings',
     
-    // Hero Video
-    HERO_VIDEO_SETTINGS: '/hero-video/settings',
-    HERO_VIDEO_UPLOAD: '/hero-video/upload',
+    // Hero Video (Phase 1 Migration)
+    HERO_VIDEO_SETTINGS: '/hero-video-settings',
+    HERO_VIDEO_UPLOAD: '/hero-video-upload',
+    HERO_VIDEO_UPLOAD_DIRECT: '/hero-video-upload-direct',
     
     // Profile Image Upload
     PROFILE_IMAGE_UPLOAD: '/profile-image/upload-url',
@@ -116,6 +117,7 @@ window.AWS_APP_CONFIG = Object.assign({}, window.AWS_APP_CONFIG || {}, {
         'API_SETTINGS': '/.netlify/functions/api-settings',
         'HERO_VIDEO_SETTINGS': '/.netlify/functions/hero-video-settings',
         'HERO_VIDEO_UPLOAD': '/.netlify/functions/hero-video-upload',
+        'HERO_VIDEO_UPLOAD_DIRECT': '/.netlify/functions/hero-video-upload-direct',
         'PROFILE_IMAGE_UPLOAD': '/.netlify/functions/s3-upload',
         'S3_UPLOAD': '/.netlify/functions/s3-upload',
         'SNOWFLAKE_HIGHSCORES': '/.netlify/functions/snowflake-highscores',
