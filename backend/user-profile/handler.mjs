@@ -447,18 +447,19 @@ export const handler = async (event) => {
       const queryParams = event.queryStringParameters || {};
       const provider = queryParams.provider || 'openai';
       
-      // Versuche Auth, aber nicht erforderlich für globale Settings
+      // Auth ist optional - globale Settings sind für alle verfügbar
       let user = null;
       try {
         user = authUser(event);
         console.log('✅ User authentifiziert');
       } catch (e) {
-        console.log('ℹ️ Keine Authentifizierung - verwende globale Settings');
+        console.log('ℹ️ Keine Authentifizierung - verwende globale Settings (erlaubt für PDF-Export)');
       }
       
+      // Lade globalen API Key (funktioniert auch ohne Auth)
       const keyData = await getFullApiKey(provider);
       
-      if (!keyData) {
+      if (!keyData || !keyData.apiKey) {
         return json(404, { 
           error: 'API Key not configured', 
           message: `Kein ${provider} API-Key konfiguriert. Bitte im Admin Panel einrichten.`,
@@ -467,7 +468,7 @@ export const handler = async (event) => {
       }
       
       // Vollständigen Key zurückgeben (auch ohne Auth für globale Settings!)
-      console.log(`✅ Vollständiger API-Key für ${provider} zurückgegeben (Länge: ${keyData.apiKey?.length || 0}, Global: ${!user ? 'Ja' : 'Nein'})`);
+      console.log(`✅ Vollständiger API-Key für ${provider} zurückgegeben (Länge: ${keyData.apiKey?.length || 0}, Global: true, Auth: ${user ? 'Ja' : 'Nein'})`);
       return json(200, {
         provider,
         apiKey: keyData.apiKey,
