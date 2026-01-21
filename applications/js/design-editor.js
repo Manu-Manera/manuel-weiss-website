@@ -4454,36 +4454,83 @@ class DesignEditor {
         
         console.log('🔄 Generiere PDF mit Puppeteer (AWS Lambda)...');
         
-        // Klone das Preview-Element und wende alle computed styles an
+        // WICHTIG: Extrahiere die computed styles direkt aus dem Preview-Element
+        // Das stellt sicher, dass das PDF genau das rendert, was in der Vorschau zu sehen ist
+        const computedStyles = window.getComputedStyle(preview);
+        const previewPadding = computedStyles.padding;
+        const previewPaddingTop = computedStyles.paddingTop;
+        const previewPaddingRight = computedStyles.paddingRight;
+        const previewPaddingBottom = computedStyles.paddingBottom;
+        const previewPaddingLeft = computedStyles.paddingLeft;
+        const previewFontSize = computedStyles.fontSize;
+        const previewFontFamily = computedStyles.fontFamily;
+        const previewLineHeight = computedStyles.lineHeight;
+        const previewColor = computedStyles.color;
+        const previewBackgroundColor = computedStyles.backgroundColor;
+        
+        console.log('📐 Computed Styles aus Vorschau:', {
+            padding: previewPadding,
+            paddingTop: previewPaddingTop,
+            paddingRight: previewPaddingRight,
+            paddingBottom: previewPaddingBottom,
+            paddingLeft: previewPaddingLeft,
+            fontSize: previewFontSize,
+            fontFamily: previewFontFamily,
+            lineHeight: previewLineHeight
+        });
+        
+        // Klone das Preview-Element und kopiere ALLE computed styles
         const clone = preview.cloneNode(true);
+        
+        // Kopiere alle computed styles direkt auf den Klon
+        clone.style.cssText = preview.style.cssText;
+        clone.style.padding = previewPadding;
+        clone.style.fontSize = previewFontSize;
+        clone.style.fontFamily = previewFontFamily;
+        clone.style.lineHeight = previewLineHeight;
+        clone.style.color = previewColor;
+        clone.style.backgroundColor = previewBackgroundColor;
         
         // WICHTIG: Ersetze ALLE CSS-Variablen im geklonten HTML durch tatsächliche Werte
         this.replaceCSSVariablesInElement(clone);
         
-        // Wende alle Design-Editor-Settings direkt auf den Klon an
-        // WICHTIG: Für PDF-Export Padding auf 0 setzen, da Puppeteer Margins handhabt
+        // Wende alle Design-Editor-Settings direkt auf den Klon an (als Fallback)
         this.applyDesignSettingsToElement(clone, true); // true = PDF-Export-Modus
         
         // Extrahiere alle CSS-Styles (inkl. Google Fonts)
         const css = this.extractAllCSS();
         
         // Google Fonts URL basierend auf gewählter Schriftart
-        const fontFamily = this.settings.fontFamily || 'Inter';
+        const fontFamily = previewFontFamily.split(',')[0].replace(/['"]/g, '').trim();
         const googleFontsUrl = this.getGoogleFontsUrl(fontFamily);
         
-        // Debug: Logge Settings
-        const marginTop = this.settings.marginTop || 20;
-        const marginRight = this.settings.marginRight || 20;
-        const marginBottom = this.settings.marginBottom || 20;
-        const marginLeft = this.settings.marginLeft || 20;
-        const fontSize = this.settings.fontSize || 11;
+        // Verwende die computed styles aus der Vorschau
+        // Parse padding values (können in verschiedenen Einheiten sein: mm, px, etc.)
+        const parsePaddingValue = (value) => {
+            if (!value || value === '0px') return '0';
+            // Wenn bereits in mm, behalte es
+            if (value.includes('mm')) return value;
+            // Wenn in px, konvertiere zu mm (1px ≈ 0.264583mm)
+            if (value.includes('px')) {
+                const pxValue = parseFloat(value);
+                return `${(pxValue * 0.264583).toFixed(2)}mm`;
+            }
+            return value;
+        };
         
-        console.log('📐 PDF Settings:', {
-            margins: { top: marginTop, right: marginRight, bottom: marginBottom, left: marginLeft },
-            fontSize: fontSize,
-            fontFamily: this.settings.fontFamily,
-            headingSize: this.settings.headingSize,
-            lineHeight: this.settings.lineHeight
+        const marginTop = parsePaddingValue(previewPaddingTop);
+        const marginRight = parsePaddingValue(previewPaddingRight);
+        const marginBottom = parsePaddingValue(previewPaddingBottom);
+        const marginLeft = parsePaddingValue(previewPaddingLeft);
+        
+        console.log('📐 PDF Settings aus Vorschau:', {
+            paddingTop: marginTop,
+            paddingRight: marginRight,
+            paddingBottom: marginBottom,
+            paddingLeft: marginLeft,
+            fontSize: previewFontSize,
+            fontFamily: previewFontFamily,
+            lineHeight: previewLineHeight
         });
         
         // Erstelle vollständiges HTML-Dokument
@@ -4496,9 +4543,9 @@ class DesignEditor {
     <title>Lebenslauf PDF Export</title>
     ${googleFontsUrl ? `<link href="${googleFontsUrl}" rel="stylesheet">` : ''}
     <style>
-        /* Basis-Styles - KEINE Skalierung */
+        /* Basis-Styles - KEINE Skalierung - Verwende Werte aus Vorschau */
         html {
-            font-size: ${this.settings.fontSize || 11}pt !important;
+            font-size: ${previewFontSize} !important;
             -webkit-text-size-adjust: 100% !important;
             -moz-text-size-adjust: 100% !important;
             -ms-text-size-adjust: 100% !important;
@@ -4510,27 +4557,23 @@ class DesignEditor {
             width: 210mm !important;
             max-width: 210mm !important;
             min-width: 210mm !important;
-            background: ${this.settings.backgroundColor || '#ffffff'} !important;
-            font-family: ${this.settings.fontFamily || "'Inter', sans-serif"} !important;
-            font-size: ${this.settings.fontSize || 11}pt !important;
-            line-height: ${this.settings.lineHeight || 1.5} !important;
-            color: ${this.settings.textColor || '#1e293b'} !important;
+            background: ${previewBackgroundColor} !important;
+            font-family: ${previewFontFamily} !important;
+            font-size: ${previewFontSize} !important;
+            line-height: ${previewLineHeight} !important;
+            color: ${previewColor} !important;
         }
         
         /* Sicherstellen, dass der Lebenslauf als durchgängiges Dokument gerendert wird */
-        /* WICHTIG: Padding direkt setzen statt Puppeteer-Margins zu verwenden für bessere Kontrolle */
+        /* WICHTIG: Verwende die exakten Werte aus der Vorschau */
         .design-resume-preview {
-            width: calc(210mm - ${marginLeft}mm - ${marginRight}mm) !important;
-            max-width: calc(210mm - ${marginLeft}mm - ${marginRight}mm) !important;
-            min-width: calc(210mm - ${marginLeft}mm - ${marginRight}mm) !important;
             min-height: auto !important;
             margin: 0 auto !important;
-            padding: ${marginTop}mm ${marginRight}mm ${marginBottom}mm ${marginLeft}mm !important;
-            background: ${this.settings.backgroundColor || '#ffffff'} !important;
-            font-family: ${this.settings.fontFamily || "'Inter', sans-serif"} !important;
-            font-size: ${fontSize}pt !important;
-            line-height: ${this.settings.lineHeight || 1.5} !important;
-            color: ${this.settings.textColor || '#1e293b'} !important;
+            background: ${previewBackgroundColor} !important;
+            font-family: ${previewFontFamily} !important;
+            font-size: ${previewFontSize} !important;
+            line-height: ${previewLineHeight} !important;
+            color: ${previewColor} !important;
             box-sizing: border-box !important;
         }
         
@@ -4550,16 +4593,21 @@ class DesignEditor {
         }
         
         /* Überschreibe alle Padding/Margin-Regeln aus extrahiertem CSS - FINALE Definition */
+        /* Verwende die exakten Werte aus der Vorschau */
         .design-resume-preview {
-            width: calc(210mm - ${marginLeft}mm - ${marginRight}mm) !important;
-            max-width: calc(210mm - ${marginLeft}mm - ${marginRight}mm) !important;
-            min-width: calc(210mm - ${marginLeft}mm - ${marginRight}mm) !important;
             margin: 0 auto !important;
-            padding-top: ${marginTop}mm !important;
-            padding-right: ${marginRight}mm !important;
-            padding-bottom: ${marginBottom}mm !important;
-            padding-left: ${marginLeft}mm !important;
+            padding-top: ${marginTop} !important;
+            padding-right: ${marginRight} !important;
+            padding-bottom: ${marginBottom} !important;
+            padding-left: ${marginLeft} !important;
             box-sizing: border-box !important;
+        }
+        
+        /* Berechne Breite basierend auf Padding */
+        .design-resume-preview {
+            width: calc(210mm - ${parseFloat(marginLeft.replace('mm', '')) || 0}mm - ${parseFloat(marginRight.replace('mm', '')) || 0}mm) !important;
+            max-width: calc(210mm - ${parseFloat(marginLeft.replace('mm', '')) || 0}mm - ${parseFloat(marginRight.replace('mm', '')) || 0}mm) !important;
+            min-width: calc(210mm - ${parseFloat(marginLeft.replace('mm', '')) || 0}mm - ${parseFloat(marginRight.replace('mm', '')) || 0}mm) !important;
         }
         
         /* Print-spezifische Styles - Seitenränder werden von Puppeteer gehandhabt */
