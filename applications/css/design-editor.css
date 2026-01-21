@@ -40,11 +40,36 @@
 
 .design-sidebar-header {
     padding: 1.25rem;
-    background: linear-gradient(135deg, var(--design-accent), #8b5cf6);
-    color: white;
     position: sticky;
     top: 0;
+    background: linear-gradient(135deg, var(--design-accent), #8b5cf6);
+    color: white;
     z-index: 10;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Design Header Actions - Buttons immer sichtbar */
+.design-header-actions {
+    display: flex !important;
+    gap: 8px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+}
+
+.design-export-btn,
+.design-close-btn {
+    min-width: 44px; /* Touch-friendly */
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+.design-export-btn {
+    flex: 1;
+    min-width: 120px;
+}
+
+.design-close-btn {
+    flex: 0 0 auto;
 }
 
 .design-sidebar-header h2 {
@@ -1229,6 +1254,29 @@
         top: 60px;
         z-index: 90;
         background: var(--design-sidebar-bg);
+    }
+    
+    /* Design Header Actions - Buttons immer sichtbar */
+    .design-header-actions {
+        display: flex !important;
+        gap: 8px;
+        margin-top: 12px;
+        flex-wrap: wrap;
+    }
+    
+    .design-export-btn,
+    .design-close-btn {
+        min-width: 44px; /* Touch-friendly */
+        flex-shrink: 0;
+    }
+    
+    .design-export-btn {
+        flex: 1;
+        min-width: 120px;
+    }
+    
+    .design-close-btn {
+        flex: 0 0 auto;
     }
     
     .design-preview-container {

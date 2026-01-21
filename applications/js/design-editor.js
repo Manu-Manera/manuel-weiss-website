@@ -4373,21 +4373,48 @@ class DesignEditor {
         };
         const settings = qualitySettings[quality] || qualitySettings.medium;
         
+        // Seitenformat-Definitionen (in mm)
+        const pageFormats = {
+            a4: { width: 210, height: 297, margin: 20 },
+            letter: { width: 216, height: 279, margin: 20 }
+        };
+        const pageFormat = pageFormats[format] || pageFormats.a4;
+        const contentWidth = pageFormat.width - (2 * pageFormat.margin); // 170mm für A4
+        
         // Lade html2pdf
         if (typeof html2pdf === 'undefined') {
             await this.loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js');
             await new Promise(resolve => setTimeout(resolve, 300));
         }
         
-        // Clone für Export - mit allen Styles
+        // Clone für Export - komplett neu stylen für PDF
         const clone = preview.cloneNode(true);
-        clone.style.position = 'absolute';
-        clone.style.left = '-9999px';
-        clone.style.width = format === 'letter' ? '216mm' : '210mm';
-        clone.style.minHeight = format === 'letter' ? '279mm' : '297mm';
-        clone.style.backgroundColor = this.settings.backgroundColor || '#ffffff';
-        clone.style.padding = '20mm';
+        
+        // Container für den Clone erstellen
+        const container = document.createElement('div');
+        container.style.position = 'absolute';
+        container.style.left = '-9999px';
+        container.style.top = '0';
+        container.style.width = `${pageFormat.width}mm`;
+        container.style.height = 'auto';
+        container.style.backgroundColor = this.settings.backgroundColor || '#ffffff';
+        container.style.overflow = 'visible';
+        
+        // Clone komplett neu stylen - entferne alle responsive/transform Styles
+        clone.style.position = 'relative';
+        clone.style.left = '0';
+        clone.style.top = '0';
+        clone.style.width = `${pageFormat.width}mm`;
+        clone.style.minHeight = `${pageFormat.height}mm`;
+        clone.style.maxWidth = `${pageFormat.width}mm`;
+        clone.style.height = 'auto';
+        clone.style.margin = '0';
+        clone.style.padding = `${pageFormat.margin}mm`;
         clone.style.boxSizing = 'border-box';
+        clone.style.backgroundColor = this.settings.backgroundColor || '#ffffff';
+        clone.style.transform = 'none';
+        clone.style.transformOrigin = 'top left';
+        clone.style.overflow = 'visible';
         
         // Stelle sicher, dass alle Styles übernommen werden
         const computedStyle = window.getComputedStyle(preview);
@@ -4396,10 +4423,67 @@ class DesignEditor {
         clone.style.color = computedStyle.color;
         clone.style.lineHeight = computedStyle.lineHeight;
         
-        document.body.appendChild(clone);
+        // Füge Print-CSS hinzu für korrekte Seitenumbrüche
+        const printStyle = document.createElement('style');
+        printStyle.id = 'pdf-export-print-styles';
+        printStyle.textContent = `
+            /* PDF Export Styles - Korrekte Seitenumbrüche */
+            .pdf-export-container * {
+                max-width: ${contentWidth}mm !important;
+                box-sizing: border-box !important;
+            }
+            
+            .pdf-export-container .resume-preview-columns {
+                max-width: ${pageFormat.width}mm !important;
+                margin-left: -${pageFormat.margin}mm !important;
+                margin-right: -${pageFormat.margin}mm !important;
+            }
+            
+            .pdf-export-container .resume-preview-column {
+                max-width: 100% !important;
+            }
+            
+            .pdf-export-container .resume-preview-section {
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
+            
+            .pdf-export-container .resume-preview-item {
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
+            
+            .pdf-export-container img {
+                max-width: ${contentWidth}mm !important;
+                height: auto !important;
+            }
+            
+            /* Verhindere ungewollte Umbrüche */
+            .pdf-export-container .resume-preview-header {
+                page-break-after: avoid;
+                break-after: avoid;
+            }
+            
+            .pdf-export-container .resume-preview-section-title {
+                page-break-after: avoid;
+                break-after: avoid;
+            }
+            
+            /* Erlaube Seitenumbrüche zwischen Sections */
+            .pdf-export-container .resume-preview-section + .resume-preview-section {
+                page-break-before: auto;
+                break-before: auto;
+            }
+        `;
         
-        // Warte kurz, damit der Clone gerendert wird
-        await new Promise(resolve => setTimeout(resolve, 100));
+        // Markiere Clone für Print-Styles
+        clone.classList.add('pdf-export-container');
+        container.appendChild(clone);
+        document.head.appendChild(printStyle);
+        document.body.appendChild(container);
+        
+        // Warte, damit der Clone vollständig gerendert wird
+        await new Promise(resolve => setTimeout(resolve, 200));
         
         const opt = {
             margin: [0, 0, 0, 0],
@@ -4411,7 +4495,10 @@ class DesignEditor {
                 logging: false,
                 backgroundColor: this.settings.backgroundColor || '#ffffff',
                 allowTaint: false,
-                removeContainer: false
+                removeContainer: false,
+                width: pageFormat.width * 3.779527559, // mm zu px (1mm = 3.779527559px bei 96dpi)
+                height: null, // Auto height
+                windowWidth: pageFormat.width * 3.779527559
             },
             jsPDF: {
                 unit: 'mm',
@@ -4419,12 +4506,21 @@ class DesignEditor {
                 orientation: 'portrait',
                 compress: true
             },
-            pagebreak: { mode: ['css', 'legacy'], avoid: ['img', '.section', '.resume-section'] }
+            pagebreak: { 
+                mode: ['css', 'legacy'], 
+                avoid: ['.resume-preview-section', '.resume-preview-item', '.resume-preview-header'],
+                before: '.resume-preview-section',
+                after: '.resume-preview-section'
+            }
         };
         
         try {
             const pdfBytes = await html2pdf().set(opt).from(clone).outputPdf('arraybuffer');
-            document.body.removeChild(clone);
+            
+            // Cleanup
+            document.body.removeChild(container);
+            const styleEl = document.getElementById('pdf-export-print-styles');
+            if (styleEl) styleEl.remove();
             
             // Nachbearbeitung mit pdf-lib für Metadaten und Seitenzahlen
             if (addMetadata || addPageNumbers) {
@@ -4433,7 +4529,10 @@ class DesignEditor {
             
             return pdfBytes;
         } catch (error) {
-            if (document.body.contains(clone)) document.body.removeChild(clone);
+            // Cleanup auch bei Fehler
+            if (document.body.contains(container)) document.body.removeChild(container);
+            const styleEl = document.getElementById('pdf-export-print-styles');
+            if (styleEl) styleEl.remove();
             throw error;
         }
     }
