@@ -105,7 +105,7 @@ Das Admin Panel muss vollständig von Netlify Functions auf AWS Lambda + API Gat
 | `s3-download-url.js` | Verschiedene Sections | 🟢 Niedrig | Niedrig | **Nicht mehr nötig** (CloudFront URLs) |
 | `api-key-auth.js` | Legacy | 🟢 Niedrig | Niedrig | **Nicht mehr verwendet** |
 | `openai-analyze.js` | ❌ Nicht verwendet | 🟢 Niedrig | Niedrig | **Kann entfernt werden** |
-| `user-profile-api.js` | `js/user-profile.js` | 🟡 Mittel | Niedrig | **Prüfen ob bereits migriert** |
+| `user-profile-api.js` | `js/user-profile.js` | 🔴 Hoch | Mittel | **Spezifische Tab-Endpoints** (`/personal`, `/applications`, `/settings`, etc.) |
 
 ### 2.3 Bereits existierende Lambda Functions
 
@@ -157,13 +157,15 @@ heroVideoSettingsResource.addMethod('POST', new apigateway.LambdaIntegration(her
 **Lambda Code:** `lambda/hero-video-settings/index.js`
 - DynamoDB: `manuel-weiss-settings` Tabelle
 - **Schema:** `settingKey: 'hero-video-url'` (Partition Key), `settingValue: <url>`, `updatedAt: <iso>`
-- GET: Settings aus DynamoDB laden (keine Auth erforderlich - öffentlich lesbar)
-- POST: Settings in DynamoDB speichern (**Auth empfohlen, aber aktuell keine in Netlify Function**)
+- **GET:** Settings aus DynamoDB laden (**Auth erforderlich - Admin-only**)
+- **POST:** Settings in DynamoDB speichern (**Auth erforderlich - Admin-only**)
+- **Auth-Implementierung:** `authUser(event)` + `isAdmin(user)` Check
 
-**⚠️ Authentifizierung:**
-- **Aktuell:** Keine Auth in Netlify Function
-- **Empfehlung:** Auth für POST/PUT hinzufügen (Admin-only)
-- **GET:** Kann öffentlich bleiben (für Frontend-Anzeige)
+**🔒 Authentifizierung:**
+- **⚠️ WICHTIG:** Alle Endpoints (GET, POST, PUT) müssen mit Authentifizierung erreichbar sein
+- **GET:** Auth erforderlich (Admin-only)
+- **POST/PUT:** Auth erforderlich (Admin-only)
+- **Keine öffentlichen Endpoints!**
 
 **Frontend Anpassung:**
 ```javascript
@@ -203,6 +205,10 @@ const heroVideoUploadLambda = new lambda.Function(this, 'HeroVideoUploadFunction
 const heroVideoUploadResource = this.api.root.addResource('hero-video-upload');
 heroVideoUploadResource.addMethod('POST', new apigateway.LambdaIntegration(heroVideoUploadLambda));
 ```
+
+**🔒 Authentifizierung:**
+- **POST:** Auth erforderlich (Admin-only)
+- **GET:** Auth erforderlich (Admin-only, falls implementiert)
 
 **Lambda Code:** `lambda/hero-video-upload/index.js`
 - S3 Presigned URL generieren für `manuel-weiss-hero-videos` Bucket
@@ -245,6 +251,7 @@ heroVideoUploadDirectResource.addMethod('POST', new apigateway.LambdaIntegration
 ```
 
 **Lambda Code:** `lambda/hero-video-upload-direct/index.js`
+- **🔒 Auth erforderlich (Admin-only)**
 - Base64 Video-Daten empfangen (max 6MB nach Base64 Encoding = ~4.5MB Video)
 - Decodieren zu Buffer
 - Validierung: Max 100MB Dateigröße
@@ -355,22 +362,77 @@ fetch(`${window.AWS_APP_CONFIG?.API_BASE}/user-profile/documents`, ...)
 
 ---
 
-### Phase 3.1: User Profile API (🟡 Priorität: Mittel)
+### Phase 3.1: User Profile API (🔴 Priorität: Hoch)
 
 #### 3.3.2 `user-profile-api.js` → Lambda
 
 **Netlify Function:** `netlify/functions/user-profile-api.js`
 
 **Verwendet in:**
-- `js/user-profile.js`
-
-**Status:** ⚠️ **Prüfen ob bereits migriert** - `backend/user-profile/handler.mjs` könnte bereits alle Endpoints abdecken
+- `js/user-profile.js` (Zeile 1613)
 
 **Endpoints (Netlify Function):**
-- Verschiedene Profile-Tabs Endpoints
-- Möglicherweise bereits durch `/user-profile/*` abgedeckt
+- `GET /personal` - Persönliche Daten laden
+- `PUT /personal` - Persönliche Daten speichern
+- `GET /applications` - Bewerbungsmanager Daten laden
+- `GET /applications/resumes` - Lebensläufe laden
+- `GET /applications/cover-letters` - Anschreiben laden
+- `GET /settings` - Einstellungen laden
+- `PUT /settings` - Einstellungen speichern
+- `GET /progress` - Fortschritt laden
+- `GET /achievements` - Erfolge laden
+- `GET /training` - Training laden
+- `GET /nutrition` - Ernährung laden
+- `GET /coach` - Coach laden
+- `GET /journal` - Tagebuch laden
 
-**Aktion:** Prüfen ob `js/user-profile.js` bereits AWS Endpoints verwendet oder noch Netlify Functions
+**Status:** ⚠️ **NICHT vollständig migriert** - `backend/user-profile/handler.mjs` hat andere Endpoint-Struktur
+
+**AWS Lambda Erstellen:**
+```typescript
+const userProfileApiLambda = new lambda.Function(this, 'UserProfileApiFunction', {
+  functionName: 'website-user-profile-api',
+  runtime: lambda.Runtime.NODEJS_18_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset('../lambda/user-profile-api'),
+  role: lambdaRole,
+  timeout: cdk.Duration.seconds(30),
+  memorySize: 256,
+  environment: {
+    PROFILES_TABLE: 'mawps-user-profiles',
+    APPLICATIONS_TABLE: 'mawps-applications',
+    RESUMES_TABLE: 'mawps-resumes',
+    COVER_LETTERS_TABLE: 'mawps-cover-letters'
+  }
+});
+
+const userProfileApiResource = this.api.root.addResource('user-profile-api');
+userProfileApiResource.addProxy({
+  anyMethod: true,
+  defaultIntegration: new apigateway.LambdaIntegration(userProfileApiLambda)
+});
+```
+
+**Lambda Code:** `lambda/user-profile-api/index.js`
+- **🔒 Auth erforderlich für ALLE Endpoints** (JWT Token aus Header)
+- DynamoDB: `mawps-user-profiles`, `mawps-applications`, `mawps-resumes`, `mawps-cover-letters`
+- User ID wird aus JWT Token extrahiert (`extractUserId`)
+- Alle Endpoints müssen `authUser(event)` verwenden
+
+**Frontend Anpassung:**
+```javascript
+// js/user-profile.js
+// ALT:
+const apiBase = '/.netlify/functions/user-profile-api';
+
+// NEU:
+const apiBase = window.getApiUrl('USER_PROFILE_API') || `${window.AWS_APP_CONFIG?.API_BASE}/user-profile-api`;
+```
+
+**⚠️ WICHTIG:** 
+- Diese Endpoints sind spezifisch für `js/user-profile.js` Tab-Navigation
+- Können nicht einfach durch `backend/user-profile/handler.mjs` ersetzt werden
+- Separate Lambda erforderlich oder `backend/user-profile/handler.mjs` erweitern
 
 ---
 
@@ -436,7 +498,9 @@ fetch(`${window.AWS_APP_CONFIG?.API_BASE}/user-profile/documents`, ...)
 ```javascript
 const AWS_APP_CONFIG = {
   API_BASE: 'https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1',
-  // ...
+  ENDPOINTS: {
+    // ...
+  }
 };
 ```
 
@@ -445,14 +509,30 @@ const AWS_APP_CONFIG = {
 const AWS_APP_CONFIG = {
   API_BASE: 'https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1',
   
-  // Admin Panel APIs
-  HERO_VIDEO_SETTINGS: `${API_BASE}/hero-video-settings`,
-  HERO_VIDEO_UPLOAD: `${API_BASE}/hero-video-upload`,
-  HERO_VIDEO_UPLOAD_DIRECT: `${API_BASE}/hero-video-upload-direct`,
-  BEWERBUNGSPROFIL_API: `${API_BASE}/bewerbungsprofil`,
-  
-  // ...
+  ENDPOINTS: {
+    // ... bestehende Endpoints ...
+    
+    // Admin Panel APIs (🔒 ALLE mit Auth erforderlich)
+    HERO_VIDEO_SETTINGS: '/hero-video-settings',
+    HERO_VIDEO_UPLOAD: '/hero-video-upload',
+    HERO_VIDEO_UPLOAD_DIRECT: '/hero-video-upload-direct',
+    BEWERBUNGSPROFIL_API: '/bewerbungsprofil',
+    USER_PROFILE_API: '/user-profile-api',  // NEU
+    
+    // ...
+  }
 };
+```
+
+**⚠️ WICHTIG:** Alle Endpoints müssen mit Auth-Token aufgerufen werden:
+```javascript
+const response = await fetch(apiUrl, {
+  method: 'GET',
+  headers: {
+    'Authorization': `Bearer ${await getAuthToken()}`,
+    'Content-Type': 'application/json'
+  }
+});
 ```
 
 ### 4.2 `window.getApiUrl()` Funktion erweitern
@@ -578,8 +658,61 @@ fetch('/.netlify/functions/documents-api', ...)
 
 **Ersetzen durch:**
 ```javascript
-fetch(`${window.AWS_APP_CONFIG?.API_BASE}/user-profile/documents`, ...)
+const apiUrl = window.getApiUrl('USER_DOCUMENTS') || `${window.AWS_APP_CONFIG?.API_BASE}/user-profile/documents`;
+fetch(apiUrl, {
+  headers: {
+    'Authorization': `Bearer ${await getAuthToken()}`,
+    'Content-Type': 'application/json'
+  }
+});
 ```
+
+#### 4.3.5 `js/user-profile.js`
+
+**Alle Vorkommen von:**
+```javascript
+const apiBase = '/.netlify/functions/user-profile-api';
+```
+
+**Ersetzen durch:**
+```javascript
+const apiBase = window.getApiUrl('USER_PROFILE_API') || `${window.AWS_APP_CONFIG?.API_BASE}/user-profile-api`;
+```
+
+**⚠️ WICHTIG:** Alle API-Calls müssen Auth-Token enthalten:
+```javascript
+const response = await fetch(`${apiBase}${endpoint}`, {
+  headers: {
+    'Authorization': `Bearer ${token}`,
+    'Content-Type': 'application/json'
+  }
+});
+```
+
+#### 4.3.6 `js/workflow-api.js`
+
+**Aktuell:**
+```javascript
+this.apiBaseUrl = '/.netlify/functions/user-data';
+```
+
+**Ersetzen durch:**
+```javascript
+this.apiBaseUrl = window.getApiUrl('USER_DATA') || `${window.AWS_APP_CONFIG?.API_BASE}/user-profile`;
+```
+
+**⚠️ WICHTIG:** Auth-Token wird bereits verwendet (Zeile 78), aber Endpoint muss angepasst werden.
+
+#### 4.3.7 `js/netlify-storage.js`
+
+**Status:** ⚠️ **Verwendet Netlify Forms, nicht Functions** - kann bleiben oder zu S3 migriert werden (niedrige Priorität)
+
+**Aktuell:**
+```javascript
+this.apiEndpoint = this.isNetlify ? '/.netlify/functions/images' : '/api/images';
+```
+
+**Option:** Zu S3 + Lambda migrieren (optional, niedrige Priorität)
 
 ---
 
@@ -672,28 +805,36 @@ fetch(`${window.AWS_APP_CONFIG?.API_BASE}/user-profile/documents`, ...)
 ## ✅ 6. CHECKLISTE
 
 ### Phase 1: Hero Video Functions
-- [ ] `lambda/hero-video-settings/index.js` erstellen
-- [ ] `lambda/hero-video-upload/index.js` erstellen
-- [ ] `lambda/hero-video-upload-direct/index.js` erstellen
+- [ ] `lambda/hero-video-settings/index.js` erstellen (**🔒 Auth für ALLE Endpoints**)
+- [ ] `lambda/hero-video-upload/index.js` erstellen (**🔒 Auth erforderlich**)
+- [ ] `lambda/hero-video-upload-direct/index.js` erstellen (**🔒 Auth erforderlich**)
 - [ ] CDK Stack erweitern (Lambdas + Routes)
 - [ ] `js/aws-app-config.js` erweitern
-- [ ] `js/admin/sections/hero-video.js` anpassen
-- [ ] `js/admin-hero-fallback-widget.js` anpassen
-- [ ] Testen (Settings laden/speichern, Upload)
+- [ ] `js/admin/sections/hero-video.js` anpassen (Auth-Token hinzufügen)
+- [ ] `js/admin-hero-fallback-widget.js` anpassen (Auth-Token hinzufügen)
+- [ ] Testen (Settings laden/speichern, Upload) - **mit Auth**
 - [ ] Deployen
 
 ### Phase 2: Bewerbungsprofil API
-- [ ] `lambda/bewerbungsprofil/index.js` erstellen
+- [ ] `lambda/bewerbungsprofil/index.js` erstellen (**🔒 Auth erforderlich**)
 - [ ] CDK Stack erweitern (Lambda + Routes)
 - [ ] `js/aws-app-config.js` erweitern
-- [ ] `js/admin-bewerbungsprofil-manager.js` anpassen
-- [ ] Testen (GET/POST/DELETE)
+- [ ] `js/admin-bewerbungsprofil-manager.js` anpassen (Auth-Token hinzufügen)
+- [ ] Testen (GET/POST/DELETE) - **mit Auth**
 - [ ] Deployen
 
 ### Phase 3: Documents API
-- [ ] Prüfen ob `/user-profile/documents` bereits funktioniert
-- [ ] `admin-script.js` anpassen (optional)
-- [ ] Testen
+- [ ] Prüfen ob `/user-profile/documents` bereits funktioniert (**🔒 Auth erforderlich**)
+- [ ] `admin-script.js` anpassen (Auth-Token hinzufügen)
+- [ ] Testen - **mit Auth**
+- [ ] Deployen
+
+### Phase 3.1: User Profile API
+- [ ] `lambda/user-profile-api/index.js` erstellen (**🔒 Auth für ALLE Endpoints**)
+- [ ] CDK Stack erweitern (Lambda + Proxy Route)
+- [ ] `js/aws-app-config.js` erweitern (`USER_PROFILE_API`)
+- [ ] `js/user-profile.js` anpassen (Auth-Token bereits vorhanden, nur Endpoint ändern)
+- [ ] Testen (alle Tab-Endpoints) - **mit Auth**
 - [ ] Deployen
 
 ### Phase 4: Cleanup
@@ -719,36 +860,43 @@ fetch(`${window.AWS_APP_CONFIG?.API_BASE}/user-profile/documents`, ...)
 - Alle Admin-Endpoints sollten `authUser(event)` verwenden
 - Zusätzlich: Admin-Group-Check in Lambda für kritische Operationen
 
-**Beispiel für Hero Video Settings (mit optionaler Auth):**
+**Beispiel für Hero Video Settings (Auth ERFORDERLICH):**
 ```javascript
 // lambda/hero-video-settings/index.js
 const { authUser, isAdmin } = require('../shared/auth');
 
 exports.handler = async (event) => {
-  // GET: Öffentlich (keine Auth)
+  // CORS Preflight
+  if (event.httpMethod === 'OPTIONS') {
+    return { statusCode: 200, headers: CORS_HEADERS, body: '' };
+  }
+
+  // 🔒 Auth ERFORDERLICH für ALLE Endpoints
+  let user;
+  try {
+    user = authUser(event);
+    if (!isAdmin(user)) {
+      return {
+        statusCode: 403,
+        headers: CORS_HEADERS,
+        body: JSON.stringify({ error: 'Admin access required' })
+      };
+    }
+  } catch (e) {
+    return {
+      statusCode: 401,
+      headers: CORS_HEADERS,
+      body: JSON.stringify({ error: 'Unauthorized', message: 'Authentication required' })
+    };
+  }
+  
+  // GET: Settings laden (nur für Admin)
   if (event.httpMethod === 'GET') {
     // ... load settings
   }
   
-  // POST/PUT: Auth erforderlich
+  // POST/PUT: Settings speichern (nur für Admin)
   if (event.httpMethod === 'POST' || event.httpMethod === 'PUT') {
-    let user = null;
-    try {
-      user = authUser(event);
-      if (!isAdmin(user)) {
-        return {
-          statusCode: 403,
-          headers: CORS_HEADERS,
-          body: JSON.stringify({ error: 'Admin access required' })
-        };
-      }
-    } catch (e) {
-      // Optional: Warnung loggen, aber trotzdem erlauben (für Kompatibilität)
-      console.warn('⚠️ Unauthenticated POST to hero-video-settings');
-      // ODER: Auth erzwingen
-      // return { statusCode: 401, ... };
-    }
-    
     // ... save settings
   }
 };
@@ -989,12 +1137,12 @@ aws logs create-log-group --log-group-name /aws/lambda/website-hero-video-settin
 
 | Phase | Dauer | Status | Details |
 |-------|-------|--------|---------|
-| Phase 1: Hero Video Functions | 3-4 Stunden | ⏳ Pending | Settings (1h), Upload (1h), Upload-Direct (1.5h), Testing (0.5h) |
-| Phase 2: Bewerbungsprofil API | 1-2 Stunden | ⏳ Pending | Lambda (1h), Testing (0.5h) |
-| Phase 3: Documents API | 0.5 Stunden | ⏳ Pending | Nur Frontend-Anpassung |
-| Phase 3.1: User Profile API | 0.5 Stunden | ⏳ Pending | Prüfung + ggf. Anpassung |
+| Phase 1: Hero Video Functions | 4-5 Stunden | ⏳ Pending | Settings (1.5h), Upload (1h), Upload-Direct (1.5h), Auth-Integration (0.5h), Testing (0.5h) |
+| Phase 2: Bewerbungsprofil API | 1.5-2 Stunden | ⏳ Pending | Lambda (1h), Auth-Integration (0.25h), Testing (0.5h) |
+| Phase 3: Documents API | 0.5 Stunden | ⏳ Pending | Frontend-Anpassung + Auth |
+| Phase 3.1: User Profile API | 2-3 Stunden | ⏳ Pending | Lambda (1.5h), Auth-Integration (0.25h), Testing (0.75h) |
 | Phase 4: Cleanup | 0.5 Stunden | ⏳ Pending | Netlify Functions entfernen |
-| **Gesamt** | **5.5-7.5 Stunden** | ⏳ Pending | Mit Puffer für Testing |
+| **Gesamt** | **8.5-11 Stunden** | ⏳ Pending | Mit Puffer für Testing + Auth-Integration |
 
 ---
 
@@ -1015,9 +1163,13 @@ aws logs create-log-group --log-group-name /aws/lambda/website-hero-video-settin
 
 ### 14.3 Authentifizierung
 
-- **Hero Video Settings:** Aktuell KEINE Auth (öffentlich lesbar)
-- **Empfehlung:** Auth für POST/PUT hinzufügen (Admin-only)
-- **GET:** Kann öffentlich bleiben (für Frontend)
+- **⚠️ WICHTIG:** **ALLE Endpoints müssen mit Authentifizierung erreichbar sein**
+- **Hero Video Settings:** Auth ERFORDERLICH für GET, POST, PUT (Admin-only)
+- **Hero Video Upload:** Auth ERFORDERLICH (Admin-only)
+- **Hero Video Upload Direct:** Auth ERFORDERLICH (Admin-only)
+- **Bewerbungsprofil:** Auth ERFORDERLICH (User + Admin)
+- **User Profile API:** Auth ERFORDERLICH für ALLE Endpoints (User)
+- **Keine öffentlichen Endpoints!**
 
 ### 14.4 Upload-Strategien
 
@@ -1044,23 +1196,25 @@ aws logs create-log-group --log-group-name /aws/lambda/website-hero-video-settin
 ## ✅ 15. VOLLSTÄNDIGKEITS-CHECKLISTE
 
 ### Backend
-- [x] Hero Video Settings Lambda
-- [x] Hero Video Upload Lambda
-- [x] Hero Video Upload Direct Lambda (mit DynamoDB Save!)
-- [x] Bewerbungsprofil Lambda
-- [x] Documents API Status geprüft
-- [x] User Profile API Status geprüft
+- [x] Hero Video Settings Lambda (**🔒 Auth für ALLE Endpoints**)
+- [x] Hero Video Upload Lambda (**🔒 Auth erforderlich**)
+- [x] Hero Video Upload Direct Lambda (**🔒 Auth erforderlich**, mit DynamoDB Save!)
+- [x] Bewerbungsprofil Lambda (**🔒 Auth erforderlich**)
+- [x] User Profile API Lambda (**🔒 Auth für ALLE Endpoints**)
+- [x] Documents API Status geprüft (**🔒 Auth erforderlich**)
 - [x] DynamoDB Schema dokumentiert
-- [x] Authentifizierung dokumentiert
+- [x] Authentifizierung dokumentiert (**ALLE Endpoints mit Auth**)
 - [x] CORS konfiguriert
 
 ### Frontend
-- [x] `js/aws-app-config.js` erweitern
-- [x] `window.getApiUrl()` erweitern
-- [x] `js/admin/sections/hero-video.js` (5 Stellen)
-- [x] `js/admin-hero-fallback-widget.js`
-- [x] `js/admin-bewerbungsprofil-manager.js`
-- [x] `admin-script.js` (optional)
+- [x] `js/aws-app-config.js` erweitern (alle neuen Endpoints)
+- [x] `window.getApiUrl()` erweitern (inkl. `USER_PROFILE_API`)
+- [x] `js/admin/sections/hero-video.js` (5 Stellen, **Auth-Token hinzufügen**)
+- [x] `js/admin-hero-fallback-widget.js` (**Auth-Token hinzufügen**)
+- [x] `js/admin-bewerbungsprofil-manager.js` (**Auth-Token hinzufügen**)
+- [x] `js/user-profile.js` (**Endpoint ändern, Auth bereits vorhanden**)
+- [x] `js/workflow-api.js` (**Endpoint ändern, Auth bereits vorhanden**)
+- [x] `admin-script.js` (optional, **Auth-Token hinzufügen**)
 
 ### Infrastructure
 - [x] CDK Stack erweitern
