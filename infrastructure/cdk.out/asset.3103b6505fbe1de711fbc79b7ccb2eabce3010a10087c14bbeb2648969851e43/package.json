@@ -1,0 +1,7 @@
+{
+  "name": "job-parser-lambda",
+  "version": "1.0.0",
+  "description": "AWS Lambda for job posting parsing",
+  "main": "index.js",
+  "dependencies": {}
+}

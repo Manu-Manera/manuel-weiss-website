@@ -1,28 +1,33 @@
 {
   "version": "48.0.0",
   "artifacts": {
-    "game-websocket-prod.assets": {
+    "manuel-weiss-website-api.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "game-websocket-prod.assets.json",
+        "file": "manuel-weiss-website-api.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "game-websocket-prod": {
+    "manuel-weiss-website-api": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://038333965110/eu-central-1",
       "properties": {
-        "templateFile": "game-websocket-prod.template.json",
+        "templateFile": "manuel-weiss-website-api.template.json",
         "terminationProtection": false,
+        "tags": {
+          "ManagedBy": "CDK",
+          "Project": "manuel-weiss-website",
+          "Purpose": "Netlify-zu-AWS-Migration"
+        },
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::038333965110:role/cdk-hnb659fds-deploy-role-038333965110-eu-central-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::038333965110:role/cdk-hnb659fds-cfn-exec-role-038333965110-eu-central-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-038333965110-eu-central-1/fca13683db5a338209371d799cda498437ebb242fce106ad6e44b1fe868d97bb.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-038333965110-eu-central-1/01d17271529511f6f4cda393f653f16ff1db4231edbc2feb2fcd560e8eef29e1.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "game-websocket-prod.assets"
+          "manuel-weiss-website-api.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::038333965110:role/cdk-hnb659fds-lookup-role-038333965110-eu-central-1",
@@ -31,201 +36,1020 @@
         }
       },
       "dependencies": [
-        "game-websocket-prod.assets"
+        "manuel-weiss-website-api.assets"
       ],
       "metadata": {
-        "/game-websocket-prod/GameConnections": [
+        "/manuel-weiss-website-api": [
           {
-            "type": "aws:cdk:hasPhysicalName",
-            "data": {
-              "Ref": "GameConnections6A1EF685"
-            }
+            "type": "aws:cdk:stack-tags",
+            "data": [
+              {
+                "Key": "ManagedBy",
+                "Value": "CDK"
+              },
+              {
+                "Key": "Project",
+                "Value": "manuel-weiss-website"
+              },
+              {
+                "Key": "Purpose",
+                "Value": "Netlify-zu-AWS-Migration"
+              }
+            ]
           }
         ],
-        "/game-websocket-prod/GameConnections/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "GameConnections6A1EF685"
-          }
-        ],
-        "/game-websocket-prod/ActiveGames": [
-          {
-            "type": "aws:cdk:hasPhysicalName",
-            "data": {
-              "Ref": "ActiveGamesA5837A12"
-            }
-          }
-        ],
-        "/game-websocket-prod/ActiveGames/Resource": [
+        "/manuel-weiss-website-api/WebsiteLambdaRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ActiveGamesA5837A12"
+            "data": "WebsiteLambdaRole06E6525E"
           }
         ],
-        "/game-websocket-prod/ConnectHandler/ServiceRole/Resource": [
+        "/manuel-weiss-website-api/WebsiteLambdaRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ConnectHandlerServiceRole7E4A9B1F"
+            "data": "WebsiteLambdaRoleDefaultPolicyDA4C46DC"
           }
         ],
-        "/game-websocket-prod/ConnectHandler/ServiceRole/DefaultPolicy/Resource": [
+        "/manuel-weiss-website-api/WebsiteAPI/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ConnectHandlerServiceRoleDefaultPolicy7DE94863"
+            "data": "WebsiteAPI5DE54201"
           }
         ],
-        "/game-websocket-prod/ConnectHandler/Resource": [
+        "/manuel-weiss-website-api/WebsiteAPI/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ConnectHandler2FFD52D8"
+            "data": "WebsiteAPIDeploymentABEB4023efcd1d29f2ebd4c15186ed478ac72a95"
           }
         ],
-        "/game-websocket-prod/DisconnectHandler/ServiceRole/Resource": [
+        "/manuel-weiss-website-api/WebsiteAPI/DeploymentStage.v1/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DisconnectHandlerServiceRoleE54F14F9"
+            "data": "WebsiteAPIDeploymentStagev1E4D7146D"
           }
         ],
-        "/game-websocket-prod/DisconnectHandler/ServiceRole/DefaultPolicy/Resource": [
+        "/manuel-weiss-website-api/WebsiteAPI/Endpoint": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DisconnectHandlerServiceRoleDefaultPolicy1800B9E5"
+            "data": "WebsiteAPIEndpoint9CDAAF55"
           }
         ],
-        "/game-websocket-prod/DisconnectHandler/Resource": [
+        "/manuel-weiss-website-api/WebsiteAPI/Default/OPTIONS/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DisconnectHandlerCB7ED6F7"
+            "data": "WebsiteAPIOPTIONS3299E7DA"
           }
         ],
-        "/game-websocket-prod/MessageHandler/ServiceRole/Resource": [
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-data/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MessageHandlerServiceRoleDF05266A"
+            "data": "WebsiteAPIuserdata30E1CF13"
           }
         ],
-        "/game-websocket-prod/MessageHandler/ServiceRole/DefaultPolicy/Resource": [
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-data/OPTIONS/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MessageHandlerServiceRoleDefaultPolicyD818A6AA"
+            "data": "WebsiteAPIuserdataOPTIONS0B920E68"
           }
         ],
-        "/game-websocket-prod/MessageHandler/Resource": [
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-data/GET/ApiPermission.manuelweisswebsiteapiWebsiteAPIB87C94C7.GET..user-data": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MessageHandlerDFBBCD6B"
+            "data": "WebsiteAPIuserdataGETApiPermissionmanuelweisswebsiteapiWebsiteAPIB87C94C7GETuserdataA54BDA4B"
           }
         ],
-        "/game-websocket-prod/GameWebSocketApi/Resource": [
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-data/GET/ApiPermission.Test.manuelweisswebsiteapiWebsiteAPIB87C94C7.GET..user-data": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "GameWebSocketApiD1AC921A"
+            "data": "WebsiteAPIuserdataGETApiPermissionTestmanuelweisswebsiteapiWebsiteAPIB87C94C7GETuserdataA861D7DB"
           }
         ],
-        "/game-websocket-prod/GameWebSocketApi/$connect-Route/ConnectIntegration-Permission": [
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-data/GET/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "GameWebSocketApiconnectRouteConnectIntegrationPermission1BD3B0C5"
+            "data": "WebsiteAPIuserdataGETCFC7EF7C"
           }
         ],
-        "/game-websocket-prod/GameWebSocketApi/$connect-Route/ConnectIntegration/Resource": [
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-data/POST/ApiPermission.manuelweisswebsiteapiWebsiteAPIB87C94C7.POST..user-data": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "GameWebSocketApiconnectRouteConnectIntegrationAD630660"
+            "data": "WebsiteAPIuserdataPOSTApiPermissionmanuelweisswebsiteapiWebsiteAPIB87C94C7POSTuserdataA030FBDA"
           }
         ],
-        "/game-websocket-prod/GameWebSocketApi/$connect-Route/Resource": [
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-data/POST/ApiPermission.Test.manuelweisswebsiteapiWebsiteAPIB87C94C7.POST..user-data": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "GameWebSocketApiconnectRouteC8D3B859"
+            "data": "WebsiteAPIuserdataPOSTApiPermissionTestmanuelweisswebsiteapiWebsiteAPIB87C94C7POSTuserdataE89C2E0B"
           }
         ],
-        "/game-websocket-prod/GameWebSocketApi/$disconnect-Route/DisconnectIntegration-Permission": [
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-data/POST/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "GameWebSocketApidisconnectRouteDisconnectIntegrationPermissionCF93779F"
+            "data": "WebsiteAPIuserdataPOST8144772E"
           }
         ],
-        "/game-websocket-prod/GameWebSocketApi/$disconnect-Route/DisconnectIntegration/Resource": [
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-data/PUT/ApiPermission.manuelweisswebsiteapiWebsiteAPIB87C94C7.PUT..user-data": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "GameWebSocketApidisconnectRouteDisconnectIntegration1E163EF6"
+            "data": "WebsiteAPIuserdataPUTApiPermissionmanuelweisswebsiteapiWebsiteAPIB87C94C7PUTuserdata1B957B0B"
           }
         ],
-        "/game-websocket-prod/GameWebSocketApi/$disconnect-Route/Resource": [
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-data/PUT/ApiPermission.Test.manuelweisswebsiteapiWebsiteAPIB87C94C7.PUT..user-data": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "GameWebSocketApidisconnectRouteC8B02477"
+            "data": "WebsiteAPIuserdataPUTApiPermissionTestmanuelweisswebsiteapiWebsiteAPIB87C94C7PUTuserdata5F85C225"
           }
         ],
-        "/game-websocket-prod/GameWebSocketApi/$default-Route/MessageIntegration-Permission": [
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-data/PUT/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "GameWebSocketApidefaultRouteMessageIntegrationPermission8238C45A"
+            "data": "WebsiteAPIuserdataPUT38BEAD94"
           }
         ],
-        "/game-websocket-prod/GameWebSocketApi/$default-Route/MessageIntegration/Resource": [
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-data/DELETE/ApiPermission.manuelweisswebsiteapiWebsiteAPIB87C94C7.DELETE..user-data": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "GameWebSocketApidefaultRouteMessageIntegrationFE1EC761"
+            "data": "WebsiteAPIuserdataDELETEApiPermissionmanuelweisswebsiteapiWebsiteAPIB87C94C7DELETEuserdata3B2186F2"
           }
         ],
-        "/game-websocket-prod/GameWebSocketApi/$default-Route/Resource": [
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-data/DELETE/ApiPermission.Test.manuelweisswebsiteapiWebsiteAPIB87C94C7.DELETE..user-data": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "GameWebSocketApidefaultRoute074205CB"
+            "data": "WebsiteAPIuserdataDELETEApiPermissionTestmanuelweisswebsiteapiWebsiteAPIB87C94C7DELETEuserdata3C19B1E1"
           }
         ],
-        "/game-websocket-prod/GameWebSocketStage/Resource": [
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-data/DELETE/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "GameWebSocketStageEBF4D039"
+            "data": "WebsiteAPIuserdataDELETE48A4857C"
           }
         ],
-        "/game-websocket-prod/WebSocketUrl": [
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-data/profile/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "WebSocketUrl"
+            "data": "WebsiteAPIuserdataprofile2B3E3D3C"
           }
         ],
-        "/game-websocket-prod/WebSocketApiId": [
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-data/profile/OPTIONS/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "WebSocketApiId"
+            "data": "WebsiteAPIuserdataprofileOPTIONS268854C8"
           }
         ],
-        "/game-websocket-prod/ConnectionsTableName": [
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-data/profile/GET/ApiPermission.manuelweisswebsiteapiWebsiteAPIB87C94C7.GET..user-data.profile": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ConnectionsTableName"
+            "data": "WebsiteAPIuserdataprofileGETApiPermissionmanuelweisswebsiteapiWebsiteAPIB87C94C7GETuserdataprofile677676FE"
           }
         ],
-        "/game-websocket-prod/GamesTableName": [
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-data/profile/GET/ApiPermission.Test.manuelweisswebsiteapiWebsiteAPIB87C94C7.GET..user-data.profile": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "GamesTableName"
+            "data": "WebsiteAPIuserdataprofileGETApiPermissionTestmanuelweisswebsiteapiWebsiteAPIB87C94C7GETuserdataprofile9DF8AF57"
           }
         ],
-        "/game-websocket-prod/CDKMetadata/Default": [
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-data/profile/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIuserdataprofileGETFF1CBA27"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-data/profile/POST/ApiPermission.manuelweisswebsiteapiWebsiteAPIB87C94C7.POST..user-data.profile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIuserdataprofilePOSTApiPermissionmanuelweisswebsiteapiWebsiteAPIB87C94C7POSTuserdataprofile2EEA6548"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-data/profile/POST/ApiPermission.Test.manuelweisswebsiteapiWebsiteAPIB87C94C7.POST..user-data.profile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIuserdataprofilePOSTApiPermissionTestmanuelweisswebsiteapiWebsiteAPIB87C94C7POSTuserdataprofileA792739B"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-data/profile/POST/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIuserdataprofilePOST069FDAE8"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-data/profile/PUT/ApiPermission.manuelweisswebsiteapiWebsiteAPIB87C94C7.PUT..user-data.profile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIuserdataprofilePUTApiPermissionmanuelweisswebsiteapiWebsiteAPIB87C94C7PUTuserdataprofile0202A25C"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-data/profile/PUT/ApiPermission.Test.manuelweisswebsiteapiWebsiteAPIB87C94C7.PUT..user-data.profile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIuserdataprofilePUTApiPermissionTestmanuelweisswebsiteapiWebsiteAPIB87C94C7PUTuserdataprofile1199A55A"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-data/profile/PUT/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIuserdataprofilePUT3E4D5614"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-data/resumes/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIuserdataresumes0AA60CB1"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-data/resumes/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIuserdataresumesOPTIONSC473DC32"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-data/resumes/GET/ApiPermission.manuelweisswebsiteapiWebsiteAPIB87C94C7.GET..user-data.resumes": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIuserdataresumesGETApiPermissionmanuelweisswebsiteapiWebsiteAPIB87C94C7GETuserdataresumesDFE2668A"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-data/resumes/GET/ApiPermission.Test.manuelweisswebsiteapiWebsiteAPIB87C94C7.GET..user-data.resumes": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIuserdataresumesGETApiPermissionTestmanuelweisswebsiteapiWebsiteAPIB87C94C7GETuserdataresumes09B28DF1"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-data/resumes/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIuserdataresumesGET3DF256F4"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-data/resumes/POST/ApiPermission.manuelweisswebsiteapiWebsiteAPIB87C94C7.POST..user-data.resumes": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIuserdataresumesPOSTApiPermissionmanuelweisswebsiteapiWebsiteAPIB87C94C7POSTuserdataresumes752AD27A"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-data/resumes/POST/ApiPermission.Test.manuelweisswebsiteapiWebsiteAPIB87C94C7.POST..user-data.resumes": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIuserdataresumesPOSTApiPermissionTestmanuelweisswebsiteapiWebsiteAPIB87C94C7POSTuserdataresumes95421C50"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-data/resumes/POST/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIuserdataresumesPOST91B7A306"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-data/resumes/DELETE/ApiPermission.manuelweisswebsiteapiWebsiteAPIB87C94C7.DELETE..user-data.resumes": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIuserdataresumesDELETEApiPermissionmanuelweisswebsiteapiWebsiteAPIB87C94C7DELETEuserdataresumes3645937C"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-data/resumes/DELETE/ApiPermission.Test.manuelweisswebsiteapiWebsiteAPIB87C94C7.DELETE..user-data.resumes": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIuserdataresumesDELETEApiPermissionTestmanuelweisswebsiteapiWebsiteAPIB87C94C7DELETEuserdataresumes00690E7F"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-data/resumes/DELETE/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIuserdataresumesDELETE7F8D989F"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-data/documents/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIuserdatadocumentsF4DC2A7D"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-data/documents/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIuserdatadocumentsOPTIONSB9FAB179"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-data/documents/GET/ApiPermission.manuelweisswebsiteapiWebsiteAPIB87C94C7.GET..user-data.documents": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIuserdatadocumentsGETApiPermissionmanuelweisswebsiteapiWebsiteAPIB87C94C7GETuserdatadocumentsE41038BA"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-data/documents/GET/ApiPermission.Test.manuelweisswebsiteapiWebsiteAPIB87C94C7.GET..user-data.documents": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIuserdatadocumentsGETApiPermissionTestmanuelweisswebsiteapiWebsiteAPIB87C94C7GETuserdatadocumentsEBAFB715"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-data/documents/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIuserdatadocumentsGETED801B1C"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-data/documents/POST/ApiPermission.manuelweisswebsiteapiWebsiteAPIB87C94C7.POST..user-data.documents": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIuserdatadocumentsPOSTApiPermissionmanuelweisswebsiteapiWebsiteAPIB87C94C7POSTuserdatadocuments08CF9377"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-data/documents/POST/ApiPermission.Test.manuelweisswebsiteapiWebsiteAPIB87C94C7.POST..user-data.documents": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIuserdatadocumentsPOSTApiPermissionTestmanuelweisswebsiteapiWebsiteAPIB87C94C7POSTuserdatadocuments61E87150"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-data/documents/POST/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIuserdatadocumentsPOST0BBE9AE4"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-data/documents/DELETE/ApiPermission.manuelweisswebsiteapiWebsiteAPIB87C94C7.DELETE..user-data.documents": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIuserdatadocumentsDELETEApiPermissionmanuelweisswebsiteapiWebsiteAPIB87C94C7DELETEuserdatadocumentsCF9A48E3"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-data/documents/DELETE/ApiPermission.Test.manuelweisswebsiteapiWebsiteAPIB87C94C7.DELETE..user-data.documents": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIuserdatadocumentsDELETEApiPermissionTestmanuelweisswebsiteapiWebsiteAPIB87C94C7DELETEuserdatadocumentsAA38F91D"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-data/documents/DELETE/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIuserdatadocumentsDELETEDCB14E0E"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-data/workflows/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIuserdataworkflowsA2ACAE15"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-data/workflows/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIuserdataworkflowsOPTIONSA48C4B2B"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-data/workflows/{proxy+}/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIuserdataworkflowsproxy8FB21782"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-data/workflows/{proxy+}/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIuserdataworkflowsproxyOPTIONS53A890DE"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-data/workflows/{proxy+}/ANY/ApiPermission.manuelweisswebsiteapiWebsiteAPIB87C94C7.ANY..user-data.workflows.{proxy+}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIuserdataworkflowsproxyANYApiPermissionmanuelweisswebsiteapiWebsiteAPIB87C94C7ANYuserdataworkflowsproxy9968A073"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-data/workflows/{proxy+}/ANY/ApiPermission.Test.manuelweisswebsiteapiWebsiteAPIB87C94C7.ANY..user-data.workflows.{proxy+}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIuserdataworkflowsproxyANYApiPermissionTestmanuelweisswebsiteapiWebsiteAPIB87C94C7ANYuserdataworkflowsproxy64C785CE"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-data/workflows/{proxy+}/ANY/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIuserdataworkflowsproxyANYBD2C5CCE"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/snowflake-highscores/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIsnowflakehighscores05F00463"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/snowflake-highscores/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIsnowflakehighscoresOPTIONSCCE6CE7F"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/snowflake-highscores/GET/ApiPermission.manuelweisswebsiteapiWebsiteAPIB87C94C7.GET..snowflake-highscores": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIsnowflakehighscoresGETApiPermissionmanuelweisswebsiteapiWebsiteAPIB87C94C7GETsnowflakehighscores5FF65DD3"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/snowflake-highscores/GET/ApiPermission.Test.manuelweisswebsiteapiWebsiteAPIB87C94C7.GET..snowflake-highscores": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIsnowflakehighscoresGETApiPermissionTestmanuelweisswebsiteapiWebsiteAPIB87C94C7GETsnowflakehighscores8B0A60CA"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/snowflake-highscores/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIsnowflakehighscoresGETA5D64BF1"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/snowflake-highscores/POST/ApiPermission.manuelweisswebsiteapiWebsiteAPIB87C94C7.POST..snowflake-highscores": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIsnowflakehighscoresPOSTApiPermissionmanuelweisswebsiteapiWebsiteAPIB87C94C7POSTsnowflakehighscoresE8DFB69A"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/snowflake-highscores/POST/ApiPermission.Test.manuelweisswebsiteapiWebsiteAPIB87C94C7.POST..snowflake-highscores": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIsnowflakehighscoresPOSTApiPermissionTestmanuelweisswebsiteapiWebsiteAPIB87C94C7POSTsnowflakehighscores62E3BC41"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/snowflake-highscores/POST/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIsnowflakehighscoresPOST3FD40DAA"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/snowflake-highscores/DELETE/ApiPermission.manuelweisswebsiteapiWebsiteAPIB87C94C7.DELETE..snowflake-highscores": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIsnowflakehighscoresDELETEApiPermissionmanuelweisswebsiteapiWebsiteAPIB87C94C7DELETEsnowflakehighscoresD24FFD5B"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/snowflake-highscores/DELETE/ApiPermission.Test.manuelweisswebsiteapiWebsiteAPIB87C94C7.DELETE..snowflake-highscores": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIsnowflakehighscoresDELETEApiPermissionTestmanuelweisswebsiteapiWebsiteAPIB87C94C7DELETEsnowflakehighscoresDE16EA0F"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/snowflake-highscores/DELETE/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIsnowflakehighscoresDELETE294180A8"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/hero-video/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIherovideo6D9A046D"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/hero-video/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIherovideoOPTIONS9A11FD4C"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/hero-video/settings/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIherovideosettings12153D67"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/hero-video/settings/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIherovideosettingsOPTIONS385AFE11"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/hero-video/settings/GET/ApiPermission.manuelweisswebsiteapiWebsiteAPIB87C94C7.GET..hero-video.settings": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIherovideosettingsGETApiPermissionmanuelweisswebsiteapiWebsiteAPIB87C94C7GETherovideosettings22CC57ED"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/hero-video/settings/GET/ApiPermission.Test.manuelweisswebsiteapiWebsiteAPIB87C94C7.GET..hero-video.settings": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIherovideosettingsGETApiPermissionTestmanuelweisswebsiteapiWebsiteAPIB87C94C7GETherovideosettings4F423B7D"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/hero-video/settings/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIherovideosettingsGET011C2806"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/hero-video/settings/POST/ApiPermission.manuelweisswebsiteapiWebsiteAPIB87C94C7.POST..hero-video.settings": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIherovideosettingsPOSTApiPermissionmanuelweisswebsiteapiWebsiteAPIB87C94C7POSTherovideosettingsA322CD97"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/hero-video/settings/POST/ApiPermission.Test.manuelweisswebsiteapiWebsiteAPIB87C94C7.POST..hero-video.settings": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIherovideosettingsPOSTApiPermissionTestmanuelweisswebsiteapiWebsiteAPIB87C94C7POSTherovideosettings6C1832FC"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/hero-video/settings/POST/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIherovideosettingsPOST4C27E110"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/hero-video/settings/PUT/ApiPermission.manuelweisswebsiteapiWebsiteAPIB87C94C7.PUT..hero-video.settings": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIherovideosettingsPUTApiPermissionmanuelweisswebsiteapiWebsiteAPIB87C94C7PUTherovideosettings4933E500"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/hero-video/settings/PUT/ApiPermission.Test.manuelweisswebsiteapiWebsiteAPIB87C94C7.PUT..hero-video.settings": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIherovideosettingsPUTApiPermissionTestmanuelweisswebsiteapiWebsiteAPIB87C94C7PUTherovideosettingsF696445A"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/hero-video/settings/PUT/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIherovideosettingsPUTADA25296"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/hero-video/upload/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIherovideouploadB7267AFC"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/hero-video/upload/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIherovideouploadOPTIONS831670D1"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/hero-video/upload/POST/ApiPermission.manuelweisswebsiteapiWebsiteAPIB87C94C7.POST..hero-video.upload": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIherovideouploadPOSTApiPermissionmanuelweisswebsiteapiWebsiteAPIB87C94C7POSTherovideouploadCF03AA9E"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/hero-video/upload/POST/ApiPermission.Test.manuelweisswebsiteapiWebsiteAPIB87C94C7.POST..hero-video.upload": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIherovideouploadPOSTApiPermissionTestmanuelweisswebsiteapiWebsiteAPIB87C94C7POSTherovideouploadEF9885CC"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/hero-video/upload/POST/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIherovideouploadPOST688D0D36"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/hero-video/upload/GET/ApiPermission.manuelweisswebsiteapiWebsiteAPIB87C94C7.GET..hero-video.upload": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIherovideouploadGETApiPermissionmanuelweisswebsiteapiWebsiteAPIB87C94C7GETherovideoupload59BAB0C0"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/hero-video/upload/GET/ApiPermission.Test.manuelweisswebsiteapiWebsiteAPIB87C94C7.GET..hero-video.upload": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIherovideouploadGETApiPermissionTestmanuelweisswebsiteapiWebsiteAPIB87C94C7GETherovideoupload95F89554"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/hero-video/upload/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIherovideouploadGET86010B9D"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/openai-proxy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIopenaiproxy5C52A162"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/openai-proxy/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIopenaiproxyOPTIONSDB5178E0"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/openai-proxy/POST/ApiPermission.manuelweisswebsiteapiWebsiteAPIB87C94C7.POST..openai-proxy": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIopenaiproxyPOSTApiPermissionmanuelweisswebsiteapiWebsiteAPIB87C94C7POSTopenaiproxy8BE44A6B"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/openai-proxy/POST/ApiPermission.Test.manuelweisswebsiteapiWebsiteAPIB87C94C7.POST..openai-proxy": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIopenaiproxyPOSTApiPermissionTestmanuelweisswebsiteapiWebsiteAPIB87C94C7POSTopenaiproxyA0D4A7BE"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/openai-proxy/POST/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIopenaiproxyPOSTF01B51F9"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/job-parser/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIjobparserBE442B8D"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/job-parser/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIjobparserOPTIONSAAC30010"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/job-parser/POST/ApiPermission.manuelweisswebsiteapiWebsiteAPIB87C94C7.POST..job-parser": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIjobparserPOSTApiPermissionmanuelweisswebsiteapiWebsiteAPIB87C94C7POSTjobparserF190B639"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/job-parser/POST/ApiPermission.Test.manuelweisswebsiteapiWebsiteAPIB87C94C7.POST..job-parser": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIjobparserPOSTApiPermissionTestmanuelweisswebsiteapiWebsiteAPIB87C94C7POSTjobparserF9E810EC"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/job-parser/POST/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIjobparserPOSTEF3AB31E"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/cv-general/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIcvgeneral0326F316"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/cv-general/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIcvgeneralOPTIONSBC1BB52C"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/cv-general/POST/ApiPermission.manuelweisswebsiteapiWebsiteAPIB87C94C7.POST..cv-general": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIcvgeneralPOSTApiPermissionmanuelweisswebsiteapiWebsiteAPIB87C94C7POSTcvgeneral9FDCDA66"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/cv-general/POST/ApiPermission.Test.manuelweisswebsiteapiWebsiteAPIB87C94C7.POST..cv-general": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIcvgeneralPOSTApiPermissionTestmanuelweisswebsiteapiWebsiteAPIB87C94C7POSTcvgeneral23B821EB"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/cv-general/POST/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIcvgeneralPOST06F0BF78"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/cv-target/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIcvtargetB62FFCEB"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/cv-target/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIcvtargetOPTIONS3FBEF25B"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/cv-target/POST/ApiPermission.manuelweisswebsiteapiWebsiteAPIB87C94C7.POST..cv-target": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIcvtargetPOSTApiPermissionmanuelweisswebsiteapiWebsiteAPIB87C94C7POSTcvtargetC23034CB"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/cv-target/POST/ApiPermission.Test.manuelweisswebsiteapiWebsiteAPIB87C94C7.POST..cv-target": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIcvtargetPOSTApiPermissionTestmanuelweisswebsiteapiWebsiteAPIB87C94C7POSTcvtargetD7CF6C2B"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/cv-target/POST/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIcvtargetPOSTC6D74A16"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/cv-job-parse/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIcvjobparseA13112AB"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/cv-job-parse/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIcvjobparseOPTIONS184BD524"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/cv-job-parse/POST/ApiPermission.manuelweisswebsiteapiWebsiteAPIB87C94C7.POST..cv-job-parse": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIcvjobparsePOSTApiPermissionmanuelweisswebsiteapiWebsiteAPIB87C94C7POSTcvjobparse83C0D560"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/cv-job-parse/POST/ApiPermission.Test.manuelweisswebsiteapiWebsiteAPIB87C94C7.POST..cv-job-parse": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIcvjobparsePOSTApiPermissionTestmanuelweisswebsiteapiWebsiteAPIB87C94C7POSTcvjobparseE988F70F"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/cv-job-parse/POST/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIcvjobparsePOST03D8444F"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/cv-files-parse/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIcvfilesparseFBC63114"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/cv-files-parse/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIcvfilesparseOPTIONSE91E3A27"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/cv-files-parse/POST/ApiPermission.manuelweisswebsiteapiWebsiteAPIB87C94C7.POST..cv-files-parse": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIcvfilesparsePOSTApiPermissionmanuelweisswebsiteapiWebsiteAPIB87C94C7POSTcvfilesparseC165B809"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/cv-files-parse/POST/ApiPermission.Test.manuelweisswebsiteapiWebsiteAPIB87C94C7.POST..cv-files-parse": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIcvfilesparsePOSTApiPermissionTestmanuelweisswebsiteapiWebsiteAPIB87C94C7POSTcvfilesparse4C84886B"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/cv-files-parse/POST/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIcvfilesparsePOST88B249A1"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/cv-export/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIcvexport437CA3EC"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/cv-export/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIcvexportOPTIONS86A03AB0"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/cv-export/POST/ApiPermission.manuelweisswebsiteapiWebsiteAPIB87C94C7.POST..cv-export": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIcvexportPOSTApiPermissionmanuelweisswebsiteapiWebsiteAPIB87C94C7POSTcvexport00D2E532"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/cv-export/POST/ApiPermission.Test.manuelweisswebsiteapiWebsiteAPIB87C94C7.POST..cv-export": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIcvexportPOSTApiPermissionTestmanuelweisswebsiteapiWebsiteAPIB87C94C7POSTcvexport76B2A68B"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/cv-export/POST/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIcvexportPOST6479F9DD"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/api-settings/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIapisettings758AC7D1"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/api-settings/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIapisettingsOPTIONSFB75BB95"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/api-settings/{proxy+}/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIapisettingsproxy79CDC3D7"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/api-settings/{proxy+}/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIapisettingsproxyOPTIONS07C84816"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/api-settings/{proxy+}/ANY/ApiPermission.manuelweisswebsiteapiWebsiteAPIB87C94C7.ANY..api-settings.{proxy+}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIapisettingsproxyANYApiPermissionmanuelweisswebsiteapiWebsiteAPIB87C94C7ANYapisettingsproxy0A1569AE"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/api-settings/{proxy+}/ANY/ApiPermission.Test.manuelweisswebsiteapiWebsiteAPIB87C94C7.ANY..api-settings.{proxy+}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIapisettingsproxyANYApiPermissionTestmanuelweisswebsiteapiWebsiteAPIB87C94C7ANYapisettingsproxy5AA040BE"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/api-settings/{proxy+}/ANY/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIapisettingsproxyANY901F1397"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/contact-email/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIcontactemail3147ADD1"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/contact-email/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIcontactemailOPTIONS38B682B3"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/contact-email/POST/ApiPermission.manuelweisswebsiteapiWebsiteAPIB87C94C7.POST..contact-email": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIcontactemailPOSTApiPermissionmanuelweisswebsiteapiWebsiteAPIB87C94C7POSTcontactemailFB6407F2"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/contact-email/POST/ApiPermission.Test.manuelweisswebsiteapiWebsiteAPIB87C94C7.POST..contact-email": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIcontactemailPOSTApiPermissionTestmanuelweisswebsiteapiWebsiteAPIB87C94C7POSTcontactemail1DA27B46"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/contact-email/POST/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIcontactemailPOST9B5F239C"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/profile-image/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIprofileimage3DDC95D9"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/profile-image/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIprofileimageOPTIONSBB8DD822"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/profile-image/upload-url/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIprofileimageuploadurlC6F43DC1"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/profile-image/upload-url/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIprofileimageuploadurlOPTIONSAD009936"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/profile-image/upload-url/POST/ApiPermission.manuelweisswebsiteapiWebsiteAPIB87C94C7.POST..profile-image.upload-url": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIprofileimageuploadurlPOSTApiPermissionmanuelweisswebsiteapiWebsiteAPIB87C94C7POSTprofileimageuploadurl3D99BA0C"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/profile-image/upload-url/POST/ApiPermission.Test.manuelweisswebsiteapiWebsiteAPIB87C94C7.POST..profile-image.upload-url": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIprofileimageuploadurlPOSTApiPermissionTestmanuelweisswebsiteapiWebsiteAPIB87C94C7POSTprofileimageuploadurl40C1B515"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/profile-image/upload-url/POST/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIprofileimageuploadurlPOSTABB57CFF"
+          }
+        ],
+        "/manuel-weiss-website-api/UserDataFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserDataFunction1C09A9EE"
+          }
+        ],
+        "/manuel-weiss-website-api/HighscoresFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HighscoresFunctionAFEAC86E"
+          }
+        ],
+        "/manuel-weiss-website-api/HeroVideoFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HeroVideoFunctionEB6472A1"
+          }
+        ],
+        "/manuel-weiss-website-api/OpenAIProxyFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OpenAIProxyFunctionDBEDB7E0"
+          }
+        ],
+        "/manuel-weiss-website-api/JobParserFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "JobParserFunction8D105D66"
+          }
+        ],
+        "/manuel-weiss-website-api/CVGeneralFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CVGeneralFunctionCC917364"
+          }
+        ],
+        "/manuel-weiss-website-api/CVTargetFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CVTargetFunction4D310D0A"
+          }
+        ],
+        "/manuel-weiss-website-api/CVJobParseFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CVJobParseFunctionEAB604E1"
+          }
+        ],
+        "/manuel-weiss-website-api/CVFilesParseFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CVFilesParseFunctionAA7FD94D"
+          }
+        ],
+        "/manuel-weiss-website-api/CVExportFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CVExportFunction5562E36E"
+          }
+        ],
+        "/manuel-weiss-website-api/ApiSettingsFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiSettingsFunction488F54F9"
+          }
+        ],
+        "/manuel-weiss-website-api/ContactEmailFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ContactEmailFunction5FE34542"
+          }
+        ],
+        "/manuel-weiss-website-api/ProfileImageFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProfileImageFunctionDA0CEEE1"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteApiUrl": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteApiUrl"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteApiId": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteApiId"
+          }
+        ],
+        "/manuel-weiss-website-api/CDKMetadata/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CDKMetadata"
           }
         ],
-        "/game-websocket-prod/BootstrapVersion": [
+        "/manuel-weiss-website-api/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/game-websocket-prod/CheckBootstrapVersion": [
+        "/manuel-weiss-website-api/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "game-websocket-prod"
+      "displayName": "manuel-weiss-website-api"
     },
     "Tree": {
       "type": "cdk:tree",

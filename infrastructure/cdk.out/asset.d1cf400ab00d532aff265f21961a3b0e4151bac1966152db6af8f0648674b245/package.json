@@ -1,0 +1,7 @@
+{
+  "name": "cv-target-lambda",
+  "version": "1.0.0",
+  "description": "AWS Lambda for targeted CV generation",
+  "main": "index.js",
+  "dependencies": {}
+}
