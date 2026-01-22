@@ -57,6 +57,9 @@ window.AWS_APP_CONFIG = Object.assign({}, window.AWS_APP_CONFIG || {}, {
     HERO_VIDEO_UPLOAD: '/hero-video-upload',
     HERO_VIDEO_UPLOAD_DIRECT: '/hero-video-upload-direct',
     
+    // Bewerbungsprofil (Phase 2 Migration)
+    BEWERBUNGSPROFIL: '/bewerbungsprofil',
+    
     // Profile Image Upload
     PROFILE_IMAGE_UPLOAD: '/profile-image/upload-url',
     S3_UPLOAD: '/profile-image/upload-url',
@@ -118,6 +121,7 @@ window.AWS_APP_CONFIG = Object.assign({}, window.AWS_APP_CONFIG || {}, {
         'HERO_VIDEO_SETTINGS': '/.netlify/functions/hero-video-settings',
         'HERO_VIDEO_UPLOAD': '/.netlify/functions/hero-video-upload',
         'HERO_VIDEO_UPLOAD_DIRECT': '/.netlify/functions/hero-video-upload-direct',
+        'BEWERBUNGSPROFIL': '/.netlify/functions/bewerbungsprofil-api',
         'PROFILE_IMAGE_UPLOAD': '/.netlify/functions/s3-upload',
         'S3_UPLOAD': '/.netlify/functions/s3-upload',
         'SNOWFLAKE_HIGHSCORES': '/.netlify/functions/snowflake-highscores',

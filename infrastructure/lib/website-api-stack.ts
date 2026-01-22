@@ -354,6 +354,25 @@ export class WebsiteApiStack extends cdk.Stack {
     });
 
     // ========================================
+    // BEWERBUNGSPROFIL LAMBDA (Phase 2 Migration)
+    // ========================================
+
+    // Bewerbungsprofil Lambda
+    const bewerbungsprofilLambda = new lambda.Function(this, 'BewerbungsprofilFunction', {
+      functionName: 'website-bewerbungsprofil',
+      runtime: lambda.Runtime.NODEJS_18_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromAsset('../lambda/bewerbungsprofil'),
+      role: lambdaRole,
+      timeout: cdk.Duration.seconds(30),
+      memorySize: 256,
+      environment: {
+        USER_DATA_TABLE: 'mawps-user-data'
+        // AWS_REGION wird automatisch von Lambda gesetzt
+      }
+    });
+
+    // ========================================
     // API ROUTES
     // ========================================
 
@@ -504,6 +523,23 @@ export class WebsiteApiStack extends cdk.Stack {
     // /hero-video-upload-direct
     const heroVideoUploadDirectResource = this.api.root.addResource('hero-video-upload-direct');
     heroVideoUploadDirectResource.addMethod('POST', new apigateway.LambdaIntegration(heroVideoUploadDirectLambda));
+
+    // ========================================
+    // BEWERBUNGSPROFIL ROUTES (Phase 2 Migration)
+    // ========================================
+
+    // /bewerbungsprofil
+    const bewerbungsprofilResource = this.api.root.addResource('bewerbungsprofil');
+    bewerbungsprofilResource.addMethod('GET', new apigateway.LambdaIntegration(bewerbungsprofilLambda));
+    bewerbungsprofilResource.addMethod('POST', new apigateway.LambdaIntegration(bewerbungsprofilLambda));
+    bewerbungsprofilResource.addMethod('PUT', new apigateway.LambdaIntegration(bewerbungsprofilLambda));
+    bewerbungsprofilResource.addMethod('DELETE', new apigateway.LambdaIntegration(bewerbungsprofilLambda));
+
+    // /bewerbungsprofil/section/{name}
+    const bewerbungsprofilSectionResource = bewerbungsprofilResource.addResource('section');
+    const bewerbungsprofilSectionNameResource = bewerbungsprofilSectionResource.addResource('{name}');
+    bewerbungsprofilSectionNameResource.addMethod('GET', new apigateway.LambdaIntegration(bewerbungsprofilLambda));
+    bewerbungsprofilSectionNameResource.addMethod('PUT', new apigateway.LambdaIntegration(bewerbungsprofilLambda));
 
     // ========================================
     // OUTPUTS

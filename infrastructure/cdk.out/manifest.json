@@ -23,7 +23,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::038333965110:role/cdk-hnb659fds-deploy-role-038333965110-eu-central-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::038333965110:role/cdk-hnb659fds-cfn-exec-role-038333965110-eu-central-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-038333965110-eu-central-1/b8bfbb5997ed35219d290eb0900fe01b95c0106fc9392052268978a9257c408f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-038333965110-eu-central-1/199d14083432ba6ec21b63c60acdb80eea147e26a4991e399c982a6c364eccbd.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -79,7 +79,7 @@
         "/manuel-weiss-website-api/WebsiteAPI/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "WebsiteAPIDeploymentABEB4023bdf304053831821ab8e3f1cc308f87fd"
+            "data": "WebsiteAPIDeploymentABEB40239dea35231107c7dca2a7692f477448a5"
           }
         ],
         "/manuel-weiss-website-api/WebsiteAPI/DeploymentStage.v1/Resource": [
@@ -1312,6 +1312,150 @@
             "data": "WebsiteAPIherovideouploaddirectPOST4C197967"
           }
         ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/bewerbungsprofil/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIbewerbungsprofil91B1749A"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/bewerbungsprofil/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIbewerbungsprofilOPTIONS2D196663"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/bewerbungsprofil/GET/ApiPermission.manuelweisswebsiteapiWebsiteAPIB87C94C7.GET..bewerbungsprofil": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIbewerbungsprofilGETApiPermissionmanuelweisswebsiteapiWebsiteAPIB87C94C7GETbewerbungsprofil7532837B"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/bewerbungsprofil/GET/ApiPermission.Test.manuelweisswebsiteapiWebsiteAPIB87C94C7.GET..bewerbungsprofil": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIbewerbungsprofilGETApiPermissionTestmanuelweisswebsiteapiWebsiteAPIB87C94C7GETbewerbungsprofilE2D5B514"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/bewerbungsprofil/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIbewerbungsprofilGET0C2ACC3B"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/bewerbungsprofil/POST/ApiPermission.manuelweisswebsiteapiWebsiteAPIB87C94C7.POST..bewerbungsprofil": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIbewerbungsprofilPOSTApiPermissionmanuelweisswebsiteapiWebsiteAPIB87C94C7POSTbewerbungsprofil42CD4600"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/bewerbungsprofil/POST/ApiPermission.Test.manuelweisswebsiteapiWebsiteAPIB87C94C7.POST..bewerbungsprofil": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIbewerbungsprofilPOSTApiPermissionTestmanuelweisswebsiteapiWebsiteAPIB87C94C7POSTbewerbungsprofil40BF668F"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/bewerbungsprofil/POST/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIbewerbungsprofilPOST81701F1D"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/bewerbungsprofil/PUT/ApiPermission.manuelweisswebsiteapiWebsiteAPIB87C94C7.PUT..bewerbungsprofil": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIbewerbungsprofilPUTApiPermissionmanuelweisswebsiteapiWebsiteAPIB87C94C7PUTbewerbungsprofilFFC6BB06"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/bewerbungsprofil/PUT/ApiPermission.Test.manuelweisswebsiteapiWebsiteAPIB87C94C7.PUT..bewerbungsprofil": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIbewerbungsprofilPUTApiPermissionTestmanuelweisswebsiteapiWebsiteAPIB87C94C7PUTbewerbungsprofil06C5088C"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/bewerbungsprofil/PUT/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIbewerbungsprofilPUT4CB1A26A"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/bewerbungsprofil/DELETE/ApiPermission.manuelweisswebsiteapiWebsiteAPIB87C94C7.DELETE..bewerbungsprofil": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIbewerbungsprofilDELETEApiPermissionmanuelweisswebsiteapiWebsiteAPIB87C94C7DELETEbewerbungsprofil9E2B6FCE"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/bewerbungsprofil/DELETE/ApiPermission.Test.manuelweisswebsiteapiWebsiteAPIB87C94C7.DELETE..bewerbungsprofil": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIbewerbungsprofilDELETEApiPermissionTestmanuelweisswebsiteapiWebsiteAPIB87C94C7DELETEbewerbungsprofilB9641695"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/bewerbungsprofil/DELETE/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIbewerbungsprofilDELETE60C3C856"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/bewerbungsprofil/section/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIbewerbungsprofilsectionBE261652"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/bewerbungsprofil/section/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIbewerbungsprofilsectionOPTIONSE3D61EBC"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/bewerbungsprofil/section/{name}/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIbewerbungsprofilsectionname1B51C8B3"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/bewerbungsprofil/section/{name}/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIbewerbungsprofilsectionnameOPTIONSA38F6F01"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/bewerbungsprofil/section/{name}/GET/ApiPermission.manuelweisswebsiteapiWebsiteAPIB87C94C7.GET..bewerbungsprofil.section.{name}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIbewerbungsprofilsectionnameGETApiPermissionmanuelweisswebsiteapiWebsiteAPIB87C94C7GETbewerbungsprofilsectionname442B8BAE"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/bewerbungsprofil/section/{name}/GET/ApiPermission.Test.manuelweisswebsiteapiWebsiteAPIB87C94C7.GET..bewerbungsprofil.section.{name}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIbewerbungsprofilsectionnameGETApiPermissionTestmanuelweisswebsiteapiWebsiteAPIB87C94C7GETbewerbungsprofilsectionnameB810F7CA"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/bewerbungsprofil/section/{name}/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIbewerbungsprofilsectionnameGET6BC9BF60"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/bewerbungsprofil/section/{name}/PUT/ApiPermission.manuelweisswebsiteapiWebsiteAPIB87C94C7.PUT..bewerbungsprofil.section.{name}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIbewerbungsprofilsectionnamePUTApiPermissionmanuelweisswebsiteapiWebsiteAPIB87C94C7PUTbewerbungsprofilsectionnameF8734897"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/bewerbungsprofil/section/{name}/PUT/ApiPermission.Test.manuelweisswebsiteapiWebsiteAPIB87C94C7.PUT..bewerbungsprofil.section.{name}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIbewerbungsprofilsectionnamePUTApiPermissionTestmanuelweisswebsiteapiWebsiteAPIB87C94C7PUTbewerbungsprofilsectionnameD5BC90A8"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/bewerbungsprofil/section/{name}/PUT/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIbewerbungsprofilsectionnamePUT716442D4"
+          }
+        ],
         "/manuel-weiss-website-api/UserDataFunction/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -1412,6 +1556,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "HeroVideoUploadDirectFunction2C31461B"
+          }
+        ],
+        "/manuel-weiss-website-api/BewerbungsprofilFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BewerbungsprofilFunction2B0A3D44"
           }
         ],
         "/manuel-weiss-website-api/WebsiteApiUrl": [
