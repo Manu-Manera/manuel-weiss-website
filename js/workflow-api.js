@@ -16,8 +16,11 @@ class WorkflowAPI {
         // Verwende zentrale API-Konfiguration
         if (window.getApiUrl) {
             this.apiBaseUrl = window.getApiUrl('USER_DATA');
+        } else if (window.AWS_APP_CONFIG?.API_BASE) {
+            // Fallback auf AWS API Base
+            this.apiBaseUrl = `${window.AWS_APP_CONFIG.API_BASE}/user-data`;
         } else {
-            // Fallback auf Netlify Functions
+            // Letzter Fallback auf Netlify Functions (nur für Entwicklung)
             this.apiBaseUrl = '/.netlify/functions/user-data';
         }
     }
