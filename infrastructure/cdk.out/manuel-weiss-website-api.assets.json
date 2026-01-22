@@ -271,16 +271,31 @@
         }
       }
     },
-    "199d14083432ba6ec21b63c60acdb80eea147e26a4991e399c982a6c364eccbd": {
+    "e4972d372b6bbd15d6e9636734252fd6c32de0504aa5bff093cd7a2eb542088a": {
+      "displayName": "UserProfileApiFunction/Code",
+      "source": {
+        "path": "asset.e4972d372b6bbd15d6e9636734252fd6c32de0504aa5bff093cd7a2eb542088a",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "038333965110-eu-central-1-aee9cb37": {
+          "bucketName": "cdk-hnb659fds-assets-038333965110-eu-central-1",
+          "objectKey": "e4972d372b6bbd15d6e9636734252fd6c32de0504aa5bff093cd7a2eb542088a.zip",
+          "region": "eu-central-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::038333965110:role/cdk-hnb659fds-file-publishing-role-038333965110-eu-central-1"
+        }
+      }
+    },
+    "d83e0b1adbb3f6545d86d073e3f7d2fca79f9eb676ef6d5a4dee1586b2d76888": {
       "displayName": "manuel-weiss-website-api Template",
       "source": {
         "path": "manuel-weiss-website-api.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "038333965110-eu-central-1-f5b8f9be": {
+        "038333965110-eu-central-1-9d711a21": {
           "bucketName": "cdk-hnb659fds-assets-038333965110-eu-central-1",
-          "objectKey": "199d14083432ba6ec21b63c60acdb80eea147e26a4991e399c982a6c364eccbd.json",
+          "objectKey": "d83e0b1adbb3f6545d86d073e3f7d2fca79f9eb676ef6d5a4dee1586b2d76888.json",
           "region": "eu-central-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::038333965110:role/cdk-hnb659fds-file-publishing-role-038333965110-eu-central-1"
         }

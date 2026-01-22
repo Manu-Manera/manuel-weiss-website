@@ -23,7 +23,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::038333965110:role/cdk-hnb659fds-deploy-role-038333965110-eu-central-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::038333965110:role/cdk-hnb659fds-cfn-exec-role-038333965110-eu-central-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-038333965110-eu-central-1/199d14083432ba6ec21b63c60acdb80eea147e26a4991e399c982a6c364eccbd.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-038333965110-eu-central-1/d83e0b1adbb3f6545d86d073e3f7d2fca79f9eb676ef6d5a4dee1586b2d76888.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -79,7 +79,7 @@
         "/manuel-weiss-website-api/WebsiteAPI/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "WebsiteAPIDeploymentABEB40239dea35231107c7dca2a7692f477448a5"
+            "data": "WebsiteAPIDeploymentABEB4023563f83b85447cf165e0182cd9a0d6a2e"
           }
         ],
         "/manuel-weiss-website-api/WebsiteAPI/DeploymentStage.v1/Resource": [
@@ -1456,6 +1456,48 @@
             "data": "WebsiteAPIbewerbungsprofilsectionnamePUT716442D4"
           }
         ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-profile-api/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIuserprofileapi739F68E1"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-profile-api/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIuserprofileapiOPTIONS5726C428"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-profile-api/{proxy+}/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIuserprofileapiproxyD77BE086"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-profile-api/{proxy+}/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIuserprofileapiproxyOPTIONSDE79F84A"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-profile-api/{proxy+}/ANY/ApiPermission.manuelweisswebsiteapiWebsiteAPIB87C94C7.ANY..user-profile-api.{proxy+}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIuserprofileapiproxyANYApiPermissionmanuelweisswebsiteapiWebsiteAPIB87C94C7ANYuserprofileapiproxyC233F631"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-profile-api/{proxy+}/ANY/ApiPermission.Test.manuelweisswebsiteapiWebsiteAPIB87C94C7.ANY..user-profile-api.{proxy+}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIuserprofileapiproxyANYApiPermissionTestmanuelweisswebsiteapiWebsiteAPIB87C94C7ANYuserprofileapiproxyCB085BBD"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/user-profile-api/{proxy+}/ANY/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIuserprofileapiproxyANYC9B0BD83"
+          }
+        ],
         "/manuel-weiss-website-api/UserDataFunction/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -1562,6 +1604,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "BewerbungsprofilFunction2B0A3D44"
+          }
+        ],
+        "/manuel-weiss-website-api/UserProfileApiFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserProfileApiFunctionCDBD086B"
           }
         ],
         "/manuel-weiss-website-api/WebsiteApiUrl": [

@@ -1610,7 +1610,7 @@ class UserProfile {
                 return;
             }
 
-            const apiBase = '/.netlify/functions/user-profile-api';
+            const apiBase = window.getApiUrl ? window.getApiUrl('USER_PROFILE_API') : (window.AWS_APP_CONFIG?.API_BASE ? `${window.AWS_APP_CONFIG.API_BASE}/user-profile-api` : '/.netlify/functions/user-profile-api');
             let endpoint = '';
 
             switch (tabName) {

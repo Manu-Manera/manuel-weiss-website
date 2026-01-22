@@ -373,6 +373,28 @@ export class WebsiteApiStack extends cdk.Stack {
     });
 
     // ========================================
+    // USER PROFILE API LAMBDA (Phase 3 Migration)
+    // ========================================
+
+    // User Profile API Lambda
+    const userProfileApiLambda = new lambda.Function(this, 'UserProfileApiFunction', {
+      functionName: 'website-user-profile-api',
+      runtime: lambda.Runtime.NODEJS_18_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromAsset('../lambda/user-profile-api'),
+      role: lambdaRole,
+      timeout: cdk.Duration.seconds(30),
+      memorySize: 256,
+      environment: {
+        PROFILES_TABLE: 'mawps-user-profiles',
+        APPLICATIONS_TABLE: 'mawps-applications',
+        RESUMES_TABLE: 'mawps-resumes',
+        COVER_LETTERS_TABLE: 'mawps-cover-letters'
+        // AWS_REGION wird automatisch von Lambda gesetzt
+      }
+    });
+
+    // ========================================
     // API ROUTES
     // ========================================
 
@@ -540,6 +562,17 @@ export class WebsiteApiStack extends cdk.Stack {
     const bewerbungsprofilSectionNameResource = bewerbungsprofilSectionResource.addResource('{name}');
     bewerbungsprofilSectionNameResource.addMethod('GET', new apigateway.LambdaIntegration(bewerbungsprofilLambda));
     bewerbungsprofilSectionNameResource.addMethod('PUT', new apigateway.LambdaIntegration(bewerbungsprofilLambda));
+
+    // ========================================
+    // USER PROFILE API ROUTES (Phase 3 Migration)
+    // ========================================
+
+    // /user-profile-api (Proxy für alle Sub-Routes)
+    const userProfileApiResource = this.api.root.addResource('user-profile-api');
+    userProfileApiResource.addProxy({
+      anyMethod: true,
+      defaultIntegration: new apigateway.LambdaIntegration(userProfileApiLambda)
+    });
 
     // ========================================
     // OUTPUTS
