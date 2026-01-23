@@ -4627,17 +4627,24 @@ class DesignEditor {
                 }
                 
                 // Safari-kompatible Dekodierung (Chunk-basiert für große Strings)
+                // WICHTIG: Safari hat Probleme mit atob() auch bei kleineren Strings, daher immer Chunk-basiert für Safari
                 let bytes;
-                if (isSafari && base64Data.length > 50000) {
+                if (isSafari) {
                     console.log('🦁 Safari erkannt - verwende Chunk-basierte Base64-Dekodierung');
                     bytes = decodeBase64Safari(base64Data);
                 } else {
-                    // Standard-Dekodierung für andere Browser oder kleine Strings
+                    // Standard-Dekodierung für andere Browser
                     const cleanBase64 = base64Data.trim().replace(/\s/g, '');
-                    const binaryString = atob(cleanBase64);
-                    bytes = new Uint8Array(binaryString.length);
-                    for (let i = 0; i < binaryString.length; i++) {
-                        bytes[i] = binaryString.charCodeAt(i);
+                    try {
+                        const binaryString = atob(cleanBase64);
+                        bytes = new Uint8Array(binaryString.length);
+                        for (let i = 0; i < binaryString.length; i++) {
+                            bytes[i] = binaryString.charCodeAt(i);
+                        }
+                    } catch (atobError) {
+                        // Fallback: Auch für andere Browser Chunk-basiert, falls atob() fehlschlägt
+                        console.warn('⚠️ atob() fehlgeschlagen, verwende Chunk-basierte Dekodierung:', atobError);
+                        bytes = decodeBase64Safari(base64Data);
                     }
                 }
                 
@@ -5301,8 +5308,11 @@ class DesignEditor {
             mainContainer.style.setProperty('margin', '0', 'important');
         }
         
-        // Extrahiere alle CSS-Styles
+        // Extrahiere alle CSS-Styles (WICHTIG: Vor dem HTML-Generieren, damit alle Styles verfügbar sind)
         const allCSS = this.extractAllCSS();
+        
+        // Extrahiere auch alle inline Styles aus dem Element und seinen Kindern
+        const inlineStyles = this.extractInlineStyles(element);
         
         // Google Fonts Link (falls Inter verwendet wird)
         const fontFamily = this.settings.fontFamily || "'Inter', sans-serif";
@@ -5374,8 +5384,11 @@ class DesignEditor {
             }
         }
         
-        /* Extrahiertes CSS */
+        /* Extrahiertes CSS aus Stylesheets */
         ${allCSS}
+        
+        /* Inline Styles */
+        ${inlineStyles}
     </style>
 </head>
 <body>
@@ -5383,7 +5396,57 @@ class DesignEditor {
 </body>
 </html>`;
         
+        console.log('📄 HTML-Dokument generiert:', {
+            htmlLength: html.length,
+            cssLength: allCSS.length,
+            inlineStylesLength: inlineStyles.length,
+            fontFamily: fontFamily,
+            fontSize: this.settings.fontSize || 11,
+            margins: `${marginTop}mm ${marginRight}mm ${marginBottom}mm ${marginLeft}mm`
+        });
+        
         return html;
+    }
+    
+    extractInlineStyles(element) {
+        // Extrahiere alle inline Styles aus dem Element und seinen Kindern
+        const styles = [];
+        const allElements = element.querySelectorAll('*');
+        
+        allElements.forEach((el, index) => {
+            if (el.style && el.style.cssText) {
+                const styleText = el.style.cssText;
+                if (styleText.trim()) {
+                    // Erstelle einen eindeutigen Selektor für dieses Element
+                    let selector = '';
+                    if (el.id) {
+                        selector = `#${el.id}`;
+                    } else if (el.className) {
+                        const classes = Array.from(el.classList).join('.');
+                        selector = `.${classes}`;
+                    } else {
+                        selector = el.tagName.toLowerCase();
+                    }
+                    
+                    // Füge einen Index hinzu, falls mehrere Elemente denselben Selektor haben
+                    if (styles.some(s => s.includes(selector))) {
+                        selector = `${selector}[data-pdf-index="${index}"]`;
+                    }
+                    
+                    styles.push(`${selector} { ${styleText} }`);
+                }
+            }
+        });
+        
+        // Füge auch Styles vom Hauptelement hinzu
+        if (element.style && element.style.cssText) {
+            const mainSelector = element.classList.contains('design-resume-preview') 
+                ? '.design-resume-preview' 
+                : element.tagName.toLowerCase();
+            styles.push(`${mainSelector} { ${element.style.cssText} }`);
+        }
+        
+        return styles.join('\n');
     }
     
     replaceCSSVariables(cssText) {
