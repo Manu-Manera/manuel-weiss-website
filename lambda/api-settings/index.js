@@ -139,11 +139,25 @@ exports.handler = async (event) => {
     try {
         // Unterstütze sowohl REST API als auch Proxy-Format
         const path = event.path || event.requestContext?.path || event.requestContext?.resourcePath || '';
+        const pathParameters = event.pathParameters || {};
         const queryStringParameters = event.queryStringParameters || event.queryStringParameters || {};
+        
+        console.log('🔍 API Settings Lambda - Debug Info:', {
+            httpMethod,
+            path,
+            pathParameters,
+            queryStringParameters,
+            rawPath: event.path,
+            requestContextPath: event.requestContext?.path,
+            requestContextResourcePath: event.requestContext?.resourcePath,
+            pathIncludesKey: path && path.includes('/key')
+        });
         
         // Route: /api-settings/key?provider=openai - Vollständigen (entschlüsselten) Key abrufen
         // Unterstützt sowohl User-spezifische als auch globale API Keys
-        if (httpMethod === 'GET' && path && path.includes('/key')) {
+        // Prüfe sowohl path.includes('/key') als auch pathParameters für Sub-Resource
+        const isKeyRoute = (path && path.includes('/key')) || pathParameters.proxy === 'key' || pathParameters.key;
+        if (httpMethod === 'GET' && isKeyRoute) {
             const provider = queryStringParameters?.provider || 'openai';
             const isGlobalRequest = queryStringParameters?.global === 'true';
             
