@@ -4137,8 +4137,13 @@ class DesignEditor {
             
             this.showNotification(`PDF exportiert! (${(pdfBytes.byteLength / 1024).toFixed(0)} KB)`, 'success');
         } catch (error) {
-            console.error('PDF Export Fehler:', error);
-            console.error('Error Stack:', error.stack);
+            console.error('❌ PDF Export Fehler:', error);
+            console.error('❌ Error Stack:', error.stack);
+            console.error('❌ Error Details:', {
+                name: error.name,
+                message: error.message,
+                cause: error.cause
+            });
             
             // Detaillierte Fehlermeldung
             let errorMessage = 'Fehler beim PDF-Export: ';
@@ -4150,7 +4155,7 @@ class DesignEditor {
                 errorMessage += 'Unbekannter Fehler';
             }
             
-            // Wenn es um API Key geht, füge Hinweis hinzu
+            // Wenn es um API Key geht, füge Hinweis hinzu (sollte nicht mehr nötig sein)
             if (error.message && error.message.includes('API Key')) {
                 errorMessage += ' Bitte öffnen Sie die Einstellungen im Admin-Panel.';
                 
@@ -4462,7 +4467,7 @@ class DesignEditor {
     async generateResumePDFWithPuppeteer(preview, options) {
         const { format = 'A4', addPageNumbers = false } = options;
         
-        console.log('🔄 Generiere PDF mit GPT-5.2 + Puppeteer (AWS Lambda)...');
+        console.log('🔄 Generiere PDF mit direkter HTML-zu-PDF Konvertierung (AWS Lambda)...');
         
         // Stelle sicher, dass Settings geladen sind
         if (!this.settings || Object.keys(this.settings).length === 0) {
