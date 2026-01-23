@@ -81,7 +81,7 @@ Antworte NUR mit dem vollständigen HTML-Code, ohne Markdown-Code-Blöcke, ohne 
                 'Authorization': `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-                model: 'gpt-4o', // Verwende gpt-4o statt gpt-5.2-pro (nicht verfügbar)
+                model: 'gpt-3.5-turbo', // Verwende gpt-3.5-turbo (gpt-4o nicht verfügbar für dieses Projekt)
                 messages: [
                     {
                         role: 'system',
