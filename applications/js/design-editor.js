@@ -5179,12 +5179,18 @@ class DesignEditor {
         const marginBottom = this.settings.marginBottom || 20;
         const marginLeft = this.settings.marginLeft || 20;
         
-        // Stelle sicher, dass Padding auf dem Hauptcontainer gesetzt ist
-        const mainContainer = element.querySelector('.design-resume-preview') || element;
+        // Stelle sicher, dass Padding auf dem Hauptcontainer gesetzt ist (für PDF-Export)
+        // WICHTIG: Das Element ist bereits ein Clone, daher können wir es direkt modifizieren
+        const mainContainer = element.classList.contains('design-resume-preview') 
+            ? element 
+            : element.querySelector('.design-resume-preview') || element;
+        
+        // Setze Padding direkt auf dem Container (wird im CSS nochmal gesetzt, aber hier für Sicherheit)
         if (mainContainer) {
-            mainContainer.style.padding = `${marginTop}mm ${marginRight}mm ${marginBottom}mm ${marginLeft}mm`;
-            mainContainer.style.boxSizing = 'border-box';
-            mainContainer.style.width = `calc(210mm - ${marginLeft}mm - ${marginRight}mm)`;
+            mainContainer.style.setProperty('padding', `${marginTop}mm ${marginRight}mm ${marginBottom}mm ${marginLeft}mm`, 'important');
+            mainContainer.style.setProperty('box-sizing', 'border-box', 'important');
+            mainContainer.style.setProperty('width', `calc(210mm - ${marginLeft}mm - ${marginRight}mm)`, 'important');
+            mainContainer.style.setProperty('margin', '0', 'important');
         }
         
         // Extrahiere alle CSS-Styles
