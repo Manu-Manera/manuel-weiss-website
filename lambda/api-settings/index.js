@@ -166,18 +166,16 @@ exports.handler = async (event) => {
             return await getFullApiKey(userId, provider, false);
         }
         
-        // Für alle anderen Endpoints ist Login erforderlich
+        // Für GET-Requests: Erlaube auch ohne userId (für globale Keys)
+        // Für POST/PUT/DELETE: userId erforderlich
         const userId = event.requestContext?.authorizer?.claims?.sub 
             || event.headers?.['x-user-id'] 
             || event.headers?.['X-User-Id'];
         
-        if (!userId) {
-            return response(401, { error: 'Nicht autorisiert - Bitte anmelden' });
-        }
-        
         switch (httpMethod) {
             case 'GET':
-                return await getApiSettings(userId);
+                // GET erlaubt auch ohne userId (lädt globale Keys)
+                return await getApiSettings(userId || null);
             case 'POST':
             case 'PUT':
                 return await saveApiSettings(userId, JSON.parse(event.body || '{}'));
