@@ -213,13 +213,12 @@ class AWSAPISettingsService {
             const apiSettingsUrl = window.getApiUrl ? window.getApiUrl('API_SETTINGS') : null;
             const isAWS = apiSettingsUrl && !apiSettingsUrl.includes('/.netlify/functions');
             
-            // WICHTIG: Verwende IMMER die /key Route für vollständige API Keys
-            // Die normale /api-settings Route gibt nur maskierte Keys zurück
+            // WICHTIG: Verwende IMMER das Legacy-Format (?action=key) für AWS API Gateway
+            // Die Lambda-Funktion unterstützt jetzt beide Formate
             let url;
             if (isAWS) {
-                // AWS API Gateway: Basis-URL + /api-settings/key
-                const baseUrl = apiSettingsUrl.replace(/\/api-settings$/, '');
-                url = `${baseUrl}/api-settings/key?provider=${provider}${useGlobal ? '&global=true' : ''}`;
+                // AWS API Gateway: Legacy Format funktioniert jetzt auch
+                url = `${apiSettingsUrl}?action=key&provider=${provider}${useGlobal ? '&global=true' : ''}`;
             } else {
                 // Netlify Functions: Legacy Format
                 url = `${this.apiEndpoint}/api-settings?action=key&provider=${provider}`;
