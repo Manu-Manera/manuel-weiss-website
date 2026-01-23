@@ -4576,60 +4576,83 @@ class DesignEditor {
             console.log('📦 Response Status:', response.status, response.statusText);
             console.log('📦 Response Headers:', Object.fromEntries(response.headers.entries()));
             
-            // WICHTIG: API Gateway mit isBase64Encoded: true gibt Base64-String zurück
-            // Browser fetch() erwartet Text, nicht ArrayBuffer für Base64
-            let pdfBlob;
+            // WICHTIG: Safari-Erkennung und spezielle Behandlung
+            const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+            console.log('🌐 Browser erkannt:', isSafari ? 'Safari' : 'Anderer Browser');
             
-            if (contentType && contentType.includes('application/pdf')) {
-                try {
-                    // Versuche zuerst als ArrayBuffer (falls API Gateway bereits dekodiert hat)
-                    const arrayBuffer = await response.arrayBuffer();
-                    if (arrayBuffer && arrayBuffer.byteLength > 0) {
-                        pdfBlob = new Blob([arrayBuffer], { type: 'application/pdf' });
-                        console.log('✅ PDF generiert (ArrayBuffer):', pdfBlob.size, 'Bytes');
-                        return pdfBlob;
+            // WICHTIG: Response kann nur EINMAL gelesen werden!
+            // API Gateway mit isBase64Encoded: true gibt Base64-STRING zurück (auch bei Content-Type: application/pdf)
+            // Daher IMMER zuerst als Text lesen, dann dekodieren
+            
+            // Hilfsfunktion für Safari-kompatible Base64-Dekodierung (Chunk-basiert)
+            const decodeBase64Safari = (base64String) => {
+                const cleanBase64 = base64String.trim().replace(/\s/g, '');
+                
+                // Safari kann atob() nicht mit sehr großen Strings handhaben
+                // Teile in Chunks auf (max 32768 Zeichen pro Chunk)
+                const chunkSize = 32768;
+                const chunks = [];
+                
+                for (let i = 0; i < cleanBase64.length; i += chunkSize) {
+                    const chunk = cleanBase64.substring(i, i + chunkSize);
+                    try {
+                        const binaryString = atob(chunk);
+                        for (let j = 0; j < binaryString.length; j++) {
+                            chunks.push(binaryString.charCodeAt(j));
+                        }
+                    } catch (e) {
+                        console.error('❌ Fehler beim Dekodieren von Base64-Chunk:', e);
+                        throw new Error(`Base64-Dekodierung fehlgeschlagen bei Position ${i}: ${e.message}`);
                     }
-                } catch (arrayBufferError) {
-                    console.warn('⚠️ ArrayBuffer-Lesen fehlgeschlagen, versuche Base64:', arrayBufferError);
                 }
                 
-                // Fallback: Versuche als Base64-Text zu lesen (Standard für API Gateway)
-                try {
-                    const base64Data = await response.text();
-                    console.log('📦 Base64 Response Länge:', base64Data.length, 'Zeichen');
-                    console.log('📦 Base64 Preview:', base64Data.substring(0, 50) + '...');
-                    
-                    // Entferne Whitespace und dekodiere
+                return new Uint8Array(chunks);
+            };
+            
+            // Lese Response als Text (Base64-String von API Gateway)
+            // WICHTIG: Response.text() kann nur einmal aufgerufen werden!
+            try {
+                const base64Data = await response.text();
+                console.log('📦 Base64 Response Länge:', base64Data.length, 'Zeichen');
+                console.log('📦 Base64 Preview:', base64Data.substring(0, 50) + '...');
+                
+                // Prüfe, ob es wirklich Base64 ist (nicht bereits ein Fehler-JSON)
+                if (base64Data.trim().startsWith('{')) {
+                    try {
+                        const errorData = JSON.parse(base64Data);
+                        throw new Error(`PDF-Generierung fehlgeschlagen: ${errorData.error || errorData.message || 'Unbekannter Fehler'}`);
+                    } catch (jsonError) {
+                        // Wenn es kein JSON ist, ist es wahrscheinlich Base64
+                    }
+                }
+                
+                // Safari-kompatible Dekodierung (Chunk-basiert für große Strings)
+                let bytes;
+                if (isSafari && base64Data.length > 50000) {
+                    console.log('🦁 Safari erkannt - verwende Chunk-basierte Base64-Dekodierung');
+                    bytes = decodeBase64Safari(base64Data);
+                } else {
+                    // Standard-Dekodierung für andere Browser oder kleine Strings
                     const cleanBase64 = base64Data.trim().replace(/\s/g, '');
                     const binaryString = atob(cleanBase64);
-                    const bytes = new Uint8Array(binaryString.length);
+                    bytes = new Uint8Array(binaryString.length);
                     for (let i = 0; i < binaryString.length; i++) {
                         bytes[i] = binaryString.charCodeAt(i);
                     }
-                    pdfBlob = new Blob([bytes], { type: 'application/pdf' });
-                    console.log('✅ PDF generiert (Base64 dekodiert):', pdfBlob.size, 'Bytes');
-                    return pdfBlob;
-                } catch (base64Error) {
-                    console.error('❌ Base64-Dekodierung fehlgeschlagen:', base64Error);
-                    throw new Error('PDF-Generierung fehlgeschlagen: Konnte Response nicht dekodieren');
                 }
-            } else {
-                // Versuche trotzdem als Base64 zu lesen (falls Content-Type fehlt)
-                console.warn('⚠️ Content-Type ist nicht application/pdf:', contentType);
-                try {
-                    const base64Data = await response.text();
-                    const cleanBase64 = base64Data.trim().replace(/\s/g, '');
-                    const binaryString = atob(cleanBase64);
-                    const bytes = new Uint8Array(binaryString.length);
-                    for (let i = 0; i < binaryString.length; i++) {
-                        bytes[i] = binaryString.charCodeAt(i);
-                    }
-                    pdfBlob = new Blob([bytes], { type: 'application/pdf' });
-                    console.log('✅ PDF generiert (Base64 ohne Content-Type):', pdfBlob.size, 'Bytes');
-                    return pdfBlob;
-                } catch (e) {
-                    throw new Error(`PDF-Generierung fehlgeschlagen: Unerwartetes Response-Format. Content-Type: ${contentType}`);
-                }
+                
+                const pdfBlob = new Blob([bytes], { type: 'application/pdf' });
+                console.log('✅ PDF generiert (Base64 dekodiert):', pdfBlob.size, 'Bytes');
+                return pdfBlob;
+                
+            } catch (base64Error) {
+                console.error('❌ Base64-Dekodierung fehlgeschlagen:', base64Error);
+                console.error('❌ Fehler-Details:', {
+                    name: base64Error.name,
+                    message: base64Error.message,
+                    stack: base64Error.stack
+                });
+                throw new Error(`PDF-Generierung fehlgeschlagen: Konnte Response nicht dekodieren. ${base64Error.message}`);
             }
         } catch (error) {
             clearTimeout(timeoutId);
