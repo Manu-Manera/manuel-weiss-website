@@ -106,7 +106,7 @@ Antworte NUR mit dem vollständigen HTML-Code, ohne Markdown-Code-Blöcke, ohne 
                         content: prompt
                     }
                 ],
-                temperature: 0.1, // Niedrige Temperatur für präzise Ausgabe
+                // temperature wird nicht unterstützt von GPT-5.2 (nur Standardwert 1)
                 max_completion_tokens: 16000 // Mehr Tokens für komplexe HTML-Strukturen
             })
         });
