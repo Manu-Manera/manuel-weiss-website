@@ -37,3 +37,4 @@ temp/
 # CDK Output
 infrastructure/cdk.out/
 infrastructure/cdk.out/**/*
+lambda/pdf-generator-gpt52.zip
