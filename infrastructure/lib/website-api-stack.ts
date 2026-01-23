@@ -526,6 +526,20 @@ export class WebsiteApiStack extends cdk.Stack {
         }]
       });
     });
+    
+    // /api-settings/key - Sub-Resource für vollständigen API Key (ohne Auth für globale Keys)
+    // Lambda behandelt OPTIONS selbst (siehe lambda/api-settings/index.js)
+    const apiSettingsKeyResource = apiSettingsResource.addResource('key');
+    apiSettingsKeyResource.addMethod('GET', apiSettingsIntegration, {
+      methodResponses: [{
+        statusCode: '200',
+        responseParameters: {
+          'method.response.header.Access-Control-Allow-Origin': true,
+          'method.response.header.Access-Control-Allow-Headers': true,
+          'method.response.header.Access-Control-Allow-Methods': true
+        }
+      }]
+    });
 
     // /contact-email (bestehende Lambda)
     const contactResource = this.api.root.addResource('contact-email');
