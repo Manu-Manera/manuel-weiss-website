@@ -4509,6 +4509,7 @@ class DesignEditor {
         }
         
         console.log('📡 Sende HTML direkt an PDF-Generator Lambda (ohne GPT):', apiUrl);
+        console.log('📦 HTML Content Preview:', htmlContent.substring(0, 200) + '...');
         
         // AbortController für Timeout (25 Sekunden - Lambda sollte schnell sein ohne GPT)
         const controller = new AbortController();
