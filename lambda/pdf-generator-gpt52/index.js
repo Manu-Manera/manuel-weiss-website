@@ -81,8 +81,7 @@ Antworte NUR mit dem vollständigen HTML-Code, ohne Markdown-Code-Blöcke, ohne 
                 'Authorization': `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-                model: 'gpt-5.2', // GPT-5.2 für beste Qualität bei HTML/CSS-Generierung
-                reasoning_effort: 'low', // Optimiert für schnelle HTML-Generierung
+                model: 'gpt-4o', // gpt-4o ist viel schneller als gpt-5.2 und passt in API Gateway Timeout
                 messages: [
                     {
                         role: 'system',
@@ -93,8 +92,8 @@ Antworte NUR mit dem vollständigen HTML-Code, ohne Markdown-Code-Blöcke, ohne 
                         content: prompt
                     }
                 ],
-                // temperature wird nicht unterstützt von GPT-5.2 (nur Standardwert 1)
-                max_completion_tokens: 8000 // Reduziert für schnellere Antworten (war 16000)
+                temperature: 0.1, // Niedrige Temperatur für konsistente HTML-Generierung
+                max_tokens: 8000 // Reduziert für schnellere Antworten
             })
         });
 
@@ -107,7 +106,7 @@ Antworte NUR mit dem vollständigen HTML-Code, ohne Markdown-Code-Blöcke, ohne 
         const htmlContent = data.choices[0]?.message?.content;
         
         if (!htmlContent) {
-            throw new Error('Keine HTML-Antwort von GPT-5.2 erhalten');
+            throw new Error('Keine HTML-Antwort von GPT-4o erhalten');
         }
 
         // Entferne Markdown-Code-Blöcke falls vorhanden
@@ -121,7 +120,7 @@ Antworte NUR mit dem vollständigen HTML-Code, ohne Markdown-Code-Blöcke, ohne 
         return cleanHTML.trim();
 
     } catch (error) {
-        console.error('❌ GPT-5.2 HTML-Generierung fehlgeschlagen:', error);
+        console.error('❌ GPT-4o HTML-Generierung fehlgeschlagen:', error);
         throw error;
     }
 }
@@ -170,7 +169,7 @@ exports.handler = async (event) => {
             };
         }
 
-        console.log('🔄 Starting PDF generation with GPT-5.2...');
+        console.log('🔄 Starting PDF generation with GPT-4o...');
         console.log('⚙️ Settings:', JSON.stringify(settings));
         console.log('📄 Content length:', content?.length || html?.length || 0);
 
@@ -178,7 +177,7 @@ exports.handler = async (event) => {
 
         // Wenn content und settings vorhanden, verwende GPT-5.2 für HTML-Generierung
         if (content && settings && Object.keys(settings).length > 0) {
-            console.log('🤖 Generiere HTML mit GPT-5.2...');
+            console.log('🤖 Generiere HTML mit GPT-4o...');
             try {
                 finalHTML = await generateHTMLWithGPT52(content, settings, apiKey);
                 console.log('✅ HTML von GPT-5.2 generiert, Länge:', finalHTML.length);

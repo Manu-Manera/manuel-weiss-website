@@ -4462,7 +4462,7 @@ class DesignEditor {
     async generateResumePDFWithPuppeteer(preview, options) {
         const { format = 'A4', addPageNumbers = false } = options;
         
-        console.log('🔄 Generiere PDF mit GPT-5.2 + Puppeteer (AWS Lambda)...');
+        console.log('🔄 Generiere PDF mit GPT-4o + Puppeteer (AWS Lambda)...');
         
         // Stelle sicher, dass Settings geladen sind
         if (!this.settings || Object.keys(this.settings).length === 0) {
@@ -4475,7 +4475,7 @@ class DesignEditor {
         // WICHTIG: Ersetze ALLE CSS-Variablen im geklonten HTML durch tatsächliche Werte
         this.replaceCSSVariablesInElement(clone);
         
-        // Extrahiere HTML-Inhalt für GPT-5.2
+        // Extrahiere HTML-Inhalt für GPT-4o
         const content = clone.outerHTML;
         
         // Hole OpenAI API Key
@@ -4624,13 +4624,13 @@ class DesignEditor {
         
         console.log('✅ Gültiger OpenAI API Key gefunden (Quelle:', keySources.join(', ') + ')');
         
-        // Rufe GPT-5.2 Lambda API auf
+        // Rufe GPT-4o Lambda API auf
         const apiUrl = window.getApiUrl('PDF_GENERATOR');
         if (!apiUrl) {
             throw new Error('PDF Generator API URL nicht gefunden. Bitte aws-app-config.js prüfen.');
         }
         
-        console.log('📡 Sende Anfrage an GPT-5.2 Lambda:', apiUrl);
+                console.log('📡 Sende Anfrage an GPT-4o Lambda:', apiUrl);
         console.log('📐 Settings:', {
             marginTop: this.settings.marginTop,
             marginRight: this.settings.marginRight,
@@ -4672,7 +4672,7 @@ class DesignEditor {
                 },
                 signal: controller.signal, // Timeout-Signal
                 body: JSON.stringify({
-                content: content, // HTML-Inhalt für GPT-5.2
+                content: content, // HTML-Inhalt für GPT-4o
                 settings: {
                     marginTop: Number(this.settings.marginTop) || 20,
                     marginRight: Number(this.settings.marginRight) || 20,
@@ -4684,7 +4684,7 @@ class DesignEditor {
                     textColor: this.settings.textColor || '#1e293b',
                     backgroundColor: this.settings.backgroundColor || '#ffffff'
                 },
-                openaiApiKey: openaiApiKey, // API Key für GPT-5.2
+                openaiApiKey: openaiApiKey, // API Key für GPT-4o
                 options: {
                     format: format,
                     printBackground: true,
@@ -4729,7 +4729,7 @@ class DesignEditor {
                 // Versuche zuerst als ArrayBuffer zu lesen (wenn API Gateway bereits dekodiert hat)
                 const arrayBuffer = await response.arrayBuffer();
                 const blob = new Blob([arrayBuffer], { type: 'application/pdf' });
-                console.log('✅ PDF generiert mit GPT-5.2 (ArrayBuffer):', blob.size, 'Bytes');
+                console.log('✅ PDF generiert mit GPT-4o (ArrayBuffer):', blob.size, 'Bytes');
                 return blob;
             } catch (arrayBufferError) {
                 console.warn('⚠️ ArrayBuffer-Lesen fehlgeschlagen, versuche Base64:', arrayBufferError);
@@ -4744,7 +4744,7 @@ class DesignEditor {
                         bytes[i] = binaryString.charCodeAt(i);
                     }
                     const blob = new Blob([bytes], { type: 'application/pdf' });
-                    console.log('✅ PDF generiert mit GPT-5.2 (Base64):', blob.size, 'Bytes');
+                    console.log('✅ PDF generiert mit GPT-4o (Base64):', blob.size, 'Bytes');
                     return blob;
                 } catch (base64Error) {
                     console.error('❌ Base64-Dekodierung fehlgeschlagen:', base64Error);
