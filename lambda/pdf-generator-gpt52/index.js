@@ -81,11 +81,25 @@ Antworte NUR mit dem vollständigen HTML-Code, ohne Markdown-Code-Blöcke, ohne 
                 'Authorization': `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-                model: 'gpt-3.5-turbo', // Verwende gpt-3.5-turbo (gpt-4o nicht verfügbar für dieses Projekt)
+                model: 'gpt-5.2', // GPT-5.2 für beste Qualität bei HTML/CSS-Generierung
+                reasoning_effort: 'low', // Optimiert für schnelle HTML-Generierung
                 messages: [
                     {
                         role: 'system',
-                        content: 'Du bist ein Experte für HTML/CSS-Layouts für PDF-Exporte. Du generierst immer vollständige, valide HTML5-Dokumente mit präzisen CSS-Styles.'
+                        content: `Du bist ein Experte für HTML/CSS-Layouts für PDF-Exporte.
+
+<output_verbosity_spec>
+- Antworte NUR mit vollständigem HTML5-Code
+- Keine Markdown-Code-Blöcke, keine Erklärungen
+- Nur das HTML-Dokument selbst
+</output_verbosity_spec>
+
+<layout_precision>
+- Generiere immer vollständige, valide HTML5-Dokumente
+- Verwende präzise CSS-Styles mit exakten mm-Werten
+- Alle Padding-Werte MÜSSEN in mm angegeben werden
+- box-sizing: border-box verwenden
+</layout_precision>`
                     },
                     {
                         role: 'user',
@@ -93,7 +107,7 @@ Antworte NUR mit dem vollständigen HTML-Code, ohne Markdown-Code-Blöcke, ohne 
                     }
                 ],
                 temperature: 0.1, // Niedrige Temperatur für präzise Ausgabe
-                max_tokens: 8000
+                max_completion_tokens: 16000 // Mehr Tokens für komplexe HTML-Strukturen
             })
         });
 
