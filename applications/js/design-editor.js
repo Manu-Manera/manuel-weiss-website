@@ -4753,6 +4753,14 @@ class DesignEditor {
             }
             throw new Error('PDF-Generierung fehlgeschlagen: Unerwartetes Response-Format');
         }
+        } catch (error) {
+            clearTimeout(timeoutId); // Timeout löschen auch bei Fehler
+            if (error.name === 'AbortError') {
+                console.error('❌ PDF Export Timeout: Die Anfrage dauerte länger als 35 Sekunden');
+                throw new Error('PDF-Generierung dauerte zu lange. Bitte versuchen Sie es erneut oder verwenden Sie eine einfachere Vorlage.');
+            }
+            throw error; // Andere Fehler weiterwerfen
+        }
     }
     
     applyDesignSettingsToElement(element, isPDFExport = false) {
