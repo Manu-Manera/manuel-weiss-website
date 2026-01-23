@@ -38,3 +38,7 @@ temp/
 infrastructure/cdk.out/
 infrastructure/cdk.out/**/*
 lambda/pdf-generator-gpt52.zip
+
+# Lambda deployment ZIP files
+lambda/**/*.zip
+*.zip
