@@ -400,24 +400,46 @@ class ApiKeysSection {
         const statusElement = document.getElementById(`${service}-status`);
         const cardElement = document.getElementById(`${service}-card`);
         
-        if (!keyInput || !statusElement || !cardElement) return;
+        if (!keyInput || !statusElement || !cardElement) {
+            console.warn(`⚠️ DOM-Elemente für ${service} nicht gefunden`);
+            return;
+        }
         
         // Prüfe ob Key vorhanden: entweder im Input, im Cache oder als data-Attribut markiert
         const inputValue = keyInput.value.trim();
         const hasKeyInCache = this.cachedApiKeys && this.cachedApiKeys[service];
         const hasKeyMarked = keyInput.dataset.hasKey === 'true';
-        const hasKey = forceActive || inputValue !== '' || hasKeyInCache || hasKeyMarked;
+        const isConfigured = keyInput.dataset.configured === 'true';
+        
+        // Prüfe ob Input einen gültigen Key enthält (nicht leer, nicht nur Punkte/Striche)
+        const hasValidInput = inputValue !== '' && 
+                              !inputValue.includes('••••') && 
+                              !inputValue.match(/^[.\-]+$/);
+        
+        const hasKey = forceActive || hasValidInput || hasKeyInCache || hasKeyMarked || isConfigured;
+        
+        console.log(`🔍 Status-Prüfung für ${service}:`, {
+            forceActive,
+            inputValue: inputValue.substring(0, 10) + '...',
+            hasKeyInCache: !!hasKeyInCache,
+            hasKeyMarked,
+            isConfigured,
+            hasValidInput,
+            hasKey
+        });
         
         if (hasKey) {
             statusElement.textContent = 'Aktiv';
             statusElement.style.background = '#dcfce7';
             statusElement.style.color = '#16a34a';
             cardElement.style.borderColor = '#10b981';
+            console.log(`✅ ${service} als AKTIV markiert`);
         } else {
             statusElement.textContent = 'Inaktiv';
             statusElement.style.background = '#fee2e2';
             statusElement.style.color = '#991b1b';
             cardElement.style.borderColor = '#e2e8f0';
+            console.log(`❌ ${service} als INAKTIV markiert`);
         }
     }
     
