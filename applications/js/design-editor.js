@@ -4143,9 +4143,19 @@ class DesignEditor {
             // Detaillierte Fehlermeldung
             let errorMessage = 'Fehler beim PDF-Export: ';
             if (error.message) {
-                errorMessage += error.message;
+                // Entferne URL aus Fehlermeldung für bessere Anzeige
+                const cleanMessage = error.message.replace(/https?:\/\/[^\s]+/g, '').trim();
+                errorMessage += cleanMessage;
             } else {
                 errorMessage += 'Unbekannter Fehler';
+            }
+            
+            // Wenn es um API Key geht, füge Hinweis hinzu
+            if (error.message && error.message.includes('API Key')) {
+                errorMessage += ' Bitte öffnen Sie die Einstellungen im Admin-Panel.';
+                
+                // Zeige zusätzlich einen prominenten Fehler-Banner
+                this.showAPIKeyErrorBanner();
             }
             
             this.showNotification(errorMessage, 'error');
@@ -4470,52 +4480,96 @@ class DesignEditor {
         
         // Hole OpenAI API Key
         let openaiApiKey = null;
+        const keySources = [];
+        
         try {
+            console.log('🔑 Suche OpenAI API Key...');
+            console.log('📋 Verfügbare Services:', {
+                awsAPISettings: !!window.awsAPISettings,
+                GlobalAPIManager: !!window.GlobalAPIManager,
+                globalApiManager: !!window.globalApiManager,
+                isLoggedIn: window.awsAPISettings ? window.awsAPISettings.isUserLoggedIn() : false
+            });
+            
             // PRIORITÄT 1: Versuche globale Keys über AWS API (funktioniert auch ohne Login)
             if (window.awsAPISettings) {
                 try {
-                    openaiApiKey = await window.awsAPISettings.getFullApiKey('openai', true); // useGlobal = true
-                    console.log('✅ OpenAI API Key aus globalen Settings geladen');
+                    console.log('🔍 Versuche globale Keys über AWS API...');
+                    const key = await window.awsAPISettings.getFullApiKey('openai', true); // useGlobal = true
+                    if (key && typeof key === 'string' && key.startsWith('sk-') && key.length > 20) {
+                        openaiApiKey = key;
+                        console.log('✅ OpenAI API Key aus globalen Settings geladen (Länge:', key.length + ')');
+                        keySources.push('AWS Global Settings');
+                    } else {
+                        console.warn('⚠️ Globale Keys zurückgegeben, aber Format ungültig:', typeof key, key ? key.substring(0, 10) + '...' : 'null');
+                    }
                 } catch (e) {
-                    console.log('ℹ️ Globale Keys nicht verfügbar, versuche user-spezifische...');
+                    console.log('ℹ️ Globale Keys nicht verfügbar:', e.message);
                 }
+            } else {
+                console.warn('⚠️ window.awsAPISettings nicht verfügbar');
             }
             
             // PRIORITÄT 2: Versuche user-spezifische Keys (wenn eingeloggt)
-            if (!openaiApiKey && window.awsAPISettings && window.awsAPISettings.isUserLoggedIn()) {
+            if (!openaiApiKey && window.awsAPISettings) {
                 try {
-                    openaiApiKey = await window.awsAPISettings.getFullApiKey('openai', false);
-                    console.log('✅ OpenAI API Key aus user-spezifischen Settings geladen');
+                    const isLoggedIn = window.awsAPISettings.isUserLoggedIn && window.awsAPISettings.isUserLoggedIn();
+                    if (isLoggedIn) {
+                        console.log('🔍 Versuche user-spezifische Keys...');
+                        const key = await window.awsAPISettings.getFullApiKey('openai', false);
+                        if (key && typeof key === 'string' && key.startsWith('sk-') && key.length > 20) {
+                            openaiApiKey = key;
+                            console.log('✅ OpenAI API Key aus user-spezifischen Settings geladen (Länge:', key.length + ')');
+                            keySources.push('AWS User Settings');
+                        }
+                    } else {
+                        console.log('ℹ️ User nicht eingeloggt, überspringe user-spezifische Keys');
+                    }
                 } catch (e) {
-                    console.log('ℹ️ User-spezifische Keys nicht verfügbar...');
+                    console.log('ℹ️ User-spezifische Keys nicht verfügbar:', e.message);
                 }
             }
             
             // PRIORITÄT 3: Versuche GlobalAPIManager
             if (!openaiApiKey && window.GlobalAPIManager) {
-                const config = window.GlobalAPIManager.getServiceConfig('openai');
-                if (config && config.key) {
-                    openaiApiKey = config.key;
-                    console.log('✅ OpenAI API Key aus GlobalAPIManager geladen');
+                try {
+                    console.log('🔍 Versuche GlobalAPIManager...');
+                    const config = window.GlobalAPIManager.getServiceConfig('openai');
+                    if (config && config.key && typeof config.key === 'string' && config.key.startsWith('sk-')) {
+                        openaiApiKey = config.key;
+                        console.log('✅ OpenAI API Key aus GlobalAPIManager geladen');
+                        keySources.push('GlobalAPIManager');
+                    }
+                } catch (e) {
+                    console.log('ℹ️ GlobalAPIManager Fehler:', e.message);
                 }
             }
             
             // PRIORITÄT 4: Versuche globalApiManager
             if (!openaiApiKey && window.globalApiManager) {
-                openaiApiKey = await window.globalApiManager.getApiKey('openai');
-                if (openaiApiKey) {
-                    console.log('✅ OpenAI API Key aus globalApiManager geladen');
+                try {
+                    console.log('🔍 Versuche globalApiManager...');
+                    const key = await window.globalApiManager.getApiKey('openai');
+                    if (key && typeof key === 'string' && key.startsWith('sk-')) {
+                        openaiApiKey = key;
+                        console.log('✅ OpenAI API Key aus globalApiManager geladen');
+                        keySources.push('globalApiManager');
+                    }
+                } catch (e) {
+                    console.log('ℹ️ globalApiManager Fehler:', e.message);
                 }
             }
             
             // PRIORITÄT 5: Versuche localStorage (Fallback)
             if (!openaiApiKey) {
+                console.log('🔍 Versuche localStorage...');
                 const localKeys = ['openai_api_key', 'admin_openai_api_key', 'ki_api_settings'];
                 for (const key of localKeys) {
                     const value = localStorage.getItem(key);
-                    if (value && value.startsWith('sk-')) {
+                    if (value && typeof value === 'string' && value.startsWith('sk-') && value.length > 20) {
                         openaiApiKey = value;
-                        console.log(`✅ OpenAI API Key aus localStorage geladen (${key})`);
+                        console.log(`✅ OpenAI API Key aus localStorage geladen (${key}, Länge: ${value.length})`);
+                        keySources.push(`localStorage (${key})`);
                         break;
                     }
                 }
@@ -4524,22 +4578,51 @@ class DesignEditor {
             // PRIORITÄT 6: Versuche global_api_keys aus localStorage
             if (!openaiApiKey) {
                 try {
+                    console.log('🔍 Versuche global_api_keys aus localStorage...');
                     const globalKeys = JSON.parse(localStorage.getItem('global_api_keys') || '{}');
                     if (globalKeys.openai && globalKeys.openai.key) {
-                        openaiApiKey = globalKeys.openai.key;
-                        console.log('✅ OpenAI API Key aus global_api_keys geladen');
+                        const key = globalKeys.openai.key;
+                        if (typeof key === 'string' && key.startsWith('sk-') && key.length > 20 && !key.includes('...')) {
+                            openaiApiKey = key;
+                            console.log('✅ OpenAI API Key aus global_api_keys geladen (Länge:', key.length + ')');
+                            keySources.push('localStorage (global_api_keys)');
+                        } else {
+                            console.warn('⚠️ global_api_keys.openai.key ist maskiert oder ungültig');
+                        }
                     }
                 } catch (e) {
-                    console.log('ℹ️ global_api_keys nicht verfügbar');
+                    console.log('ℹ️ global_api_keys nicht verfügbar:', e.message);
                 }
             }
         } catch (e) {
-            console.warn('⚠️ OpenAI API Key konnte nicht geladen werden:', e);
+            console.error('❌ Fehler beim Laden des API Keys:', e);
+        }
+        
+        // Validierung des API Keys
+        if (openaiApiKey) {
+            if (typeof openaiApiKey !== 'string') {
+                console.error('❌ API Key ist kein String:', typeof openaiApiKey);
+                openaiApiKey = null;
+            } else if (!openaiApiKey.startsWith('sk-')) {
+                console.error('❌ API Key beginnt nicht mit "sk-":', openaiApiKey.substring(0, 10) + '...');
+                openaiApiKey = null;
+            } else if (openaiApiKey.length < 20) {
+                console.error('❌ API Key zu kurz:', openaiApiKey.length);
+                openaiApiKey = null;
+            } else if (openaiApiKey.includes('...')) {
+                console.error('❌ API Key ist maskiert (enthält "...")');
+                openaiApiKey = null;
+            }
         }
         
         if (!openaiApiKey) {
-            throw new Error('OpenAI API Key nicht gefunden. Bitte konfigurieren Sie den API Key in den Einstellungen.');
+            console.error('❌ Kein gültiger OpenAI API Key gefunden');
+            console.error('📋 Geprüfte Quellen:', keySources.length > 0 ? keySources.join(', ') : 'Keine');
+            const settingsUrl = window.location.origin + '/admin#ai-settings';
+            throw new Error(`OpenAI API Key nicht gefunden. Bitte konfigurieren Sie den API Key in den Einstellungen: ${settingsUrl}`);
         }
+        
+        console.log('✅ Gültiger OpenAI API Key gefunden (Quelle:', keySources.join(', ') + ')');
         
         // Rufe GPT-5.2 Lambda API auf
         const apiUrl = window.getApiUrl('PDF_GENERATOR');
@@ -5158,6 +5241,81 @@ class DesignEditor {
         } else {
             console.log(`[${type.toUpperCase()}] ${message}`);
         }
+    }
+    
+    showAPIKeyErrorBanner() {
+        // Entferne vorhandenen Banner falls vorhanden
+        const existingBanner = document.getElementById('api-key-error-banner');
+        if (existingBanner) {
+            existingBanner.remove();
+        }
+        
+        // Erstelle neuen Banner
+        const banner = document.createElement('div');
+        banner.id = 'api-key-error-banner';
+        banner.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, #dc2626, #ef4444);
+            color: white;
+            padding: 16px 24px;
+            z-index: 10001;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        `;
+        
+        const settingsUrl = window.location.origin + '/admin#ai-settings';
+        
+        banner.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 12px; flex: 1;">
+                <i class="fas fa-exclamation-triangle" style="font-size: 1.2rem;"></i>
+                <div>
+                    <strong>OpenAI API Key nicht gefunden</strong>
+                    <div style="font-size: 0.9rem; opacity: 0.9; margin-top: 2px;">
+                        Bitte konfigurieren Sie den API Key in den Einstellungen.
+                    </div>
+                </div>
+            </div>
+            <div style="display: flex; gap: 8px;">
+                <a href="${settingsUrl}" target="_blank" style="
+                    background: rgba(255,255,255,0.2);
+                    color: white;
+                    padding: 8px 16px;
+                    border-radius: 6px;
+                    text-decoration: none;
+                    font-weight: 500;
+                    transition: background 0.2s;
+                " onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">
+                    <i class="fas fa-cog"></i> Zu den Einstellungen
+                </a>
+                <button onclick="this.closest('#api-key-error-banner').remove()" style="
+                    background: rgba(255,255,255,0.2);
+                    color: white;
+                    border: none;
+                    padding: 8px 12px;
+                    border-radius: 6px;
+                    cursor: pointer;
+                    font-size: 1.2rem;
+                    line-height: 1;
+                ">×</button>
+            </div>
+        `;
+        
+        document.body.appendChild(banner);
+        
+        // Auto-remove nach 10 Sekunden
+        setTimeout(() => {
+            if (banner.parentNode) {
+                banner.style.transition = 'opacity 0.3s';
+                banner.style.opacity = '0';
+                setTimeout(() => banner.remove(), 300);
+            }
+        }, 10000);
     }
 }
 
