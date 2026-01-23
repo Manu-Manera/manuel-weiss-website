@@ -123,15 +123,23 @@ const CORS_HEADERS = {
  * Main Handler
  */
 exports.handler = async (event) => {
-    console.log('API Settings Lambda:', JSON.stringify(event, null, 2));
+    console.log('API Settings Lambda Event:', JSON.stringify(event, null, 2));
     
-    // Handle CORS preflight
-    if (event.httpMethod === 'OPTIONS') {
-        return { statusCode: 200, headers: CORS_HEADERS, body: '' };
+    // Handle CORS preflight (sowohl für REST API als auch für Proxy)
+    const httpMethod = event.httpMethod || event.requestContext?.http?.method || event.requestContext?.httpMethod;
+    if (httpMethod === 'OPTIONS') {
+        console.log('✅ CORS Preflight Request');
+        return { 
+            statusCode: 200, 
+            headers: CORS_HEADERS, 
+            body: '' 
+        };
     }
     
     try {
-        const { httpMethod, path, queryStringParameters } = event;
+        // Unterstütze sowohl REST API als auch Proxy-Format
+        const path = event.path || event.requestContext?.path || event.requestContext?.resourcePath || '';
+        const queryStringParameters = event.queryStringParameters || event.queryStringParameters || {};
         
         // Route: /api-settings/key?provider=openai - Vollständigen (entschlüsselten) Key abrufen
         // Unterstützt sowohl User-spezifische als auch globale API Keys
