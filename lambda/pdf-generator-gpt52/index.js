@@ -32,46 +32,50 @@ const CORS_HEADERS = {
 /**
  * Ruft GPT-5.2 auf, um HTML mit korrekten Padding-Werten zu generieren
  */
+// Hilfsfunktion: Reduziere HTML-Content auf Text-Inhalt (beschleunigt GPT-Verarbeitung)
+function extractTextContent(html) {
+    // Entferne Script- und Style-Tags komplett
+    let cleaned = html.replace(/<script[\s\S]*?<\/script>/gi, '');
+    cleaned = cleaned.replace(/<style[\s\S]*?<\/style>/gi, '');
+    
+    // Entferne Kommentare
+    cleaned = cleaned.replace(/<!--[\s\S]*?-->/g, '');
+    
+    // Reduziere Whitespace
+    cleaned = cleaned.replace(/\s+/g, ' ').trim();
+    
+    // Wenn zu lang (>20000 Zeichen), kürze auf wichtigsten Teil
+    if (cleaned.length > 20000) {
+        // Behalte Anfang und Ende (Header + Footer wichtig)
+        const start = cleaned.substring(0, 10000);
+        const end = cleaned.substring(cleaned.length - 10000);
+        cleaned = start + '\n[... gekürzt ...]\n' + end;
+    }
+    
+    return cleaned;
+}
+
 async function generateHTMLWithGPT52(content, settings, apiKey) {
     const openaiApiUrl = 'https://api.openai.com/v1/chat/completions';
     
-    const prompt = `Du bist ein Experte für HTML/CSS-Layouts für PDF-Exporte. 
+    // Content optimieren: Nur Text-Inhalt extrahieren (reduziert Token-Anzahl)
+    const optimizedContent = extractTextContent(content);
+    console.log(`📊 Content optimiert: ${content.length} → ${optimizedContent.length} Zeichen`);
+    
+    const prompt = `Generiere vollständiges HTML5-Dokument für PDF-Export.
 
-Generiere ein vollständiges, valides HTML5-Dokument mit folgenden Anforderungen:
+Anforderungen:
+- Padding: ${settings.marginTop}mm/${settings.marginRight}mm/${settings.marginBottom}mm/${settings.marginLeft}mm
+- Font: ${settings.fontFamily || 'Inter'}, ${settings.fontSize || 11}pt, Zeilenabstand ${settings.lineHeight || 1.5}
+- Farben: Text ${settings.textColor || '#1e293b'}, Hintergrund ${settings.backgroundColor || '#ffffff'}
+- Container: style="padding: ${settings.marginTop}mm ${settings.marginRight}mm ${settings.marginBottom}mm ${settings.marginLeft}mm; box-sizing: border-box; width: calc(210mm - ${settings.marginLeft}mm - ${settings.marginRight}mm);"
+- HTML5 mit <!DOCTYPE html>, <head> (Meta, Fonts, <style>), <body>
+- CSS: Padding in mm, box-sizing: border-box, @media print, @page { size: A4; margin: 0; }, body { width: 210mm; margin: 0; padding: 0; }
 
-1. **Seitenränder (Padding):**
-   - Oben: ${settings.marginTop}mm
-   - Rechts: ${settings.marginRight}mm
-   - Unten: ${settings.marginBottom}mm
-   - Links: ${settings.marginLeft}mm
-   
-2. **Formatierung:**
-   - Schriftart: ${settings.fontFamily || 'Inter'}
-   - Schriftgröße: ${settings.fontSize || 11}pt
-   - Zeilenabstand: ${settings.lineHeight || 1.5}
-   - Textfarbe: ${settings.textColor || '#1e293b'}
-   - Hintergrundfarbe: ${settings.backgroundColor || '#ffffff'}
-   
-3. **WICHTIG - Padding muss als inline-Style auf dem Hauptcontainer gesetzt werden:**
-   - Das Element mit Klasse "design-resume-preview" MUSS inline-Styles haben:
-     style="padding-top: ${settings.marginTop}mm; padding-right: ${settings.marginRight}mm; padding-bottom: ${settings.marginBottom}mm; padding-left: ${settings.marginLeft}mm; box-sizing: border-box; width: calc(210mm - ${settings.marginLeft}mm - ${settings.marginRight}mm);"
-   
-4. **HTML-Struktur:**
-   - Vollständiges HTML5-Dokument mit <!DOCTYPE html>
-   - <head> mit Meta-Tags, Google Fonts Link (falls benötigt), und <style> Block
-   - <body> mit dem übergebenen Inhalt
-   
-5. **CSS-Anforderungen:**
-   - Alle Padding-Werte MÜSSEN in mm angegeben werden
-   - box-sizing: border-box verwenden
-   - @media print Block für Print-Styles
-   - @page { size: A4; margin: 0; }
-   - Body: width: 210mm, margin: 0, padding: 0
-   
-6. **Inhalt:**
-   ${content}
+Inhalt:
+${optimizedContent}
 
-Antworte NUR mit dem vollständigen HTML-Code, ohne Markdown-Code-Blöcke, ohne Erklärungen, ohne zusätzlichen Text. Nur das HTML-Dokument.`;
+Antworte NUR mit HTML-Code, kein Markdown, keine Erklärungen.`;
 
     try {
         const response = await fetch(openaiApiUrl, {
@@ -86,7 +90,7 @@ Antworte NUR mit dem vollständigen HTML-Code, ohne Markdown-Code-Blöcke, ohne 
                 messages: [
                     {
                         role: 'system',
-                        content: `Du bist ein Experte für HTML/CSS-Layouts für PDF-Exporte. Antworte NUR mit vollständigem HTML5-Code, keine Markdown-Code-Blöcke, keine Erklärungen. Verwende präzise CSS-Styles mit exakten mm-Werten, box-sizing: border-box.`
+                        content: `HTML/CSS-Experte für PDF. Antworte NUR mit HTML5-Code, kein Markdown. CSS in mm, box-sizing: border-box.`
                     },
                     {
                         role: 'user',
@@ -210,16 +214,16 @@ exports.handler = async (event) => {
 
         const page = await browser.newPage();
 
-        // Set content and wait for resources (optimiert für schnellere Ausführung)
+        // Set content and wait for resources (maximal optimiert für Geschwindigkeit)
         await page.setContent(finalHTML, {
-            waitUntil: 'load', // Schneller als 'networkidle0'
-            timeout: 15000
+            waitUntil: 'domcontentloaded', // Schnellste Option - nur DOM, keine Ressourcen
+            timeout: 10000 // Reduziert von 15s auf 10s
         });
 
-        // Wait for fonts to load (parallel)
+        // Wait for fonts to load (minimal - nur 1 Sekunde)
         await Promise.race([
             page.evaluateHandle(() => document.fonts.ready),
-            new Promise(resolve => setTimeout(resolve, 2000)) // Max 2 Sekunden für Fonts
+            new Promise(resolve => setTimeout(resolve, 1000)) // Max 1 Sekunde für Fonts (war 2s)
         ]);
 
         // Generate PDF
