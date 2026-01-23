@@ -133,7 +133,7 @@
     "aws:cdk:path": "manuel-weiss-website-api/WebsiteAPI/Resource"
    }
   },
-  "WebsiteAPIDeploymentABEB4023563f83b85447cf165e0182cd9a0d6a2e": {
+  "WebsiteAPIDeploymentABEB4023bd88855f574d3c0a85c3611dc2ef38df": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
     "Description": "API für manuel-weiss.ch (ersetzt Netlify Functions)",
@@ -142,10 +142,11 @@
     }
    },
    "DependsOn": [
-    "WebsiteAPIapisettingsproxyANY901F1397",
-    "WebsiteAPIapisettingsproxyOPTIONS07C84816",
-    "WebsiteAPIapisettingsproxy79CDC3D7",
+    "WebsiteAPIapisettingsDELETEB5ACA7C0",
+    "WebsiteAPIapisettingsGETFA533951",
     "WebsiteAPIapisettingsOPTIONSFB75BB95",
+    "WebsiteAPIapisettingsPOST30943AAB",
+    "WebsiteAPIapisettingsPUTF3A9847D",
     "WebsiteAPIapisettings758AC7D1",
     "WebsiteAPIbewerbungsprofilDELETE60C3C856",
     "WebsiteAPIbewerbungsprofilGET0C2ACC3B",
@@ -276,7 +277,7 @@
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
     "DeploymentId": {
-     "Ref": "WebsiteAPIDeploymentABEB4023563f83b85447cf165e0182cd9a0d6a2e"
+     "Ref": "WebsiteAPIDeploymentABEB4023bd88855f574d3c0a85c3611dc2ef38df"
     },
     "MethodSettings": [
      {
@@ -5371,72 +5372,7 @@
     "aws:cdk:path": "manuel-weiss-website-api/WebsiteAPI/Default/api-settings/OPTIONS/Resource"
    }
   },
-  "WebsiteAPIapisettingsproxy79CDC3D7": {
-   "Type": "AWS::ApiGateway::Resource",
-   "Properties": {
-    "ParentId": {
-     "Ref": "WebsiteAPIapisettings758AC7D1"
-    },
-    "PathPart": "{proxy+}",
-    "RestApiId": {
-     "Ref": "WebsiteAPI5DE54201"
-    }
-   },
-   "Metadata": {
-    "aws:cdk:path": "manuel-weiss-website-api/WebsiteAPI/Default/api-settings/{proxy+}/Resource"
-   }
-  },
-  "WebsiteAPIapisettingsproxyOPTIONS07C84816": {
-   "Type": "AWS::ApiGateway::Method",
-   "Properties": {
-    "ApiKeyRequired": false,
-    "AuthorizationType": "NONE",
-    "HttpMethod": "OPTIONS",
-    "Integration": {
-     "IntegrationResponses": [
-      {
-       "ResponseParameters": {
-        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization,X-User-Id,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'",
-        "method.response.header.Access-Control-Allow-Origin": "'https://manuel-weiss.ch'",
-        "method.response.header.Vary": "'Origin'",
-        "method.response.header.Access-Control-Allow-Methods": "'GET,POST,PUT,DELETE,OPTIONS'",
-        "method.response.header.Access-Control-Allow-Credentials": "'true'"
-       },
-       "ResponseTemplates": {
-        "application/json": "#set($origin = $input.params().header.get(\"Origin\"))\n#if($origin == \"\")\n  #set($origin = $input.params().header.get(\"origin\"))\n#end\n#if($origin == \"https://www.manuel-weiss.ch\" || $origin == \"https://mawps.netlify.app\" || $origin == \"http://localhost:3000\" || $origin == \"http://localhost:5500\" || $origin == \"http://127.0.0.1:5500\")\n  #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin)\n#end"
-       },
-       "StatusCode": "204"
-      }
-     ],
-     "RequestTemplates": {
-      "application/json": "{ statusCode: 200 }"
-     },
-     "Type": "MOCK"
-    },
-    "MethodResponses": [
-     {
-      "ResponseParameters": {
-       "method.response.header.Access-Control-Allow-Headers": true,
-       "method.response.header.Access-Control-Allow-Origin": true,
-       "method.response.header.Vary": true,
-       "method.response.header.Access-Control-Allow-Methods": true,
-       "method.response.header.Access-Control-Allow-Credentials": true
-      },
-      "StatusCode": "204"
-     }
-    ],
-    "ResourceId": {
-     "Ref": "WebsiteAPIapisettingsproxy79CDC3D7"
-    },
-    "RestApiId": {
-     "Ref": "WebsiteAPI5DE54201"
-    }
-   },
-   "Metadata": {
-    "aws:cdk:path": "manuel-weiss-website-api/WebsiteAPI/Default/api-settings/{proxy+}/OPTIONS/Resource"
-   }
-  },
-  "WebsiteAPIapisettingsproxyANYApiPermissionmanuelweisswebsiteapiWebsiteAPIB87C94C7ANYapisettingsproxy0A1569AE": {
+  "WebsiteAPIapisettingsGETApiPermissionmanuelweisswebsiteapiWebsiteAPIB87C94C7GETapisettings3DF1CDCD": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -5459,16 +5395,16 @@
        {
         "Ref": "WebsiteAPIDeploymentStagev1E4D7146D"
        },
-       "/*/api-settings/*"
+       "/GET/api-settings"
       ]
      ]
     }
    },
    "Metadata": {
-    "aws:cdk:path": "manuel-weiss-website-api/WebsiteAPI/Default/api-settings/{proxy+}/ANY/ApiPermission.manuelweisswebsiteapiWebsiteAPIB87C94C7.ANY..api-settings.{proxy+}"
+    "aws:cdk:path": "manuel-weiss-website-api/WebsiteAPI/Default/api-settings/GET/ApiPermission.manuelweisswebsiteapiWebsiteAPIB87C94C7.GET..api-settings"
    }
   },
-  "WebsiteAPIapisettingsproxyANYApiPermissionTestmanuelweisswebsiteapiWebsiteAPIB87C94C7ANYapisettingsproxy5AA040BE": {
+  "WebsiteAPIapisettingsGETApiPermissionTestmanuelweisswebsiteapiWebsiteAPIB87C94C7GETapisettingsDDCCA006": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -5487,22 +5423,32 @@
        {
         "Ref": "WebsiteAPI5DE54201"
        },
-       "/test-invoke-stage/*/api-settings/*"
+       "/test-invoke-stage/GET/api-settings"
       ]
      ]
     }
    },
    "Metadata": {
-    "aws:cdk:path": "manuel-weiss-website-api/WebsiteAPI/Default/api-settings/{proxy+}/ANY/ApiPermission.Test.manuelweisswebsiteapiWebsiteAPIB87C94C7.ANY..api-settings.{proxy+}"
+    "aws:cdk:path": "manuel-weiss-website-api/WebsiteAPI/Default/api-settings/GET/ApiPermission.Test.manuelweisswebsiteapiWebsiteAPIB87C94C7.GET..api-settings"
    }
   },
-  "WebsiteAPIapisettingsproxyANY901F1397": {
+  "WebsiteAPIapisettingsGETFA533951": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
     "AuthorizationType": "NONE",
-    "HttpMethod": "ANY",
+    "HttpMethod": "GET",
     "Integration": {
      "IntegrationHttpMethod": "POST",
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'",
+        "method.response.header.Access-Control-Allow-Methods": "'GET,POST,PUT,DELETE,OPTIONS'"
+       },
+       "StatusCode": "200"
+      }
+     ],
      "Type": "AWS_PROXY",
      "Uri": {
       "Fn::Join": [
@@ -5520,15 +5466,370 @@
       ]
      }
     },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "200"
+     }
+    ],
     "ResourceId": {
-     "Ref": "WebsiteAPIapisettingsproxy79CDC3D7"
+     "Ref": "WebsiteAPIapisettings758AC7D1"
     },
     "RestApiId": {
      "Ref": "WebsiteAPI5DE54201"
     }
    },
    "Metadata": {
-    "aws:cdk:path": "manuel-weiss-website-api/WebsiteAPI/Default/api-settings/{proxy+}/ANY/Resource"
+    "aws:cdk:path": "manuel-weiss-website-api/WebsiteAPI/Default/api-settings/GET/Resource"
+   }
+  },
+  "WebsiteAPIapisettingsPOSTApiPermissionmanuelweisswebsiteapiWebsiteAPIB87C94C7POSTapisettings1A1FE86C": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "ApiSettingsFunction488F54F9",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:eu-central-1:038333965110:",
+       {
+        "Ref": "WebsiteAPI5DE54201"
+       },
+       "/",
+       {
+        "Ref": "WebsiteAPIDeploymentStagev1E4D7146D"
+       },
+       "/POST/api-settings"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "manuel-weiss-website-api/WebsiteAPI/Default/api-settings/POST/ApiPermission.manuelweisswebsiteapiWebsiteAPIB87C94C7.POST..api-settings"
+   }
+  },
+  "WebsiteAPIapisettingsPOSTApiPermissionTestmanuelweisswebsiteapiWebsiteAPIB87C94C7POSTapisettings68B2330D": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "ApiSettingsFunction488F54F9",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:eu-central-1:038333965110:",
+       {
+        "Ref": "WebsiteAPI5DE54201"
+       },
+       "/test-invoke-stage/POST/api-settings"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "manuel-weiss-website-api/WebsiteAPI/Default/api-settings/POST/ApiPermission.Test.manuelweisswebsiteapiWebsiteAPIB87C94C7.POST..api-settings"
+   }
+  },
+  "WebsiteAPIapisettingsPOST30943AAB": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "POST",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'",
+        "method.response.header.Access-Control-Allow-Methods": "'GET,POST,PUT,DELETE,OPTIONS'"
+       },
+       "StatusCode": "200"
+      }
+     ],
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "ApiSettingsFunction488F54F9",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "200"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "WebsiteAPIapisettings758AC7D1"
+    },
+    "RestApiId": {
+     "Ref": "WebsiteAPI5DE54201"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "manuel-weiss-website-api/WebsiteAPI/Default/api-settings/POST/Resource"
+   }
+  },
+  "WebsiteAPIapisettingsPUTApiPermissionmanuelweisswebsiteapiWebsiteAPIB87C94C7PUTapisettings5514BB4F": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "ApiSettingsFunction488F54F9",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:eu-central-1:038333965110:",
+       {
+        "Ref": "WebsiteAPI5DE54201"
+       },
+       "/",
+       {
+        "Ref": "WebsiteAPIDeploymentStagev1E4D7146D"
+       },
+       "/PUT/api-settings"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "manuel-weiss-website-api/WebsiteAPI/Default/api-settings/PUT/ApiPermission.manuelweisswebsiteapiWebsiteAPIB87C94C7.PUT..api-settings"
+   }
+  },
+  "WebsiteAPIapisettingsPUTApiPermissionTestmanuelweisswebsiteapiWebsiteAPIB87C94C7PUTapisettingsF6C560F9": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "ApiSettingsFunction488F54F9",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:eu-central-1:038333965110:",
+       {
+        "Ref": "WebsiteAPI5DE54201"
+       },
+       "/test-invoke-stage/PUT/api-settings"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "manuel-weiss-website-api/WebsiteAPI/Default/api-settings/PUT/ApiPermission.Test.manuelweisswebsiteapiWebsiteAPIB87C94C7.PUT..api-settings"
+   }
+  },
+  "WebsiteAPIapisettingsPUTF3A9847D": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "PUT",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'",
+        "method.response.header.Access-Control-Allow-Methods": "'GET,POST,PUT,DELETE,OPTIONS'"
+       },
+       "StatusCode": "200"
+      }
+     ],
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "ApiSettingsFunction488F54F9",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "200"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "WebsiteAPIapisettings758AC7D1"
+    },
+    "RestApiId": {
+     "Ref": "WebsiteAPI5DE54201"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "manuel-weiss-website-api/WebsiteAPI/Default/api-settings/PUT/Resource"
+   }
+  },
+  "WebsiteAPIapisettingsDELETEApiPermissionmanuelweisswebsiteapiWebsiteAPIB87C94C7DELETEapisettings50B919F5": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "ApiSettingsFunction488F54F9",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:eu-central-1:038333965110:",
+       {
+        "Ref": "WebsiteAPI5DE54201"
+       },
+       "/",
+       {
+        "Ref": "WebsiteAPIDeploymentStagev1E4D7146D"
+       },
+       "/DELETE/api-settings"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "manuel-weiss-website-api/WebsiteAPI/Default/api-settings/DELETE/ApiPermission.manuelweisswebsiteapiWebsiteAPIB87C94C7.DELETE..api-settings"
+   }
+  },
+  "WebsiteAPIapisettingsDELETEApiPermissionTestmanuelweisswebsiteapiWebsiteAPIB87C94C7DELETEapisettingsAF92DFE3": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "ApiSettingsFunction488F54F9",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:eu-central-1:038333965110:",
+       {
+        "Ref": "WebsiteAPI5DE54201"
+       },
+       "/test-invoke-stage/DELETE/api-settings"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "manuel-weiss-website-api/WebsiteAPI/Default/api-settings/DELETE/ApiPermission.Test.manuelweisswebsiteapiWebsiteAPIB87C94C7.DELETE..api-settings"
+   }
+  },
+  "WebsiteAPIapisettingsDELETEB5ACA7C0": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "DELETE",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'",
+        "method.response.header.Access-Control-Allow-Methods": "'GET,POST,PUT,DELETE,OPTIONS'"
+       },
+       "StatusCode": "200"
+      }
+     ],
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "ApiSettingsFunction488F54F9",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "200"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "WebsiteAPIapisettings758AC7D1"
+    },
+    "RestApiId": {
+     "Ref": "WebsiteAPI5DE54201"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "manuel-weiss-website-api/WebsiteAPI/Default/api-settings/DELETE/Resource"
    }
   },
   "WebsiteAPIcontactemail3147ADD1": {
@@ -8326,11 +8627,12 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-038333965110-eu-central-1",
-     "S3Key": "d3fe61e6ecf00ca8c37cb4f2171a42c7b783230bbc2f9d68450eeaffdd69eda4.zip"
+     "S3Key": "43a2c29e742ca7d7a2dc5f254166de29d009c821a6ce08496b9c75a8e88328e3.zip"
     },
     "Environment": {
      "Variables": {
       "API_SETTINGS_TABLE": "mawps-api-settings",
+      "PROFILE_TABLE": "mawps-user-profiles",
       "ENCRYPTION_SECRET": "mawps-secure-api-key-encryption-2024"
      }
     },
@@ -8366,7 +8668,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "manuel-weiss-website-api/ApiSettingsFunction/Resource",
-    "aws:asset:path": "asset.d3fe61e6ecf00ca8c37cb4f2171a42c7b783230bbc2f9d68450eeaffdd69eda4",
+    "aws:asset:path": "asset.43a2c29e742ca7d7a2dc5f254166de29d009c821a6ce08496b9c75a8e88328e3",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }

@@ -23,7 +23,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::038333965110:role/cdk-hnb659fds-deploy-role-038333965110-eu-central-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::038333965110:role/cdk-hnb659fds-cfn-exec-role-038333965110-eu-central-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-038333965110-eu-central-1/d83e0b1adbb3f6545d86d073e3f7d2fca79f9eb676ef6d5a4dee1586b2d76888.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-038333965110-eu-central-1/0ec8d90b3c38b5e4d26e1384840344213807b30c0c934ff45a656f0f041a6807.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -79,7 +79,7 @@
         "/manuel-weiss-website-api/WebsiteAPI/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "WebsiteAPIDeploymentABEB4023563f83b85447cf165e0182cd9a0d6a2e"
+            "data": "WebsiteAPIDeploymentABEB4023bd88855f574d3c0a85c3611dc2ef38df"
           }
         ],
         "/manuel-weiss-website-api/WebsiteAPI/DeploymentStage.v1/Resource": [
@@ -1036,34 +1036,76 @@
             "data": "WebsiteAPIapisettingsOPTIONSFB75BB95"
           }
         ],
-        "/manuel-weiss-website-api/WebsiteAPI/Default/api-settings/{proxy+}/Resource": [
+        "/manuel-weiss-website-api/WebsiteAPI/Default/api-settings/GET/ApiPermission.manuelweisswebsiteapiWebsiteAPIB87C94C7.GET..api-settings": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "WebsiteAPIapisettingsproxy79CDC3D7"
+            "data": "WebsiteAPIapisettingsGETApiPermissionmanuelweisswebsiteapiWebsiteAPIB87C94C7GETapisettings3DF1CDCD"
           }
         ],
-        "/manuel-weiss-website-api/WebsiteAPI/Default/api-settings/{proxy+}/OPTIONS/Resource": [
+        "/manuel-weiss-website-api/WebsiteAPI/Default/api-settings/GET/ApiPermission.Test.manuelweisswebsiteapiWebsiteAPIB87C94C7.GET..api-settings": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "WebsiteAPIapisettingsproxyOPTIONS07C84816"
+            "data": "WebsiteAPIapisettingsGETApiPermissionTestmanuelweisswebsiteapiWebsiteAPIB87C94C7GETapisettingsDDCCA006"
           }
         ],
-        "/manuel-weiss-website-api/WebsiteAPI/Default/api-settings/{proxy+}/ANY/ApiPermission.manuelweisswebsiteapiWebsiteAPIB87C94C7.ANY..api-settings.{proxy+}": [
+        "/manuel-weiss-website-api/WebsiteAPI/Default/api-settings/GET/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "WebsiteAPIapisettingsproxyANYApiPermissionmanuelweisswebsiteapiWebsiteAPIB87C94C7ANYapisettingsproxy0A1569AE"
+            "data": "WebsiteAPIapisettingsGETFA533951"
           }
         ],
-        "/manuel-weiss-website-api/WebsiteAPI/Default/api-settings/{proxy+}/ANY/ApiPermission.Test.manuelweisswebsiteapiWebsiteAPIB87C94C7.ANY..api-settings.{proxy+}": [
+        "/manuel-weiss-website-api/WebsiteAPI/Default/api-settings/POST/ApiPermission.manuelweisswebsiteapiWebsiteAPIB87C94C7.POST..api-settings": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "WebsiteAPIapisettingsproxyANYApiPermissionTestmanuelweisswebsiteapiWebsiteAPIB87C94C7ANYapisettingsproxy5AA040BE"
+            "data": "WebsiteAPIapisettingsPOSTApiPermissionmanuelweisswebsiteapiWebsiteAPIB87C94C7POSTapisettings1A1FE86C"
           }
         ],
-        "/manuel-weiss-website-api/WebsiteAPI/Default/api-settings/{proxy+}/ANY/Resource": [
+        "/manuel-weiss-website-api/WebsiteAPI/Default/api-settings/POST/ApiPermission.Test.manuelweisswebsiteapiWebsiteAPIB87C94C7.POST..api-settings": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "WebsiteAPIapisettingsproxyANY901F1397"
+            "data": "WebsiteAPIapisettingsPOSTApiPermissionTestmanuelweisswebsiteapiWebsiteAPIB87C94C7POSTapisettings68B2330D"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/api-settings/POST/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIapisettingsPOST30943AAB"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/api-settings/PUT/ApiPermission.manuelweisswebsiteapiWebsiteAPIB87C94C7.PUT..api-settings": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIapisettingsPUTApiPermissionmanuelweisswebsiteapiWebsiteAPIB87C94C7PUTapisettings5514BB4F"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/api-settings/PUT/ApiPermission.Test.manuelweisswebsiteapiWebsiteAPIB87C94C7.PUT..api-settings": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIapisettingsPUTApiPermissionTestmanuelweisswebsiteapiWebsiteAPIB87C94C7PUTapisettingsF6C560F9"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/api-settings/PUT/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIapisettingsPUTF3A9847D"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/api-settings/DELETE/ApiPermission.manuelweisswebsiteapiWebsiteAPIB87C94C7.DELETE..api-settings": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIapisettingsDELETEApiPermissionmanuelweisswebsiteapiWebsiteAPIB87C94C7DELETEapisettings50B919F5"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/api-settings/DELETE/ApiPermission.Test.manuelweisswebsiteapiWebsiteAPIB87C94C7.DELETE..api-settings": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIapisettingsDELETEApiPermissionTestmanuelweisswebsiteapiWebsiteAPIB87C94C7DELETEapisettingsAF92DFE3"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default/api-settings/DELETE/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIapisettingsDELETEB5ACA7C0"
           }
         ],
         "/manuel-weiss-website-api/WebsiteAPI/Default/contact-email/Resource": [

@@ -499,9 +499,32 @@ export class WebsiteApiStack extends cdk.Stack {
 
     // /api-settings (bestehende Lambda)
     const apiSettingsResource = this.api.root.addResource('api-settings');
-    apiSettingsResource.addProxy({
-      anyMethod: true,
-      defaultIntegration: new apigateway.LambdaIntegration(apiSettingsLambda)
+    
+    // Lambda Integration mit CORS Headers
+    const apiSettingsIntegration = new apigateway.LambdaIntegration(apiSettingsLambda, {
+      proxy: true,
+      integrationResponses: [{
+        statusCode: '200',
+        responseParameters: {
+          'method.response.header.Access-Control-Allow-Origin': "'*'",
+          'method.response.header.Access-Control-Allow-Headers': "'Content-Type,Authorization,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'",
+          'method.response.header.Access-Control-Allow-Methods': "'GET,POST,PUT,DELETE,OPTIONS'"
+        }
+      }]
+    });
+    
+    // Methoden explizit erstellen mit CORS Headers (OPTIONS wird von Lambda behandelt)
+    ['GET', 'POST', 'PUT', 'DELETE'].forEach(method => {
+      apiSettingsResource.addMethod(method, apiSettingsIntegration, {
+        methodResponses: [{
+          statusCode: '200',
+          responseParameters: {
+            'method.response.header.Access-Control-Allow-Origin': true,
+            'method.response.header.Access-Control-Allow-Headers': true,
+            'method.response.header.Access-Control-Allow-Methods': true
+          }
+        }]
+      });
     });
 
     // /contact-email (bestehende Lambda)
