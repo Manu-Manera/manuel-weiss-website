@@ -185,32 +185,47 @@ class AWSAPISettingsService {
     /**
      * Vollständigen (unverschlüsselten) API Key für einen Provider holen
      * ACHTUNG: Nur für Server-seitige Operationen verwenden!
+     * @param {string} provider - Der Provider (openai, anthropic, google)
+     * @param {boolean} useGlobal - Wenn true, versuche globale Keys ohne Login (nur für AWS API)
      */
-    async getFullApiKey(provider) {
-        if (!this.isUserLoggedIn()) {
-            console.log('⚠️ User nicht eingeloggt - keine API Keys verfügbar');
-            return null;
+    async getFullApiKey(provider, useGlobal = false) {
+        // Für globale Keys ist kein Login erforderlich
+        if (!useGlobal && !this.isUserLoggedIn()) {
+            console.log('⚠️ User nicht eingeloggt - versuche globale Keys...');
+            // Versuche globale Keys als Fallback
+            return await this.getFullApiKey(provider, true);
         }
 
         try {
-            const token = await this.getAuthToken();
+            let headers = {
+                'Content-Type': 'application/json'
+            };
             
-            // Netlify Functions: Query-Param "action=key" statt Sub-Pfad
-            const response = await fetch(`${this.apiEndpoint}/api-settings?action=key&provider=${provider}`, {
+            // Nur Auth-Header hinzufügen, wenn nicht global und eingeloggt
+            if (!useGlobal && this.isUserLoggedIn()) {
+                const token = await this.getAuthToken();
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+            
+            // AWS API Gateway: /api-settings/key?provider=openai&global=true
+            // Netlify Functions: /api-settings?action=key&provider=openai (Legacy)
+            const isAWS = this.apiEndpoint && !this.apiEndpoint.includes('/.netlify/functions');
+            const url = isAWS 
+                ? `${this.apiEndpoint}/api-settings/key?provider=${provider}${useGlobal ? '&global=true' : ''}`
+                : `${this.apiEndpoint}/api-settings?action=key&provider=${provider}`;
+            
+            const response = await fetch(url, {
                 method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
+                headers: headers
             });
 
             if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.message || 'Fehler beim Laden des API Keys');
+                const error = await response.json().catch(() => ({ error: 'Unbekannter Fehler' }));
+                throw new Error(error.error || error.message || 'Fehler beim Laden des API Keys');
             }
 
             const data = await response.json();
-            console.log(`✅ Vollständiger API Key für ${provider} geladen`);
+            console.log(`✅ Vollständiger API Key für ${provider} geladen${useGlobal ? ' (global)' : ''}`);
             // Extrahiere den Key-String aus dem Response-Objekt
             const apiKey = data.apiKey || data.key || data[provider] || data;
             // Stelle sicher, dass wir einen String zurückgeben
@@ -225,6 +240,11 @@ class AWSAPISettingsService {
             return null;
         } catch (error) {
             console.error(`❌ Fehler beim Laden des vollständigen API Keys für ${provider}:`, error);
+            // Wenn nicht global versucht wurde, versuche es nochmal mit global
+            if (!useGlobal) {
+                console.log('🔄 Versuche globale Keys als Fallback...');
+                return await this.getFullApiKey(provider, true);
+            }
             throw error;
         }
     }

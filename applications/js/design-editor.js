@@ -4471,22 +4471,66 @@ class DesignEditor {
         // Hole OpenAI API Key
         let openaiApiKey = null;
         try {
-            // Versuche verschiedene Methoden, um den API Key zu holen
+            // PRIORITÄT 1: Versuche globale Keys über AWS API (funktioniert auch ohne Login)
             if (window.awsAPISettings) {
-                openaiApiKey = await window.awsAPISettings.getFullApiKey('openai');
+                try {
+                    openaiApiKey = await window.awsAPISettings.getFullApiKey('openai', true); // useGlobal = true
+                    console.log('✅ OpenAI API Key aus globalen Settings geladen');
+                } catch (e) {
+                    console.log('ℹ️ Globale Keys nicht verfügbar, versuche user-spezifische...');
+                }
             }
+            
+            // PRIORITÄT 2: Versuche user-spezifische Keys (wenn eingeloggt)
+            if (!openaiApiKey && window.awsAPISettings && window.awsAPISettings.isUserLoggedIn()) {
+                try {
+                    openaiApiKey = await window.awsAPISettings.getFullApiKey('openai', false);
+                    console.log('✅ OpenAI API Key aus user-spezifischen Settings geladen');
+                } catch (e) {
+                    console.log('ℹ️ User-spezifische Keys nicht verfügbar...');
+                }
+            }
+            
+            // PRIORITÄT 3: Versuche GlobalAPIManager
+            if (!openaiApiKey && window.GlobalAPIManager) {
+                const config = window.GlobalAPIManager.getServiceConfig('openai');
+                if (config && config.key) {
+                    openaiApiKey = config.key;
+                    console.log('✅ OpenAI API Key aus GlobalAPIManager geladen');
+                }
+            }
+            
+            // PRIORITÄT 4: Versuche globalApiManager
             if (!openaiApiKey && window.globalApiManager) {
                 openaiApiKey = await window.globalApiManager.getApiKey('openai');
+                if (openaiApiKey) {
+                    console.log('✅ OpenAI API Key aus globalApiManager geladen');
+                }
             }
+            
+            // PRIORITÄT 5: Versuche localStorage (Fallback)
             if (!openaiApiKey) {
-                // Fallback: localStorage
                 const localKeys = ['openai_api_key', 'admin_openai_api_key', 'ki_api_settings'];
                 for (const key of localKeys) {
                     const value = localStorage.getItem(key);
                     if (value && value.startsWith('sk-')) {
                         openaiApiKey = value;
+                        console.log(`✅ OpenAI API Key aus localStorage geladen (${key})`);
                         break;
                     }
+                }
+            }
+            
+            // PRIORITÄT 6: Versuche global_api_keys aus localStorage
+            if (!openaiApiKey) {
+                try {
+                    const globalKeys = JSON.parse(localStorage.getItem('global_api_keys') || '{}');
+                    if (globalKeys.openai && globalKeys.openai.key) {
+                        openaiApiKey = globalKeys.openai.key;
+                        console.log('✅ OpenAI API Key aus global_api_keys geladen');
+                    }
+                } catch (e) {
+                    console.log('ℹ️ global_api_keys nicht verfügbar');
                 }
             }
         } catch (e) {
