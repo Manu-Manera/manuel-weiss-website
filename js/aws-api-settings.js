@@ -214,10 +214,14 @@ class AWSAPISettingsService {
                 ? `${this.apiEndpoint}/api-settings/key?provider=${provider}${useGlobal ? '&global=true' : ''}`
                 : `${this.apiEndpoint}/api-settings?action=key&provider=${provider}`;
             
+            console.log(`🔍 Lade API Key von: ${url}`, { provider, useGlobal, isAWS });
+            
             const response = await fetch(url, {
                 method: 'GET',
                 headers: headers
             });
+            
+            console.log(`📡 Response Status: ${response.status}`, response);
 
             if (!response.ok) {
                 const error = await response.json().catch(() => ({ error: 'Unbekannter Fehler' }));
@@ -225,17 +229,49 @@ class AWSAPISettingsService {
             }
 
             const data = await response.json();
-            console.log(`✅ Vollständiger API Key für ${provider} geladen${useGlobal ? ' (global)' : ''}`);
+            console.log(`✅ Vollständiger API Key für ${provider} geladen${useGlobal ? ' (global)' : ''}`, data);
+            
             // Extrahiere den Key-String aus dem Response-Objekt
-            const apiKey = data.apiKey || data.key || data[provider] || data;
-            // Stelle sicher, dass wir einen String zurückgeben
-            if (typeof apiKey === 'string') {
-                return apiKey;
+            // PRIORITÄT 1: Direkter apiKey im Response
+            if (data.apiKey && typeof data.apiKey === 'string') {
+                return data.apiKey;
             }
-            // Falls data selbst ein String ist (direkter Key)
-            if (typeof data === 'string') {
+            
+            // PRIORITÄT 2: data.key
+            if (data.key && typeof data.key === 'string') {
+                return data.key;
+            }
+            
+            // PRIORITÄT 3: data[provider] (z.B. data.openai)
+            if (data[provider] && typeof data[provider] === 'string') {
+                return data[provider];
+            }
+            
+            // PRIORITÄT 4: data[provider].apiKey (z.B. data.openai.apiKey)
+            if (data[provider] && data[provider].apiKey && typeof data[provider].apiKey === 'string') {
+                return data[provider].apiKey;
+            }
+            
+            // PRIORITÄT 5: data.settings[provider].apiKey (falls Settings-Objekt zurückgegeben wurde)
+            if (data.settings && data.settings[provider] && data.settings[provider].apiKey) {
+                const providerData = data.settings[provider];
+                // Wenn der Key maskiert ist (enthält '...'), müssen wir den vollständigen Key nochmal laden
+                if (providerData.apiKey.includes('...')) {
+                    console.log('⚠️ Key ist maskiert, versuche vollständigen Key zu laden...');
+                    // Versuche nochmal mit expliziter Route
+                    return null; // Wird im catch-Block behandelt
+                }
+                // Falls der Key nicht maskiert ist, verwende ihn
+                if (typeof providerData.apiKey === 'string' && providerData.apiKey.length > 10) {
+                    return providerData.apiKey;
+                }
+            }
+            
+            // PRIORITÄT 6: Falls data selbst ein String ist (direkter Key)
+            if (typeof data === 'string' && data.length > 10) {
                 return data;
             }
+            
             console.warn('⚠️ API Key Format unerwartet:', data);
             return null;
         } catch (error) {
