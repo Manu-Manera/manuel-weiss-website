@@ -19,6 +19,7 @@ const docClient = DynamoDBDocumentClient.from(dynamoClient);
 const kmsClient = new KMSClient({ region: process.env.AWS_REGION || 'eu-central-1' });
 
 const TABLE_NAME = process.env.API_SETTINGS_TABLE || 'mawps-api-settings';
+const PROFILE_TABLE = process.env.PROFILE_TABLE || 'mawps-user-profiles'; // Für globale API Settings
 const KMS_KEY_ID = process.env.KMS_KEY_ID; // Optional: AWS KMS Key für Verschlüsselung
 const ENCRYPTION_SECRET = process.env.ENCRYPTION_SECRET || process.env.JWT_SECRET || 'mawps-secure-api-key-encryption-2024';
 
@@ -185,9 +186,71 @@ exports.handler = async (event) => {
 
 /**
  * API-Einstellungen abrufen
+ * PRIORITÄT: 1. Globale Settings (api-settings#global in mawps-user-profiles)
+ *           2. User-spezifische Settings (userId in mawps-api-settings)
  */
 async function getApiSettings(userId) {
     try {
+        // PRIORITÄT 1: Versuche globale Settings zu laden (api-settings#global)
+        try {
+            const globalKey = 'api-settings#global';
+            const globalResult = await docClient.send(new GetCommand({
+                TableName: PROFILE_TABLE,
+                Key: { userId: globalKey }
+            }));
+            
+            if (globalResult.Item) {
+                console.log('✅ Globale API Settings gefunden');
+                const settings = globalResult.Item;
+                
+                // Helper: Parse Provider-Daten aus DynamoDB Format (String -> JSON)
+                const parseProviderData = (providerData) => {
+                    if (!providerData) return null;
+                    // DynamoDB kann String oder Objekt sein
+                    if (typeof providerData === 'string') {
+                        try {
+                            return JSON.parse(providerData);
+                        } catch (e) {
+                            return null;
+                        }
+                    }
+                    return providerData;
+                };
+                
+                // Helper: Maskiere Key für Anzeige
+                const maskProviderKey = (providerData) => {
+                    if (!providerData || !providerData.apiKey) return null;
+                    const apiKey = providerData.apiKey;
+                    return {
+                        configured: true,
+                        apiKey: maskApiKey(apiKey), // Maskiert für Anzeige
+                        keyMasked: maskApiKey(apiKey),
+                        model: providerData.model || '',
+                        maxTokens: providerData.maxTokens || 1000,
+                        temperature: providerData.temperature ?? 0.7,
+                        hasFullKey: !!apiKey // Markierung dass vollständiger Key vorhanden ist
+                    };
+                };
+                
+                const maskedSettings = {
+                    hasSettings: true,
+                    settings: {
+                        openai: maskProviderKey(parseProviderData(settings.openai)),
+                        anthropic: maskProviderKey(parseProviderData(settings.anthropic)),
+                        google: maskProviderKey(parseProviderData(settings.google)),
+                        preferredProvider: settings.preferredProvider || 'openai',
+                        updatedAt: settings.updatedAt
+                    },
+                    isGlobal: true
+                };
+                
+                return response(200, maskedSettings);
+            }
+        } catch (globalError) {
+            console.log('ℹ️ Keine globalen Settings gefunden, versuche user-spezifische:', globalError.message);
+        }
+        
+        // PRIORITÄT 2: User-spezifische Settings (Fallback)
         const result = await docClient.send(new GetCommand({
             TableName: TABLE_NAME,
             Key: { userId }
@@ -211,10 +274,12 @@ async function getApiSettings(userId) {
             
             return {
                 configured: true,
+                apiKey: maskApiKey(decryptedKey),
                 keyMasked: maskApiKey(decryptedKey),
                 model: providerSettings.model,
                 maxTokens: providerSettings.maxTokens,
-                temperature: providerSettings.temperature
+                temperature: providerSettings.temperature,
+                hasFullKey: !!decryptedKey
             };
         };
         
@@ -227,7 +292,8 @@ async function getApiSettings(userId) {
                 google: decryptAndMask(settings.google),
                 preferredProvider: settings.preferredProvider || 'openai',
                 updatedAt: settings.updatedAt
-            }
+            },
+            isGlobal: false
         };
         
         return response(200, maskedSettings);
@@ -405,8 +471,57 @@ async function getApiKeyForGeneration(userId, provider = 'openai') {
  * Vollständigen API-Key abrufen (für Frontend-Anfragen über API Gateway)
  * Wird über /api-settings/key?provider=openai aufgerufen
  */
-async function getFullApiKey(userId, provider) {
+async function getFullApiKey(userId, provider, isGlobal = false) {
     try {
+        // PRIORITÄT 1: Globale Keys (api-settings#global in mawps-user-profiles)
+        if (isGlobal || !userId) {
+            try {
+                const globalKey = 'api-settings#global';
+                const globalResult = await docClient.send(new GetCommand({
+                    TableName: PROFILE_TABLE,
+                    Key: { userId: globalKey }
+                }));
+                
+                if (globalResult.Item) {
+                    // Parse Provider-Daten (kann String oder Objekt sein)
+                    let providerData = globalResult.Item[provider];
+                    if (typeof providerData === 'string') {
+                        try {
+                            providerData = JSON.parse(providerData);
+                        } catch (e) {
+                            console.warn('⚠️ Konnte Provider-Daten nicht parsen:', e);
+                            providerData = null;
+                        }
+                    }
+                    
+                    if (providerData && providerData.apiKey) {
+                        // Globale Keys sind NICHT verschlüsselt (werden direkt gespeichert)
+                        const apiKey = providerData.apiKey;
+                        
+                        if (apiKey && apiKey.length >= 10) {
+                            console.log(`🔓 Vollständiger globaler API-Key für ${provider} abgerufen`);
+                            return response(200, {
+                                apiKey: apiKey,
+                                provider,
+                                model: providerData.model,
+                                isGlobal: true
+                            });
+                        }
+                    }
+                }
+            } catch (globalError) {
+                console.log('ℹ️ Keine globalen Keys gefunden, versuche user-spezifische:', globalError.message);
+            }
+        }
+        
+        // PRIORITÄT 2: User-spezifische Keys (Fallback)
+        if (!userId) {
+            return response(404, { 
+                error: `Keine ${provider} API-Key Konfiguration gefunden`,
+                provider 
+            });
+        }
+        
         const result = await docClient.send(new GetCommand({
             TableName: TABLE_NAME,
             Key: { userId }
@@ -419,7 +534,7 @@ async function getFullApiKey(userId, provider) {
             });
         }
         
-        // Entschlüssele den API-Key
+        // Entschlüssele den API-Key (user-spezifische Keys sind verschlüsselt)
         const encryptedKey = result.Item[provider].apiKey;
         const decryptedKey = decryptApiKey(encryptedKey, userId);
         
@@ -430,15 +545,16 @@ async function getFullApiKey(userId, provider) {
             });
         }
         
-        console.log(`🔓 Vollständiger API-Key für ${provider} abgerufen`);
+        console.log(`🔓 Vollständiger API-Key für ${provider} abgerufen (User: ${userId})`);
         
-        return response(200, {
-            apiKey: decryptedKey,
-            provider,
-            model: result.Item[provider].model,
-            maxTokens: result.Item[provider].maxTokens,
-            temperature: result.Item[provider].temperature
-        });
+            return response(200, {
+                apiKey: decryptedKey,
+                provider,
+                model: result.Item[provider].model,
+                maxTokens: result.Item[provider].maxTokens,
+                temperature: result.Item[provider].temperature,
+                isGlobal: false
+            });
     } catch (error) {
         console.error('Get Full API Key Error:', error);
         return response(500, { error: 'Fehler beim Abrufen des API-Keys' });

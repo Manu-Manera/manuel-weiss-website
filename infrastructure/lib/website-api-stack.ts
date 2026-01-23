@@ -253,6 +253,7 @@ export class WebsiteApiStack extends cdk.Stack {
       memorySize: 256,
       environment: {
         API_SETTINGS_TABLE: 'mawps-api-settings',
+        PROFILE_TABLE: 'mawps-user-profiles', // Für globale API Settings
         ENCRYPTION_SECRET: process.env.ENCRYPTION_SECRET || 'mawps-secure-api-key-encryption-2024'
       }
     });
