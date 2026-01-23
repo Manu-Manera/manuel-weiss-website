@@ -81,7 +81,8 @@ Antworte NUR mit dem vollständigen HTML-Code, ohne Markdown-Code-Blöcke, ohne 
                 'Authorization': `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-                model: 'gpt-4o', // gpt-4o ist viel schneller als gpt-5.2 und passt in API Gateway Timeout
+                model: 'gpt-5.2', // Zurück zu gpt-5.2 (Projekt hat keinen Zugriff auf gpt-4o)
+                reasoning_effort: 'low', // Optimiert für schnelle HTML-Generierung
                 messages: [
                     {
                         role: 'system',
@@ -92,8 +93,7 @@ Antworte NUR mit dem vollständigen HTML-Code, ohne Markdown-Code-Blöcke, ohne 
                         content: prompt
                     }
                 ],
-                temperature: 0.1, // Niedrige Temperatur für konsistente HTML-Generierung
-                max_tokens: 8000 // Reduziert für schnellere Antworten
+                max_completion_tokens: 8000 // Reduziert für schnellere Antworten
             })
         });
 
@@ -120,7 +120,7 @@ Antworte NUR mit dem vollständigen HTML-Code, ohne Markdown-Code-Blöcke, ohne 
         return cleanHTML.trim();
 
     } catch (error) {
-        console.error('❌ GPT-4o HTML-Generierung fehlgeschlagen:', error);
+        console.error('❌ GPT-5.2 HTML-Generierung fehlgeschlagen:', error);
         throw error;
     }
 }
@@ -169,7 +169,7 @@ exports.handler = async (event) => {
             };
         }
 
-        console.log('🔄 Starting PDF generation with GPT-4o...');
+        console.log('🔄 Starting PDF generation with GPT-5.2...');
         console.log('⚙️ Settings:', JSON.stringify(settings));
         console.log('📄 Content length:', content?.length || html?.length || 0);
 
@@ -177,7 +177,7 @@ exports.handler = async (event) => {
 
         // Wenn content und settings vorhanden, verwende GPT-5.2 für HTML-Generierung
         if (content && settings && Object.keys(settings).length > 0) {
-            console.log('🤖 Generiere HTML mit GPT-4o...');
+            console.log('🤖 Generiere HTML mit GPT-5.2...');
             try {
                 finalHTML = await generateHTMLWithGPT52(content, settings, apiKey);
                 console.log('✅ HTML von GPT-5.2 generiert, Länge:', finalHTML.length);
