@@ -189,8 +189,25 @@ class ApiKeysSection {
      */
     async onNavigate() {
         console.log('🔄 API Keys Section: onNavigate aufgerufen');
-        // Warte kurz bis DOM aktualisiert ist
-        await new Promise(resolve => setTimeout(resolve, 300));
+        
+        // Warte bis DOM-Elemente vorhanden sind (max. 5 Sekunden)
+        let attempts = 0;
+        const maxAttempts = 50; // 50 * 100ms = 5 Sekunden
+        
+        while (attempts < maxAttempts) {
+            const keyInput = document.getElementById('openai-key');
+            if (keyInput) {
+                console.log('✅ DOM-Elemente gefunden, lade API Keys...');
+                break;
+            }
+            await new Promise(resolve => setTimeout(resolve, 100));
+            attempts++;
+        }
+        
+        if (attempts >= maxAttempts) {
+            console.warn('⚠️ DOM-Elemente nicht gefunden nach 5 Sekunden');
+        }
+        
         // Lade Keys aus AWS
         await this.loadApiKeysFromAWS();
     }
