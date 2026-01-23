@@ -153,55 +153,63 @@ exports.handler = async (event) => {
         }
 
         const { 
-            html, // Fallback: direktes HTML
-            content, // HTML-Inhalt für GPT-5.2
+            html, // Direktes HTML (OHNE GPT - wie andere Anwendungen)
+            content, // HTML-Inhalt für GPT-5.2 (Legacy-Modus)
             settings = {}, // Design-Settings (marginTop, marginRight, etc.)
             options = {},
-            openaiApiKey // OpenAI API Key
+            openaiApiKey // OpenAI API Key (nur für GPT-Modus)
         } = body;
-
-        // Wenn kein API Key übergeben wurde, versuche aus Umgebungsvariable
-        const apiKey = openaiApiKey || process.env.OPENAI_API_KEY;
-        
-        if (!apiKey) {
-            return {
-                statusCode: 400,
-                headers: CORS_HEADERS,
-                body: JSON.stringify({ 
-                    error: 'OpenAI API Key fehlt. Bitte als openaiApiKey im Request oder als OPENAI_API_KEY Umgebungsvariable bereitstellen.' 
-                })
-            };
-        }
-
-        console.log('🔄 Starting PDF generation with GPT-5.2...');
-        console.log('⚙️ Settings:', JSON.stringify(settings));
-        console.log('📄 Content length:', content?.length || html?.length || 0);
 
         let finalHTML = html;
 
-        // Wenn content und settings vorhanden, verwende GPT-5.2 für HTML-Generierung
-        if (content && settings && Object.keys(settings).length > 0) {
-            console.log('🤖 Generiere HTML mit GPT-5.2...');
+        // WICHTIG: Wenn html direkt bereitgestellt wird, verwende es OHNE GPT (schneller)
+        if (html) {
+            console.log('📄 HTML direkt bereitgestellt - verwende OHNE GPT (schneller)');
+            console.log('📄 HTML length:', html.length);
+        } else if (content && settings && Object.keys(settings).length > 0) {
+            // Legacy-Modus: Wenn content + settings vorhanden, verwende GPT-5.2
+            console.log('🤖 Legacy-Modus: Generiere HTML mit GPT-5.2...');
+            const apiKey = openaiApiKey || process.env.OPENAI_API_KEY;
+            
+            if (!apiKey) {
+                return {
+                    statusCode: 400,
+                    headers: CORS_HEADERS,
+                    body: JSON.stringify({ 
+                        error: 'Für GPT-Modus wird openaiApiKey benötigt. Für direkten HTML-Export bitte "html" Parameter verwenden.' 
+                    })
+                };
+            }
+            
             try {
                 finalHTML = await generateHTMLWithGPT52(content, settings, apiKey);
                 console.log('✅ HTML von GPT-5.2 generiert, Länge:', finalHTML.length);
             } catch (gptError) {
-                console.error('⚠️ GPT-5.2 Fehler, verwende Fallback-HTML:', gptError.message);
-                // Fallback: Verwende direktes HTML falls vorhanden
-                if (!html) {
-                    throw new Error(`GPT-5.2 Fehler und kein Fallback-HTML: ${gptError.message}`);
-                }
-                finalHTML = html;
+                console.error('❌ GPT-5.2 Fehler:', gptError.message);
+                throw new Error(`GPT-5.2 Fehler: ${gptError.message}`);
             }
-        } else if (!html) {
+        } else {
             return {
                 statusCode: 400,
                 headers: CORS_HEADERS,
                 body: JSON.stringify({ 
-                    error: 'Entweder "html" oder "content" + "settings" müssen bereitgestellt werden' 
+                    error: 'Entweder "html" (direkt) oder "content" + "settings" + "openaiApiKey" (GPT-Modus) müssen bereitgestellt werden' 
                 })
             };
         }
+        
+        if (!finalHTML) {
+            return {
+                statusCode: 400,
+                headers: CORS_HEADERS,
+                body: JSON.stringify({ 
+                    error: 'Kein HTML zum Rendern verfügbar' 
+                })
+            };
+        }
+        
+        console.log('🔄 Starting PDF generation...');
+        console.log('📄 Final HTML length:', finalHTML.length);
 
         // Launch Puppeteer with Chromium
         const browser = await puppeteer.launch({
