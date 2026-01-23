@@ -4639,6 +4639,45 @@ class DesignEditor {
             }
             throw error;
         }
+    }
+    
+    // ═══════════════════════════════════════════════════════════════════════════
+    // LEGACY GPT-5.2 MODUS (DEPRECATED - wird nicht mehr verwendet)
+    // ═══════════════════════════════════════════════════════════════════════════
+    // Dieser Code-Pfad ist veraltet und wird nicht mehr verwendet.
+    // Die neue Implementierung verwendet direkten HTML-Export (siehe oben).
+    // Dieser Code bleibt für Referenz, sollte aber nicht mehr ausgeführt werden.
+    
+    // ═══════════════════════════════════════════════════════════════════════════
+    // LEGACY CODE ENTFERNT
+    // ═══════════════════════════════════════════════════════════════════════════
+    // Der alte GPT-5.2 Modus wurde vollständig entfernt.
+    // Die neue Implementierung verwendet direkten HTML-Export (siehe generateResumePDFWithPuppeteer oben).
+    
+    /* LEGACY CODE - VOLLSTÄNDIG ENTFERNT
+        const { format = 'A4', addPageNumbers = false } = options;
+        
+        console.log('🔄 Generiere PDF mit GPT-5.2 + Puppeteer (AWS Lambda)...');
+        
+        // Stelle sicher, dass Settings geladen sind
+        if (!this.settings || Object.keys(this.settings).length === 0) {
+            this.settings = this.loadSettings();
+        }
+        
+        // Klone das Preview-Element
+        const clone = preview.cloneNode(true);
+        
+        // WICHTIG: Ersetze ALLE CSS-Variablen im geklonten HTML durch tatsächliche Werte
+        this.replaceCSSVariablesInElement(clone);
+        
+        // Extrahiere HTML-Inhalt für GPT-5.2
+        const content = clone.outerHTML;
+        
+        // Hole OpenAI API Key
+        let openaiApiKey = null;
+        const keySources = [];
+        
+        try {
             console.log('📋 Verfügbare Services:', {
                 awsAPISettings: !!window.awsAPISettings,
                 GlobalAPIManager: !!window.GlobalAPIManager,
@@ -4945,6 +4984,7 @@ class DesignEditor {
             }
             throw error; // Andere Fehler weiterwerfen
         }
+        */ // ENDE LEGACY CODE
     }
     
     applyDesignSettingsToElement(element, isPDFExport = false) {
