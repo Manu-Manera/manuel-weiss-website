@@ -209,48 +209,121 @@ class AWSAPISettingsService {
             
             // AWS API Gateway: /api-settings/key?provider=openai&global=true
             // Netlify Functions: /api-settings?action=key&provider=openai (Legacy)
-            const isAWS = this.apiEndpoint && !this.apiEndpoint.includes('/.netlify/functions');
-            const url = isAWS 
-                ? `${this.apiEndpoint}/api-settings/key?provider=${provider}${useGlobal ? '&global=true' : ''}`
-                : `${this.apiEndpoint}/api-settings?action=key&provider=${provider}`;
+            // Prüfe ob AWS API Gateway verwendet wird
+            const apiSettingsUrl = window.getApiUrl ? window.getApiUrl('API_SETTINGS') : null;
+            const isAWS = apiSettingsUrl && !apiSettingsUrl.includes('/.netlify/functions');
             
-            console.log(`🔍 Lade API Key von: ${url}`, { provider, useGlobal, isAWS });
+            // WICHTIG: Verwende IMMER die /key Route für vollständige API Keys
+            // Die normale /api-settings Route gibt nur maskierte Keys zurück
+            let url;
+            if (isAWS) {
+                // AWS API Gateway: Basis-URL + /api-settings/key
+                const baseUrl = apiSettingsUrl.replace(/\/api-settings$/, '');
+                url = `${baseUrl}/api-settings/key?provider=${provider}${useGlobal ? '&global=true' : ''}`;
+            } else {
+                // Netlify Functions: Legacy Format
+                url = `${this.apiEndpoint}/api-settings?action=key&provider=${provider}`;
+            }
             
-            const response = await fetch(url, {
+            console.log(`🔍 Lade vollständigen API Key von: ${url}`, { 
+                provider, 
+                useGlobal, 
+                isAWS, 
+                apiSettingsUrl,
+                apiEndpoint: this.apiEndpoint 
+            });
+            
+            let response = await fetch(url, {
                 method: 'GET',
                 headers: headers
             });
             
-            console.log(`📡 Response Status: ${response.status}`, response);
+            console.log(`📡 Response Status: ${response.status}`, {
+                status: response.status,
+                statusText: response.statusText,
+                headers: Object.fromEntries(response.headers.entries())
+            });
 
             if (!response.ok) {
-                const error = await response.json().catch(() => ({ error: 'Unbekannter Fehler' }));
+                const errorText = await response.text();
+                let error;
+                try {
+                    error = JSON.parse(errorText);
+                } catch (e) {
+                    error = { error: errorText || 'Unbekannter Fehler' };
+                }
+                console.error('❌ API Key Request fehlgeschlagen:', error);
                 throw new Error(error.error || error.message || 'Fehler beim Laden des API Keys');
             }
 
-            const data = await response.json();
-            console.log(`✅ Vollständiger API Key für ${provider} geladen${useGlobal ? ' (global)' : ''}`, data);
+            let data = await response.json();
+            console.log(`✅ Response für ${provider} geladen${useGlobal ? ' (global)' : ''}`, {
+                hasApiKey: !!data.apiKey,
+                hasSettings: !!data.settings,
+                keys: Object.keys(data)
+            });
+            
+            // WORKAROUND: Wenn wir das falsche Format bekommen ({hasSettings: true, settings: {...}}),
+            // bedeutet das, dass die falsche Route aufgerufen wurde. Versuche die /key Route explizit.
+            if (data.hasSettings && data.settings && !data.apiKey) {
+                console.warn('⚠️ Falsche Route erkannt - bekomme Settings-Format statt Key-Format');
+                console.warn('⚠️ Das bedeutet, dass /api-settings/key nicht richtig erkannt wurde');
+                console.warn('⚠️ Versuche alternative URL-Formate...');
+                
+                // Versuche verschiedene URL-Formate
+                const baseUrl = apiSettingsUrl.replace(/\/api-settings$/, '');
+                const alternativeUrls = [
+                    // Format 1: Direkt /key
+                    `${baseUrl}/api-settings/key?provider=${provider}${useGlobal ? '&global=true' : ''}`,
+                    // Format 2: Mit trailing slash
+                    `${baseUrl}/api-settings/key/?provider=${provider}${useGlobal ? '&global=true' : ''}`,
+                    // Format 3: Legacy Netlify Format
+                    `${this.apiEndpoint}/api-settings?action=key&provider=${provider}${useGlobal ? '&global=true' : ''}`
+                ];
+                
+                for (const altUrl of alternativeUrls) {
+                    try {
+                        console.log(`🔄 Versuche alternative URL: ${altUrl}`);
+                        const altResponse = await fetch(altUrl, {
+                            method: 'GET',
+                            headers: headers
+                        });
+                        
+                        if (altResponse.ok) {
+                            const altData = await altResponse.json();
+                            if (altData.apiKey && typeof altData.apiKey === 'string' && altData.apiKey.startsWith('sk-')) {
+                                console.log(`✅ Vollständiger API Key von alternativer Route geladen`);
+                                data = altData;
+                                break;
+                            }
+                        }
+                    } catch (altError) {
+                        console.warn(`⚠️ Alternative URL fehlgeschlagen: ${altUrl}`, altError);
+                    }
+                }
+            }
             
             // Extrahiere den Key-String aus dem Response-Objekt
-            // PRIORITÄT 1: Direkter apiKey im Response (Standard-Format)
-            if (data.apiKey && typeof data.apiKey === 'string' && data.apiKey.startsWith('sk-') && data.apiKey.length > 20) {
+            // PRIORITÄT 1: Direkter apiKey im Response (Standard-Format von getFullApiKey)
+            if (data.apiKey && typeof data.apiKey === 'string' && data.apiKey.startsWith('sk-') && data.apiKey.length > 20 && !data.apiKey.includes('...')) {
                 console.log(`✅ API Key extrahiert (direkt): ${data.apiKey.substring(0, 10)}...`);
                 return data.apiKey;
             }
             
             // PRIORITÄT 2: data.settings[provider].apiKey (falls Settings-Objekt zurückgegeben wurde)
+            // WICHTIG: Dieses Format kommt von getApiSettings, nicht von getFullApiKey
+            // Die Keys sind hier maskiert, also können wir sie nicht verwenden
             if (data.settings && data.settings[provider]) {
                 const providerData = data.settings[provider];
                 // Prüfe ob apiKey vorhanden ist
-                if (providerData.apiKey) {
-                    // Wenn der Key maskiert ist (enthält '...'), müssen wir den vollständigen Key nochmal laden
+                if (providerData && providerData.apiKey) {
+                    // Wenn der Key maskiert ist (enthält '...'), können wir ihn nicht verwenden
                     if (typeof providerData.apiKey === 'string' && providerData.apiKey.includes('...')) {
-                        console.log('⚠️ Key ist maskiert, versuche vollständigen Key zu laden...');
-                        // Versuche nochmal mit expliziter Route
+                        console.warn('⚠️ Key ist maskiert, kann nicht verwendet werden');
                         return null; // Wird im catch-Block behandelt
                     }
                     // Falls der Key nicht maskiert ist, verwende ihn
-                    if (typeof providerData.apiKey === 'string' && providerData.apiKey.startsWith('sk-') && providerData.apiKey.length > 20) {
+                    if (typeof providerData.apiKey === 'string' && providerData.apiKey.startsWith('sk-') && providerData.apiKey.length > 20 && !providerData.apiKey.includes('...')) {
                         console.log(`✅ API Key extrahiert (settings): ${providerData.apiKey.substring(0, 10)}...`);
                         return providerData.apiKey;
                     }

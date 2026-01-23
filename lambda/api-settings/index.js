@@ -142,29 +142,49 @@ exports.handler = async (event) => {
         const pathParameters = event.pathParameters || {};
         const queryStringParameters = event.queryStringParameters || event.queryStringParameters || {};
         
-        console.log('🔍 API Settings Lambda - Debug Info:', {
-            httpMethod,
-            path,
-            pathParameters,
-            queryStringParameters,
-            rawPath: event.path,
-            requestContextPath: event.requestContext?.path,
-            requestContextResourcePath: event.requestContext?.resourcePath,
-            pathIncludesKey: path && path.includes('/key')
-        });
-        
         // Route: /api-settings/key?provider=openai - Vollständigen (entschlüsselten) Key abrufen
         // Unterstützt sowohl User-spezifische als auch globale API Keys
-        // Prüfe sowohl path.includes('/key') als auch pathParameters für Sub-Resource
-        const isKeyRoute = (path && path.includes('/key')) || pathParameters.proxy === 'key' || pathParameters.key;
+        // WICHTIG: API Gateway kann den Path in verschiedenen Formaten liefern:
+        // - /api-settings/key (direkt im path)
+        // - /{proxy+} mit pathParameters.proxy = 'api-settings/key' oder 'key'
+        // - /api-settings/{key} mit pathParameters.key vorhanden
+        const pathStr = path || '';
+        const proxyPath = pathParameters?.proxy || '';
+        const hasKeyParam = pathParameters?.key !== undefined;
+        
+        // Prüfe verschiedene Möglichkeiten für /key Route
+        const pathHasKey = pathStr.includes('/key') || pathStr.endsWith('/key');
+        const proxyHasKey = proxyPath.includes('/key') || proxyPath === 'key' || proxyPath.endsWith('/key');
+        const isKeyRoute = pathHasKey || proxyHasKey || hasKeyParam;
+        
+        console.log('🔍 API Settings Lambda - Route Detection:', {
+            httpMethod,
+            path: pathStr,
+            pathParameters,
+            queryStringParameters,
+            proxyPath,
+            hasKeyParam,
+            pathHasKey,
+            proxyHasKey,
+            isKeyRoute,
+            rawPath: event.path,
+            requestContextPath: event.requestContext?.path,
+            requestContextResourcePath: event.requestContext?.resourcePath
+        });
+        
+        // PRIORITÄT 1: /api-settings/key Route für vollständigen API Key
         if (httpMethod === 'GET' && isKeyRoute) {
             const provider = queryStringParameters?.provider || 'openai';
-            const isGlobalRequest = queryStringParameters?.global === 'true';
+            const isGlobalRequest = queryStringParameters?.global === 'true' || queryStringParameters?.global === true;
+            
+            console.log(`🔑 /key Route erkannt - Provider: ${provider}, Global: ${isGlobalRequest}`);
             
             // Für globale Keys ist kein User-Login erforderlich
             if (isGlobalRequest) {
                 console.log(`📥 Anfrage für globalen ${provider} API-Key (ohne Auth)`);
-                return await getFullApiKey(null, provider, true);
+                const result = await getFullApiKey(null, provider, true);
+                console.log('✅ getFullApiKey Result:', result?.statusCode, result?.body ? JSON.parse(result.body) : 'no body');
+                return result;
             }
             
             // Für User-spezifische Keys ist Login erforderlich
@@ -173,11 +193,14 @@ exports.handler = async (event) => {
                 || event.headers?.['X-User-Id'];
             
             if (!userId) {
+                console.warn('⚠️ Kein User-ID gefunden für user-spezifischen Key');
                 return response(401, { error: 'Nicht autorisiert - Bitte anmelden' });
             }
             
             console.log(`📥 Anfrage für vollständigen ${provider} API-Key (User: ${userId})`);
-            return await getFullApiKey(userId, provider, false);
+            const result = await getFullApiKey(userId, provider, false);
+            console.log('✅ getFullApiKey Result:', result?.statusCode, result?.body ? JSON.parse(result.body) : 'no body');
+            return result;
         }
         
         // Für GET-Requests: Erlaube auch ohne userId (für globale Keys)
