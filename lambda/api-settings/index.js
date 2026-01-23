@@ -155,7 +155,8 @@ exports.handler = async (event) => {
         // Prüfe verschiedene Möglichkeiten für /key Route
         const pathHasKey = pathStr.includes('/key') || pathStr.endsWith('/key');
         const proxyHasKey = proxyPath.includes('/key') || proxyPath === 'key' || proxyPath.endsWith('/key');
-        const isKeyRoute = pathHasKey || proxyHasKey || hasKeyParam;
+        const hasKeyAction = queryStringParameters?.action === 'key';
+        const isKeyRoute = pathHasKey || proxyHasKey || hasKeyParam || hasKeyAction;
         
         console.log('🔍 API Settings Lambda - Route Detection:', {
             httpMethod,
@@ -166,6 +167,7 @@ exports.handler = async (event) => {
             hasKeyParam,
             pathHasKey,
             proxyHasKey,
+            hasKeyAction: queryStringParameters?.action === 'key',
             isKeyRoute,
             rawPath: event.path,
             requestContextPath: event.requestContext?.path,
@@ -177,10 +179,18 @@ exports.handler = async (event) => {
             const provider = queryStringParameters?.provider || 'openai';
             const isGlobalRequest = queryStringParameters?.global === 'true' || queryStringParameters?.global === true;
             
-            console.log(`🔑 /key Route erkannt - Provider: ${provider}, Global: ${isGlobalRequest}`);
+            // Prüfe ob User eingeloggt ist
+            const userId = event.requestContext?.authorizer?.claims?.sub 
+                || event.headers?.['x-user-id'] 
+                || event.headers?.['X-User-Id'];
+            
+            // Wenn kein User eingeloggt ist, verwende automatisch globale Keys
+            const useGlobal = isGlobalRequest || !userId;
+            
+            console.log(`🔑 /key Route erkannt - Provider: ${provider}, Global: ${useGlobal}, User: ${userId || 'keiner'}`);
             
             // Für globale Keys ist kein User-Login erforderlich
-            if (isGlobalRequest) {
+            if (useGlobal) {
                 console.log(`📥 Anfrage für globalen ${provider} API-Key (ohne Auth)`);
                 const result = await getFullApiKey(null, provider, true);
                 console.log('✅ getFullApiKey Result:', result?.statusCode, result?.body ? JSON.parse(result.body) : 'no body');
@@ -188,15 +198,6 @@ exports.handler = async (event) => {
             }
             
             // Für User-spezifische Keys ist Login erforderlich
-            const userId = event.requestContext?.authorizer?.claims?.sub 
-                || event.headers?.['x-user-id'] 
-                || event.headers?.['X-User-Id'];
-            
-            if (!userId) {
-                console.warn('⚠️ Kein User-ID gefunden für user-spezifischen Key');
-                return response(401, { error: 'Nicht autorisiert - Bitte anmelden' });
-            }
-            
             console.log(`📥 Anfrage für vollständigen ${provider} API-Key (User: ${userId})`);
             const result = await getFullApiKey(userId, provider, false);
             console.log('✅ getFullApiKey Result:', result?.statusCode, result?.body ? JSON.parse(result.body) : 'no body');
