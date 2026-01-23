@@ -158,6 +158,19 @@ exports.handler = async (event) => {
         const hasKeyAction = queryStringParameters?.action === 'key';
         const isKeyRoute = pathHasKey || proxyHasKey || hasKeyParam || hasKeyAction;
         
+        // DEBUG: Logge alle relevanten Werte
+        if (httpMethod === 'GET' && (hasKeyAction || queryStringParameters?.provider)) {
+            console.log('🔍 Key Route Check:', {
+                pathHasKey,
+                proxyHasKey,
+                hasKeyParam,
+                hasKeyAction,
+                isKeyRoute,
+                action: queryStringParameters?.action,
+                provider: queryStringParameters?.provider
+            });
+        }
+        
         console.log('🔍 API Settings Lambda - Route Detection:', {
             httpMethod,
             path: pathStr,
