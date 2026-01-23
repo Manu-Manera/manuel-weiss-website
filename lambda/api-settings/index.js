@@ -221,6 +221,8 @@ async function getApiSettings(userId) {
                 const maskProviderKey = (providerData) => {
                     if (!providerData || !providerData.apiKey) return null;
                     const apiKey = providerData.apiKey;
+                    // Prüfe ob Key lang genug ist (mindestens 10 Zeichen)
+                    if (!apiKey || apiKey.length < 10) return null;
                     return {
                         configured: true,
                         apiKey: maskApiKey(apiKey), // Maskiert für Anzeige

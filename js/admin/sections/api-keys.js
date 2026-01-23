@@ -84,20 +84,31 @@ class ApiKeysSection {
                     const services = ['openai', 'anthropic', 'google'];
                     services.forEach(service => {
                         const serviceData = settings[service];
-                        if (serviceData && (serviceData.apiKey || serviceData.configured)) {
+                        console.log(`🔍 Prüfe ${service}:`, serviceData);
+                        
+                        // Prüfe ob Service-Daten vorhanden sind (configured, apiKey, oder keyMasked)
+                        if (serviceData && (serviceData.configured || serviceData.apiKey || serviceData.keyMasked || serviceData.hasFullKey)) {
+                            console.log(`✅ ${service} hat Daten, fülle Formular...`);
+                            
                             // Speichere vollständigen Key im Cache (für späteren Gebrauch)
-                            if (serviceData.apiKey) {
+                            // WICHTIG: Wenn nur maskierter Key vorhanden, müssen wir den echten Key später laden
+                            if (serviceData.apiKey && !serviceData.apiKey.includes('...') && serviceData.apiKey.length > 10) {
                                 this.cachedApiKeys[service] = serviceData.apiKey;
+                            } else if (serviceData.hasFullKey) {
+                                // Key ist vorhanden, aber maskiert - markiere für späteres Laden
+                                this.cachedApiKeys[service] = 'MASKED'; // Placeholder
                             }
                             
                             // Formular mit MASKIERTEM Key füllen (Sicherheit!)
                             const keyInput = document.getElementById(`${service}-key`);
                             if (keyInput) {
                                 // Zeige maskierten Key an, oder den vollständigen wenn kein maskierter vorhanden
-                                const displayKey = serviceData.keyMasked || this.maskKey(serviceData.apiKey) || '••••••••';
+                                const displayKey = serviceData.keyMasked || serviceData.apiKey || '••••••••';
                                 keyInput.value = displayKey;
                                 keyInput.dataset.hasKey = 'true'; // Markiere dass ein Key vorhanden ist
                                 keyInput.dataset.originalMasked = displayKey; // Speichere maskierten Wert
+                                keyInput.dataset.configured = serviceData.configured ? 'true' : 'false';
+                                console.log(`📝 ${service} Input gefüllt mit: ${displayKey.substring(0, 10)}...`);
                             }
                             
                             const modelSelect = document.getElementById(`${service}-model`);
@@ -117,8 +128,8 @@ class ApiKeysSection {
                                 if (tempValue) tempValue.textContent = serviceData.temperature;
                             }
                             
-                            // Auch in GlobalAPIManager synchronisieren (mit vollständigem Key)
-                            if (window.GlobalAPIManager && serviceData.apiKey) {
+                            // Auch in GlobalAPIManager synchronisieren (nur wenn vollständiger Key vorhanden)
+                            if (window.GlobalAPIManager && serviceData.apiKey && !serviceData.apiKey.includes('...')) {
                                 window.GlobalAPIManager.setAPIKey(service, serviceData.apiKey, {
                                     model: serviceData.model,
                                     maxTokens: serviceData.maxTokens,
@@ -127,7 +138,10 @@ class ApiKeysSection {
                             }
                             
                             // Status aktualisieren - Force auf Aktiv wenn Key vorhanden
+                            console.log(`🔄 Aktualisiere Status für ${service}...`);
                             this.updateServiceStatus(service, true);
+                        } else {
+                            console.log(`⚠️ ${service} hat keine Daten`);
                         }
                     });
                     
