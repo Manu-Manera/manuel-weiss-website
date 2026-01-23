@@ -232,47 +232,63 @@ class AWSAPISettingsService {
             console.log(`✅ Vollständiger API Key für ${provider} geladen${useGlobal ? ' (global)' : ''}`, data);
             
             // Extrahiere den Key-String aus dem Response-Objekt
-            // PRIORITÄT 1: Direkter apiKey im Response
-            if (data.apiKey && typeof data.apiKey === 'string') {
+            // PRIORITÄT 1: Direkter apiKey im Response (Standard-Format)
+            if (data.apiKey && typeof data.apiKey === 'string' && data.apiKey.startsWith('sk-') && data.apiKey.length > 20) {
+                console.log(`✅ API Key extrahiert (direkt): ${data.apiKey.substring(0, 10)}...`);
                 return data.apiKey;
             }
             
-            // PRIORITÄT 2: data.key
-            if (data.key && typeof data.key === 'string') {
+            // PRIORITÄT 2: data.settings[provider].apiKey (falls Settings-Objekt zurückgegeben wurde)
+            if (data.settings && data.settings[provider]) {
+                const providerData = data.settings[provider];
+                // Prüfe ob apiKey vorhanden ist
+                if (providerData.apiKey) {
+                    // Wenn der Key maskiert ist (enthält '...'), müssen wir den vollständigen Key nochmal laden
+                    if (typeof providerData.apiKey === 'string' && providerData.apiKey.includes('...')) {
+                        console.log('⚠️ Key ist maskiert, versuche vollständigen Key zu laden...');
+                        // Versuche nochmal mit expliziter Route
+                        return null; // Wird im catch-Block behandelt
+                    }
+                    // Falls der Key nicht maskiert ist, verwende ihn
+                    if (typeof providerData.apiKey === 'string' && providerData.apiKey.startsWith('sk-') && providerData.apiKey.length > 20) {
+                        console.log(`✅ API Key extrahiert (settings): ${providerData.apiKey.substring(0, 10)}...`);
+                        return providerData.apiKey;
+                    }
+                }
+            }
+            
+            // PRIORITÄT 3: data.key
+            if (data.key && typeof data.key === 'string' && data.key.startsWith('sk-') && data.key.length > 20) {
+                console.log(`✅ API Key extrahiert (key): ${data.key.substring(0, 10)}...`);
                 return data.key;
             }
             
-            // PRIORITÄT 3: data[provider] (z.B. data.openai)
-            if (data[provider] && typeof data[provider] === 'string') {
+            // PRIORITÄT 4: data[provider] (z.B. data.openai)
+            if (data[provider] && typeof data[provider] === 'string' && data[provider].startsWith('sk-') && data[provider].length > 20) {
+                console.log(`✅ API Key extrahiert (provider): ${data[provider].substring(0, 10)}...`);
                 return data[provider];
             }
             
-            // PRIORITÄT 4: data[provider].apiKey (z.B. data.openai.apiKey)
-            if (data[provider] && data[provider].apiKey && typeof data[provider].apiKey === 'string') {
+            // PRIORITÄT 5: data[provider].apiKey (z.B. data.openai.apiKey)
+            if (data[provider] && data[provider].apiKey && typeof data[provider].apiKey === 'string' && data[provider].apiKey.startsWith('sk-') && data[provider].apiKey.length > 20) {
+                console.log(`✅ API Key extrahiert (provider.apiKey): ${data[provider].apiKey.substring(0, 10)}...`);
                 return data[provider].apiKey;
             }
             
-            // PRIORITÄT 5: data.settings[provider].apiKey (falls Settings-Objekt zurückgegeben wurde)
-            if (data.settings && data.settings[provider] && data.settings[provider].apiKey) {
-                const providerData = data.settings[provider];
-                // Wenn der Key maskiert ist (enthält '...'), müssen wir den vollständigen Key nochmal laden
-                if (providerData.apiKey.includes('...')) {
-                    console.log('⚠️ Key ist maskiert, versuche vollständigen Key zu laden...');
-                    // Versuche nochmal mit expliziter Route
-                    return null; // Wird im catch-Block behandelt
-                }
-                // Falls der Key nicht maskiert ist, verwende ihn
-                if (typeof providerData.apiKey === 'string' && providerData.apiKey.length > 10) {
-                    return providerData.apiKey;
-                }
-            }
-            
             // PRIORITÄT 6: Falls data selbst ein String ist (direkter Key)
-            if (typeof data === 'string' && data.length > 10) {
+            if (typeof data === 'string' && data.startsWith('sk-') && data.length > 20) {
+                console.log(`✅ API Key extrahiert (string): ${data.substring(0, 10)}...`);
                 return data;
             }
             
             console.warn('⚠️ API Key Format unerwartet:', data);
+            console.warn('⚠️ Verfügbare Felder:', Object.keys(data));
+            if (data.settings) {
+                console.warn('⚠️ Settings-Felder:', Object.keys(data.settings));
+                if (data.settings[provider]) {
+                    console.warn(`⚠️ ${provider} Felder:`, Object.keys(data.settings[provider]));
+                }
+            }
             return null;
         } catch (error) {
             console.error(`❌ Fehler beim Laden des vollständigen API Keys für ${provider}:`, error);
