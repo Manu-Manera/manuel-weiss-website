@@ -4475,15 +4475,125 @@ class DesignEditor {
         // WICHTIG: Ersetze ALLE CSS-Variablen im geklonten HTML durch tatsächliche Werte
         this.replaceCSSVariablesInElement(clone);
         
-        // Extrahiere HTML-Inhalt für GPT-5.2
-        const content = clone.outerHTML;
+        // Generiere vollständiges HTML-Dokument (wie andere Anwendungen es machen - OHNE GPT!)
+        const htmlContent = this.generateCompleteHTMLDocument(clone);
         
-        // Hole OpenAI API Key
-        let openaiApiKey = null;
-        const keySources = [];
+        console.log('📄 HTML generiert, Länge:', htmlContent.length, 'Zeichen');
+        console.log('🚀 Verwende direkte PDF-Generierung (ohne GPT) - wie andere Anwendungen');
+        
+        // Hole Auth Token falls vorhanden
+        let authToken = null;
+        try {
+            if (window.UnifiedAWSAuth && window.UnifiedAWSAuth.getInstance) {
+                const auth = window.UnifiedAWSAuth.getInstance();
+                if (auth && auth.getCurrentUser) {
+                    const user = await auth.getCurrentUser();
+                    if (user && user.signInUserSession) {
+                        authToken = user.signInUserSession.idToken.jwtToken;
+                    }
+                }
+            }
+        } catch (e) {
+            console.warn('⚠️ Auth Token konnte nicht geladen werden:', e);
+        }
+        
+        // Rufe einfache PDF-Generator Lambda auf (OHNE GPT - direkt HTML zu PDF)
+        const apiUrl = window.getApiUrl('PDF_GENERATOR');
+        if (!apiUrl) {
+            throw new Error('PDF Generator API URL nicht gefunden. Bitte aws-app-config.js prüfen.');
+        }
+        
+        console.log('📡 Sende HTML direkt an PDF-Generator Lambda (ohne GPT):', apiUrl);
+        
+        // AbortController für Timeout (25 Sekunden - Lambda sollte schnell sein ohne GPT)
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 25000);
         
         try {
-            console.log('🔑 Suche OpenAI API Key...');
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {})
+                },
+                signal: controller.signal,
+                body: JSON.stringify({
+                    html: htmlContent, // Vollständiges HTML-Dokument
+                    options: {
+                        format: format,
+                        printBackground: true,
+                        preferCSSPageSize: false,
+                        margin: {
+                            top: '0mm', // Margins sind im HTML als Padding
+                            right: '0mm',
+                            bottom: '0mm',
+                            left: '0mm'
+                        },
+                        displayHeaderFooter: addPageNumbers,
+                        footerTemplate: addPageNumbers ? `
+                            <div style="font-size: 10px; text-align: center; width: 100%; padding: 0 20mm;">
+                                <span class="pageNumber"></span> / <span class="totalPages"></span>
+                            </div>
+                        ` : ''
+                    }
+                })
+            });
+            
+            clearTimeout(timeoutId);
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                let errorData;
+                try {
+                    errorData = JSON.parse(errorText);
+                } catch (e) {
+                    errorData = { error: errorText };
+                }
+                throw new Error(`PDF-Generierung fehlgeschlagen: ${errorData.error || errorData.message || 'Unbekannter Fehler'}`);
+            }
+            
+            // API Gateway gibt Base64 direkt im Body zurück (wegen isBase64Encoded: true)
+            const contentType = response.headers.get('Content-Type');
+            console.log('📦 Response Content-Type:', contentType);
+            console.log('📦 Response Status:', response.status, response.statusText);
+            
+            if (contentType && contentType.includes('application/pdf')) {
+                try {
+                    // Versuche zuerst als ArrayBuffer zu lesen (wenn API Gateway bereits dekodiert hat)
+                    const arrayBuffer = await response.arrayBuffer();
+                    const blob = new Blob([arrayBuffer], { type: 'application/pdf' });
+                    console.log('✅ PDF generiert (direkt, ohne GPT):', blob.size, 'Bytes');
+                    return blob;
+                } catch (arrayBufferError) {
+                    console.warn('⚠️ ArrayBuffer-Lesen fehlgeschlagen, versuche Base64:', arrayBufferError);
+                    // Fallback: Versuche als Base64-Text zu lesen
+                    try {
+                        const base64Data = await response.text();
+                        const cleanBase64 = base64Data.trim().replace(/\s/g, '');
+                        const binaryString = atob(cleanBase64);
+                        const bytes = new Uint8Array(binaryString.length);
+                        for (let i = 0; i < binaryString.length; i++) {
+                            bytes[i] = binaryString.charCodeAt(i);
+                        }
+                        const blob = new Blob([bytes], { type: 'application/pdf' });
+                        console.log('✅ PDF generiert (Base64):', blob.size, 'Bytes');
+                        return blob;
+                    } catch (base64Error) {
+                        console.error('❌ Base64-Dekodierung fehlgeschlagen:', base64Error);
+                        throw new Error('PDF-Generierung fehlgeschlagen: Konnte Response nicht dekodieren');
+                    }
+                }
+            } else {
+                throw new Error(`PDF-Generierung fehlgeschlagen: Unerwartetes Response-Format. Content-Type: ${contentType}`);
+            }
+        } catch (error) {
+            clearTimeout(timeoutId);
+            if (error.name === 'AbortError') {
+                console.error('❌ PDF Export Timeout: Die Anfrage dauerte länger als 25 Sekunden');
+                throw new Error('PDF-Generierung dauerte zu lange. Bitte versuchen Sie es erneut.');
+            }
+            throw error;
+        }
             console.log('📋 Verfügbare Services:', {
                 awsAPISettings: !!window.awsAPISettings,
                 GlobalAPIManager: !!window.GlobalAPIManager,
@@ -5057,6 +5167,109 @@ class DesignEditor {
         styles.push(designStyles);
         
         return styles.join('\n');
+    }
+    
+    /**
+     * Generiert vollständiges HTML5-Dokument für PDF-Export (wie andere Anwendungen)
+     * WICHTIG: Margins werden als Padding auf dem Hauptcontainer gesetzt, da Puppeteer Margins auf 0 setzt
+     */
+    generateCompleteHTMLDocument(element) {
+        const marginTop = this.settings.marginTop || 20;
+        const marginRight = this.settings.marginRight || 20;
+        const marginBottom = this.settings.marginBottom || 20;
+        const marginLeft = this.settings.marginLeft || 20;
+        
+        // Stelle sicher, dass Padding auf dem Hauptcontainer gesetzt ist
+        const mainContainer = element.querySelector('.design-resume-preview') || element;
+        if (mainContainer) {
+            mainContainer.style.padding = `${marginTop}mm ${marginRight}mm ${marginBottom}mm ${marginLeft}mm`;
+            mainContainer.style.boxSizing = 'border-box';
+            mainContainer.style.width = `calc(210mm - ${marginLeft}mm - ${marginRight}mm)`;
+        }
+        
+        // Extrahiere alle CSS-Styles
+        const allCSS = this.extractAllCSS();
+        
+        // Google Fonts Link (falls Inter verwendet wird)
+        const fontFamily = this.settings.fontFamily || "'Inter', sans-serif";
+        const googleFontsLink = fontFamily.includes('Inter') 
+            ? '<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">'
+            : '';
+        
+        // Generiere vollständiges HTML5-Dokument
+        const html = `<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lebenslauf PDF Export</title>
+    ${googleFontsLink}
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            width: 210mm;
+            margin: 0;
+            padding: 0;
+            font-family: ${fontFamily};
+            font-size: ${this.settings.fontSize || 11}pt;
+            line-height: ${this.settings.lineHeight || 1.5};
+            color: ${this.settings.textColor || '#1e293b'};
+            background: ${this.settings.backgroundColor || '#ffffff'};
+        }
+        
+        body {
+            width: 210mm;
+            min-height: 297mm;
+        }
+        
+        .design-resume-preview {
+            width: calc(210mm - ${marginLeft}mm - ${marginRight}mm) !important;
+            margin: 0 !important;
+            padding: ${marginTop}mm ${marginRight}mm ${marginBottom}mm ${marginLeft}mm !important;
+            box-sizing: border-box !important;
+            background: ${this.settings.backgroundColor || '#ffffff'} !important;
+            font-family: ${fontFamily} !important;
+            font-size: ${this.settings.fontSize || 11}pt !important;
+            line-height: ${this.settings.lineHeight || 1.5} !important;
+            color: ${this.settings.textColor || '#1e293b'} !important;
+        }
+        
+        /* Print-Styles */
+        @media print {
+            @page {
+                size: A4;
+                margin: 0 !important;
+            }
+            
+            html, body {
+                width: 210mm !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            
+            .design-resume-preview {
+                width: calc(210mm - ${marginLeft}mm - ${marginRight}mm) !important;
+                margin: 0 !important;
+                padding: ${marginTop}mm ${marginRight}mm ${marginBottom}mm ${marginLeft}mm !important;
+                box-shadow: none !important;
+            }
+        }
+        
+        /* Extrahiertes CSS */
+        ${allCSS}
+    </style>
+</head>
+<body>
+    ${element.outerHTML}
+</body>
+</html>`;
+        
+        return html;
     }
     
     replaceCSSVariables(cssText) {
