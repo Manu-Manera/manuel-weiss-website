@@ -4719,27 +4719,46 @@ class DesignEditor {
         }
         
         // API Gateway gibt Base64 direkt im Body zurück (wegen isBase64Encoded: true)
-        // Prüfe Content-Type
+        // API Gateway dekodiert Base64 automatisch, also sollten wir direkt ArrayBuffer lesen
         const contentType = response.headers.get('Content-Type');
+        console.log('📦 Response Content-Type:', contentType);
+        console.log('📦 Response Status:', response.status, response.statusText);
+        
         if (contentType && contentType.includes('application/pdf')) {
-            // Response ist direkt Base64-kodiertes PDF
-            const base64Data = await response.text();
-            
-            // Base64 dekodieren
-            const binaryString = atob(base64Data);
-            const bytes = new Uint8Array(binaryString.length);
-            for (let i = 0; i < binaryString.length; i++) {
-                bytes[i] = binaryString.charCodeAt(i);
+            try {
+                // Versuche zuerst als ArrayBuffer zu lesen (wenn API Gateway bereits dekodiert hat)
+                const arrayBuffer = await response.arrayBuffer();
+                const blob = new Blob([arrayBuffer], { type: 'application/pdf' });
+                console.log('✅ PDF generiert mit GPT-5.2 (ArrayBuffer):', blob.size, 'Bytes');
+                return blob;
+            } catch (arrayBufferError) {
+                console.warn('⚠️ ArrayBuffer-Lesen fehlgeschlagen, versuche Base64:', arrayBufferError);
+                // Fallback: Versuche als Base64-Text zu lesen
+                try {
+                    const base64Data = await response.text();
+                    // Entferne mögliche Whitespace/Newlines
+                    const cleanBase64 = base64Data.trim().replace(/\s/g, '');
+                    const binaryString = atob(cleanBase64);
+                    const bytes = new Uint8Array(binaryString.length);
+                    for (let i = 0; i < binaryString.length; i++) {
+                        bytes[i] = binaryString.charCodeAt(i);
+                    }
+                    const blob = new Blob([bytes], { type: 'application/pdf' });
+                    console.log('✅ PDF generiert mit GPT-5.2 (Base64):', blob.size, 'Bytes');
+                    return blob;
+                } catch (base64Error) {
+                    console.error('❌ Base64-Dekodierung fehlgeschlagen:', base64Error);
+                    throw new Error('PDF-Generierung fehlgeschlagen: Konnte Response nicht dekodieren');
+                }
             }
-            const blob = new Blob([bytes], { type: 'application/pdf' });
-            console.log('✅ PDF generiert mit GPT-5.2:', blob.size, 'Bytes');
-            return blob;
         } else {
             // Fallback: Versuche JSON zu parsen (falls API anders antwortet)
             try {
                 const responseData = await response.json();
+                console.log('📦 Response als JSON erhalten:', Object.keys(responseData));
                 if (responseData.body) {
-                    const binaryString = atob(responseData.body);
+                    const cleanBase64 = responseData.body.trim().replace(/\s/g, '');
+                    const binaryString = atob(cleanBase64);
                     const bytes = new Uint8Array(binaryString.length);
                     for (let i = 0; i < binaryString.length; i++) {
                         bytes[i] = binaryString.charCodeAt(i);
@@ -4750,6 +4769,16 @@ class DesignEditor {
                 }
             } catch (e) {
                 console.error('❌ Fehler beim Parsen der Response:', e);
+                // Versuche noch als ArrayBuffer
+                try {
+                    const arrayBuffer = await response.arrayBuffer();
+                    const blob = new Blob([arrayBuffer], { type: 'application/pdf' });
+                    console.log('✅ PDF generiert (ArrayBuffer Fallback):', blob.size, 'Bytes');
+                    return blob;
+                } catch (finalError) {
+                    console.error('❌ Alle Versuche fehlgeschlagen:', finalError);
+                    throw new Error(`PDF-Generierung fehlgeschlagen: Unerwartetes Response-Format. Content-Type: ${contentType}`);
+                }
             }
             throw new Error('PDF-Generierung fehlgeschlagen: Unerwartetes Response-Format');
         }
