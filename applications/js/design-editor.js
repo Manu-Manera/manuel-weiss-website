@@ -4489,8 +4489,16 @@ class DesignEditor {
         // Klone das Preview-Element
         const clone = preview.cloneNode(true);
         
+        // WICHTIG: Extrahiere ALLE computed styles vom Original und wende sie auf den Clone an
+        // Das ist der Schlüssel, damit das Design vollständig übernommen wird
+        this.copyComputedStylesToClone(preview, clone);
+        
         // WICHTIG: Ersetze ALLE CSS-Variablen im geklonten HTML durch tatsächliche Werte
         this.replaceCSSVariablesInElement(clone);
+        
+        // WICHTIG: Wende Design-Settings direkt auf den Clone an (für PDF-Export)
+        // Das stellt sicher, dass alle Styles korrekt übernommen werden
+        this.applyDesignSettingsToElement(clone, true); // true = isPDFExport
         
         // Generiere vollständiges HTML-Dokument (wie andere Anwendungen es machen - OHNE GPT!)
         const htmlContent = this.generateCompleteHTMLDocument(clone);
@@ -5409,42 +5417,82 @@ class DesignEditor {
     }
     
     extractInlineStyles(element) {
-        // Extrahiere alle inline Styles aus dem Element und seinen Kindern
+        // WICHTIG: Extrahiere ALLE computed styles direkt vom DOM (nicht nur inline styles)
+        // Das stellt sicher, dass alle Styles (auch aus CSS-Klassen) übernommen werden
         const styles = [];
-        const allElements = element.querySelectorAll('*');
+        const allElements = [element, ...Array.from(element.querySelectorAll('*'))];
+        
+        // Wichtige CSS-Properties, die extrahiert werden sollen
+        const importantProperties = [
+            'color', 'background-color', 'background', 'font-family', 'font-size', 'font-weight',
+            'line-height', 'text-align', 'margin', 'margin-top', 'margin-right', 'margin-bottom', 'margin-left',
+            'padding', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left',
+            'border', 'border-top', 'border-right', 'border-bottom', 'border-left',
+            'width', 'height', 'min-width', 'min-height', 'max-width', 'max-height',
+            'display', 'flex-direction', 'justify-content', 'align-items', 'gap',
+            'position', 'top', 'right', 'bottom', 'left',
+            'opacity', 'transform', 'box-shadow', 'text-shadow'
+        ];
         
         allElements.forEach((el, index) => {
-            if (el.style && el.style.cssText) {
-                const styleText = el.style.cssText;
-                if (styleText.trim()) {
-                    // Erstelle einen eindeutigen Selektor für dieses Element
+            try {
+                // Überspringe Script- und Style-Tags
+                if (el.tagName === 'SCRIPT' || el.tagName === 'STYLE') {
+                    return;
+                }
+                
+                // Hole computed styles vom Browser
+                const computedStyle = window.getComputedStyle(el);
+                const styleProperties = [];
+                
+                // Extrahiere wichtige Properties
+                importantProperties.forEach(prop => {
+                    const value = computedStyle.getPropertyValue(prop);
+                    if (value && value !== 'none' && value !== 'normal' && value !== 'auto' && value !== '0px') {
+                        // Konvertiere camelCase zu kebab-case
+                        const kebabProp = prop.replace(/([A-Z])/g, '-$1').toLowerCase();
+                        styleProperties.push(`${kebabProp}: ${value}`);
+                    }
+                });
+                
+                // Füge auch explizite inline styles hinzu
+                if (el.style && el.style.cssText) {
+                    const inlineStyles = el.style.cssText.split(';').filter(s => s.trim());
+                    inlineStyles.forEach(style => {
+                        if (style.trim() && !styleProperties.some(p => p.startsWith(style.trim().split(':')[0]))) {
+                            styleProperties.push(style.trim());
+                        }
+                    });
+                }
+                
+                if (styleProperties.length > 0) {
+                    // Erstelle einen eindeutigen Selektor
                     let selector = '';
                     if (el.id) {
                         selector = `#${el.id}`;
-                    } else if (el.className) {
-                        const classes = Array.from(el.classList).join('.');
-                        selector = `.${classes}`;
+                    } else if (el.className && typeof el.className === 'string') {
+                        const classes = el.className.split(' ').filter(c => c.trim()).join('.');
+                        if (classes) {
+                            selector = `.${classes}`;
+                        } else {
+                            selector = el.tagName.toLowerCase();
+                        }
                     } else {
                         selector = el.tagName.toLowerCase();
                     }
                     
-                    // Füge einen Index hinzu, falls mehrere Elemente denselben Selektor haben
-                    if (styles.some(s => s.includes(selector))) {
-                        selector = `${selector}[data-pdf-index="${index}"]`;
-                    }
+                    // Füge einen eindeutigen Index hinzu, falls nötig
+                    const uniqueSelector = `${selector}[data-pdf-el="${index}"]`;
                     
-                    styles.push(`${selector} { ${styleText} }`);
+                    styles.push(`${uniqueSelector} { ${styleProperties.join('; ')}; }`);
+                    
+                    // Setze auch data-Attribut auf dem Element für Selektierung
+                    el.setAttribute('data-pdf-el', index);
                 }
+            } catch (e) {
+                console.warn('⚠️ Fehler beim Extrahieren von Styles für Element:', el, e);
             }
         });
-        
-        // Füge auch Styles vom Hauptelement hinzu
-        if (element.style && element.style.cssText) {
-            const mainSelector = element.classList.contains('design-resume-preview') 
-                ? '.design-resume-preview' 
-                : element.tagName.toLowerCase();
-            styles.push(`${mainSelector} { ${element.style.cssText} }`);
-        }
         
         return styles.join('\n');
     }
