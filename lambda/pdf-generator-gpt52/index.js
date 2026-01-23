@@ -81,7 +81,7 @@ Antworte NUR mit dem vollständigen HTML-Code, ohne Markdown-Code-Blöcke, ohne 
                 'Authorization': `Bearer ${apiKey}`
             },
             body: JSON.stringify({
-                model: 'gpt-5.2-pro', // Neuestes GPT-5.2 Modell
+                model: 'gpt-4o', // Verwende gpt-4o statt gpt-5.2-pro (nicht verfügbar)
                 messages: [
                     {
                         role: 'system',
@@ -93,8 +93,7 @@ Antworte NUR mit dem vollständigen HTML-Code, ohne Markdown-Code-Blöcke, ohne 
                     }
                 ],
                 temperature: 0.1, // Niedrige Temperatur für präzise Ausgabe
-                max_tokens: 8000,
-                reasoning_effort: 'xhigh' // Höchste Qualität für Layout-Generierung
+                max_tokens: 8000
             })
         });
 
