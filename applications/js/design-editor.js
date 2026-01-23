@@ -4659,13 +4659,19 @@ class DesignEditor {
             console.warn('⚠️ Auth Token konnte nicht geladen werden:', e);
         }
         
-        const response = await fetch(apiUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {})
-            },
-            body: JSON.stringify({
+        // AbortController für Timeout (35 Sekunden - länger als API Gateway Timeout)
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 35000);
+        
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {})
+                },
+                signal: controller.signal, // Timeout-Signal
+                body: JSON.stringify({
                 content: content, // HTML-Inhalt für GPT-5.2
                 settings: {
                     marginTop: Number(this.settings.marginTop) || 20,
@@ -4697,7 +4703,9 @@ class DesignEditor {
                     ` : ''
                 }
             })
-        });
+            });
+            
+            clearTimeout(timeoutId); // Timeout löschen wenn erfolgreich
         
         if (!response.ok) {
             const errorText = await response.text();

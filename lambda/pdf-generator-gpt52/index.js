@@ -224,17 +224,17 @@ exports.handler = async (event) => {
 
         const page = await browser.newPage();
 
-        // Set content and wait for resources
+        // Set content and wait for resources (optimiert für schnellere Ausführung)
         await page.setContent(finalHTML, {
-            waitUntil: 'networkidle0',
-            timeout: 30000
+            waitUntil: 'load', // Schneller als 'networkidle0'
+            timeout: 15000
         });
 
-        // Wait for fonts to load
-        await page.evaluateHandle(() => document.fonts.ready);
-
-        // Additional wait for any dynamic content
-        await page.waitForTimeout(1000);
+        // Wait for fonts to load (parallel)
+        await Promise.race([
+            page.evaluateHandle(() => document.fonts.ready),
+            new Promise(resolve => setTimeout(resolve, 2000)) // Max 2 Sekunden für Fonts
+        ]);
 
         // Generate PDF
         // WICHTIG: Margins werden im HTML als Padding gehandhabt, daher Puppeteer-Margins auf 0 setzen
