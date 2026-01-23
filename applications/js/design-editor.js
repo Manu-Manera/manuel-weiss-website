@@ -4113,15 +4113,22 @@ class DesignEditor {
         this.showNotification('PDF wird generiert...', 'info');
         
         try {
-            const pdfBytes = await this.generateResumePDF({
+            console.log('🔄 Starte PDF-Generierung mit Optionen:', { quality, format, addPageNumbers, addMetadata });
+            const pdfBlob = await this.generateResumePDF({
                 quality,
                 format,
                 addPageNumbers,
                 addMetadata
             });
             
+            if (!pdfBlob || !(pdfBlob instanceof Blob)) {
+                throw new Error('PDF-Generierung fehlgeschlagen: Kein gültiger Blob erhalten');
+            }
+            
+            console.log('✅ PDF Blob erhalten:', pdfBlob.size, 'Bytes, Type:', pdfBlob.type);
+            
             // Download
-            const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+            const blob = pdfBlob; // Bereits ein Blob
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
@@ -4132,10 +4139,15 @@ class DesignEditor {
             
             // Zeige auch Vorschau
             setTimeout(() => {
-                this.showPDFPreviewModal(pdfBytes);
+                // Konvertiere Blob zu ArrayBuffer für Preview
+                blob.arrayBuffer().then(arrayBuffer => {
+                    this.showPDFPreviewModal(arrayBuffer);
+                }).catch(e => {
+                    console.warn('⚠️ Vorschau konnte nicht angezeigt werden:', e);
+                });
             }, 500);
             
-            this.showNotification(`PDF exportiert! (${(pdfBytes.byteLength / 1024).toFixed(0)} KB)`, 'success');
+            this.showNotification(`PDF exportiert! (${(blob.size / 1024).toFixed(0)} KB)`, 'success');
         } catch (error) {
             console.error('❌ PDF Export Fehler:', error);
             console.error('❌ Error Stack:', error.stack);
