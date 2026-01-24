@@ -32,8 +32,12 @@
     ],
     "Tags": [
      {
+      "Key": "CostCenter",
+      "Value": "AI-Investment"
+     },
+     {
       "Key": "Environment",
-      "Value": "production"
+      "Value": "dev"
      },
      {
       "Key": "ManagedBy",
@@ -41,7 +45,7 @@
      },
      {
       "Key": "Project",
-      "Value": "manuel-weiss-website"
+      "Value": "ai-investment"
      }
     ]
    },
@@ -116,8 +120,12 @@
     "Name": "Manuel Weiss Website API",
     "Tags": [
      {
+      "Key": "CostCenter",
+      "Value": "AI-Investment"
+     },
+     {
       "Key": "Environment",
-      "Value": "production"
+      "Value": "dev"
      },
      {
       "Key": "ManagedBy",
@@ -125,7 +133,7 @@
      },
      {
       "Key": "Project",
-      "Value": "manuel-weiss-website"
+      "Value": "ai-investment"
      }
     ]
    },
@@ -133,7 +141,7 @@
     "aws:cdk:path": "manuel-weiss-website-api/WebsiteAPI/Resource"
    }
   },
-  "WebsiteAPIDeploymentABEB4023bd88855f574d3c0a85c3611dc2ef38df": {
+  "WebsiteAPIDeploymentABEB402320b88c392bcaf851469621faa04a7341": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
     "Description": "API für manuel-weiss.ch (ersetzt Netlify Functions)",
@@ -266,7 +274,9 @@
     "WebsiteAPIuserprofileapiproxyOPTIONSDE79F84A",
     "WebsiteAPIuserprofileapiproxyD77BE086",
     "WebsiteAPIuserprofileapiOPTIONS5726C428",
-    "WebsiteAPIuserprofileapi739F68E1"
+    "WebsiteAPIuserprofileapi739F68E1",
+    "WebsiteAPIDefault4xxCors96CABFB2",
+    "WebsiteAPIDefault5xxCorsB0A4986F"
    ],
    "Metadata": {
     "aws:cdk:path": "manuel-weiss-website-api/WebsiteAPI/Deployment/Resource",
@@ -277,7 +287,7 @@
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
     "DeploymentId": {
-     "Ref": "WebsiteAPIDeploymentABEB4023bd88855f574d3c0a85c3611dc2ef38df"
+     "Ref": "WebsiteAPIDeploymentABEB402320b88c392bcaf851469621faa04a7341"
     },
     "MethodSettings": [
      {
@@ -294,8 +304,12 @@
     "StageName": "v1",
     "Tags": [
      {
+      "Key": "CostCenter",
+      "Value": "AI-Investment"
+     },
+     {
       "Key": "Environment",
-      "Value": "production"
+      "Value": "dev"
      },
      {
       "Key": "ManagedBy",
@@ -303,7 +317,7 @@
      },
      {
       "Key": "Project",
-      "Value": "manuel-weiss-website"
+      "Value": "ai-investment"
      }
     ]
    },
@@ -8166,6 +8180,40 @@
     "aws:cdk:path": "manuel-weiss-website-api/WebsiteAPI/Default/user-profile-api/{proxy+}/ANY/Resource"
    }
   },
+  "WebsiteAPIDefault4xxCors96CABFB2": {
+   "Type": "AWS::ApiGateway::GatewayResponse",
+   "Properties": {
+    "ResponseParameters": {
+     "gatewayresponse.header.Access-Control-Allow-Origin": "'*'",
+     "gatewayresponse.header.Access-Control-Allow-Headers": "'Content-Type,Authorization,X-User-Id,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'",
+     "gatewayresponse.header.Access-Control-Allow-Methods": "'GET,POST,PUT,DELETE,OPTIONS'"
+    },
+    "ResponseType": "DEFAULT_4XX",
+    "RestApiId": {
+     "Ref": "WebsiteAPI5DE54201"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "manuel-weiss-website-api/WebsiteAPI/Default4xxCors/Resource"
+   }
+  },
+  "WebsiteAPIDefault5xxCorsB0A4986F": {
+   "Type": "AWS::ApiGateway::GatewayResponse",
+   "Properties": {
+    "ResponseParameters": {
+     "gatewayresponse.header.Access-Control-Allow-Origin": "'*'",
+     "gatewayresponse.header.Access-Control-Allow-Headers": "'Content-Type,Authorization,X-User-Id,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'",
+     "gatewayresponse.header.Access-Control-Allow-Methods": "'GET,POST,PUT,DELETE,OPTIONS'"
+    },
+    "ResponseType": "DEFAULT_5XX",
+    "RestApiId": {
+     "Ref": "WebsiteAPI5DE54201"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "manuel-weiss-website-api/WebsiteAPI/Default5xxCors/Resource"
+   }
+  },
   "UserDataFunction1C09A9EE": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
@@ -8190,8 +8238,12 @@
     "Runtime": "nodejs18.x",
     "Tags": [
      {
+      "Key": "CostCenter",
+      "Value": "AI-Investment"
+     },
+     {
       "Key": "Environment",
-      "Value": "production"
+      "Value": "dev"
      },
      {
       "Key": "ManagedBy",
@@ -8199,7 +8251,7 @@
      },
      {
       "Key": "Project",
-      "Value": "manuel-weiss-website"
+      "Value": "ai-investment"
      }
     ],
     "Timeout": 30
@@ -8239,8 +8291,12 @@
     "Runtime": "nodejs18.x",
     "Tags": [
      {
+      "Key": "CostCenter",
+      "Value": "AI-Investment"
+     },
+     {
       "Key": "Environment",
-      "Value": "production"
+      "Value": "dev"
      },
      {
       "Key": "ManagedBy",
@@ -8248,7 +8304,7 @@
      },
      {
       "Key": "Project",
-      "Value": "manuel-weiss-website"
+      "Value": "ai-investment"
      }
     ],
     "Timeout": 30
@@ -8289,8 +8345,12 @@
     "Runtime": "nodejs18.x",
     "Tags": [
      {
+      "Key": "CostCenter",
+      "Value": "AI-Investment"
+     },
+     {
       "Key": "Environment",
-      "Value": "production"
+      "Value": "dev"
      },
      {
       "Key": "ManagedBy",
@@ -8298,7 +8358,7 @@
      },
      {
       "Key": "Project",
-      "Value": "manuel-weiss-website"
+      "Value": "ai-investment"
      }
     ],
     "Timeout": 30
@@ -8333,8 +8393,12 @@
     "Runtime": "nodejs18.x",
     "Tags": [
      {
+      "Key": "CostCenter",
+      "Value": "AI-Investment"
+     },
+     {
       "Key": "Environment",
-      "Value": "production"
+      "Value": "dev"
      },
      {
       "Key": "ManagedBy",
@@ -8342,7 +8406,7 @@
      },
      {
       "Key": "Project",
-      "Value": "manuel-weiss-website"
+      "Value": "ai-investment"
      }
     ],
     "Timeout": 60
@@ -8377,8 +8441,12 @@
     "Runtime": "nodejs18.x",
     "Tags": [
      {
+      "Key": "CostCenter",
+      "Value": "AI-Investment"
+     },
+     {
       "Key": "Environment",
-      "Value": "production"
+      "Value": "dev"
      },
      {
       "Key": "ManagedBy",
@@ -8386,7 +8454,7 @@
      },
      {
       "Key": "Project",
-      "Value": "manuel-weiss-website"
+      "Value": "ai-investment"
      }
     ],
     "Timeout": 30
@@ -8421,8 +8489,12 @@
     "Runtime": "nodejs18.x",
     "Tags": [
      {
+      "Key": "CostCenter",
+      "Value": "AI-Investment"
+     },
+     {
       "Key": "Environment",
-      "Value": "production"
+      "Value": "dev"
      },
      {
       "Key": "ManagedBy",
@@ -8430,7 +8502,7 @@
      },
      {
       "Key": "Project",
-      "Value": "manuel-weiss-website"
+      "Value": "ai-investment"
      }
     ],
     "Timeout": 120
@@ -8465,8 +8537,12 @@
     "Runtime": "nodejs18.x",
     "Tags": [
      {
+      "Key": "CostCenter",
+      "Value": "AI-Investment"
+     },
+     {
       "Key": "Environment",
-      "Value": "production"
+      "Value": "dev"
      },
      {
       "Key": "ManagedBy",
@@ -8474,7 +8550,7 @@
      },
      {
       "Key": "Project",
-      "Value": "manuel-weiss-website"
+      "Value": "ai-investment"
      }
     ],
     "Timeout": 120
@@ -8509,8 +8585,12 @@
     "Runtime": "nodejs18.x",
     "Tags": [
      {
+      "Key": "CostCenter",
+      "Value": "AI-Investment"
+     },
+     {
       "Key": "Environment",
-      "Value": "production"
+      "Value": "dev"
      },
      {
       "Key": "ManagedBy",
@@ -8518,7 +8598,7 @@
      },
      {
       "Key": "Project",
-      "Value": "manuel-weiss-website"
+      "Value": "ai-investment"
      }
     ],
     "Timeout": 60
@@ -8553,8 +8633,12 @@
     "Runtime": "nodejs18.x",
     "Tags": [
      {
+      "Key": "CostCenter",
+      "Value": "AI-Investment"
+     },
+     {
       "Key": "Environment",
-      "Value": "production"
+      "Value": "dev"
      },
      {
       "Key": "ManagedBy",
@@ -8562,7 +8646,7 @@
      },
      {
       "Key": "Project",
-      "Value": "manuel-weiss-website"
+      "Value": "ai-investment"
      }
     ],
     "Timeout": 60
@@ -8597,8 +8681,12 @@
     "Runtime": "nodejs18.x",
     "Tags": [
      {
+      "Key": "CostCenter",
+      "Value": "AI-Investment"
+     },
+     {
       "Key": "Environment",
-      "Value": "production"
+      "Value": "dev"
      },
      {
       "Key": "ManagedBy",
@@ -8606,7 +8694,7 @@
      },
      {
       "Key": "Project",
-      "Value": "manuel-weiss-website"
+      "Value": "ai-investment"
      }
     ],
     "Timeout": 30
@@ -8627,7 +8715,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-038333965110-eu-central-1",
-     "S3Key": "43a2c29e742ca7d7a2dc5f254166de29d009c821a6ce08496b9c75a8e88328e3.zip"
+     "S3Key": "271b2e09e004d5161754204bfad7e230023d0a43f4ca9869d9ccedf9806af302.zip"
     },
     "Environment": {
      "Variables": {
@@ -8648,8 +8736,12 @@
     "Runtime": "nodejs18.x",
     "Tags": [
      {
+      "Key": "CostCenter",
+      "Value": "AI-Investment"
+     },
+     {
       "Key": "Environment",
-      "Value": "production"
+      "Value": "dev"
      },
      {
       "Key": "ManagedBy",
@@ -8657,7 +8749,7 @@
      },
      {
       "Key": "Project",
-      "Value": "manuel-weiss-website"
+      "Value": "ai-investment"
      }
     ],
     "Timeout": 30
@@ -8668,7 +8760,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "manuel-weiss-website-api/ApiSettingsFunction/Resource",
-    "aws:asset:path": "asset.43a2c29e742ca7d7a2dc5f254166de29d009c821a6ce08496b9c75a8e88328e3",
+    "aws:asset:path": "asset.271b2e09e004d5161754204bfad7e230023d0a43f4ca9869d9ccedf9806af302",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }
@@ -8698,8 +8790,12 @@
     "Runtime": "nodejs18.x",
     "Tags": [
      {
+      "Key": "CostCenter",
+      "Value": "AI-Investment"
+     },
+     {
       "Key": "Environment",
-      "Value": "production"
+      "Value": "dev"
      },
      {
       "Key": "ManagedBy",
@@ -8707,7 +8803,7 @@
      },
      {
       "Key": "Project",
-      "Value": "manuel-weiss-website"
+      "Value": "ai-investment"
      }
     ],
     "Timeout": 30
@@ -8747,8 +8843,12 @@
     "Runtime": "nodejs18.x",
     "Tags": [
      {
+      "Key": "CostCenter",
+      "Value": "AI-Investment"
+     },
+     {
       "Key": "Environment",
-      "Value": "production"
+      "Value": "dev"
      },
      {
       "Key": "ManagedBy",
@@ -8756,7 +8856,7 @@
      },
      {
       "Key": "Project",
-      "Value": "manuel-weiss-website"
+      "Value": "ai-investment"
      }
     ],
     "Timeout": 30
@@ -8777,7 +8877,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-038333965110-eu-central-1",
-     "S3Key": "5a09ce6c4a71a506c4d08c1682d903b1044191c6f13a3ae6032cfbe06b5b2657.zip"
+     "S3Key": "2a8a6523be43c517f7cc3c306cfcd6b9645c7d9e64274162684172f00b757705.zip"
     },
     "Environment": {
      "Variables": {
@@ -8796,8 +8896,12 @@
     "Runtime": "nodejs18.x",
     "Tags": [
      {
+      "Key": "CostCenter",
+      "Value": "AI-Investment"
+     },
+     {
       "Key": "Environment",
-      "Value": "production"
+      "Value": "dev"
      },
      {
       "Key": "ManagedBy",
@@ -8805,7 +8909,7 @@
      },
      {
       "Key": "Project",
-      "Value": "manuel-weiss-website"
+      "Value": "ai-investment"
      }
     ],
     "Timeout": 120
@@ -8816,7 +8920,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "manuel-weiss-website-api/PdfGeneratorFunction/Resource",
-    "aws:asset:path": "asset.5a09ce6c4a71a506c4d08c1682d903b1044191c6f13a3ae6032cfbe06b5b2657",
+    "aws:asset:path": "asset.2a8a6523be43c517f7cc3c306cfcd6b9645c7d9e64274162684172f00b757705",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }
@@ -8846,8 +8950,12 @@
     "Runtime": "nodejs18.x",
     "Tags": [
      {
+      "Key": "CostCenter",
+      "Value": "AI-Investment"
+     },
+     {
       "Key": "Environment",
-      "Value": "production"
+      "Value": "dev"
      },
      {
       "Key": "ManagedBy",
@@ -8855,7 +8963,7 @@
      },
      {
       "Key": "Project",
-      "Value": "manuel-weiss-website"
+      "Value": "ai-investment"
      }
     ],
     "Timeout": 30
@@ -8895,8 +9003,12 @@
     "Runtime": "nodejs18.x",
     "Tags": [
      {
+      "Key": "CostCenter",
+      "Value": "AI-Investment"
+     },
+     {
       "Key": "Environment",
-      "Value": "production"
+      "Value": "dev"
      },
      {
       "Key": "ManagedBy",
@@ -8904,7 +9016,7 @@
      },
      {
       "Key": "Project",
-      "Value": "manuel-weiss-website"
+      "Value": "ai-investment"
      }
     ],
     "Timeout": 30
@@ -8946,8 +9058,12 @@
     "Runtime": "nodejs18.x",
     "Tags": [
      {
+      "Key": "CostCenter",
+      "Value": "AI-Investment"
+     },
+     {
       "Key": "Environment",
-      "Value": "production"
+      "Value": "dev"
      },
      {
       "Key": "ManagedBy",
@@ -8955,7 +9071,7 @@
      },
      {
       "Key": "Project",
-      "Value": "manuel-weiss-website"
+      "Value": "ai-investment"
      }
     ],
     "Timeout": 120
@@ -8995,8 +9111,12 @@
     "Runtime": "nodejs18.x",
     "Tags": [
      {
+      "Key": "CostCenter",
+      "Value": "AI-Investment"
+     },
+     {
       "Key": "Environment",
-      "Value": "production"
+      "Value": "dev"
      },
      {
       "Key": "ManagedBy",
@@ -9004,7 +9124,7 @@
      },
      {
       "Key": "Project",
-      "Value": "manuel-weiss-website"
+      "Value": "ai-investment"
      }
     ],
     "Timeout": 30
@@ -9047,8 +9167,12 @@
     "Runtime": "nodejs18.x",
     "Tags": [
      {
+      "Key": "CostCenter",
+      "Value": "AI-Investment"
+     },
+     {
       "Key": "Environment",
-      "Value": "production"
+      "Value": "dev"
      },
      {
       "Key": "ManagedBy",
@@ -9056,7 +9180,7 @@
      },
      {
       "Key": "Project",
-      "Value": "manuel-weiss-website"
+      "Value": "ai-investment"
      }
     ],
     "Timeout": 30
@@ -9075,7 +9199,7 @@
   "CDKMetadata": {
    "Type": "AWS::CDK::Metadata",
    "Properties": {
-    "Analytics": "v2:deflate64:H4sIAAAAAAAA/1WPzU7DMBCEn6V3Z4G0PEAL6g1Rtdyrjb0EN/6JsjYlivLu2PmR4LTfzI7W4xLK7TM8bfDOhVRNYXQFwyWgbESyroPqHVqvKvjAytABmQRv4RBlQ2FSGi0MZ29IvHy6aZ680bLPcqZRYKtrDHTHPkWJw77VU3rBV2qN7y25kN0/KvWop7szpLyPnZxbvFH48iovF1q3y+WZT53/6Vc1CoO2UghD7kad1czaO3GMToYMyV55TN+8IjMFhn0e478H3mNoYxDTJpfTrh6F84rgxg/f5Q5KeNzcWOuiiy5oS3Ce5y+N8RXVcAEAAA=="
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/12QzU7DQAyEn6X3jYEUHqAFwQlRFe6VszFlm/2J4l1KFOXd2Z8UASd/Mx5ZI9dQr+/gZoVnrmTbVVo1ML16lJ2I1mFqR4vGtQ28YaNpi0yC17ANsiOflUID095pEvfvNs+d00qOSRaaBfbqiJ7OOMYosd/0KqcXfKBeu9GQ9cn9pWKPY75bIOZdGGRp8Uz+w7VpudBlu1wuvBvc1/ijnkqJqHtnOSf/WbPQaJoWYUr1aTCKWTkrHoOVPkG0LzzHTxyQmTzDJo35T4eX4PvgRd6k/soeZ2FdS3Diq8/6Fmq4Xp1YqWoI1itDsC/zG2i+T/KTAQAA"
    },
    "Metadata": {
     "aws:cdk:path": "manuel-weiss-website-api/CDKMetadata/Default"

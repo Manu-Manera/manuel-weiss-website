@@ -422,13 +422,22 @@ class UnifiedAWSAuth {
                 }
             };
             
-            console.log('📤 Sending login request with params:', JSON.stringify(params, null, 2));
+            // SECURITY: Niemals Passwort/Tokens in Logs ausgeben (Console/Remote-Logs).
+            console.log('📤 Sending login request (redacted):', {
+                AuthFlow: params.AuthFlow,
+                ClientId: params.ClientId,
+                AuthParameters: {
+                    USERNAME: usernameToTry,
+                    PASSWORD: '[REDACTED]'
+                }
+            });
             console.log('🔑 Username wird verwendet:', usernameToTry);
             console.log('📧 E-Mail war:', trimmedEmail);
             
             const result = await this.cognitoIdentityServiceProvider.initiateAuth(params).promise();
             
-            console.log('✅ Login successful:', result);
+            // SECURITY: result enthält Tokens – nicht loggen.
+            console.log('✅ Login successful');
             
             // Extrahiere userId (sub) aus dem idToken
             let userId = null;
@@ -620,7 +629,12 @@ class UnifiedAWSAuth {
         if (session) {
             try {
                 this.currentUser = JSON.parse(session);
-                console.log('🔍 Checking user session:', this.currentUser);
+                // SECURITY: Tokens nicht loggen.
+                console.log('🔍 Checking user session:', {
+                    id: this.currentUser?.id,
+                    email: this.currentUser?.email,
+                    expiresAt: this.currentUser?.expiresAt
+                });
                 
                 // Token-Ablauf prüfen
                 if (this.isTokenExpired()) {
@@ -882,7 +896,12 @@ class UnifiedAWSAuth {
         const allUserMenus = document.querySelectorAll('.user-dropdown, .user-menu, .nav-user-menu');
         
         console.log('🔄 Updating UI, isLoggedIn:', isLoggedIn);
-        console.log('👤 Current user:', this.currentUser);
+        // SECURITY: Niemals Tokens/Passwörter in Logs ausgeben (Console/Remote-Logs).
+        console.log('👤 Current user (redacted):', this.currentUser ? {
+            id: this.currentUser.id,
+            email: this.currentUser.email,
+            expiresAt: this.currentUser.expiresAt
+        } : null);
         
         allLoginButtons.forEach(btn => {
             if (isLoggedIn && this.currentUser) {

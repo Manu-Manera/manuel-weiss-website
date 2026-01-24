@@ -16,14 +16,15 @@
         "templateFile": "manuel-weiss-website-api.template.json",
         "terminationProtection": false,
         "tags": {
-          "Environment": "production",
+          "CostCenter": "AI-Investment",
+          "Environment": "dev",
           "ManagedBy": "CDK",
-          "Project": "manuel-weiss-website"
+          "Project": "ai-investment"
         },
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::038333965110:role/cdk-hnb659fds-deploy-role-038333965110-eu-central-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::038333965110:role/cdk-hnb659fds-cfn-exec-role-038333965110-eu-central-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-038333965110-eu-central-1/0ec8d90b3c38b5e4d26e1384840344213807b30c0c934ff45a656f0f041a6807.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-038333965110-eu-central-1/4f567d1aa88bf154bc30b3b49bdd8645060bda4c9cbf42b9128385f071417140.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -44,8 +45,12 @@
             "type": "aws:cdk:stack-tags",
             "data": [
               {
+                "Key": "CostCenter",
+                "Value": "AI-Investment"
+              },
+              {
                 "Key": "Environment",
-                "Value": "production"
+                "Value": "dev"
               },
               {
                 "Key": "ManagedBy",
@@ -53,7 +58,7 @@
               },
               {
                 "Key": "Project",
-                "Value": "manuel-weiss-website"
+                "Value": "ai-investment"
               }
             ]
           }
@@ -79,7 +84,7 @@
         "/manuel-weiss-website-api/WebsiteAPI/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "WebsiteAPIDeploymentABEB4023bd88855f574d3c0a85c3611dc2ef38df"
+            "data": "WebsiteAPIDeploymentABEB402320b88c392bcaf851469621faa04a7341"
           }
         ],
         "/manuel-weiss-website-api/WebsiteAPI/DeploymentStage.v1/Resource": [
@@ -1538,6 +1543,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "WebsiteAPIuserprofileapiproxyANYC9B0BD83"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default4xxCors/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIDefault4xxCors96CABFB2"
+          }
+        ],
+        "/manuel-weiss-website-api/WebsiteAPI/Default5xxCors/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebsiteAPIDefault5xxCorsB0A4986F"
           }
         ],
         "/manuel-weiss-website-api/UserDataFunction/Resource": [

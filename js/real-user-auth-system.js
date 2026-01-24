@@ -716,7 +716,15 @@ class RealUserAuthSystem {
                 }
             };
             
-            console.log('📤 Sending login request with params:', JSON.stringify(params, null, 2));
+            // SECURITY: Niemals Passwort/Tokens in Logs ausgeben.
+            console.log('📤 Sending login request (redacted):', {
+                AuthFlow: params.AuthFlow,
+                ClientId: params.ClientId,
+                AuthParameters: {
+                    USERNAME: usernameToTry,
+                    PASSWORD: '[REDACTED]'
+                }
+            });
             console.log('🔑 Username wird verwendet:', usernameToTry);
             console.log('📧 E-Mail war:', trimmedEmail);
             
@@ -758,7 +766,8 @@ class RealUserAuthSystem {
             console.error('❌ Login error:', error);
             console.error('❌ Error code:', error.code);
             console.error('❌ Error message:', error.message);
-            console.error('❌ Full error:', JSON.stringify(error, null, 2));
+                // SECURITY: Fehlerobjekte können sensitive Details enthalten.
+                console.error('❌ Full error:', { code: error.code, message: error.message, name: error.name });
             
             let errorMessage = 'Anmeldung fehlgeschlagen. ';
             

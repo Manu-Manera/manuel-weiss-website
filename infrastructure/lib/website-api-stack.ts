@@ -119,6 +119,28 @@ export class WebsiteApiStack extends cdk.Stack {
     });
 
     // ========================================
+    // GATEWAY-LEVEL CORS (WICHTIG für Fehlerfälle)
+    // ========================================
+    // Wenn Lambda/Integration in einen Error-Pfad läuft (z.B. 502/504/413),
+    // liefert API Gateway teils "DEFAULT_4XX/5XX" Responses OHNE CORS-Header.
+    // Das erscheint im Browser als "CORS blocked" und verschleiert die echte Ursache.
+    const gatewayCorsHeaders = {
+      'Access-Control-Allow-Origin': "'*'",
+      'Access-Control-Allow-Headers': "'Content-Type,Authorization,X-User-Id,X-Amz-Date,X-Api-Key,X-Amz-Security-Token'",
+      'Access-Control-Allow-Methods': "'GET,POST,PUT,DELETE,OPTIONS'"
+    };
+
+    this.api.addGatewayResponse('Default4xxCors', {
+      type: apigateway.ResponseType.DEFAULT_4XX,
+      responseHeaders: gatewayCorsHeaders
+    });
+
+    this.api.addGatewayResponse('Default5xxCors', {
+      type: apigateway.ResponseType.DEFAULT_5XX,
+      responseHeaders: gatewayCorsHeaders
+    });
+
+    // ========================================
     // LAMBDA FUNCTIONS
     // ========================================
 
@@ -527,19 +549,9 @@ export class WebsiteApiStack extends cdk.Stack {
       });
     });
     
-    // /api-settings/key - Sub-Resource für vollständigen API Key (ohne Auth für globale Keys)
-    // Lambda behandelt OPTIONS selbst (siehe lambda/api-settings/index.js)
-    const apiSettingsKeyResource = apiSettingsResource.addResource('key');
-    apiSettingsKeyResource.addMethod('GET', apiSettingsIntegration, {
-      methodResponses: [{
-        statusCode: '200',
-        responseParameters: {
-          'method.response.header.Access-Control-Allow-Origin': true,
-          'method.response.header.Access-Control-Allow-Headers': true,
-          'method.response.header.Access-Control-Allow-Methods': true
-        }
-      }]
-    });
+    // NOTE: /api-settings?action=key&provider=... wird produktiv genutzt.
+    // Ein zusätzliches Sub-Resource `/api-settings/key` existiert in manchen Umgebungen bereits (Out-of-band),
+    // was zu CloudFormation-Conflicts führen kann. Daher hier bewusst NICHT mehr anlegen.
 
     // /contact-email (bestehende Lambda)
     const contactResource = this.api.root.addResource('contact-email');

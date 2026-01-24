@@ -22,22 +22,28 @@ const env = {
 const projectName = app.node.tryGetContext('projectName') || 'ai-investment';
 const environment = app.node.tryGetContext('environment') || 'dev';
 
-// Create stacks
-const securityStack = new SecurityStack(app, `${projectName}-security-${environment}`, {
-  env,
-  description: 'Security and KMS keys for AI Investment System'
-});
+// Default: Wir deployen in diesem Repo häufig nur die Website-API (Netlify-Migration).
+// Die AI-Investment-Staples können optional via CDK Context aktiviert werden:
+//   npx cdk deploy --context enableAiStacks=true
+const enableAiStacks = app.node.tryGetContext('enableAiStacks') === 'true';
 
-const dataStack = new DataStack(app, `${projectName}-data-${environment}`, {
-  env,
-  description: 'Data storage for AI Investment System',
-  kmsKey: securityStack.kmsKey
-});
+if (enableAiStacks) {
+  // Create stacks
+  const securityStack = new SecurityStack(app, `${projectName}-security-${environment}`, {
+    env,
+    description: 'Security and KMS keys for AI Investment System'
+  });
 
-const authStack = new AuthStack(app, `${projectName}-auth-${environment}`, {
-  env,
-  description: 'Authentication and authorization for AI Investment System'
-});
+  const dataStack = new DataStack(app, `${projectName}-data-${environment}`, {
+    env,
+    description: 'Data storage for AI Investment System',
+    kmsKey: securityStack.kmsKey
+  });
+
+  const authStack = new AuthStack(app, `${projectName}-auth-${environment}`, {
+    env,
+    description: 'Authentication and authorization for AI Investment System'
+  });
 
 // ComputeStack temporär auskommentiert wegen fehlendem Asset (nicht Teil der Website-Migration)
 // const computeStack = new ComputeStack(app, `${projectName}-compute-${environment}`, {
@@ -47,69 +53,64 @@ const authStack = new AuthStack(app, `${projectName}-auth-${environment}`, {
 //   authStack,
 //   kmsKey: securityStack.kmsKey
 // });
-const computeStack = null; // Temporär deaktiviert
+  const computeStack: ComputeStack | null = null; // Temporär deaktiviert
 
-const apiStack = new ApiStack(app, `${projectName}-api-${environment}`, {
-  env,
-  description: 'API Gateway for AI Investment System',
-  computeStack: null, // Temporär deaktiviert
-  authStack
-});
+  // Diese Stacks hängen an ComputeStack. Wenn ComputeStack deaktiviert ist, dürfen wir sie nicht instanziieren.
+  let apiStack: ApiStack | null = null;
+  let observabilityStack: ObservabilityStack | null = null;
 
-const observabilityStack = new ObservabilityStack(app, `${projectName}-observability-${environment}`, {
-  env,
-  description: 'Monitoring and observability for AI Investment System',
-  computeStack: null, // Temporär deaktiviert
-  apiStack
-});
+  if (computeStack) {
+    apiStack = new ApiStack(app, `${projectName}-api-${environment}`, {
+      env,
+      description: 'API Gateway for AI Investment System',
+      computeStack,
+      authStack
+    });
 
-// Add dependencies
-dataStack.addDependency(securityStack);
-// computeStack.addDependency(dataStack);
-// computeStack.addDependency(authStack);
-// computeStack.addDependency(securityStack);
-// apiStack.addDependency(computeStack);
-apiStack.addDependency(authStack);
-// observabilityStack.addDependency(computeStack);
-observabilityStack.addDependency(apiStack);
+    observabilityStack = new ObservabilityStack(app, `${projectName}-observability-${environment}`, {
+      env,
+      description: 'Monitoring and observability for AI Investment System',
+      computeStack,
+      apiStack
+    });
+  }
 
-// Outputs
-new cdk.CfnOutput(apiStack, 'ApiGatewayUrl', {
-  value: apiStack.apiGateway.url,
-  description: 'API Gateway URL'
-});
+  // Add dependencies
+  dataStack.addDependency(securityStack);
+  // computeStack.addDependency(dataStack);
+  // computeStack.addDependency(authStack);
+  // computeStack.addDependency(securityStack);
+  // apiStack.addDependency(computeStack);
+  if (apiStack) {
+    apiStack.addDependency(authStack);
+  }
+  // observabilityStack.addDependency(computeStack);
+  if (observabilityStack && apiStack) {
+    observabilityStack.addDependency(apiStack);
+  }
 
-// WebSocket Stack für Echtzeit-Multiplayer-Spiele
-const webSocketStack = new WebSocketStack(app, `${projectName}-websocket-${environment}`, {
-  env,
-  environment,
-  description: 'WebSocket API für Multiplayer-Spiele'
-});
+  // Outputs (diese Outputs existieren bereits in den Stacks selbst; hier nur bei Bedarf ergänzen)
+  if (apiStack) {
+    new cdk.CfnOutput(apiStack, 'ApiGatewayUrl', {
+      value: apiStack.apiGateway.url,
+      description: 'API Gateway URL'
+    });
+  }
 
-new cdk.CfnOutput(dataStack, 'DynamoDbTableName', {
-  value: dataStack.signalsTable.tableName,
-  description: 'DynamoDB Signals Table Name'
-});
+  // WebSocket Stack für Echtzeit-Multiplayer-Spiele
+  new WebSocketStack(app, `${projectName}-websocket-${environment}`, {
+    env,
+    environment,
+    description: 'WebSocket API für Multiplayer-Spiele'
+  });
 
-new cdk.CfnOutput(dataStack, 'S3BucketName', {
-  value: dataStack.rawDataBucket.bucketName,
-  description: 'S3 Raw Data Bucket Name'
-});
-
-new cdk.CfnOutput(authStack, 'UserPoolId', {
-  value: authStack.userPool.userPoolId,
-  description: 'Cognito User Pool ID'
-});
-
-new cdk.CfnOutput(authStack, 'UserPoolClientId', {
-  value: authStack.userPoolClient.userPoolClientId,
-  description: 'Cognito User Pool Client ID'
-});
-
-new cdk.CfnOutput(observabilityStack, 'DashboardUrl', {
-  value: `https://console.aws.amazon.com/cloudwatch/home?region=${env.region}#dashboards:name=${observabilityStack.dashboard.dashboardName}`,
-  description: 'CloudWatch Dashboard URL'
-});
+  if (observabilityStack) {
+    new cdk.CfnOutput(observabilityStack, 'DashboardUrl', {
+      value: `https://console.aws.amazon.com/cloudwatch/home?region=${env.region}#dashboards:name=${observabilityStack.dashboard.dashboardName}`,
+      description: 'CloudWatch Dashboard URL'
+    });
+  }
+}
 
 // ========================================
 // WEBSITE API STACK (Netlify Migration)

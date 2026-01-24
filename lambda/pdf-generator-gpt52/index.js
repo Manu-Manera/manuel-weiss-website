@@ -139,6 +139,7 @@ exports.handler = async (event) => {
         };
     }
 
+    let browser = null;
     try {
         // Parse Request Body
         let body;
@@ -212,7 +213,7 @@ exports.handler = async (event) => {
         console.log('📄 Final HTML length:', finalHTML.length);
 
         // Launch Puppeteer with Chromium
-        const browser = await puppeteer.launch({
+        browser = await puppeteer.launch({
             args: chromium.args,
             defaultViewport: chromium.defaultViewport,
             executablePath: await chromium.executablePath(),
@@ -256,6 +257,7 @@ exports.handler = async (event) => {
         const pdf = await page.pdf(pdfOptions);
 
         await browser.close();
+        browser = null;
 
         console.log('✅ PDF generated successfully, size:', pdf.length, 'bytes');
 
@@ -283,5 +285,15 @@ exports.handler = async (event) => {
                 stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
             })
         };
+    } finally {
+        // Wichtig: Chromium immer schließen, sonst kann die Lambda-Execution "vergiften"
+        // und nachfolgende Requests über OOM/Timeout in Gateway-Errors laufen (dann ohne CORS).
+        if (browser) {
+            try {
+                await browser.close();
+            } catch (e) {
+                console.warn('⚠️ Konnte Chromium nicht sauber schließen:', e && e.message ? e.message : e);
+            }
+        }
     }
 };
