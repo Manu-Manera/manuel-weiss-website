@@ -2721,19 +2721,42 @@
                     }
                 }
                 
-                // Timeout setzen
+                // Timeout setzen (nur für API-Video, nicht für Fallback)
                 videoLoadTimeout = setTimeout(() => {
-                    console.warn('Video-Lade-Timeout erreicht (10s), verstecke Video');
-                    hideVideo();
+                    console.warn('Video-Lade-Timeout erreicht (10s)');
+                    // Verstecke nur wenn es ein API-Video war, nicht bei Fallback
+                    const currentSrc = sourceElement?.src || '';
+                    if (currentSrc && !currentSrc.includes('media/hero-manuel.mp4')) {
+                        console.warn('API-Video konnte nicht geladen werden, versuche Fallback');
+                        // Versuche Fallback-Video
+                        if (sourceElement) {
+                            sourceElement.src = 'media/hero-manuel.mp4';
+                            if (videoElement) {
+                                videoElement.load();
+                            }
+                        }
+                    }
                 }, 10000);
                 
                 try {
                     const apiUrl = window.getApiUrl ? window.getApiUrl('HERO_VIDEO_SETTINGS') : '/.netlify/functions/hero-video-settings';
-                    const response = await fetch(apiUrl);
+                    console.log('📡 Lade Hero-Video-URL von:', apiUrl);
+                    
+                    let response;
+                    try {
+                        response = await fetch(apiUrl);
+                    } catch (fetchError) {
+                        console.warn('⚠️ API nicht erreichbar, verwende Fallback-Video:', fetchError);
+                        throw new Error('API nicht erreichbar');
+                    }
+                    
                     if (!response.ok) {
+                        console.warn(`⚠️ API-Fehler ${response.status}, verwende Fallback-Video`);
                         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                     }
+                    
                     const data = await response.json();
+                    console.log('📦 API Response:', data);
                     
                     if (data.videoUrl && data.videoUrl.trim() !== '' && videoElement && sourceElement) {
                         console.log('Video-URL gefunden:', data.videoUrl);
@@ -2791,11 +2814,26 @@
                             videoElement.addEventListener('canplay', onCanPlay, { once: true });
                         }
                         
-                        // Falls Video nicht geladen werden kann, verstecke es
+                        // Falls Video nicht geladen werden kann, versuche Fallback
                         const onError = () => {
                             clearTimeout(videoLoadTimeout);
-                            console.warn('❌ Video konnte nicht geladen werden, verstecke Video-Wrapper');
-                            hideVideo();
+                            const currentSrc = sourceElement?.src || '';
+                            console.warn('❌ Video konnte nicht geladen werden:', currentSrc);
+                            
+                            // Wenn es nicht bereits das Fallback-Video ist, versuche Fallback
+                            if (!currentSrc.includes('media/hero-manuel.mp4')) {
+                                console.log('🔄 Versuche Fallback-Video');
+                                if (sourceElement) {
+                                    sourceElement.src = 'media/hero-manuel.mp4';
+                                    if (videoElement) {
+                                        videoElement.load();
+                                    }
+                                }
+                            } else {
+                                // Auch Fallback funktioniert nicht - verstecke Video
+                                console.warn('❌ Auch Fallback-Video konnte nicht geladen werden');
+                                hideVideo();
+                            }
                             videoElement.removeEventListener('error', onError);
                         };
                         
@@ -2811,15 +2849,27 @@
                         
                     } else {
                         clearTimeout(videoLoadTimeout);
-                        // Kein Video: Verstecke Video-Wrapper (Hintergrund bleibt sichtbar)
-                        console.log('Keine Video-URL gesetzt, verstecke Video-Wrapper');
-                        hideVideo();
+                        // Kein Video von API: Verwende Fallback-Video
+                        console.log('Keine Video-URL von API, verwende Fallback-Video');
+                        if (videoWrapper) {
+                            videoWrapper.style.display = 'block'; // Zeige Video-Wrapper für Fallback
+                        }
+                        if (videoElement) {
+                            videoElement.preload = 'auto';
+                            videoElement.load(); // Lade Fallback-Video
+                        }
                     }
                 } catch (error) {
                     clearTimeout(videoLoadTimeout);
-                    console.warn('Fehler beim Laden der Hero-Video-URL:', error);
-                    // Bei Fehler: Verstecke Video-Wrapper (Hintergrund bleibt sichtbar)
-                    hideVideo();
+                    console.warn('Fehler beim Laden der Hero-Video-URL, verwende Fallback-Video:', error);
+                    // Bei Fehler: Verwende Fallback-Video
+                    if (videoWrapper) {
+                        videoWrapper.style.display = 'block'; // Zeige Video-Wrapper für Fallback
+                    }
+                    if (videoElement) {
+                        videoElement.preload = 'auto';
+                        videoElement.load(); // Lade Fallback-Video
+                    }
                 }
             }
             
