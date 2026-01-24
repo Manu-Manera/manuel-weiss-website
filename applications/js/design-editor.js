@@ -4147,7 +4147,18 @@ class DesignEditor {
                 });
             }, 500);
             
-            this.showNotification(`PDF exportiert! (${(blob.size / 1024).toFixed(0)} KB)`, 'success');
+            // Manche Browser/Implementierungen liefern einen Blob ohne zuverlässiges `size`.
+            // Daher Größe robust bestimmen, um "NaN KB" zu vermeiden.
+            let sizeBytes = blob && typeof blob.size === 'number' && Number.isFinite(blob.size) ? blob.size : null;
+            if (sizeBytes == null) {
+                try {
+                    sizeBytes = (await blob.arrayBuffer()).byteLength;
+                } catch (e) {
+                    sizeBytes = null;
+                }
+            }
+            const sizeKbLabel = sizeBytes != null ? `${Math.max(1, Math.round(sizeBytes / 1024))} KB` : 'unbekannte Größe';
+            this.showNotification(`PDF exportiert! (${sizeKbLabel})`, 'success');
         } catch (error) {
             console.error('❌ PDF Export Fehler:', error);
             console.error('❌ Error Stack:', error.stack);
@@ -4219,8 +4230,10 @@ class DesignEditor {
             existingModal.remove();
         }
         
-        // Erstelle Blob URL für PDF
-        const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+        // Erstelle Blob URL für PDF (pdfBytes kann ArrayBuffer/Uint8Array/Blob sein)
+        const blob = (pdfBytes instanceof Blob)
+            ? pdfBytes
+            : new Blob([pdfBytes], { type: 'application/pdf' });
         const pdfUrl = URL.createObjectURL(blob);
         
         const resumeData = this.getResumeData();
@@ -4469,6 +4482,9 @@ class DesignEditor {
             innerHTMLLength: preview.innerHTML.trim().length,
             element: preview
         });
+
+        // WICHTIG: Stabilisiere DOM/Fonts/Images vor dem Clonen (Race-Conditions vermeiden)
+        await this.freezePreviewForPDF(preview);
         
         const { format = 'A4', addPageNumbers = false } = options;
         
@@ -4476,6 +4492,54 @@ class DesignEditor {
         return await this.generateResumePDFWithPuppeteer(preview, { format, addPageNumbers });
     }
     
+    /**
+     * Stabilisiert die Preview, damit Export deterministisch wird:
+     * - wartet auf Layout-Settling (2× rAF)
+     * - wartet kurz auf Fonts (document.fonts.ready)
+     * - wartet auf Images (decode/load), damit Layout/Zeilenumbrüche konsistent sind
+     */
+    async freezePreviewForPDF(preview, options = {}) {
+        const timeoutMs = Number(options.timeoutMs || 4000);
+        const timeout = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+        const withTimeout = async (promise, ms) => Promise.race([promise, timeout(ms)]);
+        const raf = () => new Promise(resolve => requestAnimationFrame(() => resolve()));
+
+        try {
+            // 1) Layout settle
+            await raf();
+            await raf();
+
+            // 2) Fonts (best-effort)
+            if (document.fonts && document.fonts.ready) {
+                await withTimeout(document.fonts.ready, timeoutMs);
+            }
+
+            // 3) Images (best-effort)
+            const images = Array.from(preview.querySelectorAll('img'));
+            const pending = images.filter(img => !(img.complete && img.naturalWidth > 0));
+
+            if (pending.length > 0) {
+                const waitImage = (img) => new Promise(resolve => {
+                    const done = () => resolve();
+                    // decode() ist genauer, aber nicht überall zuverlässig
+                    if (typeof img.decode === 'function') {
+                        img.decode().then(done).catch(() => {
+                            img.addEventListener('load', done, { once: true });
+                            img.addEventListener('error', done, { once: true });
+                        });
+                    } else {
+                        img.addEventListener('load', done, { once: true });
+                        img.addEventListener('error', done, { once: true });
+                    }
+                });
+
+                await withTimeout(Promise.allSettled(pending.map(waitImage)), timeoutMs);
+            }
+        } catch (e) {
+            console.warn('⚠️ freezePreviewForPDF() konnte Preview nicht vollständig stabilisieren:', e);
+        }
+    }
+
     async generateResumePDFWithPuppeteer(preview, options) {
         const { format = 'A4', addPageNumbers = false } = options;
         
@@ -4488,10 +4552,22 @@ class DesignEditor {
         
         // Klone das Preview-Element
         const clone = preview.cloneNode(true);
+
+        // WICHTIG: Canvas-Inhalte (z.B. Unterschrift) in Clone übernehmen
+        this.replaceCanvasesWithImages(preview, clone);
+
+        // WICHTIG: Nach Möglichkeit Bilder in den Clone einbetten (data: URLs), damit Lambda sie sicher rendern kann
+        await this.inlineImagesAsDataUrls(clone);
         
         // WICHTIG: Extrahiere ALLE computed styles vom Original und wende sie auf den Clone an
         // Das ist der Schlüssel, damit das Design vollständig übernommen wird
-        this.copyComputedStylesToClone(preview, clone);
+        // NOTE: In einigen Versionen ist `copyComputedStylesToClone` nicht implementiert.
+        // Für Stabilität: nur aufrufen, wenn vorhanden.
+        if (typeof this.copyComputedStylesToClone === 'function') {
+            this.copyComputedStylesToClone(preview, clone);
+        } else {
+            console.warn('⚠️ copyComputedStylesToClone() fehlt – fahre ohne computed-style Copy fort');
+        }
         
         // WICHTIG: Ersetze ALLE CSS-Variablen im geklonten HTML durch tatsächliche Werte
         this.replaceCSSVariablesInElement(clone);
@@ -4531,52 +4607,69 @@ class DesignEditor {
         console.log('📡 Sende HTML direkt an PDF-Generator Lambda (ohne GPT):', apiUrl);
         console.log('📦 HTML Content Preview:', htmlContent.substring(0, 200) + '...');
         
-        // AbortController für Timeout (25 Sekunden - Lambda sollte schnell sein ohne GPT)
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 25000);
-        
-        try {
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {})
-                },
-                signal: controller.signal,
-                body: JSON.stringify({
-                    html: htmlContent, // Vollständiges HTML-Dokument
-                    options: {
-                        format: format,
-                        printBackground: true,
-                        preferCSSPageSize: false,
-                        margin: {
-                            top: '0mm', // Margins sind im HTML als Padding
-                            right: '0mm',
-                            bottom: '0mm',
-                            left: '0mm'
-                        },
-                        displayHeaderFooter: addPageNumbers,
-                        footerTemplate: addPageNumbers ? `
-                            <div style="font-size: 10px; text-align: center; width: 100%; padding: 0 20mm;">
-                                <span class="pageNumber"></span> / <span class="totalPages"></span>
-                            </div>
-                        ` : ''
-                    }
-                })
-            });
-            
-            clearTimeout(timeoutId);
-            
-            if (!response.ok) {
-                const errorText = await response.text();
-                let errorData;
-                try {
-                    errorData = JSON.parse(errorText);
-                } catch (e) {
-                    errorData = { error: errorText };
-                }
-                throw new Error(`PDF-Generierung fehlgeschlagen: ${errorData.error || errorData.message || 'Unbekannter Fehler'}`);
+        const headers = {
+            'Content-Type': 'application/json',
+            ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {})
+        };
+
+        const body = JSON.stringify({
+            html: htmlContent, // Vollständiges HTML-Dokument
+            options: {
+                format: format,
+                printBackground: true,
+                preferCSSPageSize: false,
+                // NOTE: Die Lambda `pdf-generator` erzwingt Puppeteer-Margins = 0mm.
+                // Die echten Ränder kommen deshalb aus dem HTML-Padding (mm) der `.design-resume-preview`.
+                margin: { top: '0mm', right: '0mm', bottom: '0mm', left: '0mm' },
+                displayHeaderFooter: addPageNumbers,
+                footerTemplate: addPageNumbers ? `
+                    <div style="font-size: 10px; text-align: center; width: 100%; padding: 0 20mm;">
+                        <span class="pageNumber"></span> / <span class="totalPages"></span>
+                    </div>
+                ` : ''
             }
+        });
+
+        const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+        const maxAttempts = 3;
+        let lastError = null;
+
+        for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+            // AbortController für Timeout (25 Sekunden - Lambda sollte schnell sein ohne GPT)
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 25000);
+
+            try {
+                console.log(`📡 PDF-Export Attempt ${attempt}/${maxAttempts}`);
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers,
+                    signal: controller.signal,
+                    body
+                });
+
+                clearTimeout(timeoutId);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    let errorData;
+                    try {
+                        errorData = JSON.parse(errorText);
+                    } catch (e) {
+                        errorData = { error: errorText };
+                    }
+
+                    const message = errorData.error || errorData.message || `HTTP ${response.status}`;
+                    const retryableStatus = response.status >= 500 || response.status === 429;
+
+                    if (attempt < maxAttempts && retryableStatus) {
+                        console.warn(`⚠️ PDF-Generator HTTP ${response.status} – retry:`, message);
+                        await delay(500 * attempt + 250);
+                        continue;
+                    }
+
+                    throw new Error(`PDF-Generierung fehlgeschlagen: ${message}`);
+                }
             
             // API Gateway gibt Base64 direkt im Body zurück (wegen isBase64Encoded: true)
             const contentType = response.headers.get('Content-Type');
@@ -4669,13 +4762,106 @@ class DesignEditor {
                 });
                 throw new Error(`PDF-Generierung fehlgeschlagen: Konnte Response nicht dekodieren. ${base64Error.message}`);
             }
-        } catch (error) {
-            clearTimeout(timeoutId);
-            if (error.name === 'AbortError') {
-                console.error('❌ PDF Export Timeout: Die Anfrage dauerte länger als 25 Sekunden');
-                throw new Error('PDF-Generierung dauerte zu lange. Bitte versuchen Sie es erneut.');
+            } catch (error) {
+                clearTimeout(timeoutId);
+                lastError = error;
+
+                const isAbort = error && error.name === 'AbortError';
+                const isNetworkOrCors = error instanceof TypeError || /Failed to fetch/i.test(String(error && error.message ? error.message : error));
+
+                // In der Praxis: "CORS blocked" ist oft ein Gateway-Error ohne CORS-Header (502/504/413).
+                if (attempt < maxAttempts && (isAbort || isNetworkOrCors)) {
+                    console.warn('⚠️ PDF-Export Netz/Timeout Problem – retry:', error);
+                    await delay(750 * attempt);
+                    continue;
+                }
+
+                if (isAbort) {
+                    console.error('❌ PDF Export Timeout: Die Anfrage dauerte länger als 25 Sekunden');
+                    throw new Error('PDF-Generierung dauerte zu lange. Bitte versuchen Sie es erneut.');
+                }
+
+                if (isNetworkOrCors) {
+                    this.showNotification('PDF-Generator nicht erreichbar (Netzwerk/CORS). Bitte erneut versuchen.', 'error');
+                }
+
+                throw error;
             }
-            throw error;
+        }
+
+        throw lastError || new Error('PDF-Export fehlgeschlagen (unbekannt)');
+    }
+
+    /**
+     * Ersetzt Canvas-Elemente im Clone durch <img>, basierend auf den Canvas-Inhalten im Original-DOM.
+     * Dadurch werden z.B. gezeichnete Unterschriften im PDF sichtbar (Canvas-Inhalte werden beim cloneNode nicht übernommen).
+     */
+    replaceCanvasesWithImages(sourceRoot, targetRoot) {
+        try {
+            const sourceCanvases = Array.from(sourceRoot.querySelectorAll('canvas'));
+            const targetCanvases = Array.from(targetRoot.querySelectorAll('canvas'));
+            if (sourceCanvases.length === 0 || targetCanvases.length === 0) return;
+
+            const len = Math.min(sourceCanvases.length, targetCanvases.length);
+            for (let i = 0; i < len; i++) {
+                const srcCanvas = sourceCanvases[i];
+                const tgtCanvas = targetCanvases[i];
+                let dataUrl = null;
+                try {
+                    dataUrl = srcCanvas.toDataURL('image/png');
+                } catch (e) {
+                    continue;
+                }
+                if (!dataUrl || !dataUrl.startsWith('data:image/')) continue;
+
+                const img = document.createElement('img');
+                img.src = dataUrl;
+                img.alt = 'Canvas Export';
+                img.width = srcCanvas.width || undefined;
+                img.height = srcCanvas.height || undefined;
+                // Übernehme Layout-relevante Styles/Attribute
+                img.style.cssText = tgtCanvas.style.cssText || '';
+                if (tgtCanvas.className) img.className = tgtCanvas.className;
+                if (tgtCanvas.id) img.id = tgtCanvas.id;
+
+                tgtCanvas.replaceWith(img);
+            }
+        } catch (e) {
+            console.warn('⚠️ replaceCanvasesWithImages() fehlgeschlagen:', e);
+        }
+    }
+
+    /**
+     * Versucht, <img>-Quellen im Element als data: URLs einzubetten (best-effort).
+     * Das erhöht die Erfolgsquote in Puppeteer/Lambda, insbesondere bei blob:-URLs oder geschützten Ressourcen.
+     */
+    async inlineImagesAsDataUrls(root, options = {}) {
+        const maxImages = Number(options.maxImages || 30);
+        const imgs = Array.from(root.querySelectorAll('img')).slice(0, maxImages);
+
+        const blobToDataUrl = (blob) => new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(String(reader.result));
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
+
+        for (const img of imgs) {
+            try {
+                const src = (img.getAttribute('src') || '').trim();
+                if (!src || src.startsWith('data:')) continue;
+
+                // Best-effort fetch; wenn CORS blockt, lassen wir es so stehen.
+                const response = await fetch(src, { mode: 'cors', credentials: 'omit' });
+                if (!response.ok) continue;
+                const blob = await response.blob();
+                const dataUrl = await blobToDataUrl(blob);
+                if (dataUrl && dataUrl.startsWith('data:image/')) {
+                    img.setAttribute('src', dataUrl);
+                }
+            } catch (e) {
+                // Ignorieren – nicht jedes Bild ist einbettbar
+            }
         }
     }
     
@@ -5023,7 +5209,6 @@ class DesignEditor {
             throw error; // Andere Fehler weiterwerfen
         }
         */ // ENDE LEGACY CODE
-    }
     
     applyDesignSettingsToElement(element, isPDFExport = false) {
         // Wende alle Design-Editor-Settings direkt auf Elemente an (ersetzt CSS-Variablen)
@@ -5050,10 +5235,15 @@ class DesignEditor {
             element.style.setProperty('line-height', lineHeight, 'important');
             element.style.setProperty('color', textColor, 'important');
             element.style.setProperty('background-color', backgroundColor, 'important');
-            // WICHTIG: Für PDF-Export KEIN Padding - Puppeteer handhabt Margins!
+            // WICHTIG (PDF): Die Lambda `pdf-generator` erzwingt Puppeteer-Margins = 0mm.
+            // Daher müssen die im Design-Editor eingestellten Ränder als mm-Padding
+            // am Hauptcontainer umgesetzt werden (single source of truth).
             if (isPDFExport) {
-                element.style.setProperty('padding', '0', 'important');
+                element.style.setProperty('padding', `${marginTop}mm ${marginRight}mm ${marginBottom}mm ${marginLeft}mm`, 'important');
                 element.style.setProperty('margin', '0', 'important');
+                // Export: Zoom/Transforms dürfen nicht in den PDF-Export leaken
+                element.style.setProperty('transform', 'none', 'important');
+                element.style.setProperty('transform-origin', 'top left', 'important');
             } else {
                 element.style.padding = `${marginTop}mm ${marginRight}mm ${marginBottom}mm ${marginLeft}mm`;
             }
@@ -5142,7 +5332,9 @@ class DesignEditor {
             'Source Code Pro': 'Source+Code+Pro:wght@400;500;600'
         };
         
-        const fontKey = fontFamily.replace(/'/g, '').replace(/"/g, '');
+        // Font-Family kann Werte wie "'Inter', sans-serif" enthalten -> wir nehmen den ersten Familiennamen
+        const primary = String(fontFamily || '').split(',')[0].trim().replace(/'/g, '').replace(/"/g, '');
+        const fontKey = primary;
         if (googleFonts[fontKey]) {
             return `https://fonts.googleapis.com/css2?family=${googleFonts[fontKey]}&display=swap`;
         }
@@ -5186,6 +5378,11 @@ class DesignEditor {
         const marginBottom = this.settings.marginBottom || 20;
         const marginLeft = this.settings.marginLeft || 20;
         
+        const useFlexTwoColumns = !!(this.settings.twoColumnLayout && this.settings.twoColumnLayout !== 'none');
+        const useGridTwoColumns = Number(this.settings.columns) === 2;
+        const gridLeftWidth = this.settings.leftColumnWidth || 35;
+        const gridRightWidth = this.settings.rightColumnWidth || 65;
+
         const designStyles = `
             .design-resume-preview {
                 width: 210mm !important;
@@ -5205,18 +5402,20 @@ class DesignEditor {
             .resume-preview-columns {
                 margin-left: 0 !important;
                 margin-right: 0 !important;
-                display: ${this.settings.twoColumnLayout && this.settings.twoColumnLayout !== 'none' ? 'flex' : 'block'} !important;
+                /* Wichtig: NICHT pauschal auf block setzen – sonst fällt 2-Spalten-Layout im Export zusammen */
+                display: ${useFlexTwoColumns ? 'flex' : (useGridTwoColumns ? 'grid' : 'block')} !important;
+                ${useGridTwoColumns ? `grid-template-columns: ${gridLeftWidth}% ${gridRightWidth}% !important;` : ''}
                 gap: ${this.settings.columnGap || 24}px !important;
             }
             
             .resume-preview-column-left {
                 padding-left: 0 !important; /* Puppeteer Margins handhaben das */
-                width: ${this.settings.twoColumnLayout && this.settings.twoColumnLayout !== 'none' ? (this.settings.columnWidth || 50) + '%' : '100%'} !important;
+                width: ${useFlexTwoColumns ? (this.settings.columnWidth || 50) + '%' : 'auto'} !important;
             }
             
             .resume-preview-column-right {
                 padding-right: 0 !important; /* Puppeteer Margins handhaben das */
-                width: ${this.settings.twoColumnLayout && this.settings.twoColumnLayout !== 'none' ? (100 - (this.settings.columnWidth || 50)) + '%' : '100%'} !important;
+                width: ${useFlexTwoColumns ? (100 - (this.settings.columnWidth || 50)) + '%' : 'auto'} !important;
             }
             
             .resume-preview-header {
@@ -5301,19 +5500,32 @@ class DesignEditor {
         const marginRight = this.settings.marginRight || 20;
         const marginBottom = this.settings.marginBottom || 20;
         const marginLeft = this.settings.marginLeft || 20;
+
+        // Debug/Tracing: Settings-Hash für reproduzierbare Exporte
+        const settingsSnapshot = {
+            ...this.settings,
+            marginTop,
+            marginRight,
+            marginBottom,
+            marginLeft
+        };
+        const settingsHash = this.simpleHash(JSON.stringify(settingsSnapshot));
         
-        // Stelle sicher, dass Padding auf dem Hauptcontainer gesetzt ist (für PDF-Export)
-        // WICHTIG: Das Element ist bereits ein Clone, daher können wir es direkt modifizieren
+        // Stelle sicher, dass das Element die PDF-Ränder als mm-Padding trägt.
+        // WICHTIG: Die Lambda setzt Puppeteer-Margins auf 0mm – daher MUSS das HTML-Padding (mm)
+        // der einzige Source-of-Truth für Ränder sein.
         const mainContainer = element.classList.contains('design-resume-preview') 
             ? element 
             : element.querySelector('.design-resume-preview') || element;
         
-        // Setze Padding direkt auf dem Container (wird im CSS nochmal gesetzt, aber hier für Sicherheit)
         if (mainContainer) {
             mainContainer.style.setProperty('padding', `${marginTop}mm ${marginRight}mm ${marginBottom}mm ${marginLeft}mm`, 'important');
             mainContainer.style.setProperty('box-sizing', 'border-box', 'important');
-            mainContainer.style.setProperty('width', `calc(210mm - ${marginLeft}mm - ${marginRight}mm)`, 'important');
+            mainContainer.style.setProperty('width', '210mm', 'important');
             mainContainer.style.setProperty('margin', '0', 'important');
+            // Export: Zoom/Transforms dürfen nicht in den PDF-Export leaken
+            mainContainer.style.setProperty('transform', 'none', 'important');
+            mainContainer.style.setProperty('transform-origin', 'top left', 'important');
         }
         
         // Extrahiere alle CSS-Styles (WICHTIG: Vor dem HTML-Generieren, damit alle Styles verfügbar sind)
@@ -5322,18 +5534,18 @@ class DesignEditor {
         // Extrahiere auch alle inline Styles aus dem Element und seinen Kindern
         const inlineStyles = this.extractInlineStyles(element);
         
-        // Google Fonts Link (falls Inter verwendet wird)
+        // Google Fonts Link (robust nach gewählter Schrift)
         const fontFamily = this.settings.fontFamily || "'Inter', sans-serif";
-        const googleFontsLink = fontFamily.includes('Inter') 
-            ? '<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">'
-            : '';
+        const googleFontsUrl = this.getGoogleFontsUrl(fontFamily);
+        const googleFontsLink = googleFontsUrl ? `<link href="${googleFontsUrl}" rel="stylesheet">` : '';
         
         // Generiere vollständiges HTML5-Dokument
         const html = `<!DOCTYPE html>
+<!-- exportSource:designEditor exportVersion:2026-01-24i settingsHash:${settingsHash} -->
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Lebenslauf PDF Export</title>
     ${googleFontsLink}
     <style>
@@ -5351,24 +5563,33 @@ class DesignEditor {
             font-size: ${this.settings.fontSize || 11}pt;
             line-height: ${this.settings.lineHeight || 1.5};
             color: ${this.settings.textColor || '#1e293b'};
-            background: ${this.settings.backgroundColor || '#ffffff'};
+            /* PDF: Seitenhintergrund IMMER weiß (verhindert hellblaue Randflächen im Viewer/PDF) */
+            background: #ffffff !important;
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
         }
         
         body {
             width: 210mm;
-            min-height: 297mm;
         }
         
         .design-resume-preview {
-            width: calc(210mm - ${marginLeft}mm - ${marginRight}mm) !important;
+            width: 210mm !important;
+            min-width: 210mm !important;
+            max-width: 210mm !important;
             margin: 0 !important;
             padding: ${marginTop}mm ${marginRight}mm ${marginBottom}mm ${marginLeft}mm !important;
             box-sizing: border-box !important;
-            background: ${this.settings.backgroundColor || '#ffffff'} !important;
+            /* PDF: Container-Hintergrund weiß, damit keine farbigen "Ränder" entstehen */
+            background: #ffffff !important;
+            min-height: auto !important;
             font-family: ${fontFamily} !important;
             font-size: ${this.settings.fontSize || 11}pt !important;
             line-height: ${this.settings.lineHeight || 1.5} !important;
             color: ${this.settings.textColor || '#1e293b'} !important;
+            transform: none !important;
+            transform-origin: top left !important;
+            zoom: 1 !important;
         }
         
         /* Print-Styles */
@@ -5385,10 +5606,12 @@ class DesignEditor {
             }
             
             .design-resume-preview {
-                width: calc(210mm - ${marginLeft}mm - ${marginRight}mm) !important;
+                width: 210mm !important;
                 margin: 0 !important;
                 padding: ${marginTop}mm ${marginRight}mm ${marginBottom}mm ${marginLeft}mm !important;
                 box-shadow: none !important;
+                transform: none !important;
+                zoom: 1 !important;
             }
         }
         
@@ -5397,6 +5620,60 @@ class DesignEditor {
         
         /* Inline Styles */
         ${inlineStyles}
+
+        /* Final export overrides (MUSS als letztes kommen, damit nichts das Padding überschreibt) */
+        .design-resume-preview {
+            width: 210mm !important;
+            min-width: 210mm !important;
+            max-width: 210mm !important;
+            margin: 0 !important;
+            padding: ${marginTop}mm ${marginRight}mm ${marginBottom}mm ${marginLeft}mm !important;
+            box-sizing: border-box !important;
+            box-shadow: none !important;
+            background: #ffffff !important;
+            /* Pagination: kein fixes Seiten-Minimum erzwingen (kann zu frühen Umbrüchen/Leerraum führen) */
+            min-height: auto !important;
+            transform: none !important;
+            transform-origin: top left !important;
+            zoom: 1 !important;
+        }
+
+        /* Export-only: Preview-Layout-Abstände neutralisieren (keine zusätzlichen px-Ränder) */
+        .resume-preview-columns {
+            margin: 0 !important;
+            margin-top: 0 !important;
+        }
+
+        .resume-preview-column {
+            padding: 0 !important;
+            /* PDF/Pagination: Flex-Column-Wrapper verhindern oft saubere Seitenumbrüche → block für Print */
+            display: block !important;
+            flex-direction: initial !important;
+            gap: 0 !important;
+        }
+
+        .resume-preview-column-left,
+        .resume-preview-column-right {
+            margin: 0 !important;
+            padding: 0 !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+
+        /* Export-only: Seitenumbrüche nicht unnötig blockieren */
+        .design-resume-preview,
+        .design-resume-preview * {
+            break-inside: auto !important;
+            page-break-inside: auto !important;
+            overflow: visible !important;
+            transform: none !important;
+        }
+
+        /* Pagination: Chrome kann durch widows/orphans unnötig viel Leerraum lassen */
+        p, li {
+            widows: 1 !important;
+            orphans: 1 !important;
+        }
     </style>
 </head>
 <body>
@@ -5410,10 +5687,25 @@ class DesignEditor {
             inlineStylesLength: inlineStyles.length,
             fontFamily: fontFamily,
             fontSize: this.settings.fontSize || 11,
-            margins: `${marginTop}mm ${marginRight}mm ${marginBottom}mm ${marginLeft}mm`
+            margins: `${marginTop}mm ${marginRight}mm ${marginBottom}mm ${marginLeft}mm`,
+            settingsHash,
+            googleFontsUrl: googleFontsUrl || null
         });
         
         return html;
+    }
+
+    /**
+     * Kleiner, stabiler Hash (nicht kryptografisch) für Debugging/Tracing.
+     */
+    simpleHash(input) {
+        let hash = 5381;
+        const str = String(input || '');
+        for (let i = 0; i < str.length; i++) {
+            hash = ((hash << 5) + hash) ^ str.charCodeAt(i); // djb2-xor
+        }
+        // unsigned 32-bit
+        return (hash >>> 0).toString(16);
     }
     
     extractInlineStyles(element) {
@@ -5423,15 +5715,19 @@ class DesignEditor {
         const allElements = [element, ...Array.from(element.querySelectorAll('*'))];
         
         // Wichtige CSS-Properties, die extrahiert werden sollen
+        // WICHTIG (PDF/Pagination):
+        // - KEINE width/height/min/max-*-Werte aus `getComputedStyle` übernehmen.
+        //   `getComputedStyle()` liefert hier meist Pixel-"Used Values" (auch wenn CSS auto ist).
+        //   Das führt beim PDF-Druck zu großen Leerräumen, weil Elemente als (quasi) unteilbare Blöcke
+        //   behandelt werden und der Browser früher umbricht.
         const importantProperties = [
             'color', 'background-color', 'background', 'font-family', 'font-size', 'font-weight',
             'line-height', 'text-align', 'margin', 'margin-top', 'margin-right', 'margin-bottom', 'margin-left',
             'padding', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left',
             'border', 'border-top', 'border-right', 'border-bottom', 'border-left',
-            'width', 'height', 'min-width', 'min-height', 'max-width', 'max-height',
             'display', 'flex-direction', 'justify-content', 'align-items', 'gap',
             'position', 'top', 'right', 'bottom', 'left',
-            'opacity', 'transform', 'box-shadow', 'text-shadow'
+            'opacity', 'box-shadow', 'text-shadow'
         ];
         
         allElements.forEach((el, index) => {
