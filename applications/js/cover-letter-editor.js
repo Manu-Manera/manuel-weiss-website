@@ -87,6 +87,9 @@ class CoverLetterEditor {
         // Prüfe ob ein Anschreiben zum Bearbeiten geladen werden soll
         await this.checkEditParameter();
         
+        // Initialisiere Export-Button State
+        this.updateExportButtonState();
+        
         console.log('✅ Cover Letter Editor ready');
     }
     
@@ -806,6 +809,8 @@ ${description.substring(0, 2000)}`;
         }
         
         if (exportBtn) {
+            // Initial deaktiviert - wird aktiviert wenn Anschreiben vorhanden ist
+            exportBtn.disabled = true;
             exportBtn.addEventListener('click', () => this.exportToPDF());
         }
 
@@ -825,6 +830,7 @@ ${description.substring(0, 2000)}`;
                 this.updateStats();
                 this.generatedContent = textarea.value;
                 this.updateQualityChecks();
+                this.updateExportButtonState(); // Aktualisiere Export-Button State
             });
         }
     }
@@ -1835,6 +1841,26 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
         // Apply design
         this.applyDesign();
         this.updateQualityChecks();
+        
+        // Aktiviere Export-Button wenn Content vorhanden ist
+        this.updateExportButtonState();
+    }
+    
+    updateExportButtonState() {
+        const exportBtn = document.getElementById('exportPdfBtn');
+        if (!exportBtn) return;
+        
+        const hasContent = this.generatedContent && this.generatedContent.trim() !== '';
+        const letterText = document.getElementById('letterText');
+        const hasLetterText = letterText && letterText.value && letterText.value.trim() !== '';
+        
+        exportBtn.disabled = !(hasContent || hasLetterText);
+        
+        if (exportBtn.disabled) {
+            exportBtn.title = 'Bitte zuerst ein Anschreiben generieren';
+        } else {
+            exportBtn.title = 'Anschreiben als PDF exportieren';
+        }
     }
 
     updateGreeting() {
@@ -2620,8 +2646,16 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
     }
 
     async exportToPDF() {
-        if (!this.generatedContent) {
-            this.showToast('Kein Anschreiben zum Exportieren', 'error');
+        // Prüfe Content
+        if (!this.generatedContent || this.generatedContent.trim() === '') {
+            this.showToast('Kein Anschreiben zum Exportieren. Bitte zuerst ein Anschreiben generieren.', 'error');
+            return;
+        }
+        
+        // Prüfe DOM-Element
+        const letterText = document.getElementById('letterText');
+        if (!letterText || !letterText.value || letterText.value.trim() === '') {
+            this.showToast('Anschreiben ist leer. Bitte zuerst ein Anschreiben generieren.', 'error');
             return;
         }
         
@@ -2821,9 +2855,20 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
     async generatePDFWithLambda() {
         console.log('🔄 Generiere Anschreiben-PDF mit direkter HTML-zu-PDF Konvertierung (AWS Lambda)...');
         
+        // Prüfe zuerst, ob Content vorhanden ist
+        if (!this.generatedContent || this.generatedContent.trim() === '') {
+            throw new Error('Kein Anschreiben zum Exportieren. Bitte zuerst ein Anschreiben generieren.');
+        }
+        
         let letterElement = document.getElementById('generatedLetter');
         if (!letterElement) {
-            throw new Error('Anschreiben nicht gefunden. Bitte zuerst ein Anschreiben generieren.');
+            throw new Error('Anschreiben-Container nicht gefunden. Bitte Seite neu laden.');
+        }
+        
+        // Prüfe, ob das Element tatsächlich Content hat
+        const letterText = document.getElementById('letterText');
+        if (!letterText || !letterText.value || letterText.value.trim() === '') {
+            throw new Error('Anschreiben ist leer. Bitte zuerst ein Anschreiben generieren.');
         }
         
         // Stelle sicher, dass das Element sichtbar ist (auch wenn display: none war)
