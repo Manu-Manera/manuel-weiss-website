@@ -5360,6 +5360,14 @@ class DesignEditor {
                         cssText = this.replaceCSSVariables(cssText);
                         // Ersetze auch calc() Ausdrücke mit CSS-Variablen
                         cssText = this.replaceCalcExpressions(cssText);
+                        // WICHTIG (PDF): Entferne min-height/max-height/height von .design-resume-preview,
+                        // da diese zu übermäßigem Leerraum führen können
+                        if (cssText.includes('.design-resume-preview')) {
+                            // Entferne height, min-height und max-height aus der Regel
+                            cssText = cssText.replace(/height\s*:\s*[^;]+;?/gi, '');
+                            cssText = cssText.replace(/min-height\s*:\s*[^;]+;?/gi, '');
+                            cssText = cssText.replace(/max-height\s*:\s*[^;]+;?/gi, '');
+                        }
                         styles.push(cssText);
                     } catch (e) {
                         // Ignoriere Regeln, die nicht gelesen werden können
@@ -5541,7 +5549,7 @@ class DesignEditor {
         
         // Generiere vollständiges HTML5-Dokument
         const html = `<!DOCTYPE html>
-<!-- exportSource:designEditor exportVersion:2026-01-24i settingsHash:${settingsHash} -->
+<!-- exportSource:designEditor exportVersion:2026-01-24j settingsHash:${settingsHash} -->
 <html lang="de">
 <head>
     <meta charset="UTF-8">
@@ -5642,14 +5650,13 @@ class DesignEditor {
         .resume-preview-columns {
             margin: 0 !important;
             margin-top: 0 !important;
+            margin-bottom: 0 !important;
         }
 
         .resume-preview-column {
             padding: 0 !important;
-            /* PDF/Pagination: Flex-Column-Wrapper verhindern oft saubere Seitenumbrüche → block für Print */
-            display: block !important;
-            flex-direction: initial !important;
-            gap: 0 !important;
+            margin: 0 !important;
+            /* WICHTIG: Layout wird durch .resume-preview-columns gesteuert, nicht hier */
         }
 
         .resume-preview-column-left,
