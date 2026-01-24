@@ -3,7 +3,8 @@
  * Migrated from Netlify Function
  * Speichert und lädt die aktuelle Hero-Video-URL aus DynamoDB
  * 
- * 🔒 ALLE Endpoints erfordern Authentifizierung (Admin-only)
+ * 🔓 GET: Öffentlich (für Startseite)
+ * 🔒 POST/PUT: Erfordern Authentifizierung (Admin-only)
  */
 
 const { DynamoDBClient, PutItemCommand, GetItemCommand } = require('@aws-sdk/client-dynamodb');
@@ -72,26 +73,7 @@ exports.handler = async (event) => {
     }
 
     try {
-        // 🔒 Auth ERFORDERLICH für ALLE Endpoints
-        let user;
-        try {
-            user = authUser(event);
-            if (!(await isAdmin(user.userId, user.email))) {
-                return {
-                    statusCode: 403,
-                    headers: CORS_HEADERS,
-                    body: JSON.stringify({ error: 'Admin access required' })
-                };
-            }
-        } catch (e) {
-            return {
-                statusCode: 401,
-                headers: CORS_HEADERS,
-                body: JSON.stringify({ error: 'Unauthorized', message: e.message || 'Authentication required' })
-            };
-        }
-
-        // GET: Settings laden (nur für Admin)
+        // 🔓 GET: Öffentlich (für Startseite - keine Auth erforderlich)
         if (event.httpMethod === 'GET') {
             try {
                 const result = await dynamoDB.send(new GetItemCommand({
@@ -130,8 +112,27 @@ exports.handler = async (event) => {
             }
         }
 
-        // POST/PUT: Settings speichern (nur für Admin)
+        // 🔒 POST/PUT: Settings speichern (erfordern Auth - nur für Admin)
         if (event.httpMethod === 'POST' || event.httpMethod === 'PUT') {
+            // Auth-Prüfung für POST/PUT
+            let user;
+            try {
+                user = authUser(event);
+                if (!(await isAdmin(user.userId, user.email))) {
+                    return {
+                        statusCode: 403,
+                        headers: CORS_HEADERS,
+                        body: JSON.stringify({ error: 'Admin access required' })
+                    };
+                }
+            } catch (e) {
+                return {
+                    statusCode: 401,
+                    headers: CORS_HEADERS,
+                    body: JSON.stringify({ error: 'Unauthorized', message: e.message || 'Authentication required' })
+                };
+            }
+            
             const body = JSON.parse(event.body || '{}');
             const { videoUrl } = body;
 

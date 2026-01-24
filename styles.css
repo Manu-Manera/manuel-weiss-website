@@ -767,6 +767,7 @@ a:hover {
 }
 
 .hero-video-wrapper {
+    display: block; /* Explizit sichtbar */
     position: absolute;
     inset: 0;
     overflow: hidden;

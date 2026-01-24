@@ -81,8 +81,8 @@
         <div class="hero-video-wrapper">
             <!-- Video wird dynamisch von AWS S3 geladen -->
             <video class="hero-video" autoplay muted loop playsinline id="heroVideo">
-                <!-- Fallback: Statisches Video falls keine URL gesetzt ist -->
-                <source src="media/hero-manuel.mp4" type="video/mp4" id="heroVideoSource">
+                <!-- Fallback: Video wird dynamisch von API geladen -->
+                <!-- Kein statisches Fallback-Video - wird von API geladen -->
             </video>
             <div class="hero-video-overlay"></div>
         </div>
@@ -2704,11 +2704,42 @@
     <!-- Hero Video Loader: Lädt Video-URL dynamisch von AWS S3 -->
     <script>
         (function() {
+            // Warte auf aws-app-config.js Verfügbarkeit
+            function waitForConfig() {
+                return new Promise((resolve) => {
+                    if (window.getApiUrl) {
+                        resolve();
+                    } else {
+                        const checkInterval = setInterval(() => {
+                            if (window.getApiUrl) {
+                                clearInterval(checkInterval);
+                                resolve();
+                            }
+                        }, 100);
+                        // Timeout nach 3 Sekunden - fahre mit Fallback fort
+                        setTimeout(() => {
+                            clearInterval(checkInterval);
+                            resolve(); // Fahre mit Fallback fort
+                        }, 3000);
+                    }
+                });
+            }
+            
             async function loadHeroVideo() {
                 const heroSection = document.querySelector('.hero');
                 const videoElement = document.getElementById('heroVideo');
                 const sourceElement = document.getElementById('heroVideoSource');
                 const videoWrapper = document.querySelector('.hero-video-wrapper');
+                
+                // Prüfe ob alle Elemente vorhanden sind
+                if (!videoElement || !sourceElement || !videoWrapper) {
+                    console.error('❌ Hero-Video Elemente nicht gefunden');
+                    return;
+                }
+                
+                // Zeige Video-Wrapper sofort an (vor API-Call)
+                videoWrapper.style.display = 'block';
+                console.log('✅ Video-Wrapper angezeigt');
                 
                 // Timeout für Video-Laden (10 Sekunden)
                 let videoLoadTimeout;
@@ -2721,20 +2752,16 @@
                     }
                 }
                 
-                // Timeout setzen (nur für API-Video, nicht für Fallback)
+                // Warte auf Config (falls noch nicht geladen)
+                await waitForConfig();
+                
+                // Timeout setzen
                 videoLoadTimeout = setTimeout(() => {
                     console.warn('Video-Lade-Timeout erreicht (10s)');
-                    // Verstecke nur wenn es ein API-Video war, nicht bei Fallback
                     const currentSrc = sourceElement?.src || '';
-                    if (currentSrc && !currentSrc.includes('media/hero-manuel.mp4')) {
-                        console.warn('API-Video konnte nicht geladen werden, versuche Fallback');
-                        // Versuche Fallback-Video
-                        if (sourceElement) {
-                            sourceElement.src = 'media/hero-manuel.mp4';
-                            if (videoElement) {
-                                videoElement.load();
-                            }
-                        }
+                    if (!currentSrc || (!currentSrc.includes('s3.') && !currentSrc.includes('amazonaws.com'))) {
+                        console.warn('Video konnte nicht geladen werden nach 10s');
+                        hideVideo();
                     }
                 }, 10000);
                 
@@ -2814,26 +2841,12 @@
                             videoElement.addEventListener('canplay', onCanPlay, { once: true });
                         }
                         
-                        // Falls Video nicht geladen werden kann, versuche Fallback
+                        // Falls Video nicht geladen werden kann, verstecke es
                         const onError = () => {
                             clearTimeout(videoLoadTimeout);
                             const currentSrc = sourceElement?.src || '';
                             console.warn('❌ Video konnte nicht geladen werden:', currentSrc);
-                            
-                            // Wenn es nicht bereits das Fallback-Video ist, versuche Fallback
-                            if (!currentSrc.includes('media/hero-manuel.mp4')) {
-                                console.log('🔄 Versuche Fallback-Video');
-                                if (sourceElement) {
-                                    sourceElement.src = 'media/hero-manuel.mp4';
-                                    if (videoElement) {
-                                        videoElement.load();
-                                    }
-                                }
-                            } else {
-                                // Auch Fallback funktioniert nicht - verstecke Video
-                                console.warn('❌ Auch Fallback-Video konnte nicht geladen werden');
-                                hideVideo();
-                            }
+                            hideVideo();
                             videoElement.removeEventListener('error', onError);
                         };
                         
@@ -2849,36 +2862,33 @@
                         
                     } else {
                         clearTimeout(videoLoadTimeout);
-                        // Kein Video von API: Verwende Fallback-Video
-                        console.log('Keine Video-URL von API, verwende Fallback-Video');
-                        if (videoWrapper) {
-                            videoWrapper.style.display = 'block'; // Zeige Video-Wrapper für Fallback
-                        }
-                        if (videoElement) {
-                            videoElement.preload = 'auto';
-                            videoElement.load(); // Lade Fallback-Video
-                        }
+                        // Kein Video von API: Verstecke Video-Wrapper
+                        console.log('Keine Video-URL von API, verstecke Video-Wrapper');
+                        hideVideo();
                     }
                 } catch (error) {
                     clearTimeout(videoLoadTimeout);
-                    console.warn('Fehler beim Laden der Hero-Video-URL, verwende Fallback-Video:', error);
-                    // Bei Fehler: Verwende Fallback-Video
-                    if (videoWrapper) {
-                        videoWrapper.style.display = 'block'; // Zeige Video-Wrapper für Fallback
-                    }
-                    if (videoElement) {
-                        videoElement.preload = 'auto';
-                        videoElement.load(); // Lade Fallback-Video
-                    }
+                    console.warn('Fehler beim Laden der Hero-Video-URL:', error);
+                    // Bei Fehler: Verstecke Video-Wrapper
+                    hideVideo();
                 }
             }
             
-            // Lade Video sofort wenn DOM bereit ist
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', loadHeroVideo);
-            } else {
-                loadHeroVideo();
+            // Warte auf DOM und aws-app-config.js, dann lade Video
+            async function initHeroVideo() {
+                // Warte auf DOM
+                if (document.readyState === 'loading') {
+                    await new Promise(resolve => document.addEventListener('DOMContentLoaded', resolve));
+                }
+                
+                // Warte kurz, damit aws-app-config.js geladen werden kann
+                await new Promise(resolve => setTimeout(resolve, 100));
+                
+                // Lade Video
+                await loadHeroVideo();
             }
+            
+            initHeroVideo();
         })();
     </script>
 
