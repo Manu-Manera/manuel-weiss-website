@@ -2633,6 +2633,17 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
     }
     
     async generatePDFBytes() {
+        // Versuche zuerst Lambda-basierte PDF-Generierung (wie Resume-Editor)
+        try {
+            return await this.generatePDFWithLambda();
+        } catch (lambdaError) {
+            console.warn('⚠️ Lambda PDF-Generierung fehlgeschlagen, verwende jsPDF-Fallback:', lambdaError);
+            // Fallback zu jsPDF
+            return await this.generatePDFBytesWithJsPDF();
+        }
+    }
+    
+    async generatePDFBytesWithJsPDF() {
         // Neuer verbesserter PDF-Export mit jsPDF (Vektor-Text)
         try {
             // Lade pdfService wenn nicht vorhanden
@@ -2800,6 +2811,366 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
         }
     }
     
+    /**
+     * Lambda-basierte PDF-Generierung (wie Resume-Editor)
+     * Generiert PDF über AWS Lambda pdf-generator für bessere CSS-Unterstützung
+     */
+    async generatePDFWithLambda() {
+        console.log('🔄 Generiere Anschreiben-PDF mit AWS Lambda...');
+        
+        const letterElement = document.getElementById('generatedLetter');
+        if (!letterElement || letterElement.style.display === 'none') {
+            throw new Error('Anschreiben nicht gefunden. Bitte zuerst ein Anschreiben generieren.');
+        }
+        
+        // Klone das Letter-Element
+        const clone = letterElement.cloneNode(true);
+        
+        // Ersetze Textareas und Inputs durch statische Elemente
+        clone.querySelectorAll('textarea').forEach(ta => {
+            const div = document.createElement('div');
+            div.innerHTML = ta.value.replace(/\n/g, '<br>');
+            div.style.whiteSpace = 'pre-wrap';
+            div.style.fontFamily = 'inherit';
+            div.style.fontSize = 'inherit';
+            div.style.lineHeight = 'inherit';
+            ta.replaceWith(div);
+        });
+        
+        clone.querySelectorAll('input[type="text"]').forEach(input => {
+            const span = document.createElement('span');
+            span.textContent = input.value;
+            span.style.fontFamily = 'inherit';
+            span.style.fontSize = 'inherit';
+            input.replaceWith(span);
+        });
+        
+        // Warte auf Bilder (z.B. Unterschrift)
+        const images = Array.from(clone.querySelectorAll('img'));
+        await Promise.all(images.map(img => {
+            if (img.complete && img.naturalWidth > 0) return Promise.resolve();
+            return new Promise(resolve => {
+                img.addEventListener('load', resolve, { once: true });
+                img.addEventListener('error', resolve, { once: true });
+            });
+        }));
+        
+        // Konvertiere Bilder zu data: URLs für Lambda
+        for (const img of images) {
+            if (img.src && !img.src.startsWith('data:')) {
+                try {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.naturalWidth || img.width;
+                    canvas.height = img.naturalHeight || img.height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0);
+                    img.src = canvas.toDataURL('image/png');
+                } catch (e) {
+                    console.warn('⚠️ Bild konnte nicht konvertiert werden:', e);
+                }
+            }
+        }
+        
+        // Stelle sicher, dass das Element die richtige Struktur hat
+        if (!clone.classList.contains('generated-letter')) {
+            clone.classList.add('generated-letter');
+        }
+        
+        // Setze Container-Styles für PDF
+        clone.style.width = '210mm';
+        clone.style.margin = '0';
+        clone.style.padding = '0';
+        clone.style.background = '#ffffff';
+        clone.style.height = 'auto';
+        clone.style.minHeight = 'auto';
+        
+        // Generiere vollständiges HTML-Dokument
+        const htmlContent = this.generateCoverLetterHTMLDocument(clone);
+        
+        // Hole Auth Token falls vorhanden
+        let authToken = null;
+        try {
+            if (window.UnifiedAWSAuth && window.UnifiedAWSAuth.getInstance) {
+                const auth = window.UnifiedAWSAuth.getInstance();
+                if (auth && auth.getCurrentUser) {
+                    const user = await auth.getCurrentUser();
+                    if (user && user.signInUserSession) {
+                        authToken = user.signInUserSession.idToken.jwtToken;
+                    }
+                }
+            }
+        } catch (e) {
+            console.warn('⚠️ Auth Token konnte nicht geladen werden:', e);
+        }
+        
+        // Rufe PDF-Generator Lambda auf
+        const apiUrl = window.getApiUrl('PDF_GENERATOR');
+        if (!apiUrl) {
+            throw new Error('PDF Generator API URL nicht gefunden. Bitte aws-app-config.js prüfen.');
+        }
+        
+        const margin = this.design.margin || 25;
+        const headers = {
+            'Content-Type': 'application/json',
+            ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {})
+        };
+        
+        const body = JSON.stringify({
+            html: htmlContent,
+            options: {
+                format: 'A4',
+                printBackground: true,
+                preferCSSPageSize: false,
+                margin: { top: '0mm', right: '0mm', bottom: '0mm', left: '0mm' },
+                displayHeaderFooter: false
+            }
+        });
+        
+        const maxAttempts = 3;
+        let lastError = null;
+        
+        for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 25000);
+            
+            try {
+                console.log(`📡 PDF-Export Attempt ${attempt}/${maxAttempts}`);
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers,
+                    signal: controller.signal,
+                    body
+                });
+                
+                clearTimeout(timeoutId);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    let errorData;
+                    try {
+                        errorData = JSON.parse(errorText);
+                    } catch (e) {
+                        errorData = { error: errorText };
+                    }
+                    
+                    const message = errorData.error || errorData.message || `HTTP ${response.status}`;
+                    const retryableStatus = response.status >= 500 || response.status === 429;
+                    
+                    if (attempt < maxAttempts && retryableStatus) {
+                        console.warn(`⚠️ PDF-Generator HTTP ${response.status} – retry:`, message);
+                        await new Promise(resolve => setTimeout(resolve, 500 * attempt + 250));
+                        continue;
+                    }
+                    
+                    throw new Error(`PDF-Generierung fehlgeschlagen: ${message}`);
+                }
+                
+                // Dekodiere Base64 Response
+                const base64Data = await response.text();
+                const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+                
+                let bytes;
+                if (isSafari) {
+                    // Safari-kompatible Chunk-basierte Dekodierung
+                    const chunkSize = 32768;
+                    const chunks = [];
+                    const cleanBase64 = base64Data.trim().replace(/\s/g, '');
+                    
+                    for (let i = 0; i < cleanBase64.length; i += chunkSize) {
+                        const chunk = cleanBase64.substring(i, i + chunkSize);
+                        const binaryString = atob(chunk);
+                        for (let j = 0; j < binaryString.length; j++) {
+                            chunks.push(binaryString.charCodeAt(j));
+                        }
+                    }
+                    bytes = new Uint8Array(chunks);
+                } else {
+                    const cleanBase64 = base64Data.trim().replace(/\s/g, '');
+                    const binaryString = atob(cleanBase64);
+                    bytes = new Uint8Array(binaryString.length);
+                    for (let i = 0; i < binaryString.length; i++) {
+                        bytes[i] = binaryString.charCodeAt(i);
+                    }
+                }
+                
+                console.log('✅ PDF erfolgreich generiert:', bytes.length, 'Bytes');
+                return bytes.buffer;
+                
+            } catch (error) {
+                clearTimeout(timeoutId);
+                lastError = error;
+                
+                if (error.name === 'AbortError') {
+                    console.warn(`⚠️ PDF-Export Timeout (Attempt ${attempt}/${maxAttempts})`);
+                    if (attempt < maxAttempts) {
+                        await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+                        continue;
+                    }
+                }
+                
+                if (attempt < maxAttempts && (error.message?.includes('fetch') || error.message?.includes('network'))) {
+                    console.warn(`⚠️ PDF-Export Netzwerk-Problem – retry:`, error);
+                    await new Promise(resolve => setTimeout(resolve, 500 * attempt + 250));
+                    continue;
+                }
+                
+                throw error;
+            }
+        }
+        
+        throw lastError || new Error('PDF-Export fehlgeschlagen (unbekannt)');
+    }
+    
+    /**
+     * Generiert vollständiges HTML5-Dokument für Anschreiben-PDF-Export
+     */
+    generateCoverLetterHTMLDocument(element) {
+        const margin = this.design.margin || 25;
+        const fontFamily = this.design.font || 'Inter';
+        const fontSize = this.design.fontSize || 11;
+        const lineHeight = this.design.lineHeight || 1.6;
+        
+        // Extrahiere alle Stylesheets
+        const stylesheets = Array.from(document.styleSheets);
+        let allCSS = '';
+        
+        for (const sheet of stylesheets) {
+            try {
+                const rules = Array.from(sheet.cssRules || []);
+                for (const rule of rules) {
+                    if (rule.cssText) {
+                        allCSS += rule.cssText + '\n';
+                    }
+                }
+            } catch (e) {
+                // Cross-origin stylesheets können nicht gelesen werden
+            }
+        }
+        
+        // Filtere height/min-height/max-height aus CSS (für korrekte Pagination)
+        allCSS = allCSS.replace(/height\s*:\s*[^;]+;?/gi, '');
+        allCSS = allCSS.replace(/min-height\s*:\s*[^;]+;?/gi, '');
+        allCSS = allCSS.replace(/max-height\s*:\s*[^;]+;?/gi, '');
+        allCSS = allCSS.replace(/min-height\s*:\s*297[^;]*;?/gi, '');
+        
+        // Google Fonts Link
+        const googleFontsUrl = this.getGoogleFontsUrlForCoverLetter(fontFamily);
+        const googleFontsLink = googleFontsUrl ? `<link href="${googleFontsUrl}" rel="stylesheet">` : '';
+        
+        // Generiere vollständiges HTML5-Dokument
+        const html = `<!DOCTYPE html>
+<!-- exportSource:coverLetterEditor exportVersion:2026-01-24m -->
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Anschreiben PDF Export</title>
+    ${googleFontsLink}
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            width: 210mm;
+            margin: 0;
+            padding: 0;
+            height: auto !important;
+            min-height: 0 !important;
+            font-family: ${fontFamily}, sans-serif;
+            font-size: ${fontSize}pt;
+            line-height: ${lineHeight};
+            color: #1e293b;
+            background: #ffffff !important;
+        }
+        
+        body {
+            width: 210mm;
+            height: auto !important;
+            min-height: 0 !important;
+        }
+        
+        .cover-letter-container {
+            width: 210mm !important;
+            min-width: 210mm !important;
+            max-width: 210mm !important;
+            margin: 0 !important;
+            padding: ${margin}mm !important;
+            box-sizing: border-box !important;
+            background: #ffffff !important;
+            height: auto !important;
+            min-height: auto !important;
+        }
+        
+        /* Extrahiertes CSS */
+        ${allCSS}
+        
+        /* Export-Overrides */
+        .generated-letter {
+            width: 210mm !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            background: #ffffff !important;
+            height: auto !important;
+            min-height: auto !important;
+        }
+        
+        .generated-letter *:not(img):not(svg):not(canvas) {
+            height: auto !important;
+            min-height: 0 !important;
+        }
+        
+        /* Entferne height/min-height/max-height aus allen CSS-Regeln für korrekte Pagination */
+        * {
+            height: auto !important;
+            min-height: 0 !important;
+            max-height: none !important;
+        }
+        
+        img, svg, canvas {
+            height: auto !important;
+            max-height: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="cover-letter-container">
+        ${element.outerHTML}
+    </div>
+</body>
+</html>`;
+        
+        return html;
+    }
+    
+    getGoogleFontsUrlForCoverLetter(fontFamily) {
+        const fontMap = {
+            'Inter': 'Inter:wght@300;400;500;600;700',
+            'Roboto': 'Roboto:wght@300;400;500;700',
+            'Open Sans': 'Open+Sans:wght@300;400;500;600;700',
+            'Lato': 'Lato:wght@300;400;700',
+            'Montserrat': 'Montserrat:wght@300;400;500;600;700',
+            'Source Sans Pro': 'Source+Sans+Pro:wght@300;400;600;700',
+            'Nunito': 'Nunito:wght@300;400;500;600;700',
+            'Arial': null,
+            'Helvetica Neue': null,
+            'Georgia': 'Georgia:wght@400;700',
+            'Times New Roman': null,
+            'Merriweather': 'Merriweather:wght@300;400;700',
+            'Playfair Display': 'Playfair+Display:wght@400;500;600;700',
+            'Source Code Pro': 'Source+Code+Pro:wght@400;500;600'
+        };
+        
+        const fontKey = fontFamily.replace(/'/g, '').trim();
+        const fontParam = fontMap[fontKey] || fontMap['Inter'];
+        
+        if (!fontParam) return null;
+        
+        return `https://fonts.googleapis.com/css2?family=${fontParam}&display=swap`;
+    }
+    
     async generatePDFBytesLegacy() {
         // Fallback: html2pdf-basierter Export
         if (typeof html2pdf === 'undefined') {
@@ -2922,8 +3293,14 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
             const jobData = this.collectJobData();
             const filename = `Anschreiben_${(jobData.companyName || 'Bewerbung').replace(/\s+/g, '_')}_${new Date().toISOString().slice(0,10)}.pdf`;
             
+            // Konvertiere ArrayBuffer zu Blob falls nötig
+            const blob = pdfBytes instanceof ArrayBuffer 
+                ? new Blob([pdfBytes], { type: 'application/pdf' })
+                : pdfBytes instanceof Blob 
+                    ? pdfBytes 
+                    : new Blob([pdfBytes], { type: 'application/pdf' });
+            
             // Download
-            const blob = new Blob([pdfBytes], { type: 'application/pdf' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
@@ -2933,8 +3310,9 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
             
-            this.showToast('PDF erfolgreich erstellt!', 'success');
-            console.log(`✅ PDF exportiert: ${filename} (${(pdfBytes.byteLength / 1024).toFixed(1)} KB)`);
+            const sizeKb = (blob.size / 1024).toFixed(1);
+            this.showToast(`PDF erfolgreich erstellt! (${sizeKb} KB)`, 'success');
+            console.log(`✅ PDF exportiert: ${filename} (${sizeKb} KB)`);
             
         } catch (error) {
             console.error('PDF Export Error:', error);
@@ -2950,15 +3328,51 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
             const jobData = this.collectJobData();
             const filename = `Anschreiben_${(jobData.companyName || 'Bewerbung').replace(/\s+/g, '_')}_${new Date().toISOString().slice(0,10)}.pdf`;
             
-            if (window.pdfService) {
-                window.pdfService.showPreview(pdfBytes, { 
-                    title: `Anschreiben - ${jobData.companyName}`,
-                    filename 
-                });
-            } else {
-                // Direkter Download
-                this.downloadPDF();
-            }
+            // Konvertiere ArrayBuffer zu Blob falls nötig
+            const blob = pdfBytes instanceof ArrayBuffer 
+                ? new Blob([pdfBytes], { type: 'application/pdf' })
+                : pdfBytes instanceof Blob 
+                    ? pdfBytes 
+                    : new Blob([pdfBytes], { type: 'application/pdf' });
+            
+            // Zeige Vorschau
+            const blobUrl = URL.createObjectURL(blob);
+            const iframe = document.createElement('iframe');
+            iframe.src = blobUrl;
+            iframe.style.width = '100%';
+            iframe.style.height = '80vh';
+            iframe.style.border = 'none';
+            
+            const modal = document.createElement('div');
+            modal.className = 'pdf-preview-modal';
+            modal.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); z-index: 10000; display: flex; flex-direction: column;';
+            modal.innerHTML = `
+                <div style="padding: 1rem; background: #1e293b; display: flex; justify-content: space-between; align-items: center;">
+                    <h3 style="color: white; margin: 0;"><i class="fas fa-file-pdf"></i> PDF Vorschau</h3>
+                    <button onclick="this.closest('.pdf-preview-modal').remove()" style="background: rgba(255,255,255,0.2); border: none; color: white; width: 32px; height: 32px; border-radius: 50%; cursor: pointer;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div style="flex: 1; padding: 1rem; overflow: auto;">
+                    ${iframe.outerHTML}
+                </div>
+                <div style="padding: 1rem; background: #1e293b; display: flex; gap: 1rem; justify-content: flex-end;">
+                    <button onclick="this.closest('.pdf-preview-modal').remove()" style="padding: 0.6rem 1.2rem; background: rgba(100,116,139,0.8); border: none; color: white; border-radius: 8px; cursor: pointer;">
+                        <i class="fas fa-times"></i> Abbrechen
+                    </button>
+                    <button onclick="window.coverLetterEditor.downloadPDF(); this.closest('.pdf-preview-modal').remove();" style="padding: 0.6rem 1.2rem; background: #6366f1; border: none; color: white; border-radius: 8px; cursor: pointer;">
+                        <i class="fas fa-download"></i> PDF herunterladen
+                    </button>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Cleanup beim Schließen
+            modal.querySelector('button').addEventListener('click', () => {
+                URL.revokeObjectURL(blobUrl);
+            });
+            
         } catch (error) {
             console.error('Preview Error:', error);
             this.downloadPDF();
