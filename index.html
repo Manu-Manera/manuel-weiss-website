@@ -79,10 +79,8 @@
     <!-- Hero Section mit Video-Hintergrund -->
     <section id="home" class="hero hero-with-video">
         <div class="hero-video-wrapper">
-            <!-- Video wird dynamisch von AWS S3 geladen -->
+            <!-- Video wird dynamisch von API geladen (kein source Element nötig) -->
             <video class="hero-video" autoplay muted loop playsinline id="heroVideo">
-                <!-- Fallback: Video wird dynamisch von API geladen -->
-                <!-- Kein statisches Fallback-Video - wird von API geladen -->
             </video>
             <div class="hero-video-overlay"></div>
         </div>
@@ -2728,11 +2726,10 @@
             async function loadHeroVideo() {
                 const heroSection = document.querySelector('.hero');
                 const videoElement = document.getElementById('heroVideo');
-                const sourceElement = document.getElementById('heroVideoSource');
                 const videoWrapper = document.querySelector('.hero-video-wrapper');
                 
-                // Prüfe ob alle Elemente vorhanden sind
-                if (!videoElement || !sourceElement || !videoWrapper) {
+                // Prüfe ob Elemente vorhanden sind (kein sourceElement mehr nötig)
+                if (!videoElement || !videoWrapper) {
                     console.error('❌ Hero-Video Elemente nicht gefunden');
                     return;
                 }
@@ -2758,7 +2755,7 @@
                 // Timeout setzen
                 videoLoadTimeout = setTimeout(() => {
                     console.warn('Video-Lade-Timeout erreicht (10s)');
-                    const currentSrc = sourceElement?.src || '';
+                    const currentSrc = videoElement.src || '';
                     if (!currentSrc || (!currentSrc.includes('s3.') && !currentSrc.includes('amazonaws.com'))) {
                         console.warn('Video konnte nicht geladen werden nach 10s');
                         hideVideo();
@@ -2785,7 +2782,7 @@
                     const data = await response.json();
                     console.log('📦 API Response:', data);
                     
-                    if (data.videoUrl && data.videoUrl.trim() !== '' && videoElement && sourceElement) {
+                    if (data.videoUrl && data.videoUrl.trim() !== '' && videoElement) {
                         console.log('Video-URL gefunden:', data.videoUrl);
                         
                         // Mobile: Video sofort verstecken, erst anzeigen wenn geladen
@@ -2794,8 +2791,8 @@
                             videoWrapper.style.display = 'none'; // Verstecke sofort auf Mobile
                         }
                         
-                        // Video vorhanden: Setze die Video-URL von AWS S3
-                        sourceElement.src = data.videoUrl;
+                        // Video vorhanden: Setze die Video-URL direkt auf videoElement
+                        videoElement.src = data.videoUrl;
                         
                         // Mobile Optimierung: Preload auf "none" für schnellste Ladezeit
                         if (isMobile) {
@@ -2844,7 +2841,7 @@
                         // Falls Video nicht geladen werden kann, verstecke es
                         const onError = () => {
                             clearTimeout(videoLoadTimeout);
-                            const currentSrc = sourceElement?.src || '';
+                            const currentSrc = videoElement.src || '';
                             console.warn('❌ Video konnte nicht geladen werden:', currentSrc);
                             hideVideo();
                             videoElement.removeEventListener('error', onError);
