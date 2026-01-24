@@ -2812,19 +2812,25 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
     }
     
     /**
-     * Lambda-basierte PDF-Generierung (wie Resume-Editor)
+     * Lambda-basierte PDF-Generierung (EXAKT wie Resume-Editor)
      * Generiert PDF über AWS Lambda pdf-generator für bessere CSS-Unterstützung
      */
     async generatePDFWithLambda() {
-        console.log('🔄 Generiere Anschreiben-PDF mit AWS Lambda...');
+        console.log('🔄 Generiere Anschreiben-PDF mit direkter HTML-zu-PDF Konvertierung (AWS Lambda)...');
         
         const letterElement = document.getElementById('generatedLetter');
         if (!letterElement || letterElement.style.display === 'none') {
             throw new Error('Anschreiben nicht gefunden. Bitte zuerst ein Anschreiben generieren.');
         }
         
-        // Klone das Letter-Element
+        // Klone das Letter-Element (wie Resume-Editor)
         const clone = letterElement.cloneNode(true);
+        
+        // WICHTIG: Canvas-Inhalte (z.B. Unterschrift) in Clone übernehmen
+        this.replaceCanvasesWithImages(letterElement, clone);
+        
+        // WICHTIG: Nach Möglichkeit Bilder in den Clone einbetten (data: URLs), damit Lambda sie sicher rendern kann
+        await this.inlineImagesAsDataUrls(clone);
         
         // Ersetze Textareas und Inputs durch statische Elemente
         clone.querySelectorAll('textarea').forEach(ta => {
@@ -2845,47 +2851,19 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
             input.replaceWith(span);
         });
         
-        // Warte auf Bilder (z.B. Unterschrift)
-        const images = Array.from(clone.querySelectorAll('img'));
-        await Promise.all(images.map(img => {
-            if (img.complete && img.naturalWidth > 0) return Promise.resolve();
-            return new Promise(resolve => {
-                img.addEventListener('load', resolve, { once: true });
-                img.addEventListener('error', resolve, { once: true });
-            });
-        }));
-        
-        // Konvertiere Bilder zu data: URLs für Lambda
-        for (const img of images) {
-            if (img.src && !img.src.startsWith('data:')) {
-                try {
-                    const canvas = document.createElement('canvas');
-                    canvas.width = img.naturalWidth || img.width;
-                    canvas.height = img.naturalHeight || img.height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0);
-                    img.src = canvas.toDataURL('image/png');
-                } catch (e) {
-                    console.warn('⚠️ Bild konnte nicht konvertiert werden:', e);
-                }
-            }
-        }
+        // WICHTIG: Ersetze ALLE CSS-Variablen im geklonten HTML durch tatsächliche Werte
+        this.replaceCSSVariablesInElement(clone);
         
         // Stelle sicher, dass das Element die richtige Struktur hat
         if (!clone.classList.contains('generated-letter')) {
             clone.classList.add('generated-letter');
         }
         
-        // Setze Container-Styles für PDF
-        clone.style.width = '210mm';
-        clone.style.margin = '0';
-        clone.style.padding = '0';
-        clone.style.background = '#ffffff';
-        clone.style.height = 'auto';
-        clone.style.minHeight = 'auto';
-        
-        // Generiere vollständiges HTML-Dokument
+        // Generiere vollständiges HTML-Dokument (wie Resume-Editor)
         const htmlContent = this.generateCoverLetterHTMLDocument(clone);
+        
+        console.log('📄 HTML generiert, Länge:', htmlContent.length, 'Zeichen');
+        console.log('🚀 Verwende direkte PDF-Generierung (ohne GPT) - wie Resume-Editor');
         
         // Hole Auth Token falls vorhanden
         let authToken = null;
@@ -2903,24 +2881,28 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
             console.warn('⚠️ Auth Token konnte nicht geladen werden:', e);
         }
         
-        // Rufe PDF-Generator Lambda auf
+        // Rufe einfache PDF-Generator Lambda auf (OHNE GPT - direkt HTML zu PDF)
         const apiUrl = window.getApiUrl('PDF_GENERATOR');
         if (!apiUrl) {
             throw new Error('PDF Generator API URL nicht gefunden. Bitte aws-app-config.js prüfen.');
         }
         
-        const margin = this.design.margin || 25;
+        console.log('📡 Sende HTML direkt an PDF-Generator Lambda (ohne GPT):', apiUrl);
+        console.log('📦 HTML Content Preview:', htmlContent.substring(0, 200) + '...');
+        
         const headers = {
             'Content-Type': 'application/json',
             ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {})
         };
         
         const body = JSON.stringify({
-            html: htmlContent,
+            html: htmlContent, // Vollständiges HTML-Dokument
             options: {
                 format: 'A4',
                 printBackground: true,
                 preferCSSPageSize: false,
+                // NOTE: Die Lambda `pdf-generator` erzwingt Puppeteer-Margins = 0mm.
+                // Die echten Ränder kommen deshalb aus dem HTML-Padding (mm) des Containers.
                 margin: { top: '0mm', right: '0mm', bottom: '0mm', left: '0mm' },
                 displayHeaderFooter: false
             }
@@ -2965,53 +2947,118 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
                     throw new Error(`PDF-Generierung fehlgeschlagen: ${message}`);
                 }
                 
-                // Dekodiere Base64 Response
-                const base64Data = await response.text();
-                const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+                // API Gateway gibt Base64 direkt im Body zurück (wegen isBase64Encoded: true)
+                const contentType = response.headers.get('Content-Type');
+                console.log('📦 Response Content-Type:', contentType);
+                console.log('📦 Response Status:', response.status, response.statusText);
                 
-                let bytes;
-                if (isSafari) {
-                    // Safari-kompatible Chunk-basierte Dekodierung
+                // WICHTIG: Safari-Erkennung und spezielle Behandlung
+                const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+                console.log('🌐 Browser erkannt:', isSafari ? 'Safari' : 'Anderer Browser');
+                
+                // WICHTIG: Response kann nur EINMAL gelesen werden!
+                // API Gateway mit isBase64Encoded: true gibt Base64-STRING zurück (auch bei Content-Type: application/pdf)
+                // Daher IMMER zuerst als Text lesen, dann dekodieren
+                
+                // Hilfsfunktion für Safari-kompatible Base64-Dekodierung (Chunk-basiert)
+                const decodeBase64Safari = (base64String) => {
+                    const cleanBase64 = base64String.trim().replace(/\s/g, '');
+                    
+                    // Safari kann atob() nicht mit sehr großen Strings handhaben
+                    // Teile in Chunks auf (max 32768 Zeichen pro Chunk)
                     const chunkSize = 32768;
                     const chunks = [];
-                    const cleanBase64 = base64Data.trim().replace(/\s/g, '');
                     
                     for (let i = 0; i < cleanBase64.length; i += chunkSize) {
                         const chunk = cleanBase64.substring(i, i + chunkSize);
-                        const binaryString = atob(chunk);
-                        for (let j = 0; j < binaryString.length; j++) {
-                            chunks.push(binaryString.charCodeAt(j));
+                        try {
+                            const binaryString = atob(chunk);
+                            for (let j = 0; j < binaryString.length; j++) {
+                                chunks.push(binaryString.charCodeAt(j));
+                            }
+                        } catch (e) {
+                            console.error('❌ Fehler beim Dekodieren von Base64-Chunk:', e);
+                            throw new Error(`Base64-Dekodierung fehlgeschlagen bei Position ${i}: ${e.message}`);
                         }
                     }
-                    bytes = new Uint8Array(chunks);
-                } else {
-                    const cleanBase64 = base64Data.trim().replace(/\s/g, '');
-                    const binaryString = atob(cleanBase64);
-                    bytes = new Uint8Array(binaryString.length);
-                    for (let i = 0; i < binaryString.length; i++) {
-                        bytes[i] = binaryString.charCodeAt(i);
-                    }
-                }
+                    
+                    return new Uint8Array(chunks);
+                };
                 
-                console.log('✅ PDF erfolgreich generiert:', bytes.length, 'Bytes');
-                return bytes.buffer;
+                // Lese Response als Text (Base64-String von API Gateway)
+                // WICHTIG: Response.text() kann nur einmal aufgerufen werden!
+                try {
+                    const base64Data = await response.text();
+                    console.log('📦 Base64 Response Länge:', base64Data.length, 'Zeichen');
+                    console.log('📦 Base64 Preview:', base64Data.substring(0, 50) + '...');
+                    
+                    // Prüfe, ob es wirklich Base64 ist (nicht bereits ein Fehler-JSON)
+                    if (base64Data.trim().startsWith('{')) {
+                        try {
+                            const errorData = JSON.parse(base64Data);
+                            throw new Error(`PDF-Generierung fehlgeschlagen: ${errorData.error || errorData.message || 'Unbekannter Fehler'}`);
+                        } catch (jsonError) {
+                            // Wenn es kein JSON ist, ist es wahrscheinlich Base64
+                        }
+                    }
+                    
+                    // Safari-kompatible Dekodierung (Chunk-basiert für große Strings)
+                    // WICHTIG: Safari hat Probleme mit atob() auch bei kleineren Strings, daher immer Chunk-basiert für Safari
+                    let bytes;
+                    if (isSafari) {
+                        console.log('🦁 Safari erkannt - verwende Chunk-basierte Base64-Dekodierung');
+                        bytes = decodeBase64Safari(base64Data);
+                    } else {
+                        // Standard-Dekodierung für andere Browser
+                        const cleanBase64 = base64Data.trim().replace(/\s/g, '');
+                        try {
+                            const binaryString = atob(cleanBase64);
+                            bytes = new Uint8Array(binaryString.length);
+                            for (let i = 0; i < binaryString.length; i++) {
+                                bytes[i] = binaryString.charCodeAt(i);
+                            }
+                        } catch (atobError) {
+                            // Fallback: Auch für andere Browser Chunk-basiert, falls atob() fehlschlägt
+                            console.warn('⚠️ atob() fehlgeschlagen, verwende Chunk-basierte Dekodierung:', atobError);
+                            bytes = decodeBase64Safari(base64Data);
+                        }
+                    }
+                    
+                    const pdfBlob = new Blob([bytes], { type: 'application/pdf' });
+                    console.log('✅ PDF generiert (Base64 dekodiert):', pdfBlob.size, 'Bytes');
+                    return pdfBlob;
+                    
+                } catch (base64Error) {
+                    console.error('❌ Base64-Dekodierung fehlgeschlagen:', base64Error);
+                    console.error('❌ Fehler-Details:', {
+                        name: base64Error.name,
+                        message: base64Error.message,
+                        stack: base64Error.stack
+                    });
+                    throw new Error(`PDF-Generierung fehlgeschlagen: Konnte Response nicht dekodieren. ${base64Error.message}`);
+                }
                 
             } catch (error) {
                 clearTimeout(timeoutId);
                 lastError = error;
                 
-                if (error.name === 'AbortError') {
-                    console.warn(`⚠️ PDF-Export Timeout (Attempt ${attempt}/${maxAttempts})`);
-                    if (attempt < maxAttempts) {
-                        await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
-                        continue;
-                    }
+                const isAbort = error && error.name === 'AbortError';
+                const isNetworkOrCors = error instanceof TypeError || /Failed to fetch/i.test(String(error && error.message ? error.message : error));
+                
+                // In der Praxis: "CORS blocked" ist oft ein Gateway-Error ohne CORS-Header (502/504/413).
+                if (attempt < maxAttempts && (isAbort || isNetworkOrCors)) {
+                    console.warn('⚠️ PDF-Export Netz/Timeout Problem – retry:', error);
+                    await delay(750 * attempt);
+                    continue;
                 }
                 
-                if (attempt < maxAttempts && (error.message?.includes('fetch') || error.message?.includes('network'))) {
-                    console.warn(`⚠️ PDF-Export Netzwerk-Problem – retry:`, error);
-                    await new Promise(resolve => setTimeout(resolve, 500 * attempt + 250));
-                    continue;
+                if (isAbort) {
+                    console.error('❌ PDF Export Timeout: Die Anfrage dauerte länger als 25 Sekunden');
+                    throw new Error('PDF-Generierung dauerte zu lange. Bitte versuchen Sie es erneut.');
+                }
+                
+                if (isNetworkOrCors) {
+                    this.showToast('PDF-Generator nicht erreichbar (Netzwerk/CORS). Bitte erneut versuchen.', 'error');
                 }
                 
                 throw error;
@@ -3022,7 +3069,135 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
     }
     
     /**
+     * Ersetzt Canvas-Elemente im Clone durch <img>, basierend auf den Canvas-Inhalten im Original-DOM.
+     * (Kopiert aus DesignEditor)
+     */
+    replaceCanvasesWithImages(sourceRoot, targetRoot) {
+        try {
+            const sourceCanvases = Array.from(sourceRoot.querySelectorAll('canvas'));
+            const targetCanvases = Array.from(targetRoot.querySelectorAll('canvas'));
+            if (sourceCanvases.length === 0 || targetCanvases.length === 0) return;
+            
+            const len = Math.min(sourceCanvases.length, targetCanvases.length);
+            for (let i = 0; i < len; i++) {
+                const srcCanvas = sourceCanvases[i];
+                const tgtCanvas = targetCanvases[i];
+                let dataUrl = null;
+                try {
+                    dataUrl = srcCanvas.toDataURL('image/png');
+                } catch (e) {
+                    continue;
+                }
+                if (!dataUrl || !dataUrl.startsWith('data:image/')) continue;
+                
+                const img = document.createElement('img');
+                img.src = dataUrl;
+                img.alt = 'Canvas Export';
+                img.width = srcCanvas.width || undefined;
+                img.height = srcCanvas.height || undefined;
+                // Übernehme Layout-relevante Styles/Attribute
+                img.style.cssText = tgtCanvas.style.cssText || '';
+                if (tgtCanvas.className) img.className = tgtCanvas.className;
+                if (tgtCanvas.id) img.id = tgtCanvas.id;
+                
+                tgtCanvas.replaceWith(img);
+            }
+        } catch (e) {
+            console.warn('⚠️ replaceCanvasesWithImages() fehlgeschlagen:', e);
+        }
+    }
+    
+    /**
+     * Versucht, <img>-Quellen im Element als data: URLs einzubetten (best-effort).
+     * (Kopiert aus DesignEditor)
+     */
+    async inlineImagesAsDataUrls(root, options = {}) {
+        const maxImages = Number(options.maxImages || 30);
+        const imgs = Array.from(root.querySelectorAll('img')).slice(0, maxImages);
+        
+        const blobToDataUrl = (blob) => new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(String(reader.result));
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
+        
+        for (const img of imgs) {
+            try {
+                const src = (img.getAttribute('src') || '').trim();
+                if (!src || src.startsWith('data:')) continue;
+                
+                // Best-effort fetch; wenn CORS blockt, lassen wir es so stehen.
+                const response = await fetch(src, { mode: 'cors', credentials: 'omit' });
+                if (!response.ok) continue;
+                const blob = await response.blob();
+                const dataUrl = await blobToDataUrl(blob);
+                if (dataUrl && dataUrl.startsWith('data:image/')) {
+                    img.setAttribute('src', dataUrl);
+                }
+            } catch (e) {
+                // Ignorieren – nicht jedes Bild ist einbettbar
+            }
+        }
+    }
+    
+    /**
+     * Ersetzt CSS-Variablen in inline styles und style-Attributen
+     * (Vereinfachte Version für Anschreiben-Editor)
+     */
+    replaceCSSVariablesInElement(element) {
+        // Ersetze in style-Attributen
+        const allElements = element.querySelectorAll('*');
+        allElements.forEach(el => {
+            if (el.style) {
+                const styleText = el.getAttribute('style') || '';
+                let newStyleText = styleText;
+                
+                // Ersetze gängige CSS-Variablen durch tatsächliche Werte
+                const replacements = {
+                    '--cover-letter-font': this.design.font || 'Inter',
+                    '--cover-letter-font-size': (this.design.fontSize || 11) + 'pt',
+                    '--cover-letter-line-height': String(this.design.lineHeight || 1.6),
+                    '--cover-letter-margin': (this.design.margin || 25) + 'mm',
+                };
+                
+                for (const [varName, value] of Object.entries(replacements)) {
+                    const regex = new RegExp(`var\\(${varName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?:,\\s*[^)]+)?\\)`, 'g');
+                    newStyleText = newStyleText.replace(regex, value);
+                }
+                
+                if (newStyleText !== styleText) {
+                    el.setAttribute('style', newStyleText);
+                }
+            }
+        });
+        
+        // Ersetze auch im Element selbst
+        if (element.style) {
+            const styleText = element.getAttribute('style') || '';
+            let newStyleText = styleText;
+            
+            const replacements = {
+                '--cover-letter-font': this.design.font || 'Inter',
+                '--cover-letter-font-size': (this.design.fontSize || 11) + 'pt',
+                '--cover-letter-line-height': String(this.design.lineHeight || 1.6),
+                '--cover-letter-margin': (this.design.margin || 25) + 'mm',
+            };
+            
+            for (const [varName, value] of Object.entries(replacements)) {
+                const regex = new RegExp(`var\\(${varName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?:,\\s*[^)]+)?\\)`, 'g');
+                newStyleText = newStyleText.replace(regex, value);
+            }
+            
+            if (newStyleText !== styleText) {
+                element.setAttribute('style', newStyleText);
+            }
+        }
+    }
+    
+    /**
      * Generiert vollständiges HTML5-Dokument für Anschreiben-PDF-Export
+     * (Wie Resume-Editor: extractAllCSS + extractInlineStyles)
      */
     generateCoverLetterHTMLDocument(element) {
         const margin = this.design.margin || 25;
@@ -3030,28 +3205,32 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
         const fontSize = this.design.fontSize || 11;
         const lineHeight = this.design.lineHeight || 1.6;
         
-        // Extrahiere alle Stylesheets
-        const stylesheets = Array.from(document.styleSheets);
-        let allCSS = '';
+        // Stelle sicher, dass das Element die PDF-Ränder als mm-Padding trägt.
+        // WICHTIG: Die Lambda setzt Puppeteer-Margins auf 0mm – daher MUSS das HTML-Padding (mm)
+        // der einzige Source-of-Truth für Ränder sein.
+        const mainContainer = element.classList.contains('generated-letter') 
+            ? element 
+            : element.querySelector('.generated-letter') || element;
         
-        for (const sheet of stylesheets) {
-            try {
-                const rules = Array.from(sheet.cssRules || []);
-                for (const rule of rules) {
-                    if (rule.cssText) {
-                        allCSS += rule.cssText + '\n';
-                    }
-                }
-            } catch (e) {
-                // Cross-origin stylesheets können nicht gelesen werden
-            }
+        if (mainContainer) {
+            mainContainer.style.setProperty('padding', `${margin}mm`, 'important');
+            mainContainer.style.setProperty('box-sizing', 'border-box', 'important');
+            mainContainer.style.setProperty('width', '210mm', 'important');
+            mainContainer.style.setProperty('margin', '0', 'important');
+            mainContainer.style.setProperty('transform', 'none', 'important');
+            mainContainer.style.setProperty('transform-origin', 'top left', 'important');
         }
         
-        // Filtere height/min-height/max-height aus CSS (für korrekte Pagination)
-        allCSS = allCSS.replace(/height\s*:\s*[^;]+;?/gi, '');
-        allCSS = allCSS.replace(/min-height\s*:\s*[^;]+;?/gi, '');
-        allCSS = allCSS.replace(/max-height\s*:\s*[^;]+;?/gi, '');
+        // Extrahiere alle CSS-Styles (WICHTIG: Vor dem HTML-Generieren, damit alle Styles verfügbar sind)
+        let allCSS = this.extractAllCSSForCoverLetter();
+        
+        // Extrahiere auch alle inline Styles aus dem Element und seinen Kindern
+        let inlineStyles = this.extractInlineStylesForCoverLetter(element);
+        
+        // WICHTIG (PDF): Zusätzliche Filterung - entferne min-height: 297mm aus dem gesamten CSS-String,
+        // falls die Filterung in extractAllCSS() nicht alle Fälle erwischt hat (z.B. in zusammengesetzten CSS-Regeln)
         allCSS = allCSS.replace(/min-height\s*:\s*297[^;]*;?/gi, '');
+        inlineStyles = inlineStyles.replace(/min-height\s*:\s*297[^;]*;?/gi, '');
         
         // Google Fonts Link
         const googleFontsUrl = this.getGoogleFontsUrlForCoverLetter(fontFamily);
@@ -3104,45 +3283,160 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
             min-height: auto !important;
         }
         
-        /* Extrahiertes CSS */
+        /* Extrahiertes CSS aus Stylesheets */
         ${allCSS}
         
-        /* Export-Overrides */
+        /* Inline Styles */
+        ${inlineStyles}
+        
+        /* Final export overrides (MUSS als letztes kommen, damit nichts das Padding überschreibt) */
         .generated-letter {
             width: 210mm !important;
+            min-width: 210mm !important;
+            max-width: 210mm !important;
             margin: 0 !important;
-            padding: 0 !important;
+            padding: ${margin}mm !important;
+            box-sizing: border-box !important;
+            box-shadow: none !important;
             background: #ffffff !important;
             height: auto !important;
             min-height: auto !important;
+            transform: none !important;
+            transform-origin: top left !important;
+            zoom: 1 !important;
         }
         
         .generated-letter *:not(img):not(svg):not(canvas) {
             height: auto !important;
             min-height: 0 !important;
-        }
-        
-        /* Entferne height/min-height/max-height aus allen CSS-Regeln für korrekte Pagination */
-        * {
-            height: auto !important;
-            min-height: 0 !important;
-            max-height: none !important;
-        }
-        
-        img, svg, canvas {
-            height: auto !important;
             max-height: none !important;
         }
     </style>
 </head>
 <body>
-    <div class="cover-letter-container">
-        ${element.outerHTML}
-    </div>
+    ${element.outerHTML}
 </body>
 </html>`;
         
         return html;
+    }
+    
+    /**
+     * Extrahiert alle CSS-Styles aus Stylesheets (wie Resume-Editor)
+     */
+    extractAllCSSForCoverLetter() {
+        const styles = [];
+        
+        // Alle Stylesheets (inkl. Google Fonts)
+        Array.from(document.styleSheets).forEach(sheet => {
+            try {
+                // Prüfe ob Stylesheet von gleicher Origin ist
+                if (sheet.href && !sheet.href.startsWith(window.location.origin) && !sheet.href.includes('fonts.googleapis.com')) {
+                    // Cross-origin Stylesheet - überspringe
+                    return;
+                }
+                
+                Array.from(sheet.cssRules || []).forEach(rule => {
+                    try {
+                        let cssText = rule.cssText;
+                        // WICHTIG (PDF): Entferne height/min-height/max-height aus ALLEN CSS-Regeln,
+                        // da diese zu übermäßigem Leerraum und frühen Seitenumbrüchen führen können.
+                        cssText = cssText.replace(/height\s*:\s*[^;]+;?/gi, '');
+                        cssText = cssText.replace(/min-height\s*:\s*[^;]+;?/gi, '');
+                        cssText = cssText.replace(/max-height\s*:\s*[^;]+;?/gi, '');
+                        styles.push(cssText);
+                    } catch (e) {
+                        // Ignoriere Regeln, die nicht gelesen werden können
+                    }
+                });
+            } catch (e) {
+                // Cross-origin stylesheets können nicht gelesen werden
+                console.warn('⚠️ Stylesheet konnte nicht gelesen werden:', sheet.href || 'inline', e);
+            }
+        });
+        
+        return styles.join('\n');
+    }
+    
+    /**
+     * Extrahiert inline Styles aus Elementen (wie Resume-Editor)
+     */
+    extractInlineStylesForCoverLetter(element) {
+        const styles = [];
+        const allElements = [element, ...Array.from(element.querySelectorAll('*'))];
+        
+        // Wichtige CSS-Properties, die extrahiert werden sollen
+        const importantProperties = [
+            'color', 'background-color', 'background', 'font-family', 'font-size', 'font-weight',
+            'line-height', 'text-align', 'margin', 'margin-top', 'margin-right', 'margin-bottom', 'margin-left',
+            'padding', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left',
+            'border', 'border-top', 'border-right', 'border-bottom', 'border-left',
+            'display', 'flex-direction', 'justify-content', 'align-items', 'gap',
+            'position', 'top', 'right', 'bottom', 'left',
+            'opacity', 'box-shadow', 'text-shadow'
+        ];
+        
+        allElements.forEach((el, index) => {
+            try {
+                // Überspringe Script- und Style-Tags
+                if (el.tagName === 'SCRIPT' || el.tagName === 'STYLE') {
+                    return;
+                }
+                
+                // Hole computed styles vom Browser
+                const computedStyle = window.getComputedStyle(el);
+                const styleProperties = [];
+                
+                // Extrahiere wichtige Properties
+                importantProperties.forEach(prop => {
+                    const value = computedStyle.getPropertyValue(prop);
+                    if (value && value !== 'none' && value !== 'normal' && value !== 'auto' && value !== '0px') {
+                        // Konvertiere camelCase zu kebab-case
+                        const kebabProp = prop.replace(/([A-Z])/g, '-$1').toLowerCase();
+                        styleProperties.push(`${kebabProp}: ${value}`);
+                    }
+                });
+                
+                // Füge auch explizite inline styles hinzu
+                if (el.style && el.style.cssText) {
+                    const inlineStyles = el.style.cssText.split(';').filter(s => s.trim());
+                    inlineStyles.forEach(style => {
+                        if (style.trim() && !styleProperties.some(p => p.startsWith(style.trim().split(':')[0]))) {
+                            styleProperties.push(style.trim());
+                        }
+                    });
+                }
+                
+                if (styleProperties.length > 0) {
+                    // Erstelle einen eindeutigen Selektor
+                    let selector = '';
+                    if (el.id) {
+                        selector = `#${el.id}`;
+                    } else if (el.className && typeof el.className === 'string') {
+                        const classes = el.className.split(' ').filter(c => c.trim()).join('.');
+                        if (classes) {
+                            selector = `.${classes}`;
+                        } else {
+                            selector = el.tagName.toLowerCase();
+                        }
+                    } else {
+                        selector = el.tagName.toLowerCase();
+                    }
+                    
+                    // Füge einen eindeutigen Index hinzu, falls nötig
+                    const uniqueSelector = `${selector}[data-pdf-el="${index}"]`;
+                    
+                    styles.push(`${uniqueSelector} { ${styleProperties.join('; ')}; }`);
+                    
+                    // Setze auch data-Attribut auf dem Element für Selektierung
+                    el.setAttribute('data-pdf-el', index);
+                }
+            } catch (e) {
+                console.warn('⚠️ Fehler beim Extrahieren von Styles für Element:', el, e);
+            }
+        });
+        
+        return styles.join('\n');
     }
     
     getGoogleFontsUrlForCoverLetter(fontFamily) {
@@ -3288,17 +3582,17 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
         this.showToast('PDF wird erstellt...', 'info');
         
         try {
-            const pdfBytes = await this.generatePDFBytes();
+            const pdfResult = await this.generatePDFBytes();
             
             const jobData = this.collectJobData();
             const filename = `Anschreiben_${(jobData.companyName || 'Bewerbung').replace(/\s+/g, '_')}_${new Date().toISOString().slice(0,10)}.pdf`;
             
-            // Konvertiere ArrayBuffer zu Blob falls nötig
-            const blob = pdfBytes instanceof ArrayBuffer 
-                ? new Blob([pdfBytes], { type: 'application/pdf' })
-                : pdfBytes instanceof Blob 
-                    ? pdfBytes 
-                    : new Blob([pdfBytes], { type: 'application/pdf' });
+            // Konvertiere zu Blob (Lambda gibt Blob zurück, jsPDF gibt ArrayBuffer)
+            const blob = pdfResult instanceof Blob 
+                ? pdfResult 
+                : pdfResult instanceof ArrayBuffer 
+                    ? new Blob([pdfResult], { type: 'application/pdf' })
+                    : new Blob([pdfResult], { type: 'application/pdf' });
             
             // Download
             const url = URL.createObjectURL(blob);
@@ -3316,6 +3610,7 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
             
         } catch (error) {
             console.error('PDF Export Error:', error);
+            this.showToast(`Fehler beim PDF-Export: ${error.message || 'Unbekannter Fehler'}`, 'error');
             // Fallback zu Print
             this.showToast('Druckdialog geöffnet (Fallback)', 'warning');
             window.print();
