@@ -171,9 +171,64 @@ formFields.forEach(fieldId => {
             saveTimeout = setTimeout(() => {
                 saveField(fieldId, field.value);
             }, 2000); // 2 Sekunden nach letzter Änderung
+            
+            // Update Design Editor Preview wenn geöffnet
+            if (window.designEditor && document.getElementById('designEditorModal')?.classList.contains('active')) {
+                window.designEditor.updatePreview();
+            }
         });
     }
 });
+
+// Update Design Editor bei Änderungen in allen Formularfeldern
+function setupDesignEditorAutoUpdate() {
+    // Alle Input-Felder im Resume-Formular
+    const form = document.getElementById('resumeForm');
+    if (!form) return;
+    
+    // Event-Listener für alle Inputs, Textareas und Selects
+    const updatePreviewDebounced = (() => {
+        let timeout;
+        return () => {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                if (window.designEditor && document.getElementById('designEditorModal')?.classList.contains('active')) {
+                    console.log('🔄 Aktualisiere Design-Editor Preview nach Formular-Änderung');
+                    window.designEditor.updatePreview();
+                }
+            }, 500); // 500ms Debounce
+        };
+    })();
+    
+    // Alle Inputs, Textareas und Selects
+    form.querySelectorAll('input, textarea, select').forEach(field => {
+        field.addEventListener('input', updatePreviewDebounced);
+        field.addEventListener('change', updatePreviewDebounced);
+    });
+    
+    // Auch für dynamisch hinzugefügte Felder (Experience, Education, etc.)
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            mutation.addedNodes.forEach((node) => {
+                if (node.nodeType === 1) { // Element node
+                    node.querySelectorAll('input, textarea, select').forEach(field => {
+                        field.addEventListener('input', updatePreviewDebounced);
+                        field.addEventListener('change', updatePreviewDebounced);
+                    });
+                }
+            });
+        });
+    });
+    
+    observer.observe(form, { childList: true, subtree: true });
+}
+
+// Setup nach DOMContentLoaded
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupDesignEditorAutoUpdate);
+} else {
+    setupDesignEditorAutoUpdate();
+}
 
 // Save single field
 async function saveField(fieldName, value) {
@@ -3073,25 +3128,41 @@ function handleDrop(e) {
 
 async function exportToPDF() {
     try {
-        showNotification('PDF wird generiert...', 'info');
-        
-        // Sammle alle Daten
+        showNotification('PDF wird über Design-Export generiert...', 'info');
+
+        // Vereinheitlichter Export: immer Design-Editor-Pipeline (resume_design_settings + Lambda PDF generator).
+        // Dadurch werden Design-Parameter zuverlässig übernommen und der Browser-Print-Fallback vermieden.
+
+        // Initialisiere/öffne Design Editor falls nötig (Modal darf kurz sichtbar werden)
+        if (!window.designEditor) {
+            if (typeof openDesignEditor === 'function') {
+                openDesignEditor();
+            } else {
+                console.warn('⚠️ openDesignEditor() nicht verfügbar – versuche DesignEditor direkt zu initialisieren');
+                if (typeof DesignEditor === 'function') {
+                    window.designEditor = new DesignEditor();
+                }
+            }
+        }
+
+        // Warte kurz, damit Preview/Settings initialisiert sind
+        await new Promise(resolve => setTimeout(resolve, 150));
+
+        if (window.designEditor && typeof window.designEditor.exportToPDF === 'function') {
+            await window.designEditor.exportToPDF();
+            return;
+        }
+
+        // Letzter Fallback: alter Print-Dialog (nur wenn Design-Export nicht verfügbar ist)
+        console.warn('⚠️ Design-Export nicht verfügbar – verwende Print-Fallback');
         const resumeData = collectFormData();
         const styleSettings = JSON.parse(localStorage.getItem('resume_style') || '{}');
-        
-        // Generiere HTML für den Lebenslauf
         const resumeHtml = generateResumeHTML(resumeData, styleSettings);
-        
-        // Öffne Druckdialog
         const printWindow = window.open('', '_blank');
         printWindow.document.write(resumeHtml);
         printWindow.document.close();
-        
-        // Warte bis geladen und drucke
         printWindow.onload = function() {
-            setTimeout(() => {
-                printWindow.print();
-            }, 500);
+            setTimeout(() => printWindow.print(), 500);
         };
         
     } catch (error) {

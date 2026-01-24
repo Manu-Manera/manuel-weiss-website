@@ -1779,6 +1779,9 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
         const generatedLetter = document.getElementById('generatedLetter');
         if (generatedLetter) {
             generatedLetter.style.display = 'block';
+            // Stelle sicher, dass es auch im DOM sichtbar ist (auch wenn CSS es versteckt)
+            generatedLetter.style.visibility = 'visible';
+            generatedLetter.style.opacity = '1';
             console.log('✅ Generated Letter angezeigt');
         } else {
             console.error('❌ generatedLetter Element nicht gefunden!');
@@ -2818,9 +2821,15 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
     async generatePDFWithLambda() {
         console.log('🔄 Generiere Anschreiben-PDF mit direkter HTML-zu-PDF Konvertierung (AWS Lambda)...');
         
-        const letterElement = document.getElementById('generatedLetter');
-        if (!letterElement || letterElement.style.display === 'none') {
+        let letterElement = document.getElementById('generatedLetter');
+        if (!letterElement) {
             throw new Error('Anschreiben nicht gefunden. Bitte zuerst ein Anschreiben generieren.');
+        }
+        
+        // Stelle sicher, dass das Element sichtbar ist (auch wenn display: none war)
+        if (letterElement.style.display === 'none' || window.getComputedStyle(letterElement).display === 'none') {
+            console.warn('⚠️ generatedLetter ist versteckt - mache es sichtbar für Export');
+            letterElement.style.display = 'block';
         }
         
         // Klone das Letter-Element (wie Resume-Editor)
