@@ -5360,14 +5360,12 @@ class DesignEditor {
                         cssText = this.replaceCSSVariables(cssText);
                         // Ersetze auch calc() Ausdrücke mit CSS-Variablen
                         cssText = this.replaceCalcExpressions(cssText);
-                        // WICHTIG (PDF): Entferne min-height/max-height/height von .design-resume-preview,
-                        // da diese zu übermäßigem Leerraum führen können
-                        if (cssText.includes('.design-resume-preview')) {
-                            // Entferne height, min-height und max-height aus der Regel
-                            cssText = cssText.replace(/height\s*:\s*[^;]+;?/gi, '');
-                            cssText = cssText.replace(/min-height\s*:\s*[^;]+;?/gi, '');
-                            cssText = cssText.replace(/max-height\s*:\s*[^;]+;?/gi, '');
-                        }
+                        // WICHTIG (PDF): Entferne height/min-height/max-height aus ALLEN CSS-Regeln,
+                        // da diese zu übermäßigem Leerraum und frühen Seitenumbrüchen führen können.
+                        // Dies gilt für html, body, .design-resume-preview und alle anderen Selektoren.
+                        cssText = cssText.replace(/height\s*:\s*[^;]+;?/gi, '');
+                        cssText = cssText.replace(/min-height\s*:\s*[^;]+;?/gi, '');
+                        cssText = cssText.replace(/max-height\s*:\s*[^;]+;?/gi, '');
                         styles.push(cssText);
                     } catch (e) {
                         // Ignoriere Regeln, die nicht gelesen werden können
@@ -5537,10 +5535,15 @@ class DesignEditor {
         }
         
         // Extrahiere alle CSS-Styles (WICHTIG: Vor dem HTML-Generieren, damit alle Styles verfügbar sind)
-        const allCSS = this.extractAllCSS();
+        let allCSS = this.extractAllCSS();
         
         // Extrahiere auch alle inline Styles aus dem Element und seinen Kindern
-        const inlineStyles = this.extractInlineStyles(element);
+        let inlineStyles = this.extractInlineStyles(element);
+        
+        // WICHTIG (PDF): Zusätzliche Filterung - entferne min-height: 297mm aus dem gesamten CSS-String,
+        // falls die Filterung in extractAllCSS() nicht alle Fälle erwischt hat (z.B. in zusammengesetzten CSS-Regeln)
+        allCSS = allCSS.replace(/min-height\s*:\s*297[^;]*;?/gi, '');
+        inlineStyles = inlineStyles.replace(/min-height\s*:\s*297[^;]*;?/gi, '');
         
         // Google Fonts Link (robust nach gewählter Schrift)
         const fontFamily = this.settings.fontFamily || "'Inter', sans-serif";
@@ -5549,7 +5552,7 @@ class DesignEditor {
         
         // Generiere vollständiges HTML5-Dokument
         const html = `<!DOCTYPE html>
-<!-- exportSource:designEditor exportVersion:2026-01-24j settingsHash:${settingsHash} -->
+<!-- exportSource:designEditor exportVersion:2026-01-24l settingsHash:${settingsHash} -->
 <html lang="de">
 <head>
     <meta charset="UTF-8">
@@ -5567,6 +5570,8 @@ class DesignEditor {
             width: 210mm;
             margin: 0;
             padding: 0;
+            height: auto !important;
+            min-height: 0 !important;
             font-family: ${fontFamily};
             font-size: ${this.settings.fontSize || 11}pt;
             line-height: ${this.settings.lineHeight || 1.5};
@@ -5579,6 +5584,8 @@ class DesignEditor {
         
         body {
             width: 210mm;
+            height: auto !important;
+            min-height: 0 !important;
         }
         
         .design-resume-preview {
@@ -5640,6 +5647,7 @@ class DesignEditor {
             box-shadow: none !important;
             background: #ffffff !important;
             /* Pagination: kein fixes Seiten-Minimum erzwingen (kann zu frühen Umbrüchen/Leerraum führen) */
+            height: auto !important;
             min-height: auto !important;
             transform: none !important;
             transform-origin: top left !important;
@@ -5674,6 +5682,12 @@ class DesignEditor {
             page-break-inside: auto !important;
             overflow: visible !important;
             transform: none !important;
+        }
+
+        /* Export-only: Entferne feste Höhen von allen Elementen (außer Bildern) für korrekte Pagination */
+        .design-resume-preview *:not(img):not(svg):not(canvas) {
+            height: auto !important;
+            min-height: 0 !important;
         }
 
         /* Pagination: Chrome kann durch widows/orphans unnötig viel Leerraum lassen */
