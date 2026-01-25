@@ -5649,7 +5649,22 @@ class DesignEditor {
                     }
 
                     const message = errorData.error || errorData.message || `HTTP ${response.status}`;
+                    const errorType = errorData.type || 'Unknown';
                     const retryableStatus = response.status >= 500 || response.status === 429;
+
+                    // Detailliertes Error-Logging mit HTML-Info
+                    const htmlSizeKB = Math.round(htmlContent.length / 1024);
+                    const imageCount = (htmlContent.match(/data:image\/[^"'\s]+/g) || []).length;
+                    
+                    console.error(`❌ PDF-Generator Fehler (Attempt ${attempt}/${maxAttempts}):`, {
+                        status: response.status,
+                        statusText: response.statusText,
+                        error: message,
+                        type: errorType,
+                        htmlSize: `${htmlSizeKB}KB`,
+                        imageCount: imageCount,
+                        stack: errorData.stack
+                    });
 
                     if (attempt < maxAttempts && retryableStatus) {
                         console.warn(`⚠️ PDF-Generator HTTP ${response.status} – retry:`, message);
@@ -5657,7 +5672,25 @@ class DesignEditor {
                         continue;
                     }
 
-                    throw new Error(`PDF-Generierung fehlgeschlagen: ${message}`);
+                    // Spezifische Fehlermeldungen basierend auf Status-Code
+                    let userMessage = 'PDF-Generierung fehlgeschlagen';
+                    if (response.status === 400) {
+                        if (message.includes('HTML content too large') || message.includes('exceeds maximum size')) {
+                            userMessage = `HTML-Dokument zu groß (${htmlSizeKB}KB). Bitte reduzieren Sie die Anzahl oder Größe der Bilder.`;
+                        } else if (message.includes('Invalid HTML')) {
+                            userMessage = 'Ungültiges HTML-Dokument. Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.';
+                        } else {
+                            userMessage = `Ungültige Anfrage: ${message}`;
+                        }
+                    } else if (response.status === 500) {
+                        userMessage = `Server-Fehler beim PDF-Export (${htmlSizeKB}KB, ${imageCount} Bilder). Bitte versuchen Sie es erneut oder vereinfachen Sie das Dokument.`;
+                    } else if (response.status === 504) {
+                        userMessage = 'PDF-Generierung dauerte zu lange. Bitte versuchen Sie es erneut oder vereinfachen Sie das Dokument.';
+                    } else {
+                        userMessage = `PDF-Generierung fehlgeschlagen: ${message}`;
+                    }
+
+                    throw new Error(userMessage);
                 }
             
             // API Gateway gibt Base64 direkt im Body zurück (wegen isBase64Encoded: true)
