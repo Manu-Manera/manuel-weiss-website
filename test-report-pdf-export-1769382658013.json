@@ -1,0 +1,198 @@
+[
+  {
+    "scenario": "Szenario 1: Minimales Dokument (ohne Bilder)",
+    "timestamp": "2026-01-25T23:08:54.740Z",
+    "success": true,
+    "validations": {
+      "htmlBefore": {
+        "length": 1189,
+        "lengthKB": 1,
+        "imageCount": 0,
+        "hasValidDataUrls": false,
+        "isValidHTML": false,
+        "imageSizes": [],
+        "totalImageSize": 0,
+        "totalImageSizeKB": 0,
+        "largestImageSize": 0,
+        "largestImageSizeKB": 0
+      },
+      "request": {
+        "htmlLength": 319828,
+        "hasHtml": true,
+        "hasContent": false,
+        "hasSettings": false,
+        "imageCount": 3
+      },
+      "lambdaRequest": {
+        "requestId": "6aed497a-50fd-4619-acc5-6376df534284",
+        "timestamp": "2026-01-25T23:09:00.773Z",
+        "status": 200
+      },
+      "lambdaLogs": {
+        "requestId": "6aed497a-50fd-4619-acc5-6376df534284",
+        "analyzed": true,
+        "note": "Log-Analyse würde hier AWS CLI verwenden"
+      }
+    },
+    "errors": [],
+    "warnings": []
+  },
+  {
+    "scenario": "Szenario 2: Dokument mit kleinen Bildern (<500KB)",
+    "timestamp": "2026-01-25T23:09:18.948Z",
+    "success": true,
+    "validations": {
+      "htmlBefore": {
+        "length": 1189,
+        "lengthKB": 1,
+        "imageCount": 0,
+        "hasValidDataUrls": false,
+        "isValidHTML": false,
+        "imageSizes": [],
+        "totalImageSize": 0,
+        "totalImageSizeKB": 0,
+        "largestImageSize": 0,
+        "largestImageSizeKB": 0
+      },
+      "request": {
+        "htmlLength": 319828,
+        "hasHtml": true,
+        "hasContent": false,
+        "hasSettings": false,
+        "imageCount": 3
+      },
+      "lambdaRequest": {
+        "requestId": "7500d75a-8be2-4e37-bfb7-213c4fed10e9",
+        "timestamp": "2026-01-25T23:09:24.965Z",
+        "status": 200
+      },
+      "lambdaLogs": {
+        "requestId": "7500d75a-8be2-4e37-bfb7-213c4fed10e9",
+        "analyzed": true,
+        "note": "Log-Analyse würde hier AWS CLI verwenden"
+      }
+    },
+    "errors": [],
+    "warnings": []
+  },
+  {
+    "scenario": "Szenario 3: Dokument mit großen Bildern (>500KB)",
+    "timestamp": "2026-01-25T23:09:43.162Z",
+    "success": true,
+    "validations": {
+      "htmlBefore": {
+        "length": 1189,
+        "lengthKB": 1,
+        "imageCount": 0,
+        "hasValidDataUrls": false,
+        "isValidHTML": false,
+        "imageSizes": [],
+        "totalImageSize": 0,
+        "totalImageSizeKB": 0,
+        "largestImageSize": 0,
+        "largestImageSizeKB": 0
+      },
+      "request": {
+        "htmlLength": 319828,
+        "hasHtml": true,
+        "hasContent": false,
+        "hasSettings": false,
+        "imageCount": 3
+      },
+      "lambdaRequest": {
+        "requestId": "0247fedf-c129-4238-a47d-07c9aa629563",
+        "timestamp": "2026-01-25T23:09:49.162Z",
+        "status": 200
+      },
+      "lambdaLogs": {
+        "requestId": "0247fedf-c129-4238-a47d-07c9aa629563",
+        "analyzed": true,
+        "note": "Log-Analyse würde hier AWS CLI verwenden"
+      }
+    },
+    "errors": [],
+    "warnings": [
+      "Erwartete Bild-Kompression, aber keine großen Bilder gefunden"
+    ]
+  },
+  {
+    "scenario": "Szenario 4: Sehr großes Dokument (>8MB HTML)",
+    "timestamp": "2026-01-25T23:10:07.369Z",
+    "success": true,
+    "validations": {
+      "htmlBefore": {
+        "length": 1189,
+        "lengthKB": 1,
+        "imageCount": 0,
+        "hasValidDataUrls": false,
+        "isValidHTML": false,
+        "imageSizes": [],
+        "totalImageSize": 0,
+        "totalImageSizeKB": 0,
+        "largestImageSize": 0,
+        "largestImageSizeKB": 0
+      },
+      "request": {
+        "htmlLength": 319828,
+        "hasHtml": true,
+        "hasContent": false,
+        "hasSettings": false,
+        "imageCount": 3
+      },
+      "lambdaRequest": {
+        "requestId": "42aae930-4770-44f3-aa26-de543dc193f3",
+        "timestamp": "2026-01-25T23:10:13.495Z",
+        "status": 200
+      },
+      "lambdaLogs": {
+        "requestId": "42aae930-4770-44f3-aa26-de543dc193f3",
+        "analyzed": true,
+        "note": "Log-Analyse würde hier AWS CLI verwenden"
+      }
+    },
+    "errors": [],
+    "warnings": [
+      "Erwartete Bild-Kompression, aber keine großen Bilder gefunden"
+    ]
+  },
+  {
+    "scenario": "Szenario 5: Sehr großes PDF (>5MB)",
+    "timestamp": "2026-01-25T23:10:31.708Z",
+    "success": true,
+    "validations": {
+      "htmlBefore": {
+        "length": 1189,
+        "lengthKB": 1,
+        "imageCount": 0,
+        "hasValidDataUrls": false,
+        "isValidHTML": false,
+        "imageSizes": [],
+        "totalImageSize": 0,
+        "totalImageSizeKB": 0,
+        "largestImageSize": 0,
+        "largestImageSizeKB": 0
+      },
+      "request": {
+        "htmlLength": 319828,
+        "hasHtml": true,
+        "hasContent": false,
+        "hasSettings": false,
+        "imageCount": 3
+      },
+      "lambdaRequest": {
+        "requestId": "e2b63530-d5dc-421a-a7e6-e2ce6d088f69",
+        "timestamp": "2026-01-25T23:10:37.771Z",
+        "status": 200
+      },
+      "lambdaLogs": {
+        "requestId": "e2b63530-d5dc-421a-a7e6-e2ce6d088f69",
+        "analyzed": true,
+        "note": "Log-Analyse würde hier AWS CLI verwenden"
+      }
+    },
+    "errors": [],
+    "warnings": [
+      "Erwartete Bild-Kompression, aber keine großen Bilder gefunden"
+    ]
+  }
+]
