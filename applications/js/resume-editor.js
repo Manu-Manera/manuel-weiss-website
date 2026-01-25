@@ -337,7 +337,13 @@ async function uploadAndProcessPDF(file) {
         updateProgress(0, 'PDF wird gelesen...');
         
         // 1. Text aus PDF extrahieren mit PDF.js
-        const pdfText = await extractTextFromPDF(file);
+        let pdfText;
+        try {
+            pdfText = await extractTextFromPDF(file);
+        } catch (pdfError) {
+            console.error('PDF-Extraktion fehlgeschlagen:', pdfError);
+            throw new Error(`PDF konnte nicht gelesen werden: ${pdfError.message}`);
+        }
         
         if (!pdfText || pdfText.trim().length < 50) {
             throw new Error('Konnte keinen Text aus der PDF extrahieren. Bitte prüfen Sie, ob die PDF Textinhalt enthält.');
@@ -355,7 +361,7 @@ async function uploadAndProcessPDF(file) {
             apiKey = apiKey.apiKey || apiKey.key || apiKey.openai || null;
         }
         
-        if (!apiKey || typeof apiKey !== 'string') {
+        if (!apiKey || typeof apiKey !== 'string' || apiKey.trim().length === 0) {
             console.error('❌ API Key ungültig:', apiKey);
             showNotification('OpenAI API-Key nicht gefunden oder ungültig. Bitte im Admin-Panel konfigurieren.', 'error');
             document.getElementById('uploadProgress').style.display = 'none';
@@ -367,10 +373,22 @@ async function uploadAndProcessPDF(file) {
         updateProgress(50, 'KI-Analyse läuft...');
         
         // 3. Mit OpenAI GPT-4o strukturieren
-        const structuredData = await processTextWithGPT(pdfText, apiKey);
+        let structuredData;
+        try {
+            structuredData = await processTextWithGPT(pdfText, apiKey);
+        } catch (gptError) {
+            console.error('GPT-Analyse fehlgeschlagen:', gptError);
+            // Versuche Fallback
+            try {
+                updateProgress(60, 'Fallback-Analyse läuft...');
+                structuredData = await processTextWithGPTFallback(pdfText, apiKey);
+            } catch (fallbackError) {
+                throw new Error(`KI-Analyse fehlgeschlagen: ${gptError.message}. Fallback ebenfalls fehlgeschlagen: ${fallbackError.message}`);
+            }
+        }
         
         if (!structuredData) {
-            throw new Error('KI-Analyse fehlgeschlagen');
+            throw new Error('KI-Analyse fehlgeschlagen - keine Daten erhalten');
         }
         
         console.log('✅ Strukturierte Daten:', structuredData);
@@ -385,7 +403,8 @@ async function uploadAndProcessPDF(file) {
         
     } catch (error) {
         console.error('Error processing PDF:', error);
-        showNotification(`Fehler: ${error.message}`, 'error');
+        const errorMessage = error.message || 'Unbekannter Fehler';
+        showNotification(`Fehler: ${errorMessage}`, 'error');
         document.getElementById('uploadProgress').style.display = 'none';
     }
 }
@@ -1363,17 +1382,30 @@ function populateForm(data) {
         });
     }
     
-    // Populate Skills
+    // Populate Skills (ERWEITERT - unterstützt verschiedene Strukturen)
     if (data.skills) {
-        if (data.skills.technicalSkills && Array.isArray(data.skills.technicalSkills)) {
-            data.skills.technicalSkills.forEach(category => {
-                addTechnicalSkillCategory(category.category || '', category.skills || []);
+        // Unterstütze verschiedene Strukturen
+        const technicalSkills = data.skills.technicalSkills || data.skills.technical || [];
+        const softSkills = data.skills.softSkills || data.skills.soft || [];
+        
+        if (Array.isArray(technicalSkills) && technicalSkills.length > 0) {
+            technicalSkills.forEach(category => {
+                // Unterstütze sowohl {category, skills} als auch {name, level, category}
+                if (category.category && Array.isArray(category.skills)) {
+                    addTechnicalSkillCategory(category.category || '', category.skills || []);
+                } else if (category.name) {
+                    // Einzelner Skill mit Kategorie
+                    const catName = category.category || 'Allgemein';
+                    addTechnicalSkillCategory(catName, [category]);
+                }
             });
         }
         
-        if (data.skills.softSkills && Array.isArray(data.skills.softSkills)) {
-            data.skills.softSkills.forEach(skill => {
-                addSoftSkill(skill.skill || '', skill.examples || []);
+        if (Array.isArray(softSkills) && softSkills.length > 0) {
+            softSkills.forEach(skill => {
+                const skillName = skill.skill || skill.name || '';
+                const examples = skill.examples || [];
+                addSoftSkill(skillName, examples);
             });
         }
     }

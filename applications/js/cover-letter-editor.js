@@ -2437,7 +2437,19 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
                     const relativeX = rect.left - containerRect.left;
                     const relativeY = rect.top - containerRect.top;
                     
-                    this.design.signaturePosition = { x: relativeX, y: relativeY };
+                    // NEU: Finde Unterschriftenlinie und richte Y-Position darauf aus
+                    const signatureLine = container.querySelector('.resume-signature-line, .signature-line');
+                    if (signatureLine) {
+                        const lineRect = signatureLine.getBoundingClientRect();
+                        const lineRelativeY = lineRect.top - containerRect.top;
+                        // Setze Unterschrift genau auf Linie (Y-Position = Linien-Y - Bildhöhe)
+                        const adjustedY = lineRelativeY - rect.height;
+                        this.design.signaturePosition = { x: relativeX, y: adjustedY };
+                        signatureImg.style.top = `${adjustedY}px`;
+                    } else {
+                        this.design.signaturePosition = { x: relativeX, y: relativeY };
+                    }
+                    
                     signatureImg.style.cursor = 'move';
                 }
                 isDragging = false;

@@ -816,7 +816,7 @@
 /* Bullet Points */
 .resume-preview-bullets {
     margin: 0.5rem 0 0 0;
-    padding-left: 1.25rem;
+    padding-left: 0; /* Gleicher Einzug wie normaler Text - Container übernimmt Einzug */
     list-style-type: disc;
 }
 

@@ -39,6 +39,7 @@ class DesignEditor {
         this.setupSignatureExtended();
         this.setupPageNumbers();
         this.setupHeaderFields();
+        this.setupResumeTitlePosition();
         this.setupLanguage();
         this.setupMobile();
         this.applySettings();
@@ -193,6 +194,7 @@ class DesignEditor {
             resumeTitleSize: 10, // pt
             resumeTitleColor: '', // leer = mutedColor verwenden
             resumeTitleSpacing: 3, // letter-spacing in px
+            resumeTitlePosition: 'above-image', // 'above-image', 'left', 'center', 'right', 'same-as-header'
             
             // NEW: Signature (Extended)
             showSignature: false,
@@ -204,6 +206,9 @@ class DesignEditor {
             signatureWidth: 150,
             signatureCustomX: 70, // percentage
             signatureCustomY: 90, // percentage
+            signatureSkew: 0, // Grad für Schrägheit (-45 bis +45)
+            signatureLineWidth: 1, // px (1-5)
+            signatureLineColor: '', // leer = textColor verwenden
             
             // Sections Order & Visibility
             sections: [
@@ -935,8 +940,20 @@ class DesignEditor {
                         templatesGrid.querySelectorAll('.design-template-card').forEach(c => c.classList.remove('active'));
                         card.classList.add('active');
                         
+                        // Behalte showHeaderField beim Template-Wechsel
+                        const currentShowHeaderField = { ...this.settings.showHeaderField };
+                        const preservedSettings = {
+                            profileImageUrl: this.settings.profileImageUrl,
+                            signatureImage: this.settings.signatureImage,
+                        };
+                        
                         this.settings.template = templateId;
                         Object.assign(this.settings, template.settings);
+                        
+                        // Stelle showHeaderField wieder her (wird nicht von Template überschrieben)
+                        this.settings.showHeaderField = { ...currentShowHeaderField, ...(template.settings.showHeaderField || {}) };
+                        if (preservedSettings.profileImageUrl) this.settings.profileImageUrl = preservedSettings.profileImageUrl;
+                        if (preservedSettings.signatureImage) this.settings.signatureImage = preservedSettings.signatureImage;
                         
                         this.updateUIFromSettings();
                         this.applySettings();
@@ -962,11 +979,26 @@ class DesignEditor {
             if (display) display.textContent = fontSizeSlider.value + 'pt';
         }
         
-        // Colors
-        const accentPicker = document.getElementById('designAccentColor');
-        const accentHex = document.getElementById('designAccentColorHex');
-        if (accentPicker) accentPicker.value = this.settings.accentColor;
-        if (accentHex) accentHex.value = this.settings.accentColor;
+        // Colors - Aktualisiere ALLE Farb-Picker
+        const colorSettings = [
+            { id: 'designAccentColor', hexId: 'designAccentColorHex', key: 'accentColor' },
+            { id: 'designTextColor', hexId: 'designTextColorHex', key: 'textColor' },
+            { id: 'designMutedColor', hexId: 'designMutedColorHex', key: 'mutedColor' },
+            { id: 'designBgColor', hexId: 'designBgColorHex', key: 'backgroundColor' },
+            { id: 'designSidebarBg', hexId: 'designSidebarBgHex', key: 'sidebarBackground' },
+            { id: 'designSidebarText', hexId: 'designSidebarTextHex', key: 'sidebarTextColor' },
+            { id: 'designHeaderBg', hexId: 'designHeaderBgHex', key: 'headerBackground' },
+            { id: 'designLeftColumnBg', hexId: 'designLeftColumnBgHex', key: 'leftColumnBg' },
+            { id: 'designRightColumnBg', hexId: 'designRightColumnBgHex', key: 'rightColumnBg' }
+        ];
+        
+        colorSettings.forEach(({ id, hexId, key }) => {
+            const colorPicker = document.getElementById(id);
+            const hexInput = document.getElementById(hexId);
+            const value = this.settings[key] || '#ffffff';
+            if (colorPicker) colorPicker.value = value;
+            if (hexInput) hexInput.value = value;
+        });
         
         document.querySelectorAll('.design-color-preset').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.accent === this.settings.accentColor);
@@ -1441,6 +1473,27 @@ class DesignEditor {
             });
         } catch (e) {}
         
+        // 6. Cloud Photos (wenn eingeloggt)
+        if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
+            try {
+                const cloudPhotos = await window.cloudDataService.getPhotos();
+                if (Array.isArray(cloudPhotos)) {
+                    cloudPhotos.forEach((photo, i) => {
+                        const photoUrl = photo.url || photo.dataUrl;
+                        if (photoUrl && !images.find(x => x.url === photoUrl)) {
+                            images.push({ 
+                                url: photoUrl, 
+                                label: photo.name || `Cloud Foto ${i + 1}`, 
+                                source: 'cloud-photos' 
+                            });
+                        }
+                    });
+                }
+            } catch (e) {
+                console.warn('Cloud Photos konnten nicht geladen werden:', e);
+            }
+        }
+        
         if (images.length === 0) {
             imagesList.innerHTML = `
                 <p style="font-size: 0.75rem; color: var(--design-text-muted); grid-column: span 3; text-align: center; padding: 1rem;">
@@ -1523,11 +1576,45 @@ class DesignEditor {
         }
         
         const reader = new FileReader();
-        reader.onload = (e) => {
-            this.settings.profileImageUrl = e.target.result;
+        reader.onload = async (e) => {
+            const dataUrl = e.target.result;
+            this.settings.profileImageUrl = dataUrl;
             this.saveSettings();
             this.updatePreview();
-            this.showNotification('Profilbild hochgeladen', 'success');
+            
+            // NEU: Speichere auch in Fotos-Sektion
+            if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
+                try {
+                    const photo = {
+                        id: `photo_${Date.now()}`,
+                        name: file.name,
+                        type: file.type,
+                        size: file.size,
+                        dataUrl: dataUrl,
+                        storage: 'local',
+                        createdAt: new Date().toISOString()
+                    };
+                    await window.cloudDataService.savePhoto(photo);
+                    console.log('✅ Foto in Fotos-Sektion gespeichert');
+                } catch (error) {
+                    console.warn('⚠️ Foto konnte nicht in Fotos gespeichert werden:', error);
+                }
+            } else {
+                // Fallback: localStorage
+                let photos = JSON.parse(localStorage.getItem('user_photos') || '[]');
+                photos.unshift({
+                    id: `photo_${Date.now()}`,
+                    name: file.name,
+                    type: file.type,
+                    size: file.size,
+                    dataUrl: dataUrl,
+                    storage: 'local',
+                    createdAt: new Date().toISOString()
+                });
+                localStorage.setItem('user_photos', JSON.stringify(photos));
+            }
+            
+            this.showNotification('Profilbild hochgeladen und in Fotos gespeichert', 'success');
         };
         reader.readAsDataURL(file);
     }
@@ -1689,6 +1776,62 @@ class DesignEditor {
                 if (signatureDate) signatureDate.value = today;
                 this.saveSettings();
                 this.updatePreview();
+            });
+        }
+        
+        // Signature Skew (Schrägheit)
+        const signatureSkewSlider = document.getElementById('signatureSkew');
+        if (signatureSkewSlider) {
+            signatureSkewSlider.value = this.settings.signatureSkew || 0;
+            const skewValueEl = document.getElementById('signatureSkewValue');
+            if (skewValueEl) skewValueEl.textContent = (this.settings.signatureSkew || 0) + '°';
+            signatureSkewSlider.addEventListener('input', (e) => {
+                this.settings.signatureSkew = parseInt(e.target.value);
+                if (skewValueEl) skewValueEl.textContent = this.settings.signatureSkew + '°';
+                this.saveSettings();
+                this.updatePreview();
+            });
+        }
+        
+        // Signature Line Width (Liniendicke)
+        const signatureLineWidthSlider = document.getElementById('signatureLineWidth');
+        if (signatureLineWidthSlider) {
+            signatureLineWidthSlider.value = this.settings.signatureLineWidth || 1;
+            const lineWidthValueEl = document.getElementById('signatureLineWidthValue');
+            if (lineWidthValueEl) lineWidthValueEl.textContent = (this.settings.signatureLineWidth || 1) + 'px';
+            signatureLineWidthSlider.addEventListener('input', (e) => {
+                this.settings.signatureLineWidth = parseInt(e.target.value);
+                if (lineWidthValueEl) lineWidthValueEl.textContent = this.settings.signatureLineWidth + 'px';
+                this.saveSettings();
+                this.updatePreview();
+            });
+        }
+        
+        // Signature Line Color (Linienfarbe)
+        const signatureLineColorPicker = document.getElementById('signatureLineColor');
+        const signatureLineColorHex = document.getElementById('signatureLineColorHex');
+        if (signatureLineColorPicker) {
+            signatureLineColorPicker.value = this.settings.signatureLineColor || this.settings.textColor || '#64748b';
+            if (signatureLineColorHex) signatureLineColorHex.value = this.settings.signatureLineColor || this.settings.textColor || '#64748b';
+            
+            signatureLineColorPicker.addEventListener('input', (e) => {
+                this.settings.signatureLineColor = e.target.value;
+                if (signatureLineColorHex) signatureLineColorHex.value = e.target.value;
+                this.saveSettings();
+                this.updatePreview();
+            });
+        }
+        
+        if (signatureLineColorHex) {
+            signatureLineColorHex.addEventListener('input', (e) => {
+                let value = e.target.value;
+                if (!value.startsWith('#')) value = '#' + value;
+                if (/^#[0-9A-Fa-f]{6}$/.test(value)) {
+                    this.settings.signatureLineColor = value;
+                    if (signatureLineColorPicker) signatureLineColorPicker.value = value;
+                    this.saveSettings();
+                    this.updatePreview();
+                }
             });
         }
     }
@@ -1858,7 +2001,7 @@ class DesignEditor {
             const checkbox = document.getElementById(checkboxId);
             if (checkbox) {
                 // Setze initialen Wert aus Settings
-                checkbox.checked = this.settings.showHeaderField[fieldKey] !== false;
+                checkbox.checked = this.settings.showHeaderField && this.settings.showHeaderField[fieldKey] !== false;
                 
                 // Event Listener für Änderungen
                 checkbox.addEventListener('change', (e) => {
@@ -1868,6 +2011,18 @@ class DesignEditor {
                 });
             }
         });
+    }
+
+    setupResumeTitlePosition() {
+        const positionSelect = document.getElementById('designResumeTitlePosition');
+        if (positionSelect) {
+            positionSelect.value = this.settings.resumeTitlePosition || 'above-image';
+            positionSelect.addEventListener('change', (e) => {
+                this.settings.resumeTitlePosition = e.target.value;
+                this.saveSettings();
+                this.updatePreview();
+            });
+        }
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -2269,8 +2424,8 @@ class DesignEditor {
                     width: 100%;
                     height: 100%;
                     object-fit: cover;
+                    object-position: ${posX}% ${posY}%;
                     transform: scale(${zoomFactor});
-                    transform-origin: ${posX}% ${posY}%;
                 ">
             </div>
         `;
@@ -3327,16 +3482,47 @@ class DesignEditor {
         const titleColor = this.settings.resumeTitleColor || this.settings.mutedColor;
         const titleSpacing = this.settings.resumeTitleSpacing || 3;
         
-        const resumeTitleHtml = showResumeTitle ? `
-            <p class="resume-document-title" style="
-                text-transform: uppercase;
-                letter-spacing: ${titleSpacing}px;
-                font-size: ${titleSize}px;
-                color: ${titleColor};
-                margin-bottom: 8px;
-                font-weight: 500;
-            ">${titleText}</p>
-        ` : '';
+        const resumeTitleHtml = showResumeTitle ? (() => {
+            const position = this.settings.resumeTitlePosition || 'above-image';
+            let positionStyle = '';
+            let alignStyle = '';
+            
+            switch (position) {
+                case 'left':
+                    alignStyle = 'text-align: left;';
+                    break;
+                case 'right':
+                    alignStyle = 'text-align: right;';
+                    break;
+                case 'center':
+                    alignStyle = 'text-align: center;';
+                    break;
+                case 'same-as-header':
+                    alignStyle = `text-align: ${this.settings.headerAlign || 'center'};`;
+                    break;
+                case 'above-image':
+                default:
+                    // Über Profilbild positionieren (wenn vorhanden)
+                    if (this.settings.showProfileImage && data.profileImageUrl) {
+                        positionStyle = 'position: absolute; top: 0; left: 0; width: 100%;';
+                    }
+                    alignStyle = 'text-align: left;';
+                    break;
+            }
+            
+            return `
+                <p class="resume-document-title" style="
+                    text-transform: uppercase;
+                    letter-spacing: ${titleSpacing}px;
+                    font-size: ${titleSize}px;
+                    color: ${titleColor};
+                    margin-bottom: 8px;
+                    font-weight: 500;
+                    ${alignStyle}
+                    ${positionStyle}
+                ">${titleText}</p>
+            `;
+        })() : '';
         
         // Profile image mit Crop-Einstellungen
         let profileImageHtml = '';
@@ -3374,8 +3560,8 @@ class DesignEditor {
                         width: 100%;
                         height: 100%;
                         object-fit: cover;
+                        object-position: ${posX}% ${posY}%;
                         transform: scale(${zoomFactor});
-                        transform-origin: ${posX}% ${posY}%;
                     ">
                 </div>
             `;
@@ -3406,10 +3592,17 @@ class DesignEditor {
         if (data.street && this.settings.showHeaderField?.street !== false) {
             fullAddress = data.street;
             if (data.location && this.settings.showHeaderField?.location !== false) {
-                fullAddress += ', ' + data.location;
+                // Prüfe ob location mit Postleitzahl beginnt (z.B. "8330 Pfäffikon"), kein Komma
+                const locationStartsWithPLZ = /^\d{4,5}\s/.test(data.location);
+                if (locationStartsWithPLZ) {
+                    fullAddress += ' ' + data.location; // Leerzeichen statt Komma
+                } else {
+                    fullAddress += ', ' + data.location; // Komma für normale Standorte
+                }
             }
         } else if (data.address && this.settings.showHeaderField?.address !== false) {
-            fullAddress = data.address;
+            // Wenn address bereits "Straße, PLZ Stadt" Format hat, entferne Komma vor PLZ falls vorhanden
+            fullAddress = data.address.replace(/(\d{4,5}),\s*([A-Za-z])/, '$1 $2'); // "8330, Stadt" -> "8330 Stadt"
         } else if (data.location && this.settings.showHeaderField?.location !== false) {
             fullAddress = data.location;
         }
@@ -3425,7 +3618,14 @@ class DesignEditor {
                 ${(data.email && this.settings.showHeaderField?.email !== false) ? `<span><i class="fas fa-envelope"></i> ${data.email}</span>` : ''}
                 ${(data.linkedin && this.settings.showHeaderField?.linkedin !== false) ? `<span><i class="fab fa-linkedin"></i> <a href="${linkedinDisplay}" target="_blank" rel="noopener" style="color: inherit; text-decoration: none;">${linkedinDisplay}</a></span>` : ''}
                 ${(data.github && this.settings.showHeaderField?.github !== false) ? `<span><i class="fab fa-github"></i> <a href="${githubDisplay}" target="_blank" rel="noopener" style="color: inherit; text-decoration: none;">${githubDisplay}</a></span>` : ''}
-                ${(data.website && this.settings.showHeaderField?.website !== false) ? `<span><i class="fas fa-globe"></i> ${data.website.replace(/https?:\/\//, '')}</span>` : ''}
+                ${(data.website && this.settings.showHeaderField?.website !== false) ? (() => {
+                    let websiteUrl = data.website;
+                    if (!websiteUrl.startsWith('http://') && !websiteUrl.startsWith('https://')) {
+                        websiteUrl = 'https://' + websiteUrl;
+                    }
+                    const websiteDisplay = websiteUrl.replace(/https?:\/\//, '');
+                    return `<span><i class="fas fa-globe"></i> <a href="${websiteUrl}" target="_blank" rel="noopener" style="color: inherit; text-decoration: none;">${websiteDisplay}</a></span>`;
+                })() : ''}
             </div>
         `;
         
@@ -3811,10 +4011,15 @@ class DesignEditor {
                     ` : ''}
                     ${signatureImage ? `
                         <div class="resume-signature-image" style="margin-bottom: 4px;">
-                            <img src="${signatureImage}" alt="Unterschrift" style="height: auto; width: ${width}px; max-width: 100%;">
+                            <img src="${signatureImage}" alt="Unterschrift" style="
+                                height: auto; 
+                                width: ${width}px; 
+                                max-width: 100%;
+                                transform: ${this.settings.signatureSkew ? `skew(${this.settings.signatureSkew}deg)` : 'none'};
+                            ">
                         </div>
                     ` : ''}
-                    ${showLine ? `<div class="resume-signature-line" style="width: ${width}px; border-bottom: 1px solid ${this.settings.textColor}; margin: 0 auto;"></div>` : ''}
+                    ${showLine ? `<div class="resume-signature-line" style="width: ${width}px; border-bottom: ${this.settings.signatureLineWidth || 1}px solid ${this.settings.signatureLineColor || this.settings.textColor || '#64748b'}; margin: 0 auto;"></div>` : ''}
                 </div>
             </div>
         `;
@@ -5550,6 +5755,9 @@ class DesignEditor {
         const googleFontsUrl = this.getGoogleFontsUrl(fontFamily);
         const googleFontsLink = googleFontsUrl ? `<link href="${googleFontsUrl}" rel="stylesheet">` : '';
         
+        // Font Awesome CSS für Icons im PDF
+        const fontAwesomeLink = '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">';
+        
         // Generiere vollständiges HTML5-Dokument
         const html = `<!DOCTYPE html>
 <!-- exportSource:designEditor exportVersion:2026-01-24l settingsHash:${settingsHash} -->
@@ -5559,6 +5767,7 @@ class DesignEditor {
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Lebenslauf PDF Export</title>
     ${googleFontsLink}
+    ${fontAwesomeLink}
     <style>
         * {
             margin: 0;

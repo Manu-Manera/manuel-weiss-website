@@ -684,6 +684,16 @@
                                 <input type="range" id="designResumeTitleSpacing" class="design-slider" min="0" max="8" value="3">
                                 <span id="designResumeTitleSpacingValue" class="design-slider-value">3px</span>
                             </div>
+                            <div class="design-form-group">
+                                <label>Position</label>
+                                <select id="designResumeTitlePosition" class="design-select">
+                                    <option value="above-image">Über Profilbild (falls vorhanden)</option>
+                                    <option value="left">Linksbündig</option>
+                                    <option value="center">Mittig</option>
+                                    <option value="right">Rechtsbündig</option>
+                                    <option value="same-as-header">Gleich wie Header-Schrift</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1214,6 +1224,16 @@
                                 </div>
                             </div>
                             
+                            <!-- Unterschrift Schrägheit -->
+                            <div class="design-form-group">
+                                <label>Schrägheit (falls Foto schief fotografiert)</label>
+                                <div class="signature-size-controls">
+                                    <input type="range" id="signatureSkew" min="-45" max="45" value="0" 
+                                           oninput="document.getElementById('signatureSkewValue').textContent = this.value + '°'">
+                                    <span id="signatureSkewValue" style="font-size: 0.75rem; min-width: 50px;">0°</span>
+                                </div>
+                            </div>
+                            
                             <!-- Benutzerdefinierte Position (nur wenn "custom" gewählt) -->
                             <div id="customSignaturePosition" class="design-options-container" style="display: none;">
                                 <div class="design-form-group">
@@ -1251,6 +1271,23 @@
                                     <input type="checkbox" id="designSignatureLine" checked>
                                     <span class="design-toggle-label">Linie unter Unterschrift</span>
                                 </label>
+                            </div>
+                            <div id="signatureLineOptions" class="design-options-container" style="display: block;">
+                                <div class="design-form-group">
+                                    <label>Liniendicke</label>
+                                    <div class="signature-size-controls">
+                                        <input type="range" id="signatureLineWidth" min="1" max="5" value="1" 
+                                               oninput="document.getElementById('signatureLineWidthValue').textContent = this.value + 'px'">
+                                        <span id="signatureLineWidthValue" style="font-size: 0.75rem; min-width: 50px;">1px</span>
+                                    </div>
+                                </div>
+                                <div class="design-form-group">
+                                    <label>Linienfarbe</label>
+                                    <div style="display: flex; gap: 8px;">
+                                        <input type="color" id="signatureLineColor" class="design-color-picker" value="#64748b">
+                                        <input type="text" id="signatureLineColorHex" class="design-input" style="flex:1;" placeholder="#64748b">
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
