@@ -5504,9 +5504,54 @@ class DesignEditor {
         this.applyDesignSettingsToElement(clone, true); // true = isPDFExport
         
         // Generiere vollständiges HTML-Dokument (wie andere Anwendungen es machen - OHNE GPT!)
-        const htmlContent = this.generateCompleteHTMLDocument(clone);
+        let htmlContent = this.generateCompleteHTMLDocument(clone);
         
-        console.log('📄 HTML generiert, Länge:', htmlContent.length, 'Zeichen');
+        console.log('📄 HTML generiert, Länge:', htmlContent.length, 'Zeichen (', Math.round(htmlContent.length / 1024), 'KB)');
+        
+        // WICHTIG: HTML-Größen-Validierung und automatische Kompression
+        const MAX_HTML_SIZE = 8 * 1024 * 1024; // 8MB für Sicherheit (Lambda-Limit ist 10MB)
+        const ABSOLUTE_MAX_SIZE = 10 * 1024 * 1024; // 10MB - absolutes Maximum
+        
+        if (htmlContent.length > MAX_HTML_SIZE) {
+            console.warn(`⚠️ HTML zu groß (${Math.round(htmlContent.length / 1024)}KB), komprimiere Bilder aggressiver...`);
+            
+            // Komprimiere alle Bilder im Clone aggressiver
+            const allImages = clone.querySelectorAll('img');
+            let recompressedCount = 0;
+            
+            for (const img of allImages) {
+                const src = img.getAttribute('src');
+                if (src && src.startsWith('data:image/') && src.length > 200000) {
+                    // Aggressivere Kompression: max 200KB pro Bild
+                    const compressed = await this.compressDataUrl(src, 200000);
+                    if (compressed !== src) {
+                        img.setAttribute('src', compressed);
+                        recompressedCount++;
+                    }
+                }
+            }
+            
+            // Generiere HTML erneut mit komprimierten Bildern
+            htmlContent = this.generateCompleteHTMLDocument(clone);
+            console.log(`📦 HTML nach Re-Kompression: ${htmlContent.length} Zeichen (${Math.round(htmlContent.length / 1024)}KB), ${recompressedCount} Bilder neu komprimiert`);
+            
+            if (htmlContent.length > ABSOLUTE_MAX_SIZE) {
+                const sizeMB = (htmlContent.length / (1024 * 1024)).toFixed(2);
+                const errorMsg = `HTML-Dokument zu groß (${sizeMB}MB). Bitte reduzieren Sie die Anzahl oder Größe der Bilder.`;
+                console.error('❌', errorMsg);
+                this.showNotification(errorMsg, 'error');
+                throw new Error(errorMsg);
+            } else if (htmlContent.length > MAX_HTML_SIZE) {
+                const sizeMB = (htmlContent.length / (1024 * 1024)).toFixed(2);
+                console.warn(`⚠️ HTML immer noch groß (${sizeMB}MB), aber unter Limit. Export wird versucht...`);
+                this.showNotification(`Warnung: Dokument ist sehr groß (${sizeMB}MB). Export kann länger dauern.`, 'warning');
+            }
+        }
+        
+        // Zähle Bilder im HTML für Logging
+        const imageCount = (htmlContent.match(/data:image\/[^"'\s]+/g) || []).length;
+        console.log(`📊 HTML-Statistik: ${Math.round(htmlContent.length / 1024)}KB, ${imageCount} eingebettete Bilder`);
+        
         console.log('🚀 Verwende direkte PDF-Generierung (ohne GPT) - wie andere Anwendungen');
         
         // Hole Auth Token falls vorhanden
@@ -5837,6 +5882,7 @@ class DesignEditor {
      */
     async inlineImagesAsDataUrls(root, options = {}) {
         const maxImages = Number(options.maxImages || 30);
+        const maxImageSize = Number(options.maxImageSize || 500000); // 500KB default
         const imgs = Array.from(root.querySelectorAll('img')).slice(0, maxImages);
 
         const blobToDataUrl = (blob) => new Promise((resolve, reject) => {
@@ -5846,22 +5892,60 @@ class DesignEditor {
             reader.readAsDataURL(blob);
         });
 
+        let compressedCount = 0;
+        let totalSizeBefore = 0;
+        let totalSizeAfter = 0;
+
         for (const img of imgs) {
             try {
                 const src = (img.getAttribute('src') || '').trim();
-                if (!src || src.startsWith('data:')) continue;
+                if (!src || src.startsWith('data:')) {
+                    // Bereits dataUrl - prüfe ob komprimiert werden muss
+                    if (src.startsWith('data:image/') && src.length > maxImageSize) {
+                        console.log(`📦 Komprimiere bereits eingebettetes Bild (${Math.round(src.length / 1024)}KB)...`);
+                        const compressed = await this.compressDataUrl(src, maxImageSize);
+                        if (compressed !== src) {
+                            totalSizeBefore += src.length;
+                            totalSizeAfter += compressed.length;
+                            compressedCount++;
+                            img.setAttribute('src', compressed);
+                            console.log(`✅ Bild komprimiert: ${Math.round(src.length / 1024)}KB → ${Math.round(compressed.length / 1024)}KB`);
+                        }
+                    }
+                    continue;
+                }
 
                 // Best-effort fetch; wenn CORS blockt, lassen wir es so stehen.
                 const response = await fetch(src, { mode: 'cors', credentials: 'omit' });
                 if (!response.ok) continue;
                 const blob = await response.blob();
-                const dataUrl = await blobToDataUrl(blob);
+                let dataUrl = await blobToDataUrl(blob);
+                
                 if (dataUrl && dataUrl.startsWith('data:image/')) {
+                    // Komprimiere Bild wenn es zu groß ist
+                    if (dataUrl.length > maxImageSize) {
+                        console.log(`📦 Komprimiere Bild vor Einbettung (${Math.round(dataUrl.length / 1024)}KB)...`);
+                        const originalSize = dataUrl.length;
+                        dataUrl = await this.compressDataUrl(dataUrl, maxImageSize);
+                        if (dataUrl.length < originalSize) {
+                            totalSizeBefore += originalSize;
+                            totalSizeAfter += dataUrl.length;
+                            compressedCount++;
+                            console.log(`✅ Bild komprimiert: ${Math.round(originalSize / 1024)}KB → ${Math.round(dataUrl.length / 1024)}KB`);
+                        }
+                    }
+                    
                     img.setAttribute('src', dataUrl);
                 }
             } catch (e) {
+                console.warn('⚠️ Bild konnte nicht eingebettet werden:', e);
                 // Ignorieren – nicht jedes Bild ist einbettbar
             }
+        }
+
+        if (compressedCount > 0) {
+            const reduction = Math.round((1 - totalSizeAfter / totalSizeBefore) * 100);
+            console.log(`📦 ${compressedCount} Bilder komprimiert: ${Math.round(totalSizeBefore / 1024)}KB → ${Math.round(totalSizeAfter / 1024)}KB (${reduction}% Reduktion)`);
         }
     }
     

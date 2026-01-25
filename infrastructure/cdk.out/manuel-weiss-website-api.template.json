@@ -8877,7 +8877,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-038333965110-eu-central-1",
-     "S3Key": "2a8a6523be43c517f7cc3c306cfcd6b9645c7d9e64274162684172f00b757705.zip"
+     "S3Key": "b0c5b38abb080551f872892faba8e6b2823480e53fe394a3bc61148d6550c480.zip"
     },
     "Environment": {
      "Variables": {
@@ -8920,7 +8920,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "manuel-weiss-website-api/PdfGeneratorFunction/Resource",
-    "aws:asset:path": "asset.2a8a6523be43c517f7cc3c306cfcd6b9645c7d9e64274162684172f00b757705",
+    "aws:asset:path": "asset.b0c5b38abb080551f872892faba8e6b2823480e53fe394a3bc61148d6550c480",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }
@@ -8930,7 +8930,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-038333965110-eu-central-1",
-     "S3Key": "e4ea57efad51184802c45b1e7db69709f89f4a869d1b7f7102367339d2113d09.zip"
+     "S3Key": "52b11445fdf77b5aacca33a4d2274614bbd70ee9668e38a2b86fde457fae3e46.zip"
     },
     "Environment": {
      "Variables": {
@@ -8974,7 +8974,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "manuel-weiss-website-api/HeroVideoSettingsFunction/Resource",
-    "aws:asset:path": "asset.e4ea57efad51184802c45b1e7db69709f89f4a869d1b7f7102367339d2113d09",
+    "aws:asset:path": "asset.52b11445fdf77b5aacca33a4d2274614bbd70ee9668e38a2b86fde457fae3e46",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }
