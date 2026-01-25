@@ -2,15 +2,9 @@
 
 ## Vorbereitung
 
-1. **Lokalen Server starten** (falls noch nicht läuft):
-   ```bash
-   cd "/Users/manumanera/Documents/GitHub/Persönliche Website"
-   python3 -m http.server 8080
+1. **Chrome Browser öffnen** und navigiere zu:
    ```
-
-2. **Chrome Browser öffnen** und navigiere zu:
-   ```
-   http://localhost:8080/applications/resume-editor.html
+   https://manuel-weiss.ch/applications/resume-editor.html
    ```
 
 3. **Browser-Konsole öffnen** (F12 → Console Tab)

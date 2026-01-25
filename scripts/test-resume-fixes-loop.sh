@@ -32,9 +32,7 @@ echo ""
 echo "📋 Test-Anleitung:"
 echo ""
 echo "1. Öffne Chrome Browser"
-echo "2. Navigiere zu: file://$PROJECT_DIR/applications/resume-editor.html"
-echo "   Oder starte lokalen Server: python3 -m http.server 8080"
-echo "   Dann: http://localhost:8080/applications/resume-editor.html"
+echo "2. Navigiere zu: https://manuel-weiss.ch/applications/resume-editor.html"
 echo ""
 echo "3. Öffne Browser-Konsole (F12 → Console Tab)"
 echo ""
@@ -52,17 +50,14 @@ echo ""
 echo "═══════════════════════════════════════════"
 echo ""
 
-# Prüfe ob lokaler Server läuft
-if curl -s http://localhost:8080 > /dev/null 2>&1; then
-    echo "✅ Lokaler Server läuft auf http://localhost:8080"
+# Prüfe ob Live-Site erreichbar ist
+if curl -s https://manuel-weiss.ch > /dev/null 2>&1; then
+    echo "✅ Live-Site erreichbar: https://manuel-weiss.ch"
     echo ""
-    echo "🌐 Öffne im Browser: http://localhost:8080/applications/resume-editor.html"
+    echo "🌐 Öffne im Browser: https://manuel-weiss.ch/applications/resume-editor.html"
     echo ""
 else
-    echo "💡 Tipp: Starte lokalen Server mit:"
-    echo "   python3 -m http.server 8080"
-    echo "   oder"
-    echo "   npx http-server -p 8080"
+    echo "⚠️ Live-Site nicht erreichbar. Bitte prüfe die Verbindung."
     echo ""
 fi
 

@@ -14,7 +14,7 @@ class ResumeEditorFixTester {
         this.page = null;
         this.testResults = [];
         this.resumeData = null;
-        this.baseUrl = process.env.TEST_URL || 'http://localhost:8080';
+        this.baseUrl = process.env.TEST_URL || 'https://manuel-weiss.ch';
         this.fixes = []; // Für automatische Korrekturen
     }
 
