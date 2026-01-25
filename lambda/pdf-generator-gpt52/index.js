@@ -256,7 +256,10 @@ exports.handler = async (event) => {
 
         // Generate PDF
         // WICHTIG: Margins werden im HTML als Padding gehandhabt, daher Puppeteer-Margins auf 0 setzen
-        const pdfOptions = {
+        // API Gateway Limit: ~6MB für Response-Payload
+        const MAX_PDF_SIZE = 5 * 1024 * 1024; // 5MB für Sicherheit (API Gateway Limit ist ~6MB)
+        
+        let pdfOptions = {
             format: options.format || 'A4',
             printBackground: options.printBackground !== false,
             preferCSSPageSize: false, // WICHTIG: false für korrekte Seitengröße
@@ -273,7 +276,33 @@ exports.handler = async (event) => {
 
         console.log('📄 Generating PDF with options:', JSON.stringify(pdfOptions));
 
-        const pdf = await page.pdf(pdfOptions);
+        let pdf = await page.pdf(pdfOptions);
+        
+        // Wenn PDF zu groß ist, reduziere Qualität
+        if (pdf.length > MAX_PDF_SIZE) {
+            console.warn(`⚠️ PDF zu groß (${Math.round(pdf.length / 1024)}KB), reduziere Qualität...`);
+            
+            // Versuche mit reduzierter Qualität (scale < 1 reduziert Dateigröße)
+            pdfOptions = {
+                ...pdfOptions,
+                scale: 0.8 // Reduziere auf 80% für kleinere Dateigröße
+            };
+            
+            pdf = await page.pdf(pdfOptions);
+            console.log(`📦 PDF nach Qualitätsreduktion: ${Math.round(pdf.length / 1024)}KB`);
+            
+            // Wenn immer noch zu groß, versuche noch aggressiver
+            if (pdf.length > MAX_PDF_SIZE) {
+                console.warn(`⚠️ PDF immer noch zu groß (${Math.round(pdf.length / 1024)}KB), reduziere weiter...`);
+                pdfOptions = {
+                    ...pdfOptions,
+                    scale: 0.6 // Reduziere auf 60%
+                };
+                
+                pdf = await page.pdf(pdfOptions);
+                console.log(`📦 PDF nach weiterer Qualitätsreduktion: ${Math.round(pdf.length / 1024)}KB`);
+            }
+        }
 
         await browser.close();
         browser = null;
