@@ -161,6 +161,25 @@ exports.handler = async (event) => {
             openaiApiKey // OpenAI API Key (nur für GPT-Modus)
         } = body;
 
+        // Validiere HTML-Länge (max 10MB)
+        if (html && (typeof html !== 'string' || html.length === 0)) {
+            console.error('❌ PDF generation failed: Invalid HTML content');
+            return {
+                statusCode: 400,
+                headers: CORS_HEADERS,
+                body: JSON.stringify({ error: 'Invalid HTML content' })
+            };
+        }
+
+        if (html && html.length > 10 * 1024 * 1024) {
+            console.error('❌ PDF generation failed: HTML content too large:', html.length, 'bytes');
+            return {
+                statusCode: 400,
+                headers: CORS_HEADERS,
+                body: JSON.stringify({ error: 'HTML content exceeds maximum size of 10MB' })
+            };
+        }
+
         let finalHTML = html;
 
         // WICHTIG: Wenn html direkt bereitgestellt wird, verwende es OHNE GPT (schneller)
@@ -275,13 +294,32 @@ exports.handler = async (event) => {
 
     } catch (error) {
         console.error('❌ PDF generation error:', error);
+        console.error('❌ Error name:', error.name);
+        console.error('❌ Error message:', error.message);
+        console.error('❌ Error stack:', error.stack);
+        
+        // Unterscheide zwischen verschiedenen Fehlertypen
+        let statusCode = 500;
+        let errorMessage = 'PDF generation failed';
+        
+        if (error.name === 'TimeoutError' || error.message.includes('timeout')) {
+            statusCode = 504;
+            errorMessage = 'PDF generation timed out. The HTML content may be too complex or resources may be loading too slowly.';
+        } else if (error.message.includes('Navigation')) {
+            statusCode = 400;
+            errorMessage = 'Invalid HTML content: Navigation error during PDF generation.';
+        } else if (error.message.includes('Protocol error')) {
+            statusCode = 500;
+            errorMessage = 'Browser protocol error during PDF generation.';
+        }
         
         return {
-            statusCode: 500,
+            statusCode: statusCode,
             headers: CORS_HEADERS,
             body: JSON.stringify({
-                error: 'PDF generation failed',
+                error: errorMessage,
                 message: error.message,
+                type: error.name,
                 stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
             })
         };
