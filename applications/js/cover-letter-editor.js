@@ -2883,6 +2883,24 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
         // WICHTIG: Canvas-Inhalte (z.B. Unterschrift) in Clone übernehmen
         this.replaceCanvasesWithImages(letterElement, clone);
         
+        // Stelle sicher, dass signatureImage im Clone vorhanden ist
+        const originalSignatureImg = letterElement.querySelector('#signatureImage');
+        const cloneSignatureImg = clone.querySelector('#signatureImage');
+        if (originalSignatureImg && cloneSignatureImg && this.design.signatureImage) {
+            cloneSignatureImg.src = this.design.signatureImage;
+            cloneSignatureImg.style.display = 'block';
+            // Position und Größe übernehmen
+            if (this.design.signaturePosition) {
+                cloneSignatureImg.style.left = `${this.design.signaturePosition.x}px`;
+                cloneSignatureImg.style.top = `${this.design.signaturePosition.y}px`;
+            }
+            if (this.design.signatureSize) {
+                cloneSignatureImg.style.width = `${this.design.signatureSize}px`;
+                cloneSignatureImg.style.height = 'auto';
+            }
+            console.log('✅ signatureImage im Clone gesetzt');
+        }
+        
         // WICHTIG: Nach Möglichkeit Bilder in den Clone einbetten (data: URLs), damit Lambda sie sicher rendern kann
         await this.inlineImagesAsDataUrls(clone);
         
@@ -2907,6 +2925,10 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
         
         // WICHTIG: Ersetze ALLE CSS-Variablen im geklonten HTML durch tatsächliche Werte
         this.replaceCSSVariablesInElement(clone);
+        
+        // WICHTIG: Wende Design-Settings direkt auf den Clone an (für PDF-Export)
+        // Das stellt sicher, dass alle Styles korrekt übernommen werden
+        this.applyDesignSettingsToElement(clone, true); // true = isPDFExport
         
         // Stelle sicher, dass das Element die richtige Struktur hat
         if (!clone.classList.contains('generated-letter')) {
@@ -3179,18 +3201,64 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
         for (const img of imgs) {
             try {
                 const src = (img.getAttribute('src') || '').trim();
-                if (!src || src.startsWith('data:')) continue;
                 
-                // Best-effort fetch; wenn CORS blockt, lassen wir es so stehen.
-                const response = await fetch(src, { mode: 'cors', credentials: 'omit' });
-                if (!response.ok) continue;
-                const blob = await response.blob();
-                const dataUrl = await blobToDataUrl(blob);
-                if (dataUrl && dataUrl.startsWith('data:image/')) {
-                    img.setAttribute('src', dataUrl);
+                // Überspringe leere Quellen
+                if (!src) continue;
+                
+                // Prüfe ob bereits data: URL vorhanden ist (aber prüfe auf Gültigkeit)
+                if (src.startsWith('data:')) {
+                    // Prüfe ob data: URL gültig ist
+                    if (src.length > 100 && src.includes('base64,')) {
+                        continue; // Gültige data: URL - überspringe
+                    } else {
+                        console.warn('⚠️ Ungültige data: URL gefunden:', src.substring(0, 50));
+                        // Versuche trotzdem fortzufahren
+                    }
+                }
+                
+                // Handle blob: URLs
+                if (src.startsWith('blob:')) {
+                    try {
+                        const response = await fetch(src);
+                        if (response.ok) {
+                            const blob = await response.blob();
+                            const dataUrl = await blobToDataUrl(blob);
+                            if (dataUrl && dataUrl.startsWith('data:image/')) {
+                                img.setAttribute('src', dataUrl);
+                                console.log('✅ blob: URL zu data: URL konvertiert');
+                            } else {
+                                console.warn('⚠️ blob: URL konnte nicht zu data: URL konvertiert werden');
+                            }
+                        } else {
+                            console.warn('⚠️ blob: URL konnte nicht geladen werden:', response.status);
+                        }
+                    } catch (e) {
+                        console.warn('⚠️ blob: URL konnte nicht konvertiert werden:', e.message);
+                    }
+                    continue;
+                }
+                
+                // Best-effort fetch für externe URLs
+                try {
+                    const response = await fetch(src, { mode: 'cors', credentials: 'omit' });
+                    if (!response.ok) {
+                        console.warn('⚠️ Bild konnte nicht geladen werden:', src, `(${response.status})`);
+                        continue;
+                    }
+                    const blob = await response.blob();
+                    const dataUrl = await blobToDataUrl(blob);
+                    if (dataUrl && dataUrl.startsWith('data:image/')) {
+                        img.setAttribute('src', dataUrl);
+                        console.log('✅ Bild zu data: URL konvertiert');
+                    } else {
+                        console.warn('⚠️ Bild-Konvertierung fehlgeschlagen: Ungültiges Format');
+                    }
+                } catch (e) {
+                    console.warn('⚠️ Bild-Konvertierung fehlgeschlagen (CORS?):', src, e.message);
+                    // Bei CORS-Fehler: Versuche src direkt zu verwenden (Lambda kann es vielleicht laden)
                 }
             } catch (e) {
-                // Ignorieren – nicht jedes Bild ist einbettbar
+                console.warn('⚠️ Bild-Verarbeitung fehlgeschlagen:', e.message);
             }
         }
     }
@@ -3246,6 +3314,118 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
             if (newStyleText !== styleText) {
                 element.setAttribute('style', newStyleText);
             }
+        }
+    }
+    
+    /**
+     * Wendet alle Design-Settings direkt auf Elemente an (für PDF-Export)
+     * Ersetzt CSS-Variablen durch tatsächliche Werte
+     */
+    applyDesignSettingsToElement(element, isPDFExport = false) {
+        // Wende alle Design-Settings direkt auf Elemente an (ersetzt CSS-Variablen)
+        const fontFamily = this.design.font || 'Inter';
+        const fontSize = this.design.fontSize || 11;
+        const lineHeight = this.design.lineHeight || 1.6;
+        const margin = this.design.margin || 25;
+        const color = this.design.color || '#6366f1';
+        const paragraphSpacing = this.design.paragraphSpacing || 10;
+        const signatureGap = this.design.signatureGap || 32;
+        
+        // Haupt-Container
+        const mainContainer = element.classList.contains('generated-letter') 
+            ? element 
+            : element.querySelector('.generated-letter') || element;
+        
+        if (mainContainer) {
+            mainContainer.style.setProperty('font-family', `'${fontFamily}', sans-serif`, 'important');
+            mainContainer.style.setProperty('font-size', fontSize + 'pt', 'important');
+            mainContainer.style.setProperty('line-height', lineHeight, 'important');
+            mainContainer.style.setProperty('--letter-font', `'${fontFamily}', sans-serif`, 'important');
+            mainContainer.style.setProperty('--letter-font-size', `${fontSize}pt`, 'important');
+            mainContainer.style.setProperty('--letter-line-height', String(lineHeight), 'important');
+            mainContainer.style.setProperty('--letter-margin', `${margin}mm`, 'important');
+            mainContainer.style.setProperty('--letter-accent', color, 'important');
+            mainContainer.style.setProperty('--letter-paragraph-gap', `${paragraphSpacing}px`, 'important');
+            mainContainer.style.setProperty('--paragraph-spacing', `${paragraphSpacing}px`, 'important');
+            mainContainer.style.setProperty('--letter-signature-gap', `${signatureGap}px`, 'important');
+            mainContainer.style.setProperty('--header-top-margin', `${this.design.headerTopMargin || 0}mm`, 'important');
+            mainContainer.style.setProperty('--recipient-top-margin', `${this.design.recipientTopMargin || 25}mm`, 'important');
+            mainContainer.style.setProperty('--subject-margin-top', `${this.design.subjectMarginTop || 15}mm`, 'important');
+            mainContainer.style.setProperty('--subject-margin-bottom', `${this.design.subjectMarginBottom || 10}mm`, 'important');
+            mainContainer.style.setProperty('--date-top-offset', `${this.design.dateTopOffset || 0}mm`, 'important');
+            
+            if (isPDFExport) {
+                mainContainer.style.setProperty('padding', `${margin}mm`, 'important');
+                mainContainer.style.setProperty('margin', '0', 'important');
+                mainContainer.style.setProperty('transform', 'none', 'important');
+                mainContainer.style.setProperty('transform-origin', 'top left', 'important');
+            }
+        }
+        
+        // Header Contrast
+        if (this.design.headerContrast && this.design.headerContrast !== 'auto') {
+            mainContainer.classList.remove('header-contrast-light', 'header-contrast-dark', 'header-contrast-auto');
+            mainContainer.classList.add(`header-contrast-${this.design.headerContrast}`);
+        }
+        
+        // Text-Formatierung
+        const senderName = element.querySelector('#senderName');
+        if (senderName) {
+            senderName.style.setProperty('font-weight', this.design.senderNameBold !== false ? '600' : 'normal', 'important');
+        }
+        
+        const companyName = element.querySelector('#companyNameDisplay');
+        if (companyName) {
+            companyName.style.setProperty('font-weight', this.design.companyNameBold ? '700' : '500', 'important');
+        }
+        
+        const subjectLabel = element.querySelector('.subject-label');
+        if (subjectLabel) {
+            subjectLabel.style.setProperty('font-weight', this.design.subjectBold !== false ? '600' : 'normal', 'important');
+        }
+        
+        const signatureName = element.querySelector('#signatureName');
+        if (signatureName) {
+            signatureName.style.setProperty('font-weight', this.design.signatureNameBold ? '600' : 'normal', 'important');
+        }
+        
+        // Betreff-Abstände
+        const subjectEl = element.querySelector('.letter-subject');
+        if (subjectEl) {
+            subjectEl.style.setProperty('margin-top', `${this.design.subjectMarginTop || 15}mm`, 'important');
+            subjectEl.style.setProperty('margin-bottom', `${this.design.subjectMarginBottom || 10}mm`, 'important');
+        }
+        
+        // Datum-Position
+        const letterHeader = element.querySelector('.letter-header');
+        if (letterHeader) {
+            letterHeader.classList.remove('date-top-left', 'date-top-right', 'date-below-sender', 'date-above-recipient');
+            letterHeader.classList.add(`date-${this.design.datePosition || 'top-right'}`);
+        }
+        
+        // Datum-Offset
+        const dateContainer = element.querySelector('.letter-date-container');
+        if (dateContainer) {
+            dateContainer.style.setProperty('margin-top', `${this.design.dateTopOffset || 0}mm`, 'important');
+        }
+        
+        // Signature Image Position und Größe
+        const signatureImg = element.querySelector('#signatureImage');
+        if (signatureImg && this.design.signatureImage) {
+            signatureImg.style.setProperty('display', 'block', 'important');
+            if (this.design.signaturePosition) {
+                signatureImg.style.setProperty('left', `${this.design.signaturePosition.x}px`, 'important');
+                signatureImg.style.setProperty('top', `${this.design.signaturePosition.y}px`, 'important');
+            }
+            if (this.design.signatureSize) {
+                signatureImg.style.setProperty('width', `${this.design.signatureSize}px`, 'important');
+                signatureImg.style.setProperty('height', 'auto', 'important');
+            }
+        }
+        
+        // Style-spezifische Anpassungen (falls vorhanden)
+        if (typeof this.applyLetterStyle === 'function') {
+            this.applyLetterStyle(mainContainer);
         }
     }
     
