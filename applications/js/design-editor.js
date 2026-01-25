@@ -4881,6 +4881,14 @@ class DesignEditor {
             throw new Error('PDF Generator API URL nicht gefunden. Bitte aws-app-config.js prüfen.');
         }
         
+        // Validiere URL-Format
+        try {
+            new URL(apiUrl);
+        } catch (e) {
+            console.error('❌ Ungültige PDF Generator API URL:', apiUrl);
+            throw new Error(`Ungültige PDF Generator API URL: ${apiUrl}. Bitte aws-app-config.js prüfen.`);
+        }
+        
         console.log('📡 Sende HTML direkt an PDF-Generator Lambda (ohne GPT):', apiUrl);
         console.log('📦 HTML Content Preview:', htmlContent.substring(0, 200) + '...');
         
@@ -4918,6 +4926,15 @@ class DesignEditor {
 
             try {
                 console.log(`📡 PDF-Export Attempt ${attempt}/${maxAttempts}`);
+                console.log('📡 PDF-Export Request Details:', {
+                    url: apiUrl,
+                    htmlLength: htmlContent.length,
+                    format: format,
+                    addPageNumbers: addPageNumbers,
+                    attempt: attempt,
+                    hasAuthToken: !!authToken
+                });
+                
                 const response = await fetch(apiUrl, {
                     method: 'POST',
                     headers,
@@ -4994,14 +5011,37 @@ class DesignEditor {
                 console.log('📦 Base64 Response Länge:', base64Data.length, 'Zeichen');
                 console.log('📦 Base64 Preview:', base64Data.substring(0, 50) + '...');
                 
+                // Validiere Response-Größe (sollte mindestens einige KB sein für ein gültiges PDF)
+                if (base64Data.length < 100) {
+                    console.error('❌ Response zu klein für gültiges PDF:', base64Data.length, 'Zeichen');
+                    throw new Error('PDF-Generierung fehlgeschlagen: Response zu klein. Möglicherweise wurde ein Fehler zurückgegeben.');
+                }
+                
                 // Prüfe, ob es wirklich Base64 ist (nicht bereits ein Fehler-JSON)
                 if (base64Data.trim().startsWith('{')) {
                     try {
                         const errorData = JSON.parse(base64Data);
-                        throw new Error(`PDF-Generierung fehlgeschlagen: ${errorData.error || errorData.message || 'Unbekannter Fehler'}`);
+                        const errorMessage = errorData.error || errorData.message || 'Unbekannter Fehler';
+                        const errorType = errorData.type || 'Unknown';
+                        console.error('❌ PDF-Generator Fehler-Response:', {
+                            error: errorMessage,
+                            type: errorType,
+                            status: response.status
+                        });
+                        throw new Error(`PDF-Generierung fehlgeschlagen: ${errorMessage}`);
                     } catch (jsonError) {
                         // Wenn es kein JSON ist, ist es wahrscheinlich Base64
+                        if (jsonError.message.includes('PDF-Generierung fehlgeschlagen')) {
+                            throw jsonError; // Re-throw wenn es ein Fehler-JSON war
+                        }
                     }
+                }
+                
+                // Validiere Base64-Format (sollte nur Base64-Zeichen enthalten)
+                const base64Regex = /^[A-Za-z0-9+/=\s]+$/;
+                if (!base64Regex.test(base64Data.trim())) {
+                    console.error('❌ Response enthält ungültige Base64-Zeichen');
+                    throw new Error('PDF-Generierung fehlgeschlagen: Ungültiges Base64-Format in Response.');
                 }
                 
                 // Safari-kompatible Dekodierung (Chunk-basiert für große Strings)
@@ -5027,6 +5067,20 @@ class DesignEditor {
                 }
                 
                 const pdfBlob = new Blob([bytes], { type: 'application/pdf' });
+                
+                // Validiere PDF-Größe (sollte mindestens einige KB sein)
+                if (pdfBlob.size < 1000) {
+                    console.error('❌ PDF Blob zu klein:', pdfBlob.size, 'Bytes');
+                    throw new Error('PDF-Generierung fehlgeschlagen: Generiertes PDF ist zu klein. Möglicherweise wurde ein Fehler zurückgegeben.');
+                }
+                
+                // Validiere PDF-Header (sollte mit %PDF beginnen)
+                const pdfHeader = await pdfBlob.slice(0, 4).text();
+                if (!pdfHeader.startsWith('%PDF')) {
+                    console.error('❌ PDF Blob hat ungültigen Header:', pdfHeader);
+                    throw new Error('PDF-Generierung fehlgeschlagen: Generiertes PDF hat ungültigen Header.');
+                }
+                
                 console.log('✅ PDF generiert (Base64 dekodiert):', pdfBlob.size, 'Bytes');
                 return pdfBlob;
                 
@@ -5043,8 +5097,17 @@ class DesignEditor {
                 clearTimeout(timeoutId);
                 lastError = error;
 
+                // Detailliertes Error-Logging
+                console.error('❌ PDF-Export Fehler (Attempt', attempt, '):', {
+                    name: error?.name,
+                    message: error?.message,
+                    stack: error?.stack,
+                    type: error?.constructor?.name
+                });
+
                 const isAbort = error && error.name === 'AbortError';
                 const isNetworkOrCors = error instanceof TypeError || /Failed to fetch/i.test(String(error && error.message ? error.message : error));
+                const isTimeout = isAbort || /timeout/i.test(String(error?.message || ''));
 
                 // In der Praxis: "CORS blocked" ist oft ein Gateway-Error ohne CORS-Header (502/504/413).
                 if (attempt < maxAttempts && (isAbort || isNetworkOrCors)) {
@@ -5053,15 +5116,25 @@ class DesignEditor {
                     continue;
                 }
 
-                if (isAbort) {
+                // Spezifische Fehlermeldungen für verschiedene Fehlertypen
+                if (isTimeout || isAbort) {
                     console.error('❌ PDF Export Timeout: Die Anfrage dauerte länger als 25 Sekunden');
-                    throw new Error('PDF-Generierung dauerte zu lange. Bitte versuchen Sie es erneut.');
+                    const timeoutMessage = 'PDF-Generierung dauerte zu lange. Bitte versuchen Sie es erneut oder vereinfachen Sie das Dokument.';
+                    this.showNotification(timeoutMessage, 'error');
+                    throw new Error(timeoutMessage);
                 }
 
                 if (isNetworkOrCors) {
-                    this.showNotification('PDF-Generator nicht erreichbar (Netzwerk/CORS). Bitte erneut versuchen.', 'error');
+                    const networkMessage = 'PDF-Generator nicht erreichbar (Netzwerk/CORS). Bitte erneut versuchen.';
+                    console.error('❌ Network/CORS Error:', error);
+                    this.showNotification(networkMessage, 'error');
+                    throw new Error(networkMessage);
                 }
 
+                // Generischer Fehler mit detaillierter Meldung
+                const errorMessage = error?.message || 'Unbekannter Fehler beim PDF-Export';
+                console.error('❌ PDF-Export fehlgeschlagen:', errorMessage);
+                this.showNotification(`PDF-Export fehlgeschlagen: ${errorMessage}`, 'error');
                 throw error;
             }
         }

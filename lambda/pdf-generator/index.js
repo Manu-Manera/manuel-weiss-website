@@ -40,6 +40,7 @@ exports.handler = async (event) => {
         const { html, options = {} } = body;
 
         if (!html) {
+            console.error('❌ PDF generation failed: HTML content is required');
             return {
                 statusCode: 400,
                 headers: CORS_HEADERS,
@@ -47,8 +48,27 @@ exports.handler = async (event) => {
             };
         }
 
+        // Validiere HTML-Länge (max 10MB)
+        if (typeof html !== 'string' || html.length === 0) {
+            console.error('❌ PDF generation failed: Invalid HTML content');
+            return {
+                statusCode: 400,
+                headers: CORS_HEADERS,
+                body: JSON.stringify({ error: 'Invalid HTML content' })
+            };
+        }
+
+        if (html.length > 10 * 1024 * 1024) {
+            console.error('❌ PDF generation failed: HTML content too large:', html.length, 'bytes');
+            return {
+                statusCode: 400,
+                headers: CORS_HEADERS,
+                body: JSON.stringify({ error: 'HTML content exceeds maximum size of 10MB' })
+            };
+        }
+
         console.log('🔄 Starting PDF generation...');
-        console.log('📄 HTML length:', html.length);
+        console.log('📄 HTML length:', html.length, 'bytes');
         console.log('⚙️ Options:', JSON.stringify(options));
 
         // Launch Puppeteer with Chromium
@@ -72,7 +92,8 @@ exports.handler = async (event) => {
         await page.evaluateHandle(() => document.fonts.ready);
 
         // Additional wait for any dynamic content
-        await page.waitForTimeout(1000);
+        // WICHTIG: page.waitForTimeout() ist deprecated, verwende Promise-basierte Lösung
+        await new Promise(resolve => setTimeout(resolve, 1000));
 
         // Generate PDF
         // WICHTIG: Margins werden im HTML als Padding gehandhabt, daher Puppeteer-Margins auf 0 setzen
@@ -113,13 +134,32 @@ exports.handler = async (event) => {
 
     } catch (error) {
         console.error('❌ PDF generation error:', error);
+        console.error('❌ Error name:', error.name);
+        console.error('❌ Error message:', error.message);
+        console.error('❌ Error stack:', error.stack);
+        
+        // Unterscheide zwischen verschiedenen Fehlertypen
+        let statusCode = 500;
+        let errorMessage = 'PDF generation failed';
+        
+        if (error.name === 'TimeoutError' || error.message.includes('timeout')) {
+            statusCode = 504;
+            errorMessage = 'PDF generation timed out. The HTML content may be too complex or resources may be loading too slowly.';
+        } else if (error.message.includes('Navigation')) {
+            statusCode = 400;
+            errorMessage = 'Invalid HTML content: Navigation error during PDF generation.';
+        } else if (error.message.includes('Protocol error')) {
+            statusCode = 500;
+            errorMessage = 'Browser protocol error during PDF generation.';
+        }
         
         return {
-            statusCode: 500,
+            statusCode: statusCode,
             headers: CORS_HEADERS,
             body: JSON.stringify({
-                error: 'PDF generation failed',
+                error: errorMessage,
                 message: error.message,
+                type: error.name,
                 stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
             })
         };
