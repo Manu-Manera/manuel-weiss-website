@@ -27,6 +27,19 @@ async function testPDFExport() {
         const context = await browser.createBrowserContext();
         const page = await context.newPage();
 
+        // EXPLIZITE CACHE-LÖSCHUNG vor Test-Start
+        console.log('🧹 Lösche alle Caches vor Test-Start...');
+        
+        // CDP (Chrome DevTools Protocol) für Browser-Cache-Löschung
+        try {
+            const client = await page.target().createCDPSession();
+            await client.send('Network.clearBrowserCache');
+            await client.send('Network.setCacheDisabled', { cacheDisabled: true });
+            console.log('✅ Browser-Cache über CDP gelöscht');
+        } catch (cdpError) {
+            console.warn('⚠️ CDP Cache-Löschung fehlgeschlagen:', cdpError.message);
+        }
+
         // Console-Logs vom Browser abfangen
         page.on('console', msg => {
             const type = msg.type();
@@ -44,11 +57,40 @@ async function testPDFExport() {
         });
 
         // Request/Response Monitoring
+        let pdfRequestBody = null;
+        page.on('request', request => {
+            const url = request.url();
+            if (url.includes('pdf-generator') && request.method() === 'POST') {
+                const postData = request.postData();
+                if (postData) {
+                    try {
+                        pdfRequestBody = JSON.parse(postData);
+                        console.log('📡 PDF-Generator Request Body:', {
+                            hasHtml: !!pdfRequestBody.html,
+                            hasContent: !!pdfRequestBody.content,
+                            hasSettings: !!pdfRequestBody.settings,
+                            htmlLength: pdfRequestBody.html ? pdfRequestBody.html.length : 0
+                        });
+                        
+                        // Prüfe ob Request html Parameter enthält (nicht content + settings)
+                        if (!pdfRequestBody.html && (pdfRequestBody.content || pdfRequestBody.settings)) {
+                            console.error('❌ Request verwendet Legacy-Modus (content + settings statt html)');
+                        }
+                    } catch (e) {
+                        console.warn('⚠️ Could not parse request body:', e.message);
+                    }
+                }
+            }
+        });
+
         page.on('response', async response => {
             const url = response.url();
             if (url.includes('pdf-generator')) {
                 const status = response.status();
                 console.log(`📡 PDF-Generator Response: ${status} ${response.statusText()}`);
+                const contentType = response.headers()['content-type'];
+                console.log(`📡 Response Content-Type: ${contentType}`);
+                
                 if (status !== 200) {
                     try {
                         const text = await response.text();
@@ -56,18 +98,58 @@ async function testPDFExport() {
                     } catch (e) {
                         console.error('❌ Could not read error response');
                     }
+                } else if (contentType && contentType.includes('application/pdf')) {
+                    console.log('✅ PDF Response erhalten (Content-Type: application/pdf)');
                 }
             }
         });
 
         console.log('1️⃣ Navigiere zu Resume Editor...');
-        await page.goto(`${BASE_URL}/applications/resume-editor.html`, {
+        
+        // URL mit Timestamp für Cache-Bypass
+        const urlWithCacheBust = `${BASE_URL}/applications/resume-editor.html?t=${Date.now()}`;
+        
+        await page.goto(urlWithCacheBust, {
             waitUntil: 'networkidle2',
             timeout: 30000
         });
 
         // Warte auf Seite geladen
         await new Promise(resolve => setTimeout(resolve, 2000));
+
+        // EXPLIZITE CACHE-LÖSCHUNG nach Seitenladung (Service Worker, LocalStorage, etc.)
+        console.log('🧹 Lösche Service Worker, LocalStorage und Cache API...');
+        await page.evaluate(() => {
+            // Service Worker löschen
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then(registrations => {
+                    registrations.forEach(reg => {
+                        reg.unregister().catch(e => console.warn('Service Worker unregister failed:', e));
+                    });
+                });
+            }
+            
+            // Cache API löschen
+            if ('caches' in window) {
+                caches.keys().then(names => {
+                    names.forEach(name => {
+                        caches.delete(name).catch(e => console.warn('Cache delete failed:', e));
+                    });
+                });
+            }
+            
+            // LocalStorage und SessionStorage löschen
+            try {
+                localStorage.clear();
+                sessionStorage.clear();
+            } catch (e) {
+                console.warn('Storage clear failed:', e);
+            }
+        });
+        
+        // Warte kurz, damit Cache-Löschung abgeschlossen ist
+        await new Promise(resolve => setTimeout(resolve, 500));
+        console.log('✅ Cache-Löschung abgeschlossen');
 
         console.log('2️⃣ Öffne Design Editor...');
         // Suche nach Design Editor Button
@@ -218,6 +300,16 @@ async function testPDFExport() {
         if (pdfGenerated || result === 'success') {
             console.log('\n✅ PDF-Export Test ERFOLGREICH!');
             console.log('✅ PDF wurde erfolgreich generiert');
+            
+            // Prüfe Request-Body (sollte html enthalten, nicht content + settings)
+            if (pdfRequestBody) {
+                if (pdfRequestBody.html && !pdfRequestBody.content) {
+                    console.log('✅ Request verwendet korrekten Modus (html Parameter)');
+                } else if (pdfRequestBody.content || pdfRequestBody.settings) {
+                    console.warn('⚠️ Request verwendet Legacy-Modus (content + settings)');
+                }
+            }
+            
             return true;
         }
 
