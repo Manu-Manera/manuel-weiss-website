@@ -156,9 +156,22 @@ class CoverLetterEditor {
                 this.updateOptionButtons();
             }
             
-            // Design laden
+            // Design laden - Deep Merge um sicherzustellen, dass alle Properties erhalten bleiben
             if (letter.design) {
-                this.design = { ...this.design, ...letter.design };
+                console.log('📥 Geladenes Design aus Letter:', JSON.stringify(letter.design, null, 2));
+                console.log('📥 Aktuelles this.design vor Merge:', JSON.stringify(this.design, null, 2));
+                
+                // Deep merge für verschachtelte Objekte (z.B. signaturePosition)
+                this.design = {
+                    ...this.design,
+                    ...letter.design,
+                    // Stelle sicher, dass verschachtelte Objekte nicht komplett überschrieben werden
+                    signaturePosition: letter.design.signaturePosition 
+                        ? { ...this.design.signaturePosition, ...letter.design.signaturePosition }
+                        : (this.design.signaturePosition || letter.design.signaturePosition || null)
+                };
+                
+                console.log('📥 this.design nach Merge:', JSON.stringify(this.design, null, 2));
                 this.updateDesignControls();
             }
             
@@ -254,6 +267,7 @@ class CoverLetterEditor {
             btn.addEventListener('click', () => {
                 const style = btn.dataset.style;
                 this.design.style = style;
+                console.log(`🎨 Design geändert: style = ${style}`);
                 
                 document.querySelectorAll('.style-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
@@ -267,6 +281,7 @@ class CoverLetterEditor {
             btn.addEventListener('click', () => {
                 const color = btn.dataset.color;
                 this.design.color = color;
+                console.log(`🎨 Design geändert: color = ${color}`);
                 
                 document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
@@ -280,8 +295,11 @@ class CoverLetterEditor {
         if (fontSelect) {
             fontSelect.addEventListener('change', (e) => {
                 this.design.font = e.target.value;
+                console.log(`🎨 Design geändert: font = ${e.target.value}`);
                 this.applyDesign();
             });
+        } else {
+            console.warn('⚠️ fontSelect Element nicht gefunden');
         }
 
         // Sliders
@@ -579,14 +597,20 @@ GRUSS: [übersetzte Grußformel]`
         const valueEl = document.getElementById(sliderId.replace('Slider', 'Value'));
         
         if (slider && valueEl) {
-            slider.value = this.design[designKey];
-            valueEl.textContent = this.design[designKey] + unit;
+            // Initialisiere mit aktuellen Design-Wert
+            const currentValue = this.design[designKey] !== undefined ? this.design[designKey] : (slider.value || 0);
+            slider.value = currentValue;
+            valueEl.textContent = currentValue + unit;
             
             slider.addEventListener('input', (e) => {
-                this.design[designKey] = parseFloat(e.target.value);
-                valueEl.textContent = this.design[designKey] + unit;
+                const newValue = parseFloat(e.target.value);
+                this.design[designKey] = newValue;
+                valueEl.textContent = newValue + unit;
                 this.applyDesign();
+                console.log(`🎨 Design geändert: ${designKey} = ${newValue}`);
             });
+        } else {
+            console.warn(`⚠️ Slider nicht gefunden: ${sliderId} oder Value-Element fehlt`);
         }
     }
 
@@ -960,7 +984,20 @@ ${description.substring(0, 2000)}`;
         }
         
         if (letter.design) {
-            this.design = { ...this.design, ...letter.design };
+            console.log('📥 loadCoverLetterById - Geladenes Design:', JSON.stringify(letter.design, null, 2));
+            console.log('📥 loadCoverLetterById - Aktuelles this.design vor Merge:', JSON.stringify(this.design, null, 2));
+            
+            // Deep merge für verschachtelte Objekte
+            this.design = {
+                ...this.design,
+                ...letter.design,
+                // Stelle sicher, dass verschachtelte Objekte nicht komplett überschrieben werden
+                signaturePosition: letter.design.signaturePosition 
+                    ? { ...this.design.signaturePosition, ...letter.design.signaturePosition }
+                    : (this.design.signaturePosition || letter.design.signaturePosition || null)
+            };
+            
+            console.log('📥 loadCoverLetterById - this.design nach Merge:', JSON.stringify(this.design, null, 2));
             this.syncDesignControls();
         }
         
@@ -2606,16 +2643,50 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
             version = `${parts[0]}.${(parseInt(parts[1] || 0) + 1)}`;
         }
         
+        // Normalisiere design object - stelle sicher, dass alle Properties gespeichert werden
+        // Verhindert, dass undefined/null Properties verloren gehen
+        const designToSave = {
+            style: this.design.style || 'modern',
+            font: this.design.font || 'Inter',
+            color: this.design.color || '#6366f1',
+            fontSize: this.design.fontSize || 11,
+            lineHeight: this.design.lineHeight || 1.6,
+            margin: this.design.margin || 25,
+            paragraphSpacing: this.design.paragraphSpacing || 10,
+            signatureGap: this.design.signatureGap || 32,
+            signatureImage: this.design.signatureImage || '',
+            headerTopMargin: this.design.headerTopMargin ?? 0,
+            headerContrast: this.design.headerContrast || 'auto',
+            recipientTopMargin: this.design.recipientTopMargin ?? 25,
+            subjectMarginTop: this.design.subjectMarginTop ?? 15,
+            subjectMarginBottom: this.design.subjectMarginBottom ?? 10,
+            dateFormat: this.design.dateFormat || 'de-long',
+            datePosition: this.design.datePosition || 'top-right',
+            dateTopOffset: this.design.dateTopOffset ?? 0,
+            dateIncludeLocation: this.design.dateIncludeLocation ?? false,
+            senderNameBold: this.design.senderNameBold !== false,
+            companyNameBold: this.design.companyNameBold ?? false,
+            subjectBold: this.design.subjectBold !== false,
+            signatureNameBold: this.design.signatureNameBold ?? false,
+            signaturePosition: this.design.signaturePosition || null,
+            signatureSize: this.design.signatureSize || null
+        };
+        
+        console.log('💾 Speichere Design:', JSON.stringify(this.design, null, 2));
+        console.log('💾 Normalisiertes Design:', JSON.stringify(designToSave, null, 2));
+        
         const data = {
             id: this.currentCoverLetterId || `cl_${Date.now().toString(36)}`,
             content: content,
             jobData: jobData,
             options: this.options,
-            design: this.design,
+            design: designToSave,
             version: version,
             createdAt: this.currentCreatedAt || now,
             updatedAt: now
         };
+        
+        console.log('💾 Gespeichertes Design in data:', JSON.stringify(data.design, null, 2));
         
         this.currentCoverLetterId = data.id;
         this.currentVersion = version;
@@ -5841,11 +5912,14 @@ Gib NUR den Anschreiben-Text zurück, KEINE Meta-Informationen.`;
         const headerTopMarginValue = document.getElementById('headerTopMarginValue');
         if (headerTopMarginSlider) {
             headerTopMarginSlider.addEventListener('input', () => {
-                const value = headerTopMarginSlider.value;
-                this.design.headerTopMargin = parseInt(value);
+                const value = parseInt(headerTopMarginSlider.value);
+                this.design.headerTopMargin = value;
                 if (headerTopMarginValue) headerTopMarginValue.textContent = `${value}mm`;
+                console.log(`🎨 Design geändert: headerTopMargin = ${value}`);
                 this.applyDesign();
             });
+        } else {
+            console.warn('⚠️ headerTopMarginSlider nicht gefunden');
         }
         
         // Header Contrast
@@ -5853,8 +5927,11 @@ Gib NUR den Anschreiben-Text zurück, KEINE Meta-Informationen.`;
         if (headerContrastSelect) {
             headerContrastSelect.addEventListener('change', () => {
                 this.design.headerContrast = headerContrastSelect.value;
+                console.log(`🎨 Design geändert: headerContrast = ${headerContrastSelect.value}`);
                 this.applyDesign();
             });
+        } else {
+            console.warn('⚠️ headerContrastSelect nicht gefunden');
         }
         
         // Recipient Top Margin
@@ -5862,11 +5939,14 @@ Gib NUR den Anschreiben-Text zurück, KEINE Meta-Informationen.`;
         const recipientTopMarginValue = document.getElementById('recipientTopMarginValue');
         if (recipientTopMarginSlider) {
             recipientTopMarginSlider.addEventListener('input', () => {
-                const value = recipientTopMarginSlider.value;
-                this.design.recipientTopMargin = parseInt(value);
+                const value = parseInt(recipientTopMarginSlider.value);
+                this.design.recipientTopMargin = value;
                 if (recipientTopMarginValue) recipientTopMarginValue.textContent = `${value}mm`;
+                console.log(`🎨 Design geändert: recipientTopMargin = ${value}`);
                 this.applyDesign();
             });
+        } else {
+            console.warn('⚠️ recipientTopMarginSlider nicht gefunden');
         }
     }
 
