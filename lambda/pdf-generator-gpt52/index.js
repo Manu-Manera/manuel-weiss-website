@@ -180,7 +180,7 @@ exports.handler = async (event) => {
             };
         }
 
-        let finalHTML = html;
+        let finalHTML = html || '';
 
         // WICHTIG: Wenn html direkt bereitgestellt wird, verwende es OHNE GPT (schneller)
         if (html) {
@@ -293,9 +293,10 @@ exports.handler = async (event) => {
         };
 
     } catch (error) {
-        const htmlSize = finalHTML ? finalHTML.length : 0;
+        // Stelle sicher, dass finalHTML immer ein String ist
+        const htmlSize = (finalHTML && typeof finalHTML === 'string') ? finalHTML.length : 0;
         const htmlSizeKB = Math.round(htmlSize / 1024);
-        const imageCount = finalHTML ? (finalHTML.match(/data:image\/[^"'\s]+/g) || []).length : 0;
+        const imageCount = (finalHTML && typeof finalHTML === 'string') ? (finalHTML.match(/data:image\/[^"'\s]+/g) || []).length : 0;
         
         console.error('❌ PDF generation error:', error);
         console.error('❌ Error name:', error.name);

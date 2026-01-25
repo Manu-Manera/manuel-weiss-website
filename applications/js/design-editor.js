@@ -5515,29 +5515,65 @@ class DesignEditor {
         if (htmlContent.length > MAX_HTML_SIZE) {
             console.warn(`⚠️ HTML zu groß (${Math.round(htmlContent.length / 1024)}KB), komprimiere Bilder aggressiver...`);
             
-            // Komprimiere alle Bilder im Clone aggressiver
-            const allImages = clone.querySelectorAll('img');
-            let recompressedCount = 0;
+            // Stelle sicher, dass clone noch verfügbar ist
+            if (!clone || !clone.querySelectorAll) {
+                console.error('❌ Clone nicht mehr verfügbar für Re-Kompression');
+                const sizeMB = (htmlContent.length / (1024 * 1024)).toFixed(2);
+                const errorMsg = `HTML-Dokument zu groß (${sizeMB}MB) und Re-Kompression nicht möglich. Bitte reduzieren Sie die Anzahl oder Größe der Bilder.`;
+                this.showNotification(errorMsg, 'error');
+                throw new Error(errorMsg);
+            }
             
-            for (const img of allImages) {
-                const src = img.getAttribute('src');
-                if (src && src.startsWith('data:image/') && src.length > 200000) {
-                    // Aggressivere Kompression: max 200KB pro Bild
-                    const compressed = await this.compressDataUrl(src, 200000);
-                    if (compressed !== src) {
-                        img.setAttribute('src', compressed);
-                        recompressedCount++;
+            // Komprimiere alle Bilder im Clone aggressiver
+            const allImages = Array.from(clone.querySelectorAll('img'));
+            console.log(`📦 Re-Kompression: ${allImages.length} Bilder gefunden`);
+            let recompressedCount = 0;
+            let totalSizeBefore = 0;
+            let totalSizeAfter = 0;
+            
+            for (let i = 0; i < allImages.length; i++) {
+                const img = allImages[i];
+                try {
+                    const src = img.getAttribute('src');
+                    if (src && src.startsWith('data:image/') && src.length > 200000) {
+                        const originalSize = src.length;
+                        console.log(`📦 [${i + 1}/${allImages.length}] Re-Komprimiere Bild (${Math.round(originalSize / 1024)}KB)...`);
+                        // Aggressivere Kompression: max 200KB pro Bild
+                        const compressed = await this.compressDataUrl(src, 200000);
+                        if (compressed !== src) {
+                            img.setAttribute('src', compressed);
+                            recompressedCount++;
+                            totalSizeBefore += originalSize;
+                            totalSizeAfter += compressed.length;
+                            console.log(`✅ [${i + 1}/${allImages.length}] Re-komprimiert: ${Math.round(originalSize / 1024)}KB → ${Math.round(compressed.length / 1024)}KB`);
+                        }
                     }
+                } catch (e) {
+                    console.warn(`⚠️ [${i + 1}/${allImages.length}] Re-Kompression fehlgeschlagen:`, e);
+                    // Weiter mit nächstem Bild
                 }
             }
             
+            if (recompressedCount > 0) {
+                const reduction = Math.round((1 - totalSizeAfter / totalSizeBefore) * 100);
+                console.log(`📦 Re-Kompression: ${recompressedCount} Bilder, ${Math.round(totalSizeBefore / 1024)}KB → ${Math.round(totalSizeAfter / 1024)}KB (${reduction}% Reduktion)`);
+            }
+            
             // Generiere HTML erneut mit komprimierten Bildern
-            htmlContent = this.generateCompleteHTMLDocument(clone);
-            console.log(`📦 HTML nach Re-Kompression: ${htmlContent.length} Zeichen (${Math.round(htmlContent.length / 1024)}KB), ${recompressedCount} Bilder neu komprimiert`);
+            try {
+                htmlContent = this.generateCompleteHTMLDocument(clone);
+                console.log(`📦 HTML nach Re-Kompression: ${htmlContent.length} Zeichen (${Math.round(htmlContent.length / 1024)}KB), ${recompressedCount} Bilder neu komprimiert`);
+            } catch (e) {
+                console.error('❌ Fehler beim Neugenerieren des HTML:', e);
+                const sizeMB = (htmlContent.length / (1024 * 1024)).toFixed(2);
+                const errorMsg = `HTML-Dokument zu groß (${sizeMB}MB) und konnte nicht re-komprimiert werden. Bitte reduzieren Sie die Anzahl oder Größe der Bilder.`;
+                this.showNotification(errorMsg, 'error');
+                throw new Error(errorMsg);
+            }
             
             if (htmlContent.length > ABSOLUTE_MAX_SIZE) {
                 const sizeMB = (htmlContent.length / (1024 * 1024)).toFixed(2);
-                const errorMsg = `HTML-Dokument zu groß (${sizeMB}MB). Bitte reduzieren Sie die Anzahl oder Größe der Bilder.`;
+                const errorMsg = `HTML-Dokument zu groß (${sizeMB}MB) auch nach Re-Kompression. Bitte reduzieren Sie die Anzahl oder Größe der Bilder.`;
                 console.error('❌', errorMsg);
                 this.showNotification(errorMsg, 'error');
                 throw new Error(errorMsg);
@@ -5640,21 +5676,38 @@ class DesignEditor {
                 clearTimeout(timeoutId);
 
                 if (!response.ok) {
-                    const errorText = await response.text();
-                    let errorData;
+                    // WICHTIG: Response kann nur einmal gelesen werden
+                    let errorText;
+                    let errorData = {};
+                    
                     try {
-                        errorData = JSON.parse(errorText);
-                    } catch (e) {
-                        errorData = { error: errorText };
+                        errorText = await response.text();
+                        console.log(`📦 Error Response Text (first 500 chars):`, errorText.substring(0, 500));
+                        
+                        // Versuche JSON zu parsen
+                        try {
+                            errorData = JSON.parse(errorText);
+                            console.log('✅ Error Response als JSON geparst:', errorData);
+                        } catch (jsonError) {
+                            // Wenn kein JSON, könnte es Base64 sein (unwahrscheinlich bei Fehler, aber möglich)
+                            console.warn('⚠️ Error Response ist kein JSON, verwende als Text:', errorText.substring(0, 200));
+                            errorData = { error: errorText.substring(0, 500) };
+                        }
+                    } catch (readError) {
+                        console.error('❌ Konnte Error Response nicht lesen:', readError);
+                        errorData = { error: `HTTP ${response.status} ${response.statusText}` };
                     }
 
-                    const message = errorData.error || errorData.message || `HTTP ${response.status}`;
-                    const errorType = errorData.type || 'Unknown';
+                    // Extrahiere Fehlerinformationen mit Fallbacks
+                    const message = errorData.error || errorData.message || `HTTP ${response.status} ${response.statusText}`;
+                    const errorType = errorData.type || errorData.name || 'Unknown';
+                    const htmlSizeFromError = errorData.htmlSize || null;
+                    const imageCountFromError = errorData.imageCount || null;
                     const retryableStatus = response.status >= 500 || response.status === 429;
 
                     // Detailliertes Error-Logging mit HTML-Info
-                    const htmlSizeKB = Math.round(htmlContent.length / 1024);
-                    const imageCount = (htmlContent.match(/data:image\/[^"'\s]+/g) || []).length;
+                    const htmlSizeKB = htmlSizeFromError || Math.round(htmlContent.length / 1024);
+                    const imageCount = imageCountFromError || (htmlContent.match(/data:image\/[^"'\s]+/g) || []).length;
                     
                     console.error(`❌ PDF-Generator Fehler (Attempt ${attempt}/${maxAttempts}):`, {
                         status: response.status,
@@ -5663,7 +5716,10 @@ class DesignEditor {
                         type: errorType,
                         htmlSize: `${htmlSizeKB}KB`,
                         imageCount: imageCount,
-                        stack: errorData.stack
+                        htmlSizeFromError: htmlSizeFromError,
+                        imageCountFromError: imageCountFromError,
+                        stack: errorData.stack,
+                        fullErrorData: errorData
                     });
 
                     if (attempt < maxAttempts && retryableStatus) {
@@ -5751,17 +5807,33 @@ class DesignEditor {
                         const errorData = JSON.parse(base64Data);
                         const errorMessage = errorData.error || errorData.message || 'Unbekannter Fehler';
                         const errorType = errorData.type || 'Unknown';
-                        console.error('❌ PDF-Generator Fehler-Response:', {
+                        const htmlSizeFromError = errorData.htmlSize || null;
+                        const imageCountFromError = errorData.imageCount || null;
+                        
+                        console.error('❌ PDF-Generator Fehler-Response (als JSON erkannt):', {
                             error: errorMessage,
+                            message: errorData.message,
                             type: errorType,
-                            status: response.status
+                            htmlSize: htmlSizeFromError,
+                            imageCount: imageCountFromError,
+                            status: response.status,
+                            fullErrorData: errorData
                         });
-                        throw new Error(`PDF-Generierung fehlgeschlagen: ${errorMessage}`);
+                        
+                        // Verwende benutzerfreundliche Fehlermeldung
+                        let userMessage = errorMessage;
+                        if (htmlSizeFromError && imageCountFromError) {
+                            userMessage = `${errorMessage} (${htmlSizeFromError}KB, ${imageCountFromError} Bilder)`;
+                        }
+                        
+                        throw new Error(`PDF-Generierung fehlgeschlagen: ${userMessage}`);
                     } catch (jsonError) {
                         // Wenn es kein JSON ist, ist es wahrscheinlich Base64
                         if (jsonError.message.includes('PDF-Generierung fehlgeschlagen')) {
                             throw jsonError; // Re-throw wenn es ein Fehler-JSON war
                         }
+                        // Wenn JSON-Parsing fehlgeschlagen ist, ist es wahrscheinlich Base64
+                        console.log('⚠️ Response beginnt mit {, aber JSON-Parsing fehlgeschlagen - vermutlich Base64');
                     }
                 }
                 
@@ -5924,6 +5996,8 @@ class DesignEditor {
         const maxImageSize = Number(options.maxImageSize || 500000); // 500KB default
         const imgs = Array.from(root.querySelectorAll('img')).slice(0, maxImages);
 
+        console.log(`📸 inlineImagesAsDataUrls: ${imgs.length} Bilder gefunden, maxImageSize: ${Math.round(maxImageSize / 1024)}KB`);
+
         const blobToDataUrl = (blob) => new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.onload = () => resolve(String(reader.result));
@@ -5934,54 +6008,82 @@ class DesignEditor {
         let compressedCount = 0;
         let totalSizeBefore = 0;
         let totalSizeAfter = 0;
+        let processedCount = 0;
+        let skippedCount = 0;
 
-        for (const img of imgs) {
+        for (let i = 0; i < imgs.length; i++) {
+            const img = imgs[i];
             try {
                 const src = (img.getAttribute('src') || '').trim();
-                if (!src || src.startsWith('data:')) {
+                if (!src) {
+                    skippedCount++;
+                    continue;
+                }
+                
+                if (src.startsWith('data:')) {
                     // Bereits dataUrl - prüfe ob komprimiert werden muss
                     if (src.startsWith('data:image/') && src.length > maxImageSize) {
-                        console.log(`📦 Komprimiere bereits eingebettetes Bild (${Math.round(src.length / 1024)}KB)...`);
+                        console.log(`📦 [${i + 1}/${imgs.length}] Komprimiere bereits eingebettetes Bild (${Math.round(src.length / 1024)}KB)...`);
                         const compressed = await this.compressDataUrl(src, maxImageSize);
                         if (compressed !== src) {
                             totalSizeBefore += src.length;
                             totalSizeAfter += compressed.length;
                             compressedCount++;
                             img.setAttribute('src', compressed);
-                            console.log(`✅ Bild komprimiert: ${Math.round(src.length / 1024)}KB → ${Math.round(compressed.length / 1024)}KB`);
+                            console.log(`✅ [${i + 1}/${imgs.length}] Bild komprimiert: ${Math.round(src.length / 1024)}KB → ${Math.round(compressed.length / 1024)}KB`);
+                        } else {
+                            console.log(`⚠️ [${i + 1}/${imgs.length}] Kompression hatte keine Wirkung`);
                         }
+                    } else {
+                        console.log(`✓ [${i + 1}/${imgs.length}] Bild bereits dataUrl, Größe OK (${Math.round(src.length / 1024)}KB)`);
                     }
+                    processedCount++;
                     continue;
                 }
 
                 // Best-effort fetch; wenn CORS blockt, lassen wir es so stehen.
+                console.log(`📥 [${i + 1}/${imgs.length}] Lade Bild von URL: ${src.substring(0, 50)}...`);
                 const response = await fetch(src, { mode: 'cors', credentials: 'omit' });
-                if (!response.ok) continue;
+                if (!response.ok) {
+                    console.warn(`⚠️ [${i + 1}/${imgs.length}] Fetch fehlgeschlagen: ${response.status} ${response.statusText}`);
+                    skippedCount++;
+                    continue;
+                }
                 const blob = await response.blob();
                 let dataUrl = await blobToDataUrl(blob);
                 
                 if (dataUrl && dataUrl.startsWith('data:image/')) {
                     // Komprimiere Bild wenn es zu groß ist
                     if (dataUrl.length > maxImageSize) {
-                        console.log(`📦 Komprimiere Bild vor Einbettung (${Math.round(dataUrl.length / 1024)}KB)...`);
+                        console.log(`📦 [${i + 1}/${imgs.length}] Komprimiere Bild vor Einbettung (${Math.round(dataUrl.length / 1024)}KB)...`);
                         const originalSize = dataUrl.length;
                         dataUrl = await this.compressDataUrl(dataUrl, maxImageSize);
                         if (dataUrl.length < originalSize) {
                             totalSizeBefore += originalSize;
                             totalSizeAfter += dataUrl.length;
                             compressedCount++;
-                            console.log(`✅ Bild komprimiert: ${Math.round(originalSize / 1024)}KB → ${Math.round(dataUrl.length / 1024)}KB`);
+                            console.log(`✅ [${i + 1}/${imgs.length}] Bild komprimiert: ${Math.round(originalSize / 1024)}KB → ${Math.round(dataUrl.length / 1024)}KB`);
+                        } else {
+                            console.log(`⚠️ [${i + 1}/${imgs.length}] Kompression hatte keine Wirkung`);
                         }
+                    } else {
+                        console.log(`✓ [${i + 1}/${imgs.length}] Bild Größe OK (${Math.round(dataUrl.length / 1024)}KB)`);
                     }
                     
                     img.setAttribute('src', dataUrl);
+                    processedCount++;
+                } else {
+                    console.warn(`⚠️ [${i + 1}/${imgs.length}] Ungültiges dataUrl-Format`);
+                    skippedCount++;
                 }
             } catch (e) {
-                console.warn('⚠️ Bild konnte nicht eingebettet werden:', e);
+                console.warn(`⚠️ [${i + 1}/${imgs.length}] Bild konnte nicht eingebettet werden:`, e);
+                skippedCount++;
                 // Ignorieren – nicht jedes Bild ist einbettbar
             }
         }
 
+        console.log(`📊 inlineImagesAsDataUrls Zusammenfassung: ${processedCount} verarbeitet, ${compressedCount} komprimiert, ${skippedCount} übersprungen`);
         if (compressedCount > 0) {
             const reduction = Math.round((1 - totalSizeAfter / totalSizeBefore) * 100);
             console.log(`📦 ${compressedCount} Bilder komprimiert: ${Math.round(totalSizeBefore / 1024)}KB → ${Math.round(totalSizeAfter / 1024)}KB (${reduction}% Reduktion)`);
