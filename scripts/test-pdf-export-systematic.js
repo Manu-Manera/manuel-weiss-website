@@ -24,13 +24,16 @@ class SystematicPDFExportTester {
         console.log('🚀 Initialisiere systematischen PDF-Export Test...\n');
         
         this.browser = await puppeteer.launch({
-            headless: false,
+            headless: 'new', // Verwende neuen Headless-Modus für Stabilität
             args: [
-                '--incognito',
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--disable-dev-shm-usage',
                 '--disable-web-security',
                 '--disable-features=IsolateOrigins,site-per-process'
             ],
-            defaultViewport: { width: 1920, height: 1080 }
+            defaultViewport: { width: 1920, height: 1080 },
+            timeout: 60000
         });
 
         const context = await this.browser.createBrowserContext();
@@ -532,9 +535,13 @@ class SystematicPDFExportTester {
                         timestamp: new Date().toISOString(),
                         success: false,
                         errors: [e.message],
-                        errorStack: e.stack
+                        errorStack: e.stack,
+                        validations: {}
                     });
                 }
+                
+                // Kurze Pause zwischen Tests
+                await new Promise(resolve => setTimeout(resolve, 2000));
             }
 
             // Generiere Report
@@ -542,11 +549,22 @@ class SystematicPDFExportTester {
 
         } catch (error) {
             console.error('❌ Kritischer Fehler:', error);
+            this.testResults.push({
+                scenario: 'Kritischer Fehler',
+                timestamp: new Date().toISOString(),
+                success: false,
+                errors: [error.message],
+                errorStack: error.stack
+            });
+            this.generateReport();
         } finally {
             if (this.browser) {
-                console.log('\n⏳ Warte 3 Sekunden vor Browser-Schließung...');
-                await new Promise(resolve => setTimeout(resolve, 3000));
-                await this.browser.close();
+                try {
+                    console.log('\n⏳ Schließe Browser...');
+                    await this.browser.close();
+                } catch (e) {
+                    console.warn('⚠️ Browser konnte nicht geschlossen werden:', e.message);
+                }
             }
         }
     }
