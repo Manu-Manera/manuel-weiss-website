@@ -14,7 +14,8 @@ class ResumeEditorFixTester {
         this.page = null;
         this.testResults = [];
         this.resumeData = null;
-        this.baseUrl = 'http://localhost:8080'; // Anpassen falls nötig
+        this.baseUrl = process.env.TEST_URL || 'http://localhost:8080';
+        this.fixes = []; // Für automatische Korrekturen
     }
 
     /**
@@ -24,12 +25,20 @@ class ResumeEditorFixTester {
         console.log('🚀 Starte Lebenslauf-Editor Fix Tests...\n');
         console.log('═══════════════════════════════════════════\n');
 
-        // Browser starten
-        this.browser = await puppeteer.launch({
+        // Browser starten (Chrome auf macOS finden)
+        const chromePath = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
+        const launchOptions = {
             headless: false, // Sichtbar für Debugging
             defaultViewport: { width: 1920, height: 1080 },
             args: ['--start-maximized']
-        });
+        };
+        
+        // Prüfe ob Chrome auf macOS vorhanden ist
+        if (fs.existsSync(chromePath)) {
+            launchOptions.executablePath = chromePath;
+        }
+        
+        this.browser = await puppeteer.launch(launchOptions);
 
         this.page = await this.browser.newPage();
         
@@ -59,10 +68,10 @@ class ResumeEditorFixTester {
         
         // Öffne Resume Editor
         const resumeEditorUrl = `${this.baseUrl}/applications/resume-editor.html`;
-        await this.page.goto(resumeEditorUrl, { waitUntil: 'networkidle2', timeout: 30000 });
+                await this.page.goto(resumeEditorUrl, { waitUntil: 'networkidle2', timeout: 30000 });
 
         // Warte auf Initialisierung
-        await this.page.waitForTimeout(2000);
+        await new Promise(resolve => setTimeout(resolve, 2000));
 
         // Versuche letzten Lebenslauf zu laden
         const resumeData = await this.page.evaluate(() => {
@@ -138,7 +147,7 @@ class ResumeEditorFixTester {
 
             // Aktiviere Profilbild
             await this.page.click('#designShowProfileImage');
-            await this.page.waitForTimeout(500);
+            await new Promise(resolve => setTimeout(resolve, 500));
 
             // Setze X-Versatz auf 20
             const offsetXSlider = await this.page.$('#profileImageOffsetX');
@@ -147,7 +156,7 @@ class ResumeEditorFixTester {
                     el.value = '20';
                     el.dispatchEvent(new Event('input', { bubbles: true }));
                 });
-                await this.page.waitForTimeout(500);
+                await new Promise(resolve => setTimeout(resolve, 500));
 
                 // Prüfe ob object-position gesetzt ist
                 const hasObjectPosition = await this.page.evaluate(() => {
@@ -218,7 +227,7 @@ class ResumeEditorFixTester {
             const loadBtn = await this.page.$('#loadProfileImageBtn');
             if (loadBtn) {
                 await loadBtn.click();
-                await this.page.waitForTimeout(1000);
+                await new Promise(resolve => setTimeout(resolve, 1000));
 
                 // Prüfe ob Cloud Photos geladen werden
                 const hasCloudPhotoCode = await this.page.evaluate(() => {
@@ -534,7 +543,7 @@ class ResumeEditorFixTester {
             const designBtn = await this.page.$('#openDesignEditorBtn, .design-editor-btn, [onclick*="openDesignEditor"]');
             if (designBtn) {
                 await designBtn.click();
-                await this.page.waitForTimeout(1000);
+                await new Promise(resolve => setTimeout(resolve, 1000));
             } else {
                 // Versuche direkt über URL
                 await this.page.evaluate(() => {
@@ -542,7 +551,7 @@ class ResumeEditorFixTester {
                         openDesignEditor();
                     }
                 });
-                await this.page.waitForTimeout(1000);
+                await new Promise(resolve => setTimeout(resolve, 1000));
             }
         } catch (error) {
             console.warn('⚠️ Design Editor konnte nicht geöffnet werden:', error.message);
@@ -586,7 +595,7 @@ class ResumeEditorFixTester {
             for (const test of tests) {
                 try {
                     await test();
-                    await this.page.waitForTimeout(500);
+                    await new Promise(resolve => setTimeout(resolve, 500));
                 } catch (error) {
                     console.error('❌ Test fehlgeschlagen:', error);
                 }
