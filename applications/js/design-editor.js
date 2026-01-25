@@ -2341,7 +2341,7 @@ class DesignEditor {
         }
     }
     
-    handleSignatureUpload(file) {
+    async handleSignatureUpload(file) {
         if (!file) return;
         
         if (!file.type.startsWith('image/')) {
@@ -2354,14 +2354,17 @@ class DesignEditor {
             let imageDataUrl = e.target.result;
             
             // Automatisch weißen/hellen Hintergrund entfernen
-            this.removeSignatureBackground(imageDataUrl).then(async (transparentImage) => {
+            try {
+                const transparentImage = await this.removeSignatureBackground(imageDataUrl);
+                
                 // Komprimiere große Unterschriften automatisch
-                if (transparentImage.length > 200000) {
+                let finalImage = transparentImage;
+                if (finalImage.length > 200000) {
                     console.log('📦 Komprimiere Unterschrift automatisch...');
-                    transparentImage = await this.compressDataUrl(transparentImage, 200000);
+                    finalImage = await this.compressDataUrl(finalImage, 200000);
                 }
                 
-                this.settings.signatureImage = transparentImage;
+                this.settings.signatureImage = finalImage;
                 await this.saveSettings();
                 this.updatePreview();
                 this.showNotification('Unterschrift hochgeladen & freigestellt', 'success');
@@ -2369,10 +2372,11 @@ class DesignEditor {
                 // Show preview
                 const preview = document.getElementById('signaturePreview');
                 if (preview) {
-                    preview.innerHTML = `<img src="${transparentImage}" alt="Unterschrift" style="max-height: 60px; background: repeating-conic-gradient(#f0f0f0 0% 25%, transparent 0% 50%) 50% / 10px 10px;">`;
+                    preview.innerHTML = `<img src="${finalImage}" alt="Unterschrift" style="max-height: 60px; background: repeating-conic-gradient(#f0f0f0 0% 25%, transparent 0% 50%) 50% / 10px 10px;">`;
                 }
-            }).catch(async () => {
+            } catch (error) {
                 // Fallback ohne Freistellung
+                console.warn('⚠️ Freistellung fehlgeschlagen, verwende Original:', error);
                 let dataUrl = imageDataUrl;
                 
                 // Komprimiere auch im Fallback
@@ -2385,7 +2389,7 @@ class DesignEditor {
                 await this.saveSettings();
                 this.updatePreview();
                 this.showNotification('Unterschrift hochgeladen', 'success');
-            });
+            }
         };
         reader.readAsDataURL(file);
     }
