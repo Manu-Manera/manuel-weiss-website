@@ -1,0 +1,131 @@
+[
+  {
+    "scenario": "Szenario 1: Minimales Dokument (ohne Bilder)",
+    "timestamp": "2026-01-25T22:45:02.411Z",
+    "success": true,
+    "validations": {
+      "htmlBefore": {
+        "length": 1189,
+        "lengthKB": 1,
+        "imageCount": 0,
+        "hasValidDataUrls": false,
+        "isValidHTML": false,
+        "imageSizes": [],
+        "totalImageSize": 0,
+        "totalImageSizeKB": 0,
+        "largestImageSize": 0,
+        "largestImageSizeKB": 0
+      },
+      "request": {
+        "htmlLength": 319828,
+        "hasHtml": true,
+        "hasContent": false,
+        "hasSettings": false,
+        "imageCount": 3
+      },
+      "lambdaRequest": {
+        "requestId": "e9c0ccc1-529a-4ce1-8114-406a8f8ff2f4",
+        "timestamp": "2026-01-25T22:45:08.504Z",
+        "status": 200
+      },
+      "lambdaLogs": {
+        "requestId": "e9c0ccc1-529a-4ce1-8114-406a8f8ff2f4",
+        "analyzed": true,
+        "note": "Log-Analyse würde hier AWS CLI verwenden"
+      }
+    },
+    "errors": [],
+    "warnings": []
+  },
+  {
+    "scenario": "Szenario 2: Dokument mit kleinen Bildern (<500KB)",
+    "timestamp": "2026-01-25T22:45:22.481Z",
+    "success": true,
+    "validations": {
+      "htmlBefore": {
+        "length": 1189,
+        "lengthKB": 1,
+        "imageCount": 0,
+        "hasValidDataUrls": false,
+        "isValidHTML": false,
+        "imageSizes": [],
+        "totalImageSize": 0,
+        "totalImageSizeKB": 0,
+        "largestImageSize": 0,
+        "largestImageSizeKB": 0
+      },
+      "request": {
+        "htmlLength": 319828,
+        "hasHtml": true,
+        "hasContent": false,
+        "hasSettings": false,
+        "imageCount": 3
+      },
+      "lambdaRequest": {
+        "requestId": "2621a671-b922-446e-8e86-c7d4232c15c2",
+        "timestamp": "2026-01-25T22:45:28.401Z",
+        "status": 200
+      },
+      "lambdaLogs": {
+        "requestId": "2621a671-b922-446e-8e86-c7d4232c15c2",
+        "analyzed": true,
+        "note": "Log-Analyse würde hier AWS CLI verwenden"
+      }
+    },
+    "errors": [],
+    "warnings": []
+  },
+  {
+    "scenario": "Szenario 3: Dokument mit großen Bildern (>500KB)",
+    "timestamp": "2026-01-25T22:45:42.606Z",
+    "success": false,
+    "validations": {
+      "htmlBefore": {
+        "length": 1189,
+        "lengthKB": 1,
+        "imageCount": 0,
+        "hasValidDataUrls": false,
+        "isValidHTML": false,
+        "imageSizes": [],
+        "totalImageSize": 0,
+        "totalImageSizeKB": 0,
+        "largestImageSize": 0,
+        "largestImageSizeKB": 0
+      },
+      "request": {
+        "htmlLength": 319828,
+        "hasHtml": true,
+        "hasContent": false,
+        "hasSettings": false,
+        "imageCount": 3
+      }
+    },
+    "errors": [
+      "Attempted to use detached Frame 'AA6ABE9E6375C781F802CC63117FB3D3'."
+    ],
+    "warnings": [],
+    "errorStack": "Error: Attempted to use detached Frame 'AA6ABE9E6375C781F802CC63117FB3D3'.\n    at CdpFrame.<anonymous> (/Users/manumanera/Documents/GitHub/Persönliche Website/node_modules/puppeteer-core/lib/cjs/puppeteer/util/decorators.js:107:23)\n    at CdpPage.evaluate (/Users/manumanera/Documents/GitHub/Persönliche Website/node_modules/puppeteer-core/lib/cjs/puppeteer/api/Page.js:818:43)\n    at SystematicPDFExportTester.testPDFExport (/Users/manumanera/Documents/GitHub/Persönliche Website/scripts/test-pdf-export-systematic.js:297:51)\n    at async SystematicPDFExportTester.testScenario3_LargeImages (/Users/manumanera/Documents/GitHub/Persönliche Website/scripts/test-pdf-export-systematic.js:383:16)\n    at async SystematicPDFExportTester.runAllTests (/Users/manumanera/Documents/GitHub/Persönliche Website/scripts/test-pdf-export-systematic.js:426:13)"
+  },
+  {
+    "scenario": "Szenario 4: Sehr großes Dokument (>8MB HTML)",
+    "timestamp": "2026-01-25T22:46:02.446Z",
+    "success": false,
+    "validations": {},
+    "errors": [
+      "Attempted to use detached Frame 'AA6ABE9E6375C781F802CC63117FB3D3'."
+    ],
+    "warnings": [],
+    "errorStack": "Error: Attempted to use detached Frame 'AA6ABE9E6375C781F802CC63117FB3D3'.\n    at CdpFrame.<anonymous> (/Users/manumanera/Documents/GitHub/Persönliche Website/node_modules/puppeteer-core/lib/cjs/puppeteer/util/decorators.js:107:23)\n    at CdpPage.goto (/Users/manumanera/Documents/GitHub/Persönliche Website/node_modules/puppeteer-core/lib/cjs/puppeteer/api/Page.js:572:43)\n    at SystematicPDFExportTester.navigateToPage (/Users/manumanera/Documents/GitHub/Persönliche Website/scripts/test-pdf-export-systematic.js:116:25)\n    at SystematicPDFExportTester.testPDFExport (/Users/manumanera/Documents/GitHub/Persönliche Website/scripts/test-pdf-export-systematic.js:233:24)\n    at SystematicPDFExportTester.testScenario4_VeryLargeHTML (/Users/manumanera/Documents/GitHub/Persönliche Website/scripts/test-pdf-export-systematic.js:390:27)\n    at SystematicPDFExportTester.runAllTests (/Users/manumanera/Documents/GitHub/Persönliche Website/scripts/test-pdf-export-systematic.js:427:24)"
+  },
+  {
+    "scenario": "Szenario 5: Sehr großes PDF (>5MB)",
+    "timestamp": "2026-01-25T22:46:02.447Z",
+    "success": false,
+    "validations": {},
+    "errors": [
+      "Attempted to use detached Frame 'AA6ABE9E6375C781F802CC63117FB3D3'."
+    ],
+    "warnings": [],
+    "errorStack": "Error: Attempted to use detached Frame 'AA6ABE9E6375C781F802CC63117FB3D3'.\n    at CdpFrame.<anonymous> (/Users/manumanera/Documents/GitHub/Persönliche Website/node_modules/puppeteer-core/lib/cjs/puppeteer/util/decorators.js:107:23)\n    at CdpPage.goto (/Users/manumanera/Documents/GitHub/Persönliche Website/node_modules/puppeteer-core/lib/cjs/puppeteer/api/Page.js:572:43)\n    at SystematicPDFExportTester.navigateToPage (/Users/manumanera/Documents/GitHub/Persönliche Website/scripts/test-pdf-export-systematic.js:116:25)\n    at SystematicPDFExportTester.testPDFExport (/Users/manumanera/Documents/GitHub/Persönliche Website/scripts/test-pdf-export-systematic.js:233:24)\n    at SystematicPDFExportTester.testScenario5_VeryLargePDF (/Users/manumanera/Documents/GitHub/Persönliche Website/scripts/test-pdf-export-systematic.js:397:27)\n    at SystematicPDFExportTester.runAllTests (/Users/manumanera/Documents/GitHub/Persönliche Website/scripts/test-pdf-export-systematic.js:428:24)"
+  }
+]
