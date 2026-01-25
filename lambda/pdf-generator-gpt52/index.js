@@ -293,33 +293,57 @@ exports.handler = async (event) => {
         };
 
     } catch (error) {
+        const htmlSize = finalHTML ? finalHTML.length : 0;
+        const htmlSizeKB = Math.round(htmlSize / 1024);
+        const imageCount = finalHTML ? (finalHTML.match(/data:image\/[^"'\s]+/g) || []).length : 0;
+        
         console.error('❌ PDF generation error:', error);
         console.error('❌ Error name:', error.name);
         console.error('❌ Error message:', error.message);
         console.error('❌ Error stack:', error.stack);
+        console.error('❌ HTML size:', htmlSizeKB, 'KB');
+        console.error('❌ Image count:', imageCount);
         
         // Unterscheide zwischen verschiedenen Fehlertypen
         let statusCode = 500;
         let errorMessage = 'PDF generation failed';
+        let userFriendlyMessage = 'PDF-Generierung fehlgeschlagen';
         
-        if (error.name === 'TimeoutError' || error.message.includes('timeout')) {
+        if (error.name === 'TimeoutError' || error.message.includes('timeout') || error.message.includes('exceeded')) {
             statusCode = 504;
-            errorMessage = 'PDF generation timed out. The HTML content may be too complex or resources may be loading too slowly.';
-        } else if (error.message.includes('Navigation')) {
+            errorMessage = `PDF generation timed out. HTML size: ${htmlSizeKB}KB, Images: ${imageCount}. The HTML content may be too complex or resources may be loading too slowly.`;
+            userFriendlyMessage = `PDF-Generierung dauerte zu lange (${htmlSizeKB}KB, ${imageCount} Bilder). Bitte vereinfachen Sie das Dokument.`;
+        } else if (error.message.includes('Navigation') || error.message.includes('navigation')) {
             statusCode = 400;
-            errorMessage = 'Invalid HTML content: Navigation error during PDF generation.';
-        } else if (error.message.includes('Protocol error')) {
+            errorMessage = `Invalid HTML content: Navigation error during PDF generation. HTML size: ${htmlSizeKB}KB, Images: ${imageCount}.`;
+            userFriendlyMessage = `Ungültiges HTML-Dokument (${htmlSizeKB}KB, ${imageCount} Bilder). Navigation-Fehler beim Rendern.`;
+        } else if (error.message.includes('Protocol error') || error.message.includes('protocol')) {
             statusCode = 500;
-            errorMessage = 'Browser protocol error during PDF generation.';
+            errorMessage = `Browser protocol error during PDF generation. HTML size: ${htmlSizeKB}KB, Images: ${imageCount}.`;
+            userFriendlyMessage = `Browser-Protokoll-Fehler beim PDF-Export (${htmlSizeKB}KB, ${imageCount} Bilder).`;
+        } else if (error.message.includes('Memory') || error.message.includes('memory') || error.message.includes('OOM')) {
+            statusCode = 500;
+            errorMessage = `Out of memory error during PDF generation. HTML size: ${htmlSizeKB}KB, Images: ${imageCount}. Document may be too large.`;
+            userFriendlyMessage = `Speicher-Fehler beim PDF-Export (${htmlSizeKB}KB, ${imageCount} Bilder). Dokument zu groß.`;
+        } else if (error.message.includes('Target closed') || error.message.includes('Session closed')) {
+            statusCode = 500;
+            errorMessage = `Browser session closed unexpectedly. HTML size: ${htmlSizeKB}KB, Images: ${imageCount}.`;
+            userFriendlyMessage = `Browser-Session wurde unerwartet geschlossen (${htmlSizeKB}KB, ${imageCount} Bilder).`;
+        } else {
+            // Generischer Fehler mit Details
+            errorMessage = `PDF generation failed: ${error.message}. HTML size: ${htmlSizeKB}KB, Images: ${imageCount}.`;
+            userFriendlyMessage = `PDF-Generierung fehlgeschlagen (${htmlSizeKB}KB, ${imageCount} Bilder): ${error.message}`;
         }
         
         return {
             statusCode: statusCode,
             headers: CORS_HEADERS,
             body: JSON.stringify({
-                error: errorMessage,
-                message: error.message,
+                error: userFriendlyMessage,
+                message: errorMessage,
                 type: error.name,
+                htmlSize: htmlSizeKB,
+                imageCount: imageCount,
                 stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
             })
         };
