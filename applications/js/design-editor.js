@@ -1177,6 +1177,8 @@ class DesignEditor {
                     outline: none;
                     cursor: pointer;
                     margin: 4px 0;
+                    touch-action: pan-x;
+                    -webkit-tap-highlight-color: transparent;
                 }
                 .skill-level-slider::-webkit-slider-runnable-track {
                     width: 100%;
@@ -1230,46 +1232,72 @@ class DesignEditor {
             document.head.appendChild(style);
         }
         
-        // Add input handlers for sliders with visual feedback
+        // WICHTIG: Warte kurz, damit DOM vollständig gerendert ist
+        setTimeout(() => {
+            this.setupSkillLevelSliders(container);
+        }, 50);
+    }
+    
+    setupSkillLevelSliders(container) {
+        const maxLevel = this.settings.skillMaxLevel || 10;
+        
+        // Update gradient function
+        const updateSliderBackground = (el) => {
+            const value = parseInt(el.value) || 1;
+            const percentage = Math.round((value / maxLevel) * 100);
+            const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--design-primary') || '#6366f1';
+            el.style.background = `linear-gradient(to right, ${primaryColor} ${percentage}%, rgba(255,255,255,0.2) ${percentage}%)`;
+        };
+        
+        // Initialisiere alle Slider-Hintergründe
         container.querySelectorAll('.skill-level-slider').forEach(slider => {
-            const maxLevel = this.settings.skillMaxLevel || 10;
+            updateSliderBackground(slider);
+        });
+        
+        // Event-Delegation auf Container-Ebene (robuster als direkte Listener)
+        // Entferne alte Listener falls vorhanden
+        if (this._skillSliderHandler) {
+            container.removeEventListener('input', this._skillSliderHandler);
+            container.removeEventListener('change', this._skillSliderHandler);
+        }
+        
+        // Neuer Event-Handler mit Delegation
+        this._skillSliderHandler = (e) => {
+            if (!e.target.classList.contains('skill-level-slider')) return;
             
-            // Update gradient on input
-            const updateSliderBackground = (el) => {
-                const value = parseInt(el.value);
-                const percentage = Math.round((value / maxLevel) * 100);
-                el.style.background = `linear-gradient(to right, var(--design-primary) ${percentage}%, rgba(255,255,255,0.2) ${percentage}%)`;
-            };
+            const slider = e.target;
+            const newLevel = parseInt(slider.value) || 1;
+            const type = slider.dataset.type;
+            const catIndex = parseInt(slider.dataset.cat) || 0;
+            const skillIndex = parseInt(slider.dataset.skill) || 0;
             
-            slider.addEventListener('input', (e) => {
-                const newLevel = parseInt(e.target.value);
-                const type = e.target.dataset.type;
-                const catIndex = parseInt(e.target.dataset.cat);
-                const skillIndex = parseInt(e.target.dataset.skill);
-                
-                // Update display
-                const displayId = e.target.id + '-display';
-                const display = document.getElementById(displayId);
-                if (display) display.textContent = `${newLevel}/${maxLevel}`;
-                
-                // Update slider background
-                updateSliderBackground(e.target);
-                
-                // Debounce the actual update to form
+            // Update display
+            const displayId = slider.id + '-display';
+            const display = document.getElementById(displayId);
+            if (display) {
+                display.textContent = `${newLevel}/${maxLevel}`;
+            }
+            
+            // Update slider background
+            updateSliderBackground(slider);
+            
+            // Bei 'input' Event: Debounce für Performance
+            if (e.type === 'input') {
                 clearTimeout(this._skillUpdateTimeout);
                 this._skillUpdateTimeout = setTimeout(() => {
                     this.updateSkillLevel(type, catIndex, skillIndex, newLevel);
-                }, 100);
-            });
-            
-            slider.addEventListener('change', (e) => {
-                const newLevel = parseInt(e.target.value);
-                const type = e.target.dataset.type;
-                const catIndex = parseInt(e.target.dataset.cat);
-                const skillIndex = parseInt(e.target.dataset.skill);
+                }, 150);
+            } else if (e.type === 'change') {
+                // Bei 'change' Event: Sofort updaten
                 this.updateSkillLevel(type, catIndex, skillIndex, newLevel);
-            });
-        });
+            }
+        };
+        
+        // Event-Listener auf Container registrieren (Delegation)
+        container.addEventListener('input', this._skillSliderHandler, { passive: true });
+        container.addEventListener('change', this._skillSliderHandler, { passive: true });
+        
+        console.log(`✅ Skill-Level-Slider Event-Listener registriert (${container.querySelectorAll('.skill-level-slider').length} Slider)`);
     }
     
     renderSkillLevelRow(name, level, maxLevel, type, catIndex, skillIndex, examples = []) {
@@ -1283,7 +1311,7 @@ class DesignEditor {
                     <span style="font-size: 0.85rem; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 65%;" title="${name}">${name}</span>
                     <span class="skill-level-display" id="${uniqueId}-display" style="font-size: 0.8rem; color: var(--design-primary, #6366f1); font-weight: 700; min-width: 45px; text-align: right; background: rgba(99,102,241,0.15); padding: 2px 8px; border-radius: 4px;">${level}/${maxLevel}</span>
                 </div>
-                <div style="display: flex; align-items: center; gap: 8px; position: relative;">
+                <div style="display: flex; align-items: center; gap: 8px; position: relative; z-index: 1;">
                     <input type="range" 
                            class="skill-level-slider" 
                            id="${uniqueId}"
@@ -1293,7 +1321,7 @@ class DesignEditor {
                            min="1" 
                            max="${maxLevel}" 
                            value="${level}"
-                           style="width: 100%; height: 8px; appearance: none; -webkit-appearance: none; -moz-appearance: none; background: linear-gradient(to right, var(--design-primary, #6366f1) ${percentage}%, rgba(255,255,255,0.15) ${percentage}%); border-radius: 4px; cursor: pointer; outline: none; margin: 0; padding: 0; position: relative; z-index: 10; pointer-events: auto;">
+                           style="width: 100%; height: 8px; appearance: none; -webkit-appearance: none; -moz-appearance: none; background: linear-gradient(to right, var(--design-primary, #6366f1) ${percentage}%, rgba(255,255,255,0.15) ${percentage}%); border-radius: 4px; cursor: pointer; outline: none; margin: 0; padding: 0; position: relative; z-index: 100; pointer-events: auto !important; touch-action: pan-x; -webkit-tap-highlight-color: transparent;">
                 </div>
                 ${hasExamples ? `
                     <div style="margin-top: 6px; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.05); font-size: 0.75rem; color: var(--design-text-muted, #64748b);">
@@ -1308,43 +1336,118 @@ class DesignEditor {
     }
     
     updateSkillLevel(type, catIndex, skillIndex, newLevel) {
+        console.log(`🔧 updateSkillLevel: type=${type}, catIndex=${catIndex}, skillIndex=${skillIndex}, newLevel=${newLevel}`);
+        
+        // Validierung
+        if (!type || catIndex === undefined || skillIndex === undefined || !newLevel) {
+            console.warn('⚠️ updateSkillLevel: Ungültige Parameter', { type, catIndex, skillIndex, newLevel });
+            return;
+        }
+        
+        let updated = false;
+        
         // Update the actual form data
         if (type === 'tech') {
-            const containers = document.querySelectorAll('#technicalSkillsContainer .skill-category-item, #technicalSkillsContainer .skill-item-rated:not(.soft)');
+            // Methode 1: Category-based Skills (.skill-category-item)
+            const categoryItems = document.querySelectorAll('#technicalSkillsContainer .skill-category-item');
             let currentCatIndex = -1;
-            let currentSkillIndex = -1;
             
-            containers.forEach(item => {
-                if (item.classList.contains('skill-category-item')) {
-                    currentCatIndex++;
-                    currentSkillIndex = -1;
-                    
-                    if (currentCatIndex === catIndex) {
-                        const skillTags = item.querySelectorAll('.skill-tag');
-                        if (skillTags[skillIndex]) {
-                            const levelInput = skillTags[skillIndex].querySelector('input[type="range"], select[data-field="level"]');
-                            if (levelInput) levelInput.value = newLevel;
+            categoryItems.forEach(item => {
+                currentCatIndex++;
+                if (currentCatIndex === catIndex) {
+                    const skillTags = item.querySelectorAll('.skill-tag');
+                    if (skillTags[skillIndex]) {
+                        const levelInput = skillTags[skillIndex].querySelector('input[type="range"], select[data-field="level"]');
+                        if (levelInput) {
+                            levelInput.value = newLevel;
+                            // Trigger change event um sicherzustellen, dass andere Listener ausgelöst werden
+                            levelInput.dispatchEvent(new Event('input', { bubbles: true }));
+                            levelInput.dispatchEvent(new Event('change', { bubbles: true }));
+                            updated = true;
+                            console.log(`✅ Category-based Skill Level aktualisiert: ${skillTags[skillIndex].querySelector('input[type="text"]')?.value || 'unknown'} = ${newLevel}`);
                         }
-                    }
-                } else if (item.classList.contains('skill-item-rated')) {
-                    currentSkillIndex++;
-                    if (currentSkillIndex === skillIndex) {
-                        const levelInput = item.querySelector('[data-field="skillLevel"]');
-                        if (levelInput) levelInput.value = newLevel;
                     }
                 }
             });
+            
+            // Methode 2: Rated Skills (.skill-item-rated)
+            if (!updated) {
+                const ratedSkills = document.querySelectorAll('#technicalSkillsContainer .skill-item-rated:not(.soft)');
+                let currentSkillIndex = -1;
+                
+                ratedSkills.forEach(item => {
+                    currentSkillIndex++;
+                    if (currentSkillIndex === skillIndex) {
+                        const levelInput = item.querySelector('[data-field="skillLevel"]');
+                        if (levelInput) {
+                            levelInput.value = newLevel;
+                            levelInput.dispatchEvent(new Event('input', { bubbles: true }));
+                            levelInput.dispatchEvent(new Event('change', { bubbles: true }));
+                            updated = true;
+                            const skillName = item.querySelector('[data-field="skillName"]')?.value || 'unknown';
+                            console.log(`✅ Rated Skill Level aktualisiert: ${skillName} = ${newLevel}`);
+                        }
+                    }
+                });
+            }
+            
+            // Methode 3: Fallback - Suche nach allen Range-Inputs in technicalSkillsContainer
+            if (!updated) {
+                const allRangeInputs = document.querySelectorAll('#technicalSkillsContainer input[type="range"]');
+                if (allRangeInputs[skillIndex]) {
+                    allRangeInputs[skillIndex].value = newLevel;
+                    allRangeInputs[skillIndex].dispatchEvent(new Event('input', { bubbles: true }));
+                    allRangeInputs[skillIndex].dispatchEvent(new Event('change', { bubbles: true }));
+                    updated = true;
+                    console.log(`✅ Fallback: Skill Level aktualisiert (Index ${skillIndex}) = ${newLevel}`);
+                }
+            }
+            
         } else if (type === 'soft') {
+            // Soft Skills mit Bewertung
             const softSkills = document.querySelectorAll('#softSkillsContainer .skill-item-rated.soft');
             if (softSkills[skillIndex]) {
                 const levelInput = softSkills[skillIndex].querySelector('[data-field="skillLevel"]');
-                if (levelInput) levelInput.value = newLevel;
+                if (levelInput) {
+                    levelInput.value = newLevel;
+                    levelInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    levelInput.dispatchEvent(new Event('change', { bubbles: true }));
+                    updated = true;
+                    const skillName = softSkills[skillIndex].querySelector('[data-field="skillName"]')?.value || 'unknown';
+                    console.log(`✅ Soft Skill Level aktualisiert: ${skillName} = ${newLevel}`);
+                }
+            }
+            
+            // Fallback für Soft Skills ohne .skill-item-rated
+            if (!updated) {
+                const allSoftRangeInputs = document.querySelectorAll('#softSkillsContainer input[type="range"]');
+                if (allSoftRangeInputs[skillIndex]) {
+                    allSoftRangeInputs[skillIndex].value = newLevel;
+                    allSoftRangeInputs[skillIndex].dispatchEvent(new Event('input', { bubbles: true }));
+                    allSoftRangeInputs[skillIndex].dispatchEvent(new Event('change', { bubbles: true }));
+                    updated = true;
+                    console.log(`✅ Fallback: Soft Skill Level aktualisiert (Index ${skillIndex}) = ${newLevel}`);
+                }
             }
         }
         
-        // Re-render preview
-        this.updatePreview();
-        this.renderSkillLevelEditor();
+        if (!updated) {
+            console.warn(`⚠️ updateSkillLevel: Kein Input gefunden für type=${type}, catIndex=${catIndex}, skillIndex=${skillIndex}`);
+        }
+        
+        // WICHTIG: Warte kurz, damit DOM-Updates abgeschlossen sind
+        setTimeout(() => {
+            // Re-render preview mit aktualisierten Daten
+            // getSkillsData() wird automatisch in updatePreview() aufgerufen
+            this.updatePreview();
+            
+            console.log('✅ Preview aktualisiert nach Skill-Level-Änderung');
+        }, 50);
+        
+        // Re-render skill level editor um Slider-Werte zu aktualisieren (nach Preview-Update)
+        setTimeout(() => {
+            this.renderSkillLevelEditor();
+        }, 200);
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -3607,23 +3710,42 @@ class DesignEditor {
     getSkillsData() {
         const technicalSkills = [];
         const softSkills = [];
+        const maxLevel = this.settings.skillMaxLevel || 10;
 
         // Alte Kategorie-basierte Skills
         document.querySelectorAll('#technicalSkillsContainer .skill-category-item').forEach(item => {
-            const category = item.querySelector('.skill-category-name')?.value || '';
+            const categoryNameInput = item.querySelector('.skill-category-name');
+            const category = categoryNameInput?.value || categoryNameInput?.textContent?.trim() || '';
             const skillElements = item.querySelectorAll('.skill-tag');
             const skills = [];
             
             skillElements.forEach(skillEl => {
                 const nameInput = skillEl.querySelector('input[type="text"]');
-                const levelInput = skillEl.querySelector('input[type="range"], select[data-field="level"]');
-                skills.push({
-                    name: nameInput?.value?.trim() || '',
-                    level: levelInput ? parseInt(levelInput.value) || 5 : 5
-                });
+                const skillName = nameInput?.value?.trim() || '';
+                
+                // Suche nach Level-Input (verschiedene Möglichkeiten)
+                let levelInput = skillEl.querySelector('input[type="range"]');
+                if (!levelInput) {
+                    levelInput = skillEl.querySelector('select[data-field="level"]');
+                }
+                if (!levelInput) {
+                    levelInput = skillEl.querySelector('[data-field="level"]');
+                }
+                
+                let level = 5; // Default
+                if (levelInput) {
+                    const parsedLevel = parseInt(levelInput.value);
+                    if (!isNaN(parsedLevel) && parsedLevel >= 1 && parsedLevel <= maxLevel) {
+                        level = parsedLevel;
+                    }
+                }
+                
+                if (skillName) {
+                    skills.push({ name: skillName, level });
+                }
             });
             
-            if (category || skills.length) {
+            if (category || skills.length > 0) {
                 technicalSkills.push({ category, skills: skills.filter(s => s.name) });
             }
         });
@@ -3632,9 +3754,20 @@ class DesignEditor {
         const ratedSkillsMap = new Map(); // Group by category
         
         document.querySelectorAll('#technicalSkillsContainer .skill-item-rated:not(.soft)').forEach(item => {
-            const name = item.querySelector('[data-field="skillName"]')?.value?.trim() || '';
-            const level = parseInt(item.querySelector('[data-field="skillLevel"]')?.value) || 5;
-            const category = item.querySelector('[data-field="skillCategory"]')?.value?.trim() || 'Allgemein';
+            const nameInput = item.querySelector('[data-field="skillName"]');
+            const name = nameInput?.value?.trim() || '';
+            
+            const levelInput = item.querySelector('[data-field="skillLevel"]');
+            let level = 5; // Default
+            if (levelInput) {
+                const parsedLevel = parseInt(levelInput.value);
+                if (!isNaN(parsedLevel) && parsedLevel >= 1 && parsedLevel <= maxLevel) {
+                    level = parsedLevel;
+                }
+            }
+            
+            const categoryInput = item.querySelector('[data-field="skillCategory"]');
+            const category = categoryInput?.value?.trim() || 'Allgemein';
             
             if (name) {
                 if (!ratedSkillsMap.has(category)) {
@@ -3649,33 +3782,44 @@ class DesignEditor {
             technicalSkills.push({ category, skills });
         });
 
-        // Alte Soft Skills (ohne Bewertung)
+        // Alte Soft Skills (ohne Bewertung) - nur einmal durchlaufen
+        const processedSoftSkills = new Set();
         document.querySelectorAll('#softSkillsContainer .soft-skill-item').forEach(item => {
-            const skill = item.querySelector('input[type="text"]')?.value || '';
-            if (skill) softSkills.push(skill);
+            const skillInput = item.querySelector('input[type="text"]');
+            const skill = skillInput?.value?.trim() || '';
+            const examplesTextarea = item.querySelector('textarea');
+            const examples = examplesTextarea ? examplesTextarea.value.split('\n').filter(e => e.trim()) : [];
+            
+            if (skill && !processedSoftSkills.has(skill)) {
+                processedSoftSkills.add(skill);
+                softSkills.push({ name: skill, level: 5, examples });
+            }
         });
         
         // NEUE: Soft Skills mit Bewertung
         document.querySelectorAll('#softSkillsContainer .skill-item-rated.soft').forEach(item => {
-            const name = item.querySelector('[data-field="skillName"]')?.value?.trim() || '';
-            const level = parseInt(item.querySelector('[data-field="skillLevel"]')?.value) || 5;
+            const nameInput = item.querySelector('[data-field="skillName"]');
+            const name = nameInput?.value?.trim() || '';
+            
+            const levelInput = item.querySelector('[data-field="skillLevel"]');
+            let level = 5; // Default
+            if (levelInput) {
+                const parsedLevel = parseInt(levelInput.value);
+                if (!isNaN(parsedLevel) && parsedLevel >= 1 && parsedLevel <= maxLevel) {
+                    level = parsedLevel;
+                }
+            }
+            
             const examplesTextarea = item.querySelector('textarea[data-field="examples"]');
             const examples = examplesTextarea ? examplesTextarea.value.split('\n').filter(e => e.trim()) : [];
+            
             if (name) {
                 softSkills.push({ name, level, examples });
             }
         });
-        
-        // Alte Soft Skills (ohne Bewertung) - auch mit Examples
-        document.querySelectorAll('#softSkillsContainer .soft-skill-item').forEach(item => {
-            const skill = item.querySelector('input[type="text"]')?.value || '';
-            const examplesTextarea = item.querySelector('textarea');
-            const examples = examplesTextarea ? examplesTextarea.value.split('\n').filter(e => e.trim()) : [];
-            if (skill) {
-                softSkills.push({ name: skill, level: 5, examples });
-            }
-        });
 
+        console.log(`📊 getSkillsData: ${technicalSkills.length} technische Skill-Kategorien, ${softSkills.length} Soft Skills`);
+        
         return { technicalSkills, softSkills };
     }
 
