@@ -230,28 +230,7 @@ class SystematicPDFExportTester {
 
         try {
             // 1. Navigiere zur Seite (immer neu für sauberen Zustand)
-            // Prüfe ob Seite noch verfügbar ist
-            let pageAvailable = false;
-            try {
-                await this.page.evaluate(() => document.title);
-                pageAvailable = true;
-            } catch (e) {
-                console.warn('⚠️ Seite nicht verfügbar, initialisiere neu...');
-                pageAvailable = false;
-            }
-
-            if (!pageAvailable || !this.page.url().includes('resume-editor.html')) {
-                await this.navigateToPage();
-            } else {
-                // Seite neu laden für sauberen Zustand
-                try {
-                    await this.page.reload({ waitUntil: 'networkidle2', timeout: 30000 });
-                    await this.clearCache();
-                } catch (e) {
-                    console.warn('⚠️ Reload fehlgeschlagen, navigiere neu:', e.message);
-                    await this.navigateToPage();
-                }
-            }
+            await this.navigateToPage();
 
             // 2. Öffne Design Editor
             await this.waitForDesignEditor();
@@ -475,40 +454,87 @@ class SystematicPDFExportTester {
             console.log('='.repeat(60));
 
             // Führe alle Szenarien durch (mit Fehlerbehandlung pro Test)
-            try {
-                await this.testScenario1_MinimalDocument();
-            } catch (e) {
-                console.error('❌ Szenario 1 fehlgeschlagen:', e.message);
-            }
+            // Jeder Test initialisiert die Seite neu um "detached Frame" zu vermeiden
+            const scenarios = [
+                { name: 'Szenario 1', fn: () => this.testScenario1_MinimalDocument() },
+                { name: 'Szenario 2', fn: () => this.testScenario2_SmallImages() },
+                { name: 'Szenario 3', fn: () => this.testScenario3_LargeImages() },
+                { name: 'Szenario 4', fn: () => this.testScenario4_VeryLargeHTML() },
+                { name: 'Szenario 5', fn: () => this.testScenario5_VeryLargePDF() },
+                { name: 'Szenario 6', fn: () => this.testScenario6_ErrorHandling() }
+            ];
 
-            try {
-                await this.testScenario2_SmallImages();
-            } catch (e) {
-                console.error('❌ Szenario 2 fehlgeschlagen:', e.message);
-            }
+            for (const scenario of scenarios) {
+                try {
+                    // Initialisiere Seite neu für jeden Test
+                    if (this.page) {
+                        try {
+                            await this.page.close();
+                        } catch (e) {
+                            // Ignore
+                        }
+                    }
+                    const context = await this.browser.createBrowserContext();
+                    this.page = await context.newPage();
+                    
+                    // Console-Logs abfangen
+                    this.page.on('console', msg => {
+                        const type = msg.type();
+                        const text = msg.text();
+                        if (type === 'error' || text.includes('❌')) {
+                            console.error(`[Browser ${type}]:`, text);
+                        }
+                    });
 
-            try {
-                await this.testScenario3_LargeImages();
-            } catch (e) {
-                console.error('❌ Szenario 3 fehlgeschlagen:', e.message);
-            }
+                    // Request/Response Monitoring
+                    this.page.on('request', request => {
+                        const url = request.url();
+                        if (url.includes('pdf-generator') && request.method() === 'POST') {
+                            const postData = request.postData();
+                            if (postData) {
+                                try {
+                                    const body = JSON.parse(postData);
+                                    this.currentRequest = {
+                                        htmlLength: body.html ? body.html.length : 0,
+                                        hasHtml: !!body.html,
+                                        hasContent: !!body.content,
+                                        hasSettings: !!body.settings,
+                                        imageCount: body.html ? (body.html.match(/data:image\/[^"'\s]+/g) || []).length : 0
+                                    };
+                                } catch (e) {
+                                    // Ignore
+                                }
+                            }
+                        }
+                    });
 
-            try {
-                await this.testScenario4_VeryLargeHTML();
-            } catch (e) {
-                console.error('❌ Szenario 4 fehlgeschlagen:', e.message);
-            }
+                    this.page.on('response', async response => {
+                        const url = response.url();
+                        if (url.includes('pdf-generator')) {
+                            const headers = response.headers();
+                            const requestId = headers['x-amzn-requestid'] || headers['x-amz-request-id'];
+                            if (requestId) {
+                                this.lambdaRequestIds.push({
+                                    requestId,
+                                    timestamp: new Date(),
+                                    status: response.status()
+                                });
+                            }
+                        }
+                    });
 
-            try {
-                await this.testScenario5_VeryLargePDF();
-            } catch (e) {
-                console.error('❌ Szenario 5 fehlgeschlagen:', e.message);
-            }
-
-            try {
-                await this.testScenario6_ErrorHandling();
-            } catch (e) {
-                console.error('❌ Szenario 6 fehlgeschlagen:', e.message);
+                    await scenario.fn();
+                } catch (e) {
+                    console.error(`❌ ${scenario.name} fehlgeschlagen:`, e.message);
+                    // Erstelle Fehler-Result
+                    this.testResults.push({
+                        scenario: scenario.name,
+                        timestamp: new Date().toISOString(),
+                        success: false,
+                        errors: [e.message],
+                        errorStack: e.stack
+                    });
+                }
             }
 
             // Generiere Report
