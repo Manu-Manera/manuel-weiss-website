@@ -232,13 +232,94 @@ class DesignEditor {
             const saved = localStorage.getItem('resume_design_settings');
             if (saved) {
                 const defaults = this.getDefaultSettings();
-                const parsed = JSON.parse(saved);
+                let parsed;
+                
+                try {
+                    parsed = JSON.parse(saved);
+                } catch (parseError) {
+                    console.error('❌ Fehler beim Parsen der gespeicherten Settings:', parseError);
+                    console.warn('⚠️ Verwende Standard-Settings');
+                    return defaults;
+                }
+                
+                // Merge mit Defaults
                 const merged = { ...defaults, ...parsed };
-                merged.sections = this.mergeSections(parsed.sections, defaults.sections);
+                
+                // Lade Bilder aus separaten Keys falls vorhanden (Fallback für QuotaExceededError)
+                if (!merged.profileImageUrl || merged.profileImageUrl === '') {
+                    const savedProfileImage = localStorage.getItem('resume_design_profile_image');
+                    if (savedProfileImage) {
+                        merged.profileImageUrl = savedProfileImage;
+                        console.log('✅ Profilbild aus separatem Key geladen');
+                    }
+                }
+                
+                if (!merged.signatureImage || merged.signatureImage === '') {
+                    const savedSignatureImage = localStorage.getItem('resume_design_signature_image');
+                    if (savedSignatureImage) {
+                        merged.signatureImage = savedSignatureImage;
+                        console.log('✅ Unterschrift aus separatem Key geladen');
+                    }
+                }
+                
+                // Validierung: Prüfe kritische Settings
+                const validationErrors = [];
+                
+                // Prüfe ob showHeaderField ein Objekt ist
+                if (merged.showHeaderField && typeof merged.showHeaderField !== 'object') {
+                    console.warn('⚠️ showHeaderField ist kein Objekt, verwende Defaults');
+                    merged.showHeaderField = defaults.showHeaderField;
+                    validationErrors.push('showHeaderField');
+                }
+                
+                // Prüfe ob sections ein Array ist
+                if (!Array.isArray(merged.sections)) {
+                    console.warn('⚠️ sections ist kein Array, verwende Defaults');
+                    merged.sections = defaults.sections;
+                    validationErrors.push('sections');
+                } else {
+                    // Merge sections korrekt
+                    merged.sections = this.mergeSections(parsed.sections, defaults.sections);
+                }
+                
+                // Prüfe ob Template existiert
+                if (merged.template && !this.templates.find(t => t.id === merged.template)) {
+                    console.warn(`⚠️ Template "${merged.template}" nicht gefunden, verwende Default`);
+                    merged.template = defaults.template;
+                    validationErrors.push('template');
+                }
+                
+                // Validierung für Bild-URLs (müssen data: URLs oder leere Strings sein)
+                if (merged.profileImageUrl && !merged.profileImageUrl.startsWith('data:image/') && merged.profileImageUrl !== '') {
+                    console.warn('⚠️ profileImageUrl hat ungültiges Format');
+                    // Behalte es trotzdem, könnte eine externe URL sein
+                }
+                
+                if (merged.signatureImage && !merged.signatureImage.startsWith('data:image/') && merged.signatureImage !== '') {
+                    console.warn('⚠️ signatureImage hat ungültiges Format');
+                    // Behalte es trotzdem, könnte eine externe URL sein
+                }
+                
+                if (validationErrors.length > 0) {
+                    console.warn(`⚠️ Validierungsfehler gefunden: ${validationErrors.join(', ')}`);
+                }
+                
+                // Logging für Debugging
+                const loadedSettings = {
+                    template: merged.template,
+                    hasProfileImage: !!merged.profileImageUrl,
+                    hasSignature: !!merged.signatureImage,
+                    showProfileImage: merged.showProfileImage,
+                    showSignature: merged.showSignature,
+                    sectionsCount: merged.sections?.length || 0
+                };
+                console.log('📥 Design-Settings geladen:', loadedSettings);
+                
                 return merged;
             }
         } catch (e) {
-            console.warn('Could not load design settings:', e);
+            console.error('❌ Fehler beim Laden der Design-Settings:', e);
+            console.warn('⚠️ Verwende Standard-Settings');
         }
         return this.getDefaultSettings();
     }
@@ -261,12 +342,161 @@ class DesignEditor {
         return result;
     }
 
-    saveSettings() {
+    /**
+     * Komprimiert eine dataUrl falls sie zu groß ist
+     */
+    async compressDataUrl(dataUrl, maxSize = 300000) {
+        if (!dataUrl || !dataUrl.startsWith('data:image/')) return dataUrl;
+        if (dataUrl.length <= maxSize) return dataUrl;
+        
         try {
-            localStorage.setItem('resume_design_settings', JSON.stringify(this.settings));
-            console.log('💾 Design settings saved');
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    
+                    // Berechne neue Dimensionen (max 800px Breite/Höhe)
+                    let width = img.width;
+                    let height = img.height;
+                    const maxDimension = 800;
+                    if (width > maxDimension || height > maxDimension) {
+                        const ratio = Math.min(maxDimension / width, maxDimension / height);
+                        width = Math.round(width * ratio);
+                        height = Math.round(height * ratio);
+                    }
+                    
+                    canvas.width = width;
+                    canvas.height = height;
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    // Komprimiere mit abnehmender Qualität bis unter maxSize
+                    let quality = 0.8;
+                    let compressed = canvas.toDataURL('image/jpeg', quality);
+                    
+                    // Wenn immer noch zu groß, reduziere Qualität weiter
+                    while (compressed.length > maxSize && quality > 0.3) {
+                        quality -= 0.1;
+                        compressed = canvas.toDataURL('image/jpeg', quality);
+                    }
+                    
+                    console.log(`📦 dataUrl komprimiert: ${dataUrl.length} → ${compressed.length} bytes (${Math.round((1 - compressed.length / dataUrl.length) * 100)}% Reduktion)`);
+                    resolve(compressed);
+                };
+                img.onerror = () => resolve(dataUrl); // Fallback: Original zurückgeben
+                img.src = dataUrl;
+            });
         } catch (e) {
-            console.warn('Could not save design settings:', e);
+            console.warn('⚠️ Kompression fehlgeschlagen:', e);
+            return dataUrl; // Fallback: Original zurückgeben
+        }
+    }
+    
+    /**
+     * Speichert Settings mit QuotaExceededError-Behandlung und Kompression
+     */
+    async saveSettings() {
+        try {
+            // Erstelle Kopie der Settings für Kompression
+            const settingsToSave = { ...this.settings };
+            
+            // Komprimiere große dataUrls vor Speicherung
+            if (settingsToSave.profileImageUrl && settingsToSave.profileImageUrl.length > 300000) {
+                console.log('📦 Komprimiere Profilbild vor Speicherung...');
+                settingsToSave.profileImageUrl = await this.compressDataUrl(settingsToSave.profileImageUrl, 300000);
+            }
+            
+            if (settingsToSave.signatureImage && settingsToSave.signatureImage.length > 200000) {
+                console.log('📦 Komprimiere Unterschrift vor Speicherung...');
+                settingsToSave.signatureImage = await this.compressDataUrl(settingsToSave.signatureImage, 200000);
+            }
+            
+            // Versuche Settings zu speichern
+            const settingsJson = JSON.stringify(settingsToSave);
+            localStorage.setItem('resume_design_settings', settingsJson);
+            
+            // Validierung: Prüfe ob Settings korrekt gespeichert wurden
+            const saved = localStorage.getItem('resume_design_settings');
+            if (saved !== settingsJson) {
+                console.warn('⚠️ Settings wurden möglicherweise nicht korrekt gespeichert');
+                this.showNotification('Warnung: Einstellungen möglicherweise nicht vollständig gespeichert', 'warning');
+            } else {
+                console.log('💾 Design settings saved successfully');
+            }
+            
+            // Update this.settings mit komprimierten Werten
+            if (settingsToSave.profileImageUrl !== this.settings.profileImageUrl) {
+                this.settings.profileImageUrl = settingsToSave.profileImageUrl;
+            }
+            if (settingsToSave.signatureImage !== this.settings.signatureImage) {
+                this.settings.signatureImage = settingsToSave.signatureImage;
+            }
+            
+        } catch (e) {
+            // Spezifische Behandlung für QuotaExceededError
+            if (e.name === 'QuotaExceededError' || e.code === 22 || e.code === 1014) {
+                console.error('❌ localStorage Quota überschritten:', e);
+                
+                // Versuche mit komprimierten Bildern erneut zu speichern
+                try {
+                    const settingsToSave = { ...this.settings };
+                    
+                    // Komprimiere Bilder aggressiver
+                    if (settingsToSave.profileImageUrl) {
+                        settingsToSave.profileImageUrl = await this.compressDataUrl(settingsToSave.profileImageUrl, 150000);
+                    }
+                    if (settingsToSave.signatureImage) {
+                        settingsToSave.signatureImage = await this.compressDataUrl(settingsToSave.signatureImage, 100000);
+                    }
+                    
+                    // Versuche erneut zu speichern
+                    localStorage.setItem('resume_design_settings', JSON.stringify(settingsToSave));
+                    console.log('✅ Settings nach Kompression gespeichert');
+                    this.showNotification('Einstellungen gespeichert (Bilder wurden komprimiert)', 'success');
+                    
+                    // Update this.settings
+                    this.settings.profileImageUrl = settingsToSave.profileImageUrl;
+                    this.settings.signatureImage = settingsToSave.signatureImage;
+                    
+                } catch (retryError) {
+                    console.error('❌ Auch nach Kompression konnte nicht gespeichert werden:', retryError);
+                    
+                    // Letzter Fallback: Speichere ohne Bilder
+                    const settingsWithoutImages = { ...this.settings };
+                    const profileImageUrl = settingsWithoutImages.profileImageUrl;
+                    const signatureImage = settingsWithoutImages.signatureImage;
+                    settingsWithoutImages.profileImageUrl = ''; // Temporär entfernen
+                    settingsWithoutImages.signatureImage = ''; // Temporär entfernen
+                    
+                    try {
+                        localStorage.setItem('resume_design_settings', JSON.stringify(settingsWithoutImages));
+                        // Speichere Bilder in separaten Keys
+                        if (profileImageUrl) {
+                            try {
+                                localStorage.setItem('resume_design_profile_image', profileImageUrl);
+                            } catch (imgError) {
+                                console.warn('⚠️ Profilbild konnte nicht gespeichert werden:', imgError);
+                            }
+                        }
+                        if (signatureImage) {
+                            try {
+                                localStorage.setItem('resume_design_signature_image', signatureImage);
+                            } catch (imgError) {
+                                console.warn('⚠️ Unterschrift konnte nicht gespeichert werden:', imgError);
+                            }
+                        }
+                        
+                        this.showNotification('Einstellungen gespeichert (Bilder in separaten Speicher)', 'warning');
+                        console.log('✅ Settings ohne Bilder gespeichert, Bilder in separaten Keys');
+                    } catch (finalError) {
+                        console.error('❌ Kritischer Fehler: Settings konnten nicht gespeichert werden:', finalError);
+                        this.showNotification('Fehler: Einstellungen konnten nicht gespeichert werden. Bitte Browser-Cache löschen.', 'error');
+                    }
+                }
+            } else {
+                console.warn('⚠️ Could not save design settings:', e);
+                this.showNotification('Fehler beim Speichern der Einstellungen', 'error');
+            }
         }
     }
 
@@ -940,20 +1170,69 @@ class DesignEditor {
                         templatesGrid.querySelectorAll('.design-template-card').forEach(c => c.classList.remove('active'));
                         card.classList.add('active');
                         
-                        // Behalte showHeaderField beim Template-Wechsel
+                        // WICHTIG: Behalte alle benutzerdefinierten Settings beim Template-Wechsel
                         const currentShowHeaderField = { ...this.settings.showHeaderField };
+                        
+                        // Liste aller Settings, die beim Template-Wechsel erhalten bleiben sollen
                         const preservedSettings = {
+                            // Profilbild-Settings
+                            showProfileImage: this.settings.showProfileImage,
                             profileImageUrl: this.settings.profileImageUrl,
+                            profileImageShape: this.settings.profileImageShape,
+                            profileImageSize: this.settings.profileImageSize,
+                            profileImagePosition: this.settings.profileImagePosition,
+                            profileImageBorder: this.settings.profileImageBorder,
+                            profileImageZoom: this.settings.profileImageZoom,
+                            profileImageOffsetX: this.settings.profileImageOffsetX,
+                            profileImageOffsetY: this.settings.profileImageOffsetY,
+                            
+                            // Unterschrift-Settings
+                            showSignature: this.settings.showSignature,
                             signatureImage: this.settings.signatureImage,
+                            signatureDate: this.settings.signatureDate,
+                            signatureLocation: this.settings.signatureLocation,
+                            signatureLine: this.settings.signatureLine,
+                            signaturePosition: this.settings.signaturePosition,
+                            signatureWidth: this.settings.signatureWidth,
+                            signatureCustomX: this.settings.signatureCustomX,
+                            signatureCustomY: this.settings.signatureCustomY,
+                            signatureSkew: this.settings.signatureSkew,
+                            signatureLineWidth: this.settings.signatureLineWidth,
+                            signatureLineColor: this.settings.signatureLineColor,
+                            
+                            // Header-Feld-Sichtbarkeit
+                            showHeaderField: currentShowHeaderField,
+                            
+                            // Lebenslauf-Titel-Settings
+                            showResumeTitle: this.settings.showResumeTitle,
+                            resumeTitleText: this.settings.resumeTitleText,
+                            resumeTitlePosition: this.settings.resumeTitlePosition,
+                            resumeTitleSize: this.settings.resumeTitleSize,
+                            resumeTitleColor: this.settings.resumeTitleColor,
+                            resumeTitleSpacing: this.settings.resumeTitleSpacing,
+                            
+                            // Company Logo (falls vorhanden)
+                            showCompanyLogo: this.settings.showCompanyLogo,
+                            companyLogoUrl: this.settings.companyLogoUrl,
+                            companyLogoPosition: this.settings.companyLogoPosition,
+                            companyLogoSize: this.settings.companyLogoSize,
                         };
                         
+                        // Template anwenden
                         this.settings.template = templateId;
                         Object.assign(this.settings, template.settings);
                         
-                        // Stelle showHeaderField wieder her (wird nicht von Template überschrieben)
+                        // Stelle alle erhaltenen Settings wieder her
+                        Object.keys(preservedSettings).forEach(key => {
+                            if (preservedSettings[key] !== undefined && preservedSettings[key] !== null && preservedSettings[key] !== '') {
+                                this.settings[key] = preservedSettings[key];
+                            }
+                        });
+                        
+                        // Spezielle Behandlung für showHeaderField (merge statt replace)
                         this.settings.showHeaderField = { ...currentShowHeaderField, ...(template.settings.showHeaderField || {}) };
-                        if (preservedSettings.profileImageUrl) this.settings.profileImageUrl = preservedSettings.profileImageUrl;
-                        if (preservedSettings.signatureImage) this.settings.signatureImage = preservedSettings.signatureImage;
+                        
+                        console.log('✅ Settings beim Template-Wechsel erhalten:', Object.keys(preservedSettings).filter(k => preservedSettings[k] !== undefined && preservedSettings[k] !== null && preservedSettings[k] !== ''));
                         
                         this.updateUIFromSettings();
                         this.applySettings();
@@ -1711,7 +1990,7 @@ class DesignEditor {
                 this.settings.profileImageZoom = 100;
                 this.settings.profileImageOffsetX = 0;
                 this.settings.profileImageOffsetY = 0;
-                this.saveSettings();
+                this.saveSettings().catch(err => console.error('Fehler beim Speichern:', err));
                 this.updatePreview();
                 
                 const toggle = document.getElementById('designShowProfileImage');
@@ -1757,9 +2036,16 @@ class DesignEditor {
         
         const reader = new FileReader();
         reader.onload = async (e) => {
-            const dataUrl = e.target.result;
+            let dataUrl = e.target.result;
+            
+            // Automatische Kompression für große Bilder
+            if (dataUrl.length > 300000) {
+                console.log('📦 Komprimiere Profilbild automatisch...');
+                dataUrl = await this.compressDataUrl(dataUrl, 300000);
+            }
+            
             this.settings.profileImageUrl = dataUrl;
-            this.saveSettings();
+            await this.saveSettings();
             this.updatePreview();
             
             // NEU: Speichere auch in Fotos-Sektion
@@ -2064,11 +2350,19 @@ class DesignEditor {
         }
         
         const reader = new FileReader();
-        reader.onload = (e) => {
+        reader.onload = async (e) => {
+            let imageDataUrl = e.target.result;
+            
             // Automatisch weißen/hellen Hintergrund entfernen
-            this.removeSignatureBackground(e.target.result).then(transparentImage => {
+            this.removeSignatureBackground(imageDataUrl).then(async (transparentImage) => {
+                // Komprimiere große Unterschriften automatisch
+                if (transparentImage.length > 200000) {
+                    console.log('📦 Komprimiere Unterschrift automatisch...');
+                    transparentImage = await this.compressDataUrl(transparentImage, 200000);
+                }
+                
                 this.settings.signatureImage = transparentImage;
-                this.saveSettings();
+                await this.saveSettings();
                 this.updatePreview();
                 this.showNotification('Unterschrift hochgeladen & freigestellt', 'success');
                 
@@ -2077,10 +2371,18 @@ class DesignEditor {
                 if (preview) {
                     preview.innerHTML = `<img src="${transparentImage}" alt="Unterschrift" style="max-height: 60px; background: repeating-conic-gradient(#f0f0f0 0% 25%, transparent 0% 50%) 50% / 10px 10px;">`;
                 }
-            }).catch(() => {
+            }).catch(async () => {
                 // Fallback ohne Freistellung
-                this.settings.signatureImage = e.target.result;
-                this.saveSettings();
+                let dataUrl = imageDataUrl;
+                
+                // Komprimiere auch im Fallback
+                if (dataUrl.length > 200000) {
+                    console.log('📦 Komprimiere Unterschrift (Fallback) automatisch...');
+                    dataUrl = await this.compressDataUrl(dataUrl, 200000);
+                }
+                
+                this.settings.signatureImage = dataUrl;
+                await this.saveSettings();
                 this.updatePreview();
                 this.showNotification('Unterschrift hochgeladen', 'success');
             });
