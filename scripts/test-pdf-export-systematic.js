@@ -437,15 +437,46 @@ class SystematicPDFExportTester {
     }
 
     async testScenario6_ErrorHandling() {
-        // Für Error-Handling-Test müsste man Lambda-Fehler simulieren
-        // Das ist schwierig ohne Lambda-Zugriff, daher überspringen wir das erstmal
-        console.log('\n⚠️ Szenario 6 (Fehlerbehandlung) übersprungen - benötigt Lambda-Zugriff');
-        return {
-            scenario: 'Szenario 6: Fehlerbehandlung',
-            success: true,
-            skipped: true,
-            note: 'Benötigt Lambda-Zugriff für Fehler-Simulation'
-        };
+        // Teste Error-Handling durch Code-Validierung und normalen Export
+        const result = await this.testPDFExport('Szenario 6: Fehlerbehandlung', {});
+        
+        // Zusätzliche Validierung: Prüfe ob Error-Handling-Code vorhanden ist
+        try {
+            const codeValidation = await this.page.evaluate(() => {
+                if (!window.designEditor) return { hasErrorHandling: false, hasRetry: false };
+                const exportFn = window.designEditor.exportToPDF;
+                if (!exportFn) return { hasErrorHandling: false, hasRetry: false };
+                const fnString = exportFn.toString();
+                return {
+                    hasErrorHandling: fnString.includes('catch') && 
+                                     fnString.includes('error') && 
+                                     (fnString.includes('showNotification') || fnString.includes('showToast')),
+                    hasRetry: fnString.includes('maxAttempts') || fnString.includes('retry')
+                };
+            });
+
+            if (codeValidation.hasErrorHandling) {
+                result.validations.hasErrorHandling = true;
+                console.log('✅ Error-Handling-Code gefunden');
+            } else {
+                result.warnings.push('Error-Handling-Code nicht gefunden');
+            }
+
+            if (codeValidation.hasRetry) {
+                result.validations.hasRetry = true;
+                console.log('✅ Retry-Mechanismus gefunden');
+            } else {
+                result.warnings.push('Retry-Mechanismus nicht gefunden');
+            }
+
+            // Test ist erfolgreich wenn PDF-Export funktioniert UND Error-Handling vorhanden ist
+            result.success = result.success && codeValidation.hasErrorHandling;
+
+        } catch (e) {
+            result.warnings.push('Konnte Error-Handling nicht validieren: ' + e.message);
+        }
+
+        return result;
     }
 
     async runAllTests() {
