@@ -8877,7 +8877,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-038333965110-eu-central-1",
-     "S3Key": "b0c5b38abb080551f872892faba8e6b2823480e53fe394a3bc61148d6550c480.zip"
+     "S3Key": "cc2083e1d4a4a1c49b594a984208cbaaa9258ca9c62ac027c774073f836b65a0.zip"
     },
     "Environment": {
      "Variables": {
@@ -8920,7 +8920,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "manuel-weiss-website-api/PdfGeneratorFunction/Resource",
-    "aws:asset:path": "asset.b0c5b38abb080551f872892faba8e6b2823480e53fe394a3bc61148d6550c480",
+    "aws:asset:path": "asset.cc2083e1d4a4a1c49b594a984208cbaaa9258ca9c62ac027c774073f836b65a0",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }
