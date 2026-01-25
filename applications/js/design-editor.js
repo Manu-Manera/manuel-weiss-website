@@ -5825,12 +5825,17 @@ class DesignEditor {
                 clearTimeout(timeoutId);
                 lastError = error;
 
-                // Detailliertes Error-Logging
+                // Detailliertes Error-Logging mit HTML-Info
+                const htmlSizeKB = Math.round(htmlContent.length / 1024);
+                const imageCount = (htmlContent.match(/data:image\/[^"'\s]+/g) || []).length;
+                
                 console.error('❌ PDF-Export Fehler (Attempt', attempt, '):', {
                     name: error?.name,
                     message: error?.message,
                     stack: error?.stack,
-                    type: error?.constructor?.name
+                    type: error?.constructor?.name,
+                    htmlSize: `${htmlSizeKB}KB`,
+                    imageCount: imageCount
                 });
 
                 const isAbort = error && error.name === 'AbortError';
@@ -5847,13 +5852,13 @@ class DesignEditor {
                 // Spezifische Fehlermeldungen für verschiedene Fehlertypen
                 if (isTimeout || isAbort) {
                     console.error('❌ PDF Export Timeout: Die Anfrage dauerte länger als 25 Sekunden');
-                    const timeoutMessage = 'PDF-Generierung dauerte zu lange. Bitte versuchen Sie es erneut oder vereinfachen Sie das Dokument.';
+                    const timeoutMessage = `PDF-Generierung dauerte zu lange (${htmlSizeKB}KB, ${imageCount} Bilder). Bitte versuchen Sie es erneut oder vereinfachen Sie das Dokument.`;
                     this.showNotification(timeoutMessage, 'error');
                     throw new Error(timeoutMessage);
                 }
 
                 if (isNetworkOrCors) {
-                    const networkMessage = 'PDF-Generator nicht erreichbar (Netzwerk/CORS). Bitte erneut versuchen.';
+                    const networkMessage = `PDF-Generator nicht erreichbar (Netzwerk/CORS). Dokument: ${htmlSizeKB}KB, ${imageCount} Bilder. Bitte erneut versuchen.`;
                     console.error('❌ Network/CORS Error:', error);
                     this.showNotification(networkMessage, 'error');
                     throw new Error(networkMessage);
@@ -5861,7 +5866,8 @@ class DesignEditor {
 
                 // Generischer Fehler mit detaillierter Meldung
                 const errorMessage = error?.message || 'Unbekannter Fehler beim PDF-Export';
-                console.error('❌ PDF-Export fehlgeschlagen:', errorMessage);
+                const detailedMessage = `${errorMessage} (Dokument: ${htmlSizeKB}KB, ${imageCount} Bilder)`;
+                console.error('❌ PDF-Export fehlgeschlagen:', detailedMessage);
                 this.showNotification(`PDF-Export fehlgeschlagen: ${errorMessage}`, 'error');
                 throw error;
             }
