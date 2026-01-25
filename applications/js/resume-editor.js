@@ -341,12 +341,30 @@ async function uploadAndProcessPDF(file) {
         try {
             pdfText = await extractTextFromPDF(file);
         } catch (pdfError) {
-            console.error('PDF-Extraktion fehlgeschlagen:', pdfError);
-            throw new Error(`PDF konnte nicht gelesen werden: ${pdfError.message}`);
+            console.error('❌ PDF-Extraktion fehlgeschlagen:', pdfError);
+            console.error('❌ Error Details:', {
+                name: pdfError?.name,
+                message: pdfError?.message,
+                stack: pdfError?.stack
+            });
+            
+            // Spezifische Fehlermeldungen
+            let errorMessage = pdfError?.message || 'Unbekannter Fehler';
+            if (errorMessage.includes('PDF.js nicht geladen')) {
+                errorMessage = 'PDF.js Bibliothek nicht geladen. Bitte Seite neu laden.';
+            } else if (errorMessage.includes('Ungültige PDF')) {
+                errorMessage = 'Ungültige oder beschädigte PDF-Datei. Bitte verwenden Sie eine andere PDF.';
+            } else if (errorMessage.includes('passwortgeschützt')) {
+                errorMessage = 'PDF ist passwortgeschützt. Bitte entfernen Sie das Passwort.';
+            } else if (errorMessage.includes('zu wenig Text')) {
+                errorMessage = 'Die PDF scheint ein gescanntes Bild zu sein. Bitte verwenden Sie eine PDF mit Textinhalt oder konvertieren Sie die PDF zuerst mit OCR.';
+            }
+            
+            throw new Error(`PDF konnte nicht gelesen werden: ${errorMessage}`);
         }
         
         if (!pdfText || pdfText.trim().length < 50) {
-            throw new Error('Konnte keinen Text aus der PDF extrahieren. Bitte prüfen Sie, ob die PDF Textinhalt enthält.');
+            throw new Error('Konnte keinen Text aus der PDF extrahieren. Bitte prüfen Sie, ob die PDF Textinhalt enthält oder ob es sich um eine gescannte PDF handelt.');
         }
         
         console.log('📄 Extrahierter Text:', pdfText.substring(0, 500) + '...');
@@ -441,37 +459,88 @@ async function extractTextFromPDF(file) {
         
         reader.onload = async function(event) {
             try {
+                if (!event.target || !event.target.result) {
+                    throw new Error('Datei konnte nicht gelesen werden - keine Daten');
+                }
+                
                 const typedArray = new Uint8Array(event.target.result);
+                
+                if (typedArray.length === 0) {
+                    throw new Error('Datei ist leer');
+                }
                 
                 // PDF.js laden
                 if (!window.pdfjsLib) {
-                    throw new Error('PDF.js nicht geladen');
+                    throw new Error('PDF.js nicht geladen. Bitte Seite neu laden.');
                 }
                 
-                const pdf = await pdfjsLib.getDocument(typedArray).promise;
+                console.log('📄 Lade PDF-Dokument...', { size: typedArray.length, bytes: 'bytes' });
+                
+                let pdf;
+                try {
+                    pdf = await pdfjsLib.getDocument({
+                        data: typedArray,
+                        verbosity: 0 // Reduziere Logging
+                    }).promise;
+                } catch (pdfError) {
+                    console.error('❌ PDF.js Fehler:', pdfError);
+                    if (pdfError.name === 'InvalidPDFException') {
+                        throw new Error('Ungültige PDF-Datei. Bitte prüfen Sie, ob die Datei beschädigt ist.');
+                    } else if (pdfError.name === 'MissingPDFException') {
+                        throw new Error('PDF-Datei nicht gefunden oder leer.');
+                    } else if (pdfError.message && pdfError.message.includes('password')) {
+                        throw new Error('PDF ist passwortgeschützt. Bitte entfernen Sie das Passwort.');
+                    } else {
+                        throw new Error(`PDF konnte nicht geladen werden: ${pdfError.message || pdfError.name}`);
+                    }
+                }
+                
+                if (!pdf || !pdf.numPages) {
+                    throw new Error('PDF hat keine Seiten');
+                }
+                
                 let fullText = '';
                 
                 console.log(`📄 PDF hat ${pdf.numPages} Seiten`);
                 
                 for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-                    const page = await pdf.getPage(pageNum);
-                    const textContent = await page.getTextContent();
-                    
-                    // Verbesserte Textextraktion mit Positionsanalyse
-                    const pageText = reconstructTextWithStructure(textContent.items);
-                    fullText += `\n--- SEITE ${pageNum} ---\n${pageText}\n`;
-                    
-                    console.log(`📖 Seite ${pageNum}: ${pageText.length} Zeichen extrahiert`);
+                    try {
+                        const page = await pdf.getPage(pageNum);
+                        const textContent = await page.getTextContent();
+                        
+                        if (!textContent || !textContent.items) {
+                            console.warn(`⚠️ Seite ${pageNum} hat keinen Text-Content`);
+                            continue;
+                        }
+                        
+                        // Verbesserte Textextraktion mit Positionsanalyse
+                        const pageText = reconstructTextWithStructure(textContent.items);
+                        fullText += `\n--- SEITE ${pageNum} ---\n${pageText}\n`;
+                        
+                        console.log(`📖 Seite ${pageNum}: ${pageText.length} Zeichen extrahiert`);
+                    } catch (pageError) {
+                        console.error(`❌ Fehler beim Extrahieren von Seite ${pageNum}:`, pageError);
+                        // Weiter mit nächster Seite
+                        fullText += `\n--- SEITE ${pageNum} (FEHLER) ---\n`;
+                    }
+                }
+                
+                if (fullText.trim().length < 50) {
+                    throw new Error('Konnte zu wenig Text aus PDF extrahieren. Möglicherweise ist die PDF gescannt (Bild-PDF). Bitte verwenden Sie eine PDF mit Textinhalt.');
                 }
                 
                 console.log(`📄 Gesamt extrahiert: ${fullText.length} Zeichen`);
                 resolve(fullText);
             } catch (error) {
+                console.error('❌ PDF-Extraktions-Fehler:', error);
                 reject(error);
             }
         };
         
-        reader.onerror = () => reject(new Error('Fehler beim Lesen der Datei'));
+        reader.onerror = (error) => {
+            console.error('❌ FileReader Fehler:', error);
+            reject(new Error('Fehler beim Lesen der Datei. Bitte prüfen Sie, ob die Datei korrekt ist.'));
+        };
         reader.readAsArrayBuffer(file);
     });
 }
@@ -1411,6 +1480,15 @@ function populateForm(data) {
     if (data.skills) {
         console.log('📋 Lade Skills, Datenstruktur:', data.skills);
         
+        // Prüfe ob Container existieren
+        const techContainer = document.getElementById('technicalSkillsContainer');
+        const softContainer = document.getElementById('softSkillsContainer');
+        
+        if (!techContainer || !softContainer) {
+            console.warn('⚠️ Skill-Container nicht gefunden, überspringe Skills-Laden');
+            return;
+        }
+        
         // Unterstütze verschiedene Strukturen
         let technicalSkills = data.skills.technicalSkills || data.skills.technical || [];
         let softSkills = data.skills.softSkills || data.skills.soft || [];
@@ -1418,6 +1496,12 @@ function populateForm(data) {
         // Fallback: Wenn skills direkt ein Array ist
         if (Array.isArray(data.skills) && !technicalSkills.length && !softSkills.length) {
             technicalSkills = data.skills;
+        }
+        
+        // Auch direkte Properties prüfen (falls skills-Objekt fehlt)
+        if (!data.skills.technicalSkills && !data.skills.technical && !Array.isArray(data.skills)) {
+            technicalSkills = data.technicalSkills || [];
+            softSkills = data.softSkills || [];
         }
         
         if (Array.isArray(technicalSkills) && technicalSkills.length > 0) {
@@ -1429,16 +1513,20 @@ function populateForm(data) {
                         if (category.category && Array.isArray(category.skills)) {
                             // Format: {category: "Sprachen", skills: [{name: "Deutsch", level: 5}]}
                             addTechnicalSkillCategory(category.category || '', category.skills || []);
-                        } else if (category.name) {
+                        } else if (category.name || category.skill) {
                             // Einzelner Skill mit Kategorie
                             const catName = category.category || 'Allgemein';
-                            addTechnicalSkillCategory(catName, [category]);
+                            const skillObj = category.name ? { name: category.name, level: category.level || 5 } : { name: category.skill, level: category.level || 5 };
+                            addTechnicalSkillCategory(catName, [skillObj]);
                         } else if (Array.isArray(category)) {
                             // Falls category selbst ein Array ist
                             category.forEach(skill => {
                                 if (skill && typeof skill === 'object' && (skill.name || skill.skill)) {
                                     const catName = skill.category || 'Allgemein';
-                                    addTechnicalSkillCategory(catName, [skill]);
+                                    const skillObj = skill.name ? { name: skill.name, level: skill.level || 5 } : { name: skill.skill, level: skill.level || 5 };
+                                    addTechnicalSkillCategory(catName, [skillObj]);
+                                } else if (typeof skill === 'string') {
+                                    addTechnicalSkillCategory('Allgemein', [{ name: skill, level: 5 }]);
                                 }
                             });
                         }
@@ -1448,26 +1536,34 @@ function populateForm(data) {
                     }
                 } catch (skillError) {
                     console.warn(`⚠️ Fehler beim Laden von Skill-Kategorie ${index}:`, skillError);
+                    console.warn('⚠️ Category-Daten:', category);
                 }
             });
+        } else {
+            console.log('ℹ️ Keine technischen Skills zum Laden gefunden');
         }
         
         if (Array.isArray(softSkills) && softSkills.length > 0) {
             console.log(`📋 Lade ${softSkills.length} Soft Skills`);
             softSkills.forEach(skill => {
                 try {
-                    const skillName = skill.skill || skill.name || '';
+                    const skillName = skill.skill || skill.name || (typeof skill === 'string' ? skill : '');
                     if (skillName) {
                         const examples = skill.examples || [];
                         addSoftSkill(skillName, examples);
                     }
                 } catch (skillError) {
                     console.warn('⚠️ Fehler beim Laden eines Soft Skills:', skillError);
+                    console.warn('⚠️ Skill-Daten:', skill);
                 }
             });
+        } else {
+            console.log('ℹ️ Keine Soft Skills zum Laden gefunden');
         }
         
         console.log('✅ Skills geladen');
+    } else {
+        console.log('ℹ️ Keine Skills-Daten vorhanden');
     }
     
     // Populate Projects

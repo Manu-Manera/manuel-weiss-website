@@ -816,9 +816,9 @@
 /* Bullet Points */
 .resume-preview-bullets {
     margin: 0.5rem 0 0 0;
-    padding-left: 0 !important; /* Gleicher Einzug wie normaler Text - Container übernimmt Einzug */
+    padding-left: 1.2em !important; /* Einzug für Bullets - entspricht normalem Text-Einzug */
     list-style-type: disc;
-    list-style-position: inside; /* Bullets innerhalb des Containers */
+    list-style-position: outside; /* Bullets außerhalb, damit sie nicht weiter links sind als Text */
 }
 
 .resume-preview-bullets li {

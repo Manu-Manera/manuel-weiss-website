@@ -995,9 +995,18 @@ class DesignEditor {
         colorSettings.forEach(({ id, hexId, key }) => {
             const colorPicker = document.getElementById(id);
             const hexInput = document.getElementById(hexId);
-            const value = this.settings[key] || '#ffffff';
-            if (colorPicker) colorPicker.value = value;
-            if (hexInput) hexInput.value = value;
+            // Verwende Template-Farbe oder Fallback
+            const value = this.settings[key] || (key === 'backgroundColor' ? '#ffffff' : key === 'textColor' ? '#1e293b' : key === 'accentColor' ? '#6366f1' : '#ffffff');
+            if (colorPicker) {
+                colorPicker.value = value;
+                // Trigger change event um sicherzustellen, dass Event-Listener ausgelöst werden
+                colorPicker.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+            if (hexInput) {
+                hexInput.value = value;
+                hexInput.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+            console.log(`✅ Farbe ${key} aktualisiert:`, value);
         });
         
         document.querySelectorAll('.design-color-preset').forEach(btn => {
@@ -1020,9 +1029,16 @@ class DesignEditor {
             Object.entries(fieldMap).forEach(([checkboxId, fieldKey]) => {
                 const checkbox = document.getElementById(checkboxId);
                 if (checkbox) {
-                    checkbox.checked = this.settings.showHeaderField[fieldKey] !== false;
+                    const shouldBeChecked = this.settings.showHeaderField[fieldKey] !== false;
+                    checkbox.checked = shouldBeChecked;
+                    // Stelle sicher, dass Event-Listener vorhanden sind (werden in setupHeaderFields() registriert)
+                    console.log(`✅ Checkbox ${checkboxId} (${fieldKey}) auf ${shouldBeChecked ? 'checked' : 'unchecked'} gesetzt`);
+                } else {
+                    console.warn(`⚠️ Checkbox ${checkboxId} nicht gefunden`);
                 }
             });
+        } else {
+            console.warn('⚠️ showHeaderField nicht in Settings vorhanden');
         }
         
         // Layout
@@ -1644,43 +1660,66 @@ class DesignEditor {
             this.updatePreview();
             
             // NEU: Speichere auch in Fotos-Sektion
+            let photoSaved = false;
             try {
                 const photo = {
                     id: `photo_${Date.now()}`,
-                    name: file.name,
-                    type: file.type,
-                    size: file.size,
+                    name: file.name || `Profilbild_${Date.now()}.jpg`,
+                    type: file.type || 'image/jpeg',
+                    size: file.size || dataUrl.length,
                     dataUrl: dataUrl,
                     url: dataUrl, // Für Kompatibilität
                     storage: 'local',
                     createdAt: new Date().toISOString()
                 };
                 
-                if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
+                console.log('📸 Speichere Foto in Fotos-Sektion...', { id: photo.id, name: photo.name, size: photo.size });
+                
+                if (window.cloudDataService && typeof window.cloudDataService.isUserLoggedIn === 'function' && window.cloudDataService.isUserLoggedIn()) {
                     try {
-                        await window.cloudDataService.savePhoto(photo);
-                        console.log('✅ Foto in Fotos-Sektion gespeichert (Cloud)');
+                        const result = await window.cloudDataService.savePhoto(photo);
+                        if (result && (result.success || result.photo)) {
+                            console.log('✅ Foto in Fotos-Sektion gespeichert (Cloud)', result);
+                            photoSaved = true;
+                        } else {
+                            throw new Error('savePhoto() returned no success');
+                        }
                     } catch (cloudError) {
                         console.warn('⚠️ Cloud-Speicherung fehlgeschlagen, verwende localStorage:', cloudError);
                         // Fallback zu localStorage
+                        try {
+                            let photos = JSON.parse(localStorage.getItem('user_photos') || '[]');
+                            photos.unshift(photo);
+                            localStorage.setItem('user_photos', JSON.stringify(photos));
+                            console.log('✅ Foto in Fotos-Sektion gespeichert (localStorage)', { count: photos.length });
+                            photoSaved = true;
+                        } catch (localError) {
+                            console.error('❌ Auch localStorage-Speicherung fehlgeschlagen:', localError);
+                        }
+                    }
+                } else {
+                    // Fallback: localStorage (auch wenn nicht eingeloggt)
+                    try {
                         let photos = JSON.parse(localStorage.getItem('user_photos') || '[]');
                         photos.unshift(photo);
                         localStorage.setItem('user_photos', JSON.stringify(photos));
-                        console.log('✅ Foto in Fotos-Sektion gespeichert (localStorage)');
+                        console.log('✅ Foto in Fotos-Sektion gespeichert (localStorage)', { count: photos.length });
+                        photoSaved = true;
+                    } catch (localError) {
+                        console.error('❌ localStorage-Speicherung fehlgeschlagen:', localError);
                     }
-                } else {
-                    // Fallback: localStorage
-                    let photos = JSON.parse(localStorage.getItem('user_photos') || '[]');
-                    photos.unshift(photo);
-                    localStorage.setItem('user_photos', JSON.stringify(photos));
-                    console.log('✅ Foto in Fotos-Sektion gespeichert (localStorage)');
                 }
             } catch (error) {
                 console.error('❌ Fehler beim Speichern des Fotos:', error);
+                console.error('❌ Error Details:', { name: error.name, message: error.message, stack: error.stack });
                 // Nicht kritisch - Foto ist bereits als Profilbild gespeichert
             }
             
-            this.showNotification('Profilbild hochgeladen und in Fotos gespeichert', 'success');
+            if (photoSaved) {
+                this.showNotification('Profilbild hochgeladen und in Fotos gespeichert', 'success');
+            } else {
+                this.showNotification('Profilbild hochgeladen (Foto-Speicherung fehlgeschlagen)', 'warning');
+            }
         };
         reader.readAsDataURL(file);
     }
@@ -1877,12 +1916,14 @@ class DesignEditor {
         const signatureLineColorPicker = document.getElementById('signatureLineColor');
         const signatureLineColorHex = document.getElementById('signatureLineColorHex');
         if (signatureLineColorPicker) {
-            signatureLineColorPicker.value = this.settings.signatureLineColor || this.settings.textColor || '#64748b';
-            if (signatureLineColorHex) signatureLineColorHex.value = this.settings.signatureLineColor || this.settings.textColor || '#64748b';
+            const defaultColor = this.settings.signatureLineColor || this.settings.textColor || '#64748b';
+            signatureLineColorPicker.value = defaultColor;
+            if (signatureLineColorHex) signatureLineColorHex.value = defaultColor;
             
             signatureLineColorPicker.addEventListener('input', (e) => {
-                this.settings.signatureLineColor = e.target.value;
-                if (signatureLineColorHex) signatureLineColorHex.value = e.target.value;
+                const value = e.target.value;
+                this.settings.signatureLineColor = value;
+                if (signatureLineColorHex) signatureLineColorHex.value = value;
                 this.saveSettings();
                 this.updatePreview();
             });
@@ -1890,13 +1931,15 @@ class DesignEditor {
         
         if (signatureLineColorHex) {
             signatureLineColorHex.addEventListener('input', (e) => {
-                let value = e.target.value;
+                let value = e.target.value.trim();
                 if (!value.startsWith('#')) value = '#' + value;
                 if (/^#[0-9A-Fa-f]{6}$/.test(value)) {
                     this.settings.signatureLineColor = value;
                     if (signatureLineColorPicker) signatureLineColorPicker.value = value;
                     this.saveSettings();
                     this.updatePreview();
+                } else {
+                    console.warn('⚠️ Ungültige Hex-Farbe:', value);
                 }
             });
         }
@@ -2442,18 +2485,24 @@ class DesignEditor {
         
         if (offsetXSlider) {
             offsetXSlider.value = this.settings.profileImageOffsetX || 0;
-            document.getElementById('offsetXValue').textContent = offsetXSlider.value + '%';
+            const offsetXValueEl = document.getElementById('offsetXValue');
+            if (offsetXValueEl) offsetXValueEl.textContent = (this.settings.profileImageOffsetX || 0) + '%';
             offsetXSlider.addEventListener('input', (e) => {
-                this.settings.profileImageOffsetX = parseInt(e.target.value);
+                const value = parseInt(e.target.value) || 0;
+                this.settings.profileImageOffsetX = value;
+                if (offsetXValueEl) offsetXValueEl.textContent = value + '%';
                 updateCrop();
             });
         }
         
         if (offsetYSlider) {
             offsetYSlider.value = this.settings.profileImageOffsetY || 0;
-            document.getElementById('offsetYValue').textContent = offsetYSlider.value + '%';
+            const offsetYValueEl = document.getElementById('offsetYValue');
+            if (offsetYValueEl) offsetYValueEl.textContent = (this.settings.profileImageOffsetY || 0) + '%';
             offsetYSlider.addEventListener('input', (e) => {
-                this.settings.profileImageOffsetY = parseInt(e.target.value);
+                const value = parseInt(e.target.value) || 0;
+                this.settings.profileImageOffsetY = value;
+                if (offsetYValueEl) offsetYValueEl.textContent = value + '%';
                 updateCrop();
             });
         }
@@ -2663,6 +2712,134 @@ class DesignEditor {
         if (customOptions) {
             customOptions.style.display = show ? 'block' : 'none';
         }
+    }
+    
+    /**
+     * Setup Drag & Drop für Unterschrift im Preview
+     * Richtet Unterschrift auf Linie aus
+     */
+    setupSignatureDragDrop() {
+        const preview = document.querySelector('.design-resume-preview');
+        if (!preview) return;
+        
+        const signatureImageContainer = preview.querySelector('.signature-draggable');
+        if (!signatureImageContainer || !this.settings.signatureImage) return;
+        
+        // Entferne alte Event-Listener (falls vorhanden)
+        const newContainer = signatureImageContainer.cloneNode(true);
+        signatureImageContainer.parentNode.replaceChild(newContainer, signatureImageContainer);
+        
+        let isDragging = false;
+        let startX, startY, initialX, initialY;
+        
+        // Initialisiere Position aus Settings
+        if (this.settings.signatureCustomX !== undefined && this.settings.signatureCustomY !== undefined) {
+            newContainer.style.position = 'absolute';
+            newContainer.style.left = `${this.settings.signatureCustomX}%`;
+            newContainer.style.top = `${this.settings.signatureCustomY}%`;
+        }
+        
+        // Maus-Events
+        newContainer.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            startX = e.clientX;
+            startY = e.clientY;
+            
+            const rect = newContainer.getBoundingClientRect();
+            initialX = rect.left;
+            initialY = rect.top;
+            
+            newContainer.style.cursor = 'grabbing';
+            newContainer.style.opacity = '0.8';
+            e.preventDefault();
+        });
+        
+        const handleMouseMove = (e) => {
+            if (!isDragging) return;
+            
+            const deltaX = e.clientX - startX;
+            const deltaY = e.clientY - startY;
+            
+            const newX = initialX + deltaX;
+            const newY = initialY + deltaY;
+            
+            newContainer.style.position = 'absolute';
+            newContainer.style.left = `${newX}px`;
+            newContainer.style.top = `${newY}px`;
+        };
+        
+        const handleMouseUp = () => {
+            if (!isDragging) return;
+            isDragging = false;
+            
+            newContainer.style.cursor = 'move';
+            newContainer.style.opacity = '1';
+            
+            const previewRect = preview.getBoundingClientRect();
+            const containerRect = newContainer.getBoundingClientRect();
+            const relativeX = containerRect.left - previewRect.left;
+            const relativeY = containerRect.top - previewRect.top;
+            
+            // Finde Unterschriftenlinie und richte Y-Position darauf aus
+            const signatureLine = preview.querySelector('.resume-signature-line');
+            if (signatureLine) {
+                const lineRect = signatureLine.getBoundingClientRect();
+                const lineRelativeY = lineRect.top - previewRect.top;
+                // Setze Unterschrift genau auf Linie (Y-Position = Linien-Y - Bildhöhe)
+                const adjustedY = lineRelativeY - containerRect.height;
+                
+                // Konvertiere zu Prozent für Settings
+                const previewWidth = previewRect.width;
+                const previewHeight = preview.offsetHeight;
+                const customX = (relativeX / previewWidth) * 100;
+                const customY = (adjustedY / previewHeight) * 100;
+                
+                this.settings.signatureCustomX = Math.max(0, Math.min(100, customX));
+                this.settings.signatureCustomY = Math.max(0, Math.min(100, customY));
+                this.settings.signaturePosition = 'custom';
+                
+                newContainer.style.top = `${adjustedY}px`;
+                newContainer.style.left = `${relativeX}px`;
+                
+                console.log('✅ Unterschrift auf Linie ausgerichtet:', { x: this.settings.signatureCustomX, y: this.settings.signatureCustomY });
+            } else {
+                // Keine Linie gefunden - speichere absolute Position
+                const previewWidth = previewRect.width;
+                const previewHeight = preview.offsetHeight;
+                const customX = (relativeX / previewWidth) * 100;
+                const customY = (relativeY / previewHeight) * 100;
+                
+                this.settings.signatureCustomX = Math.max(0, Math.min(100, customX));
+                this.settings.signatureCustomY = Math.max(0, Math.min(100, customY));
+                this.settings.signaturePosition = 'custom';
+                
+                console.log('✅ Unterschrift positioniert:', { x: this.settings.signatureCustomX, y: this.settings.signatureCustomY });
+            }
+            
+            // Aktualisiere UI
+            const positionSelect = document.getElementById('designSignaturePosition');
+            if (positionSelect) positionSelect.value = 'custom';
+            const customXSlider = document.getElementById('signatureCustomX');
+            if (customXSlider) {
+                customXSlider.value = this.settings.signatureCustomX;
+                const xValueEl = document.getElementById('signatureXValue');
+                if (xValueEl) xValueEl.textContent = Math.round(this.settings.signatureCustomX) + '%';
+            }
+            const customYSlider = document.getElementById('signatureCustomY');
+            if (customYSlider) {
+                customYSlider.value = this.settings.signatureCustomY;
+                const yValueEl = document.getElementById('signatureYValue');
+                if (yValueEl) yValueEl.textContent = Math.round(this.settings.signatureCustomY) + '%';
+            }
+            
+            this.saveSettings();
+            this.updatePreview(); // Re-render mit neuen Positionen
+        };
+        
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
+        
+        // Cleanup bei nächstem Preview-Update (wird automatisch durch replaceChild gemacht)
     }
     
     setupSignatureExtraction() {
@@ -3311,6 +3488,9 @@ class DesignEditor {
 
         preview.innerHTML = companyLogoHtml + html || this.renderPlaceholderContent();
         this.updateATSCheck();
+        
+        // Setup signature drag & drop nach Preview-Update
+        this.setupSignatureDragDrop();
     }
 
     renderSectionById(section, data) {
@@ -3558,37 +3738,53 @@ class DesignEditor {
             switch (position) {
                 case 'left':
                     alignStyle = 'text-align: left;';
+                    positionStyle = '';
                     break;
                 case 'right':
                     alignStyle = 'text-align: right;';
+                    positionStyle = '';
                     break;
                 case 'center':
                     alignStyle = 'text-align: center;';
+                    positionStyle = '';
                     break;
                 case 'same-as-header':
                     alignStyle = `text-align: ${this.settings.headerAlign || 'center'};`;
+                    positionStyle = '';
                     break;
                 case 'above-image':
                 default:
                     // Über Profilbild positionieren (wenn vorhanden)
                     if (this.settings.showProfileImage && data.profileImageUrl) {
-                        positionStyle = 'position: absolute; top: 0; left: 0; width: 100%;';
+                        // Positioniere über dem Bild mit absolutem Positioning
+                        positionStyle = 'position: absolute; top: -30px; left: 0; width: 100%; z-index: 10;';
+                        alignStyle = 'text-align: left;';
+                    } else {
+                        // Wenn kein Bild, normal positionieren
+                        positionStyle = '';
+                        alignStyle = 'text-align: left;';
                     }
-                    alignStyle = 'text-align: left;';
                     break;
             }
             
+            // Wrapper für absolute Positionierung
+            const wrapperStyle = position === 'above-image' && this.settings.showProfileImage && data.profileImageUrl
+                ? 'position: relative;'
+                : '';
+            
             return `
-                <p class="resume-document-title" style="
-                    text-transform: uppercase;
-                    letter-spacing: ${titleSpacing}px;
-                    font-size: ${titleSize}px;
-                    color: ${titleColor};
-                    margin-bottom: 8px;
-                    font-weight: 500;
-                    ${alignStyle}
-                    ${positionStyle}
-                ">${titleText}</p>
+                <div class="resume-title-wrapper" style="${wrapperStyle}">
+                    <p class="resume-document-title" style="
+                        text-transform: uppercase;
+                        letter-spacing: ${titleSpacing}px;
+                        font-size: ${titleSize}px;
+                        color: ${titleColor};
+                        margin-bottom: ${position === 'above-image' && this.settings.showProfileImage && data.profileImageUrl ? '0' : '8px'};
+                        font-weight: 500;
+                        ${alignStyle}
+                        ${positionStyle}
+                    ">${titleText}</p>
+                </div>
             `;
         })() : '';
         
@@ -3670,13 +3866,15 @@ class DesignEditor {
                 }
             }
         } else if (data.address && this.settings.showHeaderField?.address !== false) {
-            // Wenn address bereits "Straße, PLZ Stadt" Format hat, entferne Komma vor PLZ falls vorhanden
-            fullAddress = data.address.replace(/(\d{4,5}),\s*([A-Za-z])/g, '$1 $2'); // "8330, Stadt" -> "8330 Stadt" (global replace)
-            // Auch Komma nach PLZ am Anfang entfernen (z.B. "Straße, 8330 Stadt" -> "Straße, 8330 Stadt" bleibt, aber "Straße, 8330, Stadt" -> "Straße, 8330 Stadt")
-            fullAddress = fullAddress.replace(/(\d{4,5}),\s*([A-Za-z])/g, '$1 $2');
+            // Wenn address bereits "Straße, PLZ Stadt" Format hat, entferne Komma nach PLZ falls vorhanden
+            // Verbesserte Regex: Entfernt Komma nach PLZ (4-5 Ziffern) gefolgt von Buchstaben
+            // Beispiele: "8330, Pfäffikon" -> "8330 Pfäffikon", "8330, Zürich" -> "8330 Zürich"
+            fullAddress = data.address.replace(/(\d{4,5}),\s*([A-Za-zÄÖÜäöü])/g, '$1 $2'); // Global replace
+            // Auch mehrfache Kommas nach PLZ entfernen
+            fullAddress = fullAddress.replace(/(\d{4,5}),\s*([A-Za-zÄÖÜäöü])/g, '$1 $2');
         } else if (data.location && this.settings.showHeaderField?.location !== false) {
             // Auch location selbst bereinigen falls es Komma nach PLZ hat
-            fullAddress = data.location.replace(/(\d{4,5}),\s*([A-Za-z])/g, '$1 $2');
+            fullAddress = data.location.replace(/(\d{4,5}),\s*([A-Za-zÄÖÜäöü])/g, '$1 $2');
         }
         
         const headerContent = `
@@ -3691,12 +3889,13 @@ class DesignEditor {
                 ${(data.linkedin && this.settings.showHeaderField?.linkedin !== false) ? `<span><i class="fab fa-linkedin"></i> <a href="${linkedinDisplay}" target="_blank" rel="noopener" style="color: inherit; text-decoration: none;">${linkedinDisplay}</a></span>` : ''}
                 ${(data.github && this.settings.showHeaderField?.github !== false) ? `<span><i class="fab fa-github"></i> <a href="${githubDisplay}" target="_blank" rel="noopener" style="color: inherit; text-decoration: none;">${githubDisplay}</a></span>` : ''}
                 ${(data.website && this.settings.showHeaderField?.website !== false) ? (() => {
-                    let websiteUrl = data.website;
+                    let websiteUrl = data.website.trim();
+                    if (!websiteUrl) return '';
                     if (!websiteUrl.startsWith('http://') && !websiteUrl.startsWith('https://')) {
                         websiteUrl = 'https://' + websiteUrl;
                     }
-                    const websiteDisplay = websiteUrl.replace(/https?:\/\//, '');
-                    return `<span><i class="fas fa-globe"></i> <a href="${websiteUrl}" target="_blank" rel="noopener" style="color: inherit; text-decoration: none;">${websiteDisplay}</a></span>`;
+                    const websiteDisplay = websiteUrl.replace(/https?:\/\//, '').replace(/\/$/, ''); // Entferne trailing slash
+                    return `<span><i class="fas fa-globe"></i> <a href="${websiteUrl}" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: underline; cursor: pointer; pointer-events: auto;">${websiteDisplay}</a></span>`;
                 })() : ''}
             </div>
         `;
@@ -4082,12 +4281,13 @@ class DesignEditor {
                         <p class="resume-signature-location-date" style="margin-bottom: 8px; font-size: 0.9em;">${location}${location && date ? ', ' : ''}${date}</p>
                     ` : ''}
                     ${signatureImage ? `
-                        <div class="resume-signature-image" style="margin-bottom: 4px;">
+                        <div class="resume-signature-image signature-draggable" style="margin-bottom: 4px; position: relative; display: inline-block; cursor: move;" data-signature-draggable="true">
                             <img src="${signatureImage}" alt="Unterschrift" style="
                                 height: auto; 
                                 width: ${width}px; 
                                 max-width: 100%;
                                 transform: ${this.settings.signatureSkew ? `skew(${this.settings.signatureSkew}deg)` : 'none'};
+                                pointer-events: none;
                             ">
                         </div>
                     ` : ''}
@@ -5901,11 +6101,12 @@ class DesignEditor {
         const googleFontsLink = googleFontsUrl ? `<link href="${googleFontsUrl}" rel="stylesheet">` : '';
         
         // Font Awesome CSS für Icons im PDF
-        const fontAwesomeLink = '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">';
+        // WICHTIG: Verwende neueste Version und stelle sicher, dass CSS geladen wird
+        const fontAwesomeLink = '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer">';
         
         // Generiere vollständiges HTML5-Dokument
         const html = `<!DOCTYPE html>
-<!-- exportSource:designEditor exportVersion:2026-01-24l settingsHash:${settingsHash} -->
+<!-- exportSource:designEditor exportVersion:2026-01-24m settingsHash:${settingsHash} -->
 <html lang="de">
 <head>
     <meta charset="UTF-8">
@@ -5913,6 +6114,18 @@ class DesignEditor {
     <title>Lebenslauf PDF Export</title>
     ${googleFontsLink}
     ${fontAwesomeLink}
+    <!-- Fallback: Font Awesome als inline CSS falls CDN nicht verfügbar -->
+    <style>
+        /* Fallback für Font Awesome Icons */
+        .fa, .fas, .far, .fal, .fab {
+            font-family: "Font Awesome 6 Free", "Font Awesome 6 Brands", "Font Awesome 6 Pro";
+            font-weight: 900;
+            font-style: normal;
+            font-variant: normal;
+            text-rendering: auto;
+            line-height: 1;
+        }
+    </style>
     <style>
         * {
             margin: 0;
