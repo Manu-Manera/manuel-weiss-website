@@ -402,9 +402,34 @@ async function uploadAndProcessPDF(file) {
         }, 'local-pdf');
         
     } catch (error) {
-        console.error('Error processing PDF:', error);
-        const errorMessage = error.message || 'Unbekannter Fehler';
-        showNotification(`Fehler: ${errorMessage}`, 'error');
+        console.error('❌ Error processing PDF:', error);
+        console.error('❌ Error Stack:', error?.stack);
+        console.error('❌ Error Details:', {
+            name: error?.name,
+            message: error?.message,
+            cause: error?.cause
+        });
+        
+        let errorMessage = 'Unbekannter Fehler';
+        if (error?.message) {
+            errorMessage = error.message;
+            // Entferne technische Details für Benutzer
+            errorMessage = errorMessage.replace(/https?:\/\/[^\s]+/g, '').trim();
+        }
+        
+        // Detaillierte Fehlermeldung für Benutzer
+        let userMessage = 'Fehler beim Verarbeiten der PDF: ';
+        if (errorMessage.includes('PDF konnte nicht gelesen')) {
+            userMessage = 'Die PDF-Datei konnte nicht gelesen werden. Bitte prüfen Sie, ob die Datei beschädigt ist oder Textinhalt enthält.';
+        } else if (errorMessage.includes('API-Key')) {
+            userMessage = 'OpenAI API-Key nicht gefunden oder ungültig. Bitte im Admin-Panel konfigurieren.';
+        } else if (errorMessage.includes('KI-Analyse')) {
+            userMessage = 'Die KI-Analyse ist fehlgeschlagen. Bitte versuchen Sie es erneut oder kontaktieren Sie den Support.';
+        } else {
+            userMessage += errorMessage;
+        }
+        
+        showNotification(userMessage, 'error');
         document.getElementById('uploadProgress').style.display = 'none';
     }
 }
@@ -1384,30 +1409,65 @@ function populateForm(data) {
     
     // Populate Skills (ERWEITERT - unterstützt verschiedene Strukturen)
     if (data.skills) {
+        console.log('📋 Lade Skills, Datenstruktur:', data.skills);
+        
         // Unterstütze verschiedene Strukturen
-        const technicalSkills = data.skills.technicalSkills || data.skills.technical || [];
-        const softSkills = data.skills.softSkills || data.skills.soft || [];
+        let technicalSkills = data.skills.technicalSkills || data.skills.technical || [];
+        let softSkills = data.skills.softSkills || data.skills.soft || [];
+        
+        // Fallback: Wenn skills direkt ein Array ist
+        if (Array.isArray(data.skills) && !technicalSkills.length && !softSkills.length) {
+            technicalSkills = data.skills;
+        }
         
         if (Array.isArray(technicalSkills) && technicalSkills.length > 0) {
-            technicalSkills.forEach(category => {
-                // Unterstütze sowohl {category, skills} als auch {name, level, category}
-                if (category.category && Array.isArray(category.skills)) {
-                    addTechnicalSkillCategory(category.category || '', category.skills || []);
-                } else if (category.name) {
-                    // Einzelner Skill mit Kategorie
-                    const catName = category.category || 'Allgemein';
-                    addTechnicalSkillCategory(catName, [category]);
+            console.log(`📋 Lade ${technicalSkills.length} technische Skills`);
+            technicalSkills.forEach((category, index) => {
+                try {
+                    // Unterstütze sowohl {category, skills} als auch {name, level, category}
+                    if (category && typeof category === 'object') {
+                        if (category.category && Array.isArray(category.skills)) {
+                            // Format: {category: "Sprachen", skills: [{name: "Deutsch", level: 5}]}
+                            addTechnicalSkillCategory(category.category || '', category.skills || []);
+                        } else if (category.name) {
+                            // Einzelner Skill mit Kategorie
+                            const catName = category.category || 'Allgemein';
+                            addTechnicalSkillCategory(catName, [category]);
+                        } else if (Array.isArray(category)) {
+                            // Falls category selbst ein Array ist
+                            category.forEach(skill => {
+                                if (skill && typeof skill === 'object' && (skill.name || skill.skill)) {
+                                    const catName = skill.category || 'Allgemein';
+                                    addTechnicalSkillCategory(catName, [skill]);
+                                }
+                            });
+                        }
+                    } else if (typeof category === 'string') {
+                        // Einfacher String - als Skill ohne Level
+                        addTechnicalSkillCategory('Allgemein', [{ name: category, level: 5 }]);
+                    }
+                } catch (skillError) {
+                    console.warn(`⚠️ Fehler beim Laden von Skill-Kategorie ${index}:`, skillError);
                 }
             });
         }
         
         if (Array.isArray(softSkills) && softSkills.length > 0) {
+            console.log(`📋 Lade ${softSkills.length} Soft Skills`);
             softSkills.forEach(skill => {
-                const skillName = skill.skill || skill.name || '';
-                const examples = skill.examples || [];
-                addSoftSkill(skillName, examples);
+                try {
+                    const skillName = skill.skill || skill.name || '';
+                    if (skillName) {
+                        const examples = skill.examples || [];
+                        addSoftSkill(skillName, examples);
+                    }
+                } catch (skillError) {
+                    console.warn('⚠️ Fehler beim Laden eines Soft Skills:', skillError);
+                }
             });
         }
+        
+        console.log('✅ Skills geladen');
     }
     
     // Populate Projects

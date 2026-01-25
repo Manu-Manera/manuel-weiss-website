@@ -2446,10 +2446,17 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
                         const adjustedY = lineRelativeY - rect.height;
                         this.design.signaturePosition = { x: relativeX, y: adjustedY };
                         signatureImg.style.top = `${adjustedY}px`;
+                        signatureImg.style.left = `${relativeX}px`;
+                        console.log('✅ Unterschrift auf Linie ausgerichtet:', { x: relativeX, y: adjustedY });
                     } else {
                         this.design.signaturePosition = { x: relativeX, y: relativeY };
+                        signatureImg.style.left = `${relativeX}px`;
+                        signatureImg.style.top = `${relativeY}px`;
+                        console.log('✅ Unterschrift positioniert:', { x: relativeX, y: relativeY });
                     }
                     
+                    // Speichere Design-Änderungen
+                    this.saveDesign();
                     signatureImg.style.cursor = 'move';
                 }
                 isDragging = false;

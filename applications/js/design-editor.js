@@ -1004,12 +1004,39 @@ class DesignEditor {
             btn.classList.toggle('active', btn.dataset.accent === this.settings.accentColor);
         });
         
+        // Header Fields Checkboxen aktualisieren (WICHTIG: Nach Template-Wechsel)
+        if (this.settings.showHeaderField) {
+            const fieldMap = {
+                'headerFieldPhone': 'phone',
+                'headerFieldEmail': 'email',
+                'headerFieldLocation': 'location',
+                'headerFieldAddress': 'address',
+                'headerFieldLinkedIn': 'linkedin',
+                'headerFieldGitHub': 'github',
+                'headerFieldWebsite': 'website',
+                'headerFieldBirthDate': 'birthDate'
+            };
+            
+            Object.entries(fieldMap).forEach(([checkboxId, fieldKey]) => {
+                const checkbox = document.getElementById(checkboxId);
+                if (checkbox) {
+                    checkbox.checked = this.settings.showHeaderField[fieldKey] !== false;
+                }
+            });
+        }
+        
         // Layout
         const columnsSelect = document.getElementById('designColumns');
         if (columnsSelect) columnsSelect.value = String(this.settings.columns);
         
         const headerAlignSelect = document.getElementById('designHeaderAlign');
         if (headerAlignSelect) headerAlignSelect.value = this.settings.headerAlign || 'center';
+        
+        // Resume Title Position
+        const resumeTitlePositionSelect = document.getElementById('designResumeTitlePosition');
+        if (resumeTitlePositionSelect) {
+            resumeTitlePositionSelect.value = this.settings.resumeTitlePosition || 'above-image';
+        }
         
         // Skill Display
         const skillDisplaySelect = document.getElementById('designSkillDisplay');
@@ -1476,21 +1503,55 @@ class DesignEditor {
         // 6. Cloud Photos (wenn eingeloggt)
         if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
             try {
-                const cloudPhotos = await window.cloudDataService.getPhotos();
-                if (Array.isArray(cloudPhotos)) {
+                const cloudPhotos = await window.cloudDataService.getPhotos(false); // Cache nutzen
+                if (Array.isArray(cloudPhotos) && cloudPhotos.length > 0) {
                     cloudPhotos.forEach((photo, i) => {
-                        const photoUrl = photo.url || photo.dataUrl;
+                        const photoUrl = photo.url || photo.dataUrl || photo.imageData;
                         if (photoUrl && !images.find(x => x.url === photoUrl)) {
                             images.push({ 
                                 url: photoUrl, 
-                                label: photo.name || `Cloud Foto ${i + 1}`, 
+                                label: photo.name || photo.filename || `Cloud Foto ${i + 1}`, 
                                 source: 'cloud-photos' 
                             });
                         }
                     });
+                    console.log(`✅ ${cloudPhotos.length} Cloud Photos geladen`);
                 }
             } catch (e) {
-                console.warn('Cloud Photos konnten nicht geladen werden:', e);
+                console.warn('⚠️ Cloud Photos konnten nicht geladen werden:', e);
+                // Fallback: Versuche localStorage
+                try {
+                    const localPhotos = JSON.parse(localStorage.getItem('user_photos') || '[]');
+                    localPhotos.forEach((photo, i) => {
+                        const photoUrl = photo.url || photo.dataUrl;
+                        if (photoUrl && !images.find(x => x.url === photoUrl)) {
+                            images.push({ 
+                                url: photoUrl, 
+                                label: photo.name || `Lokales Foto ${i + 1}`, 
+                                source: 'local-photos' 
+                            });
+                        }
+                    });
+                } catch (localError) {
+                    console.warn('⚠️ Auch localStorage Photos konnten nicht geladen werden:', localError);
+                }
+            }
+        } else {
+            // Fallback: localStorage Photos wenn nicht eingeloggt
+            try {
+                const localPhotos = JSON.parse(localStorage.getItem('user_photos') || '[]');
+                localPhotos.forEach((photo, i) => {
+                    const photoUrl = photo.url || photo.dataUrl;
+                    if (photoUrl && !images.find(x => x.url === photoUrl)) {
+                        images.push({ 
+                            url: photoUrl, 
+                            label: photo.name || `Lokales Foto ${i + 1}`, 
+                            source: 'local-photos' 
+                        });
+                    }
+                });
+            } catch (localError) {
+                console.warn('⚠️ localStorage Photos konnten nicht geladen werden:', localError);
             }
         }
         
@@ -1583,35 +1644,40 @@ class DesignEditor {
             this.updatePreview();
             
             // NEU: Speichere auch in Fotos-Sektion
-            if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
-                try {
-                    const photo = {
-                        id: `photo_${Date.now()}`,
-                        name: file.name,
-                        type: file.type,
-                        size: file.size,
-                        dataUrl: dataUrl,
-                        storage: 'local',
-                        createdAt: new Date().toISOString()
-                    };
-                    await window.cloudDataService.savePhoto(photo);
-                    console.log('✅ Foto in Fotos-Sektion gespeichert');
-                } catch (error) {
-                    console.warn('⚠️ Foto konnte nicht in Fotos gespeichert werden:', error);
-                }
-            } else {
-                // Fallback: localStorage
-                let photos = JSON.parse(localStorage.getItem('user_photos') || '[]');
-                photos.unshift({
+            try {
+                const photo = {
                     id: `photo_${Date.now()}`,
                     name: file.name,
                     type: file.type,
                     size: file.size,
                     dataUrl: dataUrl,
+                    url: dataUrl, // Für Kompatibilität
                     storage: 'local',
                     createdAt: new Date().toISOString()
-                });
-                localStorage.setItem('user_photos', JSON.stringify(photos));
+                };
+                
+                if (window.cloudDataService && window.cloudDataService.isUserLoggedIn()) {
+                    try {
+                        await window.cloudDataService.savePhoto(photo);
+                        console.log('✅ Foto in Fotos-Sektion gespeichert (Cloud)');
+                    } catch (cloudError) {
+                        console.warn('⚠️ Cloud-Speicherung fehlgeschlagen, verwende localStorage:', cloudError);
+                        // Fallback zu localStorage
+                        let photos = JSON.parse(localStorage.getItem('user_photos') || '[]');
+                        photos.unshift(photo);
+                        localStorage.setItem('user_photos', JSON.stringify(photos));
+                        console.log('✅ Foto in Fotos-Sektion gespeichert (localStorage)');
+                    }
+                } else {
+                    // Fallback: localStorage
+                    let photos = JSON.parse(localStorage.getItem('user_photos') || '[]');
+                    photos.unshift(photo);
+                    localStorage.setItem('user_photos', JSON.stringify(photos));
+                    console.log('✅ Foto in Fotos-Sektion gespeichert (localStorage)');
+                }
+            } catch (error) {
+                console.error('❌ Fehler beim Speichern des Fotos:', error);
+                // Nicht kritisch - Foto ist bereits als Profilbild gespeichert
             }
             
             this.showNotification('Profilbild hochgeladen und in Fotos gespeichert', 'success');
@@ -2415,8 +2481,10 @@ class DesignEditor {
         const offsetX = this.settings.profileImageOffsetX || 0;
         const offsetY = this.settings.profileImageOffsetY || 0;
         const zoomFactor = zoom / 100;
-        const posX = Math.max(0, Math.min(100, 50 + offsetX));
-        const posY = Math.max(0, Math.min(100, 50 + offsetY));
+        // Object-position: 50% = zentriert, offsetX/Y sind Prozentpunkte (-50 bis +50)
+        // Konvertiere zu 0-100% Skala: 50% + offsetX% = final position
+        const posX = Math.max(0, Math.min(100, 50 + (offsetX || 0)));
+        const posY = Math.max(0, Math.min(100, 50 + (offsetY || 0)));
         
         preview.innerHTML = `
             <div style="width: 100px; height: 100px; overflow: hidden; border-radius: ${this.settings.profileImageShape === 'circle' ? '50%' : '8px'}; margin: 0 auto; background: #f1f5f9;">
@@ -3547,8 +3615,9 @@ class DesignEditor {
             
             // Object-position: 50% = zentriert, mit Offset verschieben
             // Bei Zoom > 100 funktioniert object-position um den sichtbaren Bereich zu verschieben
-            const posX = Math.max(0, Math.min(100, 50 + offsetX));
-            const posY = Math.max(0, Math.min(100, 50 + offsetY));
+            // Konvertiere zu 0-100% Skala: 50% + offsetX% = final position
+            const posX = Math.max(0, Math.min(100, 50 + (offsetX || 0)));
+            const posY = Math.max(0, Math.min(100, 50 + (offsetY || 0)));
             
             profileImageHtml = `
                 <div class="resume-preview-profile-image" style="
@@ -3593,18 +3662,21 @@ class DesignEditor {
             fullAddress = data.street;
             if (data.location && this.settings.showHeaderField?.location !== false) {
                 // Prüfe ob location mit Postleitzahl beginnt (z.B. "8330 Pfäffikon"), kein Komma
-                const locationStartsWithPLZ = /^\d{4,5}\s/.test(data.location);
+                const locationStartsWithPLZ = /^\d{4,5}\s/.test(data.location.trim());
                 if (locationStartsWithPLZ) {
-                    fullAddress += ' ' + data.location; // Leerzeichen statt Komma
+                    fullAddress += ' ' + data.location.trim(); // Leerzeichen statt Komma
                 } else {
-                    fullAddress += ', ' + data.location; // Komma für normale Standorte
+                    fullAddress += ', ' + data.location.trim(); // Komma für normale Standorte
                 }
             }
         } else if (data.address && this.settings.showHeaderField?.address !== false) {
             // Wenn address bereits "Straße, PLZ Stadt" Format hat, entferne Komma vor PLZ falls vorhanden
-            fullAddress = data.address.replace(/(\d{4,5}),\s*([A-Za-z])/, '$1 $2'); // "8330, Stadt" -> "8330 Stadt"
+            fullAddress = data.address.replace(/(\d{4,5}),\s*([A-Za-z])/g, '$1 $2'); // "8330, Stadt" -> "8330 Stadt" (global replace)
+            // Auch Komma nach PLZ am Anfang entfernen (z.B. "Straße, 8330 Stadt" -> "Straße, 8330 Stadt" bleibt, aber "Straße, 8330, Stadt" -> "Straße, 8330 Stadt")
+            fullAddress = fullAddress.replace(/(\d{4,5}),\s*([A-Za-z])/g, '$1 $2');
         } else if (data.location && this.settings.showHeaderField?.location !== false) {
-            fullAddress = data.location;
+            // Auch location selbst bereinigen falls es Komma nach PLZ hat
+            fullAddress = data.location.replace(/(\d{4,5}),\s*([A-Za-z])/g, '$1 $2');
         }
         
         const headerContent = `
@@ -4366,7 +4438,7 @@ class DesignEditor {
             this.showNotification(`PDF exportiert! (${sizeKbLabel})`, 'success');
         } catch (error) {
             console.error('❌ PDF Export Fehler:', error);
-            console.error('❌ Error Stack:', error.stack);
+            console.error('❌ Error Stack:', error?.stack);
             console.error('❌ Error Details:', {
                 name: error.name,
                 message: error.message,
