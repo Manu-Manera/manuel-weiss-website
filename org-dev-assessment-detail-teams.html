@@ -662,16 +662,35 @@
         }
         
         function saveAssessment() {
+            const aggregated = parseFloat(teamsCriteria.map(c => calculateCriterionAverage(c.id)).reduce((acc, val) => acc + val, 0) / teamsCriteria.length).toFixed(1);
+            const criterionAverages = teamsCriteria.map(criterion => ({
+                criterionId: criterion.id,
+                average: calculateCriterionAverage(criterion.id)
+            }));
+            
             const allAssessments = JSON.parse(localStorage.getItem('orgDevDetailAssessments') || '{}');
             allAssessments.teams = {
-                criteria: assessmentData,
-                aggregated: parseFloat(teamsCriteria.map(c => calculateCriterionAverage(c.id)).reduce((acc, val) => acc + val, 0) / teamsCriteria.length).toFixed(1)
+                aggregated: parseFloat(aggregated),
+                details: assessmentData,
+                criteria: assessmentData, // Legacy support
+                criterionAverages: criterionAverages,
+                timestamp: new Date().toISOString()
             };
             localStorage.setItem('orgDevDetailAssessments', JSON.stringify(allAssessments));
         }
         
         function saveAndReturn() {
+            const aggregated = parseFloat(teamsCriteria.map(c => calculateCriterionAverage(c.id)).reduce((acc, val) => acc + val, 0) / teamsCriteria.length).toFixed(1);
+            
+            // Save detailed assessment
             saveAssessment();
+            
+            // Also update main workflow (analog zu HR-Strategieentwicklung)
+            let workflowData = JSON.parse(localStorage.getItem('orgDevWorkflow') || '{}');
+            if (!workflowData.orgDevMaturityData) workflowData.orgDevMaturityData = {};
+            workflowData.orgDevMaturityData.teams = parseFloat(aggregated);
+            localStorage.setItem('orgDevWorkflow', JSON.stringify(workflowData));
+            
             window.location.href = 'organisationsentwicklung-workflow.html';
         }
         
