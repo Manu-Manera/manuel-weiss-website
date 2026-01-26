@@ -24,11 +24,14 @@
             top: 50%;
             transform: translateY(-50%);
             width: 280px;
-            background: white;
-            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 24px;
             padding: 1.5rem;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            border: 1px solid #e5e7eb;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             z-index: 100;
             transition: all 0.3s ease;
         }
@@ -76,11 +79,14 @@
         }
         
         .current-state-indicator {
-            background: #eff6ff;
-            border: 2px solid #3b82f6;
-            border-radius: 12px;
+            background: rgba(239, 246, 255, 0.6);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 2px solid rgba(59, 130, 246, 0.3);
+            border-radius: 16px;
             padding: 1rem;
             margin-bottom: 1rem;
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.1);
         }
         
         .maturity-score {
@@ -111,11 +117,15 @@
         }
         
         .assessment-category {
-            background: #f8fafc;
-            border-radius: 12px;
+            background: rgba(248, 250, 252, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 20px;
             padding: 1.5rem;
-            border: 1px solid #e2e8f0;
-            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.3);
         }
         
         .assessment-category.clickable-category {
@@ -124,9 +134,12 @@
         }
         
         .assessment-category.clickable-category:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            border-color: #3b82f6;
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 12px 32px rgba(59, 130, 246, 0.15),
+                        0 4px 16px rgba(0, 0, 0, 0.1),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.4);
+            border-color: rgba(59, 130, 246, 0.4);
+            background: rgba(255, 255, 255, 0.8);
         }
         
         /* Allow clicks on the category itself, but prevent child elements from blocking */
@@ -196,11 +209,16 @@
             text-align: center;
             margin-bottom: 2rem;
             padding: 3rem 2rem;
-            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.9) 0%, rgba(29, 78, 216, 0.9) 100%);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             color: white;
-            border-radius: 16px;
+            border-radius: 24px;
             position: relative;
             overflow: hidden;
+            box-shadow: 0 8px 32px rgba(59, 130, 246, 0.2),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
         .workflow-header::before {
@@ -263,10 +281,16 @@
         .progress-step.completed {
             background: #1d4ed8;
         .workflow-step {
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            border: 1px solid #e5e7eb;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         .step-header {
             margin-bottom: 1.5rem;
         .step-number {
