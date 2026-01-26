@@ -609,7 +609,7 @@
             
             updateCriterionAverage(criterionId);
             updateAggregatedScore();
-            saveAssessment();
+            saveAssessment().catch(err => console.warn('Fehler beim Speichern:', err));
         }
         
         function calculateCriterionAverage(criterionId) {
@@ -662,22 +662,35 @@
             }
         }
         
-        function saveAssessment() {
+        async function saveAssessment() {
             const aggregated = parseFloat(cultureCriteria.map(c => calculateCriterionAverage(c.id)).reduce((acc, val) => acc + val, 0) / cultureCriteria.length).toFixed(1);
             const criterionAverages = cultureCriteria.map(criterion => ({
                 criterionId: criterion.id,
                 average: calculateCriterionAverage(criterion.id)
             }));
             
-            const allAssessments = JSON.parse(localStorage.getItem('orgDevDetailAssessments') || '{}');
-            allAssessments.culture = {
+            const assessmentDataToSave = {
                 aggregated: parseFloat(aggregated),
                 details: assessmentData,
                 criteria: assessmentData, // Legacy support
                 criterionAverages: criterionAverages,
                 timestamp: new Date().toISOString()
             };
+            
+            // Speichere in localStorage
+            const allAssessments = JSON.parse(localStorage.getItem('orgDevDetailAssessments') || '{}');
+            allAssessments.culture = assessmentDataToSave;
             localStorage.setItem('orgDevDetailAssessments', JSON.stringify(allAssessments));
+            
+            // API-Call (mit Fallback - localStorage wurde bereits gespeichert)
+            if (window.OrgDevAPI) {
+                try {
+                    const orgDevAPI = new OrgDevAPI();
+                    await orgDevAPI.saveAssessment('culture', assessmentDataToSave);
+                } catch (error) {
+                    console.warn('⚠️ API-Speicherung fehlgeschlagen, localStorage wurde verwendet:', error);
+                }
+            }
         }
         
         function saveAndReturn() {
@@ -705,12 +718,45 @@
         }
         
         async function exportToPDF() {
-            if (!assessmentExporter) {
-                assessmentExporter = new AssessmentExporter();
-                await new Promise(resolve => setTimeout(resolve, 1000));
+            try {
+                showNotification('PDF wird generiert...', 'info');
+                
+                if (!assessmentExporter) {
+                    assessmentExporter = new AssessmentExporter();
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                }
+                const data = prepareExportData();
+                
+                if (assessmentExporter.exportToPDFLambda) {
+                    await assessmentExporter.exportToPDFLambda(
+                        data, 
+                        `Organisationsentwicklung-Kultur-Assessment-${new Date().toISOString().split('T')[0]}`,
+                        'Kultur & Werte'
+                    );
+                    showNotification('PDF erfolgreich generiert!', 'success');
+                } else {
+                    await assessmentExporter.exportToPDF(data, `Organisationsentwicklung-Kultur-Assessment-${new Date().toISOString().split('T')[0]}`);
+                    showNotification('PDF erfolgreich generiert!', 'success');
+                }
+            } catch (error) {
+                console.error('PDF Export Fehler:', error);
+                showNotification('Fehler beim PDF-Export: ' + error.message, 'error');
             }
-            const data = prepareExportData();
-            await assessmentExporter.exportToPDF(data, `Organisationsentwicklung-Kultur-&-Werte-Assessment-${new Date().toISOString().split('T')[0]}`);
+        }
+        
+        function showNotification(message, type = 'info') {
+            if (typeof window.showNotification === 'function') {
+                window.showNotification(message, type);
+            } else if (window.UnifiedAWSAuth && window.UnifiedAWSAuth.getInstance) {
+                const auth = window.UnifiedAWSAuth.getInstance();
+                if (auth && auth.showNotification) {
+                    auth.showNotification(message, type);
+                } else {
+                    alert(message);
+                }
+            } else {
+                alert(message);
+            }
         }
         
         function prepareExportData() {
@@ -743,5 +789,8 @@
     
     <!-- Assessment Export Script -->
     <script src="js/assessment-export.js"></script>
+    
+    <!-- Org Dev API Script -->
+    <script src="js/org-dev-api.js"></script>
 </body>
 </html>

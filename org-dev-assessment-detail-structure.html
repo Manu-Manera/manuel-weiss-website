@@ -65,6 +65,45 @@
         .criterion-examples {
             border-left: 4px solid #10b981;
         }
+        
+        /* Moderne Export-Button Styles mit Glassmorphism */
+        .export-button {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .export-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
+        }
+        
+        .export-button:active {
+            transform: translateY(0);
+        }
+        
+        .export-button.loading {
+            opacity: 0.7;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        
+        .export-button.loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            margin: -10px 0 0 -10px;
+            border: 2px solid currentColor;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -108,10 +147,10 @@
                 <button class="save-button" onclick="saveAndReturn()" style="flex: 1; min-width: 200px;">
                     <i class="fas fa-save"></i> Bewertung speichern und zurück
                 </button>
-                <button class="export-button excel" onclick="exportToExcel()" style="background: #217346; color: white; border: none; padding: 1rem 2rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; flex: 1; min-width: 150px;">
+                <button class="export-button excel" onclick="exportToExcel()" id="excelExportBtn" style="background: rgba(33, 115, 70, 0.1); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); color: #217346; border: 1px solid rgba(33, 115, 70, 0.3); padding: 1rem 2rem; border-radius: 12px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; flex: 1; min-width: 150px; box-shadow: 0 4px 16px rgba(33, 115, 70, 0.1);">
                     <i class="fas fa-file-excel"></i> Excel Export
                 </button>
-                <button class="export-button pdf" onclick="exportToPDF()" style="background: #dc3545; color: white; border: none; padding: 1rem 2rem; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; flex: 1; min-width: 150px;">
+                <button class="export-button pdf" onclick="exportToPDF()" id="pdfExportBtn" style="background: rgba(220, 53, 69, 0.1); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); color: #dc3545; border: 1px solid rgba(220, 53, 69, 0.3); padding: 1rem 2rem; border-radius: 12px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; flex: 1; min-width: 150px; box-shadow: 0 4px 16px rgba(220, 53, 69, 0.1);">
                     <i class="fas fa-file-pdf"></i> PDF Export
                 </button>
             </div>
@@ -609,7 +648,7 @@
             
             updateCriterionAverage(criterionId);
             updateAggregatedScore();
-            saveAssessment();
+            saveAssessment().catch(err => console.warn('Fehler beim Speichern:', err));
         }
         
         function calculateCriterionAverage(criterionId) {
@@ -662,22 +701,35 @@
             }
         }
         
-        function saveAssessment() {
+        async function saveAssessment() {
             const aggregated = parseFloat(structureCriteria.map(c => calculateCriterionAverage(c.id)).reduce((acc, val) => acc + val, 0) / structureCriteria.length).toFixed(1);
             const criterionAverages = structureCriteria.map(criterion => ({
                 criterionId: criterion.id,
                 average: calculateCriterionAverage(criterion.id)
             }));
             
-            const allAssessments = JSON.parse(localStorage.getItem('orgDevDetailAssessments') || '{}');
-            allAssessments.structure = {
+            const assessmentDataToSave = {
                 aggregated: parseFloat(aggregated),
                 details: assessmentData,
                 criteria: assessmentData, // Legacy support
                 criterionAverages: criterionAverages,
                 timestamp: new Date().toISOString()
             };
+            
+            // Speichere in localStorage
+            const allAssessments = JSON.parse(localStorage.getItem('orgDevDetailAssessments') || '{}');
+            allAssessments.structure = assessmentDataToSave;
             localStorage.setItem('orgDevDetailAssessments', JSON.stringify(allAssessments));
+            
+            // API-Call (mit Fallback - localStorage wurde bereits gespeichert)
+            if (window.OrgDevAPI) {
+                try {
+                    const orgDevAPI = new OrgDevAPI();
+                    await orgDevAPI.saveAssessment('structure', assessmentDataToSave);
+                } catch (error) {
+                    console.warn('⚠️ API-Speicherung fehlgeschlagen, localStorage wurde verwendet:', error);
+                }
+            }
         }
         
         function saveAndReturn() {
@@ -696,21 +748,85 @@
         }
         
         async function exportToExcel() {
-            if (!assessmentExporter) {
-                assessmentExporter = new AssessmentExporter();
-                await new Promise(resolve => setTimeout(resolve, 1000));
+            const btn = document.getElementById('excelExportBtn');
+            try {
+                if (btn) {
+                    btn.classList.add('loading');
+                    btn.disabled = true;
+                }
+                showNotification('Excel wird generiert...', 'info');
+                
+                if (!assessmentExporter) {
+                    assessmentExporter = new AssessmentExporter();
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                }
+                const data = prepareExportData();
+                await assessmentExporter.exportToExcel(data, `Organisationsentwicklung-Struktur-Assessment-${new Date().toISOString().split('T')[0]}`);
+                showNotification('Excel erfolgreich generiert!', 'success');
+            } catch (error) {
+                console.error('Excel Export Fehler:', error);
+                showNotification('Fehler beim Excel-Export: ' + error.message, 'error');
+            } finally {
+                if (btn) {
+                    btn.classList.remove('loading');
+                    btn.disabled = false;
+                }
             }
-            const data = prepareExportData();
-            await assessmentExporter.exportToExcel(data, `Organisationsentwicklung-Struktur-Assessment-${new Date().toISOString().split('T')[0]}`);
         }
         
         async function exportToPDF() {
-            if (!assessmentExporter) {
-                assessmentExporter = new AssessmentExporter();
-                await new Promise(resolve => setTimeout(resolve, 1000));
+            const btn = document.getElementById('pdfExportBtn');
+            try {
+                if (btn) {
+                    btn.classList.add('loading');
+                    btn.disabled = true;
+                }
+                showNotification('PDF wird generiert...', 'info');
+                
+                if (!assessmentExporter) {
+                    assessmentExporter = new AssessmentExporter();
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                }
+                const data = prepareExportData();
+                
+                // Nutze moderne Lambda-basierte PDF-Generierung
+                if (assessmentExporter.exportToPDFLambda) {
+                    await assessmentExporter.exportToPDFLambda(
+                        data, 
+                        `Organisationsentwicklung-Struktur-Assessment-${new Date().toISOString().split('T')[0]}`,
+                        'Organisationsstruktur & Design'
+                    );
+                    showNotification('PDF erfolgreich generiert!', 'success');
+                } else {
+                    // Fallback zu alter jsPDF-Methode
+                    await assessmentExporter.exportToPDF(data, `Organisationsentwicklung-Struktur-Assessment-${new Date().toISOString().split('T')[0]}`);
+                    showNotification('PDF erfolgreich generiert!', 'success');
+                }
+            } catch (error) {
+                console.error('PDF Export Fehler:', error);
+                showNotification('Fehler beim PDF-Export: ' + error.message, 'error');
+            } finally {
+                if (btn) {
+                    btn.classList.remove('loading');
+                    btn.disabled = false;
+                }
             }
-            const data = prepareExportData();
-            await assessmentExporter.exportToPDF(data, `Organisationsentwicklung-Struktur-Assessment-${new Date().toISOString().split('T')[0]}`);
+        }
+        
+        function showNotification(message, type = 'info') {
+            // Einfache Notification-Funktion (falls nicht vorhanden)
+            if (typeof window.showNotification === 'function') {
+                window.showNotification(message, type);
+            } else if (window.UnifiedAWSAuth && window.UnifiedAWSAuth.getInstance) {
+                const auth = window.UnifiedAWSAuth.getInstance();
+                if (auth && auth.showNotification) {
+                    auth.showNotification(message, type);
+                } else {
+                    alert(message);
+                }
+            } else {
+                alert(message);
+            }
         }
         
         function prepareExportData() {
@@ -743,5 +859,8 @@
     
     <!-- Assessment Export Script -->
     <script src="js/assessment-export.js"></script>
+    
+    <!-- Org Dev API Script -->
+    <script src="js/org-dev-api.js"></script>
 </body>
 </html>

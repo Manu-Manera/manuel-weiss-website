@@ -226,6 +226,276 @@ class AssessmentExporter {
     }
 
     /**
+     * Export assessment to PDF using Lambda pdf-generator-gpt52 (modern, with Glassmorphism)
+     */
+    async exportToPDFLambda(data, filename = 'Assessment', dimensionName = 'Assessment') {
+        try {
+            // Generiere modernes HTML für PDF
+            const htmlContent = this.generateModernPDFHTML(data, dimensionName);
+            
+            // Hole Auth Token falls vorhanden
+            let authToken = null;
+            try {
+                if (window.UnifiedAWSAuth && window.UnifiedAWSAuth.getInstance) {
+                    const auth = window.UnifiedAWSAuth.getInstance();
+                    if (auth && auth.getCurrentUser) {
+                        const user = await auth.getCurrentUser();
+                        if (user && user.signInUserSession) {
+                            authToken = user.signInUserSession.idToken.jwtToken;
+                        }
+                    }
+                }
+            } catch (e) {
+                console.warn('⚠️ Auth Token konnte nicht geladen werden:', e);
+            }
+            
+            // Rufe PDF-Generator Lambda auf
+            const apiUrl = window.getApiUrl('PDF_GENERATOR');
+            if (!apiUrl) {
+                throw new Error('PDF Generator API URL nicht gefunden. Bitte aws-app-config.js prüfen.');
+            }
+            
+            const headers = {
+                'Content-Type': 'application/json',
+                ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {})
+            };
+            
+            const body = JSON.stringify({
+                html: htmlContent,
+                options: {
+                    format: 'a4',
+                    printBackground: true,
+                    preferCSSPageSize: false,
+                    margin: { top: '0mm', right: '0mm', bottom: '0mm', left: '0mm' },
+                    displayHeaderFooter: true,
+                    footerTemplate: `
+                        <div style="font-size: 10px; text-align: center; width: 100%; padding: 0 20mm;">
+                            <span class="pageNumber"></span> / <span class="totalPages"></span>
+                        </div>
+                    `
+                }
+            });
+            
+            // Retry-Mechanismus
+            const maxAttempts = 3;
+            let lastError = null;
+            
+            for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 25000);
+                
+                try {
+                    console.log(`📡 PDF-Export Attempt ${attempt}/${maxAttempts}`);
+                    
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers,
+                        signal: controller.signal,
+                        body
+                    });
+                    
+                    clearTimeout(timeoutId);
+                    
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        throw new Error(`HTTP ${response.status}: ${errorText.substring(0, 200)}`);
+                    }
+                    
+                    // PDF als Base64 erhalten
+                    const result = await response.json();
+                    const pdfBase64 = result.pdf || result.body || result;
+                    
+                    // Konvertiere Base64 zu Blob und download
+                    const byteCharacters = atob(pdfBase64);
+                    const byteNumbers = new Array(byteCharacters.length);
+                    for (let i = 0; i < byteCharacters.length; i++) {
+                        byteNumbers[i] = byteCharacters.charCodeAt(i);
+                    }
+                    const byteArray = new Uint8Array(byteNumbers);
+                    const blob = new Blob([byteArray], { type: 'application/pdf' });
+                    
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `${filename}.pdf`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                    
+                    console.log('✅ PDF erfolgreich generiert und heruntergeladen');
+                    return true;
+                    
+                } catch (error) {
+                    lastError = error;
+                    console.warn(`⚠️ PDF-Export Versuch ${attempt}/${maxAttempts} fehlgeschlagen:`, error);
+                    if (attempt < maxAttempts) {
+                        await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+                    }
+                }
+            }
+            
+            throw lastError || new Error('PDF-Export fehlgeschlagen nach mehreren Versuchen');
+            
+        } catch (error) {
+            console.error('❌ PDF-Export Fehler:', error);
+            alert(`Fehler beim PDF-Export: ${error.message}`);
+            return false;
+        }
+    }
+    
+    /**
+     * Generiere modernes HTML für PDF mit Glassmorphism-Effekten
+     */
+    generateModernPDFHTML(data, dimensionName) {
+        const date = new Date().toLocaleDateString('de-DE');
+        const overall = data.overall || data.aggregated || 0;
+        
+        // Generiere Dimensionen-Übersicht
+        let dimensionsHTML = '';
+        if (data.criteria && Array.isArray(data.criteria)) {
+            data.criteria.forEach(criterion => {
+                const avg = criterion.average || 0;
+                const color = this.getScoreColor(avg);
+                dimensionsHTML += `
+                    <div class="dimension-card" style="background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(10px); border-radius: 16px; padding: 15mm; margin-bottom: 15mm; border: 1px solid rgba(255, 255, 255, 0.3); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);">
+                        <h3 style="color: ${color}; margin-bottom: 10mm;">${criterion.title}</h3>
+                        <div style="font-size: 24pt; font-weight: bold; color: ${color}; margin-bottom: 5mm;">${avg.toFixed(1)}/5.0</div>
+                        <p style="color: #6b7280; margin-bottom: 10mm;">${criterion.description || ''}</p>
+                        ${this.generateSubCriteriaHTML(criterion)}
+                    </div>
+                `;
+            });
+        }
+        
+        return `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        @page { size: A4; margin: 0; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20mm;
+            width: 210mm;
+            margin: 0;
+        }
+        .pdf-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 30mm;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30mm;
+            padding-bottom: 20mm;
+            border-bottom: 3px solid #10b981;
+        }
+        .header h1 {
+            font-size: 32pt;
+            color: #1f2937;
+            margin-bottom: 10mm;
+        }
+        .header p {
+            font-size: 12pt;
+            color: #6b7280;
+        }
+        .executive-summary {
+            background: rgba(240, 253, 244, 0.6);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 20mm;
+            margin-bottom: 20mm;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        .executive-summary h2 {
+            color: #059669;
+            margin-bottom: 10mm;
+            font-size: 20pt;
+        }
+        .score-large {
+            font-size: 48pt;
+            font-weight: bold;
+            color: #10b981;
+            text-align: center;
+            margin: 10mm 0;
+        }
+        .dimension-card h3 {
+            font-size: 18pt;
+            margin-bottom: 8mm;
+        }
+        .sub-criterion-item {
+            background: rgba(248, 250, 252, 0.8);
+            border-radius: 8px;
+            padding: 8mm;
+            margin-bottom: 5mm;
+            border-left: 4px solid #10b981;
+        }
+        .sub-criterion-item strong {
+            color: #1f2937;
+        }
+        .sub-criterion-item .score {
+            color: #059669;
+            font-weight: bold;
+            float: right;
+        }
+    </style>
+</head>
+<body>
+    <div class="pdf-container">
+        <header class="header">
+            <h1>Organisationsentwicklung Assessment</h1>
+            <p>${dimensionName}</p>
+            <p>Erstellt am: ${date}</p>
+        </header>
+        
+        <section class="executive-summary">
+            <h2>Executive Summary</h2>
+            <div class="score-large">${overall.toFixed(1)}/5.0</div>
+            <p style="text-align: center; color: #6b7280; font-size: 14pt;">Gesamtbewertung</p>
+        </section>
+        
+        <section class="dimensions-overview">
+            <h2 style="color: #1f2937; margin-bottom: 20mm; font-size: 24pt;">Detaillierte Bewertung</h2>
+            ${dimensionsHTML}
+        </section>
+    </div>
+</body>
+</html>
+        `;
+    }
+    
+    generateSubCriteriaHTML(criterion) {
+        if (!criterion.subCriteria || !Array.isArray(criterion.subCriteria)) {
+            return '';
+        }
+        
+        return criterion.subCriteria.map(sub => {
+            const score = sub.score || 0;
+            return `
+                <div class="sub-criterion-item">
+                    <strong>${sub.title}</strong>
+                    <span class="score">${score}/5</span>
+                    ${sub.description ? `<p style="margin-top: 3mm; color: #6b7280;">${sub.description}</p>` : ''}
+                </div>
+            `;
+        }).join('');
+    }
+    
+    getScoreColor(score) {
+        if (score <= 1.5) return '#ef4444';
+        if (score <= 2.5) return '#f59e0b';
+        if (score <= 3.5) return '#3b82f6';
+        if (score <= 4.5) return '#10b981';
+        return '#059669';
+    }
+
+    /**
      * Create a chart canvas for PDF embedding
      */
     async createChartCanvas(data, type = 'radar') {
