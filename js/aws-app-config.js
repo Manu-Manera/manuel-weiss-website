@@ -130,7 +130,8 @@ window.AWS_APP_CONFIG = Object.assign({}, window.AWS_APP_CONFIG || {}, {
         'S3_UPLOAD': '/.netlify/functions/s3-upload',
         'SNOWFLAKE_HIGHSCORES': '/.netlify/functions/snowflake-highscores',
         'CONTACT_EMAIL': '/.netlify/functions/send-contact-email',
-        'PDF_GENERATOR': '/.netlify/functions/pdf-generator'
+        'PDF_GENERATOR': '/.netlify/functions/pdf-generator',
+        'ORG_DEV_ASSESSMENTS': '/.netlify/functions/org-dev-assessments'
       };
       return netlifyMap[endpoint] || `/.netlify/functions/${endpoint.toLowerCase().replace(/_/g, '-')}`;
     }

@@ -1003,10 +1003,34 @@
         
         // Assessment functions
         function updateAssessment(dimension, value) {
-            orgDevMaturityData[dimension] = parseInt(value);
-            const valueDisplay = document.getElementById(`${dimension}Value`);
-            if (valueDisplay) {
-                valueDisplay.textContent = value;
+            // Priorität: Detail-Assessment > manueller Slider
+            const detailAssessments = JSON.parse(localStorage.getItem('orgDevDetailAssessments') || '{}');
+            const workflowData = JSON.parse(localStorage.getItem('orgDevWorkflow') || '{}');
+            
+            // Wenn ein Detail-Assessment existiert, verwende dessen Wert, nicht den manuellen Slider
+            if (detailAssessments[dimension] && detailAssessments[dimension].aggregated) {
+                // Detail-Assessment hat Priorität - setze Slider auf Detail-Assessment Wert
+                const detailValue = detailAssessments[dimension].aggregated;
+                orgDevMaturityData[dimension] = detailValue;
+                const slider = document.getElementById(`${dimension}Slider`);
+                const valueDisplay = document.getElementById(`${dimension}Value`);
+                if (slider) slider.value = detailValue;
+                if (valueDisplay) valueDisplay.textContent = detailValue.toFixed(1);
+            } else if (workflowData.orgDevMaturityData && workflowData.orgDevMaturityData[dimension]) {
+                // Fallback: Workflow-Daten
+                const workflowValue = workflowData.orgDevMaturityData[dimension];
+                orgDevMaturityData[dimension] = workflowValue;
+                const slider = document.getElementById(`${dimension}Slider`);
+                const valueDisplay = document.getElementById(`${dimension}Value`);
+                if (slider) slider.value = workflowValue;
+                if (valueDisplay) valueDisplay.textContent = workflowValue.toFixed(1);
+            } else {
+                // Nur wenn kein Detail-Assessment existiert, verwende manuellen Slider
+                orgDevMaturityData[dimension] = parseInt(value);
+                const valueDisplay = document.getElementById(`${dimension}Value`);
+                if (valueDisplay) {
+                    valueDisplay.textContent = value;
+                }
             }
             calculateOverallMaturity();
             updateMaturityDisplay();
@@ -1014,15 +1038,39 @@
         }
         
         function calculateOverallMaturity() {
-            // Load detail assessments if available
+            // Load detail assessments if available (Priorität: Detail-Assessment > Workflow > Default)
             const detailAssessments = JSON.parse(localStorage.getItem('orgDevDetailAssessments') || '{}');
+            const workflowData = JSON.parse(localStorage.getItem('orgDevWorkflow') || '{}');
             let total = 0;
             let count = 0;
             
             Object.keys(orgDevMaturityData).forEach(dimension => {
+                let value = null;
+                
+                // Priorität 1: Detail-Assessment
                 if (detailAssessments[dimension] && detailAssessments[dimension].aggregated) {
-                    total += detailAssessments[dimension].aggregated;
-                } else {
+                    value = detailAssessments[dimension].aggregated;
+                }
+                // Priorität 2: Workflow-Daten
+                else if (workflowData.orgDevMaturityData && workflowData.orgDevMaturityData[dimension]) {
+                    value = workflowData.orgDevMaturityData[dimension];
+                }
+                // Priorität 3: Aktueller Wert (manueller Slider)
+                else if (orgDevMaturityData[dimension]) {
+                    value = orgDevMaturityData[dimension];
+                }
+                
+                if (value !== null) {
+                    total += value;
+                    count++;
+                }
+            });
+            
+            if (count > 0) {
+                overallOrgDevMaturity = parseFloat((total / count).toFixed(1));
+            } else {
+                overallOrgDevMaturity = 1.0;
+            }
                     total += orgDevMaturityData[dimension];
                 }
                 count++;
@@ -1085,18 +1133,60 @@
         }
         
         function loadDetailAssessments() {
-            const detailAssessments = JSON.parse(localStorage.getItem('orgDevDetailAssessments') || '{}');
-            Object.keys(detailAssessments).forEach(dimension => {
-                if (detailAssessments[dimension].aggregated) {
-                    orgDevMaturityData[dimension] = detailAssessments[dimension].aggregated;
-                    const slider = document.getElementById(`${dimension}Slider`);
-                    const valueDisplay = document.getElementById(`${dimension}Value`);
-                    if (slider) slider.value = detailAssessments[dimension].aggregated;
-                    if (valueDisplay) valueDisplay.textContent = detailAssessments[dimension].aggregated;
+            try {
+                // Priorität: Detail-Assessment > Workflow-Daten > Default
+                const detailAssessments = JSON.parse(localStorage.getItem('orgDevDetailAssessments') || '{}');
+                const workflowData = JSON.parse(localStorage.getItem('orgDevWorkflow') || '{}');
+                
+                Object.keys(orgDevMaturityData).forEach(dimension => {
+                    let value = null;
+                    
+                    // Priorität 1: Detail-Assessment (mit aggregated)
+                    if (detailAssessments[dimension] && detailAssessments[dimension].aggregated) {
+                        value = detailAssessments[dimension].aggregated;
+                    }
+                    // Priorität 2: Workflow-Daten
+                    else if (workflowData.orgDevMaturityData && workflowData.orgDevMaturityData[dimension]) {
+                        value = workflowData.orgDevMaturityData[dimension];
+                    }
+                    
+                    if (value !== null) {
+                        orgDevMaturityData[dimension] = value;
+                        const slider = document.getElementById(`${dimension}Slider`);
+                        const valueDisplay = document.getElementById(`${dimension}Value`);
+                        if (slider) {
+                            slider.value = value;
+                        }
+                        if (valueDisplay) {
+                            valueDisplay.textContent = value.toFixed(1);
+                        }
+                    }
+                });
+                
+                calculateOverallMaturity();
+                updateMaturityDisplay();
+            } catch (error) {
+                console.error('Fehler beim Laden der Detail-Assessments:', error);
+                // Fallback: Versuche Workflow-Daten zu laden
+                try {
+                    const workflowData = JSON.parse(localStorage.getItem('orgDevWorkflow') || '{}');
+                    if (workflowData.orgDevMaturityData) {
+                        Object.keys(workflowData.orgDevMaturityData).forEach(dimension => {
+                            if (orgDevMaturityData.hasOwnProperty(dimension)) {
+                                orgDevMaturityData[dimension] = workflowData.orgDevMaturityData[dimension];
+                                const slider = document.getElementById(`${dimension}Slider`);
+                                const valueDisplay = document.getElementById(`${dimension}Value`);
+                                if (slider) slider.value = workflowData.orgDevMaturityData[dimension];
+                                if (valueDisplay) valueDisplay.textContent = workflowData.orgDevMaturityData[dimension].toFixed(1);
+                            }
+                        });
+                        calculateOverallMaturity();
+                        updateMaturityDisplay();
+                    }
+                } catch (fallbackError) {
+                    console.error('Fehler beim Fallback-Laden:', fallbackError);
                 }
-            });
-            calculateOverallMaturity();
-            updateMaturityDisplay();
+            }
         }
         
         // Navigation functions
