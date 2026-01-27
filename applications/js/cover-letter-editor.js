@@ -1471,7 +1471,20 @@ ${description.substring(0, 2000)}`;
         // WICHTIG: Reihenfolge ist kritisch - Admin Panel speichert in global_api_keys!
         console.log('🔑 Getting OpenAI Key...');
         
-        // 1. Try global_api_keys localStorage ZUERST (Admin Panel speichert hier!)
+        // 1. Try GlobalAPIManager ZUERST (Admin Panel verwendet das!)
+        if (window.GlobalAPIManager) {
+            try {
+                const key = window.GlobalAPIManager.getAPIKey('openai');
+                if (key && typeof key === 'string' && !key.includes('...') && key.startsWith('sk-')) {
+                    console.log('✅ Got key from GlobalAPIManager');
+                    return key;
+                }
+            } catch (e) {
+                console.warn('GlobalAPIManager error:', e);
+            }
+        }
+        
+        // 2. Try global_api_keys localStorage (Admin Panel speichert auch hier direkt!)
         try {
             const globalKeys = JSON.parse(localStorage.getItem('global_api_keys') || '{}');
             if (globalKeys.openai?.key && !globalKeys.openai.key.includes('...') && globalKeys.openai.key.startsWith('sk-')) {
@@ -1482,7 +1495,7 @@ ${description.substring(0, 2000)}`;
             console.warn('Fehler beim Lesen von global_api_keys:', e);
         }
         
-        // 2. Try admin-api-settings localStorage
+        // 3. Try admin-api-settings localStorage
         try {
             const adminSettings = JSON.parse(localStorage.getItem('admin-api-settings') || '{}');
             if (adminSettings.openai?.apiKey && adminSettings.openai.apiKey.startsWith('sk-') && !adminSettings.openai.apiKey.includes('...')) {
@@ -1493,7 +1506,7 @@ ${description.substring(0, 2000)}`;
             console.warn('Fehler beim Lesen von admin-api-settings:', e);
         }
         
-        // 3. Try awsAPISettings (kann fehlschlagen wenn nicht eingeloggt)
+        // 4. Try awsAPISettings (kann fehlschlagen wenn nicht eingeloggt)
         if (window.awsAPISettings) {
             try {
                 const key = await window.awsAPISettings.getFullApiKey('openai');
@@ -1512,7 +1525,7 @@ ${description.substring(0, 2000)}`;
             }
         }
         
-        // 4. Try globalApiManager
+        // 5. Try globalApiManager (kleingeschrieben - andere Instanz)
         if (window.globalApiManager) {
             try {
                 const key = await window.globalApiManager.getApiKey('openai');
