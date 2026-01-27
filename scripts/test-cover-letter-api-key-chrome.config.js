@@ -18,8 +18,8 @@ module.exports = {
     },
     
     // Test-Loop Einstellungen
-    maxIterations: parseInt(process.env.MAX_ITERATIONS) || 10,
-    cloudFrontWaitTime: parseInt(process.env.CLOUDFRONT_WAIT) || 30000, // 30 Sekunden
+    maxIterations: parseInt(process.env.MAX_ITERATIONS) || 1, // Nur 1 Iteration für schnelleren Test
+    cloudFrontWaitTime: parseInt(process.env.CLOUDFRONT_WAIT) || 15000, // 15 Sekunden
     
     // Debugging
     screenshotOnFailure: process.env.SCREENSHOT_ON_FAILURE !== 'false',
