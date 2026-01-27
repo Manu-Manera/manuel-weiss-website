@@ -1496,7 +1496,16 @@ ${description.substring(0, 2000)}`;
                 }
             }
             
-            // 2. Versuche über globalApiManager
+            // 2. Versuche über GlobalAPIManager (Admin Panel verwendet das!)
+            if (window.GlobalAPIManager) {
+                const key = window.GlobalAPIManager.getAPIKey('openai');
+                if (key) {
+                    console.log('✅ API-Key über GlobalAPIManager geladen');
+                    return key;
+                }
+            }
+            
+            // 2b. Versuche über globalApiManager (kleingeschrieben - Fallback)
             if (window.globalApiManager) {
                 const key = await window.globalApiManager.getApiKey('openai');
                 if (key) {
@@ -1524,7 +1533,18 @@ ${description.substring(0, 2000)}`;
                 console.warn('API-Settings Endpoint nicht erreichbar:', e);
             }
             
-            // 4. Fallback: localStorage
+            // 4. Fallback: global_api_keys (Admin Panel speichert hier!)
+            try {
+                const globalKeys = JSON.parse(localStorage.getItem('global_api_keys') || '{}');
+                if (globalKeys.openai?.key) {
+                    console.log('✅ API-Key aus global_api_keys geladen');
+                    return globalKeys.openai.key;
+                }
+            } catch (e) {
+                console.warn('Fehler beim Lesen von global_api_keys:', e);
+            }
+            
+            // 5. Fallback: localStorage (andere Keys)
             const localKeys = ['openai_api_key', 'admin_openai_api_key', 'ki_api_settings'];
             for (const key of localKeys) {
                 const value = localStorage.getItem(key);
