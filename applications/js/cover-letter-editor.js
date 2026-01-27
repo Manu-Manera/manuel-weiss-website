@@ -1484,122 +1484,82 @@ ${description.substring(0, 2000)}`;
     }
 
     async getAPIKey() {
-        // EXAKT GLEICHE LOGIK WIE RESUME EDITOR getOpenAIKey() - DIE FUNKTIONIERT!
-        // Kopiert aus applications/js/resume-editor.js Zeile 2682-2718
-        // WICHTIG: Reihenfolge ist kritisch - Admin Panel speichert in global_api_keys!
-        console.log('🔑 Getting OpenAI Key...');
-        
-        // 1. Try GlobalAPIManager ZUERST (Admin Panel verwendet das!)
-        if (window.GlobalAPIManager) {
-            try {
-                const key = window.GlobalAPIManager.getAPIKey('openai');
-                if (key && typeof key === 'string' && !key.includes('...') && key.startsWith('sk-')) {
-                    console.log('✅ Got key from GlobalAPIManager');
-                    return key;
-                }
-            } catch (e) {
-                console.warn('GlobalAPIManager error:', e);
-            }
-        }
-        
-        // 2. Try global_api_keys localStorage (Admin Panel speichert auch hier direkt!)
+        // EXAKT GLEICHE LOGIK WIE RESUME EDITOR getOpenAIApiKey() - DIE FUNKTIONIERT BEI OCR!
+        // Kopiert aus applications/js/resume-editor.js Zeile 631-695
         try {
-            const globalKeys = JSON.parse(localStorage.getItem('global_api_keys') || '{}');
-            if (globalKeys.openai?.key && !globalKeys.openai.key.includes('...') && globalKeys.openai.key.startsWith('sk-')) {
-                console.log('✅ Got key from global_api_keys localStorage');
-                return globalKeys.openai.key;
-            }
-        } catch (e) {
-            console.warn('Fehler beim Lesen von global_api_keys:', e);
-        }
-        
-        // 3. Try admin-api-settings localStorage
-        try {
-            const adminSettings = JSON.parse(localStorage.getItem('admin-api-settings') || '{}');
-            if (adminSettings.openai?.apiKey && adminSettings.openai.apiKey.startsWith('sk-') && !adminSettings.openai.apiKey.includes('...')) {
-                console.log('✅ Got key from admin-api-settings');
-                return adminSettings.openai.apiKey;
-            }
-        } catch (e) {
-            console.warn('Fehler beim Lesen von admin-api-settings:', e);
-        }
-        
-        // 4. Try awsAPISettings (kann fehlschlagen wenn nicht eingeloggt)
-        if (window.awsAPISettings) {
-            try {
+            // 1. Versuche über aws-api-settings
+            if (window.awsAPISettings) {
                 const key = await window.awsAPISettings.getFullApiKey('openai');
-                // Handle case where getFullApiKey might return an object
-                let apiKey = key;
-                if (key && typeof key === 'object') {
-                    apiKey = key.apiKey || key.key || key.openai || null;
-                }
-                if (apiKey && typeof apiKey === 'string' && !apiKey.includes('...') && apiKey.startsWith('sk-')) {
-                    console.log('✅ Got key from awsAPISettings');
-                    return apiKey;
-                }
-            } catch (e) {
-                // Fehler beim Laden aus AWS - ignoriere stillschweigend (Fallbacks werden verwendet)
-                // Keine Warnung, da dies erwartet ist wenn User nicht eingeloggt oder Key nicht in AWS
-            }
-        }
-        
-        // 5. Try globalApiManager (kleingeschrieben - andere Instanz)
-        if (window.globalApiManager) {
-            try {
-                const key = await window.globalApiManager.getApiKey('openai');
-                if (key && typeof key === 'string' && !key.includes('...') && key.startsWith('sk-')) {
-                    console.log('✅ Got key from globalApiManager');
+                if (key) {
+                    console.log('✅ API-Key über awsAPISettings geladen');
                     return key;
                 }
-            } catch (e) {
-                console.warn('globalApiManager error:', e);
             }
-        }
-        
-        // 5. Try admin_state (Admin Panel) - Fallback
-        try {
-            const stateManagerData = localStorage.getItem('admin_state');
-            if (stateManagerData) {
-                const state = JSON.parse(stateManagerData);
-                if (state.services?.openai?.key && !state.services.openai.key.includes('...') && state.services.openai.key.startsWith('sk-')) {
-                    console.log('✅ Got key from admin_state.services.openai.key');
-                    return state.services.openai.key;
-                }
-                if (state.apiKeys?.openai?.apiKey && !state.apiKeys.openai.apiKey.includes('...') && state.apiKeys.openai.apiKey.startsWith('sk-')) {
-                    console.log('✅ Got key from admin_state.apiKeys.openai.apiKey');
-                    return state.apiKeys.openai.apiKey;
+            
+            // 2. Versuche über globalApiManager
+            if (window.globalApiManager) {
+                const key = await window.globalApiManager.getApiKey('openai');
+                if (key) {
+                    console.log('✅ API-Key über globalApiManager geladen');
+                    return key;
                 }
             }
-        } catch (e) {
-            console.warn('Fehler beim Lesen von admin_state:', e);
-        }
-        
-        // 6. Fallback: direkte localStorage Keys
-        const localKeys = ['openai_api_key', 'admin_openai_api_key', 'ki_api_settings'];
-        for (const keyName of localKeys) {
+            
+            // 3. Versuche über API (zentrale Konfiguration)
             try {
-                const value = localStorage.getItem(keyName);
+                const apiUrl = window.getApiUrl ? window.getApiUrl('API_SETTINGS') + '/key?provider=openai' : (window.AWS_APP_CONFIG?.API_BASE || 'https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1') + '/api-settings/key?provider=openai';
+                const response = await fetch(apiUrl, {
+                    headers: {
+                        'X-User-Id': this.getUserId()
+                    }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.apiKey) {
+                        console.log('✅ API-Key über API geladen');
+                        return data.apiKey;
+                    }
+                }
+            } catch (e) {
+                console.warn('API-Settings Endpoint nicht erreichbar:', e);
+            }
+            
+            // 4. Fallback: localStorage
+            const localKeys = ['openai_api_key', 'admin_openai_api_key', 'ki_api_settings'];
+            for (const key of localKeys) {
+                const value = localStorage.getItem(key);
                 if (value) {
                     try {
                         const parsed = JSON.parse(value);
-                        if (parsed.openai && typeof parsed.openai === 'string' && parsed.openai.startsWith('sk-') && !parsed.openai.includes('...')) {
-                            console.log(`✅ Got key from ${keyName} (parsed)`);
+                        if (parsed.openai) {
+                            console.log('✅ API-Key aus localStorage geladen');
                             return parsed.openai;
                         }
                     } catch {
-                        if (value.startsWith('sk-') && !value.includes('...')) {
-                            console.log(`✅ Got key from ${keyName} (direct)`);
+                        if (value.startsWith('sk-')) {
+                            console.log('✅ API-Key direkt aus localStorage geladen');
                             return value;
                         }
                     }
                 }
-            } catch (e) {
-                // Ignoriere Fehler
             }
+            
+            return null;
+        } catch (error) {
+            console.error('Fehler beim Abrufen des API-Keys:', error);
+            return null;
         }
-        
-        console.warn('❌ No OpenAI key found');
-        return null;
+    }
+    
+    getUserId() {
+        try {
+            const session = localStorage.getItem('aws_auth_session');
+            if (session) {
+                const parsed = JSON.parse(session);
+                return parsed.userId || parsed.sub || 'anonymous';
+            }
+        } catch (e) {}
+        return 'anonymous';
     }
 
     async generateWithAI(jobData, apiKey) {
@@ -4800,8 +4760,7 @@ Gib nur den Einleitungsabsatz zurück.`;
         const apiKey = await this.getAPIKey();
         if (!apiKey) {
             console.warn('⚠️ Skill Gap Analyse: Kein API-Key gefunden');
-            console.warn('   Prüfe Console-Logs oben für detaillierte Informationen über fehlgeschlagene Quellen');
-            this.showToast('Kein API-Key gefunden. Bitte im Admin Panel konfigurieren. (Prüfe Console für Details)', 'error');
+            this.showToast('Kein API-Key gefunden. Skill Gap Analyse erfordert einen API-Key.', 'warning');
             return;
         }
         
