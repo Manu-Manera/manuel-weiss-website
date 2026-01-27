@@ -118,7 +118,32 @@ class CoverLetterEditor {
         // Initialisiere Export-Button State
         this.updateExportButtonState();
         
+        // Prüfe API-Key Verfügbarkeit (nur Info, keine Warnung)
+        this.checkAPIKeyAvailability();
+        
         console.log('✅ Cover Letter Editor ready');
+    }
+    
+    /**
+     * Prüft ob API-Key verfügbar ist (nur für Info, keine Warnung)
+     */
+    async checkAPIKeyAvailability() {
+        try {
+            // Warte kurz, damit alle Services initialisiert sind
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            const apiKey = await this.getAPIKey();
+            if (!apiKey) {
+                // Keine Warnung hier - wird nur bei tatsächlicher Nutzung angezeigt
+                console.log('ℹ️ API-Key nicht verfügbar - Template-Modus wird verwendet');
+                console.log('   💡 Tipp: Im Admin Panel (https://manuel-weiss.ch/admin#api-keys) konfigurieren für AI-Generierung');
+            } else {
+                console.log('✅ API-Key verfügbar - AI-Generierung möglich');
+            }
+        } catch (e) {
+            // Stille Fehlerbehandlung - keine störende Warnung
+            console.log('ℹ️ API-Key-Prüfung:', e.message);
+        }
     }
     
     async checkEditParameter() {
@@ -1388,7 +1413,11 @@ ${description.substring(0, 2000)}`;
             } else {
                 console.warn('⚠️ Kein API-Key, verwende Template');
                 console.warn('   Prüfe Console-Logs oben für detaillierte Informationen über fehlgeschlagene Quellen');
-                this.showToast('Kein API-Key gefunden. Verwende Template. (Prüfe Console für Details)', 'warning');
+                
+                // Zeige hilfreiche Warnung mit Link zum Admin Panel
+                const adminLink = '<a href="/admin.html#api-keys" target="_blank" style="text-decoration: underline; font-weight: bold;">Admin Panel</a>';
+                this.showToast(`Kein API-Key gefunden. Verwende Template. Konfiguriere in ${adminLink} für AI-Generierung.`, 'warning');
+                
                 content = this.generateFromTemplate(jobData);
                 console.log('✅ Template-Generierung erfolgreich, Länge:', content?.length);
             }
@@ -4276,17 +4305,23 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
         
         const toast = document.createElement('div');
         toast.className = `toast ${type}`;
+        
+        // Erlaube HTML in Toast-Messages (für Links)
+        const messageHtml = typeof message === 'string' ? message : message;
         toast.innerHTML = `
             <i class="fas ${icons[type]}"></i>
-            <span>${message}</span>
+            <span>${messageHtml}</span>
         `;
         
         container.appendChild(toast);
         
+        // Längere Anzeigedauer für Warnungen mit Links
+        const displayTime = type === 'warning' && messageHtml.includes('<a') ? 8000 : 4000;
+        
         setTimeout(() => {
             toast.style.animation = 'slideIn 0.3s ease-out reverse';
             setTimeout(() => toast.remove(), 300);
-        }, 4000);
+        }, displayTime);
     }
 
     // ═══════════════════════════════════════════════════════════════════════════
