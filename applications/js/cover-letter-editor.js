@@ -1496,11 +1496,12 @@ ${description.substring(0, 2000)}`;
                 }
             }
             
-            // 2. Versuche über globalApiManager
-            if (window.globalApiManager) {
-                const key = await window.globalApiManager.getApiKey('openai');
+            // 2. Versuche über globalApiManager (kleingeschrieben - Alias für GlobalAPIManager)
+            const apiManager = window.globalApiManager || window.GlobalAPIManager;
+            if (apiManager) {
+                const key = apiManager.getAPIKey ? apiManager.getAPIKey('openai') : await apiManager.getApiKey('openai');
                 if (key) {
-                    console.log('✅ API-Key über globalApiManager geladen');
+                    console.log('✅ API-Key über API Manager geladen');
                     return key;
                 }
             }
