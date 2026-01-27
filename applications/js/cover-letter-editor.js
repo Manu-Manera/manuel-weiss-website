@@ -1387,7 +1387,8 @@ ${description.substring(0, 2000)}`;
                 console.log('✅ AI-Generierung erfolgreich, Länge:', content?.length);
             } else {
                 console.warn('⚠️ Kein API-Key, verwende Template');
-                this.showToast('Kein API-Key gefunden. Verwende Template.', 'warning');
+                console.warn('   Prüfe Console-Logs oben für detaillierte Informationen über fehlgeschlagene Quellen');
+                this.showToast('Kein API-Key gefunden. Verwende Template. (Prüfe Console für Details)', 'warning');
                 content = this.generateFromTemplate(jobData);
                 console.log('✅ Template-Generierung erfolgreich, Länge:', content?.length);
             }
