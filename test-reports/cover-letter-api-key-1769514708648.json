@@ -1,0 +1,44 @@
+{
+  "timestamp": "2026-01-27T11:51:48.648Z",
+  "iteration": 1,
+  "totalTests": 7,
+  "passedTests": 7,
+  "failedTests": 0,
+  "results": [
+    {
+      "success": true,
+      "scenario": "pageLoad",
+      "details": "Page geladen, coverLetterEditor initialisiert, awsAPISettings: true"
+    },
+    {
+      "success": true,
+      "scenario": "adminState",
+      "details": "API-Key gefunden: sk-test123... (Quelle: admin_state)"
+    },
+    {
+      "success": true,
+      "scenario": "globalApiKeys",
+      "details": "API-Key gefunden: sk-test123... (Quelle: global_api_keys)"
+    },
+    {
+      "success": true,
+      "scenario": "awsApiSettings",
+      "details": "API-Key gefunden: sk-test123... (Quelle: awsAPISettings)"
+    },
+    {
+      "success": true,
+      "scenario": "generation",
+      "details": "Anschreiben generiert (AI), Länge: 1200 Zeichen, API-Key gefunden: true"
+    },
+    {
+      "success": true,
+      "scenario": "invalidKeys",
+      "details": "Maskierte und ungültige Keys wurden korrekt ignoriert"
+    },
+    {
+      "success": true,
+      "scenario": "timing",
+      "details": "API-Key gefunden in 1ms"
+    }
+  ]
+}

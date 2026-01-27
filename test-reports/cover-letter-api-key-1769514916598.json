@@ -1,0 +1,44 @@
+{
+  "timestamp": "2026-01-27T11:55:16.598Z",
+  "iteration": 1,
+  "totalTests": 7,
+  "passedTests": 5,
+  "failedTests": 2,
+  "results": [
+    {
+      "success": true,
+      "scenario": "pageLoad",
+      "details": "Page geladen, coverLetterEditor initialisiert, awsAPISettings: true"
+    },
+    {
+      "success": false,
+      "scenario": "adminState",
+      "reason": "API-Key nicht gefunden. Analysis: {\"apiKeyFound\":false,\"source\":null,\"errors\":[\"❌ Fehler beim Laden des vollständigen API Keys für openai: JSHandle@error\",\"Fehler beim Abrufen des API-Keys: JSHandle@error\",\"❌ Fehler beim Laden des vollständigen API Keys für openai: JSHandle@error\",\"Fehler beim Abrufen des API-Keys: JSHandle@error\"],\"warnings\":[\"⚠️ User nicht eingeloggt - verwende localStorage\",\"⚠️ UnifiedProfileService enthält Test-Daten, überspringe...\",\"⚠️ User nicht eingeloggt - verwende localStorage\",\"⚠️ User nicht eingeloggt - versuche globale Keys...\",\"⚠️ User nicht eingeloggt - versuche globale Keys...\"],\"timing\":null}"
+    },
+    {
+      "success": false,
+      "scenario": "globalApiKeys",
+      "reason": "API-Key nicht gefunden. Analysis: {\"apiKeyFound\":false,\"source\":null,\"errors\":[\"❌ Fehler beim Laden des vollständigen API Keys für openai: JSHandle@error\",\"Fehler beim Abrufen des API-Keys: JSHandle@error\",\"❌ Fehler beim Laden des vollständigen API Keys für openai: JSHandle@error\",\"Fehler beim Abrufen des API-Keys: JSHandle@error\",\"❌ Fehler beim Laden des vollständigen API Keys für openai: JSHandle@error\",\"Fehler beim Abrufen des API-Keys: JSHandle@error\"],\"warnings\":[\"⚠️ User nicht eingeloggt - verwende localStorage\",\"⚠️ User nicht eingeloggt - versuche globale Keys...\",\"⚠️ User nicht eingeloggt - versuche globale Keys...\",\"⚠️ User nicht eingeloggt - versuche globale Keys...\"],\"timing\":null}"
+    },
+    {
+      "success": true,
+      "scenario": "awsApiSettings",
+      "details": "API-Key gefunden: sk-test123... (Quelle: awsAPISettings)"
+    },
+    {
+      "success": true,
+      "scenario": "generation",
+      "details": "Anschreiben generiert (AI), Länge: 1200 Zeichen, API-Key gefunden: true"
+    },
+    {
+      "success": true,
+      "scenario": "invalidKeys",
+      "details": "Maskierte und ungültige Keys wurden korrekt ignoriert"
+    },
+    {
+      "success": true,
+      "scenario": "timing",
+      "details": "API-Key gefunden in 0ms"
+    }
+  ]
+}

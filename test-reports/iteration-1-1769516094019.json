@@ -1,0 +1,507 @@
+[
+  {
+    "type": "log",
+    "text": "🚀 Initializing Unified AWS Auth System...",
+    "timestamp": "2026-01-27T12:13:23.441Z"
+  },
+  {
+    "type": "log",
+    "text": "📦 Loading AWS SDK...",
+    "timestamp": "2026-01-27T12:13:23.442Z"
+  },
+  {
+    "type": "log",
+    "text": "✅ Unified AWS Auth System loaded",
+    "timestamp": "2026-01-27T12:13:23.443Z"
+  },
+  {
+    "type": "log",
+    "text": "☁️ Cloud Data Service geladen",
+    "timestamp": "2026-01-27T12:13:23.485Z"
+  },
+  {
+    "type": "log",
+    "text": "🔄 UnifiedProfileService wird initialisiert...",
+    "timestamp": "2026-01-27T12:13:23.485Z"
+  },
+  {
+    "type": "log",
+    "text": "✅ UnifiedProfileService geladen",
+    "timestamp": "2026-01-27T12:13:23.485Z"
+  },
+  {
+    "type": "log",
+    "text": "📝 Initialisiere CoverLetterEditor...",
+    "timestamp": "2026-01-27T12:13:23.487Z"
+  },
+  {
+    "type": "log",
+    "text": "📝 Cover Letter Editor initializing...",
+    "timestamp": "2026-01-27T12:13:23.487Z"
+  },
+  {
+    "type": "log",
+    "text": "✅ CoverLetterEditor erfolgreich initialisiert",
+    "timestamp": "2026-01-27T12:13:23.487Z"
+  },
+  {
+    "type": "log",
+    "text": "📋 Industry Templates initialized",
+    "timestamp": "2026-01-27T12:13:23.487Z"
+  },
+  {
+    "type": "log",
+    "text": "📐 Split-View Editor initialized",
+    "timestamp": "2026-01-27T12:13:23.487Z"
+  },
+  {
+    "type": "log",
+    "text": "👥 Collaboration Module initialized",
+    "timestamp": "2026-01-27T12:13:23.487Z"
+  },
+  {
+    "type": "log",
+    "text": "✅ awsAPISettings bereits verfügbar",
+    "timestamp": "2026-01-27T12:13:23.588Z"
+  },
+  {
+    "type": "log",
+    "text": "✅ GlobalAPIManager bereits verfügbar",
+    "timestamp": "2026-01-27T12:13:23.589Z"
+  },
+  {
+    "type": "log",
+    "text": "🔍 Setup Generate Button - Button gefunden: true",
+    "timestamp": "2026-01-27T12:13:23.589Z"
+  },
+  {
+    "type": "log",
+    "text": "✅ Event-Listener für Generate Button registriert",
+    "timestamp": "2026-01-27T12:13:23.589Z"
+  },
+  {
+    "type": "log",
+    "text": "⚠️ User nicht eingeloggt - verwende localStorage",
+    "timestamp": "2026-01-27T12:13:23.589Z"
+  },
+  {
+    "type": "log",
+    "text": "⚠️ User nicht eingeloggt - verwende localStorage",
+    "timestamp": "2026-01-27T12:13:23.589Z"
+  },
+  {
+    "type": "warn",
+    "text": "⚠️ headerContrastSelect nicht gefunden",
+    "timestamp": "2026-01-27T12:13:23.589Z"
+  },
+  {
+    "type": "log",
+    "text": "✅ AWS SDK loaded",
+    "timestamp": "2026-01-27T12:13:23.754Z"
+  },
+  {
+    "type": "log",
+    "text": "✅ AWS SDK loaded successfully",
+    "timestamp": "2026-01-27T12:13:23.755Z"
+  },
+  {
+    "type": "log",
+    "text": "🌍 AWS region configured: eu-central-1",
+    "timestamp": "2026-01-27T12:13:24.258Z"
+  },
+  {
+    "type": "log",
+    "text": "🔐 Cognito Identity Service Provider initialized",
+    "timestamp": "2026-01-27T12:13:24.267Z"
+  },
+  {
+    "type": "log",
+    "text": "ℹ️ No session found",
+    "timestamp": "2026-01-27T12:13:24.267Z"
+  },
+  {
+    "type": "log",
+    "text": "🔄 Updating UI, isLoggedIn: false",
+    "timestamp": "2026-01-27T12:13:24.267Z"
+  },
+  {
+    "type": "log",
+    "text": "👤 Current user (redacted): ",
+    "timestamp": "2026-01-27T12:13:24.267Z"
+  },
+  {
+    "type": "log",
+    "text": "✅ Unified AWS Auth System initialized successfully",
+    "timestamp": "2026-01-27T12:13:24.268Z"
+  },
+  {
+    "type": "log",
+    "text": "📊 Lade vollständiges Profil aus allen Quellen...",
+    "timestamp": "2026-01-27T12:13:24.296Z"
+  },
+  {
+    "type": "log",
+    "text": "⚠️ User nicht eingeloggt - verwende localStorage",
+    "timestamp": "2026-01-27T12:13:24.296Z"
+  },
+  {
+    "type": "log",
+    "text": "📋 Geladene Datenquellen: JSHandle@object",
+    "timestamp": "2026-01-27T12:13:24.301Z"
+  },
+  {
+    "type": "log",
+    "text": "✅ Unified Profile erstellt: JSHandle@object",
+    "timestamp": "2026-01-27T12:13:24.301Z"
+  },
+  {
+    "type": "log",
+    "text": "✅ UnifiedProfileService initialisiert",
+    "timestamp": "2026-01-27T12:13:24.301Z"
+  },
+  {
+    "type": "log",
+    "text": "⚠️ UnifiedProfileService enthält Test-Daten, überspringe...",
+    "timestamp": "2026-01-27T12:13:24.302Z"
+  },
+  {
+    "type": "log",
+    "text": "⚠️ User nicht eingeloggt - verwende localStorage",
+    "timestamp": "2026-01-27T12:13:24.302Z"
+  },
+  {
+    "type": "log",
+    "text": "👤 Profile loaded: No",
+    "timestamp": "2026-01-27T12:13:24.302Z"
+  },
+  {
+    "type": "log",
+    "text": "✅ Cover Letter Editor ready",
+    "timestamp": "2026-01-27T12:13:24.316Z"
+  },
+  {
+    "type": "log",
+    "text": "🔑 Getting OpenAI Key...",
+    "timestamp": "2026-01-27T12:13:26.318Z"
+  },
+  {
+    "type": "log",
+    "text": "⚠️ User nicht eingeloggt - versuche globale Keys...",
+    "timestamp": "2026-01-27T12:13:26.320Z"
+  },
+  {
+    "type": "log",
+    "text": "🔍 Lade vollständigen API Key von: /.netlify/functions/api-settings?action=key&provider=openai JSHandle@object",
+    "timestamp": "2026-01-27T12:13:26.320Z"
+  },
+  {
+    "type": "log",
+    "text": "📡 Response Status: 200 JSHandle@object",
+    "timestamp": "2026-01-27T12:13:26.342Z"
+  },
+  {
+    "type": "error",
+    "text": "❌ Fehler beim Laden des vollständigen API Keys für openai: JSHandle@error",
+    "timestamp": "2026-01-27T12:13:26.357Z"
+  },
+  {
+    "type": "log",
+    "text": "ℹ️ awsAPISettings.getFullApiKey fehlgeschlagen, versuche weitere Quellen",
+    "timestamp": "2026-01-27T12:13:26.358Z"
+  },
+  {
+    "type": "log",
+    "text": "✅ Got key from admin_state.services.openai.key",
+    "timestamp": "2026-01-27T12:13:26.358Z"
+  },
+  {
+    "type": "log",
+    "text": "✅ API-Key verfügbar - AI-Generierung möglich",
+    "timestamp": "2026-01-27T12:13:26.359Z"
+  },
+  {
+    "type": "log",
+    "text": "🔑 Getting OpenAI Key...",
+    "timestamp": "2026-01-27T12:13:26.459Z"
+  },
+  {
+    "type": "log",
+    "text": "⚠️ User nicht eingeloggt - versuche globale Keys...",
+    "timestamp": "2026-01-27T12:13:26.460Z"
+  },
+  {
+    "type": "log",
+    "text": "🔍 Lade vollständigen API Key von: /.netlify/functions/api-settings?action=key&provider=openai JSHandle@object",
+    "timestamp": "2026-01-27T12:13:26.460Z"
+  },
+  {
+    "type": "log",
+    "text": "📡 Response Status: 200 JSHandle@object",
+    "timestamp": "2026-01-27T12:13:26.490Z"
+  },
+  {
+    "type": "error",
+    "text": "❌ Fehler beim Laden des vollständigen API Keys für openai: JSHandle@error",
+    "timestamp": "2026-01-27T12:13:26.492Z"
+  },
+  {
+    "type": "log",
+    "text": "ℹ️ awsAPISettings.getFullApiKey fehlgeschlagen, versuche weitere Quellen",
+    "timestamp": "2026-01-27T12:13:26.492Z"
+  },
+  {
+    "type": "log",
+    "text": "✅ Got key from admin_state.services.openai.key",
+    "timestamp": "2026-01-27T12:13:26.492Z"
+  },
+  {
+    "type": "log",
+    "text": "🔑 Getting OpenAI Key...",
+    "timestamp": "2026-01-27T12:13:27.804Z"
+  },
+  {
+    "type": "log",
+    "text": "✅ Got key from global_api_keys localStorage",
+    "timestamp": "2026-01-27T12:13:27.804Z"
+  },
+  {
+    "type": "log",
+    "text": "🔑 Getting OpenAI Key...",
+    "timestamp": "2026-01-27T12:13:29.111Z"
+  },
+  {
+    "type": "log",
+    "text": "⚠️ User nicht eingeloggt - versuche globale Keys...",
+    "timestamp": "2026-01-27T12:13:29.111Z"
+  },
+  {
+    "type": "log",
+    "text": "✅ Got key from awsAPISettings",
+    "timestamp": "2026-01-27T12:13:29.111Z"
+  },
+  {
+    "type": "log",
+    "text": "ℹ️ No session found",
+    "timestamp": "2026-01-27T12:13:32.920Z"
+  },
+  {
+    "type": "log",
+    "text": "🔄 Updating UI, isLoggedIn: false",
+    "timestamp": "2026-01-27T12:13:32.921Z"
+  },
+  {
+    "type": "log",
+    "text": "👤 Current user (redacted): ",
+    "timestamp": "2026-01-27T12:13:32.921Z"
+  },
+  {
+    "type": "log",
+    "text": "🔑 Getting OpenAI Key...",
+    "timestamp": "2026-01-27T12:13:40.546Z"
+  },
+  {
+    "type": "log",
+    "text": "⚠️ User nicht eingeloggt - versuche globale Keys...",
+    "timestamp": "2026-01-27T12:13:40.547Z"
+  },
+  {
+    "type": "log",
+    "text": "✅ Got key from awsAPISettings",
+    "timestamp": "2026-01-27T12:13:40.547Z"
+  },
+  {
+    "type": "error",
+    "text": "Failed to load resource: the server responded with a status of 401 ()",
+    "timestamp": "2026-01-27T12:13:40.877Z"
+  },
+  {
+    "type": "error",
+    "text": "API Fehler: 401",
+    "timestamp": "2026-01-27T12:13:40.877Z"
+  },
+  {
+    "type": "log",
+    "text": "✅ Generate Button geklickt (Event-Listener)!",
+    "timestamp": "2026-01-27T12:14:27.820Z"
+  },
+  {
+    "type": "log",
+    "text": "🚀 generateCoverLetter() aufgerufen",
+    "timestamp": "2026-01-27T12:14:27.820Z"
+  },
+  {
+    "type": "log",
+    "text": "✅ Validierung starten...",
+    "timestamp": "2026-01-27T12:14:27.820Z"
+  },
+  {
+    "type": "log",
+    "text": "✅ Formular-Validierung erfolgreich",
+    "timestamp": "2026-01-27T12:14:27.820Z"
+  },
+  {
+    "type": "log",
+    "text": "📊 Loading-State aktivieren...",
+    "timestamp": "2026-01-27T12:14:27.820Z"
+  },
+  {
+    "type": "log",
+    "text": "📊 Loading-Animation angezeigt",
+    "timestamp": "2026-01-27T12:14:27.820Z"
+  },
+  {
+    "type": "log",
+    "text": "📝 Job-Daten sammeln...",
+    "timestamp": "2026-01-27T12:14:27.820Z"
+  },
+  {
+    "type": "log",
+    "text": "📝 Job-Daten: JSHandle@object",
+    "timestamp": "2026-01-27T12:14:27.820Z"
+  },
+  {
+    "type": "log",
+    "text": "🔑 API-Key abrufen...",
+    "timestamp": "2026-01-27T12:14:27.820Z"
+  },
+  {
+    "type": "log",
+    "text": "🔑 Getting OpenAI Key...",
+    "timestamp": "2026-01-27T12:14:27.822Z"
+  },
+  {
+    "type": "log",
+    "text": "⚠️ User nicht eingeloggt - versuche globale Keys...",
+    "timestamp": "2026-01-27T12:14:27.822Z"
+  },
+  {
+    "type": "log",
+    "text": "✅ Got key from awsAPISettings",
+    "timestamp": "2026-01-27T12:14:27.822Z"
+  },
+  {
+    "type": "log",
+    "text": "🔑 API-Key gefunden: true",
+    "timestamp": "2026-01-27T12:14:27.822Z"
+  },
+  {
+    "type": "log",
+    "text": "🤖 Generiere mit AI...",
+    "timestamp": "2026-01-27T12:14:27.822Z"
+  },
+  {
+    "type": "log",
+    "text": "🤖 Sende Anfrage an OpenAI mit Modell: gpt-5.2",
+    "timestamp": "2026-01-27T12:14:27.822Z"
+  },
+  {
+    "type": "log",
+    "text": "📝 Prompt-Länge: 2272 Zeichen",
+    "timestamp": "2026-01-27T12:14:27.822Z"
+  },
+  {
+    "type": "log",
+    "text": "📤 Request Body: {\n  \"model\": \"gpt-5.2\",\n  \"reasoning_effort\": \"low\",\n  \"verbosity\": \"medium\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Du bist ein professioneller Bewerbungsberater und Experte für überzeugende Bewerbungsanschreiben. Du erstellst personalisierte, spezifische und authentische Anschreiben, die genau auf die Stellenbeschreibung eingehen. Du verwendest konkrete Beispiele, messbare Ergebnisse und vermeidest Floskeln. Antworte NUR mit dem Anschreiben-Text, keine zusätzlichen Erk...",
+    "timestamp": "2026-01-27T12:14:27.822Z"
+  },
+  {
+    "type": "error",
+    "text": "Failed to load resource: the server responded with a status of 401 ()",
+    "timestamp": "2026-01-27T12:14:28.097Z"
+  },
+  {
+    "type": "error",
+    "text": "❌ OpenAI API Fehler: 401 JSHandle@object",
+    "timestamp": "2026-01-27T12:14:28.097Z"
+  },
+  {
+    "type": "error",
+    "text": "❌ Generation error: JSHandle@error",
+    "timestamp": "2026-01-27T12:14:28.097Z"
+  },
+  {
+    "type": "error",
+    "text": "❌ Error Stack: Error: API Error: 401 - Incorrect API key provided: sk-test1*******************************************************7890. You can find your API key at https://platform.openai.com/account/api-keys.\n    at CoverLetterEditor.generateWithAI (https://manuel-weiss.ch/applications/js/cover-letter-editor.js?v=20260120:1646:19)\n    at async CoverLetterEditor.generateCoverLetter (https://manuel-weiss.ch/applications/js/cover-letter-editor.js?v=20260120:1429:27)",
+    "timestamp": "2026-01-27T12:14:28.098Z"
+  },
+  {
+    "type": "log",
+    "text": "📄 displayGeneratedLetter aufgerufen, Content-Länge: 758",
+    "timestamp": "2026-01-27T12:14:28.098Z"
+  },
+  {
+    "type": "log",
+    "text": "✅ Empty State ausgeblendet",
+    "timestamp": "2026-01-27T12:14:28.098Z"
+  },
+  {
+    "type": "log",
+    "text": "✅ Generated Letter angezeigt",
+    "timestamp": "2026-01-27T12:14:28.098Z"
+  },
+  {
+    "type": "log",
+    "text": "✅ Toolbar angezeigt",
+    "timestamp": "2026-01-27T12:14:28.098Z"
+  },
+  {
+    "type": "log",
+    "text": "✅ Fallback auf Template erfolgreich",
+    "timestamp": "2026-01-27T12:14:28.103Z"
+  },
+  {
+    "type": "log",
+    "text": "📊 Loading-Animation ausgeblendet",
+    "timestamp": "2026-01-27T12:14:28.104Z"
+  },
+  {
+    "type": "log",
+    "text": "🏁 Generierung abgeschlossen",
+    "timestamp": "2026-01-27T12:14:28.104Z"
+  },
+  {
+    "type": "log",
+    "text": "🔑 Getting OpenAI Key...",
+    "timestamp": "2026-01-27T12:14:51.597Z"
+  },
+  {
+    "type": "log",
+    "text": "⚠️ User nicht eingeloggt - versuche globale Keys...",
+    "timestamp": "2026-01-27T12:14:51.597Z"
+  },
+  {
+    "type": "log",
+    "text": "✅ Got key from awsAPISettings",
+    "timestamp": "2026-01-27T12:14:51.597Z"
+  },
+  {
+    "type": "log",
+    "text": "🔑 Getting OpenAI Key...",
+    "timestamp": "2026-01-27T12:14:51.805Z"
+  },
+  {
+    "type": "log",
+    "text": "⚠️ User nicht eingeloggt - versuche globale Keys...",
+    "timestamp": "2026-01-27T12:14:51.805Z"
+  },
+  {
+    "type": "log",
+    "text": "✅ Got key from awsAPISettings",
+    "timestamp": "2026-01-27T12:14:51.805Z"
+  },
+  {
+    "type": "log",
+    "text": "🔑 Getting OpenAI Key...",
+    "timestamp": "2026-01-27T12:14:53.014Z"
+  },
+  {
+    "type": "log",
+    "text": "⚠️ User nicht eingeloggt - versuche globale Keys...",
+    "timestamp": "2026-01-27T12:14:53.014Z"
+  },
+  {
+    "type": "log",
+    "text": "✅ Got key from awsAPISettings",
+    "timestamp": "2026-01-27T12:14:53.014Z"
+  }
+]
