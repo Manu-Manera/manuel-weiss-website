@@ -1412,12 +1412,7 @@ ${description.substring(0, 2000)}`;
                 console.log('✅ AI-Generierung erfolgreich, Länge:', content?.length);
             } else {
                 console.warn('⚠️ Kein API-Key, verwende Template');
-                console.warn('   Prüfe Console-Logs oben für detaillierte Informationen über fehlgeschlagene Quellen');
-                
-                // Zeige hilfreiche Warnung mit Link zum Admin Panel
-                const adminLink = '<a href="/admin.html#api-keys" target="_blank" style="text-decoration: underline; font-weight: bold;">Admin Panel</a>';
-                this.showToast(`Kein API-Key gefunden. Verwende Template. Konfiguriere in ${adminLink} für AI-Generierung.`, 'warning');
-                
+                this.showToast('Kein API-Key gefunden. Verwende Template.', 'warning');
                 content = this.generateFromTemplate(jobData);
                 console.log('✅ Template-Generierung erfolgreich, Länge:', content?.length);
             }
