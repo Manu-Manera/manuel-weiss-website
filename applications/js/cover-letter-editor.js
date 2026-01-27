@@ -1525,7 +1525,36 @@ ${description.substring(0, 2000)}`;
                 console.warn('API-Settings Endpoint nicht erreichbar:', e);
             }
             
-            // 4. Fallback: localStorage
+            // 4. Fallback: global_api_keys (Admin Panel speichert hier!)
+            try {
+                const globalKeys = JSON.parse(localStorage.getItem('global_api_keys') || '{}');
+                if (globalKeys.openai?.key) {
+                    console.log('✅ API-Key aus global_api_keys geladen');
+                    return globalKeys.openai.key;
+                }
+            } catch (e) {
+                console.warn('Fehler beim Lesen von global_api_keys:', e);
+            }
+            
+            // 5. Fallback: admin_state (Admin Panel)
+            try {
+                const stateManagerData = localStorage.getItem('admin_state');
+                if (stateManagerData) {
+                    const state = JSON.parse(stateManagerData);
+                    if (state.services?.openai?.key) {
+                        console.log('✅ API-Key aus admin_state.services.openai.key geladen');
+                        return state.services.openai.key;
+                    }
+                    if (state.apiKeys?.openai?.apiKey) {
+                        console.log('✅ API-Key aus admin_state.apiKeys.openai.apiKey geladen');
+                        return state.apiKeys.openai.apiKey;
+                    }
+                }
+            } catch (e) {
+                console.warn('Fehler beim Lesen von admin_state:', e);
+            }
+            
+            // 6. Fallback: localStorage (andere Keys)
             const localKeys = ['openai_api_key', 'admin_openai_api_key', 'ki_api_settings'];
             for (const key of localKeys) {
                 const value = localStorage.getItem(key);
