@@ -1485,24 +1485,34 @@ ${description.substring(0, 2000)}`;
 
     async getAPIKey() {
         // EXAKT GLEICHE LOGIK WIE RESUME EDITOR getOpenAIApiKey() - DIE FUNKTIONIERT BEI OCR!
-        // Kopiert aus applications/js/resume-editor.js Zeile 631-695 - OHNE ÄNDERUNGEN!
+        // Kopiert aus applications/js/resume-editor.js Zeile 631-695
+        // WICHTIG: Jede Quelle in try-catch, damit Fehler nicht die gesamte Funktion abbrechen
         try {
-            // 1. Versuche über aws-api-settings
+            // 1. Versuche über aws-api-settings (kann fehlschlagen wenn nicht eingeloggt)
             if (window.awsAPISettings) {
-                const key = await window.awsAPISettings.getFullApiKey('openai');
-                if (key) {
-                    console.log('✅ API-Key über awsAPISettings geladen');
-                    return key;
+                try {
+                    const key = await window.awsAPISettings.getFullApiKey('openai');
+                    if (key) {
+                        console.log('✅ API-Key über awsAPISettings geladen');
+                        return key;
+                    }
+                } catch (e) {
+                    // Fehler beim Laden aus AWS - ignoriere und gehe weiter
+                    console.log('ℹ️ awsAPISettings.getFullApiKey fehlgeschlagen, versuche weitere Quellen');
                 }
             }
             
             // 2. Versuche über globalApiManager (kleingeschrieben - Alias für GlobalAPIManager)
             const apiManager = window.globalApiManager || window.GlobalAPIManager;
             if (apiManager) {
-                const key = apiManager.getAPIKey ? apiManager.getAPIKey('openai') : await apiManager.getApiKey('openai');
-                if (key) {
-                    console.log('✅ API-Key über API Manager geladen');
-                    return key;
+                try {
+                    const key = apiManager.getAPIKey ? apiManager.getAPIKey('openai') : (apiManager.getApiKey ? await apiManager.getApiKey('openai') : null);
+                    if (key) {
+                        console.log('✅ API-Key über API Manager geladen');
+                        return key;
+                    }
+                } catch (e) {
+                    console.log('ℹ️ API Manager getAPIKey fehlgeschlagen, versuche weitere Quellen');
                 }
             }
             
@@ -1557,20 +1567,24 @@ ${description.substring(0, 2000)}`;
             // 6. Fallback: localStorage (andere Keys)
             const localKeys = ['openai_api_key', 'admin_openai_api_key', 'ki_api_settings'];
             for (const key of localKeys) {
-                const value = localStorage.getItem(key);
-                if (value) {
-                    try {
-                        const parsed = JSON.parse(value);
-                        if (parsed.openai) {
-                            console.log('✅ API-Key aus localStorage geladen');
-                            return parsed.openai;
-                        }
-                    } catch {
-                        if (value.startsWith('sk-')) {
-                            console.log('✅ API-Key direkt aus localStorage geladen');
-                            return value;
+                try {
+                    const value = localStorage.getItem(key);
+                    if (value) {
+                        try {
+                            const parsed = JSON.parse(value);
+                            if (parsed.openai) {
+                                console.log('✅ API-Key aus localStorage geladen');
+                                return parsed.openai;
+                            }
+                        } catch {
+                            if (value.startsWith('sk-')) {
+                                console.log('✅ API-Key direkt aus localStorage geladen');
+                                return value;
+                            }
                         }
                     }
+                } catch (e) {
+                    // Ignoriere Fehler bei einzelnen Keys
                 }
             }
             
