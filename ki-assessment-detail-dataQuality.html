@@ -379,25 +379,145 @@
                         id: 'completeEmployeeData', 
                         title: 'Alle Mitarbeiterdaten sind vollständig erfasst',
                         description: 'Wie vollständig sind die Mitarbeiterdaten?',
-                        examples: ['100% Datenabdeckung', 'Alle Pflichtfelder ausgefüllt', 'Vollständige Stammdaten']
+                        examples: ['100% Datenabdeckung', 'Alle Pflichtfelder ausgefüllt', 'Vollständige Stammdaten'],
+                        subSubCriteria: [
+                            {
+                                id: 'masterDataCompleteness',
+                                title: 'Vollständigkeit der Stammdaten',
+                                description: 'Sind alle Pflichtfelder in den Stammdaten ausgefüllt?',
+                                examples: ['100% Abdeckung Pflichtfelder', 'Validierte Dateneingabe', 'Automatische Prüfungen'],
+                                bestPractices: ['DAMA: Data Completeness Dimension', 'McKinsey: Master Data Management', 'ISO 8000: Data Quality']
+                            },
+                            {
+                                id: 'organizationalData',
+                                title: 'Organisationsdaten vollständig',
+                                description: 'Sind alle Organisationsstrukturen erfasst?',
+                                examples: ['Vollständige Hierarchien', 'Alle Abteilungen', 'Reporting-Lines definiert'],
+                                bestPractices: ['BCG: Organizational Data Model', 'Deloitte: HR Data Architecture']
+                            },
+                            {
+                                id: 'employmentHistory',
+                                title: 'Vollständige Beschäftigungshistorie',
+                                description: 'Ist die gesamte Beschäftigungshistorie erfasst?',
+                                examples: ['Alle Positionen', 'Vollständige Karrierepfade', 'Historische Daten'],
+                                bestPractices: ['DAMA: Temporal Completeness', 'McKinsey: Employee Lifecycle Data']
+                            },
+                            {
+                                id: 'skillData',
+                                title: 'Kompetenz- und Skill-Daten vollständig',
+                                description: 'Sind alle Kompetenzen und Skills erfasst?',
+                                examples: ['Skill-Matrizen', 'Zertifikate', 'Weiterbildungen'],
+                                bestPractices: ['Deloitte: Skills Taxonomy', 'BCG: Competency Framework']
+                            }
+                        ]
                     },
                     { 
                         id: 'noMissingFields', 
                         title: 'Keine fehlenden Felder in kritischen Datensätzen',
                         description: 'Gibt es fehlende Felder in wichtigen Datensätzen?',
-                        examples: ['Keine Lücken in kritischen Feldern', 'Datenvalidierung aktiv', 'Automatische Prüfungen']
+                        examples: ['Keine Lücken in kritischen Feldern', 'Datenvalidierung aktiv', 'Automatische Prüfungen'],
+                        subSubCriteria: [
+                            {
+                                id: 'criticalFieldsComplete',
+                                title: 'Kritische Felder zu 100% ausgefüllt',
+                                description: 'Sind alle kritischen Felder in allen Datensätzen ausgefüllt?',
+                                examples: ['Keine NULL-Werte in kritischen Feldern', 'Pflichtfeld-Validierung', 'Completeness Checks'],
+                                bestPractices: ['DAMA: Completeness Dimension', 'Gartner: Critical Data Elements']
+                            },
+                            {
+                                id: 'dataValidation',
+                                title: 'Aktive Datenvalidierung',
+                                description: 'Gibt es aktive Validierungsprozesse?',
+                                examples: ['Echtzeit-Validierung', 'Business Rules', 'Data Quality Rules'],
+                                bestPractices: ['ISO 8000: Data Validation', 'McKinsey: Data Quality Controls']
+                            },
+                            {
+                                id: 'automatedChecks',
+                                title: 'Automatische Vollständigkeitsprüfungen',
+                                description: 'Werden automatische Prüfungen durchgeführt?',
+                                examples: ['Scheduled Checks', 'Automated Alerts', 'Quality Monitoring'],
+                                bestPractices: ['DAMA: Automated Data Quality', 'BCG: Continuous Monitoring']
+                            },
+                            {
+                                id: 'missingDataProcess',
+                                title: 'Prozess für fehlende Daten',
+                                description: 'Gibt es einen definierten Prozess für fehlende Daten?',
+                                examples: ['Data Remediation Process', 'Owner Assignment', 'Escalation Rules'],
+                                bestPractices: ['Deloitte: Data Remediation', 'Gartner: Data Quality Process']
+                            }
+                        ]
                     },
                     { 
                         id: 'historicalData', 
                         title: 'Historische Daten sind vollständig verfügbar',
                         description: 'Wie vollständig ist der historische Datenbestand?',
-                        examples: ['Vollständige Historie seit Systemstart', 'Archivierte Daten zugänglich', 'Keine Datenverluste']
+                        examples: ['Vollständige Historie seit Systemstart', 'Archivierte Daten zugänglich', 'Keine Datenverluste'],
+                        subSubCriteria: [
+                            {
+                                id: 'fullHistory',
+                                title: 'Vollständige Historie seit Systemstart',
+                                description: 'Ist die komplette Historie seit Systemstart verfügbar?',
+                                examples: ['Alle historischen Datensätze', 'Keine Datenlöschungen', 'Vollständige Timeline'],
+                                bestPractices: ['DAMA: Temporal Completeness', 'McKinsey: Historical Data Retention']
+                            },
+                            {
+                                id: 'archivedData',
+                                title: 'Archivierte Daten zugänglich',
+                                description: 'Sind archivierte Daten einfach zugänglich?',
+                                examples: ['Archive-System', 'Schnelle Wiederherstellung', 'Metadata für Archive'],
+                                bestPractices: ['ISO 15489: Records Management', 'Deloitte: Data Archiving']
+                            },
+                            {
+                                id: 'noDataLoss',
+                                title: 'Keine Datenverluste',
+                                description: 'Gibt es Datenverluste in der Historie?',
+                                examples: ['Backup-Strategien', 'Disaster Recovery', 'Data Retention Policies'],
+                                bestPractices: ['Gartner: Data Loss Prevention', 'BCG: Data Resilience']
+                            },
+                            {
+                                id: 'historicalAccess',
+                                title: 'Einfacher Zugriff auf historische Daten',
+                                description: 'Wie einfach ist der Zugriff auf historische Daten?',
+                                examples: ['Historical Queries', 'Time-based Views', 'Historical Reporting'],
+                                bestPractices: ['DAMA: Historical Data Access', 'McKinsey: Temporal Analytics']
+                            }
+                        ]
                     },
                     { 
                         id: 'dataCoverage', 
                         title: 'Vollständige Abdeckung aller HR-Prozesse',
                         description: 'Werden alle HR-Prozesse durch Daten abgedeckt?',
-                        examples: ['Recruiting bis Offboarding', 'Alle HR-Lifecycle-Events', 'Vollständige Prozessdaten']
+                        examples: ['Recruiting bis Offboarding', 'Alle HR-Lifecycle-Events', 'Vollständige Prozessdaten'],
+                        subSubCriteria: [
+                            {
+                                id: 'recruitingToOffboarding',
+                                title: 'Recruiting bis Offboarding abgedeckt',
+                                description: 'Sind alle Phasen des Employee Lifecycle abgedeckt?',
+                                examples: ['Recruiting-Daten', 'Onboarding-Daten', 'Offboarding-Daten'],
+                                bestPractices: ['McKinsey: Employee Lifecycle', 'Deloitte: End-to-End HR Data']
+                            },
+                            {
+                                id: 'lifecycleEvents',
+                                title: 'Alle HR-Lifecycle-Events erfasst',
+                                description: 'Werden alle wichtigen Events erfasst?',
+                                examples: ['Promotions', 'Transfers', 'Terminations', 'Rehires'],
+                                bestPractices: ['BCG: HR Event Tracking', 'Gartner: Lifecycle Analytics']
+                            },
+                            {
+                                id: 'processData',
+                                title: 'Vollständige Prozessdaten',
+                                description: 'Sind alle Prozessdaten erfasst?',
+                                examples: ['Workflow-Daten', 'Approval-Daten', 'Process Metrics'],
+                                bestPractices: ['DAMA: Process Data', 'McKinsey: Process Analytics']
+                            },
+                            {
+                                id: 'transactionalData',
+                                title: 'Transaktionale HR-Daten erfasst',
+                                description: 'Sind alle Transaktionen erfasst?',
+                                examples: ['Payroll-Transaktionen', 'Benefits-Transaktionen', 'Time-Transaktionen'],
+                                bestPractices: ['ISO 8000: Transactional Data', 'Deloitte: Transaction Tracking']
+                            }
+                        ]
                     }
                 ]
             },
@@ -411,25 +531,145 @@
                         id: 'noDuplicates', 
                         title: 'Keine Duplikate in Mitarbeiterdaten',
                         description: 'Gibt es Duplikate in den Mitarbeiterdaten?',
-                        examples: ['Deduplizierung aktiv', 'Einheitliche Mitarbeiter-IDs', 'Automatische Duplikatserkennung']
+                        examples: ['Deduplizierung aktiv', 'Einheitliche Mitarbeiter-IDs', 'Automatische Duplikatserkennung'],
+                        subSubCriteria: [
+                            {
+                                id: 'deduplicationActive',
+                                title: 'Aktive Deduplizierung',
+                                description: 'Gibt es aktive Deduplizierungsprozesse?',
+                                examples: ['Automated Matching', 'Fuzzy Matching', 'Merge Rules'],
+                                bestPractices: ['DAMA: Uniqueness Dimension', 'Gartner: Master Data Deduplication']
+                            },
+                            {
+                                id: 'uniqueIdentifiers',
+                                title: 'Einheitliche Mitarbeiter-IDs',
+                                description: 'Gibt es einheitliche Identifikatoren?',
+                                examples: ['Single Employee ID', 'Global ID System', 'No Duplicate IDs'],
+                                bestPractices: ['ISO 8000: Unique Identifiers', 'McKinsey: ID Management']
+                            },
+                            {
+                                id: 'duplicateDetection',
+                                title: 'Automatische Duplikatserkennung',
+                                description: 'Werden Duplikate automatisch erkannt?',
+                                examples: ['Real-time Detection', 'Batch Processing', 'Alert System'],
+                                bestPractices: ['BCG: Duplicate Detection', 'Deloitte: Data Matching']
+                            },
+                            {
+                                id: 'mergeProcess',
+                                title: 'Definierter Merge-Prozess',
+                                description: 'Gibt es einen Prozess für Duplikat-Merges?',
+                                examples: ['Merge Rules', 'Approval Process', 'Audit Trail'],
+                                bestPractices: ['DAMA: Data Merging', 'Gartner: Master Data Merge']
+                            }
+                        ]
                     },
                     { 
                         id: 'consistentData', 
                         title: 'Konsistente Dateneingabe über alle Systeme',
                         description: 'Wie konsistent ist die Dateneingabe?',
-                        examples: ['Einheitliche Formate', 'Standardisierte Eingabemasken', 'Validierungsregeln']
+                        examples: ['Einheitliche Formate', 'Standardisierte Eingabemasken', 'Validierungsregeln'],
+                        subSubCriteria: [
+                            {
+                                id: 'uniformFormats',
+                                title: 'Einheitliche Datenformate',
+                                description: 'Werden einheitliche Formate verwendet?',
+                                examples: ['Date Formats', 'Name Formats', 'Address Formats'],
+                                bestPractices: ['ISO 8601: Date Formats', 'DAMA: Data Standards']
+                            },
+                            {
+                                id: 'standardizedInput',
+                                title: 'Standardisierte Eingabemasken',
+                                description: 'Gibt es standardisierte Eingabemasken?',
+                                examples: ['Consistent UI', 'Dropdown Lists', 'Validation Rules'],
+                                bestPractices: ['McKinsey: User Experience', 'BCG: Data Entry Standards']
+                            },
+                            {
+                                id: 'validationRules',
+                                title: 'Konsistente Validierungsregeln',
+                                description: 'Sind die Validierungsregeln konsistent?',
+                                examples: ['Business Rules', 'Format Validation', 'Range Checks'],
+                                bestPractices: ['ISO 8000: Validation Rules', 'Deloitte: Data Validation']
+                            },
+                            {
+                                id: 'crossSystemConsistency',
+                                title: 'Konsistenz über alle Systeme',
+                                description: 'Sind die Daten über alle Systeme konsistent?',
+                                examples: ['Synchronized Data', 'Consistent Models', 'Unified Standards'],
+                                bestPractices: ['Gartner: Multi-System Consistency', 'DAMA: Data Integration']
+                            }
+                        ]
                     },
                     { 
                         id: 'dataQualityChecks', 
                         title: 'Regelmäßige Datenqualitätsprüfungen',
                         description: 'Wie regelmäßig werden Datenqualitätsprüfungen durchgeführt?',
-                        examples: ['Monatliche Qualitätsreviews', 'Automatisierte Checks', 'Datenqualitäts-Dashboards']
+                        examples: ['Monatliche Qualitätsreviews', 'Automatisierte Checks', 'Datenqualitäts-Dashboards'],
+                        subSubCriteria: [
+                            {
+                                id: 'regularReviews',
+                                title: 'Regelmäßige Qualitätsreviews',
+                                description: 'Wie regelmäßig werden Reviews durchgeführt?',
+                                examples: ['Monthly Reviews', 'Quarterly Audits', 'Annual Assessments'],
+                                bestPractices: ['DAMA: Data Quality Monitoring', 'McKinsey: Quality Reviews']
+                            },
+                            {
+                                id: 'automatedChecks',
+                                title: 'Automatisierte Qualitätschecks',
+                                description: 'Gibt es automatisierte Checks?',
+                                examples: ['Scheduled Checks', 'Real-time Monitoring', 'Automated Alerts'],
+                                bestPractices: ['BCG: Automated Quality', 'Gartner: Continuous Monitoring']
+                            },
+                            {
+                                id: 'qualityDashboards',
+                                title: 'Datenqualitäts-Dashboards',
+                                description: 'Gibt es Dashboards für Datenqualität?',
+                                examples: ['Quality Metrics', 'Trend Analysis', 'Issue Tracking'],
+                                bestPractices: ['Deloitte: Quality Dashboards', 'McKinsey: Data Quality KPIs']
+                            },
+                            {
+                                id: 'qualityMetrics',
+                                title: 'Definierte Qualitätsmetriken',
+                                description: 'Gibt es definierte Metriken?',
+                                examples: ['Completeness Score', 'Accuracy Score', 'Consistency Score'],
+                                bestPractices: ['ISO 8000: Quality Metrics', 'DAMA: Quality Dimensions']
+                            }
+                        ]
                     },
                     { 
                         id: 'errorCorrection', 
                         title: 'Schnelle Fehlerkorrekturprozesse',
                         description: 'Wie schnell werden Datenfehler korrigiert?',
-                        examples: ['Sofortige Fehlerbenachrichtigung', 'Klarer Korrekturprozess', 'Verantwortlichkeiten definiert']
+                        examples: ['Sofortige Fehlerbenachrichtigung', 'Klarer Korrekturprozess', 'Verantwortlichkeiten definiert'],
+                        subSubCriteria: [
+                            {
+                                id: 'immediateNotification',
+                                title: 'Sofortige Fehlerbenachrichtigung',
+                                description: 'Werden Fehler sofort benachrichtigt?',
+                                examples: ['Real-time Alerts', 'Email Notifications', 'System Alerts'],
+                                bestPractices: ['McKinsey: Error Detection', 'BCG: Alert Systems']
+                            },
+                            {
+                                id: 'correctionProcess',
+                                title: 'Klarer Korrekturprozess',
+                                description: 'Gibt es einen definierten Korrekturprozess?',
+                                examples: ['Workflow for Corrections', 'Approval Steps', 'Documentation'],
+                                bestPractices: ['DAMA: Data Correction', 'Deloitte: Remediation Process']
+                            },
+                            {
+                                id: 'clearResponsibilities',
+                                title: 'Verantwortlichkeiten definiert',
+                                description: 'Sind Verantwortlichkeiten klar definiert?',
+                                examples: ['Data Stewards', 'Owners', 'Escalation Path'],
+                                bestPractices: ['Gartner: Data Ownership', 'ISO 8000: Responsibilities']
+                            },
+                            {
+                                id: 'correctionSpeed',
+                                title: 'Schnelle Korrekturzeiten',
+                                description: 'Wie schnell werden Fehler korrigiert?',
+                                examples: ['SLA for Corrections', 'Priority Levels', 'Fast Resolution'],
+                                bestPractices: ['McKinsey: Time to Resolution', 'BCG: Correction SLAs']
+                            }
+                        ]
                     }
                 ]
             },
@@ -443,25 +683,145 @@
                         id: 'centralPlatform', 
                         title: 'Zentrale HR-Datenplattform vorhanden',
                         description: 'Gibt es eine zentrale Plattform für alle HR-Daten?',
-                        examples: ['Single Source of Truth', 'Zentrales HRIS', 'Unified Data Platform']
+                        examples: ['Single Source of Truth', 'Zentrales HRIS', 'Unified Data Platform'],
+                        subSubCriteria: [
+                            {
+                                id: 'singleSourceOfTruth',
+                                title: 'Single Source of Truth etabliert',
+                                description: 'Gibt es eine einzige Quelle der Wahrheit?',
+                                examples: ['Central HRIS', 'Master Data Hub', 'Unified Platform'],
+                                bestPractices: ['McKinsey: Single Source of Truth', 'BCG: Data Hub Architecture']
+                            },
+                            {
+                                id: 'centralHRIS',
+                                title: 'Zentrales HRIS als Kernplattform',
+                                description: 'Ist ein zentrales HRIS vorhanden?',
+                                examples: ['SAP SuccessFactors', 'Workday', 'Oracle HCM'],
+                                bestPractices: ['Gartner: HRIS Selection', 'Deloitte: Platform Strategy']
+                            },
+                            {
+                                id: 'unifiedDataPlatform',
+                                title: 'Unified Data Platform',
+                                description: 'Gibt es eine einheitliche Datenplattform?',
+                                examples: ['Data Warehouse', 'Data Lake', 'Unified Analytics'],
+                                bestPractices: ['DAMA: Data Platform', 'McKinsey: Data Architecture']
+                            },
+                            {
+                                id: 'dataCentralization',
+                                title: 'Zentralisierte Datenarchitektur',
+                                description: 'Ist die Datenarchitektur zentralisiert?',
+                                examples: ['Central Storage', 'Unified Access', 'Consolidated Views'],
+                                bestPractices: ['BCG: Centralized Architecture', 'Deloitte: Data Strategy']
+                            }
+                        ]
                     },
                     { 
                         id: 'apiIntegration', 
                         title: 'APIs für System-Integration verfügbar',
                         description: 'Wie gut sind Ihre Systeme über APIs verbunden?',
-                        examples: ['REST/GraphQL APIs', 'Standardisierte Schnittstellen', 'API-First Architektur']
+                        examples: ['REST/GraphQL APIs', 'Standardisierte Schnittstellen', 'API-First Architektur'],
+                        subSubCriteria: [
+                            {
+                                id: 'restGraphQLAPIs',
+                                title: 'REST/GraphQL APIs verfügbar',
+                                description: 'Gibt es moderne API-Schnittstellen?',
+                                examples: ['REST APIs', 'GraphQL', 'OpenAPI Standards'],
+                                bestPractices: ['Gartner: API Strategy', 'McKinsey: API-First Design']
+                            },
+                            {
+                                id: 'standardizedInterfaces',
+                                title: 'Standardisierte Schnittstellen',
+                                description: 'Sind die Schnittstellen standardisiert?',
+                                examples: ['OpenAPI Spec', 'Standard Formats', 'Consistent Endpoints'],
+                                bestPractices: ['ISO: API Standards', 'BCG: Interface Design']
+                            },
+                            {
+                                id: 'apiFirstArchitecture',
+                                title: 'API-First Architektur',
+                                description: 'Folgt die Architektur API-First Prinzipien?',
+                                examples: ['API Gateway', 'Microservices', 'API Management'],
+                                bestPractices: ['Deloitte: API-First', 'Gartner: API Architecture']
+                            },
+                            {
+                                id: 'apiDocumentation',
+                                title: 'Vollständige API-Dokumentation',
+                                description: 'Gibt es vollständige API-Dokumentation?',
+                                examples: ['OpenAPI Docs', 'Developer Portal', 'API Examples'],
+                                bestPractices: ['DAMA: API Documentation', 'McKinsey: Developer Experience']
+                            }
+                        ]
                     },
                     { 
                         id: 'realtimeSync', 
                         title: 'Echtzeit-Synchronisation zwischen Systemen',
                         description: 'Wie aktuell sind die Daten zwischen Systemen?',
-                        examples: ['Event-basierte Updates', 'Sub-Sekunden Latenz', 'Bidirektionale Sync']
+                        examples: ['Event-basierte Updates', 'Sub-Sekunden Latenz', 'Bidirektionale Sync'],
+                        subSubCriteria: [
+                            {
+                                id: 'eventDrivenUpdates',
+                                title: 'Event-basierte Updates',
+                                description: 'Werden Events für Updates verwendet?',
+                                examples: ['Event Streaming', 'Message Queues', 'Event Bus'],
+                                bestPractices: ['McKinsey: Event-Driven Architecture', 'BCG: Real-time Integration']
+                            },
+                            {
+                                id: 'lowLatency',
+                                title: 'Sub-Sekunden Latenz',
+                                description: 'Wie gering ist die Latenz?',
+                                examples: ['< 1s Latency', 'Real-time Processing', 'Streaming'],
+                                bestPractices: ['Gartner: Low Latency', 'Deloitte: Real-time Data']
+                            },
+                            {
+                                id: 'bidirectionalSync',
+                                title: 'Bidirektionale Synchronisation',
+                                description: 'Funktioniert die Sync bidirektional?',
+                                examples: ['Two-way Sync', 'Conflict Resolution', 'Sync Rules'],
+                                bestPractices: ['DAMA: Data Synchronization', 'McKinsey: Multi-directional Sync']
+                            },
+                            {
+                                id: 'syncMonitoring',
+                                title: 'Synchronisations-Monitoring',
+                                description: 'Wird die Synchronisation überwacht?',
+                                examples: ['Sync Status', 'Error Tracking', 'Performance Metrics'],
+                                bestPractices: ['BCG: Sync Monitoring', 'Gartner: Integration Monitoring']
+                            }
+                        ]
                     },
                     { 
                         id: 'dataConsistency', 
                         title: 'Konsistente Daten über alle Systeme',
                         description: 'Sind die Daten über alle Systeme konsistent?',
-                        examples: ['Einheitliche Datenmodelle', 'Synchronisierte Masterdaten', 'Keine Inkonsistenzen']
+                        examples: ['Einheitliche Datenmodelle', 'Synchronisierte Masterdaten', 'Keine Inkonsistenzen'],
+                        subSubCriteria: [
+                            {
+                                id: 'uniformDataModels',
+                                title: 'Einheitliche Datenmodelle',
+                                description: 'Gibt es einheitliche Datenmodelle?',
+                                examples: ['Common Schema', 'Unified Model', 'Standard Entities'],
+                                bestPractices: ['DAMA: Data Modeling', 'McKinsey: Unified Models']
+                            },
+                            {
+                                id: 'synchronizedMasterData',
+                                title: 'Synchronisierte Masterdaten',
+                                description: 'Sind Masterdaten synchronisiert?',
+                                examples: ['Master Data Sync', 'Consistent IDs', 'Unified Master Data'],
+                                bestPractices: ['Gartner: Master Data Management', 'BCG: MDM Strategy']
+                            },
+                            {
+                                id: 'noInconsistencies',
+                                title: 'Keine Dateninkonsistenzen',
+                                description: 'Gibt es Inkonsistenzen?',
+                                examples: ['Consistency Checks', 'Validation Rules', 'Conflict Detection'],
+                                bestPractices: ['Deloitte: Data Consistency', 'DAMA: Consistency Dimension']
+                            },
+                            {
+                                id: 'crossSystemValidation',
+                                title: 'Cross-System Validierung',
+                                description: 'Gibt es Validierung über Systeme hinweg?',
+                                examples: ['Cross-System Checks', 'Consistency Rules', 'Validation Framework'],
+                                bestPractices: ['McKinsey: Cross-System Validation', 'Gartner: Multi-System Quality']
+                            }
+                        ]
                     }
                 ]
             },
@@ -475,25 +835,145 @@
                         id: 'uniformFormats', 
                         title: 'Einheitliche Datenformate und -strukturen',
                         description: 'Nutzen Sie einheitliche Datenformate?',
-                        examples: ['JSON/XML Standards', 'Einheitliche Feldnamen', 'Konsistente Datentypen']
+                        examples: ['JSON/XML Standards', 'Einheitliche Feldnamen', 'Konsistente Datentypen'],
+                        subSubCriteria: [
+                            {
+                                id: 'jsonXmlStandards',
+                                title: 'JSON/XML Standards',
+                                description: 'Werden Standard-Formate verwendet?',
+                                examples: ['JSON Schema', 'XML Schema', 'Standard Formats'],
+                                bestPractices: ['ISO: Data Formats', 'DAMA: Format Standards']
+                            },
+                            {
+                                id: 'uniformFieldNames',
+                                title: 'Einheitliche Feldnamen',
+                                description: 'Sind Feldnamen einheitlich?',
+                                examples: ['Naming Conventions', 'Standard Fields', 'Consistent Naming'],
+                                bestPractices: ['McKinsey: Naming Standards', 'BCG: Field Conventions']
+                            },
+                            {
+                                id: 'consistentDataTypes',
+                                title: 'Konsistente Datentypen',
+                                description: 'Sind Datentypen konsistent?',
+                                examples: ['Standard Types', 'Type Validation', 'Consistent Schemas'],
+                                bestPractices: ['Deloitte: Data Types', 'Gartner: Type Management']
+                            },
+                            {
+                                id: 'formatValidation',
+                                title: 'Format-Validierung',
+                                description: 'Gibt es Format-Validierung?',
+                                examples: ['Schema Validation', 'Format Checks', 'Type Checking'],
+                                bestPractices: ['DAMA: Format Validation', 'ISO 8000: Validation']
+                            }
+                        ]
                     },
                     { 
                         id: 'standardizedCategories', 
                         title: 'Standardisierte Kategorien und Klassifikationen',
                         description: 'Gibt es standardisierte Kategorien?',
-                        examples: ['ISO-Standards', 'Einheitliche Taxonomien', 'Klare Klassifikationen']
+                        examples: ['ISO-Standards', 'Einheitliche Taxonomien', 'Klare Klassifikationen'],
+                        subSubCriteria: [
+                            {
+                                id: 'isoStandards',
+                                title: 'ISO-Standards verwendet',
+                                description: 'Werden ISO-Standards verwendet?',
+                                examples: ['ISO 3166 (Countries)', 'ISO 8601 (Dates)', 'ISO Standards'],
+                                bestPractices: ['ISO: International Standards', 'DAMA: Standard Taxonomies']
+                            },
+                            {
+                                id: 'uniformTaxonomies',
+                                title: 'Einheitliche Taxonomien',
+                                description: 'Gibt es einheitliche Taxonomien?',
+                                examples: ['Job Taxonomies', 'Skill Taxonomies', 'Organization Taxonomies'],
+                                bestPractices: ['McKinsey: Taxonomy Design', 'BCG: Classification Systems']
+                            },
+                            {
+                                id: 'clearClassifications',
+                                title: 'Klare Klassifikationen',
+                                description: 'Sind Klassifikationen klar definiert?',
+                                examples: ['Clear Categories', 'Hierarchical Structures', 'Classification Rules'],
+                                bestPractices: ['Deloitte: Classification', 'Gartner: Taxonomy Management']
+                            },
+                            {
+                                id: 'standardizedCodes',
+                                title: 'Standardisierte Codes und Werte',
+                                description: 'Gibt es standardisierte Codes?',
+                                examples: ['Code Lists', 'Value Sets', 'Standard Codes'],
+                                bestPractices: ['DAMA: Code Standards', 'ISO: Code Lists']
+                            }
+                        ]
                     },
                     { 
                         id: 'dataModeling', 
                         title: 'Datenmodellierung nach Best Practices',
                         description: 'Folgt Ihre Datenmodellierung Best Practices?',
-                        examples: ['Normalisierte Datenmodelle', 'Entity-Relationship-Diagramme', 'Dokumentierte Schemas']
+                        examples: ['Normalisierte Datenmodelle', 'Entity-Relationship-Diagramme', 'Dokumentierte Schemas'],
+                        subSubCriteria: [
+                            {
+                                id: 'normalizedModels',
+                                title: 'Normalisierte Datenmodelle',
+                                description: 'Sind die Modelle normalisiert?',
+                                examples: ['3NF Normalization', 'Normalized Schema', 'Reduced Redundancy'],
+                                bestPractices: ['DAMA: Data Normalization', 'McKinsey: Model Design']
+                            },
+                            {
+                                id: 'erDiagrams',
+                                title: 'Entity-Relationship-Diagramme',
+                                description: 'Gibt es ER-Diagramme?',
+                                examples: ['ER Models', 'Relationship Diagrams', 'Data Models'],
+                                bestPractices: ['BCG: Data Modeling', 'Gartner: Model Documentation']
+                            },
+                            {
+                                id: 'documentedSchemas',
+                                title: 'Dokumentierte Schemas',
+                                description: 'Sind Schemas dokumentiert?',
+                                examples: ['Schema Docs', 'Model Documentation', 'Data Dictionary'],
+                                bestPractices: ['Deloitte: Schema Documentation', 'DAMA: Model Documentation']
+                            },
+                            {
+                                id: 'bestPracticeModels',
+                                title: 'Best Practice Modelle',
+                                description: 'Folgen Modelle Best Practices?',
+                                examples: ['Industry Models', 'Reference Models', 'Best Practice Patterns'],
+                                bestPractices: ['Gartner: Reference Models', 'McKinsey: Industry Standards']
+                            }
+                        ]
                     },
                     { 
                         id: 'metadata', 
                         title: 'Vollständige Metadaten und Dokumentation',
                         description: 'Gibt es vollständige Metadaten?',
-                        examples: ['Data Dictionary', 'Vollständige Dokumentation', 'Metadata Management']
+                        examples: ['Data Dictionary', 'Vollständige Dokumentation', 'Metadata Management'],
+                        subSubCriteria: [
+                            {
+                                id: 'dataDictionary',
+                                title: 'Data Dictionary vorhanden',
+                                description: 'Gibt es ein Data Dictionary?',
+                                examples: ['Field Definitions', 'Data Types', 'Business Rules'],
+                                bestPractices: ['DAMA: Data Dictionary', 'McKinsey: Metadata Management']
+                            },
+                            {
+                                id: 'completeDocumentation',
+                                title: 'Vollständige Dokumentation',
+                                description: 'Ist die Dokumentation vollständig?',
+                                examples: ['Field Documentation', 'Process Docs', 'User Guides'],
+                                bestPractices: ['BCG: Documentation Standards', 'Deloitte: Knowledge Management']
+                            },
+                            {
+                                id: 'metadataManagement',
+                                title: 'Metadata Management System',
+                                description: 'Gibt es ein Metadata Management System?',
+                                examples: ['Metadata Repository', 'Metadata Tools', 'Metadata Governance'],
+                                bestPractices: ['Gartner: Metadata Management', 'DAMA: Metadata Framework']
+                            },
+                            {
+                                id: 'lineageTracking',
+                                title: 'Data Lineage Tracking',
+                                description: 'Wird Data Lineage getrackt?',
+                                examples: ['Lineage Diagrams', 'Source Tracking', 'Impact Analysis'],
+                                bestPractices: ['Deloitte: Data Lineage', 'McKinsey: Lineage Management']
+                            }
+                        ]
                     }
                 ]
             },
@@ -507,25 +987,145 @@
                         id: 'selfServiceAccess', 
                         title: 'Selbstbedienungszugriff für autorisierte Nutzer',
                         description: 'Können Nutzer selbstständig auf Daten zugreifen?',
-                        examples: ['Self-Service Portale', 'Benutzerfreundliche Interfaces', '24/7 Verfügbarkeit']
+                        examples: ['Self-Service Portale', 'Benutzerfreundliche Interfaces', '24/7 Verfügbarkeit'],
+                        subSubCriteria: [
+                            {
+                                id: 'selfServicePortals',
+                                title: 'Self-Service Portale',
+                                description: 'Gibt es Self-Service Portale?',
+                                examples: ['Employee Portal', 'Manager Portal', 'HR Portal'],
+                                bestPractices: ['McKinsey: Self-Service', 'BCG: Portal Design']
+                            },
+                            {
+                                id: 'userFriendlyInterfaces',
+                                title: 'Benutzerfreundliche Interfaces',
+                                description: 'Sind die Interfaces benutzerfreundlich?',
+                                examples: ['Intuitive UI', 'Easy Navigation', 'Clear Layout'],
+                                bestPractices: ['Deloitte: UX Design', 'Gartner: User Experience']
+                            },
+                            {
+                                id: 'availability247',
+                                title: '24/7 Verfügbarkeit',
+                                description: 'Sind die Daten 24/7 verfügbar?',
+                                examples: ['Always On', 'High Availability', 'No Downtime'],
+                                bestPractices: ['DAMA: Availability', 'McKinsey: Service Levels']
+                            },
+                            {
+                                id: 'mobileAccess',
+                                title: 'Mobile Zugriff möglich',
+                                description: 'Gibt es Mobile-Zugriff?',
+                                examples: ['Mobile Apps', 'Responsive Design', 'Mobile Portal'],
+                                bestPractices: ['BCG: Mobile Strategy', 'Gartner: Mobile Access']
+                            }
+                        ]
                     },
                     { 
                         id: 'fastQueries', 
                         title: 'Schnelle Datenabfragen möglich',
                         description: 'Wie schnell sind Datenabfragen?',
-                        examples: ['Sub-Sekunden Antwortzeiten', 'Optimierte Queries', 'Caching-Strategien']
+                        examples: ['Sub-Sekunden Antwortzeiten', 'Optimierte Queries', 'Caching-Strategien'],
+                        subSubCriteria: [
+                            {
+                                id: 'subSecondResponse',
+                                title: 'Sub-Sekunden Antwortzeiten',
+                                description: 'Wie schnell sind Antwortzeiten?',
+                                examples: ['< 1s Response', 'Fast Queries', 'Optimized Performance'],
+                                bestPractices: ['Gartner: Performance SLAs', 'McKinsey: Query Optimization']
+                            },
+                            {
+                                id: 'optimizedQueries',
+                                title: 'Optimierte Queries',
+                                description: 'Sind Queries optimiert?',
+                                examples: ['Query Optimization', 'Indexing', 'Performance Tuning'],
+                                bestPractices: ['DAMA: Query Performance', 'BCG: Database Optimization']
+                            },
+                            {
+                                id: 'cachingStrategies',
+                                title: 'Caching-Strategien',
+                                description: 'Gibt es Caching?',
+                                examples: ['Query Caching', 'Data Caching', 'CDN Caching'],
+                                bestPractices: ['Deloitte: Caching Strategy', 'Gartner: Cache Management']
+                            },
+                            {
+                                id: 'queryPerformance',
+                                title: 'Query Performance Monitoring',
+                                description: 'Wird Performance überwacht?',
+                                examples: ['Performance Metrics', 'Slow Query Detection', 'Optimization Alerts'],
+                                bestPractices: ['McKinsey: Performance Monitoring', 'BCG: Query Analytics']
+                            }
+                        ]
                     },
                     { 
                         id: 'noLongProcesses', 
                         title: 'Keine langwierigen Genehmigungsprozesse',
                         description: 'Wie schnell ist der Datenzugriff genehmigt?',
-                        examples: ['Automatisierte Berechtigungen', 'Schnelle Freigaben', 'Selbstbedienung']
+                        examples: ['Automatisierte Berechtigungen', 'Schnelle Freigaben', 'Selbstbedienung'],
+                        subSubCriteria: [
+                            {
+                                id: 'automatedPermissions',
+                                title: 'Automatisierte Berechtigungen',
+                                description: 'Werden Berechtigungen automatisiert?',
+                                examples: ['Auto-Provisioning', 'Role-Based Access', 'Automated Grants'],
+                                bestPractices: ['Gartner: Automated Access', 'McKinsey: Permission Automation']
+                            },
+                            {
+                                id: 'fastApprovals',
+                                title: 'Schnelle Freigaben',
+                                description: 'Wie schnell sind Freigaben?',
+                                examples: ['Quick Approval', 'Streamlined Process', 'Fast Workflow'],
+                                bestPractices: ['BCG: Approval Processes', 'Deloitte: Workflow Optimization']
+                            },
+                            {
+                                id: 'selfServiceApproval',
+                                title: 'Selbstbedienung für Standardfälle',
+                                description: 'Gibt es Selbstbedienung?',
+                                examples: ['Self-Service Requests', 'Automated Approval', 'Standard Access'],
+                                bestPractices: ['DAMA: Self-Service', 'Gartner: Automated Workflows']
+                            },
+                            {
+                                id: 'approvalSLA',
+                                title: 'SLA für Freigaben',
+                                description: 'Gibt es SLAs für Freigaben?',
+                                examples: ['Approval SLAs', 'Time Limits', 'Escalation Rules'],
+                                bestPractices: ['McKinsey: Process SLAs', 'BCG: Service Levels']
+                            }
+                        ]
                     },
                     { 
                         id: 'dataPortals', 
                         title: 'Benutzerfreundliche Datenportale verfügbar',
                         description: 'Gibt es benutzerfreundliche Portale?',
-                        examples: ['Intuitive Dashboards', 'Suchfunktionen', 'Filter und Sortierung']
+                        examples: ['Intuitive Dashboards', 'Suchfunktionen', 'Filter und Sortierung'],
+                        subSubCriteria: [
+                            {
+                                id: 'intuitiveDashboards',
+                                title: 'Intuitive Dashboards',
+                                description: 'Gibt es intuitive Dashboards?',
+                                examples: ['Custom Dashboards', 'Visual Analytics', 'Interactive Views'],
+                                bestPractices: ['Deloitte: Dashboard Design', 'McKinsey: Data Visualization']
+                            },
+                            {
+                                id: 'searchFunctions',
+                                title: 'Suchfunktionen',
+                                description: 'Gibt es gute Suchfunktionen?',
+                                examples: ['Full-Text Search', 'Advanced Search', 'Filtered Search'],
+                                bestPractices: ['Gartner: Search Capabilities', 'BCG: Search Design']
+                            },
+                            {
+                                id: 'filterSort',
+                                title: 'Filter und Sortierung',
+                                description: 'Gibt es Filter und Sortierung?',
+                                examples: ['Multi-Filter', 'Dynamic Sorting', 'Saved Filters'],
+                                bestPractices: ['DAMA: Data Filtering', 'McKinsey: User Experience']
+                            },
+                            {
+                                id: 'dataExport',
+                                title: 'Datenexport-Funktionen',
+                                description: 'Kann man Daten exportieren?',
+                                examples: ['Excel Export', 'CSV Export', 'PDF Reports'],
+                                bestPractices: ['Deloitte: Export Capabilities', 'Gartner: Data Portability']
+                            }
+                        ]
                     }
                 ]
             },
@@ -539,25 +1139,145 @@
                         id: 'clearResponsibilities', 
                         title: 'Klare Datenverantwortlichkeiten definiert',
                         description: 'Gibt es klare Verantwortlichkeiten?',
-                        examples: ['Data Stewards', 'Klare Rollen', 'Verantwortlichkeitsmatrix']
+                        examples: ['Data Stewards', 'Klare Rollen', 'Verantwortlichkeitsmatrix'],
+                        subSubCriteria: [
+                            {
+                                id: 'dataStewards',
+                                title: 'Data Stewards definiert',
+                                description: 'Gibt es Data Stewards?',
+                                examples: ['Steward Roles', 'Clear Ownership', 'Steward Network'],
+                                bestPractices: ['DAMA: Data Stewardship', 'McKinsey: Steward Model']
+                            },
+                            {
+                                id: 'clearRoles',
+                                title: 'Klare Rollen und Verantwortlichkeiten',
+                                description: 'Sind Rollen klar definiert?',
+                                examples: ['Role Definitions', 'RACI Matrix', 'Responsibility Matrix'],
+                                bestPractices: ['BCG: Role Definition', 'Deloitte: RACI Framework']
+                            },
+                            {
+                                id: 'responsibilityMatrix',
+                                title: 'Verantwortlichkeitsmatrix',
+                                description: 'Gibt es eine Verantwortlichkeitsmatrix?',
+                                examples: ['RACI Chart', 'Ownership Matrix', 'Responsibility Map'],
+                                bestPractices: ['Gartner: Responsibility Framework', 'McKinsey: Governance Matrix']
+                            },
+                            {
+                                id: 'accountability',
+                                title: 'Klare Accountability',
+                                description: 'Ist Accountability klar?',
+                                examples: ['Accountable Persons', 'Clear Escalation', 'Ownership'],
+                                bestPractices: ['DAMA: Accountability', 'BCG: Ownership Model']
+                            }
+                        ]
                     },
                     { 
                         id: 'regularReviews', 
                         title: 'Regelmäßige Datenqualitätsreviews',
                         description: 'Wie regelmäßig werden Reviews durchgeführt?',
-                        examples: ['Monatliche Reviews', 'Quartalsweise Audits', 'Kontinuierliche Überwachung']
+                        examples: ['Monatliche Reviews', 'Quartalsweise Audits', 'Kontinuierliche Überwachung'],
+                        subSubCriteria: [
+                            {
+                                id: 'monthlyReviews',
+                                title: 'Monatliche Qualitätsreviews',
+                                description: 'Werden monatliche Reviews durchgeführt?',
+                                examples: ['Monthly Meetings', 'Quality Reports', 'Review Process'],
+                                bestPractices: ['McKinsey: Review Cadence', 'BCG: Regular Reviews']
+                            },
+                            {
+                                id: 'quarterlyAudits',
+                                title: 'Quartalsweise Audits',
+                                description: 'Gibt es quartalsweise Audits?',
+                                examples: ['Quarterly Audits', 'Comprehensive Reviews', 'Audit Reports'],
+                                bestPractices: ['Deloitte: Audit Process', 'Gartner: Audit Framework']
+                            },
+                            {
+                                id: 'continuousMonitoring',
+                                title: 'Kontinuierliche Überwachung',
+                                description: 'Gibt es kontinuierliche Überwachung?',
+                                examples: ['Real-time Monitoring', 'Continuous Checks', 'Ongoing Reviews'],
+                                bestPractices: ['DAMA: Continuous Monitoring', 'McKinsey: Real-time Quality']
+                            },
+                            {
+                                id: 'reviewProcess',
+                                title: 'Definierter Review-Prozess',
+                                description: 'Gibt es einen definierten Prozess?',
+                                examples: ['Review Workflow', 'Review Checklist', 'Review Documentation'],
+                                bestPractices: ['BCG: Process Definition', 'Gartner: Review Standards']
+                            }
+                        ]
                     },
                     { 
                         id: 'documentedStandards', 
                         title: 'Dokumentierte Datenqualitätsstandards',
                         description: 'Gibt es dokumentierte Standards?',
-                        examples: ['Datenqualitätsrichtlinien', 'Best Practices', 'Standard Operating Procedures']
+                        examples: ['Datenqualitätsrichtlinien', 'Best Practices', 'Standard Operating Procedures'],
+                        subSubCriteria: [
+                            {
+                                id: 'qualityGuidelines',
+                                title: 'Datenqualitätsrichtlinien',
+                                description: 'Gibt es Qualitätsrichtlinien?',
+                                examples: ['Quality Policies', 'Guidelines', 'Standards'],
+                                bestPractices: ['DAMA: Quality Standards', 'McKinsey: Policy Framework']
+                            },
+                            {
+                                id: 'bestPractices',
+                                title: 'Dokumentierte Best Practices',
+                                description: 'Sind Best Practices dokumentiert?',
+                                examples: ['Best Practice Docs', 'Reference Guides', 'Practice Library'],
+                                bestPractices: ['BCG: Best Practices', 'Deloitte: Knowledge Base']
+                            },
+                            {
+                                id: 'standardProcedures',
+                                title: 'Standard Operating Procedures',
+                                description: 'Gibt es SOPs?',
+                                examples: ['SOP Documents', 'Process Procedures', 'Standard Workflows'],
+                                bestPractices: ['Gartner: SOP Framework', 'McKinsey: Process Documentation']
+                            },
+                            {
+                                id: 'standardsCompliance',
+                                title: 'Compliance mit Standards',
+                                description: 'Wird Compliance überwacht?',
+                                examples: ['Compliance Checks', 'Standards Adherence', 'Compliance Reports'],
+                                bestPractices: ['DAMA: Standards Compliance', 'BCG: Compliance Framework']
+                            }
+                        ]
                     },
                     { 
                         id: 'governanceFramework', 
                         title: 'Etabliertes Daten-Governance-Framework',
                         description: 'Gibt es ein Governance-Framework?',
-                        examples: ['DAMA Framework', 'Strukturierte Prozesse', 'Governance Board']
+                        examples: ['DAMA Framework', 'Strukturierte Prozesse', 'Governance Board'],
+                        subSubCriteria: [
+                            {
+                                id: 'damaFramework',
+                                title: 'DAMA Framework etabliert',
+                                description: 'Wird DAMA Framework verwendet?',
+                                examples: ['DAMA DMBOK', 'DAMA Principles', 'DAMA Practices'],
+                                bestPractices: ['DAMA: DMBOK Framework', 'McKinsey: DAMA Adoption']
+                            },
+                            {
+                                id: 'structuredProcesses',
+                                title: 'Strukturierte Governance-Prozesse',
+                                description: 'Gibt es strukturierte Prozesse?',
+                                examples: ['Governance Processes', 'Structured Workflows', 'Process Framework'],
+                                bestPractices: ['BCG: Process Framework', 'Deloitte: Governance Processes']
+                            },
+                            {
+                                id: 'governanceBoard',
+                                title: 'Governance Board vorhanden',
+                                description: 'Gibt es ein Governance Board?',
+                                examples: ['Governance Committee', 'Board Meetings', 'Decision Authority'],
+                                bestPractices: ['Gartner: Governance Board', 'McKinsey: Board Structure']
+                            },
+                            {
+                                id: 'governanceMetrics',
+                                title: 'Governance-Metriken',
+                                description: 'Gibt es Governance-Metriken?',
+                                examples: ['Governance KPIs', 'Metrics Dashboard', 'Performance Tracking'],
+                                bestPractices: ['DAMA: Governance Metrics', 'BCG: KPI Framework']
+                            }
+                        ]
                     }
                 ]
             },
@@ -571,25 +1291,145 @@
                         id: 'realtimeUpdates', 
                         title: 'Echtzeit-Updates bei Datenänderungen',
                         description: 'Wie schnell werden Daten aktualisiert?',
-                        examples: ['Sofortige Updates', 'Event-driven Architecture', 'Real-time Processing']
+                        examples: ['Sofortige Updates', 'Event-driven Architecture', 'Real-time Processing'],
+                        subSubCriteria: [
+                            {
+                                id: 'immediateUpdates',
+                                title: 'Sofortige Updates',
+                                description: 'Werden Updates sofort durchgeführt?',
+                                examples: ['Real-time Updates', 'Instant Changes', 'Immediate Sync'],
+                                bestPractices: ['McKinsey: Real-time Processing', 'BCG: Instant Updates']
+                            },
+                            {
+                                id: 'eventDrivenArchitecture',
+                                title: 'Event-driven Architecture',
+                                description: 'Wird Event-driven Architecture verwendet?',
+                                examples: ['Event Streaming', 'Event Bus', 'Event Processing'],
+                                bestPractices: ['Gartner: Event Architecture', 'Deloitte: Event-Driven Design']
+                            },
+                            {
+                                id: 'realtimeProcessing',
+                                title: 'Real-time Processing',
+                                description: 'Gibt es Real-time Processing?',
+                                examples: ['Stream Processing', 'Real-time Analytics', 'Live Processing'],
+                                bestPractices: ['DAMA: Real-time Data', 'McKinsey: Stream Processing']
+                            },
+                            {
+                                id: 'updateLatency',
+                                title: 'Minimale Update-Latenz',
+                                description: 'Wie gering ist die Latenz?',
+                                examples: ['< 1s Latency', 'Low Latency', 'Fast Updates'],
+                                bestPractices: ['BCG: Latency Optimization', 'Gartner: Performance SLAs']
+                            }
+                        ]
                     },
                     { 
                         id: 'minimalDelay', 
                         title: 'Minimale Verzögerung bei Datensynchronisation',
                         description: 'Wie gering ist die Verzögerung?',
-                        examples: ['Sub-Sekunden Latenz', 'Streaming Data', 'Minimaler Lag']
+                        examples: ['Sub-Sekunden Latenz', 'Streaming Data', 'Minimaler Lag'],
+                        subSubCriteria: [
+                            {
+                                id: 'subSecondLatency',
+                                title: 'Sub-Sekunden Latenz',
+                                description: 'Wie gering ist die Latenz?',
+                                examples: ['< 1s Latency', 'Low Latency Sync', 'Fast Synchronization'],
+                                bestPractices: ['Gartner: Low Latency', 'McKinsey: Performance Targets']
+                            },
+                            {
+                                id: 'streamingData',
+                                title: 'Streaming Data',
+                                description: 'Wird Streaming verwendet?',
+                                examples: ['Data Streaming', 'Stream Processing', 'Continuous Flow'],
+                                bestPractices: ['Deloitte: Streaming Architecture', 'BCG: Stream Processing']
+                            },
+                            {
+                                id: 'minimalLag',
+                                title: 'Minimaler Lag',
+                                description: 'Wie gering ist der Lag?',
+                                examples: ['Near-zero Lag', 'Minimal Delay', 'Fast Sync'],
+                                bestPractices: ['DAMA: Synchronization', 'Gartner: Lag Reduction']
+                            },
+                            {
+                                id: 'syncPerformance',
+                                title: 'Sync-Performance Monitoring',
+                                description: 'Wird Performance überwacht?',
+                                examples: ['Latency Metrics', 'Sync Monitoring', 'Performance Alerts'],
+                                bestPractices: ['McKinsey: Performance Monitoring', 'BCG: Metrics Tracking']
+                            }
+                        ]
                     },
                     { 
                         id: 'currentData', 
                         title: 'Aktuelle Daten für alle Stakeholder verfügbar',
                         description: 'Sind die Daten für alle aktuell?',
-                        examples: ['Single Source of Truth', 'Konsistente Views', 'Aktuelle Informationen']
+                        examples: ['Single Source of Truth', 'Konsistente Views', 'Aktuelle Informationen'],
+                        subSubCriteria: [
+                            {
+                                id: 'singleSourceOfTruth',
+                                title: 'Single Source of Truth',
+                                description: 'Gibt es eine einzige Quelle?',
+                                examples: ['Central Source', 'Unified Data', 'One Source'],
+                                bestPractices: ['McKinsey: Single Source', 'BCG: Unified Data']
+                            },
+                            {
+                                id: 'consistentViews',
+                                title: 'Konsistente Views für alle',
+                                description: 'Sind Views konsistent?',
+                                examples: ['Unified Views', 'Consistent Data', 'Same Information'],
+                                bestPractices: ['Deloitte: View Management', 'Gartner: Data Consistency']
+                            },
+                            {
+                                id: 'currentInformation',
+                                title: 'Aktuelle Informationen',
+                                description: 'Sind Informationen aktuell?',
+                                examples: ['Up-to-date Data', 'Current Information', 'Fresh Data'],
+                                bestPractices: ['DAMA: Data Currency', 'McKinsey: Information Freshness']
+                            },
+                            {
+                                id: 'stakeholderAccess',
+                                title: 'Zugriff für alle Stakeholder',
+                                description: 'Haben alle Stakeholder Zugriff?',
+                                examples: ['Role-based Access', 'Stakeholder Portals', 'Unified Access'],
+                                bestPractices: ['BCG: Access Management', 'Gartner: Stakeholder Access']
+                            }
+                        ]
                     },
                     { 
                         id: 'dataFreshness', 
                         title: 'Hohe Datenaktualität (Data Freshness)',
                         description: 'Wie aktuell sind die Daten?',
-                        examples: ['Tägliche Updates', 'Kontinuierliche Synchronisation', 'Fresh Data Indicators']
+                        examples: ['Tägliche Updates', 'Kontinuierliche Synchronisation', 'Fresh Data Indicators'],
+                        subSubCriteria: [
+                            {
+                                id: 'dailyUpdates',
+                                title: 'Tägliche Updates',
+                                description: 'Werden tägliche Updates durchgeführt?',
+                                examples: ['Daily Refresh', 'Daily Sync', 'Daily Updates'],
+                                bestPractices: ['McKinsey: Update Frequency', 'BCG: Refresh Cadence']
+                            },
+                            {
+                                id: 'continuousSync',
+                                title: 'Kontinuierliche Synchronisation',
+                                description: 'Gibt es kontinuierliche Sync?',
+                                examples: ['Continuous Sync', 'Ongoing Updates', 'Real-time Sync'],
+                                bestPractices: ['Deloitte: Continuous Sync', 'Gartner: Sync Strategy']
+                            },
+                            {
+                                id: 'freshDataIndicators',
+                                title: 'Fresh Data Indicators',
+                                description: 'Gibt es Indikatoren für Datenaktualität?',
+                                examples: ['Last Updated', 'Data Age', 'Freshness Metrics'],
+                                bestPractices: ['DAMA: Data Freshness', 'McKinsey: Currency Indicators']
+                            },
+                            {
+                                id: 'freshnessSLA',
+                                title: 'SLA für Datenaktualität',
+                                description: 'Gibt es SLAs?',
+                                examples: ['Freshness SLAs', 'Update SLAs', 'Currency Targets'],
+                                bestPractices: ['BCG: SLA Framework', 'Gartner: Service Levels']
+                            }
+                        ]
                     }
                 ]
             },
@@ -603,25 +1443,145 @@
                         id: 'encryptedStorage', 
                         title: 'Verschlüsselte Datenspeicherung',
                         description: 'Sind die Daten verschlüsselt?',
-                        examples: ['Encryption at Rest', 'TLS in Transit', 'Strong Encryption']
+                        examples: ['Encryption at Rest', 'TLS in Transit', 'Strong Encryption'],
+                        subSubCriteria: [
+                            {
+                                id: 'encryptionAtRest',
+                                title: 'Encryption at Rest',
+                                description: 'Sind Daten im Ruhezustand verschlüsselt?',
+                                examples: ['Database Encryption', 'File Encryption', 'Storage Encryption'],
+                                bestPractices: ['Gartner: Encryption Standards', 'McKinsey: Data Protection']
+                            },
+                            {
+                                id: 'tlsInTransit',
+                                title: 'TLS in Transit',
+                                description: 'Wird TLS für Übertragung verwendet?',
+                                examples: ['TLS 1.3', 'HTTPS', 'Encrypted Connections'],
+                                bestPractices: ['Deloitte: Transport Security', 'BCG: Encryption Standards']
+                            },
+                            {
+                                id: 'strongEncryption',
+                                title: 'Strong Encryption',
+                                description: 'Wird starke Verschlüsselung verwendet?',
+                                examples: ['AES-256', 'Strong Algorithms', 'Key Management'],
+                                bestPractices: ['DAMA: Encryption Standards', 'Gartner: Key Management']
+                            },
+                            {
+                                id: 'keyManagement',
+                                title: 'Key Management',
+                                description: 'Gibt es Key Management?',
+                                examples: ['Key Rotation', 'Secure Key Storage', 'Key Management System'],
+                                bestPractices: ['McKinsey: Key Management', 'BCG: Security Practices']
+                            }
+                        ]
                     },
                     { 
                         id: 'accessControls', 
                         title: 'Zugriffskontrollen und Berechtigungen',
                         description: 'Wie sind Zugriffe kontrolliert?',
-                        examples: ['Role-Based Access', 'Least Privilege', 'Access Logging']
+                        examples: ['Role-Based Access', 'Least Privilege', 'Access Logging'],
+                        subSubCriteria: [
+                            {
+                                id: 'roleBasedAccess',
+                                title: 'Role-Based Access Control (RBAC)',
+                                description: 'Wird RBAC verwendet?',
+                                examples: ['Role Definitions', 'Permission Matrix', 'RBAC System'],
+                                bestPractices: ['Gartner: RBAC Framework', 'McKinsey: Access Control']
+                            },
+                            {
+                                id: 'leastPrivilege',
+                                title: 'Least Privilege Prinzip',
+                                description: 'Wird Least Privilege angewendet?',
+                                examples: ['Minimal Permissions', 'Need-to-Know', 'Privilege Minimization'],
+                                bestPractices: ['Deloitte: Security Principles', 'BCG: Access Strategy']
+                            },
+                            {
+                                id: 'accessLogging',
+                                title: 'Access Logging und Audit',
+                                description: 'Wird Zugriff geloggt?',
+                                examples: ['Access Logs', 'Audit Trails', 'Log Analysis'],
+                                bestPractices: ['DAMA: Audit Logging', 'Gartner: Access Monitoring']
+                            },
+                            {
+                                id: 'accessReview',
+                                title: 'Regelmäßige Access Reviews',
+                                description: 'Werden Access Reviews durchgeführt?',
+                                examples: ['Quarterly Reviews', 'Access Certification', 'Review Process'],
+                                bestPractices: ['McKinsey: Access Governance', 'BCG: Review Framework']
+                            }
+                        ]
                     },
                     { 
                         id: 'gdprCompliance', 
                         title: 'DSGVO-konforme Datenverarbeitung',
                         description: 'Ist die Datenverarbeitung DSGVO-konform?',
-                        examples: ['Privacy by Design', 'Data Minimization', 'Right to be Forgotten']
+                        examples: ['Privacy by Design', 'Data Minimization', 'Right to be Forgotten'],
+                        subSubCriteria: [
+                            {
+                                id: 'privacyByDesign',
+                                title: 'Privacy by Design',
+                                description: 'Wird Privacy by Design angewendet?',
+                                examples: ['Privacy Built-in', 'Default Privacy', 'Privacy Controls'],
+                                bestPractices: ['GDPR: Privacy by Design', 'Deloitte: Privacy Framework']
+                            },
+                            {
+                                id: 'dataMinimization',
+                                title: 'Data Minimization',
+                                description: 'Wird Data Minimization angewendet?',
+                                examples: ['Minimal Data Collection', 'Purpose Limitation', 'Data Reduction'],
+                                bestPractices: ['GDPR: Data Minimization', 'BCG: Privacy Principles']
+                            },
+                            {
+                                id: 'rightToBeForgotten',
+                                title: 'Right to be Forgotten',
+                                description: 'Kann das Recht auf Vergessenwerden umgesetzt werden?',
+                                examples: ['Data Deletion', 'Erasure Process', 'Deletion Workflow'],
+                                bestPractices: ['GDPR: Article 17', 'Gartner: Data Deletion']
+                            },
+                            {
+                                id: 'consentManagement',
+                                title: 'Consent Management',
+                                description: 'Gibt es Consent Management?',
+                                examples: ['Consent Tracking', 'Consent Records', 'Consent Management'],
+                                bestPractices: ['GDPR: Consent', 'McKinsey: Privacy Management']
+                            }
+                        ]
                     },
                     { 
                         id: 'securityMonitoring', 
                         title: 'Kontinuierliches Sicherheitsmonitoring',
                         description: 'Wie wird Sicherheit überwacht?',
-                        examples: ['SIEM-Systeme', 'Security Audits', 'Threat Detection']
+                        examples: ['SIEM-Systeme', 'Security Audits', 'Threat Detection'],
+                        subSubCriteria: [
+                            {
+                                id: 'siemSystems',
+                                title: 'SIEM-Systeme',
+                                description: 'Gibt es SIEM-Systeme?',
+                                examples: ['SIEM Platform', 'Security Analytics', 'Event Correlation'],
+                                bestPractices: ['Gartner: SIEM Solutions', 'McKinsey: Security Monitoring']
+                            },
+                            {
+                                id: 'securityAudits',
+                                title: 'Security Audits',
+                                description: 'Werden Security Audits durchgeführt?',
+                                examples: ['Regular Audits', 'Compliance Audits', 'Security Assessments'],
+                                bestPractices: ['Deloitte: Audit Framework', 'BCG: Security Governance']
+                            },
+                            {
+                                id: 'threatDetection',
+                                title: 'Threat Detection',
+                                description: 'Gibt es Threat Detection?',
+                                examples: ['Threat Monitoring', 'Anomaly Detection', 'Threat Alerts'],
+                                bestPractices: ['DAMA: Threat Management', 'Gartner: Threat Detection']
+                            },
+                            {
+                                id: 'incidentResponse',
+                                title: 'Incident Response Prozess',
+                                description: 'Gibt es einen Incident Response Prozess?',
+                                examples: ['Response Plan', 'Incident Handling', 'Response Team'],
+                                bestPractices: ['McKinsey: Incident Response', 'BCG: Security Operations']
+                            }
+                        ]
                     }
                 ]
             }
