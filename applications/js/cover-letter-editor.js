@@ -1538,8 +1538,8 @@ ${description.substring(0, 2000)}`;
                     return apiKey;
                 }
             } catch (e) {
-                // Fehler beim Laden aus AWS - ignoriere und gehe weiter
-                console.log('ℹ️ awsAPISettings.getFullApiKey fehlgeschlagen, versuche weitere Quellen');
+                // Fehler beim Laden aus AWS - ignoriere stillschweigend (Fallbacks werden verwendet)
+                // Keine Warnung, da dies erwartet ist wenn User nicht eingeloggt oder Key nicht in AWS
             }
         }
         
