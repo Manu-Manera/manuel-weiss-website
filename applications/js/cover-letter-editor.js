@@ -1571,6 +1571,34 @@ ${description.substring(0, 2000)}`;
         }
     }
     
+    /**
+     * Hole Modell-Konfiguration aus Admin Panel (für Anschreibengenerierung)
+     * Fallback auf gpt-5.2 wenn nicht konfiguriert
+     */
+    getOpenAIModel() {
+        // 1. Versuche GlobalAPIManager (Admin Panel)
+        if (window.GlobalAPIManager) {
+            const config = window.GlobalAPIManager.getServiceConfig('openai');
+            if (config && config.model) {
+                console.log(`✅ Modell aus GlobalAPIManager: ${config.model}`);
+                return config.model;
+            }
+        }
+        
+        // 2. Versuche global_api_keys localStorage
+        try {
+            const globalKeys = JSON.parse(localStorage.getItem('global_api_keys') || '{}');
+            if (globalKeys.openai?.model) {
+                console.log(`✅ Modell aus global_api_keys: ${globalKeys.openai.model}`);
+                return globalKeys.openai.model;
+            }
+        } catch (e) {}
+        
+        // 3. Fallback: gpt-5.2 für Anschreibengenerierung (beste Qualität)
+        console.log('ℹ️ Verwende Standard-Modell: gpt-5.2');
+        return 'gpt-5.2';
+    }
+    
     getUserId() {
         try {
             const session = localStorage.getItem('aws_auth_session');
@@ -1585,8 +1613,8 @@ ${description.substring(0, 2000)}`;
     async generateWithAI(jobData, apiKey) {
         const prompt = this.buildPrompt(jobData);
         
-        // GPT-5.2 - bestes Modell für komplexe Aufgaben
-        const model = 'gpt-5.2';
+        // Hole Modell aus Admin Panel Konfiguration (Fallback: gpt-5.2)
+        const model = this.getOpenAIModel();
         const maxTokens = this.options.length === 'short' ? 800 : this.options.length === 'medium' ? 1200 : 1600;
         
         console.log('🤖 Sende Anfrage an OpenAI mit Modell:', model);
