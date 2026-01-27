@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alle Mitarbeiterdaten sind vollständig erfasst - Datenqualität Assessment - Manuel Weiss</title>
+    <title>Verschlüsselte Datenspeicherung - Datenqualität Assessment - Manuel Weiss</title>
     
     <!-- Meta Tags -->
     <meta name="description" content="Detaillierte Bewertung der Vollständigkeit von Mitarbeiterdaten für KI-Readiness in HR. Best Practices basierend auf DAMA, ISO, McKinsey, BCG, Deloitte.">
@@ -358,8 +358,8 @@
                 <i class="fas fa-arrow-left"></i>
                 Zurück zu Datenqualität
             </a>
-            <h1><i class="fas fa-user-check"></i> Alle Mitarbeiterdaten sind vollständig erfasst</h1>
-            <p>Wie vollständig sind die Mitarbeiterdaten?</p>
+            <h1><i class="fas fa-user-check"></i> Verschlüsselte Datenspeicherung</h1>
+            <p>Sind die Daten verschlüsselt?</p>
         </div>
         
         <div id="subSubCriteriaContainer">
@@ -381,71 +381,70 @@
     </div>
     
     <script>
-        // Sub-Sub-Criteria definitions for "Alle Mitarbeiterdaten sind vollständig erfasst"
+        // Sub-Sub-Criteria definitions for "Verschlüsselte Datenspeicherung"
         const subSubCriteria = [
           {
-                    "id": "masterDataCompleteness",
-                    "title": "Vollständigkeit der Stammdaten",
-                    "description": "Sind alle Pflichtfelder in den Stammdaten ausgefüllt?",
+                    "id": "encryptionAtRest",
+                    "title": "Encryption at Rest",
+                    "description": "Sind Daten im Ruhezustand verschlüsselt?",
                     "examples": [
-                              "100% Abdeckung Pflichtfelder",
-                              "Validierte Dateneingabe",
-                              "Automatische Prüfungen"
+                              "Database Encryption",
+                              "File Encryption",
+                              "Storage Encryption"
                     ],
                     "bestPractices": [
-                              "DAMA: Data Completeness Dimension",
-                              "McKinsey: Master Data Management",
-                              "ISO 8000: Data Quality"
+                              "Gartner: Encryption Standards",
+                              "McKinsey: Data Protection"
                     ]
           },
           {
-                    "id": "organizationalData",
-                    "title": "Organisationsdaten vollständig",
-                    "description": "Sind alle Organisationsstrukturen erfasst?",
+                    "id": "tlsInTransit",
+                    "title": "TLS in Transit",
+                    "description": "Wird TLS für Übertragung verwendet?",
                     "examples": [
-                              "Vollständige Hierarchien",
-                              "Alle Abteilungen",
-                              "Reporting-Lines definiert"
+                              "TLS 1.3",
+                              "HTTPS",
+                              "Encrypted Connections"
                     ],
                     "bestPractices": [
-                              "BCG: Organizational Data Model",
-                              "Deloitte: HR Data Architecture"
+                              "Deloitte: Transport Security",
+                              "BCG: Encryption Standards"
                     ]
           },
           {
-                    "id": "employmentHistory",
-                    "title": "Vollständige Beschäftigungshistorie",
-                    "description": "Ist die gesamte Beschäftigungshistorie erfasst?",
+                    "id": "strongEncryption",
+                    "title": "Strong Encryption",
+                    "description": "Wird starke Verschlüsselung verwendet?",
                     "examples": [
-                              "Alle Positionen",
-                              "Vollständige Karrierepfade",
-                              "Historische Daten"
+                              "AES-256",
+                              "Strong Algorithms",
+                              "Key Management"
                     ],
                     "bestPractices": [
-                              "DAMA: Temporal Completeness",
-                              "McKinsey: Employee Lifecycle Data"
+                              "DAMA: Encryption Standards",
+                              "Gartner: Key Management"
                     ]
           },
           {
-                    "id": "skillData",
-                    "title": "Kompetenz- und Skill-Daten vollständig",
-                    "description": "Sind alle Kompetenzen und Skills erfasst?",
+                    "id": "keyManagement",
+                    "title": "Key Management",
+                    "description": "Gibt es Key Management?",
                     "examples": [
-                              "Skill-Matrizen",
-                              "Zertifikate",
-                              "Weiterbildungen"
+                              "Key Rotation",
+                              "Secure Key Storage",
+                              "Key Management System"
                     ],
                     "bestPractices": [
-                              "Deloitte: Skills Taxonomy",
-                              "BCG: Competency Framework"
+                              "McKinsey: Key Management",
+                              "BCG: Security Practices"
                     ]
           }
 ];
         
         let assessmentValues = {};
         let isManualOverride = false;
-        const criterionId = 'dataCompleteness';
-        const subCriterionId = 'completeEmployeeData';
+        const criterionId = 'dataSecurity';
+        const subCriterionId = 'encryptedStorage';
         
         
         
@@ -454,8 +453,8 @@
             const saved = JSON.parse(localStorage.getItem('kiDetailAssessments') || '{}');
             const parentData = saved.dataQuality;
             
-            if (parentData && parentData.criteria && parentData.criteria[dataCompleteness] && parentData.criteria[dataCompleteness].subCriteria && parentData.criteria[dataCompleteness].subCriteria[subCriterionId]) {
-                const subCriterionData = parentData.criteria[dataCompleteness].subCriteria[subCriterionId];
+            if (parentData && parentData.criteria && parentData.criteria[criterionId] && parentData.criteria[criterionId].subCriteria && parentData.criteria[criterionId].subCriteria[subCriterionId]) {
+                const subCriterionData = parentData.criteria[criterionId].subCriteria[subCriterionId];
                 
                 // Load sub-sub-criteria values
                 if (subCriterionData.subSubCriteria) {
@@ -582,15 +581,15 @@
             if (!saved.dataQuality.criteria) {
                 saved.dataQuality.criteria = {};
             }
-            if (!saved.dataQuality.criteria[dataCompleteness]) {
-                saved.dataQuality.criteria[dataCompleteness] = { subCriteria: {} };
+            if (!saved.dataQuality.criteria[criterionId]) {
+                saved.dataQuality.criteria[criterionId] = { subCriteria: {} };
             }
-            if (!saved.dataQuality.criteria[dataCompleteness].subCriteria) {
-                saved.dataQuality.criteria[dataCompleteness].subCriteria = {};
+            if (!saved.dataQuality.criteria[criterionId].subCriteria) {
+                saved.dataQuality.criteria[criterionId].subCriteria = {};
             }
             
             // Save sub-sub-criteria data
-            saved.dataQuality.criteria[dataCompleteness].subCriteria[subCriterionId] = {
+            saved.dataQuality.criteria[criterionId].subCriteria[subCriterionId] = {
                 aggregated: aggregated,
                 isManualOverride: isManualOverride,
                 subSubCriteria: assessmentValues,

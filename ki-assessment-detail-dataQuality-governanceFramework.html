@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alle Mitarbeiterdaten sind vollständig erfasst - Datenqualität Assessment - Manuel Weiss</title>
+    <title>Etabliertes Daten-Governance-Framework - Datenqualität Assessment - Manuel Weiss</title>
     
     <!-- Meta Tags -->
     <meta name="description" content="Detaillierte Bewertung der Vollständigkeit von Mitarbeiterdaten für KI-Readiness in HR. Best Practices basierend auf DAMA, ISO, McKinsey, BCG, Deloitte.">
@@ -358,8 +358,8 @@
                 <i class="fas fa-arrow-left"></i>
                 Zurück zu Datenqualität
             </a>
-            <h1><i class="fas fa-user-check"></i> Alle Mitarbeiterdaten sind vollständig erfasst</h1>
-            <p>Wie vollständig sind die Mitarbeiterdaten?</p>
+            <h1><i class="fas fa-user-check"></i> Etabliertes Daten-Governance-Framework</h1>
+            <p>Gibt es ein Governance-Framework?</p>
         </div>
         
         <div id="subSubCriteriaContainer">
@@ -381,71 +381,70 @@
     </div>
     
     <script>
-        // Sub-Sub-Criteria definitions for "Alle Mitarbeiterdaten sind vollständig erfasst"
+        // Sub-Sub-Criteria definitions for "Etabliertes Daten-Governance-Framework"
         const subSubCriteria = [
           {
-                    "id": "masterDataCompleteness",
-                    "title": "Vollständigkeit der Stammdaten",
-                    "description": "Sind alle Pflichtfelder in den Stammdaten ausgefüllt?",
+                    "id": "damaFramework",
+                    "title": "DAMA Framework etabliert",
+                    "description": "Wird DAMA Framework verwendet?",
                     "examples": [
-                              "100% Abdeckung Pflichtfelder",
-                              "Validierte Dateneingabe",
-                              "Automatische Prüfungen"
+                              "DAMA DMBOK",
+                              "DAMA Principles",
+                              "DAMA Practices"
                     ],
                     "bestPractices": [
-                              "DAMA: Data Completeness Dimension",
-                              "McKinsey: Master Data Management",
-                              "ISO 8000: Data Quality"
+                              "DAMA: DMBOK Framework",
+                              "McKinsey: DAMA Adoption"
                     ]
           },
           {
-                    "id": "organizationalData",
-                    "title": "Organisationsdaten vollständig",
-                    "description": "Sind alle Organisationsstrukturen erfasst?",
+                    "id": "structuredProcesses",
+                    "title": "Strukturierte Governance-Prozesse",
+                    "description": "Gibt es strukturierte Prozesse?",
                     "examples": [
-                              "Vollständige Hierarchien",
-                              "Alle Abteilungen",
-                              "Reporting-Lines definiert"
+                              "Governance Processes",
+                              "Structured Workflows",
+                              "Process Framework"
                     ],
                     "bestPractices": [
-                              "BCG: Organizational Data Model",
-                              "Deloitte: HR Data Architecture"
+                              "BCG: Process Framework",
+                              "Deloitte: Governance Processes"
                     ]
           },
           {
-                    "id": "employmentHistory",
-                    "title": "Vollständige Beschäftigungshistorie",
-                    "description": "Ist die gesamte Beschäftigungshistorie erfasst?",
+                    "id": "governanceBoard",
+                    "title": "Governance Board vorhanden",
+                    "description": "Gibt es ein Governance Board?",
                     "examples": [
-                              "Alle Positionen",
-                              "Vollständige Karrierepfade",
-                              "Historische Daten"
+                              "Governance Committee",
+                              "Board Meetings",
+                              "Decision Authority"
                     ],
                     "bestPractices": [
-                              "DAMA: Temporal Completeness",
-                              "McKinsey: Employee Lifecycle Data"
+                              "Gartner: Governance Board",
+                              "McKinsey: Board Structure"
                     ]
           },
           {
-                    "id": "skillData",
-                    "title": "Kompetenz- und Skill-Daten vollständig",
-                    "description": "Sind alle Kompetenzen und Skills erfasst?",
+                    "id": "governanceMetrics",
+                    "title": "Governance-Metriken",
+                    "description": "Gibt es Governance-Metriken?",
                     "examples": [
-                              "Skill-Matrizen",
-                              "Zertifikate",
-                              "Weiterbildungen"
+                              "Governance KPIs",
+                              "Metrics Dashboard",
+                              "Performance Tracking"
                     ],
                     "bestPractices": [
-                              "Deloitte: Skills Taxonomy",
-                              "BCG: Competency Framework"
+                              "DAMA: Governance Metrics",
+                              "BCG: KPI Framework"
                     ]
           }
 ];
         
         let assessmentValues = {};
         let isManualOverride = false;
-        const criterionId = 'dataCompleteness';
-        const subCriterionId = 'completeEmployeeData';
+        const criterionId = 'dataGovernance';
+        const subCriterionId = 'governanceFramework';
         
         
         
@@ -454,8 +453,8 @@
             const saved = JSON.parse(localStorage.getItem('kiDetailAssessments') || '{}');
             const parentData = saved.dataQuality;
             
-            if (parentData && parentData.criteria && parentData.criteria[dataCompleteness] && parentData.criteria[dataCompleteness].subCriteria && parentData.criteria[dataCompleteness].subCriteria[subCriterionId]) {
-                const subCriterionData = parentData.criteria[dataCompleteness].subCriteria[subCriterionId];
+            if (parentData && parentData.criteria && parentData.criteria[criterionId] && parentData.criteria[criterionId].subCriteria && parentData.criteria[criterionId].subCriteria[subCriterionId]) {
+                const subCriterionData = parentData.criteria[criterionId].subCriteria[subCriterionId];
                 
                 // Load sub-sub-criteria values
                 if (subCriterionData.subSubCriteria) {
@@ -582,15 +581,15 @@
             if (!saved.dataQuality.criteria) {
                 saved.dataQuality.criteria = {};
             }
-            if (!saved.dataQuality.criteria[dataCompleteness]) {
-                saved.dataQuality.criteria[dataCompleteness] = { subCriteria: {} };
+            if (!saved.dataQuality.criteria[criterionId]) {
+                saved.dataQuality.criteria[criterionId] = { subCriteria: {} };
             }
-            if (!saved.dataQuality.criteria[dataCompleteness].subCriteria) {
-                saved.dataQuality.criteria[dataCompleteness].subCriteria = {};
+            if (!saved.dataQuality.criteria[criterionId].subCriteria) {
+                saved.dataQuality.criteria[criterionId].subCriteria = {};
             }
             
             // Save sub-sub-criteria data
-            saved.dataQuality.criteria[dataCompleteness].subCriteria[subCriterionId] = {
+            saved.dataQuality.criteria[criterionId].subCriteria[subCriterionId] = {
                 aggregated: aggregated,
                 isManualOverride: isManualOverride,
                 subSubCriteria: assessmentValues,

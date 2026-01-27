@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alle Mitarbeiterdaten sind vollständig erfasst - Datenqualität Assessment - Manuel Weiss</title>
+    <title>Keine fehlenden Felder in kritischen Datensätzen - Datenqualität Assessment - Manuel Weiss</title>
     
     <!-- Meta Tags -->
     <meta name="description" content="Detaillierte Bewertung der Vollständigkeit von Mitarbeiterdaten für KI-Readiness in HR. Best Practices basierend auf DAMA, ISO, McKinsey, BCG, Deloitte.">
@@ -358,8 +358,8 @@
                 <i class="fas fa-arrow-left"></i>
                 Zurück zu Datenqualität
             </a>
-            <h1><i class="fas fa-user-check"></i> Alle Mitarbeiterdaten sind vollständig erfasst</h1>
-            <p>Wie vollständig sind die Mitarbeiterdaten?</p>
+            <h1><i class="fas fa-user-check"></i> Keine fehlenden Felder in kritischen Datensätzen</h1>
+            <p>Gibt es fehlende Felder in wichtigen Datensätzen?</p>
         </div>
         
         <div id="subSubCriteriaContainer">
@@ -381,63 +381,62 @@
     </div>
     
     <script>
-        // Sub-Sub-Criteria definitions for "Alle Mitarbeiterdaten sind vollständig erfasst"
+        // Sub-Sub-Criteria definitions for "Keine fehlenden Felder in kritischen Datensätzen"
         const subSubCriteria = [
           {
-                    "id": "masterDataCompleteness",
-                    "title": "Vollständigkeit der Stammdaten",
-                    "description": "Sind alle Pflichtfelder in den Stammdaten ausgefüllt?",
+                    "id": "criticalFieldsComplete",
+                    "title": "Kritische Felder zu 100% ausgefüllt",
+                    "description": "Sind alle kritischen Felder in allen Datensätzen ausgefüllt?",
                     "examples": [
-                              "100% Abdeckung Pflichtfelder",
-                              "Validierte Dateneingabe",
-                              "Automatische Prüfungen"
+                              "Keine NULL-Werte in kritischen Feldern",
+                              "Pflichtfeld-Validierung",
+                              "Completeness Checks"
                     ],
                     "bestPractices": [
-                              "DAMA: Data Completeness Dimension",
-                              "McKinsey: Master Data Management",
-                              "ISO 8000: Data Quality"
+                              "DAMA: Completeness Dimension",
+                              "Gartner: Critical Data Elements"
                     ]
           },
           {
-                    "id": "organizationalData",
-                    "title": "Organisationsdaten vollständig",
-                    "description": "Sind alle Organisationsstrukturen erfasst?",
+                    "id": "dataValidation",
+                    "title": "Aktive Datenvalidierung",
+                    "description": "Gibt es aktive Validierungsprozesse?",
                     "examples": [
-                              "Vollständige Hierarchien",
-                              "Alle Abteilungen",
-                              "Reporting-Lines definiert"
+                              "Echtzeit-Validierung",
+                              "Business Rules",
+                              "Data Quality Rules"
                     ],
                     "bestPractices": [
-                              "BCG: Organizational Data Model",
-                              "Deloitte: HR Data Architecture"
+                              "ISO 8000: Data Validation",
+                              "McKinsey: Data Quality Controls"
                     ]
           },
           {
-                    "id": "employmentHistory",
-                    "title": "Vollständige Beschäftigungshistorie",
-                    "description": "Ist die gesamte Beschäftigungshistorie erfasst?",
+                    "id": "automatedChecks",
+                    "title": "Automatische Vollständigkeitsprüfungen",
+                    "description": "Werden automatische Prüfungen durchgeführt?",
                     "examples": [
-                              "Alle Positionen",
-                              "Vollständige Karrierepfade",
-                              "Historische Daten"
+                              "Scheduled Checks",
+                              "Automated Alerts",
+                              "Quality Monitoring"
                     ],
                     "bestPractices": [
-                              "DAMA: Temporal Completeness",
-                              "McKinsey: Employee Lifecycle Data"
+                              "DAMA: Automated Data Quality",
+                              "BCG: Continuous Monitoring"
                     ]
           },
           {
-                    "id": "skillData",
-                    "title": "Kompetenz- und Skill-Daten vollständig",
-                    "description": "Sind alle Kompetenzen und Skills erfasst?",
+                    "id": "missingDataProcess",
+                    "title": "Prozess für fehlende Daten",
+                    "description": "Gibt es einen definierten Prozess für fehlende Daten?",
                     "examples": [
-                              "Skill-Matrizen",
-                              "Zertifikate",
-                              "Weiterbildungen"
+                              "Data Remediation Process",
+                              "Owner Assignment",
+                              "Escalation Rules"
                     ],
                     "bestPractices": [
-                              "Deloitte: Skills Taxonomy",
-                              "BCG: Competency Framework"
+                              "Deloitte: Data Remediation",
+                              "Gartner: Data Quality Process"
                     ]
           }
 ];
@@ -445,17 +444,15 @@
         let assessmentValues = {};
         let isManualOverride = false;
         const criterionId = 'dataCompleteness';
-        const subCriterionId = 'completeEmployeeData';
-        
-        
+        const subCriterionId = 'noMissingFields';
         
         function initializeAssessment() {
             // Load from parent assessment
             const saved = JSON.parse(localStorage.getItem('kiDetailAssessments') || '{}');
             const parentData = saved.dataQuality;
             
-            if (parentData && parentData.criteria && parentData.criteria[dataCompleteness] && parentData.criteria[dataCompleteness].subCriteria && parentData.criteria[dataCompleteness].subCriteria[subCriterionId]) {
-                const subCriterionData = parentData.criteria[dataCompleteness].subCriteria[subCriterionId];
+            if (parentData && parentData.criteria && parentData.criteria[criterionId] && parentData.criteria[criterionId].subCriteria && parentData.criteria[criterionId].subCriteria[subCriterionId]) {
+                const subCriterionData = parentData.criteria[criterionId].subCriteria[subCriterionId];
                 
                 // Load sub-sub-criteria values
                 if (subCriterionData.subSubCriteria) {
@@ -582,15 +579,15 @@
             if (!saved.dataQuality.criteria) {
                 saved.dataQuality.criteria = {};
             }
-            if (!saved.dataQuality.criteria[dataCompleteness]) {
-                saved.dataQuality.criteria[dataCompleteness] = { subCriteria: {} };
+            if (!saved.dataQuality.criteria[criterionId]) {
+                saved.dataQuality.criteria[criterionId] = { subCriteria: {} };
             }
-            if (!saved.dataQuality.criteria[dataCompleteness].subCriteria) {
-                saved.dataQuality.criteria[dataCompleteness].subCriteria = {};
+            if (!saved.dataQuality.criteria[criterionId].subCriteria) {
+                saved.dataQuality.criteria[criterionId].subCriteria = {};
             }
             
             // Save sub-sub-criteria data
-            saved.dataQuality.criteria[dataCompleteness].subCriteria[subCriterionId] = {
+            saved.dataQuality.criteria[criterionId].subCriteria[subCriterionId] = {
                 aggregated: aggregated,
                 isManualOverride: isManualOverride,
                 subSubCriteria: assessmentValues,

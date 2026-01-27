@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alle Mitarbeiterdaten sind vollständig erfasst - Datenqualität Assessment - Manuel Weiss</title>
+    <title>DSGVO-konforme Datenverarbeitung - Datenqualität Assessment - Manuel Weiss</title>
     
     <!-- Meta Tags -->
     <meta name="description" content="Detaillierte Bewertung der Vollständigkeit von Mitarbeiterdaten für KI-Readiness in HR. Best Practices basierend auf DAMA, ISO, McKinsey, BCG, Deloitte.">
@@ -358,8 +358,8 @@
                 <i class="fas fa-arrow-left"></i>
                 Zurück zu Datenqualität
             </a>
-            <h1><i class="fas fa-user-check"></i> Alle Mitarbeiterdaten sind vollständig erfasst</h1>
-            <p>Wie vollständig sind die Mitarbeiterdaten?</p>
+            <h1><i class="fas fa-user-check"></i> DSGVO-konforme Datenverarbeitung</h1>
+            <p>Ist die Datenverarbeitung DSGVO-konform?</p>
         </div>
         
         <div id="subSubCriteriaContainer">
@@ -381,71 +381,70 @@
     </div>
     
     <script>
-        // Sub-Sub-Criteria definitions for "Alle Mitarbeiterdaten sind vollständig erfasst"
+        // Sub-Sub-Criteria definitions for "DSGVO-konforme Datenverarbeitung"
         const subSubCriteria = [
           {
-                    "id": "masterDataCompleteness",
-                    "title": "Vollständigkeit der Stammdaten",
-                    "description": "Sind alle Pflichtfelder in den Stammdaten ausgefüllt?",
+                    "id": "privacyByDesign",
+                    "title": "Privacy by Design",
+                    "description": "Wird Privacy by Design angewendet?",
                     "examples": [
-                              "100% Abdeckung Pflichtfelder",
-                              "Validierte Dateneingabe",
-                              "Automatische Prüfungen"
+                              "Privacy Built-in",
+                              "Default Privacy",
+                              "Privacy Controls"
                     ],
                     "bestPractices": [
-                              "DAMA: Data Completeness Dimension",
-                              "McKinsey: Master Data Management",
-                              "ISO 8000: Data Quality"
+                              "GDPR: Privacy by Design",
+                              "Deloitte: Privacy Framework"
                     ]
           },
           {
-                    "id": "organizationalData",
-                    "title": "Organisationsdaten vollständig",
-                    "description": "Sind alle Organisationsstrukturen erfasst?",
+                    "id": "dataMinimization",
+                    "title": "Data Minimization",
+                    "description": "Wird Data Minimization angewendet?",
                     "examples": [
-                              "Vollständige Hierarchien",
-                              "Alle Abteilungen",
-                              "Reporting-Lines definiert"
+                              "Minimal Data Collection",
+                              "Purpose Limitation",
+                              "Data Reduction"
                     ],
                     "bestPractices": [
-                              "BCG: Organizational Data Model",
-                              "Deloitte: HR Data Architecture"
+                              "GDPR: Data Minimization",
+                              "BCG: Privacy Principles"
                     ]
           },
           {
-                    "id": "employmentHistory",
-                    "title": "Vollständige Beschäftigungshistorie",
-                    "description": "Ist die gesamte Beschäftigungshistorie erfasst?",
+                    "id": "rightToBeForgotten",
+                    "title": "Right to be Forgotten",
+                    "description": "Kann das Recht auf Vergessenwerden umgesetzt werden?",
                     "examples": [
-                              "Alle Positionen",
-                              "Vollständige Karrierepfade",
-                              "Historische Daten"
+                              "Data Deletion",
+                              "Erasure Process",
+                              "Deletion Workflow"
                     ],
                     "bestPractices": [
-                              "DAMA: Temporal Completeness",
-                              "McKinsey: Employee Lifecycle Data"
+                              "GDPR: Article 17",
+                              "Gartner: Data Deletion"
                     ]
           },
           {
-                    "id": "skillData",
-                    "title": "Kompetenz- und Skill-Daten vollständig",
-                    "description": "Sind alle Kompetenzen und Skills erfasst?",
+                    "id": "consentManagement",
+                    "title": "Consent Management",
+                    "description": "Gibt es Consent Management?",
                     "examples": [
-                              "Skill-Matrizen",
-                              "Zertifikate",
-                              "Weiterbildungen"
+                              "Consent Tracking",
+                              "Consent Records",
+                              "Consent Management"
                     ],
                     "bestPractices": [
-                              "Deloitte: Skills Taxonomy",
-                              "BCG: Competency Framework"
+                              "GDPR: Consent",
+                              "McKinsey: Privacy Management"
                     ]
           }
 ];
         
         let assessmentValues = {};
         let isManualOverride = false;
-        const criterionId = 'dataCompleteness';
-        const subCriterionId = 'completeEmployeeData';
+        const criterionId = 'dataSecurity';
+        const subCriterionId = 'gdprCompliance';
         
         
         
@@ -454,8 +453,8 @@
             const saved = JSON.parse(localStorage.getItem('kiDetailAssessments') || '{}');
             const parentData = saved.dataQuality;
             
-            if (parentData && parentData.criteria && parentData.criteria[dataCompleteness] && parentData.criteria[dataCompleteness].subCriteria && parentData.criteria[dataCompleteness].subCriteria[subCriterionId]) {
-                const subCriterionData = parentData.criteria[dataCompleteness].subCriteria[subCriterionId];
+            if (parentData && parentData.criteria && parentData.criteria[criterionId] && parentData.criteria[criterionId].subCriteria && parentData.criteria[criterionId].subCriteria[subCriterionId]) {
+                const subCriterionData = parentData.criteria[criterionId].subCriteria[subCriterionId];
                 
                 // Load sub-sub-criteria values
                 if (subCriterionData.subSubCriteria) {
@@ -582,15 +581,15 @@
             if (!saved.dataQuality.criteria) {
                 saved.dataQuality.criteria = {};
             }
-            if (!saved.dataQuality.criteria[dataCompleteness]) {
-                saved.dataQuality.criteria[dataCompleteness] = { subCriteria: {} };
+            if (!saved.dataQuality.criteria[criterionId]) {
+                saved.dataQuality.criteria[criterionId] = { subCriteria: {} };
             }
-            if (!saved.dataQuality.criteria[dataCompleteness].subCriteria) {
-                saved.dataQuality.criteria[dataCompleteness].subCriteria = {};
+            if (!saved.dataQuality.criteria[criterionId].subCriteria) {
+                saved.dataQuality.criteria[criterionId].subCriteria = {};
             }
             
             // Save sub-sub-criteria data
-            saved.dataQuality.criteria[dataCompleteness].subCriteria[subCriterionId] = {
+            saved.dataQuality.criteria[criterionId].subCriteria[subCriterionId] = {
                 aggregated: aggregated,
                 isManualOverride: isManualOverride,
                 subSubCriteria: assessmentValues,

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alle Mitarbeiterdaten sind vollständig erfasst - Datenqualität Assessment - Manuel Weiss</title>
+    <title>Schnelle Datenabfragen möglich - Datenqualität Assessment - Manuel Weiss</title>
     
     <!-- Meta Tags -->
     <meta name="description" content="Detaillierte Bewertung der Vollständigkeit von Mitarbeiterdaten für KI-Readiness in HR. Best Practices basierend auf DAMA, ISO, McKinsey, BCG, Deloitte.">
@@ -358,8 +358,8 @@
                 <i class="fas fa-arrow-left"></i>
                 Zurück zu Datenqualität
             </a>
-            <h1><i class="fas fa-user-check"></i> Alle Mitarbeiterdaten sind vollständig erfasst</h1>
-            <p>Wie vollständig sind die Mitarbeiterdaten?</p>
+            <h1><i class="fas fa-user-check"></i> Schnelle Datenabfragen möglich</h1>
+            <p>Wie schnell sind Datenabfragen?</p>
         </div>
         
         <div id="subSubCriteriaContainer">
@@ -381,71 +381,70 @@
     </div>
     
     <script>
-        // Sub-Sub-Criteria definitions for "Alle Mitarbeiterdaten sind vollständig erfasst"
+        // Sub-Sub-Criteria definitions for "Schnelle Datenabfragen möglich"
         const subSubCriteria = [
           {
-                    "id": "masterDataCompleteness",
-                    "title": "Vollständigkeit der Stammdaten",
-                    "description": "Sind alle Pflichtfelder in den Stammdaten ausgefüllt?",
+                    "id": "subSecondResponse",
+                    "title": "Sub-Sekunden Antwortzeiten",
+                    "description": "Wie schnell sind Antwortzeiten?",
                     "examples": [
-                              "100% Abdeckung Pflichtfelder",
-                              "Validierte Dateneingabe",
-                              "Automatische Prüfungen"
+                              "< 1s Response",
+                              "Fast Queries",
+                              "Optimized Performance"
                     ],
                     "bestPractices": [
-                              "DAMA: Data Completeness Dimension",
-                              "McKinsey: Master Data Management",
-                              "ISO 8000: Data Quality"
+                              "Gartner: Performance SLAs",
+                              "McKinsey: Query Optimization"
                     ]
           },
           {
-                    "id": "organizationalData",
-                    "title": "Organisationsdaten vollständig",
-                    "description": "Sind alle Organisationsstrukturen erfasst?",
+                    "id": "optimizedQueries",
+                    "title": "Optimierte Queries",
+                    "description": "Sind Queries optimiert?",
                     "examples": [
-                              "Vollständige Hierarchien",
-                              "Alle Abteilungen",
-                              "Reporting-Lines definiert"
+                              "Query Optimization",
+                              "Indexing",
+                              "Performance Tuning"
                     ],
                     "bestPractices": [
-                              "BCG: Organizational Data Model",
-                              "Deloitte: HR Data Architecture"
+                              "DAMA: Query Performance",
+                              "BCG: Database Optimization"
                     ]
           },
           {
-                    "id": "employmentHistory",
-                    "title": "Vollständige Beschäftigungshistorie",
-                    "description": "Ist die gesamte Beschäftigungshistorie erfasst?",
+                    "id": "cachingStrategies",
+                    "title": "Caching-Strategien",
+                    "description": "Gibt es Caching?",
                     "examples": [
-                              "Alle Positionen",
-                              "Vollständige Karrierepfade",
-                              "Historische Daten"
+                              "Query Caching",
+                              "Data Caching",
+                              "CDN Caching"
                     ],
                     "bestPractices": [
-                              "DAMA: Temporal Completeness",
-                              "McKinsey: Employee Lifecycle Data"
+                              "Deloitte: Caching Strategy",
+                              "Gartner: Cache Management"
                     ]
           },
           {
-                    "id": "skillData",
-                    "title": "Kompetenz- und Skill-Daten vollständig",
-                    "description": "Sind alle Kompetenzen und Skills erfasst?",
+                    "id": "queryPerformance",
+                    "title": "Query Performance Monitoring",
+                    "description": "Wird Performance überwacht?",
                     "examples": [
-                              "Skill-Matrizen",
-                              "Zertifikate",
-                              "Weiterbildungen"
+                              "Performance Metrics",
+                              "Slow Query Detection",
+                              "Optimization Alerts"
                     ],
                     "bestPractices": [
-                              "Deloitte: Skills Taxonomy",
-                              "BCG: Competency Framework"
+                              "McKinsey: Performance Monitoring",
+                              "BCG: Query Analytics"
                     ]
           }
 ];
         
         let assessmentValues = {};
         let isManualOverride = false;
-        const criterionId = 'dataCompleteness';
-        const subCriterionId = 'completeEmployeeData';
+        const criterionId = 'dataAccessibility';
+        const subCriterionId = 'fastQueries';
         
         
         
@@ -454,8 +453,8 @@
             const saved = JSON.parse(localStorage.getItem('kiDetailAssessments') || '{}');
             const parentData = saved.dataQuality;
             
-            if (parentData && parentData.criteria && parentData.criteria[dataCompleteness] && parentData.criteria[dataCompleteness].subCriteria && parentData.criteria[dataCompleteness].subCriteria[subCriterionId]) {
-                const subCriterionData = parentData.criteria[dataCompleteness].subCriteria[subCriterionId];
+            if (parentData && parentData.criteria && parentData.criteria[criterionId] && parentData.criteria[criterionId].subCriteria && parentData.criteria[criterionId].subCriteria[subCriterionId]) {
+                const subCriterionData = parentData.criteria[criterionId].subCriteria[subCriterionId];
                 
                 // Load sub-sub-criteria values
                 if (subCriterionData.subSubCriteria) {
@@ -582,15 +581,15 @@
             if (!saved.dataQuality.criteria) {
                 saved.dataQuality.criteria = {};
             }
-            if (!saved.dataQuality.criteria[dataCompleteness]) {
-                saved.dataQuality.criteria[dataCompleteness] = { subCriteria: {} };
+            if (!saved.dataQuality.criteria[criterionId]) {
+                saved.dataQuality.criteria[criterionId] = { subCriteria: {} };
             }
-            if (!saved.dataQuality.criteria[dataCompleteness].subCriteria) {
-                saved.dataQuality.criteria[dataCompleteness].subCriteria = {};
+            if (!saved.dataQuality.criteria[criterionId].subCriteria) {
+                saved.dataQuality.criteria[criterionId].subCriteria = {};
             }
             
             // Save sub-sub-criteria data
-            saved.dataQuality.criteria[dataCompleteness].subCriteria[subCriterionId] = {
+            saved.dataQuality.criteria[criterionId].subCriteria[subCriterionId] = {
                 aggregated: aggregated,
                 isManualOverride: isManualOverride,
                 subSubCriteria: assessmentValues,

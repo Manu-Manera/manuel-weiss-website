@@ -1,29 +1,13 @@
-const fs = require('fs');
-
-// Read the main file to extract subSubCriteria
-const mainFile = fs.readFileSync('ki-assessment-detail-dataQuality.html', 'utf8');
-
-// Extract dataQualityCriteria
-const criteriaMatch = mainFile.match(/const dataQualityCriteria = \[([\s\S]*?)\];/);
-if (!criteriaMatch) {
-    console.error('Could not find dataQualityCriteria');
-    process.exit(1);
-}
-
-// Parse the criteria (simplified - we'll extract manually)
-const criteriaStr = criteriaMatch[1];
-
-// Template for sub-detail page
-const template = `<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{TITLE}} - Datenqualität Assessment - Manuel Weiss</title>
+    <title>Schnelle Fehlerkorrekturprozesse - Datenqualität Assessment - Manuel Weiss</title>
     
     <!-- Meta Tags -->
-    <meta name="description" content="Detaillierte Bewertung für KI-Readiness in HR. Best Practices basierend auf DAMA, ISO, McKinsey, BCG, Deloitte.">
-    <meta name="keywords" content="Datenqualität, HR-Daten, KI-Readiness, Data Quality Assessment">
+    <meta name="description" content="Detaillierte Bewertung der Vollständigkeit von Mitarbeiterdaten für KI-Readiness in HR. Best Practices basierend auf DAMA, ISO, McKinsey, BCG, Deloitte.">
+    <meta name="keywords" content="Mitarbeiterdaten, Datenvollständigkeit, HR-Daten, KI-Readiness, Data Quality Assessment">
     <meta name="author" content="Manuel Weiss">
     
     <!-- Styles -->
@@ -31,7 +15,7 @@ const template = `<!DOCTYPE html>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
-    <!-- Custom Styles -->
+    <!-- Custom Styles for Detail Assessment -->
     <link rel="stylesheet" href="css/ki-assessment-detail.css">
     <style>
         .detail-assessment-container {
@@ -312,6 +296,30 @@ const template = `<!DOCTYPE html>
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
         }
         
+        .manual-override-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(245, 158, 11, 0.1);
+            color: #d97706;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            margin-left: 1rem;
+        }
+        
+        .auto-calculated-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(16, 185, 129, 0.1);
+            color: #059669;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            margin-left: 1rem;
+        }
+        
         @media (max-width: 768px) {
             .detail-header h1 {
                 font-size: 2rem;
@@ -350,8 +358,8 @@ const template = `<!DOCTYPE html>
                 <i class="fas fa-arrow-left"></i>
                 Zurück zu Datenqualität
             </a>
-            <h1><i class="fas fa-user-check"></i> {{TITLE}}</h1>
-            <p>{{DESCRIPTION}}</p>
+            <h1><i class="fas fa-user-check"></i> Schnelle Fehlerkorrekturprozesse</h1>
+            <p>Wie schnell werden Datenfehler korrigiert?</p>
         </div>
         
         <div id="subSubCriteriaContainer">
@@ -373,22 +381,79 @@ const template = `<!DOCTYPE html>
     </div>
     
     <script>
-        // Sub-Sub-Criteria definitions
-        const subSubCriteria = {{SUBSUBCRITERIA}};
+        // Sub-Sub-Criteria definitions for "Schnelle Fehlerkorrekturprozesse"
+        const subSubCriteria = [
+          {
+                    "id": "immediateNotification",
+                    "title": "Sofortige Fehlerbenachrichtigung",
+                    "description": "Werden Fehler sofort benachrichtigt?",
+                    "examples": [
+                              "Real-time Alerts",
+                              "Email Notifications",
+                              "System Alerts"
+                    ],
+                    "bestPractices": [
+                              "McKinsey: Error Detection",
+                              "BCG: Alert Systems"
+                    ]
+          },
+          {
+                    "id": "correctionProcess",
+                    "title": "Klarer Korrekturprozess",
+                    "description": "Gibt es einen definierten Korrekturprozess?",
+                    "examples": [
+                              "Workflow for Corrections",
+                              "Approval Steps",
+                              "Documentation"
+                    ],
+                    "bestPractices": [
+                              "DAMA: Data Correction",
+                              "Deloitte: Remediation Process"
+                    ]
+          },
+          {
+                    "id": "clearResponsibilities",
+                    "title": "Verantwortlichkeiten definiert",
+                    "description": "Sind Verantwortlichkeiten klar definiert?",
+                    "examples": [
+                              "Data Stewards",
+                              "Owners",
+                              "Escalation Path"
+                    ],
+                    "bestPractices": [
+                              "Gartner: Data Ownership",
+                              "ISO 8000: Responsibilities"
+                    ]
+          },
+          {
+                    "id": "correctionSpeed",
+                    "title": "Schnelle Korrekturzeiten",
+                    "description": "Wie schnell werden Fehler korrigiert?",
+                    "examples": [
+                              "SLA for Corrections",
+                              "Priority Levels",
+                              "Fast Resolution"
+                    ],
+                    "bestPractices": [
+                              "McKinsey: Time to Resolution",
+                              "BCG: Correction SLAs"
+                    ]
+          }
+];
         
         let assessmentValues = {};
         let isManualOverride = false;
-        const criterionId = '{{CRITERION_ID}}';
-        const subCriterionId = '{{SUBCRITERION_ID}}';
+        const criterionId = 'dataAccuracy';
+        const subCriterionId = 'errorCorrection';
+        
+        
         
         function initializeAssessment() {
             // Load from parent assessment
             const saved = JSON.parse(localStorage.getItem('kiDetailAssessments') || '{}');
             const parentData = saved.dataQuality;
             
-            if (parentData && parentData.criteria && parentData.criteria[criterionId] && 
-                parentData.criteria[criterionId].subCriteria && 
-                parentData.criteria[criterionId].subCriteria[subCriterionId]) {
+            if (parentData && parentData.criteria && parentData.criteria[criterionId] && parentData.criteria[criterionId].subCriteria && parentData.criteria[criterionId].subCriteria[subCriterionId]) {
                 const subCriterionData = parentData.criteria[criterionId].subCriteria[subCriterionId];
                 
                 // Load sub-sub-criteria values
@@ -417,28 +482,28 @@ const template = `<!DOCTYPE html>
             const container = document.getElementById('subSubCriteriaContainer');
             container.innerHTML = subSubCriteria.map(subSubCriterion => {
                 const value = assessmentValues[subSubCriterion.id] || 1;
-                return \`
+                return `
                 <div class="sub-sub-criterion-card">
                     <div class="sub-sub-criterion-header">
                         <div class="sub-sub-criterion-icon">
                             <i class="fas fa-check-circle"></i>
                         </div>
                         <div class="sub-sub-criterion-title-section">
-                            <h3 class="sub-sub-criterion-title">\${subSubCriterion.title}</h3>
-                            <p class="sub-sub-criterion-description">\${subSubCriterion.description}</p>
+                            <h3 class="sub-sub-criterion-title">${subSubCriterion.title}</h3>
+                            <p class="sub-sub-criterion-description">${subSubCriterion.description}</p>
                             <div style="margin-top: 0.5rem;">
-                                \${subSubCriterion.bestPractices.map(bp => \`<span class="best-practices-badge">\${bp}</span>\`).join('')}
+                                ${subSubCriterion.bestPractices.map(bp => `<span class="best-practices-badge">${bp}</span>`).join('')}
                             </div>
                         </div>
                     </div>
-                    \${subSubCriterion.examples && subSubCriterion.examples.length > 0 ? \`
+                    ${subSubCriterion.examples && subSubCriterion.examples.length > 0 ? `
                     <div class="sub-sub-criterion-examples">
                         <h5>Beispiele:</h5>
                         <ul>
-                            \${subSubCriterion.examples.map(ex => \`<li>\${ex}</li>\`).join('')}
+                            ${subSubCriterion.examples.map(ex => `<li>${ex}</li>`).join('')}
                         </ul>
                     </div>
-                    \` : ''}
+                    ` : ''}
                     <div class="slider-section">
                         <div class="slider-wrapper">
                             <div class="slider-labels-top">
@@ -450,12 +515,12 @@ const template = `<!DOCTYPE html>
                                 min="1" 
                                 max="5" 
                                 step="1"
-                                value="\${value}"
+                                value="${value}"
                                 class="sub-sub-criterion-slider" 
-                                id="slider-\${subSubCriterion.id}"
-                                oninput="updateSubSubCriterionValue('\${subSubCriterion.id}', this.value)"
+                                id="slider-${subSubCriterion.id}"
+                                oninput="updateSubSubCriterionValue('${subSubCriterion.id}', this.value)"
                             >
-                            <div class="sub-sub-criterion-value" id="value-\${subSubCriterion.id}">\${value}</div>
+                            <div class="sub-sub-criterion-value" id="value-${subSubCriterion.id}">${value}</div>
                             <div class="slider-scale">
                                 <span>1</span>
                                 <span>2</span>
@@ -466,13 +531,13 @@ const template = `<!DOCTYPE html>
                         </div>
                     </div>
                 </div>
-                \`;
+                `;
             }).join('');
         }
         
         function updateSubSubCriterionValue(subSubCriterionId, value) {
             assessmentValues[subSubCriterionId] = parseInt(value);
-            document.getElementById(\`value-\${subSubCriterionId}\`).textContent = value;
+            document.getElementById(`value-${subSubCriterionId}`).textContent = value;
             updateAggregatedScore();
         }
         
@@ -493,9 +558,9 @@ const template = `<!DOCTYPE html>
             } else if (average <= 3.5) {
                 description = 'Gut - Solide Basis, weitere Optimierung möglich';
             } else if (average <= 4.5) {
-                description = 'Sehr gut - Hohe Qualität, kleine Verbesserungen möglich';
+                description = 'Sehr gut - Hohe Vollständigkeit, kleine Verbesserungen möglich';
             } else {
-                description = 'Exzellent - Hervorragende Qualität';
+                description = 'Exzellent - Hervorragende Datenvollständigkeit';
             }
             
             document.getElementById('scoreDescription').textContent = description;
@@ -541,7 +606,4 @@ const template = `<!DOCTYPE html>
         });
     </script>
 </body>
-</html>`;
-
-console.log('Template loaded. This script would generate all sub-detail pages.');
-console.log('For now, creating pages manually is more reliable.');
+</html>

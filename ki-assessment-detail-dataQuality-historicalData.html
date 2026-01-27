@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alle Mitarbeiterdaten sind vollständig erfasst - Datenqualität Assessment - Manuel Weiss</title>
+    <title>Historische Daten sind vollständig verfügbar - Datenqualität Assessment - Manuel Weiss</title>
     
     <!-- Meta Tags -->
     <meta name="description" content="Detaillierte Bewertung der Vollständigkeit von Mitarbeiterdaten für KI-Readiness in HR. Best Practices basierend auf DAMA, ISO, McKinsey, BCG, Deloitte.">
@@ -358,8 +358,8 @@
                 <i class="fas fa-arrow-left"></i>
                 Zurück zu Datenqualität
             </a>
-            <h1><i class="fas fa-user-check"></i> Alle Mitarbeiterdaten sind vollständig erfasst</h1>
-            <p>Wie vollständig sind die Mitarbeiterdaten?</p>
+            <h1><i class="fas fa-user-check"></i> Historische Daten sind vollständig verfügbar</h1>
+            <p>Wie vollständig ist der historische Datenbestand?</p>
         </div>
         
         <div id="subSubCriteriaContainer">
@@ -381,63 +381,62 @@
     </div>
     
     <script>
-        // Sub-Sub-Criteria definitions for "Alle Mitarbeiterdaten sind vollständig erfasst"
+        // Sub-Sub-Criteria definitions for "Historische Daten sind vollständig verfügbar"
         const subSubCriteria = [
           {
-                    "id": "masterDataCompleteness",
-                    "title": "Vollständigkeit der Stammdaten",
-                    "description": "Sind alle Pflichtfelder in den Stammdaten ausgefüllt?",
+                    "id": "fullHistory",
+                    "title": "Vollständige Historie seit Systemstart",
+                    "description": "Ist die komplette Historie seit Systemstart verfügbar?",
                     "examples": [
-                              "100% Abdeckung Pflichtfelder",
-                              "Validierte Dateneingabe",
-                              "Automatische Prüfungen"
-                    ],
-                    "bestPractices": [
-                              "DAMA: Data Completeness Dimension",
-                              "McKinsey: Master Data Management",
-                              "ISO 8000: Data Quality"
-                    ]
-          },
-          {
-                    "id": "organizationalData",
-                    "title": "Organisationsdaten vollständig",
-                    "description": "Sind alle Organisationsstrukturen erfasst?",
-                    "examples": [
-                              "Vollständige Hierarchien",
-                              "Alle Abteilungen",
-                              "Reporting-Lines definiert"
-                    ],
-                    "bestPractices": [
-                              "BCG: Organizational Data Model",
-                              "Deloitte: HR Data Architecture"
-                    ]
-          },
-          {
-                    "id": "employmentHistory",
-                    "title": "Vollständige Beschäftigungshistorie",
-                    "description": "Ist die gesamte Beschäftigungshistorie erfasst?",
-                    "examples": [
-                              "Alle Positionen",
-                              "Vollständige Karrierepfade",
-                              "Historische Daten"
+                              "Alle historischen Datensätze",
+                              "Keine Datenlöschungen",
+                              "Vollständige Timeline"
                     ],
                     "bestPractices": [
                               "DAMA: Temporal Completeness",
-                              "McKinsey: Employee Lifecycle Data"
+                              "McKinsey: Historical Data Retention"
                     ]
           },
           {
-                    "id": "skillData",
-                    "title": "Kompetenz- und Skill-Daten vollständig",
-                    "description": "Sind alle Kompetenzen und Skills erfasst?",
+                    "id": "archivedData",
+                    "title": "Archivierte Daten zugänglich",
+                    "description": "Sind archivierte Daten einfach zugänglich?",
                     "examples": [
-                              "Skill-Matrizen",
-                              "Zertifikate",
-                              "Weiterbildungen"
+                              "Archive-System",
+                              "Schnelle Wiederherstellung",
+                              "Metadata für Archive"
                     ],
                     "bestPractices": [
-                              "Deloitte: Skills Taxonomy",
-                              "BCG: Competency Framework"
+                              "ISO 15489: Records Management",
+                              "Deloitte: Data Archiving"
+                    ]
+          },
+          {
+                    "id": "noDataLoss",
+                    "title": "Keine Datenverluste",
+                    "description": "Gibt es Datenverluste in der Historie?",
+                    "examples": [
+                              "Backup-Strategien",
+                              "Disaster Recovery",
+                              "Data Retention Policies"
+                    ],
+                    "bestPractices": [
+                              "Gartner: Data Loss Prevention",
+                              "BCG: Data Resilience"
+                    ]
+          },
+          {
+                    "id": "historicalAccess",
+                    "title": "Einfacher Zugriff auf historische Daten",
+                    "description": "Wie einfach ist der Zugriff auf historische Daten?",
+                    "examples": [
+                              "Historical Queries",
+                              "Time-based Views",
+                              "Historical Reporting"
+                    ],
+                    "bestPractices": [
+                              "DAMA: Historical Data Access",
+                              "McKinsey: Temporal Analytics"
                     ]
           }
 ];
@@ -445,7 +444,7 @@
         let assessmentValues = {};
         let isManualOverride = false;
         const criterionId = 'dataCompleteness';
-        const subCriterionId = 'completeEmployeeData';
+        const subCriterionId = 'historicalData';
         
         
         

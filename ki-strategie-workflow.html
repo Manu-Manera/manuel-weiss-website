@@ -2040,11 +2040,23 @@
         
         // Maturity assessment functions
         function updateAssessment(dimension, value) {
-            maturityData[dimension] = parseInt(value);
+            const numValue = parseFloat(value);
+            maturityData[dimension] = numValue;
+            
+            // Save manual override flag
+            const savedAssessments = JSON.parse(localStorage.getItem('kiDetailAssessments') || '{}');
+            if (!savedAssessments[dimension]) {
+                savedAssessments[dimension] = {};
+            }
+            savedAssessments[dimension].isManualOverride = true;
+            savedAssessments[dimension].aggregated = numValue;
+            savedAssessments[dimension].timestamp = new Date().toISOString();
+            localStorage.setItem('kiDetailAssessments', JSON.stringify(savedAssessments));
+            
             // Update value display
             const valueDisplay = document.getElementById(`${dimension}Value`);
             if (valueDisplay) {
-                valueDisplay.textContent = value;
+                valueDisplay.textContent = numValue.toFixed(1);
             }
             calculateOverallMaturity();
             updateMaturityDisplay();
@@ -2081,17 +2093,32 @@
             
             Object.keys(dimensionMap).forEach(dimension => {
                 const savedKey = dimensionMap[dimension];
-                if (savedAssessments[savedKey] && savedAssessments[savedKey].aggregated) {
-                    const aggregatedValue = savedAssessments[savedKey].aggregated;
-                    maturityData[dimension] = aggregatedValue;
-                    const slider = document.getElementById(`${dimension}Slider`);
-                    if (slider) {
-                        slider.value = Math.round(aggregatedValue);
+                if (savedAssessments[savedKey]) {
+                    // Check for manual override first
+                    let aggregatedValue = null;
+                    
+                    // Check if there's a manual override at the dimension level
+                    if (savedAssessments[savedKey].isManualOverride && savedAssessments[savedKey].aggregated !== undefined) {
+                        aggregatedValue = savedAssessments[savedKey].aggregated;
+                    } else if (savedAssessments[savedKey].aggregated !== undefined) {
+                        // Use aggregated value (which may come from sub-sub-criteria)
+                        aggregatedValue = savedAssessments[savedKey].aggregated;
+                    } else if (savedAssessments[savedKey].criterionAverages && savedAssessments[savedKey].criterionAverages.length > 0) {
+                        // Calculate from criterion averages (which may include sub-sub-criteria averages)
+                        aggregatedValue = savedAssessments[savedKey].criterionAverages.reduce((sum, c) => sum + c.average, 0) / savedAssessments[savedKey].criterionAverages.length;
                     }
-                    // Update value display
-                    const valueDisplay = document.getElementById(`${dimension}Value`);
-                    if (valueDisplay) {
-                        valueDisplay.textContent = aggregatedValue.toFixed(1);
+                    
+                    if (aggregatedValue !== null) {
+                        maturityData[dimension] = aggregatedValue;
+                        const slider = document.getElementById(`${dimension}Slider`);
+                        if (slider) {
+                            slider.value = Math.round(aggregatedValue);
+                        }
+                        // Update value display
+                        const valueDisplay = document.getElementById(`${dimension}Value`);
+                        if (valueDisplay) {
+                            valueDisplay.textContent = aggregatedValue.toFixed(1);
+                        }
                     }
                 }
             });

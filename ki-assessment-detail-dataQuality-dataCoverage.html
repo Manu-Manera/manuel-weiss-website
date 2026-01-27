@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alle Mitarbeiterdaten sind vollständig erfasst - Datenqualität Assessment - Manuel Weiss</title>
+    <title>Vollständige Abdeckung aller HR-Prozesse - Datenqualität Assessment - Manuel Weiss</title>
     
     <!-- Meta Tags -->
     <meta name="description" content="Detaillierte Bewertung der Vollständigkeit von Mitarbeiterdaten für KI-Readiness in HR. Best Practices basierend auf DAMA, ISO, McKinsey, BCG, Deloitte.">
@@ -358,8 +358,8 @@
                 <i class="fas fa-arrow-left"></i>
                 Zurück zu Datenqualität
             </a>
-            <h1><i class="fas fa-user-check"></i> Alle Mitarbeiterdaten sind vollständig erfasst</h1>
-            <p>Wie vollständig sind die Mitarbeiterdaten?</p>
+            <h1><i class="fas fa-user-check"></i> Vollständige Abdeckung aller HR-Prozesse</h1>
+            <p>Werden alle HR-Prozesse durch Daten abgedeckt?</p>
         </div>
         
         <div id="subSubCriteriaContainer">
@@ -381,63 +381,63 @@
     </div>
     
     <script>
-        // Sub-Sub-Criteria definitions for "Alle Mitarbeiterdaten sind vollständig erfasst"
+        // Sub-Sub-Criteria definitions for "Vollständige Abdeckung aller HR-Prozesse"
         const subSubCriteria = [
           {
-                    "id": "masterDataCompleteness",
-                    "title": "Vollständigkeit der Stammdaten",
-                    "description": "Sind alle Pflichtfelder in den Stammdaten ausgefüllt?",
+                    "id": "recruitingToOffboarding",
+                    "title": "Recruiting bis Offboarding abgedeckt",
+                    "description": "Sind alle Phasen des Employee Lifecycle abgedeckt?",
                     "examples": [
-                              "100% Abdeckung Pflichtfelder",
-                              "Validierte Dateneingabe",
-                              "Automatische Prüfungen"
+                              "Recruiting-Daten",
+                              "Onboarding-Daten",
+                              "Offboarding-Daten"
                     ],
                     "bestPractices": [
-                              "DAMA: Data Completeness Dimension",
-                              "McKinsey: Master Data Management",
-                              "ISO 8000: Data Quality"
+                              "McKinsey: Employee Lifecycle",
+                              "Deloitte: End-to-End HR Data"
                     ]
           },
           {
-                    "id": "organizationalData",
-                    "title": "Organisationsdaten vollständig",
-                    "description": "Sind alle Organisationsstrukturen erfasst?",
+                    "id": "lifecycleEvents",
+                    "title": "Alle HR-Lifecycle-Events erfasst",
+                    "description": "Werden alle wichtigen Events erfasst?",
                     "examples": [
-                              "Vollständige Hierarchien",
-                              "Alle Abteilungen",
-                              "Reporting-Lines definiert"
+                              "Promotions",
+                              "Transfers",
+                              "Terminations",
+                              "Rehires"
                     ],
                     "bestPractices": [
-                              "BCG: Organizational Data Model",
-                              "Deloitte: HR Data Architecture"
+                              "BCG: HR Event Tracking",
+                              "Gartner: Lifecycle Analytics"
                     ]
           },
           {
-                    "id": "employmentHistory",
-                    "title": "Vollständige Beschäftigungshistorie",
-                    "description": "Ist die gesamte Beschäftigungshistorie erfasst?",
+                    "id": "processData",
+                    "title": "Vollständige Prozessdaten",
+                    "description": "Sind alle Prozessdaten erfasst?",
                     "examples": [
-                              "Alle Positionen",
-                              "Vollständige Karrierepfade",
-                              "Historische Daten"
+                              "Workflow-Daten",
+                              "Approval-Daten",
+                              "Process Metrics"
                     ],
                     "bestPractices": [
-                              "DAMA: Temporal Completeness",
-                              "McKinsey: Employee Lifecycle Data"
+                              "DAMA: Process Data",
+                              "McKinsey: Process Analytics"
                     ]
           },
           {
-                    "id": "skillData",
-                    "title": "Kompetenz- und Skill-Daten vollständig",
-                    "description": "Sind alle Kompetenzen und Skills erfasst?",
+                    "id": "transactionalData",
+                    "title": "Transaktionale HR-Daten erfasst",
+                    "description": "Sind alle Transaktionen erfasst?",
                     "examples": [
-                              "Skill-Matrizen",
-                              "Zertifikate",
-                              "Weiterbildungen"
+                              "Payroll-Transaktionen",
+                              "Benefits-Transaktionen",
+                              "Time-Transaktionen"
                     ],
                     "bestPractices": [
-                              "Deloitte: Skills Taxonomy",
-                              "BCG: Competency Framework"
+                              "ISO 8000: Transactional Data",
+                              "Deloitte: Transaction Tracking"
                     ]
           }
 ];
@@ -445,7 +445,7 @@
         let assessmentValues = {};
         let isManualOverride = false;
         const criterionId = 'dataCompleteness';
-        const subCriterionId = 'completeEmployeeData';
+        const subCriterionId = 'dataCoverage';
         
         
         
