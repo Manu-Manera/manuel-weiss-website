@@ -72,11 +72,11 @@ export class AuthStack extends cdk.Stack {
         ],
         callbackUrls: [
           'http://localhost:3000/callback',
-          'https://mawps.netlify.app/callback'
+          'https://manuel-weiss.ch/callback'
         ],
         logoutUrls: [
           'http://localhost:3000/logout',
-          'https://mawps.netlify.app/logout'
+          'https://manuel-weiss.ch/logout'
         ]
       },
       refreshTokenValidity: cdk.Duration.days(30),

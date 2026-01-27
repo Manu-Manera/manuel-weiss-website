@@ -650,7 +650,7 @@ async function getOpenAIApiKey() {
         
         // 3. Versuche über API (zentrale Konfiguration)
         try {
-            const apiUrl = window.getApiUrl ? window.getApiUrl('API_SETTINGS') + '/key?provider=openai' : '/.netlify/functions/api-settings/key?provider=openai';
+            const apiUrl = window.getApiUrl ? window.getApiUrl('API_SETTINGS') + '/key?provider=openai' : (window.AWS_APP_CONFIG?.API_BASE || 'https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1') + '/api-settings/key?provider=openai';
             const response = await fetch(apiUrl, {
                 headers: {
                     'X-User-Id': getUserId()
@@ -664,7 +664,7 @@ async function getOpenAIApiKey() {
                 }
             }
         } catch (e) {
-            console.warn('Netlify Function nicht erreichbar:', e);
+            console.warn('API-Settings Endpoint nicht erreichbar:', e);
         }
         
         // 4. Fallback: localStorage

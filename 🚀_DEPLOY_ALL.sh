@@ -24,7 +24,37 @@ if [ -n "$(git status --porcelain)" ]; then
     git add -A
     git commit -m "Auto-deploy: $(date +%Y-%m-%d_%H-%M-%S)" || echo -e "${YELLOW}⚠️ Keine Änderungen zum Committen${NC}"
     git push origin main || echo -e "${YELLOW}⚠️ Push fehlgeschlagen - bitte manuell über GitHub Desktop pushen${NC}"
-    echo -e "${GREEN}✅ Frontend wird über Netlify deployed (2-3 Min)${NC}"
+    echo -e "${GREEN}✅ Frontend-Änderungen committed und gepusht${NC}"
+    echo -e "${BLUE}📤 Führe AWS S3 Sync aus...${NC}"
+    
+    # AWS S3 Sync
+    if command -v aws &> /dev/null && aws sts get-caller-identity &> /dev/null; then
+        aws s3 sync . s3://manuel-weiss-website \
+            --exclude "*.git/*" \
+            --exclude "node_modules/*" \
+            --exclude "infrastructure/*" \
+            --exclude "lambda/*" \
+            --exclude "netlify/*" \
+            --exclude ".github/*" \
+            --exclude "docs/archive/*" \
+            --exclude "scripts/archive/*" \
+            --region eu-central-1
+        
+        echo -e "${GREEN}✅ S3 Sync abgeschlossen${NC}"
+        
+        # CloudFront Invalidation
+        echo -e "${BLUE}🔄 Invalidiere CloudFront Cache...${NC}"
+        aws cloudfront create-invalidation \
+            --distribution-id E305V0ATIXMNNG \
+            --paths "/*" \
+            --region eu-central-1
+        
+        echo -e "${GREEN}✅ CloudFront Cache invalidiert (2-5 Min bis live)${NC}"
+    else
+        echo -e "${YELLOW}⚠️ AWS CLI nicht verfügbar - manuelles Deployment erforderlich${NC}"
+        echo -e "${YELLOW}   Führe aus: aws s3 sync . s3://manuel-weiss-website --exclude '*.git/*' --exclude 'node_modules/*' --exclude 'infrastructure/*' --exclude 'lambda/*' --exclude 'netlify/*' --region eu-central-1${NC}"
+        echo -e "${YELLOW}   Dann: aws cloudfront create-invalidation --distribution-id E305V0ATIXMNNG --paths '/*' --region eu-central-1${NC}"
+    fi
 else
     echo -e "${YELLOW}ℹ️ Keine Frontend-Änderungen${NC}"
 fi
@@ -57,11 +87,11 @@ echo "   ℹ️ Verwende deploy-user-profile-lambda.sh für Deployment"
 echo ""
 echo -e "${GREEN}🎉 DEPLOYMENT ABGESCHLOSSEN!${NC}"
 echo ""
-echo "Frontend: https://mawps.netlify.app (wird in 2-3 Min live sein)"
+echo "Frontend: https://manuel-weiss.ch (wird in 2-5 Min live sein nach CloudFront Invalidation)"
 echo "Backend: https://of2iwj7h2c.execute-api.eu-central-1.amazonaws.com/prod"
 echo ""
 echo -e "${BLUE}📋 Nächste Schritte:${NC}"
-echo "1. Warten Sie 2-3 Minuten bis Netlify deployed hat"
-echo "2. Testen Sie: https://mawps.netlify.app/admin#hero-about"
+echo "1. Warten Sie 2-5 Minuten bis CloudFront Cache invalidiert ist"
+echo "2. Testen Sie: https://manuel-weiss.ch/admin#hero-about"
 echo "3. Laden Sie ein Profilbild hoch und prüfen Sie die Console"
 

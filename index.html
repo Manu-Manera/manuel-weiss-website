@@ -15,7 +15,7 @@
     <meta property="og:title" content="Manuel Weiss - Professional Services">
     <meta property="og:description" content="HR Berater für AI, Transformation und Geschäftsprozesse">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://mawps.netlify.app">
+    <meta property="og:url" content="https://manuel-weiss.ch">
     
     <!-- PWA -->
     <link rel="manifest" href="manifest.json">
@@ -1458,7 +1458,7 @@
             }
             
             // PRIORITÄT: Profilbild SOFORT aus AWS laden (vor allem anderen)
-            // WICHTIG: Dies funktioniert domain-unabhängig (mawps.netlify.app und manuel-weiss.ch)
+            // WICHTIG: Dies funktioniert domain-unabhängig (manuel-weiss.ch)
             console.log('🌐 WEBSITE: Loading profile image from AWS (works on all domains)...');
             const awsImage = await loadProfileImageFromAWS();
             if (!awsImage) {
@@ -2467,7 +2467,7 @@
             
             async saveHighscore(name, score) {
                 try {
-                    const apiUrl = window.getApiUrl ? window.getApiUrl('SNOWFLAKE_HIGHSCORES') : '/.netlify/functions/snowflake-highscores';
+                    const apiUrl = window.getApiUrl ? window.getApiUrl('SNOWFLAKE_HIGHSCORES') : (window.AWS_APP_CONFIG?.API_BASE || 'https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1') + '/snowflake-highscores';
                     const response = await fetch(apiUrl, {
                         method: 'POST',
                         headers: {
@@ -2500,7 +2500,7 @@
             
             async loadHighscores() {
                 try {
-                    const apiUrl = window.getApiUrl ? window.getApiUrl('SNOWFLAKE_HIGHSCORES') : '/.netlify/functions/snowflake-highscores';
+                    const apiUrl = window.getApiUrl ? window.getApiUrl('SNOWFLAKE_HIGHSCORES') : (window.AWS_APP_CONFIG?.API_BASE || 'https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1') + '/snowflake-highscores';
                     const response = await fetch(apiUrl);
                     if (!response.ok) {
                         throw new Error('Failed to load highscores');
@@ -2763,7 +2763,7 @@
                 }, 10000);
                 
                 try {
-                    const apiUrl = window.getApiUrl ? window.getApiUrl('HERO_VIDEO_SETTINGS') : '/.netlify/functions/hero-video-settings';
+                    const apiUrl = window.getApiUrl ? window.getApiUrl('HERO_VIDEO_SETTINGS') : (window.AWS_APP_CONFIG?.API_BASE || 'https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1') + '/hero-video-settings';
                     console.log('📡 Lade Hero-Video-URL von:', apiUrl);
                     
                     let response;

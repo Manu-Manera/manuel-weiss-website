@@ -17,8 +17,9 @@ class OrgDevAPI {
             // Fallback auf AWS API Base
             this.apiBaseUrl = `${window.AWS_APP_CONFIG.API_BASE}/organisationsentwicklung/assessments`;
         } else {
-            // Letzter Fallback auf Netlify Functions (nur für Entwicklung)
-            this.apiBaseUrl = '/.netlify/functions/org-dev-assessments';
+            // Fallback: Verwende AWS API Gateway direkt
+            console.warn('⚠️ ORG_DEV_ASSESSMENTS Endpoint nicht in aws-app-config.js gefunden. Verwende direkten API Gateway Pfad.');
+            this.apiBaseUrl = `${window.AWS_APP_CONFIG?.API_BASE || 'https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1'}/organisationsentwicklung/assessments`;
         }
     }
 

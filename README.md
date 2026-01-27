@@ -4,8 +4,7 @@
 
 ## 🌐 Live Website
 
-**Website:** [https://manu-manera.github.io/manuel-weiss-website](https://manu-manera.github.io/manuel-weiss-website)  
-**Netlify:** [https://mawps.netlify.app](https://mawps.netlify.app) *(Primär)*
+**Website:** [https://manuel-weiss.ch](https://manuel-weiss.ch) *(Primär - AWS S3 + CloudFront)*
 
 ---
 
@@ -17,13 +16,12 @@
 
 **Kurzfassung:**
 1. Änderungen in Cursor/IDE machen
-2. GitHub Desktop öffnen → Commit erstellen
-3. "Push origin" klicken
-4. Netlify deployt automatisch (2-3 Min)
-5. Website testen: https://mawps.netlify.app
+2. AWS S3 Sync ausführen: `aws s3 sync . s3://manuel-weiss-website --exclude "*.git/*" --exclude "node_modules/*" --exclude "infrastructure/*" --exclude "lambda/*" --exclude "netlify/*" --region eu-central-1`
+3. CloudFront Cache invalidiert: `aws cloudfront create-invalidation --distribution-id E305V0ATIXMNNG --paths "/*" --region eu-central-1`
+4. Website testen: https://manuel-weiss.ch
 
 **Repository:** `Manu-Manera/manuel-weiss-website`  
-**Deployment:** GitHub Desktop → GitHub → Netlify (automatisch)
+**Deployment:** AWS S3 + CloudFront (manuell via AWS CLI)
 
 ---
 
@@ -59,7 +57,7 @@ Diese professionelle Website kombiniert **Business-Services**, **KI-gestützte B
 - **Frontend**: HTML5, CSS3, JavaScript ES6+, React, Chakra UI
 - **Backend**: AWS Lambda, DynamoDB, S3, Cognito, API Gateway
 - **AI Integration**: OpenAI GPT-3.5/GPT-4, CoverLetterGPT Prompts
-- **Deployment**: Netlify (Primär), GitHub Pages (Backup)
+- **Deployment**: AWS S3 + CloudFront (vollständig migriert)
 - **Version Control**: GitHub Desktop + GitHub Repository
 
 ---
@@ -321,15 +319,15 @@ const apiConfig = {
 - **Automatische Erkennung** von Änderungen
 - **Live Preview** verfügbar
 
-#### 3. Deployment über GitHub Desktop
-1. **Änderungen committen** in GitHub Desktop
-2. **Push zu GitHub** Repository
-3. **Netlify** deployt automatisch (1-2 Minuten)
-4. **Live Website** unter [https://mawps.netlify.app](https://mawps.netlify.app)
+#### 3. Deployment über AWS CLI
+1. **Änderungen committen** in GitHub Desktop (optional, für Versionskontrolle)
+2. **AWS S3 Sync** ausführen: `aws s3 sync . s3://manuel-weiss-website --exclude "*.git/*" --exclude "node_modules/*" --exclude "infrastructure/*" --exclude "lambda/*" --exclude "netlify/*" --region eu-central-1`
+3. **CloudFront Cache invalidiert**: `aws cloudfront create-invalidation --distribution-id E305V0ATIXMNNG --paths "/*" --region eu-central-1`
+4. **Live Website** unter [https://manuel-weiss.ch](https://manuel-weiss.ch) (2-5 Minuten)
 
 ### 🌐 **Live URLs**
-- **Primär**: [https://mawps.netlify.app](https://mawps.netlify.app)
-- **Backup**: [https://manu-manera.github.io/manuel-weiss-website](https://manu-manera.github.io/manuel-weiss-website)
+- **Primär**: [https://manuel-weiss.ch](https://manuel-weiss.ch) (AWS S3 + CloudFront)
+- **Backend API**: [https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1](https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1)
 
 ### 🔑 **API-Konfiguration**
 
@@ -341,7 +339,7 @@ localStorage.setItem('openai_api_key', 'sk-your-api-key-here');
 // Option 2: Über Umgebungsvariable
 window.OPENAI_API_KEY = 'sk-your-api-key-here';
 
-// Option 3: Über Admin Panel (https://mawps.netlify.app/admin)
+// Option 3: Über Admin Panel (https://manuel-weiss.ch/admin)
 // KI-Einstellungen → OpenAI API Key konfigurieren
 
 // Option 4: Über den integrierten Dialog
@@ -563,22 +561,21 @@ const secureStorage = {
 
 ## 🚀 Deployment
 
-### 🌐 **Netlify (Primär)**
-- **URL**: [https://mawps.netlify.app](https://mawps.netlify.app)
-- **Automatisches Deployment**: Bei jedem Push auf `main` Branch
-- **Build Command**: Kein Build erforderlich (statische Website)
-- **Publish Directory**: `/` (Root)
-- **Custom Headers**: Für bessere Performance und Sicherheit
+### 🌐 **AWS S3 + CloudFront (Primär)**
+- **URL**: [https://manuel-weiss.ch](https://manuel-weiss.ch)
+- **Hosting**: AWS S3 Static Website Hosting
+- **CDN**: CloudFront Distribution
+- **Deployment**: Manuell via AWS CLI (S3 Sync + CloudFront Invalidation)
 
-### 📱 **GitHub Desktop Workflow**
+### 📱 **Deployment-Workflow**
 1. **Änderungen in Cursor** → Dateien werden automatisch erkannt
-2. **GitHub Desktop** → Commits und Push zu GitHub
-3. **Netlify** → Automatisches Deployment (1-2 Minuten)
-4. **Live Website** → Sofort verfügbar
+2. **AWS S3 Sync** → `aws s3 sync . s3://manuel-weiss-website --exclude "*.git/*" --exclude "node_modules/*" --exclude "infrastructure/*" --exclude "lambda/*" --exclude "netlify/*" --region eu-central-1`
+3. **CloudFront Invalidation** → `aws cloudfront create-invalidation --distribution-id E305V0ATIXMNNG --paths "/*" --region eu-central-1`
+4. **Live Website** → Verfügbar nach 2-5 Minuten (Cache-Invalidation)
 
 ### 🔄 **Deployment-Pipeline**
 ```
-Cursor (Änderungen) → GitHub Desktop → GitHub → Netlify → Live Website
+Cursor (Änderungen) → AWS S3 Sync → CloudFront Invalidation → Live Website (manuel-weiss.ch)
 ```
 
 ### ☁️ **AWS Amplify (Backend)**
@@ -666,8 +663,8 @@ gh run view --log
 - **Code Examples**: Beispiele in den JavaScript-Dateien
 
 ### 📧 **Kontakt**
-- **Website**: [https://mawps.netlify.app](https://mawps.netlify.app) *(Primär)*
-- **Backup**: [https://manu-manera.github.io/manuel-weiss-website](https://manu-manera.github.io/manuel-weiss-website)
+- **Website**: [https://manuel-weiss.ch](https://manuel-weiss.ch) *(Primär - AWS S3 + CloudFront)*
+- **Backend API**: [https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1](https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1)
 - **Email**: info@manuel-weiss.com
 - **GitHub**: [@Manu-Manera](https://github.com/Manu-Manera)
 

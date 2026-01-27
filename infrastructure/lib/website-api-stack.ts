@@ -95,7 +95,7 @@ export class WebsiteApiStack extends cdk.Stack {
         allowOrigins: [
           'https://manuel-weiss.ch',
           'https://www.manuel-weiss.ch',
-          'https://mawps.netlify.app',
+          'https://manuel-weiss.ch',
           'http://localhost:3000',
           'http://localhost:5500',
           'http://127.0.0.1:5500'

@@ -9,9 +9,8 @@
  * 2. API URL aus Output kopieren und hier eintragen
  */
 
-// API Base URL - wird nach CDK Deploy gesetzt
-// Temporär auf Netlify Functions bis Migration abgeschlossen
-const USE_AWS_API = true; // ✅ Auf true gesetzt nach erfolgreichem CDK Deploy
+// API Base URL - AWS API Gateway (vollständig migriert von Netlify)
+const USE_AWS_API = true; // ✅ Vollständig auf AWS migriert
 
 window.AWS_APP_CONFIG = Object.assign({}, window.AWS_APP_CONFIG || {}, {
   // ========================================
@@ -22,7 +21,7 @@ window.AWS_APP_CONFIG = Object.assign({}, window.AWS_APP_CONFIG || {}, {
   // Format: https://xxxxxxxxxx.execute-api.eu-central-1.amazonaws.com/v1
   API_BASE: USE_AWS_API 
     ? 'https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1'
-    : '', // Leer = Netlify Functions als Fallback
+    : '', // Muss gesetzt sein - AWS API Gateway URL erforderlich
   
   // Alle API Endpoints
   ENDPOINTS: {
@@ -91,50 +90,25 @@ window.AWS_APP_CONFIG = Object.assign({}, window.AWS_APP_CONFIG || {}, {
   
   /**
    * Gibt die vollständige URL für einen Endpoint zurück
-   * Falls API_BASE gesetzt ist, wird AWS verwendet
-   * Sonst Fallback auf Netlify Functions
+   * Verwendet AWS API Gateway (vollständig migriert von Netlify)
    */
   getEndpointUrl: function(endpoint) {
-    if (this.API_BASE && this.API_BASE.length > 0) {
-      // AWS API Gateway
-      const endpointPath = this.ENDPOINTS[endpoint];
-      if (!endpointPath) {
-        console.error('❌ Endpoint nicht gefunden:', endpoint);
-        return null;
-      }
-      // Stelle sicher, dass API_BASE mit / endet und endpointPath mit / beginnt
-      const base = this.API_BASE.endsWith('/') ? this.API_BASE.slice(0, -1) : this.API_BASE;
-      const path = endpointPath.startsWith('/') ? endpointPath : '/' + endpointPath;
-      return base + path;
-    } else {
-      // Netlify Functions Fallback
-      const netlifyMap = {
-        'USER_DATA': '/.netlify/functions/user-data',
-        'USER_PROFILE': '/.netlify/functions/user-data/profile',
-        'USER_RESUMES': '/.netlify/functions/user-data/resumes',
-        'USER_DOCUMENTS': '/.netlify/functions/user-data/documents',
-        'CV_GENERAL': '/.netlify/functions/cv-general',
-        'CV_TARGET': '/.netlify/functions/cv-target',
-        'CV_JOB_PARSE': '/.netlify/functions/cv-job-parse',
-        'CV_FILES_PARSE': '/.netlify/functions/cv-files-parse',
-        'CV_EXPORT': '/.netlify/functions/cv-export',
-        'JOB_PARSER': '/.netlify/functions/job-parser',
-        'OPENAI_PROXY': '/.netlify/functions/openai-proxy',
-        'API_SETTINGS': '/.netlify/functions/api-settings',
-        'HERO_VIDEO_SETTINGS': '/.netlify/functions/hero-video-settings',
-        'HERO_VIDEO_UPLOAD': '/.netlify/functions/hero-video-upload',
-        'HERO_VIDEO_UPLOAD_DIRECT': '/.netlify/functions/hero-video-upload-direct',
-        'BEWERBUNGSPROFIL': '/.netlify/functions/bewerbungsprofil-api',
-        'USER_PROFILE_API': '/.netlify/functions/user-profile-api',
-        'PROFILE_IMAGE_UPLOAD': '/.netlify/functions/s3-upload',
-        'S3_UPLOAD': '/.netlify/functions/s3-upload',
-        'SNOWFLAKE_HIGHSCORES': '/.netlify/functions/snowflake-highscores',
-        'CONTACT_EMAIL': '/.netlify/functions/send-contact-email',
-        'PDF_GENERATOR': '/.netlify/functions/pdf-generator',
-        'ORG_DEV_ASSESSMENTS': '/.netlify/functions/org-dev-assessments'
-      };
-      return netlifyMap[endpoint] || `/.netlify/functions/${endpoint.toLowerCase().replace(/_/g, '-')}`;
+    if (!this.API_BASE || this.API_BASE.length === 0) {
+      console.error('❌ API_BASE nicht konfiguriert. Bitte AWS API Gateway URL in aws-app-config.js eintragen.');
+      return null;
     }
+    
+    // AWS API Gateway
+    const endpointPath = this.ENDPOINTS[endpoint];
+    if (!endpointPath) {
+      console.error('❌ Endpoint nicht gefunden:', endpoint);
+      return null;
+    }
+    
+    // Stelle sicher, dass API_BASE mit / endet und endpointPath mit / beginnt
+    const base = this.API_BASE.endsWith('/') ? this.API_BASE.slice(0, -1) : this.API_BASE;
+    const path = endpointPath.startsWith('/') ? endpointPath : '/' + endpointPath;
+    return base + path;
   }
 });
 
@@ -143,4 +117,4 @@ window.getApiUrl = function(endpoint) {
   return window.AWS_APP_CONFIG.getEndpointUrl(endpoint);
 };
 
-console.log('✅ AWS App Config loaded, API_BASE:', window.AWS_APP_CONFIG.API_BASE || 'Netlify Fallback');
+console.log('✅ AWS App Config loaded, API_BASE:', window.AWS_APP_CONFIG.API_BASE || 'NICHT KONFIGURIERT');

@@ -1,7 +1,8 @@
 # 🏗️ Aktuelle Deployment-Architektur
 
 > **Erstellt:** 2026-01-21  
-> **Status:** ✅ Hybrid-System (Netlify → AWS Migration teilweise abgeschlossen)
+> **Aktualisiert:** 2026-01-24  
+> **Status:** ✅ Vollständig auf AWS migriert (Netlify abgeklemmt)
 
 ---
 
@@ -183,30 +184,20 @@ aws lambda update-function-code \
 
 ---
 
-## 🔄 NETLIFY (FALLBACK)
+## ✅ MIGRATION ABGESCHLOSSEN
 
-### **Status:** ⚠️ NOCH AKTIV (aber nicht mehr primär)
+### **Status:** ✅ Vollständig auf AWS migriert
 
-### **Aktueller Status:**
-- **URL:** `https://mawps.netlify.app`
-- **Verwendung:** Fallback für Netlify Functions (falls AWS API nicht verfügbar)
-- **Auto-Deploy:** ✅ Noch aktiv (GitHub Webhook)
-
-### **Netlify Functions:**
-```
-netlify/functions/
-├── user-data.js
-├── documents-api.js
-├── profile-image-upload.js
-├── snowflake-highscores.js
-├── cv-export.js
-└── openai-proxy.js
-```
+### **Netlify:**
+- **Status:** ❌ Abgeklemmt (nicht mehr in Verwendung)
+- **Grund:** Vollständige Migration zu AWS S3 + CloudFront + Lambda + API Gateway
 
 ### **Migration-Status:**
-- ✅ Frontend: Migriert zu AWS S3 + CloudFront
-- ⚠️ Backend: Teilweise migriert (Lambda + API Gateway)
-- ⚠️ Netlify Functions: Noch als Fallback aktiv
+- ✅ Frontend: Vollständig migriert zu AWS S3 + CloudFront
+- ✅ Backend: Vollständig migriert zu AWS Lambda + API Gateway
+- ✅ Alle Functions: Migriert zu AWS Lambda
+
+**Hinweis:** Die `netlify/functions/` Dateien sind noch im Repository vorhanden, werden aber nicht mehr verwendet.
 
 ---
 
@@ -274,9 +265,9 @@ aws lambda update-function-code \
 - **DynamoDB:** `mawps-user-profiles`
 - **S3 Media:** `manuel-weiss-public-media`
 
-### **Fallback:**
-- **Netlify:** `https://mawps.netlify.app`
-- **Netlify Functions:** `/.netlify/functions/*`
+### **Legacy (nicht mehr in Verwendung):**
+- **Netlify:** `https://mawps.netlify.app` (abgeklemmt)
+- **Netlify Functions:** `/.netlify/functions/*` (migriert zu AWS Lambda)
 
 ---
 

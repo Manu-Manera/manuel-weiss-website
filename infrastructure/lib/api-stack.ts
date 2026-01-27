@@ -32,7 +32,7 @@ export class ApiStack extends cdk.Stack {
       defaultCorsPreflightOptions: {
         allowOrigins: [
           'http://localhost:3000',
-          'https://mawps.netlify.app'
+          'https://manuel-weiss.ch'
         ],
         allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
         allowHeaders: [
