@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alle Mitarbeiterdaten sind vollständig erfasst - Datenqualität Assessment - Manuel Weiss</title>
+    
+    <!-- Meta Tags -->
+    <meta name="description" content="Detaillierte Bewertung der Vollständigkeit von Mitarbeiterdaten für KI-Readiness in HR. Best Practices basierend auf DAMA, ISO, McKinsey, BCG, Deloitte.">
+    <meta name="keywords" content="Mitarbeiterdaten, Datenvollständigkeit, HR-Daten, KI-Readiness, Data Quality Assessment">
+    <meta name="author" content="Manuel Weiss">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Custom Styles for Detail Assessment -->
+    <link rel="stylesheet" href="css/ki-assessment-detail.css">
+    <style>
+        .detail-assessment-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .detail-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem 2rem;
+            border-radius: 16px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .detail-header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+        
+        .detail-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(-4px);
+        }
+        
+        .sub-sub-criterion-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+        
+        .sub-sub-criterion-card:hover {
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
+        }
+        
+        .sub-sub-criterion-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .sub-sub-criterion-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+        
+        .sub-sub-criterion-title-section {
+            flex: 1;
+        }
+        
+        .sub-sub-criterion-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+        
+        .sub-sub-criterion-description {
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 0.75rem;
+        }
+        
+        .best-practices-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .sub-sub-criterion-examples {
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            margin-top: 1rem;
+        }
+        
+        .sub-sub-criterion-examples h5 {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .sub-sub-criterion-examples ul {
+            margin: 0;
+            padding-left: 1.5rem;
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        
+        .sub-sub-criterion-examples li {
+            margin-bottom: 0.25rem;
+        }
+        
+        .slider-section {
+            margin-top: 1.5rem;
+        }
+        
+        .slider-wrapper {
+            position: relative;
+            margin-bottom: 1rem;
+        }
+        
+        .slider-labels-top {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        
+        .sub-sub-criterion-slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: #e5e7eb;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        
+        .sub-sub-criterion-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .sub-sub-criterion-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.6);
+        }
+        
+        .sub-sub-criterion-slider::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .sub-sub-criterion-slider::-moz-range-thumb:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.6);
+        }
+        
+        .sub-sub-criterion-value {
+            text-align: center;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #764ba2;
+            margin-top: 0.5rem;
+        }
+        
+        .slider-scale {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: #9ca3af;
+            margin-top: 0.25rem;
+        }
+        
+        .aggregated-score {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 2rem;
+            border-radius: 16px;
+            text-align: center;
+            margin-top: 2rem;
+            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.3);
+        }
+        
+        .aggregated-score h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .score-display {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .score-circle-large {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            font-weight: 800;
+            backdrop-filter: blur(10px);
+        }
+        
+        .score-description {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .save-button {
+            display: block;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: white;
+            color: #667eea;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .save-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .manual-override-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(245, 158, 11, 0.1);
+            color: #d97706;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            margin-left: 1rem;
+        }
+        
+        .auto-calculated-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(16, 185, 129, 0.1);
+            color: #059669;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            margin-left: 1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .detail-header h1 {
+                font-size: 2rem;
+            }
+            
+            .sub-sub-criterion-card {
+                padding: 1.5rem;
+            }
+            
+            .sub-sub-criterion-title {
+                font-size: 1.25rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="manuel-weiss-photo.svg" alt="MW" class="nav-logo">
+                <span class="nav-name">Manuel Weiss</span>
+            </div>
+            <div class="nav-menu" id="navMenu">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="ki-strategieentwicklung.html" class="nav-link">KI-Strategieentwicklung</a>
+                <a href="index.html#about" class="nav-link">Über mich</a>
+                <a href="index.html#contact" class="nav-link">Kontakt</a>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="detail-assessment-container">
+        <div class="detail-header">
+            <a href="ki-assessment-detail-dataQuality.html" class="back-button">
+                <i class="fas fa-arrow-left"></i>
+                Zurück zu Datenqualität
+            </a>
+            <h1><i class="fas fa-user-check"></i> Alle Mitarbeiterdaten sind vollständig erfasst</h1>
+            <p>Bewerten Sie die Vollständigkeit der Mitarbeiterdaten basierend auf Best Practices führender Beratungshäuser (DAMA, ISO, McKinsey, BCG, Deloitte).</p>
+        </div>
+        
+        <div id="subSubCriteriaContainer">
+            <!-- Sub-Sub-Criteria will be dynamically loaded -->
+        </div>
+        
+        <div class="aggregated-score">
+            <h3>Durchschnittsbewertung</h3>
+            <div class="score-display">
+                <div class="score-circle-large" id="aggregatedScore">1.0</div>
+                <div class="score-description" id="scoreDescription">Bewerten Sie die Kriterien, um Ihre Durchschnittsbewertung zu sehen</div>
+            </div>
+            <div style="display: flex; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap;">
+                <button class="save-button" onclick="saveAndReturn()" style="flex: 1; min-width: 200px;">
+                    <i class="fas fa-save"></i> Bewertung speichern und zurück
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Sub-Sub-Criteria definitions for "Alle Mitarbeiterdaten sind vollständig erfasst"
+        const subSubCriteria = [
+            {
+                id: 'masterDataCompleteness',
+                title: 'Vollständigkeit der Stammdaten',
+                description: 'Sind alle Pflichtfelder in den Stammdaten ausgefüllt?',
+                examples: ['100% Abdeckung Pflichtfelder', 'Validierte Dateneingabe', 'Automatische Prüfungen'],
+                bestPractices: ['DAMA: Data Completeness Dimension', 'McKinsey: Master Data Management', 'ISO 8000: Data Quality']
+            },
+            {
+                id: 'organizationalData',
+                title: 'Organisationsdaten vollständig',
+                description: 'Sind alle Organisationsstrukturen erfasst?',
+                examples: ['Vollständige Hierarchien', 'Alle Abteilungen', 'Reporting-Lines definiert'],
+                bestPractices: ['BCG: Organizational Data Model', 'Deloitte: HR Data Architecture']
+            },
+            {
+                id: 'employmentHistory',
+                title: 'Vollständige Beschäftigungshistorie',
+                description: 'Ist die gesamte Beschäftigungshistorie erfasst?',
+                examples: ['Alle Positionen', 'Vollständige Karrierepfade', 'Historische Daten'],
+                bestPractices: ['DAMA: Temporal Completeness', 'McKinsey: Employee Lifecycle Data']
+            },
+            {
+                id: 'skillData',
+                title: 'Kompetenz- und Skill-Daten vollständig',
+                description: 'Sind alle Kompetenzen und Skills erfasst?',
+                examples: ['Skill-Matrizen', 'Zertifikate', 'Weiterbildungen'],
+                bestPractices: ['Deloitte: Skills Taxonomy', 'BCG: Competency Framework']
+            }
+        ];
+        
+        let assessmentValues = {};
+        let isManualOverride = false;
+        
+        function initializeAssessment() {
+            // Load from parent assessment
+            const saved = JSON.parse(localStorage.getItem('kiDetailAssessments') || '{}');
+            const parentData = saved.dataQuality;
+            
+            if (parentData && parentData.criteria && parentData.criteria.dataCompleteness && 
+                parentData.criteria.dataCompleteness.subCriteria && 
+                parentData.criteria.dataCompleteness.subCriteria.completeEmployeeData) {
+                const subCriterionData = parentData.criteria.dataCompleteness.subCriteria.completeEmployeeData;
+                
+                // Load sub-sub-criteria values
+                if (subCriterionData.subSubCriteria) {
+                    assessmentValues = subCriterionData.subSubCriteria;
+                }
+                
+                // Load manual override flag
+                if (subCriterionData.isManualOverride !== undefined) {
+                    isManualOverride = subCriterionData.isManualOverride;
+                }
+            }
+            
+            // Initialize values if not present
+            subSubCriteria.forEach(subSubCriterion => {
+                if (!assessmentValues[subSubCriterion.id]) {
+                    assessmentValues[subSubCriterion.id] = 1;
+                }
+            });
+            
+            renderSubSubCriteria();
+            updateAggregatedScore();
+        }
+        
+        function renderSubSubCriteria() {
+            const container = document.getElementById('subSubCriteriaContainer');
+            container.innerHTML = subSubCriteria.map(subSubCriterion => {
+                const value = assessmentValues[subSubCriterion.id] || 1;
+                return `
+                <div class="sub-sub-criterion-card">
+                    <div class="sub-sub-criterion-header">
+                        <div class="sub-sub-criterion-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="sub-sub-criterion-title-section">
+                            <h3 class="sub-sub-criterion-title">${subSubCriterion.title}</h3>
+                            <p class="sub-sub-criterion-description">${subSubCriterion.description}</p>
+                            <div style="margin-top: 0.5rem;">
+                                ${subSubCriterion.bestPractices.map(bp => `<span class="best-practices-badge">${bp}</span>`).join('')}
+                            </div>
+                        </div>
+                    </div>
+                    ${subSubCriterion.examples && subSubCriterion.examples.length > 0 ? `
+                    <div class="sub-sub-criterion-examples">
+                        <h5>Beispiele:</h5>
+                        <ul>
+                            ${subSubCriterion.examples.map(ex => `<li>${ex}</li>`).join('')}
+                        </ul>
+                    </div>
+                    ` : ''}
+                    <div class="slider-section">
+                        <div class="slider-wrapper">
+                            <div class="slider-labels-top">
+                                <span>1 - Mangelhaft</span>
+                                <span>5 - Exzellent</span>
+                            </div>
+                            <input 
+                                type="range" 
+                                min="1" 
+                                max="5" 
+                                step="1"
+                                value="${value}"
+                                class="sub-sub-criterion-slider" 
+                                id="slider-${subSubCriterion.id}"
+                                oninput="updateSubSubCriterionValue('${subSubCriterion.id}', this.value)"
+                            >
+                            <div class="sub-sub-criterion-value" id="value-${subSubCriterion.id}">${value}</div>
+                            <div class="slider-scale">
+                                <span>1</span>
+                                <span>2</span>
+                                <span>3</span>
+                                <span>4</span>
+                                <span>5</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+        
+        function updateSubSubCriterionValue(subSubCriterionId, value) {
+            assessmentValues[subSubCriterionId] = parseInt(value);
+            document.getElementById(`value-${subSubCriterionId}`).textContent = value;
+            updateAggregatedScore();
+        }
+        
+        function updateAggregatedScore() {
+            const values = subSubCriteria.map(subSubCriterion => {
+                return assessmentValues[subSubCriterion.id] || 1;
+            });
+            
+            const average = (values.reduce((sum, val) => sum + val, 0) / values.length).toFixed(1);
+            
+            document.getElementById('aggregatedScore').textContent = average;
+            
+            let description = '';
+            if (average <= 1.5) {
+                description = 'Mangelhaft - Erhebliche Verbesserungen erforderlich';
+            } else if (average <= 2.5) {
+                description = 'Verbesserungswürdig - Grundlagen vorhanden, Optimierung nötig';
+            } else if (average <= 3.5) {
+                description = 'Gut - Solide Basis, weitere Optimierung möglich';
+            } else if (average <= 4.5) {
+                description = 'Sehr gut - Hohe Vollständigkeit, kleine Verbesserungen möglich';
+            } else {
+                description = 'Exzellent - Hervorragende Datenvollständigkeit';
+            }
+            
+            document.getElementById('scoreDescription').textContent = description;
+        }
+        
+        function saveAndReturn() {
+            // Calculate average
+            const values = subSubCriteria.map(subSubCriterion => {
+                return assessmentValues[subSubCriterion.id] || 1;
+            });
+            const aggregated = parseFloat((values.reduce((sum, val) => sum + val, 0) / values.length).toFixed(1));
+            
+            // Load parent assessment
+            let saved = JSON.parse(localStorage.getItem('kiDetailAssessments') || '{}');
+            if (!saved.dataQuality) {
+                saved.dataQuality = { criteria: {} };
+            }
+            if (!saved.dataQuality.criteria) {
+                saved.dataQuality.criteria = {};
+            }
+            if (!saved.dataQuality.criteria.dataCompleteness) {
+                saved.dataQuality.criteria.dataCompleteness = { subCriteria: {} };
+            }
+            if (!saved.dataQuality.criteria.dataCompleteness.subCriteria) {
+                saved.dataQuality.criteria.dataCompleteness.subCriteria = {};
+            }
+            
+            // Save sub-sub-criteria data
+            saved.dataQuality.criteria.dataCompleteness.subCriteria.completeEmployeeData = {
+                aggregated: aggregated,
+                isManualOverride: isManualOverride,
+                subSubCriteria: assessmentValues,
+                timestamp: new Date().toISOString()
+            };
+            
+            localStorage.setItem('kiDetailAssessments', JSON.stringify(saved));
+            
+            window.location.href = 'ki-assessment-detail-dataQuality.html';
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeAssessment();
+        });
+    </script>
+</body>
+</html>

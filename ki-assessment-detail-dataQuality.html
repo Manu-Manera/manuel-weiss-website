@@ -229,6 +229,69 @@
             color: #764ba2;
         }
         
+        .sub-criterion-item {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid #764ba2;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .sub-criterion-item:hover {
+            box-shadow: 0 4px 16px rgba(118, 75, 162, 0.15);
+            transform: translateX(4px);
+        }
+        
+        .sub-criterion-item.clickable {
+            position: relative;
+        }
+        
+        .sub-detail-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #667eea;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-top: 0.75rem;
+            transition: all 0.3s ease;
+        }
+        
+        .sub-criterion-item:hover .sub-detail-link {
+            transform: translateX(4px);
+        }
+        
+        .sub-criterion-average-display {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .override-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.5rem;
+            background: rgba(245, 158, 11, 0.1);
+            color: #d97706;
+            border-radius: 6px;
+            font-size: 0.75rem;
+        }
+        
+        .auto-calculated-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.5rem;
+            background: rgba(16, 185, 129, 0.1);
+            color: #059669;
+            border-radius: 6px;
+            font-size: 0.75rem;
+        }
+        
         .slider-scale {
             display: flex;
             justify-content: space-between;
@@ -1595,15 +1658,40 @@
                 assessmentValues = saved.dataQuality.details;
             }
             
-            // Initialize sub-criteria values if not present
-            dataQualityCriteria.forEach(criterion => {
-                criterion.subCriteria.forEach(subCriterion => {
-                    const key = `${criterion.id}_${subCriterion.id}`;
-                    if (!assessmentValues[key]) {
-                        assessmentValues[key] = 1;
+            // Load sub-sub-criteria aggregated values if available
+            if (saved.dataQuality && saved.dataQuality.criteria) {
+                dataQualityCriteria.forEach(criterion => {
+                    if (saved.dataQuality.criteria[criterion.id] && saved.dataQuality.criteria[criterion.id].subCriteria) {
+                        criterion.subCriteria.forEach(subCriterion => {
+                            const key = `${criterion.id}_${subCriterion.id}`;
+                            const subCriterionData = saved.dataQuality.criteria[criterion.id].subCriteria[subCriterion.id];
+                            
+                            if (subCriterionData && subCriterionData.aggregated !== undefined) {
+                                assessmentValues[key] = subCriterionData.aggregated;
+                            } else if (!assessmentValues[key]) {
+                                assessmentValues[key] = 1;
+                            }
+                        });
+                    } else {
+                        criterion.subCriteria.forEach(subCriterion => {
+                            const key = `${criterion.id}_${subCriterion.id}`;
+                            if (!assessmentValues[key]) {
+                                assessmentValues[key] = 1;
+                            }
+                        });
                     }
                 });
-            });
+            } else {
+                // Initialize sub-criteria values if not present
+                dataQualityCriteria.forEach(criterion => {
+                    criterion.subCriteria.forEach(subCriterion => {
+                        const key = `${criterion.id}_${subCriterion.id}`;
+                        if (!assessmentValues[key]) {
+                            assessmentValues[key] = 1;
+                        }
+                    });
+                });
+            }
             
             renderCriteria();
             updateAggregatedScore();
@@ -1633,11 +1721,48 @@
                     <div class="sub-criteria-container">
                         ${criterion.subCriteria.map(subCriterion => {
                             const key = `${criterion.id}_${subCriterion.id}`;
-                            const value = assessmentValues[key] || 1;
+                            
+                            // Check if sub-sub-criteria exist and calculate average
+                            let subSubAverage = null;
+                            let isManualOverride = false;
+                            
+                            if (subCriterion.subSubCriteria && subCriterion.subSubCriteria.length > 0) {
+                                // Load saved data
+                                const saved = JSON.parse(localStorage.getItem('kiDetailAssessments') || '{}');
+                                const parentData = saved.dataQuality;
+                                
+                                if (parentData && parentData.criteria && parentData.criteria[criterion.id] && 
+                                    parentData.criteria[criterion.id].subCriteria && 
+                                    parentData.criteria[criterion.id].subCriteria[subCriterion.id]) {
+                                    const subCriterionData = parentData.criteria[criterion.id].subCriteria[subCriterion.id];
+                                    
+                                    if (subCriterionData.aggregated !== undefined) {
+                                        subSubAverage = subCriterionData.aggregated;
+                                    }
+                                    if (subCriterionData.isManualOverride !== undefined) {
+                                        isManualOverride = subCriterionData.isManualOverride;
+                                    }
+                                }
+                                
+                                // If no saved data, calculate from sub-sub-criteria if they exist in localStorage
+                                if (subSubAverage === null && parentData && parentData.criteria && 
+                                    parentData.criteria[criterion.id] && parentData.criteria[criterion.id].subCriteria &&
+                                    parentData.criteria[criterion.id].subCriteria[subCriterion.id] &&
+                                    parentData.criteria[criterion.id].subCriteria[subCriterion.id].subSubCriteria) {
+                                    const subSubValues = Object.values(parentData.criteria[criterion.id].subCriteria[subCriterion.id].subSubCriteria);
+                                    if (subSubValues.length > 0) {
+                                        subSubAverage = subSubValues.reduce((sum, val) => sum + val, 0) / subSubValues.length;
+                                    }
+                                }
+                            }
+                            
+                            // Use subSubAverage if available, otherwise use stored value or default
+                            const value = subSubAverage !== null ? Math.round(subSubAverage) : (assessmentValues[key] || 1);
+                            
                             return `
-                            <div class="sub-criterion-item" style="border-left-color: #764ba2;">
-                                <div class="sub-criterion-label">${subCriterion.title}</div>
-                                ${subCriterion.description ? `<div class="sub-criterion-description" style="color: #6b7280; font-size: 0.875rem; margin-bottom: 0.5rem;">${subCriterion.description}</div>` : ''}
+                            <div class="sub-criterion-item clickable" onclick="openSubDetailAssessment('${criterion.id}', '${subCriterion.id}')" style="border-left-color: #764ba2;">
+                                <div class="sub-criterion-label" style="font-weight: 600; font-size: 1.1rem; color: #1f2937; margin-bottom: 0.5rem;">${subCriterion.title}</div>
+                                ${subCriterion.description ? `<div class="sub-criterion-description" style="color: #6b7280; font-size: 0.875rem; margin-bottom: 0.75rem;">${subCriterion.description}</div>` : ''}
                                 ${subCriterion.examples && subCriterion.examples.length > 0 ? `
                                 <div class="sub-criterion-examples" style="background: #f8fafc; padding: 0.75rem; border-radius: 6px; margin-bottom: 0.75rem; font-size: 0.8rem; color: #6b7280;">
                                     <strong style="color: #374151; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">Beispiele:</strong>
@@ -1646,19 +1771,24 @@
                                     </ul>
                                 </div>
                                 ` : ''}
-                                <div class="sub-criterion-slider-wrapper">
+                                <div class="sub-criterion-average-display">
+                                    <span style="color: #6b7280; font-size: 0.875rem;">Durchschnitt:</span>
+                                    <span class="sub-criterion-value" id="avg-${key}" style="font-weight: 700; font-size: 1.1rem;">${subSubAverage !== null ? subSubAverage.toFixed(1) : value}</span>
+                                    ${isManualOverride ? '<span class="override-indicator"><i class="fas fa-hand-paper"></i> Manuell übersteuert</span>' : (subSubAverage !== null ? '<span class="auto-calculated-indicator"><i class="fas fa-calculator"></i> Automatisch berechnet</span>' : '')}
+                                </div>
+                                <div class="sub-criterion-slider-wrapper" onclick="event.stopPropagation();">
                                     <input 
                                         type="range" 
                                         min="1" 
                                         max="5" 
-                                        step="1"
-                                        value="${value}"
+                                        step="0.1"
+                                        value="${subSubAverage !== null ? subSubAverage : value}"
                                         class="sub-criterion-slider" 
                                         id="slider-${key}"
                                         style="accent-color: #764ba2;"
-                                        oninput="updateSubCriterionValue('${criterion.id}', '${subCriterion.id}', this.value)"
+                                        oninput="updateSubCriterionValue('${criterion.id}', '${subCriterion.id}', this.value, true)"
                                     >
-                                    <div class="sub-criterion-value" id="value-${key}">${value}</div>
+                                    <div class="sub-criterion-value" id="value-${key}">${subSubAverage !== null ? subSubAverage.toFixed(1) : value}</div>
                                     <div class="sub-criterion-scale">
                                         <span>1</span>
                                         <span>2</span>
@@ -1667,6 +1797,11 @@
                                         <span>5</span>
                                     </div>
                                 </div>
+                                ${subCriterion.subSubCriteria && subCriterion.subSubCriteria.length > 0 ? `
+                                <div class="sub-detail-link">
+                                    <i class="fas fa-chevron-right"></i> Detaillierte Bewertung öffnen
+                                </div>
+                                ` : ''}
                             </div>
                             `;
                         }).join('')}
@@ -1680,15 +1815,55 @@
             }).join('');
         }
         
-        function updateSubCriterionValue(criterionId, subCriterionId, value) {
+        function openSubDetailAssessment(criterionId, subCriterionId) {
+            // Save current progress
+            saveAssessment();
+            // Navigate to sub-detail page
+            window.location.href = `ki-assessment-detail-dataQuality-${subCriterionId}.html`;
+        }
+        
+        function updateSubCriterionValue(criterionId, subCriterionId, value, isManual = false) {
             const key = `${criterionId}_${subCriterionId}`;
-            assessmentValues[key] = parseInt(value);
-            document.getElementById(`value-${key}`).textContent = value;
+            const numValue = parseFloat(value);
+            assessmentValues[key] = numValue;
+            document.getElementById(`value-${key}`).textContent = numValue.toFixed(1);
+            document.getElementById(`avg-${key}`).textContent = numValue.toFixed(1);
+            
+            // Save manual override flag if manual
+            if (isManual) {
+                let saved = JSON.parse(localStorage.getItem('kiDetailAssessments') || '{}');
+                if (!saved.dataQuality) saved.dataQuality = { criteria: {} };
+                if (!saved.dataQuality.criteria) saved.dataQuality.criteria = {};
+                if (!saved.dataQuality.criteria[criterionId]) saved.dataQuality.criteria[criterionId] = { subCriteria: {} };
+                if (!saved.dataQuality.criteria[criterionId].subCriteria) saved.dataQuality.criteria[criterionId].subCriteria = {};
+                if (!saved.dataQuality.criteria[criterionId].subCriteria[subCriterionId]) {
+                    saved.dataQuality.criteria[criterionId].subCriteria[subCriterionId] = {};
+                }
+                saved.dataQuality.criteria[criterionId].subCriteria[subCriterionId].isManualOverride = true;
+                saved.dataQuality.criteria[criterionId].subCriteria[subCriterionId].aggregated = numValue;
+                localStorage.setItem('kiDetailAssessments', JSON.stringify(saved));
+                
+                // Update indicator
+                const item = document.querySelector(`[onclick*="${subCriterionId}"]`);
+                if (item) {
+                    const indicator = item.querySelector('.override-indicator, .auto-calculated-indicator');
+                    if (indicator) {
+                        indicator.outerHTML = '<span class="override-indicator"><i class="fas fa-hand-paper"></i> Manuell übersteuert</span>';
+                    }
+                }
+            }
             
             // Update criterion average
             const criterion = dataQualityCriteria.find(c => c.id === criterionId);
             const subValues = criterion.subCriteria.map(sub => {
                 const subKey = `${criterionId}_${sub.id}`;
+                // Check if there's a saved aggregated value (from sub-sub-criteria or manual override)
+                const saved = JSON.parse(localStorage.getItem('kiDetailAssessments') || '{}');
+                if (saved.dataQuality && saved.dataQuality.criteria && saved.dataQuality.criteria[criterionId] &&
+                    saved.dataQuality.criteria[criterionId].subCriteria && saved.dataQuality.criteria[criterionId].subCriteria[sub.id] &&
+                    saved.dataQuality.criteria[criterionId].subCriteria[sub.id].aggregated !== undefined) {
+                    return saved.dataQuality.criteria[criterionId].subCriteria[sub.id].aggregated;
+                }
                 return assessmentValues[subKey] || 1;
             });
             const criterionAverage = (subValues.reduce((sum, val) => sum + val, 0) / subValues.length).toFixed(1);
@@ -1697,12 +1872,77 @@
             updateAggregatedScore();
         }
         
+        function saveAssessment() {
+            // Calculate and save current state
+            const criterionAverages = dataQualityCriteria.map(criterion => {
+                const subValues = criterion.subCriteria.map(sub => {
+                    const subKey = `${criterion.id}_${sub.id}`;
+                    // Check for saved aggregated value first
+                    const saved = JSON.parse(localStorage.getItem('kiDetailAssessments') || '{}');
+                    if (saved.dataQuality && saved.dataQuality.criteria && saved.dataQuality.criteria[criterion.id] &&
+                        saved.dataQuality.criteria[criterion.id].subCriteria && saved.dataQuality.criteria[criterion.id].subCriteria[sub.id] &&
+                        saved.dataQuality.criteria[criterion.id].subCriteria[sub.id].aggregated !== undefined) {
+                        return saved.dataQuality.criteria[criterion.id].subCriteria[sub.id].aggregated;
+                    }
+                    return assessmentValues[subKey] || 1;
+                });
+                return {
+                    criterionId: criterion.id,
+                    average: subValues.reduce((sum, val) => sum + val, 0) / subValues.length
+                };
+            });
+            
+            const aggregated = (criterionAverages.reduce((sum, c) => sum + c.average, 0) / criterionAverages.length).toFixed(1);
+            
+            let saved = JSON.parse(localStorage.getItem('kiDetailAssessments') || '{}');
+            if (!saved.dataQuality) saved.dataQuality = {};
+            if (!saved.dataQuality.criteria) saved.dataQuality.criteria = {};
+            
+            // Save criterion data
+            dataQualityCriteria.forEach(criterion => {
+                if (!saved.dataQuality.criteria[criterion.id]) {
+                    saved.dataQuality.criteria[criterion.id] = { subCriteria: {} };
+                }
+                if (!saved.dataQuality.criteria[criterion.id].subCriteria) {
+                    saved.dataQuality.criteria[criterion.id].subCriteria = {};
+                }
+                
+                criterion.subCriteria.forEach(subCriterion => {
+                    const subKey = `${criterion.id}_${subCriterion.id}`;
+                    const currentValue = assessmentValues[subKey] || 1;
+                    
+                    // Only update if not already set from sub-sub-criteria
+                    if (!saved.dataQuality.criteria[criterion.id].subCriteria[subCriterion.id] ||
+                        saved.dataQuality.criteria[criterion.id].subCriteria[subCriterion.id].aggregated === undefined) {
+                        saved.dataQuality.criteria[criterion.id].subCriteria[subCriterion.id] = {
+                            aggregated: currentValue,
+                            isManualOverride: false
+                        };
+                    }
+                });
+            });
+            
+            saved.dataQuality.aggregated = parseFloat(aggregated);
+            saved.dataQuality.details = assessmentValues;
+            saved.dataQuality.criterionAverages = criterionAverages;
+            saved.dataQuality.timestamp = new Date().toISOString();
+            
+            localStorage.setItem('kiDetailAssessments', JSON.stringify(saved));
+        }
+        
         function updateAggregatedScore() {
             // Calculate average for each main criterion, then overall average
             const criterionAverages = dataQualityCriteria.map(criterion => {
                 const subValues = criterion.subCriteria.map(sub => {
-                    const key = `${criterion.id}_${sub.id}`;
-                    return assessmentValues[key] || 1;
+                    const subKey = `${criterion.id}_${sub.id}`;
+                    // Check for saved aggregated value (from sub-sub-criteria or manual override)
+                    const saved = JSON.parse(localStorage.getItem('kiDetailAssessments') || '{}');
+                    if (saved.dataQuality && saved.dataQuality.criteria && saved.dataQuality.criteria[criterion.id] &&
+                        saved.dataQuality.criteria[criterion.id].subCriteria && saved.dataQuality.criteria[criterion.id].subCriteria[sub.id] &&
+                        saved.dataQuality.criteria[criterion.id].subCriteria[sub.id].aggregated !== undefined) {
+                        return saved.dataQuality.criteria[criterion.id].subCriteria[sub.id].aggregated;
+                    }
+                    return assessmentValues[subKey] || 1;
                 });
                 return subValues.reduce((sum, val) => sum + val, 0) / subValues.length;
             });
@@ -1728,35 +1968,7 @@
         }
         
         function saveAndReturn() {
-            // Calculate overall average from criterion averages
-            const criterionAverages = dataQualityCriteria.map(criterion => {
-                const subValues = criterion.subCriteria.map(sub => {
-                    const key = `${criterion.id}_${sub.id}`;
-                    return assessmentValues[key] || 1;
-                });
-                return subValues.reduce((sum, val) => sum + val, 0) / subValues.length;
-            });
-            
-            const aggregated = (criterionAverages.reduce((sum, val) => sum + val, 0) / criterionAverages.length).toFixed(1);
-            
-            let saved = JSON.parse(localStorage.getItem('kiDetailAssessments') || '{}');
-            saved.dataQuality = {
-                aggregated: parseFloat(aggregated),
-                details: assessmentValues,
-                criterionAverages: dataQualityCriteria.map(criterion => {
-                    const subValues = criterion.subCriteria.map(sub => {
-                        const key = `${criterion.id}_${sub.id}`;
-                        return assessmentValues[key] || 1;
-                    });
-                    return {
-                        criterionId: criterion.id,
-                        average: subValues.reduce((sum, val) => sum + val, 0) / subValues.length
-                    };
-                }),
-                timestamp: new Date().toISOString()
-            };
-            localStorage.setItem('kiDetailAssessments', JSON.stringify(saved));
-            
+            saveAssessment();
             window.location.href = 'ki-strategie-workflow.html';
         }
         
