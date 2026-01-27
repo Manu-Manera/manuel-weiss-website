@@ -887,6 +887,13 @@
     <script src="../js/unified-aws-auth.js?v=20260113"></script>
     <script src="../js/aws-profile-api.js?v=20260113"></script>
     <script src="../js/aws-api-settings.js?v=20260113"></script>
+    <script>
+        // Sicherstellen dass awsAPISettings initialisiert ist
+        if (typeof AWSAPISettingsService !== 'undefined' && !window.awsAPISettings) {
+            console.log('🔧 Initialisiere awsAPISettings manuell...');
+            window.awsAPISettings = new AWSAPISettingsService();
+        }
+    </script>
     <script src="../js/global-api-manager.js?v=20260113"></script>
     <script src="../js/cloud-data-service.js?v=20260114c"></script>
     <script src="../js/workflow-api.js?v=20260114c"></script>

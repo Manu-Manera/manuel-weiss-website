@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API-Key Integration Test - Anschreibengenerator</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        h1 {
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+        .test-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-right: 1rem;
+            margin-bottom: 1rem;
+        }
+        .test-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        .results {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        .success { color: #059669; }
+        .error { color: #dc2626; }
+        .info { color: #2563eb; }
+        .warning { color: #d97706; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 API-Key Integration Test - Anschreibengenerator</h1>
+        <p>Dieser Test prüft alle Szenarien für die API-Key-Erkennung im Anschreibengenerator.</p>
+        
+        <button class="test-button" onclick="runTests()">🚀 Alle Tests ausführen</button>
+        <button class="test-button" onclick="clearResults()">🗑️ Ergebnisse löschen</button>
+        <button class="test-button" onclick="openCoverLetterEditor()">📝 Anschreibengenerator öffnen</button>
+        
+        <div id="results" class="results" style="display: none;"></div>
+    </div>
+
+    <!-- Lade notwendige Scripts -->
+    <script src="../js/aws-api-settings.js?v=20260113"></script>
+    <script src="../js/global-api-manager.js?v=20260113"></script>
+    <script src="js/cover-letter-editor.js?v=20260120"></script>
+    <script src="test-cover-letter-api-key.js"></script>
+
+    <script>
+        let tester = null;
+
+        async function runTests() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.style.display = 'block';
+            resultsDiv.innerHTML = '⏳ Tests werden ausgeführt...\n\n';
+
+            // Warte auf coverLetterEditor
+            let attempts = 0;
+            while (typeof window.coverLetterEditor === 'undefined' && attempts < 20) {
+                await new Promise(resolve => setTimeout(resolve, 500));
+                attempts++;
+            }
+
+            if (typeof window.coverLetterEditor === 'undefined') {
+                resultsDiv.innerHTML += '❌ FEHLER: coverLetterEditor nicht gefunden!\n';
+                resultsDiv.innerHTML += 'Bitte öffne zuerst den Anschreibengenerator.\n';
+                return;
+            }
+
+            // Erstelle Tester
+            tester = new CoverLetterAPIKeyTester();
+            
+            // Fange Console-Logs ab
+            const originalLog = console.log;
+            const originalWarn = console.warn;
+            const originalError = console.error;
+            
+            const logs = [];
+            console.log = function(...args) {
+                logs.push({ type: 'log', args });
+                originalLog.apply(console, args);
+            };
+            console.warn = function(...args) {
+                logs.push({ type: 'warn', args });
+                originalWarn.apply(console, args);
+            };
+            console.error = function(...args) {
+                logs.push({ type: 'error', args });
+                originalError.apply(console, args);
+            };
+
+            // Führe Tests aus
+            const summary = await tester.runAllTests();
+
+            // Stelle Console wieder her
+            console.log = originalLog;
+            console.warn = originalWarn;
+            console.error = originalError;
+
+            // Zeige Ergebnisse
+            let output = '';
+            output += `\n${'='.repeat(60)}\n`;
+            output += `TEST-ZUSAMMENFASSUNG\n`;
+            output += `${'='.repeat(60)}\n`;
+            output += `✅ Erfolgreich: ${summary.successful}/${summary.total}\n`;
+            output += `❌ Fehlgeschlagen: ${summary.failed}/${summary.total}\n\n`;
+
+            if (summary.failed > 0) {
+                output += `FEHLGESCHLAGENE TESTS:\n`;
+                summary.results.forEach((result, index) => {
+                    if (!result.success) {
+                        output += `  ${index + 1}. ${result.reason || 'Unbekannter Fehler'}\n`;
+                    }
+                });
+                output += `\n`;
+            }
+
+            output += `DETAILLIERTE LOGS:\n`;
+            tester.results.forEach(log => {
+                const icon = log.type === 'success' ? '✅' : log.type === 'error' ? '❌' : log.type === 'warning' ? '⚠️' : 'ℹ️';
+                const className = log.type === 'success' ? 'success' : log.type === 'error' ? 'error' : log.type === 'warning' ? 'warning' : 'info';
+                output += `<span class="${className}">${icon} ${log.message}</span>\n`;
+            });
+
+            resultsDiv.innerHTML = output;
+        }
+
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+            document.getElementById('results').style.display = 'none';
+        }
+
+        function openCoverLetterEditor() {
+            window.open('cover-letter-editor.html', '_blank');
+        }
+
+        // Auto-Start wenn coverLetterEditor verfügbar
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                if (typeof window.coverLetterEditor !== 'undefined') {
+                    console.log('✅ coverLetterEditor gefunden - Tests können ausgeführt werden');
+                } else {
+                    console.warn('⚠️ coverLetterEditor nicht gefunden - bitte Anschreibengenerator öffnen');
+                }
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

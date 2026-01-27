@@ -67,15 +67,28 @@ class CoverLetterEditor {
         if (!window.awsAPISettings) {
             console.log('⏳ Warte auf awsAPISettings...');
             let attempts = 0;
-            while (!window.awsAPISettings && attempts < 10) {
+            const maxAttempts = 50; // 5 Sekunden statt 1 Sekunde
+            while (!window.awsAPISettings && attempts < maxAttempts) {
                 await new Promise(resolve => setTimeout(resolve, 100));
                 attempts++;
             }
             if (window.awsAPISettings) {
-                console.log('✅ awsAPISettings geladen');
+                console.log(`✅ awsAPISettings geladen nach ${attempts * 100}ms`);
             } else {
-                console.warn('⚠️ awsAPISettings nach 1 Sekunde nicht verfügbar');
+                console.warn(`⚠️ awsAPISettings nach ${maxAttempts * 100}ms nicht verfügbar`);
+                // Versuche manuelle Initialisierung
+                if (typeof AWSAPISettingsService !== 'undefined') {
+                    console.log('🔄 Versuche manuelle Initialisierung von awsAPISettings...');
+                    try {
+                        window.awsAPISettings = new AWSAPISettingsService();
+                        console.log('✅ awsAPISettings manuell initialisiert');
+                    } catch (e) {
+                        console.error('❌ Fehler bei manueller Initialisierung:', e);
+                    }
+                }
             }
+        } else {
+            console.log('✅ awsAPISettings bereits verfügbar');
         }
         
         // Setup event handlers
@@ -1429,35 +1442,63 @@ ${description.substring(0, 2000)}`;
 
     async getAPIKey() {
         console.log('🔑 Suche API-Key für Anschreiben...');
+        const startTime = Date.now();
+        const sources = [];
         
         // 1. Try AWS API Settings (mit globalem Fallback)
         if (window.awsAPISettings) {
             try {
                 // Versuche zuerst globale Keys (kein Login erforderlich)
+                sources.push('awsAPISettings (global)');
                 let key = await window.awsAPISettings.getFullApiKey('openai', true);
+                // Handle case where getFullApiKey might return an object
+                if (key && typeof key === 'object') {
+                    console.log('⚠️ getFullApiKey gab Objekt zurück, extrahiere String:', Object.keys(key));
+                    key = key.apiKey || key.key || key.openai || null;
+                }
                 if (key && typeof key === 'string' && !key.includes('...') && key.startsWith('sk-')) {
-                    console.log('✅ API-Key über awsAPISettings (global) geladen');
+                    const duration = Date.now() - startTime;
+                    console.log(`✅ API-Key über awsAPISettings (global) geladen in ${duration}ms`);
+                    console.log(`   Key-Präfix: ${key.substring(0, 10)}...`);
                     return key;
+                } else {
+                    console.log(`   awsAPISettings (global): Key nicht gefunden oder ungültig (Typ: ${typeof key}, Wert: ${key ? key.substring(0, 20) : 'null'}...)`);
                 }
                 
                 // Versuche user-spezifische Keys (falls eingeloggt)
                 if (window.awsAPISettings.isUserLoggedIn && window.awsAPISettings.isUserLoggedIn()) {
+                    sources.push('awsAPISettings (user)');
                     key = await window.awsAPISettings.getFullApiKey('openai', false);
-                    if (key && typeof key === 'string' && !key.includes('...') && key.startsWith('sk-')) {
-                        console.log('✅ API-Key über awsAPISettings (user) geladen');
-                        return key;
+                    // Handle case where getFullApiKey might return an object
+                    if (key && typeof key === 'object') {
+                        console.log('⚠️ getFullApiKey gab Objekt zurück, extrahiere String:', Object.keys(key));
+                        key = key.apiKey || key.key || key.openai || null;
                     }
+                    if (key && typeof key === 'string' && !key.includes('...') && key.startsWith('sk-')) {
+                        const duration = Date.now() - startTime;
+                        console.log(`✅ API-Key über awsAPISettings (user) geladen in ${duration}ms`);
+                        console.log(`   Key-Präfix: ${key.substring(0, 10)}...`);
+                        return key;
+                    } else {
+                        console.log(`   awsAPISettings (user): Key nicht gefunden oder ungültig (Typ: ${typeof key}, Wert: ${key ? key.substring(0, 20) : 'null'}...)`);
+                    }
+                } else {
+                    console.log('   awsAPISettings (user): User nicht eingeloggt');
                 }
             } catch (e) {
-                console.warn('AWS API Settings error:', e);
+                console.warn('❌ AWS API Settings error:', e);
+                console.warn('   Stack:', e.stack);
             }
         } else {
             console.warn('⚠️ window.awsAPISettings nicht verfügbar');
+            sources.push('awsAPISettings (nicht verfügbar)');
         }
         
         // 2. Try API Call direkt (wie in resume-editor.js)
+        sources.push('direkter API-Call');
         try {
             const apiUrl = window.getApiUrl ? window.getApiUrl('API_SETTINGS') + '/key?provider=openai&global=true' : (window.AWS_APP_CONFIG?.API_BASE || 'https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1') + '/api-settings/key?provider=openai&global=true';
+            console.log(`   Versuche direkten API-Call: ${apiUrl}`);
             const response = await fetch(apiUrl, {
                 headers: {
                     'Content-Type': 'application/json'
@@ -1466,99 +1507,167 @@ ${description.substring(0, 2000)}`;
             if (response.ok) {
                 const data = await response.json();
                 if (data.apiKey && typeof data.apiKey === 'string' && !data.apiKey.includes('...') && data.apiKey.startsWith('sk-')) {
-                    console.log('✅ API-Key über direkten API-Call geladen');
+                    const duration = Date.now() - startTime;
+                    console.log(`✅ API-Key über direkten API-Call geladen in ${duration}ms`);
+                    console.log(`   Key-Präfix: ${data.apiKey.substring(0, 10)}...`);
                     return data.apiKey;
+                } else {
+                    console.log(`   Direkter API-Call: Ungültiges Response-Format (apiKey: ${data.apiKey ? typeof data.apiKey : 'undefined'})`);
                 }
+            } else {
+                console.log(`   Direkter API-Call: HTTP ${response.status} ${response.statusText}`);
             }
         } catch (e) {
-            console.warn('Direkter API-Call fehlgeschlagen:', e);
+            console.warn('❌ Direkter API-Call fehlgeschlagen:', e.message);
         }
         
         // 3. Try globalApiManager
+        sources.push('globalApiManager');
         if (window.globalApiManager) {
             try {
                 const key = await window.globalApiManager.getApiKey('openai');
                 if (key && typeof key === 'string' && !key.includes('...') && key.startsWith('sk-')) {
-                    console.log('✅ API-Key über globalApiManager geladen');
+                    const duration = Date.now() - startTime;
+                    console.log(`✅ API-Key über globalApiManager geladen in ${duration}ms`);
+                    console.log(`   Key-Präfix: ${key.substring(0, 10)}...`);
                     return key;
+                } else {
+                    console.log(`   globalApiManager: Key nicht gefunden oder ungültig (Typ: ${typeof key})`);
                 }
             } catch (e) {
-                console.warn('globalApiManager error:', e);
+                console.warn('❌ globalApiManager error:', e.message);
             }
+        } else {
+            console.log('   globalApiManager: nicht verfügbar');
         }
         
         // 4. Try GlobalAPIManager (falls vorhanden)
+        sources.push('GlobalAPIManager');
         if (window.GlobalAPIManager) {
             try {
                 const config = window.GlobalAPIManager.getServiceConfig('openai');
                 if (config?.key && typeof config.key === 'string' && !config.key.includes('...') && config.key.startsWith('sk-')) {
-                    console.log('✅ API-Key über GlobalAPIManager geladen');
+                    const duration = Date.now() - startTime;
+                    console.log(`✅ API-Key über GlobalAPIManager geladen in ${duration}ms`);
+                    console.log(`   Key-Präfix: ${config.key.substring(0, 10)}...`);
                     return config.key;
+                } else {
+                    console.log(`   GlobalAPIManager: Key nicht gefunden (config: ${config ? 'vorhanden' : 'null'})`);
                 }
             } catch (e) {
-                console.warn('GlobalAPIManager error:', e);
+                console.warn('❌ GlobalAPIManager error:', e.message);
             }
+        } else {
+            console.log('   GlobalAPIManager: nicht verfügbar');
         }
         
         // 5. Try AIProviderManager (aus utils.js)
+        sources.push('AIProviderManager');
         if (window.AIProviderManager) {
             try {
                 const provider = await window.AIProviderManager.getActiveProvider();
                 if (provider && provider.type === 'openai' && provider.key && typeof provider.key === 'string' && !provider.key.includes('...') && provider.key.startsWith('sk-')) {
-                    console.log('✅ API-Key über AIProviderManager geladen');
+                    const duration = Date.now() - startTime;
+                    console.log(`✅ API-Key über AIProviderManager geladen in ${duration}ms`);
+                    console.log(`   Key-Präfix: ${provider.key.substring(0, 10)}...`);
                     return provider.key;
+                } else {
+                    console.log(`   AIProviderManager: Provider nicht gefunden oder ungültig (Typ: ${provider ? provider.type : 'null'})`);
                 }
             } catch (e) {
-                console.warn('AIProviderManager error:', e);
+                console.warn('❌ AIProviderManager error:', e.message);
             }
+        } else {
+            console.log('   AIProviderManager: nicht verfügbar');
         }
         
         // 6. Try admin_state (Admin Panel)
+        sources.push('admin_state');
         try {
             const stateManagerData = localStorage.getItem('admin_state');
             if (stateManagerData) {
                 const state = JSON.parse(stateManagerData);
                 if (state.services?.openai?.key && !state.services.openai.key.includes('...') && state.services.openai.key.startsWith('sk-')) {
-                    console.log('✅ API-Key aus admin_state geladen');
+                    const duration = Date.now() - startTime;
+                    console.log(`✅ API-Key aus admin_state.services.openai.key geladen in ${duration}ms`);
+                    console.log(`   Key-Präfix: ${state.services.openai.key.substring(0, 10)}...`);
                     return state.services.openai.key;
                 }
                 if (state.apiKeys?.openai?.apiKey && !state.apiKeys.openai.apiKey.includes('...') && state.apiKeys.openai.apiKey.startsWith('sk-')) {
-                    console.log('✅ API-Key aus admin_state.apiKeys geladen');
+                    const duration = Date.now() - startTime;
+                    console.log(`✅ API-Key aus admin_state.apiKeys.openai.apiKey geladen in ${duration}ms`);
+                    console.log(`   Key-Präfix: ${state.apiKeys.openai.apiKey.substring(0, 10)}...`);
                     return state.apiKeys.openai.apiKey;
                 }
+                console.log(`   admin_state: Struktur vorhanden, aber kein gültiger Key gefunden`);
+                console.log(`     services.openai.key: ${state.services?.openai?.key ? 'vorhanden' : 'nicht vorhanden'}`);
+                console.log(`     apiKeys.openai.apiKey: ${state.apiKeys?.openai?.apiKey ? 'vorhanden' : 'nicht vorhanden'}`);
+            } else {
+                console.log('   admin_state: nicht vorhanden');
             }
         } catch (e) {
-            console.warn('Kein API-Key in admin_state:', e);
+            console.warn('❌ Fehler beim Lesen von admin_state:', e.message);
         }
         
         // 7. Try global_api_keys
+        sources.push('global_api_keys');
         try {
             const globalKeys = JSON.parse(localStorage.getItem('global_api_keys') || '{}');
             if (globalKeys.openai?.key && !globalKeys.openai.key.includes('...') && globalKeys.openai.key.startsWith('sk-')) {
-                console.log('✅ API-Key aus global_api_keys geladen');
+                const duration = Date.now() - startTime;
+                console.log(`✅ API-Key aus global_api_keys.openai.key geladen in ${duration}ms`);
+                console.log(`   Key-Präfix: ${globalKeys.openai.key.substring(0, 10)}...`);
                 return globalKeys.openai.key;
             }
             // Alternative Struktur: globalKeys.openai direkt als String
             if (globalKeys.openai && typeof globalKeys.openai === 'string' && !globalKeys.openai.includes('...') && globalKeys.openai.startsWith('sk-')) {
-                console.log('✅ API-Key aus global_api_keys (direkt) geladen');
+                const duration = Date.now() - startTime;
+                console.log(`✅ API-Key aus global_api_keys.openai (direkt) geladen in ${duration}ms`);
+                console.log(`   Key-Präfix: ${globalKeys.openai.substring(0, 10)}...`);
                 return globalKeys.openai;
             }
+            console.log(`   global_api_keys: Struktur vorhanden, aber kein gültiger Key gefunden`);
+            console.log(`     openai.key: ${globalKeys.openai?.key ? 'vorhanden' : 'nicht vorhanden'}`);
+            console.log(`     openai (direkt): ${globalKeys.openai && typeof globalKeys.openai === 'string' ? 'vorhanden' : 'nicht vorhanden'}`);
         } catch (e) {
-            console.warn('Fehler beim Lesen von global_api_keys:', e);
+            console.warn('❌ Fehler beim Lesen von global_api_keys:', e.message);
         }
         
         // 8. Try direct openai_api_key
+        sources.push('openai_api_key (direkt)');
         try {
             const directKey = localStorage.getItem('openai_api_key');
             if (directKey && !directKey.includes('...') && directKey.startsWith('sk-')) {
-                console.log('✅ API-Key direkt aus localStorage geladen');
+                const duration = Date.now() - startTime;
+                console.log(`✅ API-Key direkt aus localStorage (openai_api_key) geladen in ${duration}ms`);
+                console.log(`   Key-Präfix: ${directKey.substring(0, 10)}...`);
                 return directKey;
+            } else {
+                console.log(`   openai_api_key: ${directKey ? 'vorhanden aber ungültig' : 'nicht vorhanden'}`);
             }
         } catch (e) {
-            console.warn('Fehler beim Lesen von openai_api_key:', e);
+            console.warn('❌ Fehler beim Lesen von openai_api_key:', e.message);
         }
         
-        console.warn('❌ Kein API-Key gefunden in allen Quellen');
+        const duration = Date.now() - startTime;
+        console.warn(`❌ Kein API-Key gefunden in allen Quellen (${duration}ms)`);
+        console.warn(`   Geprüfte Quellen: ${sources.join(', ')}`);
+        console.warn('   Verfügbare Objekte:');
+        console.warn(`     - window.awsAPISettings: ${!!window.awsAPISettings}`);
+        console.warn(`     - window.globalApiManager: ${!!window.globalApiManager}`);
+        console.warn(`     - window.GlobalAPIManager: ${!!window.GlobalAPIManager}`);
+        console.warn(`     - window.AIProviderManager: ${!!window.AIProviderManager}`);
+        console.warn('   localStorage Keys:');
+        try {
+            const adminState = localStorage.getItem('admin_state');
+            const globalKeys = localStorage.getItem('global_api_keys');
+            const directKey = localStorage.getItem('openai_api_key');
+            console.warn(`     - admin_state: ${adminState ? 'vorhanden' : 'nicht vorhanden'}`);
+            console.warn(`     - global_api_keys: ${globalKeys ? 'vorhanden' : 'nicht vorhanden'}`);
+            console.warn(`     - openai_api_key: ${directKey ? 'vorhanden' : 'nicht vorhanden'}`);
+        } catch (e) {
+            console.warn(`     - Fehler beim Prüfen: ${e.message}`);
+        }
         return null;
     }
 
