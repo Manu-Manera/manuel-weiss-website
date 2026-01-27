@@ -63,11 +63,11 @@ class CoverLetterEditor {
             }
         });
         
-        // Warte auf awsAPISettings, falls noch nicht geladen
+        // Warte auf awsAPISettings und GlobalAPIManager, falls noch nicht geladen
         if (!window.awsAPISettings) {
             console.log('⏳ Warte auf awsAPISettings...');
             let attempts = 0;
-            const maxAttempts = 50; // 5 Sekunden statt 1 Sekunde
+            const maxAttempts = 50; // 5 Sekunden
             while (!window.awsAPISettings && attempts < maxAttempts) {
                 await new Promise(resolve => setTimeout(resolve, 100));
                 attempts++;
@@ -89,6 +89,24 @@ class CoverLetterEditor {
             }
         } else {
             console.log('✅ awsAPISettings bereits verfügbar');
+        }
+        
+        // Warte auf GlobalAPIManager (wird vom Admin Panel verwendet!)
+        if (!window.GlobalAPIManager) {
+            console.log('⏳ Warte auf GlobalAPIManager...');
+            let attempts = 0;
+            const maxAttempts = 30; // 3 Sekunden
+            while (!window.GlobalAPIManager && attempts < maxAttempts) {
+                await new Promise(resolve => setTimeout(resolve, 100));
+                attempts++;
+            }
+            if (window.GlobalAPIManager) {
+                console.log(`✅ GlobalAPIManager geladen nach ${attempts * 100}ms`);
+            } else {
+                console.warn(`⚠️ GlobalAPIManager nach ${maxAttempts * 100}ms nicht verfügbar`);
+            }
+        } else {
+            console.log('✅ GlobalAPIManager bereits verfügbar');
         }
         
         // Setup event handlers
