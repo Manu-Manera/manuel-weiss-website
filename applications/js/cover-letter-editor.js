@@ -1658,6 +1658,18 @@ ${description.substring(0, 2000)}`;
         console.warn(`     - window.globalApiManager: ${!!window.globalApiManager}`);
         console.warn(`     - window.GlobalAPIManager: ${!!window.GlobalAPIManager}`);
         console.warn(`     - window.AIProviderManager: ${!!window.AIProviderManager}`);
+        
+        // Prüfe Login-Status
+        try {
+            const isLoggedIn = window.awsAPISettings?.isUserLoggedIn ? window.awsAPISettings.isUserLoggedIn() : false;
+            console.warn(`   Login-Status: ${isLoggedIn ? '✅ Eingeloggt' : '❌ Nicht eingeloggt'}`);
+            if (!isLoggedIn) {
+                console.warn('   💡 Tipp: Bitte zuerst einloggen, damit API-Keys aus AWS geladen werden können');
+            }
+        } catch (e) {
+            console.warn(`   Login-Status: Fehler beim Prüfen (${e.message})`);
+        }
+        
         console.warn('   localStorage Keys:');
         try {
             const adminState = localStorage.getItem('admin_state');
@@ -1666,9 +1678,27 @@ ${description.substring(0, 2000)}`;
             console.warn(`     - admin_state: ${adminState ? 'vorhanden' : 'nicht vorhanden'}`);
             console.warn(`     - global_api_keys: ${globalKeys ? 'vorhanden' : 'nicht vorhanden'}`);
             console.warn(`     - openai_api_key: ${directKey ? 'vorhanden' : 'nicht vorhanden'}`);
+            
+            // Prüfe ob Keys maskiert sind
+            if (adminState) {
+                try {
+                    const state = JSON.parse(adminState);
+                    const key = state.services?.openai?.key || state.apiKeys?.openai?.apiKey;
+                    if (key && key.includes('...')) {
+                        console.warn('     ⚠️ admin_state enthält maskierten Key - bitte im Admin Panel neu speichern');
+                    }
+                } catch (e) {}
+            }
         } catch (e) {
             console.warn(`     - Fehler beim Prüfen: ${e.message}`);
         }
+        
+        console.warn('   💡 Nächste Schritte:');
+        console.warn('      1. Prüfe ob du eingeloggt bist');
+        console.warn('      2. Öffne das Admin Panel (https://manuel-weiss.ch/admin)');
+        console.warn('      3. Gehe zu "API Keys" und konfiguriere den OpenAI API Key');
+        console.warn('      4. Speichere den Key (wird dann in AWS DynamoDB gespeichert)');
+        
         return null;
     }
 
@@ -4863,7 +4893,9 @@ Gib nur den Einleitungsabsatz zurück.`;
         // API Key prüfen
         const apiKey = await this.getAPIKey();
         if (!apiKey) {
-            this.showToast('Kein API-Key gefunden. Bitte im Admin Panel konfigurieren.', 'error');
+            console.warn('⚠️ Skill Gap Analyse: Kein API-Key gefunden');
+            console.warn('   Prüfe Console-Logs oben für detaillierte Informationen über fehlgeschlagene Quellen');
+            this.showToast('Kein API-Key gefunden. Bitte im Admin Panel konfigurieren. (Prüfe Console für Details)', 'error');
             return;
         }
         
