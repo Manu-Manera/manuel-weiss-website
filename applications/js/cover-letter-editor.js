@@ -1468,9 +1468,32 @@ ${description.substring(0, 2000)}`;
     async getAPIKey() {
         // EXAKT GLEICHE LOGIK WIE RESUME EDITOR getOpenAIKey() - DIE FUNKTIONIERT!
         // Kopiert aus applications/js/resume-editor.js Zeile 2682-2718
+        // WICHTIG: Reihenfolge ist kritisch - Admin Panel speichert in global_api_keys!
         console.log('🔑 Getting OpenAI Key...');
         
-        // 1. Try awsAPISettings first
+        // 1. Try global_api_keys localStorage ZUERST (Admin Panel speichert hier!)
+        try {
+            const globalKeys = JSON.parse(localStorage.getItem('global_api_keys') || '{}');
+            if (globalKeys.openai?.key && !globalKeys.openai.key.includes('...') && globalKeys.openai.key.startsWith('sk-')) {
+                console.log('✅ Got key from global_api_keys localStorage');
+                return globalKeys.openai.key;
+            }
+        } catch (e) {
+            console.warn('Fehler beim Lesen von global_api_keys:', e);
+        }
+        
+        // 2. Try admin-api-settings localStorage
+        try {
+            const adminSettings = JSON.parse(localStorage.getItem('admin-api-settings') || '{}');
+            if (adminSettings.openai?.apiKey && adminSettings.openai.apiKey.startsWith('sk-') && !adminSettings.openai.apiKey.includes('...')) {
+                console.log('✅ Got key from admin-api-settings');
+                return adminSettings.openai.apiKey;
+            }
+        } catch (e) {
+            console.warn('Fehler beim Lesen von admin-api-settings:', e);
+        }
+        
+        // 3. Try awsAPISettings (kann fehlschlagen wenn nicht eingeloggt)
         if (window.awsAPISettings) {
             try {
                 const key = await window.awsAPISettings.getFullApiKey('openai');
@@ -1484,30 +1507,9 @@ ${description.substring(0, 2000)}`;
                     return apiKey;
                 }
             } catch (e) {
-                console.warn('AWS API Settings error:', e);
+                // Fehler beim Laden aus AWS - ignoriere und gehe weiter
+                console.log('ℹ️ awsAPISettings.getFullApiKey fehlgeschlagen, versuche weitere Quellen');
             }
-        }
-        
-        // 2. Try global_api_keys localStorage (WICHTIG: Das ist wo Admin Panel speichert!)
-        try {
-            const globalKeys = JSON.parse(localStorage.getItem('global_api_keys') || '{}');
-            if (globalKeys.openai?.key && !globalKeys.openai.key.includes('...') && globalKeys.openai.key.startsWith('sk-')) {
-                console.log('✅ Got key from global_api_keys localStorage');
-                return globalKeys.openai.key;
-            }
-        } catch (e) {
-            console.warn('Fehler beim Lesen von global_api_keys:', e);
-        }
-        
-        // 3. Try admin-api-settings localStorage
-        try {
-            const adminSettings = JSON.parse(localStorage.getItem('admin-api-settings') || '{}');
-            if (adminSettings.openai?.apiKey && adminSettings.openai.apiKey.startsWith('sk-') && !adminSettings.openai.apiKey.includes('...')) {
-                console.log('✅ Got key from admin-api-settings');
-                return adminSettings.openai.apiKey;
-            }
-        } catch (e) {
-            console.warn('Fehler beim Lesen von admin-api-settings:', e);
         }
         
         // 4. Try globalApiManager
