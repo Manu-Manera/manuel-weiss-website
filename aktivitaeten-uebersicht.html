@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aktivitäten & Persönliches | Manuel Weiss</title>
+    
+    <!-- Meta Tags -->
+    <meta name="description" content="Entdecke meine persönlichen Projekte, Aktivitäten und Vermietungen - Wohnmobil, Fotobox, E-Bikes, SUP und mehr.">
+    <meta name="robots" content="noindex, nofollow">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        .aktivitaeten-page {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+        
+        /* Hero */
+        .aktivitaeten-hero {
+            background: linear-gradient(135deg, #475569 0%, #64748b 50%, #94a3b8 100%);
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+        }
+        
+        .hero-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        /* Section Styles */
+        .section {
+            padding: 4rem 0;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+        
+        .section-subtitle {
+            color: #6b7280;
+        }
+        
+        /* Services Grid */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .service-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+        
+        .service-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+        }
+        
+        .service-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .service-card h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+        
+        .service-card p {
+            color: #6b7280;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+        
+        .service-features {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 1rem 0;
+        }
+        
+        .service-features li {
+            padding: 0.25rem 0;
+            color: #4b5563;
+            font-size: 0.9rem;
+        }
+        
+        .service-cta {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #6366f1;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        /* Activities Grid */
+        .activities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .activity-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s ease;
+        }
+        
+        .activity-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+        
+        .activity-image {
+            position: relative;
+            height: 180px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .activity-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .activity-icon {
+            font-size: 4rem;
+        }
+        
+        .activity-content {
+            padding: 1.5rem;
+        }
+        
+        .activity-content h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+        
+        .activity-content p {
+            color: #6b7280;
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+        }
+        
+        .activity-link {
+            color: #6366f1;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        /* About Section */
+        .about-section {
+            background: white;
+        }
+        
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+        
+        .about-text h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+        
+        .about-text p {
+            color: #6b7280;
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+        
+        .about-highlights {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .highlight-item {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+        
+        .highlight-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            flex-shrink: 0;
+        }
+        
+        .highlight-content h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.25rem;
+        }
+        
+        .highlight-content p {
+            font-size: 0.9rem;
+            color: #6b7280;
+            margin: 0;
+        }
+        
+        .about-visual {
+            text-align: center;
+        }
+        
+        .about-image img {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #6366f1;
+            box-shadow: 0 8px 30px rgba(99, 102, 241, 0.3);
+        }
+        
+        .about-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .stat-card {
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #6366f1;
+        }
+        
+        .stat-label {
+            font-size: 0.7rem;
+            color: #6b7280;
+            text-transform: uppercase;
+        }
+        
+        /* Testimonials */
+        .testimonials-section {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+        
+        .testimonials-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .stat-highlight {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            position: relative;
+        }
+        
+        .stat-highlight::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            border-radius: 16px 16px 0 0;
+        }
+        
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 1rem;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+        
+        .stat-number-large {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .stat-label-large {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-description {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        
+        /* Back Link */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: white;
+            opacity: 0.9;
+            text-decoration: none;
+            margin-bottom: 2rem;
+            font-weight: 500;
+        }
+        
+        .back-link:hover {
+            opacity: 1;
+        }
+        
+        /* Footer */
+        .simple-footer {
+            background: #1f2937;
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+        }
+        
+        .simple-footer a {
+            color: #94a3b8;
+            text-decoration: none;
+        }
+        
+        .simple-footer a:hover {
+            color: white;
+        }
+        
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 1.75rem;
+            }
+            
+            .about-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .about-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body class="aktivitaeten-page">
+    <!-- Hero -->
+    <section class="aktivitaeten-hero">
+        <div class="container">
+            <a href="index.html" class="back-link">
+                <i class="fas fa-arrow-left"></i>
+                Zurück zur Hauptseite
+            </a>
+            <h1 class="hero-title">Aktivitäten & Persönliches</h1>
+            <p class="hero-subtitle">
+                Entdecke meine persönlichen Projekte, Vermietungen und Interessen abseits der HR-Beratung
+            </p>
+        </div>
+    </section>
+
+    <!-- Vermietungen & Aktivitäten -->
+    <section class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Vermietungen & Aktivitäten</h2>
+                <p class="section-subtitle">Entdecke meine verschiedenen Angebote</p>
+            </div>
+            
+            <div class="activities-grid">
+                <a href="wohnmobil.html" class="activity-card">
+                    <div class="activity-image">
+                        <img src="images/wohnmobil/wohnmobil-exterior.jpg" alt="Wohnmobil" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'activity-icon\'>🚐</div>'">
+                    </div>
+                    <div class="activity-content">
+                        <h3>Wohnmobil</h3>
+                        <p>Komfortable Reisen mit unserem modernen Wohnmobil</p>
+                        <span class="activity-link">Mehr erfahren <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </a>
+                
+                <a href="fotobox.html" class="activity-card">
+                    <div class="activity-image">
+                        <img src="images/fotobox/fotobox-1.jpg" alt="Fotobox" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'activity-icon\'>📸</div>'">
+                    </div>
+                    <div class="activity-content">
+                        <h3>Fotobox</h3>
+                        <p>Professionelle Fotobox für Events und Feiern</p>
+                        <span class="activity-link">Mehr erfahren <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </a>
+                
+                <a href="ebike.html" class="activity-card">
+                    <div class="activity-image">
+                        <div class="activity-icon">🚲</div>
+                    </div>
+                    <div class="activity-content">
+                        <h3>E-Bikes</h3>
+                        <p>Elektrofahrräder für umweltfreundliche Mobilität</p>
+                        <span class="activity-link">Mehr erfahren <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </a>
+                
+                <a href="sup.html" class="activity-card">
+                    <div class="activity-image">
+                        <div class="activity-icon">🏄</div>
+                    </div>
+                    <div class="activity-content">
+                        <h3>SUP</h3>
+                        <p>Stand-Up Paddling für Wassersport-Enthusiasten</p>
+                        <span class="activity-link">Mehr erfahren <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Persönliche Projekte -->
+    <section class="section" style="background: white;">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Persönliche Projekte</h2>
+                <p class="section-subtitle">Tools und Anwendungen für persönliche Entwicklung</p>
+            </div>
+            
+            <div class="services-grid">
+                <!-- Fachliche Entwicklung -->
+                <div class="service-card" onclick="window.location.href='fachliche-entwicklung.html'">
+                    <div class="service-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <div class="service-badge">🚀 NEU</div>
+                    <h3>Fachliche Entwicklung</h3>
+                    <p>Strukturierte Weiterbildungspfade für Ihre Karriere. KI-gestützte Lernempfehlungen und Skill-Tracking.</p>
+                    <ul class="service-features">
+                        <li>📚 Lernpfad-Generator</li>
+                        <li>🎯 Skill-Gap-Analyse</li>
+                        <li>📈 Fortschritts-Tracking</li>
+                    </ul>
+                    <div class="service-cta">
+                        <span>Mehr erfahren</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </div>
+                
+                <!-- Persönlichkeitsentwicklung -->
+                <div class="service-card" onclick="window.location.href='persoenlichkeitsentwicklung-uebersicht.html'">
+                    <div class="service-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <div class="service-badge">🚀 NEU</div>
+                    <h3>Persönlichkeitsentwicklung</h3>
+                    <p>Umfassende Persönlichkeitsentwicklung mit 33+ wissenschaftlich fundierten Methoden.</p>
+                    <ul class="service-features">
+                        <li>🧠 33+ Persönlichkeitsmethoden</li>
+                        <li>📊 Fortschritts-Tracking</li>
+                        <li>🎯 Ziel-Management</li>
+                    </ul>
+                    <div class="service-cta">
+                        <span>Mehr erfahren</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </div>
+                
+                <!-- Bewerbungsmanager -->
+                <div class="service-card" onclick="window.location.href='applications/index.html'">
+                    <div class="service-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3>Bewerbungsmanager</h3>
+                    <p>Automatisieren Sie Ihre Bewerbungen mit KI-Power. 90% Zeitersparnis.</p>
+                    <ul class="service-features">
+                        <li>KI-Anschreiben-Generator</li>
+                        <li>Lebenslauf-Optimierung</li>
+                        <li>Bewerbungs-Tracking</li>
+                    </ul>
+                    <div class="service-cta">
+                        <span>Mehr erfahren</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </div>
+                
+                <!-- Personal Training -->
+                <div class="service-card" onclick="window.location.href='personal-training.html'">
+                    <div class="service-icon">
+                        <i class="fas fa-dumbbell"></i>
+                    </div>
+                    <h3>Personal Training</h3>
+                    <p>KI-gestützte Trainingspläne für Gym oder Home-Workout.</p>
+                    <ul class="service-features">
+                        <li>AI-Trainingsplan-Generator</li>
+                        <li>Gym & Bodyweight-Optionen</li>
+                        <li>Kalender-Export</li>
+                    </ul>
+                    <div class="service-cta">
+                        <span>Mehr erfahren</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </div>
+                
+                <!-- Ernährungsplan -->
+                <div class="service-card" onclick="window.location.href='ernaehrungsplan.html'">
+                    <div class="service-icon">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <h3>Ernährungsplan</h3>
+                    <p>Personalisierte Ernährungspläne basierend auf Ihren Zielen.</p>
+                    <ul class="service-features">
+                        <li>🥗 Personalisierte Pläne</li>
+                        <li>📊 Makro-Berechnung</li>
+                        <li>🍳 Rezeptvorschläge</li>
+                    </ul>
+                    <div class="service-cta">
+                        <span>Mehr erfahren</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </div>
+                
+                <!-- AI Coach -->
+                <div class="service-card" onclick="window.location.href='ai-coach.html'">
+                    <div class="service-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <div class="service-badge">✨ KI</div>
+                    <h3>AI Coach</h3>
+                    <p>Ihr persönlicher KI-Coach für alle Lebensbereiche. 24/7 verfügbar.</p>
+                    <ul class="service-features">
+                        <li>🤖 24/7 Verfügbar</li>
+                        <li>💬 Chat-basiert</li>
+                        <li>🎯 Zielorientiert</li>
+                    </ul>
+                    <div class="service-cta">
+                        <span>Mehr erfahren</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </div>
+                
+                <!-- Spiele -->
+                <div class="service-card" onclick="window.location.href='games.html'">
+                    <div class="service-icon">
+                        <i class="fas fa-chess"></i>
+                    </div>
+                    <div class="service-badge">🎮 NEU</div>
+                    <h3>Spiele</h3>
+                    <p>Spiele gegen andere Spieler online. Schach, Tic-Tac-Toe und mehr.</p>
+                    <ul class="service-features">
+                        <li>♟️ Schach Multiplayer</li>
+                        <li>🤖 Gegen Computer</li>
+                        <li>🏆 Ranglisten</li>
+                    </ul>
+                    <div class="service-cta">
+                        <span>Jetzt spielen</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Über mich -->
+    <section class="section about-section">
+        <div class="container">
+            <div class="about-content">
+                <div class="about-text">
+                    <h2>Über mich</h2>
+                    <p>
+                        Als HR-Berater mit Fokus auf AI und Transformation bringe ich über 6 Jahre IT Projekt Erfahrung in der Digitalisierung von HR-Prozessen mit. 
+                        Mein Ziel ist es, Unternehmen dabei zu unterstützen, ihre HR-Abteilungen zukunftsfähig zu gestalten.
+                    </p>
+                    <p>
+                        Neben meiner professionellen Arbeit engagiere ich mich für persönliche Entwicklung und teile meine Leidenschaft für 
+                        Fitness, Outdoor-Aktivitäten und innovative Technologien.
+                    </p>
+                    
+                    <div class="about-highlights">
+                        <div class="highlight-item">
+                            <div class="highlight-icon">
+                                <i class="fas fa-graduation-cap"></i>
+                            </div>
+                            <div class="highlight-content">
+                                <h3>Bildung & Expertise</h3>
+                                <p>Studium der Wirtschaftswissenschaften mit Schwerpunkt Personalwesen und Digitalisierung</p>
+                            </div>
+                        </div>
+                        <div class="highlight-item">
+                            <div class="highlight-icon">
+                                <i class="fas fa-briefcase"></i>
+                            </div>
+                            <div class="highlight-content">
+                                <h3>Berufserfahrung</h3>
+                                <p>6+ Jahre IT Projekt Erfahrung in HR-Beratung, AI-Integration und Geschäftsprozessoptimierung</p>
+                            </div>
+                        </div>
+                        <div class="highlight-item">
+                            <div class="highlight-icon">
+                                <i class="fas fa-lightbulb"></i>
+                            </div>
+                            <div class="highlight-content">
+                                <h3>Innovation</h3>
+                                <p>Spezialisiert auf moderne HR-Technologien und KI-gestützte Lösungen</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-visual">
+                    <div class="about-image">
+                        <img src="manuel-weiss-portrait.jpg" alt="Manuel Weiss" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'200\'%3E%3Crect fill=\'%236366f1\' width=\'200\' height=\'200\'/%3E%3Ctext fill=\'white\' font-size=\'60\' x=\'50%25\' y=\'50%25\' dominant-baseline=\'middle\' text-anchor=\'middle\'%3EMW%3C/text%3E%3C/svg%3E'">
+                    </div>
+                    <div class="about-stats">
+                        <div class="stat-card">
+                            <div class="stat-number">6+</div>
+                            <div class="stat-label">Jahre Erfahrung</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">60+</div>
+                            <div class="stat-label">Projekte</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">100%</div>
+                            <div class="stat-label">Lernkurve</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Ergebnisse & Referenzen -->
+    <section class="section testimonials-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Ergebnisse & Referenzen</h2>
+                <p class="section-subtitle">Messbare Erfolge und Feedback aus meinen Projekten</p>
+            </div>
+            
+            <div class="testimonials-stats">
+                <div class="stat-highlight">
+                    <div class="stat-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="stat-number-large">100%</div>
+                    <div class="stat-label-large">Lernkurveneffekt</div>
+                    <p class="stat-description">Kontinuierliche Weiterentwicklung und Anpassung an neue Technologien</p>
+                </div>
+                
+                <div class="stat-highlight">
+                    <div class="stat-icon">
+                        <i class="fas fa-project-diagram"></i>
+                    </div>
+                    <div class="stat-number-large">60+</div>
+                    <div class="stat-label-large">Erfolgreiche Projekte</div>
+                    <p class="stat-description">Von HR-Systemen über KI-Integration bis hin zu Web-Anwendungen</p>
+                </div>
+                
+                <div class="stat-highlight">
+                    <div class="stat-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-number-large">6+</div>
+                    <div class="stat-label-large">Jahre Erfahrung</div>
+                    <p class="stat-description">In IT-Projekten, HR-Beratung und digitaler Transformation</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="simple-footer">
+        <div class="container">
+            <p>&copy; 2024 Manuel Weiss | <a href="index.html">Zurück zur Hauptseite</a> | <a href="impressum.html">Impressum</a> | <a href="datenschutz.html">Datenschutz</a></p>
+        </div>
+    </footer>
+
+    <script src="js/aws-config.js"></script>
+</body>
+</html>
