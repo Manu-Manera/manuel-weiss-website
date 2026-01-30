@@ -976,7 +976,15 @@
     <script src="js/split-view-editor.js?v=20260115"></script>
     <script src="js/collaboration.js?v=20260115"></script>
     
-    <!-- Mobile Menu Script -->
+    <!-- Design Panel Toggle Button (Mobile/Tablet) -->
+    <button class="design-panel-toggle" id="designPanelToggle" aria-label="Design-Einstellungen öffnen">
+        <i class="fas fa-palette"></i>
+    </button>
+    
+    <!-- Mobile Overlay -->
+    <div class="mobile-panel-overlay" id="mobilePanelOverlay"></div>
+    
+    <!-- Mobile Menu & Design Panel Script -->
     <script>
         (function() {
             const mobileHamburger = document.getElementById('mobileHamburger');
@@ -1002,6 +1010,38 @@
             sidebarToggle?.addEventListener('click', toggleSidebar);
             overlay?.addEventListener('click', toggleSidebar);
             
+            // Design Panel Toggle (für Mobile/Tablet)
+            const designPanelToggle = document.getElementById('designPanelToggle');
+            const designPanel = document.getElementById('designPanel');
+            const mobilePanelOverlay = document.getElementById('mobilePanelOverlay');
+            
+            function toggleDesignPanel() {
+                designPanel?.classList.toggle('mobile-open');
+                mobilePanelOverlay?.classList.toggle('active');
+                
+                // Toggle Icon ändern
+                const icon = designPanelToggle?.querySelector('i');
+                if (icon) {
+                    if (designPanel?.classList.contains('mobile-open')) {
+                        icon.className = 'fas fa-times';
+                    } else {
+                        icon.className = 'fas fa-palette';
+                    }
+                }
+            }
+            
+            designPanelToggle?.addEventListener('click', toggleDesignPanel);
+            mobilePanelOverlay?.addEventListener('click', toggleDesignPanel);
+            
+            // Close Button in Design Panel (für Mobile)
+            const closeBtn = document.createElement('button');
+            closeBtn.className = 'mobile-close-btn';
+            closeBtn.innerHTML = '<i class="fas fa-times"></i>';
+            closeBtn.onclick = toggleDesignPanel;
+            if (designPanel && window.innerWidth <= 1200) {
+                designPanel.insertBefore(closeBtn, designPanel.firstChild);
+            }
+            
             // Mobile Quick Actions
             document.getElementById('mobileGenerateBtn')?.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -1018,6 +1058,15 @@
             document.getElementById('mobileSaveBtn')?.addEventListener('click', () => {
                 document.getElementById('saveBtn')?.click();
             });
+            
+            // Sidebar-Sections auf Mobile collapsible machen
+            if (window.innerWidth <= 768) {
+                document.querySelectorAll('.sidebar-section h3').forEach(header => {
+                    header.addEventListener('click', function() {
+                        this.parentElement.classList.toggle('mobile-collapsed');
+                    });
+                });
+            }
         })();
     </script>
 </body>

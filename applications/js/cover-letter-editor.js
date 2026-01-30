@@ -1843,7 +1843,9 @@ ANFORDERUNGEN FÜR DAS ANSCHREIBEN:
 - Länge: ${lengthMap[this.options.length]} (${this.options.length})
 - Schwerpunkt: ${focusMap[this.options.focus]} (${this.options.focus})
 - Ziel-Modus: ${goalMap[this.options.goal] || goalMap['role-fit']} (${this.options.goal})
-- Land: ${this.getSelectedCountry()} (${this.getSelectedCountry() === 'CH' ? 'Schweiz - verwende "ss" statt "ß"' : this.getSelectedCountry() === 'DE' ? 'Deutschland - Standard-Duden' : this.getSelectedCountry() === 'AT' ? 'Österreich' : 'USA - Englisch'})
+
+LÄNDERSPEZIFISCHE BEST PRACTICES (${this.getSelectedCountry()}):
+${this.getCountryBestPractices()}
 
 WICHTIGE RICHTLINIEN:
 1. Das Anschreiben muss SPEZIFISCH auf die Stellenbeschreibung eingehen
@@ -1990,8 +1992,18 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
         const letterText = document.getElementById('letterText');
         if (letterText) {
             const withPlaceholders = this.applyPlaceholders(cleanedContent, jobData);
-            letterText.value = withPlaceholders;
+            
+            // Unterstütze sowohl TEXTAREA als auch DIV (contenteditable)
+            if (letterText.tagName === 'TEXTAREA') {
+                letterText.value = withPlaceholders;
+            } else {
+                // Bei DIV: Konvertiere Zeilenumbrüche zu <p> Tags für bessere Formatierung
+                const paragraphs = withPlaceholders.split('\n\n').filter(p => p.trim());
+                letterText.innerHTML = paragraphs.map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
+            }
+            
             this.generatedContent = withPlaceholders;
+            console.log('✅ Anschreiben in letterText eingefügt, Länge:', withPlaceholders.length);
         }
         
         // Update sender info IMMER (auch wenn Profil später geladen wird)
@@ -2225,6 +2237,57 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
         // Standard: Deutschland
         if (countrySelect) countrySelect.value = 'DE';
         return 'DE';
+    }
+
+    /**
+     * Gibt länderspezifische Best Practices für die Anschreibengenerierung zurück
+     */
+    getCountryBestPractices() {
+        const country = this.getSelectedCountry();
+        
+        const practices = {
+            DE: `🇩🇪 DEUTSCHLAND:
+- Formelle Anrede mit "Sie" (niemals "Du")
+- Grußformel: "Mit freundlichen Grüßen"
+- Verwende Standard-Duden-Schreibweise mit "ß"
+- Strukturiert und sachlich, aber nicht steif
+- Bezug auf Unternehmenskultur und -werte
+- DIN 5008 Format für Geschäftsbriefe
+- Betreff: "Bewerbung als [Position]"
+- Datum rechts oben, z.B. "München, 30. Januar 2026"`,
+
+            CH: `🇨🇭 SCHWEIZ:
+- Höflich-distanzierte "Sie"-Form
+- Grußformel: "Freundliche Grüsse" (mit "ss" statt "ß"!)
+- WICHTIG: Verwende IMMER "ss" statt "ß" (Schweizer Schreibweise)
+- Präzision und Qualität betonen
+- Direkter, aber respektvoller Ton
+- Schweizer Unternehmen schätzen Zuverlässigkeit
+- Mehrsprachigkeit erwähnen wenn vorhanden
+- Datum: "Zürich, 30. Januar 2026"`,
+
+            AT: `🇦🇹 ÖSTERREICH:
+- Formelle "Sie"-Form
+- Grußformel: "Mit freundlichen Grüßen"
+- Titel sind SEHR wichtig (Dr., Mag., Ing.)
+- Herzlicher, aber professioneller Ton
+- Wiener Höflichkeit beachten
+- Regionale Bezüge positiv
+- "ß" wird verwendet wie in Deutschland
+- Datum: "Wien, 30. Jänner 2026" (Jänner statt Januar!)`,
+
+            US: `🇺🇸 USA:
+- Professional but enthusiastic tone
+- Greeting: "Dear Hiring Manager," or "Dear [Name],"
+- Closing: "Sincerely," or "Best regards,"
+- Focus on achievements and metrics
+- Action-oriented language
+- Confidence without arrogance
+- Brief and to the point (1 page max)
+- Date format: "January 30, 2026"`
+        };
+        
+        return practices[country] || practices['DE'];
     }
 
     applyDesign() {
