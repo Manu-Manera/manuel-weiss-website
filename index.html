@@ -230,11 +230,36 @@
             padding: 4rem 0;
             background: linear-gradient(135deg, rgba(30, 58, 138, 1) 0%, rgba(55, 48, 163, 1) 50%, rgba(124, 58, 237, 1) 100%);
             position: relative;
+            overflow: hidden;
+        }
+        /* Sternen-Funkeln bis ganz nach unten */
+        .snowflake-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                radial-gradient(circle, rgba(255,255,255,0.85) 0.4px, transparent 1.2px),
+                radial-gradient(circle, rgba(255,255,255,0.5) 0.8px, transparent 2px),
+                radial-gradient(circle, rgba(255,255,255,0.25) 1.2px, transparent 2.8px);
+            background-size: 180px 220px, 280px 320px, 380px 440px;
+            opacity: 0.6;
+            animation: starsTwinkle 12s ease-in-out infinite;
+            z-index: 0;
+            pointer-events: none;
+        }
+        @keyframes starsTwinkle {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 0.75; }
         }
         
         .snowflake-content {
             max-width: 700px;
             margin: 0 auto;
+            position: relative;
+            z-index: 1;
         }
         
         .highscore-feature-card {

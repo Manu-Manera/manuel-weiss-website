@@ -755,68 +755,89 @@ GRUSS: [übersetzte Grußformel]`
     }
 
     async extractJobInfoFromDescription(description) {
-        if (!description || description.length < 30) return;
+        if (!description || description.length < 30) {
+            console.log('⏭️ Extraktion übersprungen - Text zu kurz:', description?.length || 0);
+            return;
+        }
 
         const positionField = document.getElementById('jobTitle');
         const companyField = document.getElementById('companyName');
         const contactField = document.getElementById('contactPerson');
 
-        // Prüfe ob BEIDE Felder bereits ausgefüllt sind
-        if (positionField?.value && companyField?.value) {
-            console.log('ℹ️ Position und Unternehmen bereits ausgefüllt, überspringe Extraktion');
-            return;
-        }
-
         console.log('🔍 Starte automatische Extraktion aus Stellenbeschreibung...');
+        console.log('📊 Textlänge:', description.length, 'Zeichen');
+        console.log('📊 Felder bereits gefüllt - Position:', !!positionField?.value, 'Unternehmen:', !!companyField?.value);
 
         // ═══════════════════════════════════════════════════════════════════
         // SCHRITT 1: Schnelle Regex-basierte Extraktion (sofort, ohne API)
         // ═══════════════════════════════════════════════════════════════════
         const regexExtracted = this.extractWithRegex(description);
         
-        // Sofort Regex-Ergebnisse anwenden wenn verfügbar
-        if (regexExtracted.position && !positionField?.value) {
-            positionField.value = regexExtracted.position;
-            console.log('✅ Position (Regex):', regexExtracted.position);
-        }
-        if (regexExtracted.company && !companyField?.value) {
-            companyField.value = regexExtracted.company;
-            console.log('✅ Unternehmen (Regex):', regexExtracted.company);
-        }
-        
-        // Wenn beide Felder jetzt ausgefüllt sind, zeige Toast und beende
-        if (positionField?.value && companyField?.value) {
-            this.showToast('Position und Unternehmen erkannt', 'success');
-            return;
-        }
-
         // ═══════════════════════════════════════════════════════════════════
-        // SCHRITT 2: KI-basierte Extraktion (wenn API-Key verfügbar)
+        // SCHRITT 2: KI-basierte Extraktion (IMMER versuchen wenn API-Key da)
+        // Regex-Ergebnisse werden nur als Fallback verwendet
         // ═══════════════════════════════════════════════════════════════════
         try {
             const apiKey = await this.getAPIKey();
+            
             if (!apiKey) {
-                console.log('ℹ️ Kein API-Key für KI-Extraktion - nur Regex-Ergebnisse verwendet');
+                console.log('⚠️ Kein API-Key - verwende nur Regex-Ergebnisse');
+                // Nur Regex-Ergebnisse anwenden wenn kein API-Key
+                if (regexExtracted.position && !positionField?.value) {
+                    positionField.value = regexExtracted.position;
+                }
+                if (regexExtracted.company && !companyField?.value) {
+                    companyField.value = regexExtracted.company;
+                }
+                if (regexExtracted.contactPerson && !contactField?.value) {
+                    contactField.value = regexExtracted.contactPerson;
+                }
                 if (regexExtracted.position || regexExtracted.company) {
-                    this.showToast('Informationen teilweise erkannt', 'info');
+                    this.showToast('Informationen teilweise erkannt (ohne KI)', 'info');
                 }
                 return;
             }
 
-            console.log('🤖 Starte KI-basierte Extraktion...');
+            console.log('🤖 Starte KI-basierte Extraktion mit API-Key...');
 
-            const prompt = `Analysiere diese Stellenbeschreibung und extrahiere:
+            const prompt = `Analysiere diese Stellenbeschreibung und extrahiere präzise:
 
-1. Position/Job-Titel (exakter Titel wie "Solution Consultant", "Senior Developer")
-2. Unternehmen/Firmenname (z.B. "DXC Technology", "SAP AG")
-3. Ansprechpartner (falls erwähnt: "Herr/Frau Name" oder "Recruiting Team")
+1. Position/Job-Titel (exakter Titel wie "Senior Consultant", "Solution Consultant", "HR Manager")
+2. Unternehmen/Firmenname (exakter Name wie "ITConcepts GmbH", "SAP AG", "DXC Technology")
+3. Ansprechpartner (falls erwähnt, z.B. "Claudio Manig", "Frau Müller")
 
-Antworte NUR mit JSON:
+WICHTIG: Extrahiere NUR tatsächlich genannte Informationen. Bei E-Mails wie "claudio.manig@itconcepts.ch" ist der Ansprechpartner "Claudio Manig" und das Unternehmen "ITConcepts".
+
+Antworte NUR mit JSON ohne Markdown:
 {"position": "...", "company": "...", "contactPerson": "..."}
 Verwende null für nicht gefundene Werte.
 
 Stellenbeschreibung:
 ${description.substring(0, 2500)}`;
+
+            // Bestimme Modell und Parameter
+            const model = this.getOpenAIModel() || 'gpt-4o-mini';
+            const isReasoningModel = model.includes('o1') || model.includes('o3');
+            
+            const requestBody = {
+                model: model,
+                messages: [
+                    {
+                        role: 'system',
+                        content: 'Du bist ein Experte für Stellenanalysen. Extrahiere präzise die gefragten Informationen. Antworte NUR mit validem JSON ohne Markdown-Formatierung.'
+                    },
+                    { role: 'user', content: prompt }
+                ],
+                max_tokens: 300,
+                temperature: 0.1
+            };
+            
+            // Reasoning-Modelle brauchen andere Parameter
+            if (isReasoningModel) {
+                delete requestBody.temperature;
+                requestBody.max_completion_tokens = 300;
+                delete requestBody.max_tokens;
+            }
 
             const response = await fetch('https://api.openai.com/v1/chat/completions', {
                 method: 'POST',
@@ -824,18 +845,7 @@ ${description.substring(0, 2500)}`;
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${apiKey}`
                 },
-                body: JSON.stringify({
-                    model: this.getOpenAIModel(),
-                    reasoning_effort: 'low',
-                    messages: [
-                        {
-                            role: 'system',
-                            content: 'Du bist ein Experte für Stellenanalysen. Extrahiere präzise Informationen. Antworte NUR mit validem JSON ohne Markdown.'
-                        },
-                        { role: 'user', content: prompt }
-                    ],
-                    max_completion_tokens: 300
-                })
+                body: JSON.stringify(requestBody)
             });
 
             if (!response.ok) {
@@ -855,24 +865,21 @@ ${description.substring(0, 2500)}`;
             }
 
             const extracted = JSON.parse(jsonMatch[0]);
+            console.log('🤖 KI-Extraktion Ergebnis:', extracted);
             let updated = false;
 
-            // KI-Ergebnisse anwenden (überschreibt Regex wenn besser)
-            if (extracted.position && extracted.position !== 'null') {
-                if (!positionField?.value || positionField.value.length < extracted.position.length) {
-                    positionField.value = extracted.position;
-                    console.log('✅ Position (KI):', extracted.position);
-                    updated = true;
-                }
+            // KI-Ergebnisse IMMER anwenden (überschreiben fehlerhafte Regex-Werte)
+            if (extracted.position && extracted.position !== 'null' && extracted.position !== null) {
+                positionField.value = extracted.position;
+                console.log('✅ Position (KI):', extracted.position);
+                updated = true;
             }
-            if (extracted.company && extracted.company !== 'null') {
-                if (!companyField?.value || companyField.value.length < extracted.company.length) {
-                    companyField.value = extracted.company;
-                    console.log('✅ Unternehmen (KI):', extracted.company);
-                    updated = true;
-                }
+            if (extracted.company && extracted.company !== 'null' && extracted.company !== null) {
+                companyField.value = extracted.company;
+                console.log('✅ Unternehmen (KI):', extracted.company);
+                updated = true;
             }
-            if (extracted.contactPerson && extracted.contactPerson !== 'null' && !contactField?.value) {
+            if (extracted.contactPerson && extracted.contactPerson !== 'null' && extracted.contactPerson !== null) {
                 contactField.value = extracted.contactPerson;
                 console.log('✅ Ansprechpartner (KI):', extracted.contactPerson);
                 updated = true;
@@ -880,6 +887,8 @@ ${description.substring(0, 2500)}`;
 
             if (updated) {
                 this.showToast('Stelleninformationen automatisch erkannt', 'success');
+            } else {
+                console.log('ℹ️ KI konnte keine Informationen extrahieren');
             }
 
         } catch (error) {
@@ -893,53 +902,94 @@ ${description.substring(0, 2500)}`;
     extractWithRegex(text) {
         const result = { position: null, company: null, contactPerson: null };
         
-        // Position extrahieren
+        // Blacklist für falsch erkannte Begriffe
+        const blacklist = ['bietet', 'bist', 'dir', 'Was', 'für', 'und', 'die', 'der', 'das', 'wir', 'sie', 
+                          'unser', 'ihre', 'dein', 'deine', 'gerne', 'freuen', 'uns', 'auf', 'dich'];
+        
+        const isValid = (str) => {
+            if (!str || str.length < 3 || str.length > 60) return false;
+            const lower = str.toLowerCase();
+            return !blacklist.some(bad => lower.includes(bad));
+        };
+        
+        // ════════════════════════════════════════════════════════════════════
+        // POSITION: Nur sehr spezifische Patterns (mit m/w/d oder klaren Job-Titeln)
+        // ════════════════════════════════════════════════════════════════════
         const positionPatterns = [
-            /(?:suchen|sucht|gesucht)[^.]*?(?:eine[n]?|den|die)\s+([A-ZÄÖÜ][a-zäöüß]+(?:\s+[A-ZÄÖÜ][a-zäöüß]+){0,3})\s*\(?m\/w\/d\)?/i,
-            /(?:Position|Stelle|Job|Rolle)[:\s]+([A-ZÄÖÜ][a-zäöüß]+(?:\s+[A-ZÄÖÜ][a-zäöüß]+){0,3})/i,
-            /(?:als|für)\s+(?:eine[n]?\s+)?([A-ZÄÖÜ][a-zäöüß]+(?:\s+[A-ZÄÖÜ][a-zäöüß]+){0,3})\s*\(?m\/w\/d\)?/i,
-            /^([A-ZÄÖÜ][a-zäöüß]+(?:\s+[A-ZÄÖÜ][a-zäöüß]+){0,3})\s*\(?m\/w\/d\)?/m,
-            /([A-Za-zäöüß\s]+(?:Manager|Developer|Engineer|Consultant|Analyst|Designer|Specialist|Expert|Lead|Architect|Administrator|Berater|Entwickler|Leiter)(?:in)?)/i
+            // Klare Job-Titel mit (m/w/d)
+            /^([A-ZÄÖÜ][a-zäöüß]+(?:\s+[A-ZÄÖÜ][a-zäöüß]+){0,4})\s*\(m\/w\/d\)/m,
+            /\(m\/w\/d\)\s*[-–]\s*([A-ZÄÖÜ][a-zäöüß]+(?:\s+[A-ZÄÖÜ][a-zäöüß]+){0,4})/i,
+            // Bekannte Job-Suffixe
+            /((?:Senior|Junior|Lead|Chief|Head of)?\s*[A-Za-zäöüß]+\s*(?:Manager|Developer|Engineer|Consultant|Analyst|Designer|Specialist|Expert|Architect|Administrator|Berater|Entwickler|Leiter|Referent|Sachbearbeiter)(?:in)?)/i,
+            // "als [Position]" aber nur mit m/w/d danach
+            /als\s+([A-ZÄÖÜ][a-zäöüß]+(?:\s+[A-ZÄÖÜ][a-zäöüß]+){0,3})\s*\(m\/w\/d\)/i
         ];
         
         for (const pattern of positionPatterns) {
             const match = text.match(pattern);
-            if (match && match[1] && match[1].length > 3 && match[1].length < 60) {
+            if (match && match[1] && isValid(match[1])) {
                 result.position = match[1].trim();
+                console.log('📋 Position (Regex):', result.position);
                 break;
             }
         }
         
-        // Unternehmen extrahieren
+        // ════════════════════════════════════════════════════════════════════
+        // UNTERNEHMEN: Nur mit klaren Rechtsformen (GmbH, AG, etc.)
+        // ════════════════════════════════════════════════════════════════════
         const companyPatterns = [
-            /(?:bei|für|von|Unternehmen|Firma|Arbeitgeber)[:\s]+([A-ZÄÖÜ][A-Za-zäöüß\s&\.-]+(?:GmbH|AG|SE|Ltd|Inc|Corp|KG|OHG|e\.V\.|Group|Holding)?)/i,
-            /([A-ZÄÖÜ][A-Za-zäöüß]+(?:\s+[A-ZÄÖÜ][A-Za-zäöüß]+)*)\s+(?:sucht|bietet|ist ein)/i,
-            /(?:Willkommen bei|Join)\s+([A-ZÄÖÜ][A-Za-zäöüß\s&\.-]+)/i,
-            /([A-Za-zäöüß\s]+(?:GmbH|AG|SE|Ltd|Inc|Group))/i
+            // Rechtsform am Ende (zuverlässigster Pattern)
+            /([A-ZÄÖÜ][A-Za-zäöüß\s&\.-]{2,40})\s+(GmbH|AG|SE|Ltd\.?|Inc\.?|KG|OHG|e\.V\.|Group|Holding)/i,
+            // "bei [Firma]" mit Rechtsform
+            /bei\s+([A-ZÄÖÜ][A-Za-zäöüß\s&\.-]{2,30})\s+(GmbH|AG|SE)/i,
+            // E-Mail Domain als Firmenname
+            /@([a-zA-Z0-9-]+)\.[a-z]{2,}/i
         ];
         
         for (const pattern of companyPatterns) {
             const match = text.match(pattern);
-            if (match && match[1] && match[1].length > 2 && match[1].length < 50) {
-                // Filtere generische Begriffe
-                const company = match[1].trim();
-                if (!['Das Unternehmen', 'Die Firma', 'Unser Unternehmen', 'Wir'].includes(company)) {
+            if (match) {
+                let company = match[1]?.trim();
+                // Bei E-Mail: Kapitalisieren
+                if (pattern.source.includes('@')) {
+                    company = match[1].charAt(0).toUpperCase() + match[1].slice(1);
+                }
+                // Bei Rechtsform: anhängen
+                else if (match[2]) {
+                    company = `${company} ${match[2]}`.trim();
+                }
+                if (company && company.length > 2 && company.length < 60) {
                     result.company = company;
+                    console.log('📋 Unternehmen (Regex):', result.company);
                     break;
                 }
             }
         }
         
-        // Ansprechpartner extrahieren
+        // ════════════════════════════════════════════════════════════════════
+        // ANSPRECHPARTNER: Nur mit "Herr/Frau [Name]" Pattern
+        // ════════════════════════════════════════════════════════════════════
         const contactPatterns = [
-            /(?:Ansprechpartner|Kontakt|Fragen)[:\s]+(?:Herr|Frau)\s+([A-ZÄÖÜ][a-zäöüß]+(?:\s+[A-ZÄÖÜ][a-zäöüß]+)?)/i,
-            /(?:Herr|Frau)\s+([A-ZÄÖÜ][a-zäöüß]+)\s+(?:freut sich|steht Ihnen)/i
+            /(?:Ansprechpartner(?:in)?|Kontakt|Ihre Fragen)[:\s]+(?:Herr|Frau)\s+([A-ZÄÖÜ][a-zäöüß]+(?:\s+[A-ZÄÖÜ][a-zäöüß]+)?)/i,
+            /(?:Herr|Frau)\s+([A-ZÄÖÜ][a-zäöüß]+(?:\s+[A-ZÄÖÜ][a-zäöüß]+)?),?\s+(?:freut sich|steht Ihnen|unter)/i,
+            // E-Mail mit Namen: vorname.nachname@
+            /([A-Za-zäöüß]+)\.([A-Za-zäöüß]+)@/i
         ];
         
         for (const pattern of contactPatterns) {
             const match = text.match(pattern);
             if (match && match[1]) {
-                result.contactPerson = match[0].includes('Herr') ? `Herr ${match[1]}` : `Frau ${match[1]}`;
+                if (pattern.source.includes('@')) {
+                    // E-Mail Pattern: Vorname Nachname
+                    const firstName = match[1].charAt(0).toUpperCase() + match[1].slice(1);
+                    const lastName = match[2].charAt(0).toUpperCase() + match[2].slice(1);
+                    result.contactPerson = `${firstName} ${lastName}`;
+                } else {
+                    // Herr/Frau Pattern
+                    const prefix = text.match(/(?:Herr|Frau)/i)?.[0] || '';
+                    result.contactPerson = `${prefix} ${match[1]}`.trim();
+                }
+                console.log('📋 Ansprechpartner (Regex):', result.contactPerson);
                 break;
             }
         }
@@ -1600,85 +1650,113 @@ ${description.substring(0, 2500)}`;
     }
 
     async getAPIKey() {
-        // REPARIERT: Priorität auf lokale Quellen (Admin Panel speichert in global_api_keys!)
-        // API-Calls nur als letzter Fallback, da sie fehlschlagen können
-        console.log('🔑 Suche API-Key...');
+        // ═══════════════════════════════════════════════════════════════════
+        // VOLLSTÄNDIG ÜBERARBEITETE API-KEY SUCHE
+        // Durchsucht ALLE möglichen Speicherorte systematisch
+        // ═══════════════════════════════════════════════════════════════════
+        console.log('🔑 Starte API-Key Suche...');
+        
+        // Hilfsfunktion: Prüft ob ein Key gültig ist
+        const isValidKey = (key) => key && typeof key === 'string' && key.startsWith('sk-') && key.length > 20;
         
         try {
             // ═══════════════════════════════════════════════════════════════════
-            // PRIORITÄT 1: global_api_keys (Admin Panel speichert hier!)
+            // QUELLE 1: global_api_keys (Admin Panel Hauptspeicher)
             // ═══════════════════════════════════════════════════════════════════
             try {
-                const globalKeys = localStorage.getItem('global_api_keys');
-                if (globalKeys) {
-                    const parsed = JSON.parse(globalKeys);
-                    if (parsed.openai?.key && parsed.openai.key.startsWith('sk-')) {
-                        console.log('✅ API-Key aus global_api_keys geladen (Admin Panel)');
-                        return parsed.openai.key;
+                const globalKeysRaw = localStorage.getItem('global_api_keys');
+                console.log('🔍 global_api_keys vorhanden:', !!globalKeysRaw);
+                if (globalKeysRaw) {
+                    const globalKeys = JSON.parse(globalKeysRaw);
+                    // Mehrere mögliche Pfade prüfen
+                    const possibleKeys = [
+                        globalKeys.openai?.key,
+                        globalKeys.openai?.apiKey,
+                        globalKeys.openai
+                    ];
+                    for (const key of possibleKeys) {
+                        if (isValidKey(key)) {
+                            console.log('✅ API-Key aus global_api_keys geladen');
+                            return key;
+                        }
                     }
                 }
             } catch (e) {
-                console.log('ℹ️ global_api_keys nicht verfügbar:', e.message);
+                console.log('⚠️ global_api_keys Parse-Fehler:', e.message);
             }
             
             // ═══════════════════════════════════════════════════════════════════
-            // PRIORITÄT 2: GlobalAPIManager Instanz (falls geladen)
+            // QUELLE 2: GlobalAPIManager Instanz
             // ═══════════════════════════════════════════════════════════════════
             try {
-                const apiManager = window.GlobalAPIManager || window.globalApiManager;
-                if (apiManager && typeof apiManager.getAPIKey === 'function') {
-                    const key = apiManager.getAPIKey('openai');
-                    if (key && key.startsWith('sk-')) {
-                        console.log('✅ API-Key über GlobalAPIManager geladen');
-                        return key;
+                const apiManager = window.GlobalAPIManager || window.globalApiManager || window.APIManager;
+                console.log('🔍 GlobalAPIManager vorhanden:', !!apiManager, 'Typ:', typeof apiManager);
+                if (apiManager) {
+                    // Prüfe ob es eine Instanz mit getAPIKey Methode ist
+                    if (typeof apiManager.getAPIKey === 'function') {
+                        const key = apiManager.getAPIKey('openai');
+                        if (isValidKey(key)) {
+                            console.log('✅ API-Key über GlobalAPIManager.getAPIKey() geladen');
+                            return key;
+                        }
+                    }
+                    // Prüfe direkten Zugriff auf keys Property
+                    if (apiManager.keys?.openai?.key && isValidKey(apiManager.keys.openai.key)) {
+                        console.log('✅ API-Key über GlobalAPIManager.keys direkt geladen');
+                        return apiManager.keys.openai.key;
                     }
                 }
             } catch (e) {
-                console.log('ℹ️ GlobalAPIManager nicht verfügbar:', e.message);
+                console.log('⚠️ GlobalAPIManager Fehler:', e.message);
             }
             
             // ═══════════════════════════════════════════════════════════════════
-            // PRIORITÄT 3: admin_state (alternatives Admin Panel Format)
+            // QUELLE 3: admin_state (State Manager Format)
             // ═══════════════════════════════════════════════════════════════════
             try {
-                const stateData = localStorage.getItem('admin_state');
-                if (stateData) {
-                    const state = JSON.parse(stateData);
-                    // Format 1: state.services.openai.key
-                    if (state.services?.openai?.key && state.services.openai.key.startsWith('sk-')) {
-                        console.log('✅ API-Key aus admin_state.services geladen');
-                        return state.services.openai.key;
-                    }
-                    // Format 2: state.apiKeys.openai.apiKey
-                    if (state.apiKeys?.openai?.apiKey && state.apiKeys.openai.apiKey.startsWith('sk-')) {
-                        console.log('✅ API-Key aus admin_state.apiKeys geladen');
-                        return state.apiKeys.openai.apiKey;
+                const stateRaw = localStorage.getItem('admin_state');
+                console.log('🔍 admin_state vorhanden:', !!stateRaw);
+                if (stateRaw) {
+                    const state = JSON.parse(stateRaw);
+                    const possibleKeys = [
+                        state.apiKeys?.openai?.apiKey,
+                        state.apiKeys?.openai?.key,
+                        state.services?.openai?.apiKey,
+                        state.services?.openai?.key
+                    ];
+                    for (const key of possibleKeys) {
+                        if (isValidKey(key)) {
+                            console.log('✅ API-Key aus admin_state geladen');
+                            return key;
+                        }
                     }
                 }
             } catch (e) {
-                console.log('ℹ️ admin_state nicht verfügbar:', e.message);
+                console.log('⚠️ admin_state Parse-Fehler:', e.message);
             }
             
             // ═══════════════════════════════════════════════════════════════════
-            // PRIORITÄT 4: Andere localStorage Keys
+            // QUELLE 4: Direkte localStorage Keys
             // ═══════════════════════════════════════════════════════════════════
-            const localKeys = ['openai_api_key', 'admin_openai_api_key', 'ki_api_settings'];
-            for (const keyName of localKeys) {
+            const directKeys = ['openai_api_key', 'admin_openai_api_key', 'ki_api_settings', 'openai-key', 'api_key'];
+            for (const keyName of directKeys) {
                 try {
                     const value = localStorage.getItem(keyName);
                     if (value) {
                         // Direkter Key-String
-                        if (value.startsWith('sk-')) {
-                            console.log(`✅ API-Key aus localStorage (${keyName}) geladen`);
+                        if (isValidKey(value)) {
+                            console.log(`✅ API-Key aus localStorage['${keyName}'] geladen`);
                             return value;
                         }
                         // JSON-Format
                         try {
                             const parsed = JSON.parse(value);
-                            const key = parsed.openai || parsed.key || parsed.apiKey;
-                            if (key && typeof key === 'string' && key.startsWith('sk-')) {
-                                console.log(`✅ API-Key aus localStorage JSON (${keyName}) geladen`);
-                                return key;
+                            const possibleKeys = [parsed.openai, parsed.key, parsed.apiKey, parsed.openai?.key];
+                            for (const key of possibleKeys) {
+                                if (isValidKey(key)) {
+                                    console.log(`✅ API-Key aus localStorage['${keyName}'] JSON geladen`);
+                                    return key;
+                                }
                             }
                         } catch {}
                     }
@@ -1686,30 +1764,38 @@ ${description.substring(0, 2500)}`;
             }
             
             // ═══════════════════════════════════════════════════════════════════
-            // PRIORITÄT 5: awsAPISettings (nur wenn verfügbar, mit Timeout)
+            // QUELLE 5: awsAPISettings (Cloud-Speicher)
             // ═══════════════════════════════════════════════════════════════════
             if (window.awsAPISettings && typeof window.awsAPISettings.getFullApiKey === 'function') {
                 try {
-                    // Timeout von 3 Sekunden für AWS API Call
+                    console.log('🔍 Versuche awsAPISettings...');
                     const timeoutPromise = new Promise((_, reject) => 
-                        setTimeout(() => reject(new Error('Timeout')), 3000)
+                        setTimeout(() => reject(new Error('Timeout nach 3s')), 3000)
                     );
                     const keyPromise = window.awsAPISettings.getFullApiKey('openai');
                     const key = await Promise.race([keyPromise, timeoutPromise]);
                     
-                    if (key && typeof key === 'string' && key.startsWith('sk-')) {
+                    if (isValidKey(key)) {
                         console.log('✅ API-Key über awsAPISettings geladen');
+                        // Cache in localStorage für schnelleren Zugriff
+                        try {
+                            const globalKeys = JSON.parse(localStorage.getItem('global_api_keys') || '{}');
+                            globalKeys.openai = globalKeys.openai || {};
+                            globalKeys.openai.key = key;
+                            localStorage.setItem('global_api_keys', JSON.stringify(globalKeys));
+                        } catch {}
                         return key;
                     }
                 } catch (e) {
-                    console.log('ℹ️ awsAPISettings fehlgeschlagen:', e.message);
+                    console.log('⚠️ awsAPISettings Fehler:', e.message);
                 }
             }
             
             // ═══════════════════════════════════════════════════════════════════
-            // PRIORITÄT 6: Direkte API-Abfrage (letzter Fallback)
+            // QUELLE 6: AWS API Endpoint (letzter Fallback)
             // ═══════════════════════════════════════════════════════════════════
             try {
+                console.log('🔍 Versuche AWS API Endpoint...');
                 const apiUrl = window.getApiUrl 
                     ? window.getApiUrl('API_SETTINGS') + '/key?provider=openai' 
                     : (window.AWS_APP_CONFIG?.API_BASE || 'https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1') + '/api-settings/key?provider=openai';
@@ -1726,19 +1812,23 @@ ${description.substring(0, 2500)}`;
                 if (response.ok) {
                     const data = await response.json();
                     const key = data.apiKey || data.key;
-                    if (key && typeof key === 'string' && key.startsWith('sk-')) {
-                        console.log('✅ API-Key über API-Endpoint geladen');
+                    if (isValidKey(key)) {
+                        console.log('✅ API-Key über AWS API-Endpoint geladen');
                         return key;
                     }
                 }
             } catch (e) {
-                console.log('ℹ️ API-Endpoint nicht erreichbar:', e.message);
+                console.log('⚠️ API-Endpoint Fehler:', e.message);
             }
             
-            console.log('⚠️ Kein API-Key gefunden - Template-Modus wird verwendet');
+            // Keine Key gefunden - zeige Debug-Info
+            console.log('❌ Kein API-Key gefunden!');
+            console.log('📋 localStorage Keys:', Object.keys(localStorage).filter(k => k.includes('api') || k.includes('key') || k.includes('openai')));
+            this.showToast('Kein API-Key gefunden. Verwende Template.', 'warning');
             return null;
+            
         } catch (error) {
-            console.error('❌ Unerwarteter Fehler beim API-Key Abruf:', error);
+            console.error('❌ Kritischer Fehler bei API-Key Suche:', error);
             return null;
         }
     }

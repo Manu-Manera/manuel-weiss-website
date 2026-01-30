@@ -743,7 +743,7 @@ a:hover {
     isolation: isolate;
 }
 
-/* Schneeflocken-Hintergrund für Hero - immer sichtbar */
+/* Sternen-Funkeln für Hero - scharfe Punkte wie Sterne */
 .hero::after {
     content: '';
     position: absolute;
@@ -752,12 +752,12 @@ a:hover {
     right: 0;
     bottom: -10%;
     background-image:
-        radial-gradient(rgba(255,255,255,0.55) 1px, transparent 45%),
-        radial-gradient(rgba(255,255,255,0.35) 1.6px, transparent 40%),
-        radial-gradient(rgba(255,255,255,0.2) 2.2px, transparent 30%);
-    background-size: 260px 360px, 360px 420px, 520px 620px;
-    opacity: 0.55;
-    animation: servicesSnowFall 28s linear infinite, snowflakeGlow 10s ease-in-out infinite;
+        radial-gradient(circle, rgba(255,255,255,0.85) 0.4px, transparent 1.2px),
+        radial-gradient(circle, rgba(255,255,255,0.5) 0.8px, transparent 2px),
+        radial-gradient(circle, rgba(255,255,255,0.25) 1.2px, transparent 2.8px);
+    background-size: 180px 220px, 280px 320px, 380px 440px;
+    opacity: 0.6;
+    animation: servicesSnowFall 28s linear infinite, starsTwinkle 12s ease-in-out infinite;
     z-index: 3; /* Unter Video, aber über Hintergrund */
     pointer-events: none;
 }
@@ -1532,7 +1532,7 @@ a:hover {
     }
 }
 
-/* Winterlicher Schnee für Services Section - ohne Y-Formen, nur Schneeflocken */
+/* Sternen-Funkeln für Services Section - scharfe Punkte wie Sterne */
 .services::after {
     content: '';
     position: absolute;
@@ -1541,12 +1541,12 @@ a:hover {
     right: 0;
     bottom: -10%;
     background-image:
-        radial-gradient(rgba(255,255,255,0.55) 1px, transparent 45%),
-        radial-gradient(rgba(255,255,255,0.35) 1.6px, transparent 40%),
-        radial-gradient(rgba(255,255,255,0.2) 2.2px, transparent 30%);
-    background-size: 260px 360px, 360px 420px, 520px 620px;
-    opacity: 0.55;
-    animation: servicesSnowFall 28s linear infinite, snowflakeGlow 10s ease-in-out infinite;
+        radial-gradient(circle, rgba(255,255,255,0.85) 0.4px, transparent 1.2px),
+        radial-gradient(circle, rgba(255,255,255,0.5) 0.8px, transparent 2px),
+        radial-gradient(circle, rgba(255,255,255,0.25) 1.2px, transparent 2.8px);
+    background-size: 180px 220px, 280px 320px, 380px 440px;
+    opacity: 0.6;
+    animation: servicesSnowFall 28s linear infinite, starsTwinkle 12s ease-in-out infinite;
     z-index: 0;
     pointer-events: none;
 }
@@ -1569,6 +1569,15 @@ a:hover {
     }
     50% {
         opacity: 0.7;
+    }
+}
+
+@keyframes starsTwinkle {
+    0%, 100% {
+        opacity: 0.5;
+    }
+    50% {
+        opacity: 0.75;
     }
 }
 
