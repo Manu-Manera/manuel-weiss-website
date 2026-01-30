@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Coach - KI-gestützte HR-Beratung | Manuel Weiss</title>
+    
+    <!-- Meta Tags -->
+    <meta name="description" content="Ihr persönlicher KI-Coach für alle HR-Themen. Interaktiver Coachingplan-Wizard für HR-Strategie, Prozessoptimierung und Digitalisierung.">
+    <meta name="keywords" content="HR Coach, KI-Beratung, HR-Strategie, Coaching, Digitalisierung, Personalwesen">
+    <meta name="author" content="Manuel Weiss">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        /* HR Coach Page Styles */
+        .hr-coach-page {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+        
+        /* Hero Section */
+        .hr-coach-hero {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hr-coach-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .hero-icon {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 2rem;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            backdrop-filter: blur(10px);
+        }
+        
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #fff, #e0e7ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+        
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+        }
+        
+        /* Wizard Container */
+        .wizard-container {
+            max-width: 900px;
+            margin: -3rem auto 4rem;
+            padding: 0 1rem;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .wizard-card {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        /* Progress Bar */
+        .wizard-progress {
+            background: #f1f5f9;
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+        }
+        
+        .progress-steps::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 40px;
+            right: 40px;
+            height: 3px;
+            background: #e2e8f0;
+        }
+        
+        .progress-line {
+            position: absolute;
+            top: 20px;
+            left: 40px;
+            height: 3px;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+        
+        .step-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: #64748b;
+            transition: all 0.3s ease;
+        }
+        
+        .step-item.active .step-circle {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+        }
+        
+        .step-item.completed .step-circle {
+            background: #10b981;
+            color: white;
+        }
+        
+        .step-label {
+            font-size: 0.75rem;
+            color: #64748b;
+            font-weight: 500;
+            text-align: center;
+            max-width: 80px;
+        }
+        
+        .step-item.active .step-label {
+            color: #6366f1;
+            font-weight: 600;
+        }
+        
+        /* Wizard Content */
+        .wizard-content {
+            padding: 2.5rem;
+            min-height: 400px;
+        }
+        
+        .wizard-step {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .wizard-step.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .step-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+        
+        .step-description {
+            color: #6b7280;
+            margin-bottom: 2rem;
+        }
+        
+        /* Option Cards */
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .option-card {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .option-card:hover {
+            border-color: #6366f1;
+            background: #f1f5f9;
+        }
+        
+        .option-card.selected {
+            border-color: #6366f1;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.2);
+        }
+        
+        .option-icon {
+            width: 50px;
+            height: 50px;
+            margin: 0 auto 1rem;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+        }
+        
+        .option-title {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.25rem;
+        }
+        
+        .option-description {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        
+        /* Checkbox Options */
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 0.75rem;
+        }
+        
+        .checkbox-option {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem;
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .checkbox-option:hover {
+            border-color: #6366f1;
+        }
+        
+        .checkbox-option.checked {
+            border-color: #6366f1;
+            background: rgba(99, 102, 241, 0.05);
+        }
+        
+        .checkbox-option input {
+            display: none;
+        }
+        
+        .checkbox-box {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #d1d5db;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+        
+        .checkbox-option.checked .checkbox-box {
+            background: #6366f1;
+            border-color: #6366f1;
+            color: white;
+        }
+        
+        /* Textarea */
+        .wizard-textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 1rem;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+        
+        .wizard-textarea:focus {
+            outline: none;
+            border-color: #6366f1;
+        }
+        
+        /* Timeline Selector */
+        .timeline-options {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .timeline-option {
+            flex: 1;
+            min-width: 150px;
+            padding: 1.25rem;
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .timeline-option:hover {
+            border-color: #6366f1;
+        }
+        
+        .timeline-option.selected {
+            border-color: #6366f1;
+            background: rgba(99, 102, 241, 0.1);
+        }
+        
+        .timeline-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #6366f1;
+        }
+        
+        .timeline-label {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        
+        /* Wizard Navigation */
+        .wizard-navigation {
+            display: flex;
+            justify-content: space-between;
+            padding: 1.5rem 2.5rem;
+            border-top: 1px solid #e2e8f0;
+            background: #f8fafc;
+        }
+        
+        .btn-wizard {
+            padding: 0.875rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: none;
+        }
+        
+        .btn-back {
+            background: #e2e8f0;
+            color: #64748b;
+        }
+        
+        .btn-back:hover {
+            background: #d1d5db;
+        }
+        
+        .btn-next {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+        }
+        
+        .btn-next:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+        }
+        
+        .btn-generate {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+        
+        .btn-generate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+        }
+        
+        /* Summary Section */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .summary-item {
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 12px;
+            border-left: 4px solid #6366f1;
+        }
+        
+        .summary-label {
+            font-size: 0.75rem;
+            color: #6b7280;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .summary-value {
+            font-weight: 600;
+            color: #1f2937;
+        }
+        
+        /* Generated Plan */
+        .generated-plan {
+            display: none;
+            margin-top: 2rem;
+        }
+        
+        .generated-plan.visible {
+            display: block;
+            animation: slideUp 0.5s ease;
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .plan-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .plan-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Roadmap */
+        .roadmap {
+            position: relative;
+            padding-left: 2rem;
+        }
+        
+        .roadmap::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(180deg, #6366f1, #8b5cf6, #a855f7);
+            border-radius: 3px;
+        }
+        
+        .roadmap-item {
+            position: relative;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            background: white;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            margin-left: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .roadmap-item:hover {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transform: translateX(5px);
+        }
+        
+        .roadmap-item::before {
+            content: '';
+            position: absolute;
+            left: -2rem;
+            top: 1.75rem;
+            width: 16px;
+            height: 16px;
+            background: #6366f1;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
+        }
+        
+        .roadmap-phase {
+            font-size: 0.75rem;
+            color: #6366f1;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+        
+        .roadmap-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+        
+        .roadmap-description {
+            color: #6b7280;
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+        }
+        
+        .roadmap-tasks {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .roadmap-task {
+            background: #f1f5f9;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: #475569;
+        }
+        
+        /* Plan Actions */
+        .plan-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn-action {
+            padding: 0.875rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            border: none;
+        }
+        
+        .btn-download {
+            background: #6366f1;
+            color: white;
+        }
+        
+        .btn-download:hover {
+            background: #4f46e5;
+        }
+        
+        .btn-restart {
+            background: #e2e8f0;
+            color: #64748b;
+        }
+        
+        .btn-restart:hover {
+            background: #d1d5db;
+        }
+        
+        /* Loading State */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .loading-overlay.visible {
+            display: flex;
+        }
+        
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid #e2e8f0;
+            border-top-color: #6366f1;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            font-size: 1.1rem;
+            color: #6b7280;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .wizard-content {
+                padding: 1.5rem;
+            }
+            
+            .step-label {
+                display: none;
+            }
+            
+            .wizard-navigation {
+                padding: 1rem 1.5rem;
+            }
+            
+            .btn-wizard {
+                padding: 0.75rem 1.25rem;
+            }
+        }
+    </style>
+</head>
+<body class="hr-coach-page">
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="index.html">
+                    <img src="manuel-weiss-portrait.jpg" alt="MW" class="nav-logo">
+                    <span class="nav-name">Manuel Weiss</span>
+                </a>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">Start</a>
+                <a href="ai-digitalisierung.html" class="nav-link">AI & Digitalisierung</a>
+                <a href="index.html#contact" class="nav-link">Kontakt</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hr-coach-hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-icon">
+                    <i class="fas fa-user-tie"></i>
+                </div>
+                <h1 class="hero-title">HR Coach</h1>
+                <p class="hero-subtitle">
+                    Ihr persönlicher KI-Coach für alle HR-Themen. 
+                    Erstellen Sie einen individualisierten Coachingplan in wenigen Schritten.
+                </p>
+                <div class="hero-badge">
+                    <i class="fas fa-robot"></i>
+                    <span>KI-gestützte Beratung</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Wizard Container -->
+    <div class="wizard-container">
+        <div class="wizard-card">
+            <!-- Progress Bar -->
+            <div class="wizard-progress">
+                <div class="progress-steps">
+                    <div class="progress-line" id="progressLine"></div>
+                    <div class="step-item active" data-step="1">
+                        <div class="step-circle">1</div>
+                        <div class="step-label">HR-Bereich</div>
+                    </div>
+                    <div class="step-item" data-step="2">
+                        <div class="step-circle">2</div>
+                        <div class="step-label">Situation</div>
+                    </div>
+                    <div class="step-item" data-step="3">
+                        <div class="step-circle">3</div>
+                        <div class="step-label">Ziele</div>
+                    </div>
+                    <div class="step-item" data-step="4">
+                        <div class="step-circle">4</div>
+                        <div class="step-label">Timeline</div>
+                    </div>
+                    <div class="step-item" data-step="5">
+                        <div class="step-circle">5</div>
+                        <div class="step-label">Coachingplan</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wizard Content -->
+            <div class="wizard-content">
+                <!-- Step 1: HR-Bereich auswählen -->
+                <div class="wizard-step active" data-step="1">
+                    <h2 class="step-title">Welchen HR-Bereich möchten Sie optimieren?</h2>
+                    <p class="step-description">Wählen Sie den Fokusbereich für Ihr Coaching aus.</p>
+                    
+                    <div class="options-grid">
+                        <div class="option-card" data-value="strategy" onclick="selectOption(this, 'hrArea')">
+                            <div class="option-icon">
+                                <i class="fas fa-chess-king"></i>
+                            </div>
+                            <div class="option-title">HR-Strategie</div>
+                            <div class="option-description">Strategische Ausrichtung & Vision</div>
+                        </div>
+                        
+                        <div class="option-card" data-value="recruiting" onclick="selectOption(this, 'hrArea')">
+                            <div class="option-icon">
+                                <i class="fas fa-user-plus"></i>
+                            </div>
+                            <div class="option-title">Recruiting</div>
+                            <div class="option-description">Talentgewinnung & Employer Branding</div>
+                        </div>
+                        
+                        <div class="option-card" data-value="onboarding" onclick="selectOption(this, 'hrArea')">
+                            <div class="option-icon">
+                                <i class="fas fa-handshake"></i>
+                            </div>
+                            <div class="option-title">Onboarding</div>
+                            <div class="option-description">Einarbeitung & Integration</div>
+                        </div>
+                        
+                        <div class="option-card" data-value="performance" onclick="selectOption(this, 'hrArea')">
+                            <div class="option-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="option-title">Performance</div>
+                            <div class="option-description">Leistungsmanagement & Feedback</div>
+                        </div>
+                        
+                        <div class="option-card" data-value="development" onclick="selectOption(this, 'hrArea')">
+                            <div class="option-icon">
+                                <i class="fas fa-graduation-cap"></i>
+                            </div>
+                            <div class="option-title">Entwicklung</div>
+                            <div class="option-description">Learning & Development</div>
+                        </div>
+                        
+                        <div class="option-card" data-value="digitalization" onclick="selectOption(this, 'hrArea')">
+                            <div class="option-icon">
+                                <i class="fas fa-laptop-code"></i>
+                            </div>
+                            <div class="option-title">Digitalisierung</div>
+                            <div class="option-description">HR-Tech & Automatisierung</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Aktuelle Situation -->
+                <div class="wizard-step" data-step="2">
+                    <h2 class="step-title">Beschreiben Sie Ihre aktuelle Situation</h2>
+                    <p class="step-description">Was sind die größten Herausforderungen in diesem Bereich?</p>
+                    
+                    <div class="checkbox-grid">
+                        <label class="checkbox-option" onclick="toggleCheckbox(this)">
+                            <input type="checkbox" name="challenges" value="efficiency">
+                            <div class="checkbox-box"><i class="fas fa-check"></i></div>
+                            <span>Ineffiziente Prozesse</span>
+                        </label>
+                        
+                        <label class="checkbox-option" onclick="toggleCheckbox(this)">
+                            <input type="checkbox" name="challenges" value="technology">
+                            <div class="checkbox-box"><i class="fas fa-check"></i></div>
+                            <span>Veraltete Technologie</span>
+                        </label>
+                        
+                        <label class="checkbox-option" onclick="toggleCheckbox(this)">
+                            <input type="checkbox" name="challenges" value="talent">
+                            <div class="checkbox-box"><i class="fas fa-check"></i></div>
+                            <span>Fachkräftemangel</span>
+                        </label>
+                        
+                        <label class="checkbox-option" onclick="toggleCheckbox(this)">
+                            <input type="checkbox" name="challenges" value="engagement">
+                            <div class="checkbox-box"><i class="fas fa-check"></i></div>
+                            <span>Geringe Mitarbeiterbindung</span>
+                        </label>
+                        
+                        <label class="checkbox-option" onclick="toggleCheckbox(this)">
+                            <input type="checkbox" name="challenges" value="data">
+                            <div class="checkbox-box"><i class="fas fa-check"></i></div>
+                            <span>Mangelnde Datengrundlage</span>
+                        </label>
+                        
+                        <label class="checkbox-option" onclick="toggleCheckbox(this)">
+                            <input type="checkbox" name="challenges" value="change">
+                            <div class="checkbox-box"><i class="fas fa-check"></i></div>
+                            <span>Change-Resistenz</span>
+                        </label>
+                    </div>
+                    
+                    <div style="margin-top: 1.5rem;">
+                        <label class="step-description" style="display: block; margin-bottom: 0.5rem;">Weitere Details (optional):</label>
+                        <textarea class="wizard-textarea" id="situationDetails" placeholder="Beschreiben Sie Ihre spezifische Situation..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Step 3: Ziele definieren -->
+                <div class="wizard-step" data-step="3">
+                    <h2 class="step-title">Was möchten Sie erreichen?</h2>
+                    <p class="step-description">Definieren Sie Ihre wichtigsten Ziele.</p>
+                    
+                    <div class="checkbox-grid">
+                        <label class="checkbox-option" onclick="toggleCheckbox(this)">
+                            <input type="checkbox" name="goals" value="cost-reduction">
+                            <div class="checkbox-box"><i class="fas fa-check"></i></div>
+                            <span>Kostenreduktion</span>
+                        </label>
+                        
+                        <label class="checkbox-option" onclick="toggleCheckbox(this)">
+                            <input type="checkbox" name="goals" value="time-savings">
+                            <div class="checkbox-box"><i class="fas fa-check"></i></div>
+                            <span>Zeitersparnis</span>
+                        </label>
+                        
+                        <label class="checkbox-option" onclick="toggleCheckbox(this)">
+                            <input type="checkbox" name="goals" value="quality">
+                            <div class="checkbox-box"><i class="fas fa-check"></i></div>
+                            <span>Qualitätssteigerung</span>
+                        </label>
+                        
+                        <label class="checkbox-option" onclick="toggleCheckbox(this)">
+                            <input type="checkbox" name="goals" value="employee-satisfaction">
+                            <div class="checkbox-box"><i class="fas fa-check"></i></div>
+                            <span>Mitarbeiterzufriedenheit</span>
+                        </label>
+                        
+                        <label class="checkbox-option" onclick="toggleCheckbox(this)">
+                            <input type="checkbox" name="goals" value="innovation">
+                            <div class="checkbox-box"><i class="fas fa-check"></i></div>
+                            <span>Innovationsfähigkeit</span>
+                        </label>
+                        
+                        <label class="checkbox-option" onclick="toggleCheckbox(this)">
+                            <input type="checkbox" name="goals" value="compliance">
+                            <div class="checkbox-box"><i class="fas fa-check"></i></div>
+                            <span>Compliance & Rechtssicherheit</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Step 4: Timeline & Ressourcen -->
+                <div class="wizard-step" data-step="4">
+                    <h2 class="step-title">Timeline & Ressourcen</h2>
+                    <p class="step-description">Wählen Sie Ihren gewünschten Zeitrahmen.</p>
+                    
+                    <div class="timeline-options">
+                        <div class="timeline-option" data-value="3" onclick="selectTimeline(this)">
+                            <div class="timeline-value">3</div>
+                            <div class="timeline-label">Monate - Quick Win</div>
+                        </div>
+                        
+                        <div class="timeline-option" data-value="6" onclick="selectTimeline(this)">
+                            <div class="timeline-value">6</div>
+                            <div class="timeline-label">Monate - Standard</div>
+                        </div>
+                        
+                        <div class="timeline-option" data-value="12" onclick="selectTimeline(this)">
+                            <div class="timeline-value">12</div>
+                            <div class="timeline-label">Monate - Umfassend</div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 2rem;">
+                        <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">Verfügbare Ressourcen</h3>
+                        <div class="options-grid" style="grid-template-columns: repeat(3, 1fr);">
+                            <div class="option-card" data-value="low" onclick="selectOption(this, 'resources')">
+                                <div class="option-title">Begrenzt</div>
+                                <div class="option-description">Wenig Budget & Personal</div>
+                            </div>
+                            <div class="option-card" data-value="medium" onclick="selectOption(this, 'resources')">
+                                <div class="option-title">Moderat</div>
+                                <div class="option-description">Durchschnittlich</div>
+                            </div>
+                            <div class="option-card" data-value="high" onclick="selectOption(this, 'resources')">
+                                <div class="option-title">Umfangreich</div>
+                                <div class="option-description">Gutes Budget verfügbar</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 5: Zusammenfassung & Generierung -->
+                <div class="wizard-step" data-step="5">
+                    <h2 class="step-title">Ihr personalisierter Coachingplan</h2>
+                    <p class="step-description">Zusammenfassung Ihrer Angaben</p>
+                    
+                    <div class="summary-grid" id="summaryGrid">
+                        <div class="summary-item">
+                            <div class="summary-label">HR-Bereich</div>
+                            <div class="summary-value" id="summaryArea">-</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label">Herausforderungen</div>
+                            <div class="summary-value" id="summaryChallenges">-</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label">Ziele</div>
+                            <div class="summary-value" id="summaryGoals">-</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label">Timeline</div>
+                            <div class="summary-value" id="summaryTimeline">-</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Generated Plan Section -->
+                    <div class="generated-plan" id="generatedPlan">
+                        <div class="plan-header">
+                            <h3 class="plan-title">Ihr HR-Coachingplan</h3>
+                            <p style="color: #6b7280;">Basierend auf Ihren Angaben haben wir folgenden Plan erstellt:</p>
+                        </div>
+                        
+                        <div class="roadmap" id="roadmapContent">
+                            <!-- Will be populated dynamically -->
+                        </div>
+                        
+                        <div class="plan-actions">
+                            <button class="btn-action btn-download" onclick="downloadPlan()">
+                                <i class="fas fa-download"></i>
+                                Plan herunterladen
+                            </button>
+                            <button class="btn-action btn-restart" onclick="restartWizard()">
+                                <i class="fas fa-redo"></i>
+                                Neu starten
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="wizard-navigation">
+                <button class="btn-wizard btn-back" id="btnBack" onclick="previousStep()" style="visibility: hidden;">
+                    <i class="fas fa-arrow-left"></i>
+                    Zurück
+                </button>
+                <button class="btn-wizard btn-next" id="btnNext" onclick="nextStep()">
+                    Weiter
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Generiere Ihren Coachingplan...</div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/aws-config.js"></script>
+    <script src="js/global-api-manager.js"></script>
+    <script>
+        // Wizard State
+        let currentStep = 1;
+        const totalSteps = 5;
+        
+        const wizardData = {
+            hrArea: null,
+            challenges: [],
+            situationDetails: '',
+            goals: [],
+            timeline: null,
+            resources: null
+        };
+
+        // Klick-Mining für zukünftige Verbesserungsvorschläge
+        const clickTracking = {
+            sessionId: Date.now().toString(36),
+            clicks: [],
+            startTime: Date.now()
+        };
+
+        function trackClick(area, context) {
+            clickTracking.clicks.push({
+                area: area,
+                context: context,
+                timestamp: Date.now(),
+                step: currentStep
+            });
+            // Speichere in localStorage für spätere Analyse
+            localStorage.setItem('hr_coach_clicks', JSON.stringify(clickTracking));
+        }
+
+        function selectOption(element, field) {
+            const container = element.parentElement;
+            container.querySelectorAll('.option-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            wizardData[field] = element.dataset.value;
+            trackClick(field, element.dataset.value);
+        }
+
+        function selectTimeline(element) {
+            document.querySelectorAll('.timeline-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            wizardData.timeline = element.dataset.value;
+            trackClick('timeline', element.dataset.value);
+        }
+
+        function toggleCheckbox(element) {
+            element.classList.toggle('checked');
+            const input = element.querySelector('input');
+            input.checked = element.classList.contains('checked');
+            
+            // Update wizardData
+            const name = input.name;
+            const value = input.value;
+            
+            if (input.checked) {
+                if (!wizardData[name]) wizardData[name] = [];
+                wizardData[name].push(value);
+            } else {
+                wizardData[name] = wizardData[name].filter(v => v !== value);
+            }
+            
+            trackClick(name, value);
+        }
+
+        function updateProgress() {
+            const progressLine = document.getElementById('progressLine');
+            const percentage = ((currentStep - 1) / (totalSteps - 1)) * 100;
+            progressLine.style.width = `${percentage}%`;
+            
+            document.querySelectorAll('.step-item').forEach((item, index) => {
+                const step = index + 1;
+                item.classList.remove('active', 'completed');
+                
+                if (step < currentStep) {
+                    item.classList.add('completed');
+                } else if (step === currentStep) {
+                    item.classList.add('active');
+                }
+            });
+        }
+
+        function showStep(step) {
+            document.querySelectorAll('.wizard-step').forEach(s => {
+                s.classList.remove('active');
+            });
+            document.querySelector(`.wizard-step[data-step="${step}"]`).classList.add('active');
+            
+            // Update buttons
+            const btnBack = document.getElementById('btnBack');
+            const btnNext = document.getElementById('btnNext');
+            
+            btnBack.style.visibility = step === 1 ? 'hidden' : 'visible';
+            
+            if (step === totalSteps) {
+                btnNext.innerHTML = '<i class="fas fa-magic"></i> Plan generieren';
+                btnNext.classList.remove('btn-next');
+                btnNext.classList.add('btn-generate');
+                updateSummary();
+            } else {
+                btnNext.innerHTML = 'Weiter <i class="fas fa-arrow-right"></i>';
+                btnNext.classList.remove('btn-generate');
+                btnNext.classList.add('btn-next');
+            }
+            
+            updateProgress();
+        }
+
+        function nextStep() {
+            if (currentStep === totalSteps) {
+                generatePlan();
+                return;
+            }
+            
+            // Validation
+            if (currentStep === 1 && !wizardData.hrArea) {
+                alert('Bitte wählen Sie einen HR-Bereich aus.');
+                return;
+            }
+            
+            if (currentStep === 4 && !wizardData.timeline) {
+                alert('Bitte wählen Sie einen Zeitrahmen aus.');
+                return;
+            }
+            
+            wizardData.situationDetails = document.getElementById('situationDetails')?.value || '';
+            
+            currentStep++;
+            showStep(currentStep);
+        }
+
+        function previousStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                showStep(currentStep);
+            }
+        }
+
+        function updateSummary() {
+            const areaLabels = {
+                strategy: 'HR-Strategie',
+                recruiting: 'Recruiting',
+                onboarding: 'Onboarding',
+                performance: 'Performance',
+                development: 'Entwicklung',
+                digitalization: 'Digitalisierung'
+            };
+            
+            const challengeLabels = {
+                efficiency: 'Ineffiziente Prozesse',
+                technology: 'Veraltete Technologie',
+                talent: 'Fachkräftemangel',
+                engagement: 'Geringe Bindung',
+                data: 'Mangelnde Daten',
+                change: 'Change-Resistenz'
+            };
+            
+            const goalLabels = {
+                'cost-reduction': 'Kostenreduktion',
+                'time-savings': 'Zeitersparnis',
+                quality: 'Qualität',
+                'employee-satisfaction': 'Zufriedenheit',
+                innovation: 'Innovation',
+                compliance: 'Compliance'
+            };
+            
+            document.getElementById('summaryArea').textContent = areaLabels[wizardData.hrArea] || '-';
+            document.getElementById('summaryChallenges').textContent = 
+                wizardData.challenges.map(c => challengeLabels[c]).join(', ') || '-';
+            document.getElementById('summaryGoals').textContent = 
+                wizardData.goals.map(g => goalLabels[g]).join(', ') || '-';
+            document.getElementById('summaryTimeline').textContent = 
+                wizardData.timeline ? `${wizardData.timeline} Monate` : '-';
+        }
+
+        async function generatePlan() {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            loadingOverlay.classList.add('visible');
+            
+            // Simuliere API-Call (oder echten AI-Call wenn API-Key verfügbar)
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            // Generate roadmap based on inputs
+            const roadmapItems = generateRoadmapItems();
+            
+            const roadmapContent = document.getElementById('roadmapContent');
+            roadmapContent.innerHTML = roadmapItems.map((item, index) => `
+                <div class="roadmap-item" onclick="trackClick('roadmap_click', '${item.phase}')">
+                    <div class="roadmap-phase">Phase ${index + 1} - ${item.timing}</div>
+                    <div class="roadmap-title">${item.title}</div>
+                    <div class="roadmap-description">${item.description}</div>
+                    <div class="roadmap-tasks">
+                        ${item.tasks.map(task => `<span class="roadmap-task">${task}</span>`).join('')}
+                    </div>
+                </div>
+            `).join('');
+            
+            loadingOverlay.classList.remove('visible');
+            document.getElementById('generatedPlan').classList.add('visible');
+            document.querySelector('.wizard-navigation').style.display = 'none';
+            
+            // Track completion
+            trackClick('plan_generated', wizardData.hrArea);
+        }
+
+        function generateRoadmapItems() {
+            const areaPlans = {
+                strategy: [
+                    { title: 'Analyse & Assessment', description: 'Bestandsaufnahme der aktuellen HR-Strategie und Identifikation von Gaps', tasks: ['Stakeholder-Interviews', 'SWOT-Analyse', 'Benchmark'] },
+                    { title: 'Vision & Zieldefinition', description: 'Entwicklung einer zukunftsorientierten HR-Vision', tasks: ['Workshop-Reihe', 'Ziel-Framework', 'KPI-Definition'] },
+                    { title: 'Roadmap-Entwicklung', description: 'Detaillierte Planung der Umsetzungsschritte', tasks: ['Maßnahmenplanung', 'Ressourcenplanung', 'Change-Konzept'] },
+                    { title: 'Implementierung & Review', description: 'Umsetzung und kontinuierliche Optimierung', tasks: ['Pilotprojekte', 'Rollout', 'Review-Zyklen'] }
+                ],
+                recruiting: [
+                    { title: 'Employer Branding Analyse', description: 'Bewertung der aktuellen Arbeitgebermarke', tasks: ['Kandidatenbefragung', 'Wettbewerbsanalyse', 'EVP-Check'] },
+                    { title: 'Prozessoptimierung', description: 'Streamlining des Recruiting-Prozesses', tasks: ['Prozess-Mapping', 'Tool-Evaluation', 'Automation'] },
+                    { title: 'Sourcing-Strategie', description: 'Entwicklung neuer Recruiting-Kanäle', tasks: ['Active Sourcing', 'Social Recruiting', 'Talent Pools'] },
+                    { title: 'Candidate Experience', description: 'Optimierung der Bewerbererfahrung', tasks: ['Journey Mapping', 'Touchpoint-Optimierung', 'Feedback-System'] }
+                ],
+                digitalization: [
+                    { title: 'Technologie-Assessment', description: 'Analyse der aktuellen HR-Tech-Landschaft', tasks: ['System-Audit', 'Gap-Analyse', 'Anforderungen'] },
+                    { title: 'Toolauswahl & Architektur', description: 'Auswahl und Planung der HR-Systeme', tasks: ['RFP-Prozess', 'Vendor-Auswahl', 'Integrationskonzept'] },
+                    { title: 'Implementierung', description: 'Technische Umsetzung und Migration', tasks: ['Datenmigration', 'Konfiguration', 'Testing'] },
+                    { title: 'Adoption & Optimierung', description: 'Sicherstellung der Nutzerakzeptanz', tasks: ['Training', 'Change Management', 'Continuous Improvement'] }
+                ]
+            };
+            
+            const basePlan = areaPlans[wizardData.hrArea] || areaPlans.strategy;
+            const months = parseInt(wizardData.timeline) || 6;
+            const phaseLength = Math.floor(months / basePlan.length);
+            
+            return basePlan.map((item, index) => ({
+                ...item,
+                phase: `Phase ${index + 1}`,
+                timing: `Monat ${index * phaseLength + 1}-${(index + 1) * phaseLength}`
+            }));
+        }
+
+        function downloadPlan() {
+            // Generate PDF or text download
+            const planText = generatePlanText();
+            const blob = new Blob([planText], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'hr-coachingplan.txt';
+            a.click();
+            URL.revokeObjectURL(url);
+            trackClick('download', 'plan');
+        }
+
+        function generatePlanText() {
+            const areaLabels = {
+                strategy: 'HR-Strategie', recruiting: 'Recruiting', 
+                onboarding: 'Onboarding', performance: 'Performance',
+                development: 'Entwicklung', digitalization: 'Digitalisierung'
+            };
+            
+            return `
+HR COACHINGPLAN
+===============
+
+Bereich: ${areaLabels[wizardData.hrArea]}
+Timeline: ${wizardData.timeline} Monate
+Erstellt am: ${new Date().toLocaleDateString('de-DE')}
+
+ZUSAMMENFASSUNG
+---------------
+${document.getElementById('roadmapContent').innerText}
+
+---
+Erstellt mit HR Coach von Manuel Weiss
+https://manuel-weiss.ch
+            `.trim();
+        }
+
+        function restartWizard() {
+            currentStep = 1;
+            Object.keys(wizardData).forEach(key => {
+                if (Array.isArray(wizardData[key])) {
+                    wizardData[key] = [];
+                } else {
+                    wizardData[key] = null;
+                }
+            });
+            
+            // Reset UI
+            document.querySelectorAll('.option-card, .timeline-option, .checkbox-option').forEach(el => {
+                el.classList.remove('selected', 'checked');
+            });
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+            document.getElementById('situationDetails').value = '';
+            document.getElementById('generatedPlan').classList.remove('visible');
+            document.querySelector('.wizard-navigation').style.display = 'flex';
+            
+            showStep(1);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            showStep(1);
+        });
+    </script>
+</body>
+</html>
