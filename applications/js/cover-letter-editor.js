@@ -766,151 +766,68 @@ GRUSS: [übersetzte Grußformel]`
 
         console.log('🔍 Starte automatische Extraktion aus Stellenbeschreibung...');
         console.log('📊 Textlänge:', description.length, 'Zeichen');
-        console.log('📊 Felder bereits gefüllt - Position:', !!positionField?.value, 'Unternehmen:', !!companyField?.value);
 
         // ═══════════════════════════════════════════════════════════════════
-        // SCHRITT 1: Schnelle Regex-basierte Extraktion (sofort, ohne API)
-        // ═══════════════════════════════════════════════════════════════════
-        const regexExtracted = this.extractWithRegex(description);
-        
-        // ═══════════════════════════════════════════════════════════════════
-        // SCHRITT 2: KI-basierte Extraktion (IMMER versuchen wenn API-Key da)
-        // Regex-Ergebnisse werden nur als Fallback verwendet
+        // NEUER ANSATZ: Verwendet zentralen OpenAI Service mit GPT-5.2
         // ═══════════════════════════════════════════════════════════════════
         try {
-            const apiKey = await this.getAPIKey();
+            if (!window.OpenAIService) {
+                console.error('❌ OpenAI Service nicht verfügbar!');
+                this.showToast('OpenAI Service nicht geladen', 'error');
+                return;
+            }
             
-            if (!apiKey) {
-                console.log('⚠️ Kein API-Key - verwende nur Regex-Ergebnisse');
-                // Nur Regex-Ergebnisse anwenden wenn kein API-Key
-                if (regexExtracted.position && !positionField?.value) {
-                    positionField.value = regexExtracted.position;
-                }
-                if (regexExtracted.company && !companyField?.value) {
-                    companyField.value = regexExtracted.company;
-                }
-                if (regexExtracted.contactPerson && !contactField?.value) {
-                    contactField.value = regexExtracted.contactPerson;
-                }
-                if (regexExtracted.position || regexExtracted.company) {
-                    this.showToast('Informationen teilweise erkannt (ohne KI)', 'info');
-                }
+            // Async API-Key Prüfung (lädt aus AWS Cloud falls nötig)
+            const hasKey = await window.OpenAIService.hasApiKeyAsync();
+            if (!hasKey) {
+                console.error('❌ Kein OpenAI API-Key konfiguriert!');
+                this.showToast('Kein API-Key. Bitte im Admin Panel hinterlegen.', 'warning');
                 return;
             }
 
-            console.log('🤖 Starte KI-basierte Extraktion mit API-Key...');
-
-            const prompt = `Analysiere diese Stellenbeschreibung und extrahiere präzise:
-
-1. Position/Job-Titel (exakter Titel wie "Senior Consultant", "Solution Consultant", "HR Manager")
-2. Unternehmen/Firmenname (exakter Name wie "ITConcepts GmbH", "SAP AG", "DXC Technology")
-3. Ansprechpartner (falls erwähnt, z.B. "Claudio Manig", "Frau Müller")
-
-WICHTIG: Extrahiere NUR tatsächlich genannte Informationen. Bei E-Mails wie "claudio.manig@itconcepts.ch" ist der Ansprechpartner "Claudio Manig" und das Unternehmen "ITConcepts".
-
-Antworte NUR mit JSON ohne Markdown:
-{"position": "...", "company": "...", "contactPerson": "..."}
-Verwende null für nicht gefundene Werte.
-
-Stellenbeschreibung:
-${description.substring(0, 2500)}`;
-
-            // Bestimme Modell und Parameter
-            const model = this.getOpenAIModel() || 'gpt-4o-mini';
-            const isReasoningModel = model.includes('o1') || model.includes('o3');
+            console.log('🤖 Starte KI-basierte Extraktion mit OpenAI Service...');
+            this.showToast('Extrahiere Stelleninformationen...', 'info');
             
-            const requestBody = {
-                model: model,
-                messages: [
-                    {
-                        role: 'system',
-                        content: 'Du bist ein Experte für Stellenanalysen. Extrahiere präzise die gefragten Informationen. Antworte NUR mit validem JSON ohne Markdown-Formatierung.'
-                    },
-                    { role: 'user', content: prompt }
-                ],
-                max_tokens: 300,
-                temperature: 0.1
-            };
+            const extracted = await window.OpenAIService.extractJobInfo(description);
+            console.log('🤖 Extraktionsergebnis:', extracted);
             
-            // Reasoning-Modelle brauchen andere Parameter
-            if (isReasoningModel) {
-                delete requestBody.temperature;
-                requestBody.max_completion_tokens = 300;
-                delete requestBody.max_tokens;
-            }
-
-            const response = await fetch('https://api.openai.com/v1/chat/completions', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${apiKey}`
-                },
-                body: JSON.stringify(requestBody)
-            });
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.warn('⚠️ KI-Extraktion fehlgeschlagen:', response.status, errorText);
-                return;
-            }
-
-            const data = await response.json();
-            const content = data.choices[0]?.message?.content || '';
-            
-            // JSON extrahieren (auch wenn in Markdown eingebettet)
-            const jsonMatch = content.match(/\{[\s\S]*?\}/);
-            if (!jsonMatch) {
-                console.warn('⚠️ Kein JSON in KI-Antwort gefunden');
-                return;
-            }
-
-            const extracted = JSON.parse(jsonMatch[0]);
-            console.log('🤖 KI-Extraktion Ergebnis:', extracted);
             let updated = false;
 
-            // KI-Ergebnisse IMMER anwenden (überschreiben fehlerhafte Regex-Werte)
-            if (extracted.position && extracted.position !== 'null' && extracted.position !== null) {
+            // Ergebnisse in Felder eintragen
+            if (extracted.position) {
                 positionField.value = extracted.position;
-                console.log('✅ Position (KI):', extracted.position);
+                console.log('✅ Position:', extracted.position);
                 updated = true;
             }
-            if (extracted.company && extracted.company !== 'null' && extracted.company !== null) {
+            if (extracted.company) {
                 companyField.value = extracted.company;
-                console.log('✅ Unternehmen (KI):', extracted.company);
+                console.log('✅ Unternehmen:', extracted.company);
                 updated = true;
             }
-            if (extracted.contactPerson && extracted.contactPerson !== 'null' && extracted.contactPerson !== null) {
+            if (extracted.contactPerson) {
                 contactField.value = extracted.contactPerson;
-                console.log('✅ Ansprechpartner (KI):', extracted.contactPerson);
+                console.log('✅ Ansprechpartner:', extracted.contactPerson);
                 updated = true;
             }
 
             if (updated) {
-                this.showToast('Stelleninformationen automatisch erkannt', 'success');
+                this.showToast('Stelleninformationen automatisch erkannt!', 'success');
             } else {
-                console.log('ℹ️ KI konnte keine Informationen extrahieren');
+                this.showToast('Keine Informationen extrahiert', 'info');
             }
 
         } catch (error) {
-            console.warn('⚠️ Fehler bei KI-Extraktion:', error.message);
+            console.error('❌ Fehler bei Job-Info Extraktion:', error);
+            this.showToast('Extraktion fehlgeschlagen: ' + error.message, 'error');
         }
     }
 
     /**
-     * Regex-basierte Schnellextraktion (ohne API-Call)
+     * Regex-basierte Schnellextraktion - DEAKTIVIERT (nur noch OpenAI Service)
      */
     extractWithRegex(text) {
-        const result = { position: null, company: null, contactPerson: null };
-        
-        // Blacklist für falsch erkannte Begriffe
-        const blacklist = ['bietet', 'bist', 'dir', 'Was', 'für', 'und', 'die', 'der', 'das', 'wir', 'sie', 
-                          'unser', 'ihre', 'dein', 'deine', 'gerne', 'freuen', 'uns', 'auf', 'dich'];
-        
-        const isValid = (str) => {
-            if (!str || str.length < 3 || str.length > 60) return false;
-            const lower = str.toLowerCase();
-            return !blacklist.some(bad => lower.includes(bad));
-        };
+        // Nicht mehr verwendet - OpenAI Service übernimmt alles
+        return { position: null, company: null, contactPerson: null };
         
         // ════════════════════════════════════════════════════════════════════
         // POSITION: Nur sehr spezifische Patterns (mit m/w/d oder klaren Job-Titeln)
@@ -1651,186 +1568,37 @@ ${description.substring(0, 2500)}`;
 
     async getAPIKey() {
         // ═══════════════════════════════════════════════════════════════════
-        // VOLLSTÄNDIG ÜBERARBEITETE API-KEY SUCHE
-        // Durchsucht ALLE möglichen Speicherorte systematisch
+        // VERWENDET NEUEN ZENTRALEN OPENAI SERVICE (ASYNC für AWS Cloud Support)
         // ═══════════════════════════════════════════════════════════════════
-        console.log('🔑 Starte API-Key Suche...');
-        
-        // Hilfsfunktion: Prüft ob ein Key gültig ist
-        const isValidKey = (key) => key && typeof key === 'string' && key.startsWith('sk-') && key.length > 20;
-        
-        try {
-            // ═══════════════════════════════════════════════════════════════════
-            // QUELLE 1: global_api_keys (Admin Panel Hauptspeicher)
-            // ═══════════════════════════════════════════════════════════════════
-            try {
-                const globalKeysRaw = localStorage.getItem('global_api_keys');
-                console.log('🔍 global_api_keys vorhanden:', !!globalKeysRaw);
-                if (globalKeysRaw) {
-                    const globalKeys = JSON.parse(globalKeysRaw);
-                    // Mehrere mögliche Pfade prüfen
-                    const possibleKeys = [
-                        globalKeys.openai?.key,
-                        globalKeys.openai?.apiKey,
-                        globalKeys.openai
-                    ];
-                    for (const key of possibleKeys) {
-                        if (isValidKey(key)) {
-                            console.log('✅ API-Key aus global_api_keys geladen');
-                            return key;
-                        }
-                    }
-                }
-            } catch (e) {
-                console.log('⚠️ global_api_keys Parse-Fehler:', e.message);
+        if (window.OpenAIService) {
+            // Async Version verwenden - unterstützt AWS Cloud laden
+            const key = await window.OpenAIService.getApiKeyAsync();
+            if (key) {
+                console.log('✅ API-Key über OpenAI Service geladen');
+                return key;
             }
-            
-            // ═══════════════════════════════════════════════════════════════════
-            // QUELLE 2: GlobalAPIManager Instanz
-            // ═══════════════════════════════════════════════════════════════════
-            try {
-                const apiManager = window.GlobalAPIManager || window.globalApiManager || window.APIManager;
-                console.log('🔍 GlobalAPIManager vorhanden:', !!apiManager, 'Typ:', typeof apiManager);
-                if (apiManager) {
-                    // Prüfe ob es eine Instanz mit getAPIKey Methode ist
-                    if (typeof apiManager.getAPIKey === 'function') {
-                        const key = apiManager.getAPIKey('openai');
-                        if (isValidKey(key)) {
-                            console.log('✅ API-Key über GlobalAPIManager.getAPIKey() geladen');
-                            return key;
-                        }
-                    }
-                    // Prüfe direkten Zugriff auf keys Property
-                    if (apiManager.keys?.openai?.key && isValidKey(apiManager.keys.openai.key)) {
-                        console.log('✅ API-Key über GlobalAPIManager.keys direkt geladen');
-                        return apiManager.keys.openai.key;
-                    }
-                }
-            } catch (e) {
-                console.log('⚠️ GlobalAPIManager Fehler:', e.message);
-            }
-            
-            // ═══════════════════════════════════════════════════════════════════
-            // QUELLE 3: admin_state (State Manager Format)
-            // ═══════════════════════════════════════════════════════════════════
-            try {
-                const stateRaw = localStorage.getItem('admin_state');
-                console.log('🔍 admin_state vorhanden:', !!stateRaw);
-                if (stateRaw) {
-                    const state = JSON.parse(stateRaw);
-                    const possibleKeys = [
-                        state.apiKeys?.openai?.apiKey,
-                        state.apiKeys?.openai?.key,
-                        state.services?.openai?.apiKey,
-                        state.services?.openai?.key
-                    ];
-                    for (const key of possibleKeys) {
-                        if (isValidKey(key)) {
-                            console.log('✅ API-Key aus admin_state geladen');
-                            return key;
-                        }
-                    }
-                }
-            } catch (e) {
-                console.log('⚠️ admin_state Parse-Fehler:', e.message);
-            }
-            
-            // ═══════════════════════════════════════════════════════════════════
-            // QUELLE 4: Direkte localStorage Keys
-            // ═══════════════════════════════════════════════════════════════════
-            const directKeys = ['openai_api_key', 'admin_openai_api_key', 'ki_api_settings', 'openai-key', 'api_key'];
-            for (const keyName of directKeys) {
-                try {
-                    const value = localStorage.getItem(keyName);
-                    if (value) {
-                        // Direkter Key-String
-                        if (isValidKey(value)) {
-                            console.log(`✅ API-Key aus localStorage['${keyName}'] geladen`);
-                            return value;
-                        }
-                        // JSON-Format
-                        try {
-                            const parsed = JSON.parse(value);
-                            const possibleKeys = [parsed.openai, parsed.key, parsed.apiKey, parsed.openai?.key];
-                            for (const key of possibleKeys) {
-                                if (isValidKey(key)) {
-                                    console.log(`✅ API-Key aus localStorage['${keyName}'] JSON geladen`);
-                                    return key;
-                                }
-                            }
-                        } catch {}
-                    }
-                } catch (e) {}
-            }
-            
-            // ═══════════════════════════════════════════════════════════════════
-            // QUELLE 5: awsAPISettings (Cloud-Speicher)
-            // ═══════════════════════════════════════════════════════════════════
-            if (window.awsAPISettings && typeof window.awsAPISettings.getFullApiKey === 'function') {
-                try {
-                    console.log('🔍 Versuche awsAPISettings...');
-                    const timeoutPromise = new Promise((_, reject) => 
-                        setTimeout(() => reject(new Error('Timeout nach 3s')), 3000)
-                    );
-                    const keyPromise = window.awsAPISettings.getFullApiKey('openai');
-                    const key = await Promise.race([keyPromise, timeoutPromise]);
-                    
-                    if (isValidKey(key)) {
-                        console.log('✅ API-Key über awsAPISettings geladen');
-                        // Cache in localStorage für schnelleren Zugriff
-                        try {
-                            const globalKeys = JSON.parse(localStorage.getItem('global_api_keys') || '{}');
-                            globalKeys.openai = globalKeys.openai || {};
-                            globalKeys.openai.key = key;
-                            localStorage.setItem('global_api_keys', JSON.stringify(globalKeys));
-                        } catch {}
-                        return key;
-                    }
-                } catch (e) {
-                    console.log('⚠️ awsAPISettings Fehler:', e.message);
-                }
-            }
-            
-            // ═══════════════════════════════════════════════════════════════════
-            // QUELLE 6: AWS API Endpoint (letzter Fallback)
-            // ═══════════════════════════════════════════════════════════════════
-            try {
-                console.log('🔍 Versuche AWS API Endpoint...');
-                const apiUrl = window.getApiUrl 
-                    ? window.getApiUrl('API_SETTINGS') + '/key?provider=openai' 
-                    : (window.AWS_APP_CONFIG?.API_BASE || 'https://6i6ysj9c8c.execute-api.eu-central-1.amazonaws.com/v1') + '/api-settings/key?provider=openai';
-                
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 3000);
-                
-                const response = await fetch(apiUrl, {
-                    headers: { 'X-User-Id': this.getUserId() },
-                    signal: controller.signal
-                });
-                clearTimeout(timeoutId);
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    const key = data.apiKey || data.key;
-                    if (isValidKey(key)) {
-                        console.log('✅ API-Key über AWS API-Endpoint geladen');
-                        return key;
-                    }
-                }
-            } catch (e) {
-                console.log('⚠️ API-Endpoint Fehler:', e.message);
-            }
-            
-            // Keine Key gefunden - zeige Debug-Info
-            console.log('❌ Kein API-Key gefunden!');
-            console.log('📋 localStorage Keys:', Object.keys(localStorage).filter(k => k.includes('api') || k.includes('key') || k.includes('openai')));
-            this.showToast('Kein API-Key gefunden. Verwende Template.', 'warning');
-            return null;
-            
-        } catch (error) {
-            console.error('❌ Kritischer Fehler bei API-Key Suche:', error);
-            return null;
         }
+        
+        console.log('⚠️ OpenAI Service nicht verfügbar, nutze Fallback...');
+        
+        // Fallback: Direkt aus localStorage lesen
+        try {
+            const globalKeys = localStorage.getItem('global_api_keys');
+            if (globalKeys) {
+                const parsed = JSON.parse(globalKeys);
+                // Prüfe ob Key gültig ist (nicht maskiert)
+                const key = parsed.openai?.key || parsed.openai?.apiKey;
+                if (key && key.startsWith('sk-') && !key.includes('•') && key.length > 20) {
+                    console.log('✅ API-Key aus localStorage Fallback');
+                    return key;
+                }
+            }
+        } catch (e) {
+            console.error('❌ API-Key Fallback fehlgeschlagen:', e);
+        }
+        
+        this.showToast('Kein API-Key gefunden. Bitte im Admin Panel hinterlegen.', 'warning');
+        return null;
     }
     
     /**
