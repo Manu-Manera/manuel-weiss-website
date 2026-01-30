@@ -8,14 +8,13 @@
 
 class OpenAIService {
     constructor() {
-        this.model = 'gpt-5.2';
-        this.fallbackModel = 'gpt-4o-mini';
-        this.apiEndpoint = 'https://api.openai.com/v1/responses';
-        this.fallbackEndpoint = 'https://api.openai.com/v1/chat/completions';
+        // Verwende gpt-3.5-turbo als sicherstes Modell (für alle API-Keys verfügbar)
+        this.model = 'gpt-3.5-turbo';
+        this.apiEndpoint = 'https://api.openai.com/v1/chat/completions';
         this.cachedApiKey = null;
         this.keyLoadPromise = null;
         
-        console.log('🤖 OpenAI Service initialisiert');
+        console.log('🤖 OpenAI Service initialisiert (gpt-3.5-turbo)');
     }
     
     /**
@@ -195,68 +194,15 @@ class OpenAIService {
     
     /**
      * ═══════════════════════════════════════════════════════════════════════
-     * GPT-5.2 Responses API Call
+     * OpenAI Chat Completions API Call
      * ═══════════════════════════════════════════════════════════════════════
      */
     async callGPT52(input, options = {}) {
-        // Async API-Key Laden (unterstützt AWS Cloud)
-        const apiKey = await this.getApiKeyAsync();
-        if (!apiKey) {
-            throw new Error('Kein OpenAI API-Key konfiguriert. Bitte im Admin Panel hinterlegen.');
-        }
-        
-        const {
-            systemPrompt = null,
-            reasoningEffort = 'none',  // none, low, medium, high, xhigh
-            verbosity = 'medium',       // low, medium, high
-            maxOutputTokens = 2000
-        } = options;
-        
-        // Request Body für GPT-5.2 Responses API
-        const requestBody = {
-            model: this.model,
-            input: systemPrompt ? `${systemPrompt}\n\n${input}` : input,
-            reasoning: {
-                effort: reasoningEffort
-            },
-            text: {
-                verbosity: verbosity
-            },
-            max_output_tokens: maxOutputTokens
-        };
-        
-        console.log('🚀 GPT-5.2 API Call:', { model: this.model, reasoningEffort, verbosity });
-        
-        try {
-            // Versuche zuerst die neue Responses API
-            const response = await fetch(this.apiEndpoint, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${apiKey}`
-                },
-                body: JSON.stringify(requestBody)
-            });
-            
-            if (response.ok) {
-                const data = await response.json();
-                console.log('✅ GPT-5.2 Responses API erfolgreich');
-                return this.extractResponseText(data);
-            }
-            
-            // Fallback auf Chat Completions API
-            console.log('⚠️ Responses API nicht verfügbar, Fallback auf Chat Completions...');
-            return await this.callChatCompletions(input, options, apiKey);
-            
-        } catch (error) {
-            console.error('❌ GPT-5.2 API Fehler:', error);
-            // Fallback versuchen
-            return await this.callChatCompletions(input, options, apiKey);
-        }
+        return await this.callChatCompletions(input, options);
     }
     
     /**
-     * Fallback: Chat Completions API (für ältere Modelle / Kompatibilität)
+     * Chat Completions API - Standard OpenAI API
      */
     async callChatCompletions(input, options = {}, apiKey = null) {
         apiKey = apiKey || await this.getApiKeyAsync();
@@ -270,7 +216,7 @@ class OpenAIService {
         } = options;
         
         const requestBody = {
-            model: 'gpt-4o-mini',  // Fallback Modell
+            model: this.model,  // gpt-3.5-turbo
             messages: [
                 { role: 'system', content: systemPrompt },
                 { role: 'user', content: input }
@@ -279,9 +225,9 @@ class OpenAIService {
             temperature: 0.3
         };
         
-        console.log('🔄 Chat Completions API Fallback...');
+        console.log('🚀 OpenAI API Call:', { model: this.model });
         
-        const response = await fetch(this.fallbackEndpoint, {
+        const response = await fetch(this.apiEndpoint, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
