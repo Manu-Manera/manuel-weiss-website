@@ -18,6 +18,75 @@
     <link rel="manifest" href="../manifest.json">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@300;400;500;600;700&family=Lato:wght@300;400;700&family=Montserrat:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700&family=Nunito:wght@300;400;500;600;700&family=Source+Sans+Pro:wght@300;400;600;700&family=Source+Code+Pro:wght@400;500;600&family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Quicksand:wght@300;400;500;600;700&family=DM+Sans:wght@400;500;700&family=Cormorant+Garamond:wght@400;500;600;700&family=Libre+Baskerville:wght@400;700&family=Crimson+Pro:wght@400;500;600;700&family=Cinzel:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Fira+Code:wght@400;500;600&family=Dancing+Script:wght@400;500;600;700&family=Great+Vibes&family=Pacifico&family=Satisfy&family=Allura&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Auth Guard - Prüft ob User eingeloggt ist -->
+    <script>
+        (function() {
+            // Prüfe ob Session vorhanden ist
+            const session = localStorage.getItem('aws_auth_session');
+            if (!session) {
+                // Keine Session - zeige Login-Overlay
+                document.addEventListener('DOMContentLoaded', function() {
+                    showLoginRequired();
+                });
+            } else {
+                try {
+                    const parsed = JSON.parse(session);
+                    // Prüfe ob Session abgelaufen ist (1 Stunde)
+                    const expiresAt = parsed.expiresAt || (parsed.timestamp + 3600000);
+                    if (Date.now() > expiresAt) {
+                        document.addEventListener('DOMContentLoaded', function() {
+                            showLoginRequired();
+                        });
+                    }
+                } catch(e) {
+                    document.addEventListener('DOMContentLoaded', function() {
+                        showLoginRequired();
+                    });
+                }
+            }
+            
+            function showLoginRequired() {
+                // Erstelle Overlay
+                const overlay = document.createElement('div');
+                overlay.id = 'auth-required-overlay';
+                overlay.innerHTML = `
+                    <div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,23,42,0.95);z-index:99999;display:flex;align-items:center;justify-content:center;">
+                        <div style="background:linear-gradient(135deg,#1e3a8a,#3730a3);padding:40px;border-radius:16px;text-align:center;max-width:400px;box-shadow:0 25px 50px rgba(0,0,0,0.5);">
+                            <div style="font-size:48px;margin-bottom:20px;">🔐</div>
+                            <h2 style="color:white;font-size:24px;margin-bottom:16px;">Anmeldung erforderlich</h2>
+                            <p style="color:#cbd5e1;margin-bottom:24px;">Um den Anschreiben-Editor zu nutzen, müssen Sie sich anmelden.</p>
+                            <button onclick="openLoginModal()" 
+                               style="display:inline-block;background:linear-gradient(135deg,#7c3aed,#a855f7);color:white;padding:14px 32px;border-radius:8px;border:none;cursor:pointer;font-weight:600;font-size:16px;transition:transform 0.2s;">
+                                Jetzt anmelden
+                            </button>
+                            <p style="color:#94a3b8;margin-top:16px;font-size:14px;">
+                                <a href="../index.html" style="color:#a5b4fc;">← Zurück zur Startseite</a>
+                            </p>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(overlay);
+                // Verstecke Hauptinhalt
+                const main = document.querySelector('main');
+                if (main) main.style.display = 'none';
+                const nav = document.querySelector('nav');
+                if (nav) nav.style.display = 'none';
+            }
+            
+            // Globale Funktion zum Öffnen des Login-Modals
+            window.openLoginModal = function() {
+                if (window.realUserAuth && window.realUserAuth.showLoginModal) {
+                    window.realUserAuth.showLoginModal();
+                } else if (window.awsAuth && window.awsAuth.showLoginModal) {
+                    window.awsAuth.showLoginModal();
+                } else {
+                    // Fallback: Zur Startseite mit Login-Parameter
+                    window.location.href = '../index.html?login=true';
+                }
+            };
+        })();
+    </script>
 </head>
 <body>
     <!-- Navigation -->

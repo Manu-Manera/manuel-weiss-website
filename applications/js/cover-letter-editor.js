@@ -4522,12 +4522,182 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
             checks.push({ ok: false, text: `Fehlende Keywords: ${missing.slice(0, 6).join(', ')}` });
         }
 
+        // Regelbasierte Checks
         list.innerHTML = checks.map(check => `
             <div class="quality-check-item ${check.ok ? 'ok' : 'warn'}">
                 <i class="fas ${check.ok ? 'fa-check-circle' : 'fa-exclamation-triangle'}"></i>
                 <span>${check.text}</span>
             </div>
         `).join('');
+        
+        // KI-Tipps Container (falls noch nicht vorhanden)
+        let aiTipsContainer = document.getElementById('aiQualityTips');
+        if (!aiTipsContainer) {
+            aiTipsContainer = document.createElement('div');
+            aiTipsContainer.id = 'aiQualityTips';
+            aiTipsContainer.className = 'ai-quality-tips';
+            list.parentNode.appendChild(aiTipsContainer);
+        }
+        
+        // KI-Analyse Button (falls noch nicht vorhanden und Text vorhanden)
+        let aiButton = document.getElementById('aiQualityBtn');
+        if (!aiButton && wordCount > 50) {
+            const btnContainer = document.createElement('div');
+            btnContainer.style.marginTop = '12px';
+            btnContainer.innerHTML = `
+                <button id="aiQualityBtn" class="btn-ai-quality" onclick="window.coverLetterEditor.runAIQualityCheck()">
+                    <i class="fas fa-magic"></i> KI-Verbesserungstipps generieren
+                </button>
+            `;
+            list.parentNode.appendChild(btnContainer);
+        }
+    }
+    
+    /**
+     * KI-basierter Qualitätscheck mit konkreten Verbesserungstipps
+     */
+    async runAIQualityCheck() {
+        const text = (document.getElementById('letterText')?.value || '').trim();
+        if (!text || text.length < 50) {
+            this.showToast('Bitte zuerst ein Anschreiben erstellen', 'warning');
+            return;
+        }
+        
+        const btn = document.getElementById('aiQualityBtn');
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analysiere...';
+        }
+        
+        try {
+            // Prüfe API-Key
+            if (!window.OpenAIService || !(await window.OpenAIService.hasApiKeyAsync())) {
+                this.showToast('Kein API-Key konfiguriert', 'warning');
+                return;
+            }
+            
+            const result = await window.OpenAIService.analyzeQuality({
+                coverLetterText: text,
+                jobDescription: document.getElementById('jobDescription')?.value || '',
+                position: document.getElementById('jobTitle')?.value || '',
+                company: document.getElementById('companyName')?.value || ''
+            });
+            
+            this.displayAIQualityTips(result);
+            
+        } catch (error) {
+            console.error('❌ KI-Qualitätscheck fehlgeschlagen:', error);
+            this.showToast('Fehler bei der KI-Analyse: ' + error.message, 'error');
+        } finally {
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-magic"></i> KI-Verbesserungstipps generieren';
+            }
+        }
+    }
+    
+    /**
+     * KI-Qualitätstipps anzeigen
+     */
+    displayAIQualityTips(result) {
+        const container = document.getElementById('aiQualityTips');
+        if (!container) return;
+        
+        const { score, summary, tips } = result;
+        
+        // Score-Farbe bestimmen
+        const scoreClass = score >= 80 ? 'excellent' : score >= 60 ? 'good' : score >= 40 ? 'needs-work' : 'poor';
+        
+        let html = `
+            <div class="ai-quality-header">
+                <div class="ai-score ${scoreClass}">
+                    <span class="score-value">${score}</span>
+                    <span class="score-label">/ 100</span>
+                </div>
+                <div class="ai-summary">${summary || 'Analyse abgeschlossen'}</div>
+            </div>
+        `;
+        
+        if (tips && tips.length > 0) {
+            html += '<div class="ai-tips-list">';
+            
+            // Sortiere nach Priorität
+            const sortedTips = [...tips].sort((a, b) => (a.priority || 5) - (b.priority || 5));
+            
+            sortedTips.forEach((tip, index) => {
+                const typeIcon = {
+                    warning: 'fa-exclamation-triangle',
+                    success: 'fa-check-circle',
+                    info: 'fa-lightbulb'
+                }[tip.type] || 'fa-lightbulb';
+                
+                const typeClass = tip.type || 'info';
+                
+                html += `
+                    <div class="ai-tip-item ${typeClass}">
+                        <div class="tip-header">
+                            <i class="fas ${typeIcon}"></i>
+                            <span class="tip-title">${tip.title || 'Verbesserung'}</span>
+                            <span class="tip-category">${this.getCategoryLabel(tip.category)}</span>
+                        </div>
+                        <div class="tip-description">${tip.description || ''}</div>
+                        ${tip.suggestion ? `
+                            <div class="tip-suggestion">
+                                <strong>Vorschlag:</strong> ${tip.suggestion}
+                                <button class="btn-apply-tip" onclick="window.coverLetterEditor.applyTipSuggestion('${encodeURIComponent(tip.suggestion)}')">
+                                    <i class="fas fa-paste"></i> Übernehmen
+                                </button>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+        }
+        
+        container.innerHTML = html;
+        container.style.display = 'block';
+        
+        // Scroll zum Container
+        container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    
+    /**
+     * Tipp-Vorschlag in Zwischenablage kopieren
+     */
+    applyTipSuggestion(encodedSuggestion) {
+        const suggestion = decodeURIComponent(encodedSuggestion);
+        navigator.clipboard.writeText(suggestion).then(() => {
+            this.showToast('Vorschlag in Zwischenablage kopiert!', 'success');
+        }).catch(() => {
+            // Fallback: In Textarea einfügen
+            const textarea = document.getElementById('letterText');
+            if (textarea) {
+                const start = textarea.selectionStart;
+                const before = textarea.value.substring(0, start);
+                const after = textarea.value.substring(start);
+                textarea.value = before + suggestion + after;
+                textarea.focus();
+                this.showToast('Vorschlag eingefügt', 'success');
+            }
+        });
+    }
+    
+    getCategoryLabel(category) {
+        const labels = {
+            keywords: 'Keywords',
+            specificity: 'Spezifität',
+            achievements: 'Erfolge',
+            personality: 'Persönlichkeit',
+            length: 'Länge',
+            structure: 'Struktur',
+            hard_skill: 'Hard Skill',
+            soft_skill: 'Soft Skill',
+            experience: 'Erfahrung',
+            qualification: 'Qualifikation'
+        };
+        return labels[category] || category || '';
     }
 
     findDuplicateSentences(text) {

@@ -8,13 +8,24 @@
 
 class OpenAIService {
     constructor() {
-        // Verwende gpt-3.5-turbo als sicherstes Modell (für alle API-Keys verfügbar)
-        this.model = 'gpt-3.5-turbo';
+        // Liste der Modelle zum Ausprobieren (in Prioritätsreihenfolge)
+        // WICHTIG: gpt-5.2 wird von diesem Projekt unterstützt (Projekt-spezifischer Zugang)
+        this.modelFallbacks = [
+            'gpt-5.2',          // Projekt-spezifisches Modell (höchste Priorität!)
+            'gpt-4o-mini',      // Günstig und schnell
+            'gpt-4o',           // Leistungsstark
+            'gpt-4-turbo',      // Sehr leistungsstark
+            'gpt-4',            // Standard GPT-4
+            'gpt-3.5-turbo',    // Klassisches Modell
+            'gpt-3.5-turbo-16k' // Mit langem Kontext
+        ];
+        this.model = this.modelFallbacks[0]; // Startet mit gpt-5.2
+        this.workingModel = null; // Wird gesetzt sobald ein Modell funktioniert
         this.apiEndpoint = 'https://api.openai.com/v1/chat/completions';
         this.cachedApiKey = null;
         this.keyLoadPromise = null;
         
-        console.log('🤖 OpenAI Service initialisiert (gpt-3.5-turbo)');
+        console.log('🤖 OpenAI Service initialisiert (gpt-5.2 + Fallback-Modelle)');
     }
     
     /**
@@ -202,7 +213,7 @@ class OpenAIService {
     }
     
     /**
-     * Chat Completions API - Standard OpenAI API
+     * Chat Completions API - Standard OpenAI API mit Modell-Fallback
      */
     async callChatCompletions(input, options = {}, apiKey = null) {
         apiKey = apiKey || await this.getApiKeyAsync();
@@ -215,36 +226,87 @@ class OpenAIService {
             maxOutputTokens = 2000
         } = options;
         
-        const requestBody = {
-            model: this.model,  // gpt-3.5-turbo
-            messages: [
-                { role: 'system', content: systemPrompt },
-                { role: 'user', content: input }
-            ],
-            max_tokens: maxOutputTokens,
-            temperature: 0.3
-        };
+        // Wenn bereits ein funktionierendes Modell gefunden wurde, dieses verwenden
+        const modelsToTry = this.workingModel 
+            ? [this.workingModel] 
+            : [...this.modelFallbacks];
         
-        console.log('🚀 OpenAI API Call:', { model: this.model });
+        let lastError = null;
         
-        const response = await fetch(this.apiEndpoint, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${apiKey}`
-            },
-            body: JSON.stringify(requestBody)
-        });
-        
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error('❌ Chat Completions API Fehler:', response.status, errorText);
-            throw new Error(`OpenAI API Fehler: ${response.status}`);
+        for (const model of modelsToTry) {
+            // gpt-5.2 verwendet andere Parameter als Standard-Modelle
+            const isGPT52 = model === 'gpt-5.2';
+            
+            const requestBody = {
+                model: model,
+                messages: [
+                    { role: 'system', content: systemPrompt },
+                    { role: 'user', content: input }
+                ]
+            };
+            
+            // Parameter je nach Modell setzen
+            if (isGPT52) {
+                // GPT-5.2 verwendet reasoning_effort und max_completion_tokens
+                requestBody.reasoning_effort = 'low';
+                requestBody.max_completion_tokens = maxOutputTokens;
+            } else {
+                // Standard-Modelle verwenden temperature und max_tokens
+                requestBody.max_tokens = maxOutputTokens;
+                requestBody.temperature = 0.3;
+            }
+            
+            console.log('🚀 OpenAI API Call:', { model, isGPT52 });
+            
+            try {
+                const response = await fetch(this.apiEndpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log(`✅ Chat Completions API erfolgreich mit Modell: ${model}`);
+                    
+                    // Merke das funktionierende Modell für zukünftige Aufrufe
+                    this.workingModel = model;
+                    this.model = model;
+                    
+                    return data.choices[0]?.message?.content || '';
+                }
+                
+                // Prüfe ob es ein Modell-Zugriffs-Fehler ist (403/404)
+                if (response.status === 403 || response.status === 404) {
+                    const errorText = await response.text();
+                    if (errorText.includes('does not have access') || errorText.includes('model_not_found')) {
+                        console.warn(`⚠️ Modell ${model} nicht verfügbar, versuche nächstes...`);
+                        lastError = new Error(`Modell ${model} nicht zugänglich`);
+                        continue; // Versuche nächstes Modell
+                    }
+                }
+                
+                // Anderer Fehler - wirf Exception
+                const errorText = await response.text();
+                console.error('❌ Chat Completions API Fehler:', response.status, errorText);
+                throw new Error(`OpenAI API Fehler: ${response.status}`);
+                
+            } catch (fetchError) {
+                // Netzwerkfehler oder andere Exceptions
+                if (fetchError.message?.includes('API Fehler')) {
+                    throw fetchError;
+                }
+                console.warn(`⚠️ Fehler mit Modell ${model}:`, fetchError.message);
+                lastError = fetchError;
+            }
         }
         
-        const data = await response.json();
-        console.log('✅ Chat Completions API erfolgreich');
-        return data.choices[0]?.message?.content || '';
+        // Kein Modell hat funktioniert
+        console.error('❌ Alle Modelle fehlgeschlagen');
+        throw new Error(lastError?.message || 'Kein OpenAI-Modell verfügbar. Bitte API-Key Berechtigungen im OpenAI Dashboard prüfen.');
     }
     
     /**
@@ -393,8 +455,6 @@ Antworte mit strukturiertem JSON:
         try {
             const response = await this.callGPT52(prompt, {
                 systemPrompt: 'Du bist ein Karriereberater und Experte für Kompetenzentwicklung. Erstelle detaillierte Skill-Gap-Analysen.',
-                reasoningEffort: 'medium',
-                verbosity: 'high',
                 maxOutputTokens: 2000
             });
             
@@ -405,6 +465,119 @@ Antworte mit strukturiertem JSON:
             return { error: 'Keine strukturierte Antwort erhalten', rawResponse: response };
         } catch (error) {
             console.error('❌ Skill-Gap Analyse fehlgeschlagen:', error);
+            throw error;
+        }
+    }
+    
+    /**
+     * KI-basierter Qualitätscheck mit konkreten Verbesserungsvorschlägen
+     */
+    async analyzeQuality(data) {
+        const { coverLetterText, jobDescription, position, company } = data;
+        
+        if (!coverLetterText || coverLetterText.trim().length < 50) {
+            return { tips: [], score: 0, summary: 'Kein Anschreiben vorhanden' };
+        }
+        
+        const prompt = `Analysiere dieses Bewerbungsanschreiben und gib konkrete, umsetzbare Verbesserungsvorschläge:
+
+ANSCHREIBEN:
+"""
+${coverLetterText}
+"""
+
+STELLENBESCHREIBUNG:
+"""
+${jobDescription || 'Nicht verfügbar'}
+"""
+
+POSITION: ${position || 'Nicht angegeben'}
+UNTERNEHMEN: ${company || 'Nicht angegeben'}
+
+ANALYSE-AUFGABE:
+1. Bewerte das Anschreiben auf einer Skala von 0-100
+2. Identifiziere die TOP 5 wichtigsten Verbesserungsmöglichkeiten
+3. Gib für jeden Punkt einen konkreten Verbesserungsvorschlag mit Textbeispiel
+4. Prüfe: Keyword-Match, Spezifität, messbare Erfolge, Persönlichkeit, Länge
+
+Antworte NUR mit JSON:
+{
+  "score": 75,
+  "summary": "Kurze Zusammenfassung der Qualität (1 Satz)",
+  "tips": [
+    {
+      "type": "warning|success|info",
+      "category": "keywords|specificity|achievements|personality|length|structure",
+      "title": "Kurzer Titel",
+      "description": "Beschreibung des Problems",
+      "suggestion": "Konkreter Verbesserungsvorschlag oder Textbeispiel zum Einfügen",
+      "priority": 1-5
+    }
+  ]
+}`;
+
+        try {
+            const response = await this.callGPT52(prompt, {
+                systemPrompt: 'Du bist ein erfahrener Bewerbungscoach. Gib konstruktives, hilfreiches Feedback zu Bewerbungsanschreiben. Sei konkret und gib umsetzbare Tipps.',
+                maxOutputTokens: 1500
+            });
+            
+            // Parse JSON
+            const jsonMatch = response.match(/\{[\s\S]*\}/);
+            if (jsonMatch) {
+                const result = JSON.parse(jsonMatch[0]);
+                console.log('✅ KI-Qualitätscheck abgeschlossen:', result.score, 'Punkte,', result.tips?.length, 'Tipps');
+                return result;
+            }
+            
+            return { tips: [], score: 50, summary: 'Analyse konnte nicht verarbeitet werden' };
+        } catch (error) {
+            console.error('❌ KI-Qualitätscheck fehlgeschlagen:', error);
+            return { tips: [], score: 0, summary: 'Fehler bei der Analyse' };
+        }
+    }
+    
+    /**
+     * Absatz verbessern / Alternative generieren
+     */
+    async improveParagraph(data) {
+        const { paragraph, context, type = 'improve' } = data;
+        
+        const typeInstructions = {
+            improve: 'Verbessere diesen Absatz: professioneller, überzeugender, mit mehr Substanz',
+            shorter: 'Kürze diesen Absatz auf ca. 50% der Länge, behalte die wichtigsten Punkte',
+            stronger: 'Mache diesen Absatz stärker: mehr Aktionsverben, messbare Erfolge, überzeugendere Sprache',
+            alternatives: 'Schreibe 3 alternative Versionen dieses Absatzes mit unterschiedlichen Ansätzen'
+        };
+        
+        const prompt = `${typeInstructions[type] || typeInstructions.improve}
+
+ABSATZ:
+"""
+${paragraph}
+"""
+
+${context ? `KONTEXT: ${context}` : ''}
+
+${type === 'alternatives' ? 'Antworte mit JSON: {"alternatives": ["...", "...", "..."]}' : 'Antworte NUR mit dem verbesserten Text, keine Erklärungen.'}`;
+
+        try {
+            const response = await this.callGPT52(prompt, {
+                systemPrompt: 'Du bist ein professioneller Texter für Bewerbungen. Schreibe überzeugend, professionell und authentisch.',
+                maxOutputTokens: 800
+            });
+            
+            if (type === 'alternatives') {
+                const jsonMatch = response.match(/\{[\s\S]*\}/);
+                if (jsonMatch) {
+                    return JSON.parse(jsonMatch[0]).alternatives || [response];
+                }
+                return [response];
+            }
+            
+            return response.trim();
+        } catch (error) {
+            console.error('❌ Absatz-Verbesserung fehlgeschlagen:', error);
             throw error;
         }
     }
