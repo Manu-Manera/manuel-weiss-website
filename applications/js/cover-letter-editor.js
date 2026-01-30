@@ -1602,30 +1602,14 @@ GRUSS: [übersetzte Grußformel]`
     }
     
     /**
-     * Hole Modell-Konfiguration aus Admin Panel (für Anschreibengenerierung)
-     * Fallback auf gpt-5.2 wenn nicht konfiguriert
+     * Hole Modell-Konfiguration für Anschreibengenerierung
+     * WICHTIG: Das Projekt hat nur Zugriff auf gpt-5.2, daher wird dieses
+     * Modell immer verwendet, unabhängig von der Admin Panel Konfiguration.
      */
     getOpenAIModel() {
-        // 1. Versuche GlobalAPIManager (Admin Panel)
-        if (window.GlobalAPIManager) {
-            const config = window.GlobalAPIManager.getServiceConfig('openai');
-            if (config && config.model) {
-                console.log(`✅ Modell aus GlobalAPIManager: ${config.model}`);
-                return config.model;
-            }
-        }
-        
-        // 2. Versuche global_api_keys localStorage
-        try {
-            const globalKeys = JSON.parse(localStorage.getItem('global_api_keys') || '{}');
-            if (globalKeys.openai?.model) {
-                console.log(`✅ Modell aus global_api_keys: ${globalKeys.openai.model}`);
-                return globalKeys.openai.model;
-            }
-        } catch (e) {}
-        
-        // 3. Fallback: gpt-5.2 für Anschreibengenerierung (beste Qualität)
-        console.log('ℹ️ Verwende Standard-Modell: gpt-5.2');
+        // Das Projekt (proj_ahKQKL8blps2wYe5LzQRUOZ9) hat nur Zugriff auf gpt-5.2
+        // Admin Panel Modell-Einstellung wird ignoriert, da andere Modelle 403 Fehler verursachen
+        console.log('ℹ️ Verwende gpt-5.2 (Projekt-spezifisches Modell)');
         return 'gpt-5.2';
     }
     
