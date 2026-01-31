@@ -916,19 +916,44 @@ class DesignEditor {
 
     setupTemplates() {
         const templates = [
-            // Original Templates
+            // Original Templates - VERBESSERT mit korrekten Header-Einstellungen
             { id: 'modern', name: 'Modern', desc: 'Clean & Professional', icon: '📄', 
-              settings: { accentColor: '#6366f1', fontFamily: "'Inter', sans-serif", columns: 1, sidebarBackground: 'transparent', showResumeTitle: true } },
+              settings: { 
+                accentColor: '#6366f1', fontFamily: "'Inter', sans-serif", columns: 1, 
+                sidebarBackground: 'transparent', showResumeTitle: true,
+                headerBackground: '#ffffff', headerTextColor: '#1e293b'
+              } },
             { id: 'classic', name: 'Klassisch', desc: 'Zeitlos & Elegant', icon: '📋', 
-              settings: { accentColor: '#1e293b', fontFamily: "'Georgia', serif", columns: 1, sidebarBackground: 'transparent', showResumeTitle: true } },
+              settings: { 
+                accentColor: '#1e3a5f', fontFamily: "'Georgia', serif", columns: 1, 
+                sidebarBackground: 'transparent', showResumeTitle: true,
+                headerBackground: '#ffffff', headerTextColor: '#1e293b',
+                sectionTitleColor: '#1e3a5f'
+              } },
             { id: 'creative', name: 'Kreativ', desc: 'Auffällig & Modern', icon: '🎨', 
-              settings: { accentColor: '#8b5cf6', fontFamily: "'Montserrat', sans-serif", columns: 2, sidebarBackground: 'transparent', showResumeTitle: false } },
+              settings: { 
+                accentColor: '#8b5cf6', fontFamily: "'Montserrat', sans-serif", columns: 2, 
+                sidebarBackground: '#f5f3ff', showResumeTitle: false,
+                headerBackground: '#8b5cf6', headerTextColor: '#ffffff'
+              } },
             { id: 'minimal', name: 'Minimal', desc: 'Schlicht & Fokussiert', icon: '✨', 
-              settings: { accentColor: '#64748b', fontFamily: "'Inter', sans-serif", columns: 1, sidebarBackground: 'transparent', showResumeTitle: false } },
+              settings: { 
+                accentColor: '#64748b', fontFamily: "'Inter', sans-serif", columns: 1, 
+                sidebarBackground: 'transparent', showResumeTitle: false,
+                headerBackground: '#ffffff', headerTextColor: '#334155'
+              } },
             { id: 'executive', name: 'Executive', desc: 'Führungskräfte', icon: '👔', 
-              settings: { accentColor: '#0f172a', fontFamily: "'Times New Roman', serif", columns: 1, sidebarBackground: 'transparent', showResumeTitle: true } },
+              settings: { 
+                accentColor: '#1e3a5f', fontFamily: "'Times New Roman', serif", columns: 1, 
+                sidebarBackground: 'transparent', showResumeTitle: true,
+                headerBackground: '#f8fafc', headerTextColor: '#0f172a'
+              } },
             { id: 'ats', name: 'ATS-Optimiert', desc: 'Für Bewerbungssysteme', icon: '🤖', 
-              settings: { accentColor: '#1e293b', fontFamily: "'Arial', sans-serif", columns: 1, showIcons: false, sidebarBackground: 'transparent', showResumeTitle: true } },
+              settings: { 
+                accentColor: '#1e293b', fontFamily: "'Arial', sans-serif", columns: 1, 
+                showIcons: false, sidebarBackground: 'transparent', showResumeTitle: true,
+                headerBackground: '#ffffff', headerTextColor: '#000000'
+              } },
             
             // Sidebar Templates
             { id: 'sidebar-dark', name: 'Sidebar Dunkel', desc: 'Dunkle Sidebar', icon: '🌙', 
@@ -2581,10 +2606,41 @@ class DesignEditor {
         }
         
         if (btnEN) {
-            btnEN.addEventListener('click', () => {
+            btnEN.addEventListener('click', async () => {
+                const previousLang = this.settings.language;
                 this.settings.language = 'en';
                 updateLanguageButtons();
                 this.saveSettings();
+                
+                // KI-Übersetzung des gesamten Lebenslaufs anbieten
+                if (previousLang === 'de') {
+                    const shouldTranslate = confirm('Möchten Sie den gesamten Lebenslauf mit KI ins Englische übersetzen?\n\nDies übersetzt alle Texte (Kurzprofil, Berufserfahrungen, Ausbildung, etc.).');
+                    if (shouldTranslate) {
+                        await this.translateResumeWithAI('en');
+                    }
+                }
+                
+                this.updatePreview();
+            });
+        }
+        
+        if (btnDE) {
+            // Zusätzliche Logik für DE-Button mit KI-Übersetzung
+            const originalHandler = btnDE.onclick;
+            btnDE.addEventListener('click', async () => {
+                const previousLang = this.settings.language;
+                this.settings.language = 'de';
+                updateLanguageButtons();
+                this.saveSettings();
+                
+                // KI-Übersetzung des gesamten Lebenslaufs anbieten
+                if (previousLang === 'en') {
+                    const shouldTranslate = confirm('Möchten Sie den gesamten Lebenslauf mit KI ins Deutsche übersetzen?\n\nDies übersetzt alle Texte (Summary, Work Experience, Education, etc.).');
+                    if (shouldTranslate) {
+                        await this.translateResumeWithAI('de');
+                    }
+                }
+                
                 this.updatePreview();
             });
         }
@@ -2650,6 +2706,172 @@ class DesignEditor {
     translate(key) {
         const translations = this.getTranslations();
         return translations[key] || key;
+    }
+    
+    /**
+     * Übersetzt den gesamten Lebenslauf mit KI
+     */
+    async translateResumeWithAI(targetLang) {
+        const langNames = { de: 'Deutsch', en: 'Englisch' };
+        this.showNotification(`Übersetze Lebenslauf ins ${langNames[targetLang]}...`, 'info');
+        
+        try {
+            // Hole API-Key
+            const apiKey = await this.getOpenAIKey();
+            if (!apiKey) {
+                this.showNotification('Kein API-Key gefunden. Bitte im Admin-Panel konfigurieren.', 'error');
+                return;
+            }
+            
+            // Sammle alle Lebenslauf-Daten
+            const resumeData = this.getResumeData();
+            
+            // Zu übersetzende Felder
+            const fieldsToTranslate = {
+                title: resumeData.title || '',
+                summary: resumeData.summary || '',
+                experience: (resumeData.experience || []).map(exp => ({
+                    position: exp.position || '',
+                    company: exp.company || '',
+                    description: exp.description || ''
+                })),
+                education: (resumeData.education || []).map(edu => ({
+                    degree: edu.degree || '',
+                    institution: edu.institution || '',
+                    description: edu.description || ''
+                })),
+                projects: (resumeData.projects || []).map(proj => ({
+                    name: proj.name || '',
+                    description: proj.description || ''
+                }))
+            };
+            
+            const prompt = `Übersetze den folgenden Lebenslauf-Inhalt ins ${langNames[targetLang]}.
+            
+WICHTIG:
+- Übersetze professionell und behalte den formellen Ton
+- Firmennamen, Eigennamen und technische Begriffe NICHT übersetzen
+- Datumsformate anpassen: ${targetLang === 'en' ? 'MM/YYYY' : 'MM/YYYY'}
+- Abkürzungen beibehalten (z.B. GmbH, AG, Inc.)
+
+EINGABE (JSON):
+${JSON.stringify(fieldsToTranslate, null, 2)}
+
+Antworte NUR mit dem übersetzten JSON im exakt gleichen Format.`;
+
+            const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${apiKey}`
+                },
+                body: JSON.stringify({
+                    model: 'gpt-5.2',
+                    reasoning_effort: 'medium',
+                    messages: [
+                        { role: 'system', content: 'Du bist ein professioneller Übersetzer für Bewerbungsunterlagen. Antworte nur mit validem JSON.' },
+                        { role: 'user', content: prompt }
+                    ],
+                    max_completion_tokens: 8000
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error('API-Fehler: ' + response.status);
+            }
+            
+            const data = await response.json();
+            const content = data.choices?.[0]?.message?.content || '';
+            
+            // Parse JSON-Antwort
+            const jsonMatch = content.match(/\{[\s\S]*\}/);
+            if (!jsonMatch) {
+                throw new Error('Keine gültige JSON-Antwort erhalten');
+            }
+            
+            const translated = JSON.parse(jsonMatch[0]);
+            
+            // Aktualisiere die Felder im Resume-Editor
+            this.applyTranslatedData(translated);
+            
+            this.showNotification(`Lebenslauf erfolgreich ins ${langNames[targetLang]} übersetzt!`, 'success');
+            this.updatePreview();
+            
+        } catch (error) {
+            console.error('Übersetzungsfehler:', error);
+            this.showNotification('Übersetzung fehlgeschlagen: ' + error.message, 'error');
+        }
+    }
+    
+    /**
+     * Wendet übersetzte Daten auf den Resume-Editor an
+     */
+    applyTranslatedData(translated) {
+        // Title
+        if (translated.title) {
+            const titleEl = document.getElementById('title');
+            if (titleEl) titleEl.value = translated.title;
+        }
+        
+        // Summary
+        if (translated.summary) {
+            const summaryEl = document.getElementById('summary');
+            if (summaryEl) summaryEl.value = translated.summary;
+        }
+        
+        // Experience
+        if (translated.experience && Array.isArray(translated.experience)) {
+            const expItems = document.querySelectorAll('.experience-item');
+            translated.experience.forEach((exp, index) => {
+                const item = expItems[index];
+                if (item) {
+                    const positionEl = item.querySelector('[data-field="position"]');
+                    const descEl = item.querySelector('[data-field="description"]');
+                    if (positionEl && exp.position) positionEl.value = exp.position;
+                    if (descEl && exp.description) descEl.value = exp.description;
+                }
+            });
+        }
+        
+        // Education
+        if (translated.education && Array.isArray(translated.education)) {
+            const eduItems = document.querySelectorAll('.education-item');
+            translated.education.forEach((edu, index) => {
+                const item = eduItems[index];
+                if (item) {
+                    const degreeEl = item.querySelector('[data-field="degree"]');
+                    const descEl = item.querySelector('[data-field="description"]');
+                    if (degreeEl && edu.degree) degreeEl.value = edu.degree;
+                    if (descEl && edu.description) descEl.value = edu.description;
+                }
+            });
+        }
+        
+        // Trigger change events
+        document.querySelectorAll('#title, #summary, [data-field="position"], [data-field="description"], [data-field="degree"]')
+            .forEach(el => el.dispatchEvent(new Event('input', { bubbles: true })));
+    }
+    
+    /**
+     * Holt OpenAI API-Key
+     */
+    async getOpenAIKey() {
+        // Versuche aus GlobalAPIManager
+        if (window.GlobalAPIManager?.getAPIKey) {
+            const key = window.GlobalAPIManager.getAPIKey('openai');
+            if (key) return key;
+        }
+        
+        // Versuche aus localStorage
+        const keys = JSON.parse(localStorage.getItem('global_api_keys') || '{}');
+        if (keys.openai) return keys.openai;
+        
+        // Versuche aus awsAPISettings
+        if (window.awsAPISettings?.getKey) {
+            return await window.awsAPISettings.getKey('openai');
+        }
+        
+        return null;
     }
     
     renderCustomTranslations() {
@@ -4204,16 +4426,9 @@ class DesignEditor {
                     break;
                 case 'above-image':
                 default:
-                    // Über Profilbild positionieren (wenn vorhanden)
-                    if (this.settings.showProfileImage && data.profileImageUrl) {
-                        // Positioniere über dem Bild mit absolutem Positioning
-                        positionStyle = 'position: absolute; top: -30px; left: 0; width: 100%; z-index: 10;';
-                        alignStyle = 'text-align: left;';
-                    } else {
-                        // Wenn kein Bild, normal positionieren
-                        positionStyle = '';
-                        alignStyle = 'text-align: left;';
-                    }
+                    // Über Profilbild positionieren - IMMER eine Zeile über dem Bild
+                    positionStyle = '';
+                    alignStyle = 'text-align: left;';
                     break;
             }
             
@@ -4352,12 +4567,37 @@ class DesignEditor {
         
         if (this.settings.showProfileImage && data.profileImageUrl) {
             const imgPos = this.settings.profileImagePosition;
+            
+            // Header-Content OHNE resumeTitle (der kommt separat)
+            const headerContentWithoutTitle = `
+                <h1 class="resume-preview-name">${data.firstName} ${data.lastName}</h1>
+                <p class="resume-preview-title">${data.title}</p>
+                ${(data.birthDate && this.settings.showHeaderField?.birthDate !== false) ? `<p class="resume-preview-birthdate" style="font-size: 0.85em; color: ${this.settings.mutedColor};">Geboren am ${this.formatBirthDate(data.birthDate)}</p>` : ''}
+                <div class="resume-preview-contact">
+                    ${(data.phone && this.settings.showHeaderField?.phone !== false) ? `<span><i class="fas fa-phone"></i> ${data.phone}</span>` : ''}
+                    ${fullAddress ? `<span><i class="fas fa-map-marker-alt"></i> ${fullAddress}</span>` : ''}
+                    ${(data.email && this.settings.showHeaderField?.email !== false) ? `<span><i class="fas fa-envelope"></i> ${data.email}</span>` : ''}
+                    ${(data.linkedin && this.settings.showHeaderField?.linkedin !== false) ? `<span><i class="fab fa-linkedin"></i> <a href="${linkedinDisplay}" target="_blank" rel="noopener" style="color: inherit; text-decoration: none;">${linkedinDisplay}</a></span>` : ''}
+                    ${(data.github && this.settings.showHeaderField?.github !== false) ? `<span><i class="fab fa-github"></i> <a href="${githubDisplay}" target="_blank" rel="noopener" style="color: inherit; text-decoration: none;">${githubDisplay}</a></span>` : ''}
+                    ${(data.website && this.settings.showHeaderField?.website !== false) ? (() => {
+                        let websiteUrl = data.website.trim();
+                        if (!websiteUrl) return '';
+                        if (!websiteUrl.startsWith('http://') && !websiteUrl.startsWith('https://')) {
+                            websiteUrl = 'https://' + websiteUrl;
+                        }
+                        const websiteDisplay = websiteUrl.replace(/https?:\/\//, '').replace(/\/$/, '');
+                        return `<span><i class="fas fa-globe"></i> <a href="${websiteUrl}" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: underline; cursor: pointer; pointer-events: auto;">${websiteDisplay}</a></span>`;
+                    })() : ''}
+                </div>
+            `;
+            
             return `
-                <div class="resume-preview-header ${alignClass}" style="${headerBg}">
-                    <div class="resume-header-with-image" style="display: flex; align-items: center; gap: 24px; ${imgPos === 'right' ? 'flex-direction: row-reverse;' : ''} ${imgPos === 'center' ? 'flex-direction: column; text-align: center;' : ''}">
+                <div class="resume-preview-header resume-preview-header-section ${alignClass}" data-section="header" style="${headerBg}">
+                    ${resumeTitleHtml}
+                    <div class="resume-header-with-image" style="display: flex; align-items: center; gap: 24px; margin-top: 8px; ${imgPos === 'right' ? 'flex-direction: row-reverse;' : ''} ${imgPos === 'center' ? 'flex-direction: column; text-align: center;' : ''}">
                         ${profileImageHtml}
                         <div class="resume-header-content" style="flex: 1;">
-                            ${headerContent}
+                            ${headerContentWithoutTitle}
                         </div>
                     </div>
                 </div>
@@ -4365,7 +4605,7 @@ class DesignEditor {
         }
         
         return `
-            <div class="resume-preview-header ${alignClass}" style="${headerBg}">
+            <div class="resume-preview-header resume-preview-header-section ${alignClass}" data-section="header" style="${headerBg}">
                 ${headerContent}
             </div>
         `;
@@ -6476,13 +6716,42 @@ class DesignEditor {
         
         // Header
         const headerAlign = this.settings.headerAlign || 'center';
+        const headerBackground = this.settings.headerBackground || 'transparent';
+        const headerTextColor = this.settings.headerTextColor || accentColor;
+        
+        // Header-Sektion mit Hintergrund
+        const headerSections = element.querySelectorAll('.resume-preview-header-section, [data-section="header"]');
+        headerSections.forEach(section => {
+            if (headerBackground && headerBackground !== 'transparent') {
+                section.style.setProperty('background', headerBackground, 'important');
+                // Negative Margins für Full-Width Hintergrund
+                section.style.setProperty('margin-left', `-${marginLeft}mm`, 'important');
+                section.style.setProperty('margin-right', `-${marginRight}mm`, 'important');
+                section.style.setProperty('margin-top', `-${marginTop}mm`, 'important');
+                section.style.setProperty('padding', `${marginTop}mm ${marginRight}mm 20px ${marginLeft}mm`, 'important');
+                section.style.setProperty('margin-bottom', '20px', 'important');
+            }
+        });
+        
         const headers = element.querySelectorAll('.resume-preview-header, .resume-preview-name');
         headers.forEach(header => {
-            header.style.setProperty('color', accentColor, 'important');
+            // Verwende headerTextColor wenn headerBackground gesetzt ist
+            const useTextColor = (headerBackground && headerBackground !== 'transparent' && headerBackground !== '#ffffff') 
+                ? headerTextColor 
+                : accentColor;
+            header.style.setProperty('color', useTextColor, 'important');
             header.style.setProperty('font-size', (headingSize + 4) + 'pt', 'important');
             header.style.setProperty('margin-bottom', sectionGap + 'px', 'important');
             header.style.setProperty('text-align', headerAlign, 'important');
         });
+        
+        // Header-Kontakt-Infos bei dunklem Hintergrund
+        if (headerBackground && headerBackground !== 'transparent' && headerBackground !== '#ffffff') {
+            const headerContacts = element.querySelectorAll('.resume-preview-header-section .resume-preview-contact, .resume-preview-header-section .resume-preview-birthdate');
+            headerContacts.forEach(contact => {
+                contact.style.setProperty('color', headerTextColor, 'important');
+            });
+        }
         
         // Section Titles
         const sectionTitles = element.querySelectorAll('.resume-preview-section-title');
@@ -6936,6 +7205,32 @@ class DesignEditor {
         p, li {
             widows: 1 !important;
             orphans: 1 !important;
+        }
+        
+        /* WICHTIG: Aufzählungszeichen innerhalb des Randes halten */
+        ul, ol {
+            list-style-position: inside !important;
+            padding-left: 0 !important;
+            margin-left: 0 !important;
+        }
+        
+        li {
+            padding-left: 0 !important;
+            margin-left: 0 !important;
+            text-indent: 0 !important;
+        }
+        
+        /* Beschreibungs-Text mit Stichpunkten */
+        .resume-preview-item-description,
+        .resume-preview-description {
+            padding-left: 0 !important;
+            margin-left: 0 !important;
+        }
+        
+        /* Stichpunkte als inline-Elemente behandeln */
+        .resume-preview-item-description br + span,
+        .resume-preview-item-description br::after {
+            display: inline;
         }
     </style>
 </head>

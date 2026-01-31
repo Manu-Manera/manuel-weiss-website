@@ -257,24 +257,34 @@ class CollaborationModule {
         const isCoverLetter = !!document.getElementById('letterText');
         
         if (isResume) {
-            // Collect resume data
+            // Collect resume data - flach für shared.html
+            const formData = typeof collectFormData === 'function' ? collectFormData() : this.collectResumeFormData();
             return {
                 type: 'resume',
-                data: window.resumeEditor?.collectFormData() || this.collectResumeFormData()
+                ...formData
             };
         } else if (isCoverLetter) {
             // Collect cover letter data
+            const letterText = document.getElementById('letterText');
+            const content = letterText?.tagName === 'TEXTAREA' ? letterText.value : letterText?.textContent || '';
+            const jobData = window.coverLetterEditor?.collectJobData?.() || {};
+            
             return {
                 type: 'coverLetter',
-                data: {
-                    text: document.getElementById('letterText')?.value || '',
-                    jobData: window.coverLetterEditor?.jobData || {},
-                    design: window.coverLetterEditor?.design || {}
-                }
+                senderName: `${document.getElementById('senderFirstName')?.value || ''} ${document.getElementById('senderLastName')?.value || ''}`.trim(),
+                senderAddress: document.getElementById('senderAddress')?.value || '',
+                companyName: jobData.companyName || '',
+                companyAddress: jobData.companyAddress || '',
+                contactPerson: jobData.contactPerson || '',
+                date: document.getElementById('currentDate')?.textContent || new Date().toLocaleDateString('de-DE'),
+                subject: document.getElementById('subjectLine')?.textContent || '',
+                salutation: document.getElementById('greetingSalutation')?.value || '',
+                content: content,
+                greeting: document.getElementById('greetingText')?.value || ''
             };
         }
         
-        return { type: 'unknown', data: {} };
+        return { type: 'unknown' };
     }
     
     collectResumeFormData() {
@@ -292,26 +302,23 @@ class CollaborationModule {
     }
     
     hashPassword(password) {
-        // Simple hash for demo - in production use proper crypto
+        // Simple base64 encoding for demo - kompatibel mit shared.html
         if (!password) return null;
-        let hash = 0;
-        for (let i = 0; i < password.length; i++) {
-            const char = password.charCodeAt(i);
-            hash = ((hash << 5) - hash) + char;
-            hash = hash & hash;
-        }
-        return hash.toString(16);
+        return btoa(password);
     }
     
     saveShareData(data) {
+        // Speichere unter individuellem Key für shared.html Zugriff
+        localStorage.setItem(`share_${data.id}`, JSON.stringify(data));
+        
+        // Zusätzlich in Index speichern
         const shares = JSON.parse(localStorage.getItem('shared_documents') || '{}');
-        shares[data.id] = data;
+        shares[data.id] = { id: data.id, createdAt: data.createdAt, expiresAt: data.expiresAt };
         localStorage.setItem('shared_documents', JSON.stringify(shares));
     }
     
     getShareData(shareId) {
-        const shares = JSON.parse(localStorage.getItem('shared_documents') || '{}');
-        return shares[shareId];
+        return JSON.parse(localStorage.getItem(`share_${shareId}`) || 'null');
     }
     
     copyShareLink() {

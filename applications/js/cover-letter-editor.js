@@ -127,6 +127,17 @@ class CoverLetterEditor {
         // Load user profile
         await this.loadUserProfile();
         
+        // Late-Load Listener: Wenn Profil später geladen wird, aktualisiere Absender
+        if (window.unifiedProfileService) {
+            window.unifiedProfileService.onProfileChange((profile) => {
+                if (profile && profile.firstName && profile.firstName !== 'Test') {
+                    console.log('📦 Profil-Update empfangen:', profile.firstName, profile.lastName);
+                    this.profileData = this.normalizeProfileData(profile);
+                    this.updateSenderInfo();
+                }
+            });
+        }
+        
         // Set initial date
         this.setCurrentDate();
         
@@ -1346,9 +1357,39 @@ GRUSS: [übersetzte Grußformel]`
             email: rawData.email || rawData.profile?.email || personal.email || '',
             phone: rawData.phone || rawData.profile?.phone || personal.phone || '',
             location: rawData.location || rawData.profile?.location || personal.location || '',
+            address: rawData.address || rawData.profile?.address || personal.address || '',
+            street: rawData.street || rawData.profile?.street || personal.street || '',
+            houseNumber: rawData.houseNumber || rawData.profile?.houseNumber || personal.houseNumber || '',
+            postalCode: rawData.postalCode || rawData.profile?.postalCode || personal.postalCode || '',
+            city: rawData.city || rawData.profile?.city || personal.city || '',
             summary: rawData.summary || professional.summary || '',
             skills: rawData.skills || professional.skills || rawData.skills || []
         };
+    }
+
+    parseAddressLines(address) {
+        if (!address || typeof address !== 'string') return { streetLine: '', cityLine: '' };
+        const normalized = address.replace(/\r/g, '').trim();
+        if (!normalized) return { streetLine: '', cityLine: '' };
+        const lines = normalized
+            .split(/[\n,]/)
+            .map(part => part.trim())
+            .filter(Boolean);
+        if (lines.length >= 2) {
+            return {
+                streetLine: lines[0],
+                cityLine: lines.slice(1).join(' ')
+            };
+        }
+        const postalMatch = normalized.match(/(\d{4,6})\s+(.+)$/);
+        if (postalMatch) {
+            const before = normalized.slice(0, postalMatch.index).trim().replace(/,$/, '');
+            return {
+                streetLine: before || normalized,
+                cityLine: `${postalMatch[1]} ${postalMatch[2]}`.trim()
+            };
+        }
+        return { streetLine: normalized, cityLine: '' };
     }
 
     updateSenderInfo() {
@@ -1358,8 +1399,17 @@ GRUSS: [übersetzte Grußformel]`
             if (window.unifiedProfileService?.isInitialized && window.unifiedProfileService.profile) {
                 const profile = window.unifiedProfileService.profile;
                 if (profile && profile.firstName && profile.firstName !== 'Test') {
-                    this.profileData = profile;
+                    this.profileData = this.normalizeProfileData(profile);
                 }
+            }
+            // Fallback: cloudDataService
+            if (!this.profileData && window.cloudDataService) {
+                window.cloudDataService.getProfile(true).then(profile => {
+                    if (profile) {
+                        this.profileData = this.normalizeProfileData(profile);
+                        this.updateSenderInfo(); // Rekursiv nach Laden
+                    }
+                }).catch(() => {});
             }
             // Wenn immer noch kein Profil, versuche es später nochmal
             if (!this.profileData) {
@@ -1379,7 +1429,7 @@ GRUSS: [übersetzte Grußformel]`
         // Name: Vorname + Nachname (ohne Mittelname)
         const firstName = this.profileData.firstName || this.profileData.name?.split(' ')[0] || '';
         const lastName = this.profileData.lastName || this.profileData.name?.split(' ').pop() || '';
-        const fullName = `${firstName} ${lastName}`.trim() || 'Vorname Nachname';
+        const fullName = `${firstName} ${lastName}`.trim() || '';
         
         // Name - IMMER setzen wenn Platzhalter oder leer
         if (nameEl) {
@@ -1391,8 +1441,9 @@ GRUSS: [übersetzte Grußformel]`
                 currentName === 'Muster' ||
                 currentName.includes('Mustermann') ||
                 currentName === nameEl.dataset?.placeholder;
-            if (isPlaceholder && fullName && fullName !== 'Vorname Nachname') {
+            if (isPlaceholder && fullName) {
                 nameEl.textContent = fullName;
+                console.log('✅ Absender-Name aus Profil geladen:', fullName);
             }
         }
         
@@ -1400,11 +1451,11 @@ GRUSS: [übersetzte Grußformel]`
             // Prüfe ob es ein Input oder Span ist
             if (signatureEl.tagName === 'INPUT') {
                 if (!signatureEl.value || signatureEl.value === 'Ihr Name') {
-                    signatureEl.value = fullName;
+                    signatureEl.value = fullName || '';
                 }
             } else {
                 if (!signatureEl.textContent.trim() || signatureEl.textContent.trim() === 'Ihr Name') {
-                    signatureEl.textContent = fullName;
+                    signatureEl.textContent = fullName || '';
                 }
             }
         }
@@ -1418,11 +1469,21 @@ GRUSS: [übersetzte Grußformel]`
                 currentStreet.includes('Musterstraße') ||
                 currentStreet === streetEl.dataset?.placeholder;
             if (isPlaceholder) {
+                // Versuche strukturierte Daten
+                let streetLine = '';
                 const street = this.profileData.street || this.profileData.strasse || '';
                 const houseNumber = this.profileData.houseNumber || this.profileData.hausnummer || '';
-                const streetLine = `${street} ${houseNumber}`.trim();
+                streetLine = `${street} ${houseNumber}`.trim();
+                
+                // Fallback: aus address parsen
+                if (!streetLine && (this.profileData.address || this.profileData.location)) {
+                    const parsed = this.parseAddressLines(this.profileData.address || this.profileData.location || '');
+                    streetLine = parsed.streetLine;
+                }
+                
                 if (streetLine) {
                     streetEl.textContent = streetLine;
+                    console.log('✅ Absender-Straße aus Profil geladen:', streetLine);
                 }
             }
         }
@@ -1436,18 +1497,33 @@ GRUSS: [übersetzte Grußformel]`
                 currentCity.includes('Musterstadt') ||
                 currentCity === cityEl.dataset?.placeholder;
             if (isPlaceholder) {
+                // Versuche strukturierte Daten
+                let cityLine = '';
                 const postalCode = this.profileData.postalCode || this.profileData.plz || this.profileData.zip || '';
                 const city = this.profileData.city || this.profileData.ort || this.profileData.stadt || '';
-                const cityLine = `${postalCode} ${city}`.trim();
+                cityLine = `${postalCode} ${city}`.trim();
+                
+                // Fallback: aus address/location parsen
+                if (!cityLine && (this.profileData.address || this.profileData.location)) {
+                    const parsed = this.parseAddressLines(this.profileData.address || this.profileData.location || '');
+                    cityLine = parsed.cityLine;
+                }
+                // Fallback: location direkt
+                if (!cityLine && this.profileData.location) {
+                    cityLine = this.profileData.location;
+                }
+                
                 if (cityLine) {
                     cityEl.textContent = cityLine;
+                    console.log('✅ Absender-Stadt aus Profil geladen:', cityLine);
                 }
             }
         }
         
         // Ort für Datum (wenn aktiviert)
-        if (locationEl && this.profileData.city) {
-            const city = this.profileData.city || this.profileData.ort || this.profileData.stadt || '';
+        if (locationEl) {
+            const city = this.profileData.city || this.profileData.ort || this.profileData.stadt || 
+                        this.profileData.location?.split(',')[0]?.trim() || '';
             if (city && !locationEl.textContent.trim()) {
                 locationEl.textContent = city;
             }
@@ -1569,34 +1645,87 @@ GRUSS: [übersetzte Grußformel]`
     async getAPIKey() {
         // ═══════════════════════════════════════════════════════════════════
         // VERWENDET NEUEN ZENTRALEN OPENAI SERVICE (ASYNC für AWS Cloud Support)
+        // Safari-kompatibel mit mehreren Fallback-Strategien
         // ═══════════════════════════════════════════════════════════════════
-        if (window.OpenAIService) {
-            // Async Version verwenden - unterstützt AWS Cloud laden
-            const key = await window.OpenAIService.getApiKeyAsync();
-            if (key) {
-                console.log('✅ API-Key über OpenAI Service geladen');
-                return key;
-            }
-        }
+        console.log('🔑 getAPIKey() gestartet...');
         
-        console.log('⚠️ OpenAI Service nicht verfügbar, nutze Fallback...');
-        
-        // Fallback: Direkt aus localStorage lesen
+        // Strategie 1: OpenAI Service (beste Option)
         try {
-            const globalKeys = localStorage.getItem('global_api_keys');
-            if (globalKeys) {
-                const parsed = JSON.parse(globalKeys);
-                // Prüfe ob Key gültig ist (nicht maskiert)
-                const key = parsed.openai?.key || parsed.openai?.apiKey;
-                if (key && key.startsWith('sk-') && !key.includes('•') && key.length > 20) {
-                    console.log('✅ API-Key aus localStorage Fallback');
+            if (window.OpenAIService) {
+                console.log('🔑 Versuche OpenAI Service...');
+                const key = await window.OpenAIService.getApiKeyAsync();
+                if (key && key.startsWith('sk-') && key.length > 20) {
+                    console.log('✅ API-Key über OpenAI Service geladen');
                     return key;
                 }
             }
         } catch (e) {
-            console.error('❌ API-Key Fallback fehlgeschlagen:', e);
+            console.warn('⚠️ OpenAI Service fehlgeschlagen:', e.message);
         }
         
+        // Strategie 2: GlobalAPIManager (wenn verfügbar)
+        try {
+            if (window.GlobalAPIManager?.getAPIKey) {
+                console.log('🔑 Versuche GlobalAPIManager...');
+                const key = window.GlobalAPIManager.getAPIKey('openai');
+                if (key && key.startsWith('sk-') && key.length > 20) {
+                    console.log('✅ API-Key über GlobalAPIManager geladen');
+                    return key;
+                }
+            }
+        } catch (e) {
+            console.warn('⚠️ GlobalAPIManager fehlgeschlagen:', e.message);
+        }
+        
+        // Strategie 3: awsAPISettings (Cloud-basiert)
+        try {
+            if (window.awsAPISettings?.getKey) {
+                console.log('🔑 Versuche awsAPISettings...');
+                const key = await window.awsAPISettings.getKey('openai');
+                if (key && key.startsWith('sk-') && key.length > 20) {
+                    console.log('✅ API-Key über awsAPISettings geladen');
+                    return key;
+                }
+            }
+        } catch (e) {
+            console.warn('⚠️ awsAPISettings fehlgeschlagen:', e.message);
+        }
+        
+        // Strategie 4: localStorage Fallback (Safari-kompatibel)
+        console.log('🔑 Versuche localStorage Fallback...');
+        try {
+            // Prüfe ob localStorage verfügbar ist (Safari Private Browsing kann es blockieren)
+            const testKey = '__storage_test__';
+            localStorage.setItem(testKey, testKey);
+            localStorage.removeItem(testKey);
+            
+            // global_api_keys Format
+            const globalKeys = localStorage.getItem('global_api_keys');
+            if (globalKeys) {
+                const parsed = JSON.parse(globalKeys);
+                const key = parsed.openai?.key || parsed.openai?.apiKey || parsed.openai;
+                if (key && typeof key === 'string' && key.startsWith('sk-') && !key.includes('•') && key.length > 20) {
+                    console.log('✅ API-Key aus global_api_keys');
+                    return key;
+                }
+            }
+            
+            // admin_state Format (alternatives Speicherformat)
+            const adminState = localStorage.getItem('admin_state');
+            if (adminState) {
+                const parsed = JSON.parse(adminState);
+                const apiKeys = parsed.apiKeys || {};
+                const key = apiKeys.openai?.key || apiKeys.openai?.apiKey;
+                if (key && typeof key === 'string' && key.startsWith('sk-') && !key.includes('•') && key.length > 20) {
+                    console.log('✅ API-Key aus admin_state');
+                    return key;
+                }
+            }
+        } catch (e) {
+            console.error('❌ localStorage nicht verfügbar (Safari Private Browsing?):', e.message);
+        }
+        
+        console.error('❌ Kein API-Key gefunden in allen Strategien');
         this.showToast('Kein API-Key gefunden. Bitte im Admin Panel hinterlegen.', 'warning');
         return null;
     }
@@ -1633,11 +1762,11 @@ GRUSS: [übersetzte Grußformel]`
         
         console.log('🤖 Sende Anfrage an OpenAI mit Modell:', model);
         console.log('📝 Prompt-Länge:', prompt.length, 'Zeichen');
+        console.log('🌐 Browser:', navigator.userAgent.includes('Safari') && !navigator.userAgent.includes('Chrome') ? 'Safari' : 'Other');
         
         const requestBody = {
             model: model,
             reasoning_effort: 'low', // Schneller, aber immer noch intelligent
-            verbosity: 'medium',
             messages: [
                 {
                     role: 'system',
@@ -1651,32 +1780,67 @@ GRUSS: [übersetzte Grußformel]`
             max_completion_tokens: maxTokens
         };
         
-        console.log('📤 Request Body:', JSON.stringify(requestBody, null, 2).substring(0, 500) + '...');
+        console.log('📤 Request wird gesendet...');
         
-        const response = await fetch('https://api.openai.com/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${apiKey}`
-            },
-            body: JSON.stringify(requestBody)
-        });
-        
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            console.error('❌ OpenAI API Fehler:', response.status, errorData);
-            throw new Error(`API Error: ${response.status} - ${errorData.error?.message || 'Unbekannter Fehler'}`);
+        try {
+            // Timeout für Safari (kann bei langen Requests hängen)
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 Sekunden Timeout
+            
+            const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${apiKey}`
+                },
+                body: JSON.stringify(requestBody),
+                signal: controller.signal
+            });
+            
+            clearTimeout(timeoutId);
+            
+            console.log('📥 Response Status:', response.status);
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                let errorData = {};
+                try {
+                    errorData = JSON.parse(errorText);
+                } catch (e) {
+                    console.error('❌ Fehler beim Parsen der Error-Response:', errorText.substring(0, 200));
+                }
+                console.error('❌ OpenAI API Fehler:', response.status, errorData);
+                throw new Error(`API Error: ${response.status} - ${errorData.error?.message || errorText.substring(0, 100) || 'Unbekannter Fehler'}`);
+            }
+            
+            const responseText = await response.text();
+            console.log('📥 Response erhalten, Länge:', responseText.length);
+            
+            let data;
+            try {
+                data = JSON.parse(responseText);
+            } catch (e) {
+                console.error('❌ Fehler beim Parsen der Response:', responseText.substring(0, 200));
+                throw new Error('Ungültige JSON-Antwort von OpenAI');
+            }
+            
+            console.log('✅ OpenAI Antwort erhalten, Tokens verwendet:', data.usage);
+            
+            const content = data.choices?.[0]?.message?.content;
+            if (!content) {
+                console.error('❌ Keine Content in Antwort:', data);
+                throw new Error('Keine Antwort von OpenAI erhalten');
+            }
+            
+            return content;
+            
+        } catch (error) {
+            if (error.name === 'AbortError') {
+                console.error('❌ Timeout bei OpenAI Anfrage');
+                throw new Error('Die Anfrage hat zu lange gedauert. Bitte versuchen Sie es erneut.');
+            }
+            throw error;
         }
-        
-        const data = await response.json();
-        console.log('✅ OpenAI Antwort erhalten, Tokens verwendet:', data.usage);
-        
-        const content = data.choices?.[0]?.message?.content;
-        if (!content) {
-            throw new Error('Keine Antwort von OpenAI erhalten');
-        }
-        
-        return content;
     }
 
     async callOpenAI(messages, apiKey, opts = {}) {
@@ -2045,7 +2209,16 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
         
         const hasContent = this.generatedContent && this.generatedContent.trim() !== '';
         const letterText = document.getElementById('letterText');
-        const hasLetterText = letterText && letterText.value && letterText.value.trim() !== '';
+        
+        // Unterstütze sowohl TEXTAREA als auch DIV (contenteditable)
+        let hasLetterText = false;
+        if (letterText) {
+            if (letterText.tagName === 'TEXTAREA') {
+                hasLetterText = letterText.value && letterText.value.trim() !== '';
+            } else {
+                hasLetterText = letterText.textContent && letterText.textContent.trim() !== '';
+            }
+        }
         
         exportBtn.disabled = !(hasContent || hasLetterText);
         
@@ -2082,20 +2255,35 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
         
         if (!salutationEl) return;
         
-        // Nur setzen wenn leer
-        if (!salutationEl.value || salutationEl.value === 'Sehr geehrte Damen und Herren,') {
-            if (contactPerson) {
-                // Person bekannt
-                const isFemale = contactPerson.toLowerCase().includes('frau') || contactPerson.toLowerCase().includes('ms.') || contactPerson.toLowerCase().includes('miss');
-                const isMale = contactPerson.toLowerCase().includes('herr') || contactPerson.toLowerCase().includes('mr.');
-                
-                if (country === 'US') {
-                    salutationEl.value = isFemale ? 'Dear Ms. ' : isMale ? 'Dear Mr. ' : 'Dear ';
+        // Immer aktualisieren wenn Ansprechpartner sich ändert
+        if (contactPerson) {
+            // Extrahiere den Nachnamen aus dem Ansprechpartner-Feld
+            const nameInfo = this.parseContactPersonName(contactPerson);
+            
+            if (country === 'US') {
+                if (nameInfo.isFemale) {
+                    salutationEl.value = `Dear Ms. ${nameInfo.lastName},`;
+                } else if (nameInfo.isMale) {
+                    salutationEl.value = `Dear Mr. ${nameInfo.lastName},`;
                 } else {
-                    salutationEl.value = isFemale ? 'Sehr geehrte Frau ' : isMale ? 'Sehr geehrter Herr ' : 'Sehr geehrte/r ';
+                    salutationEl.value = `Dear ${nameInfo.fullName},`;
                 }
             } else {
-                // Keine Person bekannt
+                if (nameInfo.isFemale) {
+                    salutationEl.value = `Sehr geehrte Frau ${nameInfo.lastName},`;
+                } else if (nameInfo.isMale) {
+                    salutationEl.value = `Sehr geehrter Herr ${nameInfo.lastName},`;
+                } else {
+                    salutationEl.value = `Sehr geehrte/r ${nameInfo.fullName},`;
+                }
+            }
+        } else {
+            // Keine Person bekannt - nur wenn leer oder Standard
+            if (!salutationEl.value || 
+                salutationEl.value === 'Sehr geehrte Damen und Herren,' ||
+                salutationEl.value.startsWith('Sehr geehrte Frau') ||
+                salutationEl.value.startsWith('Sehr geehrter Herr') ||
+                salutationEl.value.startsWith('Dear')) {
                 const salutations = {
                     'CH': 'Sehr geehrte Damen und Herren,',
                     'DE': 'Sehr geehrte Damen und Herren,',
@@ -2105,6 +2293,44 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
                 salutationEl.value = salutations[country] || salutations['DE'];
             }
         }
+    }
+    
+    /**
+     * Parst den Ansprechpartner-Namen und extrahiert relevante Informationen
+     */
+    parseContactPersonName(contactPerson) {
+        const input = contactPerson.trim();
+        const lower = input.toLowerCase();
+        
+        // Erkenne Geschlecht
+        const isFemale = lower.includes('frau') || lower.includes('ms.') || lower.includes('miss') || lower.includes('mrs.');
+        const isMale = lower.includes('herr') || lower.includes('mr.');
+        
+        // Entferne Titel und Anredeformen
+        let cleanName = input
+            .replace(/^(herr|frau|mr\.?|ms\.?|mrs\.?|miss|dr\.?|prof\.?)\s*/gi, '')
+            .replace(/\s+(herr|frau|mr\.?|ms\.?|mrs\.?|miss)\s*/gi, ' ')
+            .trim();
+        
+        // Extrahiere Vorname und Nachname
+        const parts = cleanName.split(/\s+/);
+        let firstName = '';
+        let lastName = cleanName;
+        
+        if (parts.length >= 2) {
+            firstName = parts[0];
+            lastName = parts.slice(1).join(' ');
+        } else if (parts.length === 1) {
+            lastName = parts[0];
+        }
+        
+        return {
+            fullName: cleanName,
+            firstName: firstName,
+            lastName: lastName,
+            isFemale: isFemale,
+            isMale: isMale
+        };
     }
 
     removeGreetingFromContent(content) {
@@ -2294,7 +2520,9 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
         const letter = document.querySelector('.generated-letter');
         if (!letter) return;
         
-        letter.style.setProperty('--letter-font', `'${this.design.font}', sans-serif`);
+        const fontFamily = `'${this.design.font}', sans-serif`;
+        
+        letter.style.setProperty('--letter-font', fontFamily);
         letter.style.setProperty('--letter-font-size', `${this.design.fontSize}pt`);
         letter.style.setProperty('--letter-line-height', this.design.lineHeight);
         letter.style.setProperty('--letter-margin', `${this.design.margin}mm`);
@@ -2310,10 +2538,18 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
         letter.style.setProperty('--subject-margin-bottom', `${this.design.subjectMarginBottom || 10}mm`);
         letter.style.setProperty('--date-top-offset', `${this.design.dateTopOffset || 0}mm`);
         
-        letter.style.fontFamily = `'${this.design.font}', sans-serif`;
+        letter.style.fontFamily = fontFamily;
         letter.style.fontSize = `${this.design.fontSize}pt`;
         letter.style.lineHeight = this.design.lineHeight;
         letter.style.padding = `${this.design.margin}mm`;
+        
+        // ═══════════════════════════════════════════════════════════════════
+        // SCHRIFTART-KONSISTENZ: Alle Elemente erben die gleiche Font
+        // ═══════════════════════════════════════════════════════════════════
+        const fontElements = letter.querySelectorAll('.letter-sender span, .letter-recipient span, .editable-field, .letter-date, .letter-subject, .greeting-input, .greeting-salutation-input, .subject-input, .signature-name-input, .letter-text-content');
+        fontElements.forEach(el => {
+            el.style.fontFamily = fontFamily;
+        });
         
         // Header Contrast anwenden
         letter.classList.remove('header-contrast-light', 'header-contrast-dark', 'header-contrast-auto');
@@ -2325,11 +2561,19 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
         const senderName = document.getElementById('senderName');
         if (senderName) {
             senderName.style.fontWeight = this.design.senderNameBold !== false ? '600' : 'normal';
+            senderName.style.fontFamily = fontFamily;
         }
+        
+        // Alle Sender-Elemente konsistent formatieren
+        ['senderStreet', 'senderCity', 'senderContact'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.style.fontFamily = fontFamily;
+        });
         
         const companyName = document.getElementById('companyNameDisplay');
         if (companyName) {
             companyName.style.fontWeight = this.design.companyNameBold ? '700' : '500';
+            companyName.style.fontFamily = fontFamily;
         }
         
         const subjectLabel = letter.querySelector('.subject-label');
@@ -2340,6 +2584,7 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
         const signatureName = document.getElementById('signatureName');
         if (signatureName) {
             signatureName.style.fontWeight = this.design.signatureNameBold ? '600' : 'normal';
+            signatureName.style.fontFamily = fontFamily;
         }
         
         // Betreff-Abstände anwenden
@@ -2378,14 +2623,17 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
                 signatureImg.style.userSelect = 'none';
                 
                 // Position und Größe anwenden
-                if (this.design.signaturePosition) {
-                    signatureImg.style.left = `${this.design.signaturePosition.x}px`;
-                    signatureImg.style.top = `${this.design.signaturePosition.y}px`;
+                if (!this.design.signaturePosition) {
+                    this.design.signaturePosition = { x: 0, y: 0 };
                 }
-                if (this.design.signatureSize) {
-                    signatureImg.style.width = `${this.design.signatureSize}px`;
-                    signatureImg.style.height = 'auto';
+                if (!this.design.signatureSize) {
+                    this.design.signatureSize = 200;
                 }
+                signatureImg.style.left = `${this.design.signaturePosition.x}px`;
+                signatureImg.style.top = `${this.design.signaturePosition.y}px`;
+                signatureImg.style.width = `${this.design.signatureSize}px`;
+                signatureImg.style.height = 'auto';
+                this.ensureSignatureVisible(signatureImg);
             } else {
                 signatureImg.removeAttribute('src');
                 signatureImg.style.display = 'none';
@@ -2397,26 +2645,58 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
         const letterBody = document.getElementById('letterBody');
         const pageBreakIndicator = document.getElementById('pageBreakIndicator');
         const pageContainer = document.querySelector('.letter-page-container');
+        const letter = document.querySelector('.generated-letter');
         
-        if (!letterBody || !pageBreakIndicator || !pageContainer) return;
+        if (!letterBody || !pageBreakIndicator || !pageContainer || !letter) return;
         
-        // A4 Höhe in Pixel (bei 96 DPI): 297mm ≈ 1123px, minus Margins
-        const a4HeightPx = 1123 - (this.design.margin * 2 * 3.78); // mm zu px
+        // A4 Höhe berechnen (297mm minus Margins)
+        const margin = this.design.margin || 25;
+        const a4HeightMm = 297 - (margin * 2);
+        const a4HeightPx = a4HeightMm * 3.78; // mm zu px Umrechnung (96 DPI)
         
         const contentHeight = pageContainer.scrollHeight;
         
-        if (contentHeight > a4HeightPx) {
+        // Nur anzeigen wenn Inhalt deutlich über eine Seite geht (mindestens 50px drüber)
+        if (contentHeight > a4HeightPx + 50) {
             pageBreakIndicator.classList.add('visible');
-            // Positioniere den Indikator an der richtigen Stelle
+            // Positioniere den Indikator an der A4-Seitenkante
             pageBreakIndicator.style.top = `${a4HeightPx}px`;
         } else {
             pageBreakIndicator.classList.remove('visible');
+        }
+    }
+
+    ensureSignatureVisible(signatureImg) {
+        const container = document.getElementById('signatureContainer');
+        if (!signatureImg || !container) return;
+        const clamp = () => {
+            const maxX = Math.max(0, container.clientWidth - signatureImg.offsetWidth);
+            const maxY = Math.max(0, container.clientHeight - signatureImg.offsetHeight);
+            const current = this.design.signaturePosition || { x: 0, y: 0 };
+            const nextX = Math.min(Math.max(current.x || 0, 0), maxX);
+            const nextY = Math.min(Math.max(current.y || 0, 0), maxY);
+            this.design.signaturePosition = { x: nextX, y: nextY };
+            signatureImg.style.left = `${nextX}px`;
+            signatureImg.style.top = `${nextY}px`;
+        };
+        if (signatureImg.complete) {
+            clamp();
+        } else {
+            signatureImg.onload = clamp;
         }
     }
     
     applyLetterStyle(letter) {
         // Reset all style classes
         letter.classList.remove('style-modern', 'style-classic', 'style-minimal', 'style-elegant', 'style-creative', 'style-corporate');
+        
+        // Reset alle inline-Styles die von Vorlagen gesetzt werden
+        letter.style.borderLeft = '';
+        letter.style.borderTop = '';
+        letter.style.borderRadius = '';
+        letter.style.border = '';
+        letter.style.boxShadow = '';
+        letter.style.background = '';
         
         // Add current style class
         letter.classList.add(`style-${this.design.style}`);
@@ -2426,56 +2706,64 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
         
         switch (this.design.style) {
             case 'modern':
-                letter.style.setProperty('--header-style', `linear-gradient(135deg, ${accentColor} 0%, ${accentColor}dd 100%)`);
+                letter.style.setProperty('--header-style', `linear-gradient(135deg, ${accentColor} 0%, ${this.adjustColorBrightness(accentColor, -10)} 100%)`);
                 letter.style.setProperty('--header-text-color', '#ffffff');
                 letter.style.setProperty('--border-style', 'none');
-                letter.style.borderRadius = '0';
+                letter.style.boxShadow = '0 4px 20px rgba(0,0,0,0.08)';
                 break;
                 
             case 'classic':
                 letter.style.setProperty('--header-style', 'transparent');
                 letter.style.setProperty('--header-text-color', '#1e293b');
                 letter.style.setProperty('--border-style', `2px solid ${accentColor}`);
-                letter.style.borderLeft = `3px solid ${accentColor}`;
-                letter.style.borderRadius = '0';
+                letter.style.borderLeft = `4px solid ${accentColor}`;
                 break;
                 
             case 'minimal':
                 letter.style.setProperty('--header-style', 'transparent');
                 letter.style.setProperty('--header-text-color', '#1e293b');
                 letter.style.setProperty('--border-style', 'none');
-                letter.style.borderRadius = '0';
-                letter.style.borderLeft = 'none';
                 break;
                 
             case 'elegant':
                 letter.style.setProperty('--header-style', 'transparent');
                 letter.style.setProperty('--header-text-color', '#1e293b');
                 letter.style.setProperty('--border-style', `1px solid ${accentColor}`);
-                letter.style.borderTop = `4px solid ${accentColor}`;
-                letter.style.borderRadius = '0';
-                letter.style.borderLeft = 'none';
+                letter.style.borderTop = `5px solid ${accentColor}`;
                 break;
                 
             case 'creative':
-                letter.style.setProperty('--header-style', `linear-gradient(135deg, ${accentColor} 0%, ${this.adjustColor(accentColor, 30)} 50%, ${this.adjustColor(accentColor, 60)} 100%)`);
+                letter.style.setProperty('--header-style', `linear-gradient(135deg, ${accentColor} 0%, ${this.adjustColor(accentColor, 40)} 50%, ${this.adjustColor(accentColor, 80)} 100%)`);
                 letter.style.setProperty('--header-text-color', '#ffffff');
                 letter.style.setProperty('--border-style', 'none');
-                letter.style.borderRadius = '12px';
-                letter.style.borderLeft = 'none';
+                letter.style.borderRadius = '16px';
+                letter.style.boxShadow = '0 8px 32px rgba(0,0,0,0.12)';
                 break;
                 
             case 'corporate':
-                letter.style.setProperty('--header-style', `linear-gradient(to bottom, ${accentColor} 0%, ${accentColor} 35%, transparent 35%)`);
+                letter.style.setProperty('--header-style', `linear-gradient(180deg, ${accentColor} 0%, ${this.adjustColorBrightness(accentColor, -20)} 100%)`);
                 letter.style.setProperty('--header-text-color', '#ffffff');
                 letter.style.setProperty('--border-style', 'none');
-                letter.style.borderRadius = '0';
-                letter.style.borderLeft = 'none';
+                letter.style.border = '1px solid #e2e8f0';
                 break;
                 
             default:
                 break;
         }
+    }
+    
+    // Hilfsfunktion: Farbe heller/dunkler machen
+    adjustColorBrightness(color, percent) {
+        const hex = color.replace('#', '');
+        let r = parseInt(hex.substr(0, 2), 16);
+        let g = parseInt(hex.substr(2, 2), 16);
+        let b = parseInt(hex.substr(4, 2), 16);
+        
+        r = Math.min(255, Math.max(0, r + (r * percent / 100)));
+        g = Math.min(255, Math.max(0, g + (g * percent / 100)));
+        b = Math.min(255, Math.max(0, b + (b * percent / 100)));
+        
+        return `#${Math.round(r).toString(16).padStart(2, '0')}${Math.round(g).toString(16).padStart(2, '0')}${Math.round(b).toString(16).padStart(2, '0')}`;
     }
     
     // Hilfsfunktion: Farbe anpassen (für Gradienten)
@@ -2716,10 +3004,25 @@ Lassen Sie uns gemeinsam herausfinden, wie ich Ihrem Team neue Impulse geben kan
     }
 
     updateStats() {
-        const textarea = document.getElementById('letterText');
-        if (!textarea) return;
+        const letterTextEl = document.getElementById('letterText');
+        if (!letterTextEl) return;
         
-        const text = textarea.value;
+        // Unterstütze sowohl TEXTAREA als auch DIV (contenteditable)
+        let text = '';
+        if (letterTextEl.tagName === 'TEXTAREA') {
+            text = letterTextEl.value || '';
+        } else {
+            text = letterTextEl.textContent || letterTextEl.innerText || '';
+        }
+        
+        if (!text || typeof text !== 'string') {
+            // Fallback: Keine Stats wenn kein Text
+            const wordCount = document.getElementById('wordCount');
+            const charCount = document.getElementById('charCount');
+            if (wordCount) wordCount.textContent = '0';
+            if (charCount) charCount.textContent = '0';
+            return;
+        }
         const words = text.trim().split(/\s+/).filter(w => w.length > 0).length;
         const chars = text.length;
         
@@ -6298,6 +6601,14 @@ Gib NUR den Anschreiben-Text zurück, KEINE Meta-Informationen.`;
                 if (previewContainer) {
                     previewContainer.innerHTML = `<img src="${signature}" alt="Unterschrift" style="max-height: 60px;">`;
                 }
+                if (!this.design.signaturePosition) {
+                    this.design.signaturePosition = { x: 0, y: 0 };
+                }
+                if (!this.design.signatureSize) {
+                    this.design.signatureSize = 200;
+                }
+                this.applyDesign();
+                this.setupSignatureDragDrop();
                 console.log('✅ Gespeicherte Signatur geladen');
             }
         } catch (error) {
@@ -6473,7 +6784,8 @@ Gib NUR den Anschreiben-Text zurück, KEINE Meta-Informationen.`;
                     'Authorization': `Bearer ${apiKey}`
                 },
                 body: JSON.stringify({
-                    model: 'gpt-4o-mini',
+                    model: 'gpt-5.2',
+                    reasoning_effort: 'low',
                     messages: [{
                         role: 'system',
                         content: `Du bist ein Experte für Firmenadressen. Suche die offizielle Hauptsitz-Adresse von Unternehmen.

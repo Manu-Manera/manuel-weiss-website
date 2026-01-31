@@ -10,7 +10,44 @@
     <title>Anschreiben-Editor - Bewerbungsmanager</title>
     <link rel="stylesheet" href="../styles.css">
     <link rel="stylesheet" href="css/applications-main.css">
-    <link rel="stylesheet" href="css/cover-letter-editor.css?v=20260115editable">
+    <link rel="stylesheet" href="css/cover-letter-editor.css?v=20260131design">
+    <style>
+        /* Inline-Styles für Resize-Handle (Cache-Bypass) */
+        .design-panel-resize-handle {
+            position: absolute !important;
+            left: -6px !important;
+            top: 0 !important;
+            bottom: 0 !important;
+            width: 12px !important;
+            cursor: ew-resize !important;
+            background: transparent !important;
+            z-index: 100 !important;
+        }
+        .design-panel-resize-handle:hover,
+        .design-panel-resize-handle.active {
+            background: linear-gradient(to right, rgba(99, 102, 241, 0.4), transparent) !important;
+        }
+        .design-panel-resize-handle::before {
+            content: '' !important;
+            position: absolute !important;
+            left: 4px !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            width: 4px !important;
+            height: 60px !important;
+            background: #cbd5e1 !important;
+            border-radius: 2px !important;
+        }
+        .design-panel-resize-handle:hover::before,
+        .design-panel-resize-handle.active::before {
+            background: #6366f1 !important;
+            height: 100px !important;
+            box-shadow: 0 0 8px rgba(99, 102, 241, 0.5) !important;
+        }
+        .editor-design-panel {
+            position: relative !important;
+        }
+    </style>
     <link rel="stylesheet" href="css/inline-suggestions.css?v=20260115">
     <link rel="stylesheet" href="css/job-match.css?v=20260115">
     <link rel="stylesheet" href="css/split-view.css?v=20260115">
@@ -485,6 +522,8 @@
 
             <!-- Right Panel: Design Options -->
             <aside class="editor-design-panel" id="designPanel">
+                <!-- Resize Handle -->
+                <div class="design-panel-resize-handle" id="designPanelResizeHandle"></div>
                 <h3><i class="fas fa-palette"></i> Design</h3>
                 
                 <!-- Letter Styles -->
@@ -969,7 +1008,7 @@
     <script src="../js/cloud-data-service.js?v=20260114c"></script>
     <script src="../js/workflow-api.js?v=20260114c"></script>
     <script src="../js/unified-profile-service.js?v=20260115"></script>
-    <script src="js/cover-letter-editor.js?v=20260130b"></script>
+    <script src="js/cover-letter-editor.js?v=20260131design"></script>
     <!-- KI-Schreibassistent entfernt auf Benutzerwunsch -->
     <!-- Job-Match-Analyzer entfernt wegen Absturz-Problemen -->
     <script src="js/industry-templates.js?v=20260115"></script>
@@ -1066,6 +1105,56 @@
                         this.parentElement.classList.toggle('mobile-collapsed');
                     });
                 });
+            }
+            
+            // ═══════════════════════════════════════════════════════════════════
+            // DESIGN PANEL RESIZE HANDLE
+            // ═══════════════════════════════════════════════════════════════════
+            const resizeHandle = document.getElementById('designPanelResizeHandle');
+            if (resizeHandle && designPanel) {
+                let isResizing = false;
+                let startX = 0;
+                let startWidth = 0;
+                
+                resizeHandle.addEventListener('mousedown', (e) => {
+                    isResizing = true;
+                    startX = e.clientX;
+                    startWidth = designPanel.offsetWidth;
+                    designPanel.classList.add('resizing');
+                    resizeHandle.classList.add('active');
+                    document.body.style.cursor = 'ew-resize';
+                    e.preventDefault();
+                });
+                
+                document.addEventListener('mousemove', (e) => {
+                    if (!isResizing) return;
+                    
+                    // Panel ist rechts im Grid-Layout, Handle ist am linken Rand des Panels
+                    // Standard-Logik für rechtes Panel:
+                    // - Handle nach LINKS ziehen = Panel wird GRÖSSER (expandiert in Hauptbereich)
+                    // - Handle nach RECHTS ziehen = Panel wird KLEINER
+                    const deltaX = startX - e.clientX;
+                    const newWidth = Math.min(Math.max(startWidth + deltaX, 280), 600);
+                    designPanel.style.width = newWidth + 'px';
+                });
+                
+                document.addEventListener('mouseup', () => {
+                    if (isResizing) {
+                        isResizing = false;
+                        designPanel.classList.remove('resizing');
+                        resizeHandle.classList.remove('active');
+                        document.body.style.cursor = '';
+                        
+                        // Speichere die Breite
+                        localStorage.setItem('designPanelWidth', designPanel.style.width);
+                    }
+                });
+                
+                // Gespeicherte Breite laden
+                const savedWidth = localStorage.getItem('designPanelWidth');
+                if (savedWidth) {
+                    designPanel.style.width = savedWidth;
+                }
             }
         })();
     </script>

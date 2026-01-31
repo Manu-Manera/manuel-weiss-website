@@ -549,6 +549,7 @@
     display: flex;
     justify-content: space-between;
     margin-bottom: 2rem;
+    font-family: var(--letter-font, 'Inter', sans-serif);
 }
 
 .letter-sender {
@@ -575,6 +576,7 @@
     border-radius: 4px;
     transition: background-color 0.2s;
     outline: none;
+    font-family: inherit;
 }
 
 .editable-field:empty:before {
@@ -604,6 +606,7 @@
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
+    font-family: var(--letter-font, 'Inter', sans-serif);
 }
 
 .letter-recipient span {
@@ -643,6 +646,7 @@
 
 .letter-body {
     margin-bottom: 2rem;
+    font-family: var(--letter-font, 'Inter', sans-serif);
 }
 
 .letter-body textarea {
@@ -661,16 +665,27 @@
     outline: none;
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   LETTER FOOTER - Grußformel & Unterschrift
+   ═══════════════════════════════════════════════════════════════════════════ */
 .letter-footer {
     display: flex;
     flex-direction: column;
     gap: var(--letter-signature-gap, 2rem);
     margin-top: 2rem;
+    font-family: var(--letter-font, 'Inter', sans-serif);
+    min-height: 120px; /* Genug Platz für Unterschrift */
 }
 
 .letter-footer span:last-child {
     font-weight: 600;
     color: var(--letter-accent, var(--cl-primary));
+}
+
+/* Grußformel Styling */
+.letter-footer .greeting-input {
+    font-size: inherit;
+    margin-bottom: 0.5rem;
 }
 
 /* Editierbare Grußformel, Anrede, Betreff und Signatur */
@@ -732,30 +747,58 @@
     gap: 0.5rem;
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   SIGNATUR-CONTAINER - Verbesserte Sichtbarkeit
+   ═══════════════════════════════════════════════════════════════════════════ */
 .signature-container {
     position: relative;
-    min-height: 80px;
+    min-height: 100px;
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+    padding-top: 0.5rem;
 }
 
 #signatureImage {
-    max-width: 200px;
-    max-height: 80px;
+    max-width: 220px;
+    max-height: 100px;
+    min-height: 40px;
     object-fit: contain;
     position: relative;
     cursor: move;
     user-select: none;
-    transition: opacity 0.2s;
+    transition: opacity 0.2s, transform 0.15s;
+    z-index: 10;
+    display: block !important;
+}
+
+#signatureImage[src]:not([src=""]) {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
 #signatureImage:hover {
-    opacity: 0.9;
+    opacity: 0.85;
+    transform: scale(1.02);
 }
 
 #signatureImage:active {
     cursor: grabbing;
+    transform: scale(1.01);
+}
+
+/* Signatur-Platzhalter wenn kein Bild */
+.signature-container:not(:has(#signatureImage[src]:not([src=""]))) .signature-name-input {
+    margin-top: 1rem;
+}
+
+/* Unterschriftslinie (optional) */
+.signature-line {
+    width: 200px;
+    height: 1px;
+    background: #cbd5e1;
+    margin-top: 0.5rem;
 }
 
 /* Editor Toolbar */
@@ -818,35 +861,82 @@
     background: var(--cl-card);
     border-left: 1px solid var(--cl-border);
     padding: 1.25rem;
+    padding-left: 1.5rem; /* Extra Platz für Resize-Handle */
     overflow-y: auto;
     overflow-x: hidden;
     width: var(--cl-design-width);
     min-width: var(--cl-design-min-width);
     max-width: var(--cl-design-max-width);
-    resize: horizontal;
     position: relative;
-    transition: width 0.1s ease-out;
+    flex-shrink: 0;
 }
 
-/* Resize Handle für bessere Sichtbarkeit */
-.editor-design-panel::before {
+/* Resize Handle - Interaktiver Bereich am linken Rand */
+.design-panel-resize-handle {
+    position: absolute;
+    left: -6px; /* Leicht über den Rand hinaus für besseres Greifen */
+    top: 0;
+    bottom: 0;
+    width: 12px; /* Breiter für einfacheres Greifen */
+    cursor: ew-resize;
+    background: transparent;
+    z-index: 100; /* Höherer z-index */
+    transition: background 0.2s;
+}
+
+.design-panel-resize-handle:hover,
+.design-panel-resize-handle.active {
+    background: linear-gradient(to right, 
+        rgba(99, 102, 241, 0.3), 
+        rgba(99, 102, 241, 0.1), 
+        transparent);
+}
+
+/* Visueller Indikator - immer sichtbar */
+.design-panel-resize-handle::before {
     content: '';
     position: absolute;
-    left: 0;
+    left: 4px;
     top: 50%;
     transform: translateY(-50%);
     width: 4px;
-    height: 40px;
+    height: 60px;
     background: var(--cl-border);
     border-radius: 2px;
-    cursor: ew-resize;
-    opacity: 0.5;
-    transition: opacity 0.2s;
+    transition: background 0.2s, height 0.2s, box-shadow 0.2s;
 }
 
-.editor-design-panel:hover::before {
-    opacity: 1;
+.design-panel-resize-handle:hover::before,
+.design-panel-resize-handle.active::before {
     background: var(--cl-primary);
+    height: 100px;
+    box-shadow: 0 0 8px rgba(99, 102, 241, 0.5);
+}
+
+/* Doppelpfeil-Icon beim Hover */
+.design-panel-resize-handle::after {
+    content: '⋮⋮';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 10px;
+    color: var(--cl-text-muted);
+    opacity: 0;
+    transition: opacity 0.2s;
+    letter-spacing: -2px;
+}
+
+.design-panel-resize-handle:hover::after {
+    opacity: 1;
+    color: var(--cl-primary);
+}
+
+/* Doppelpfeil-Cursor beim Hovern */
+.editor-design-panel.resizing,
+.editor-design-panel.resizing * {
+    cursor: ew-resize !important;
+    user-select: none;
 }
 
 .editor-design-panel h3 {
@@ -1155,78 +1245,102 @@
     background: rgba(99, 102, 241, 0.05);
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   STYLE PREVIEW THUMBNAILS - Verbesserte Darstellung
+   ═══════════════════════════════════════════════════════════════════════════ */
 .style-preview {
     width: 100%;
-    height: 40px;
+    height: 44px;
     border-radius: 4px;
     background: #f1f5f9;
+    position: relative;
+    overflow: hidden;
 }
 
 .modern-preview {
-    background: linear-gradient(135deg, #6366f1 30%, #f1f5f9 30%);
+    background: linear-gradient(135deg, var(--cl-primary, #6366f1) 35%, #f8fafc 35%);
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05);
 }
 
 .classic-preview {
-    background: linear-gradient(to right, #1e293b 2px, #f1f5f9 2px);
+    background: linear-gradient(to right, var(--cl-primary, #6366f1) 4px, #f8fafc 4px);
+    border-bottom: 1px solid #e2e8f0;
 }
 
 .minimal-preview {
-    background: #f8fafc;
+    background: #ffffff;
     border: 1px solid #e2e8f0;
 }
 
 .elegant-preview {
-    background: linear-gradient(to bottom, #f8fafc 20%, #fef3c7 20% 25%, #f8fafc 25%);
-    border: 1px solid #d4af37;
+    background: linear-gradient(to bottom, #d4af37 5px, #fefce8 5px 10px, #f8fafc 10px);
 }
 
 .creative-preview {
     background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 50%, #3b82f6 100%);
     border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
 }
 
 .corporate-preview {
-    background: linear-gradient(to bottom, #1e3a5f 35%, #f8fafc 35%);
+    background: linear-gradient(to bottom, #1e3a5f 40%, #f8fafc 40%);
+    border: 1px solid #e2e8f0;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   LETTER STYLE VARIANTS
+   LETTER STYLE VARIANTS - Verbesserte Designvorlagen
    ═══════════════════════════════════════════════════════════════════════════ */
 
-/* Modern Style */
+/* Basis: Font-Inheritance für alle Stile */
+.generated-letter .letter-sender,
+.generated-letter .letter-sender span,
+.generated-letter .letter-recipient,
+.generated-letter .letter-recipient span,
+.generated-letter .editable-field,
+.generated-letter .letter-date,
+.generated-letter .letter-subject,
+.generated-letter input,
+.generated-letter .greeting-input,
+.generated-letter .greeting-salutation-input,
+.generated-letter .subject-input,
+.generated-letter .signature-name-input {
+    font-family: inherit !important;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   MODERN STYLE - Farbiger Header mit Gradient
+   ───────────────────────────────────────────────────────────────────────────── */
 .generated-letter.style-modern .letter-header {
-    background: var(--header-style, linear-gradient(135deg, #6366f1 0%, #6366f1dd 100%));
+    background: var(--header-style, linear-gradient(135deg, var(--letter-accent, #6366f1) 0%, color-mix(in srgb, var(--letter-accent, #6366f1) 85%, white) 100%));
     color: var(--header-text-color, #ffffff);
-    padding: 1.5rem;
+    padding: 1.75rem 2rem;
     margin: calc(var(--letter-margin, 25mm) * -1);
     margin-top: calc(var(--header-top-margin, 0mm) - var(--letter-margin, 25mm));
     margin-bottom: 2rem;
     border-radius: 0;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
 }
 
 .generated-letter.style-modern .letter-sender span {
     color: var(--header-text-color, #ffffff) !important;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.15);
 }
 
 .generated-letter.style-modern .letter-sender span:first-child {
     color: var(--header-text-color, #ffffff) !important;
     font-weight: 700;
-    font-size: 1.2em;
+    font-size: 1.25em;
+    letter-spacing: -0.02em;
 }
 
-.generated-letter.style-modern .letter-date {
-    color: var(--header-text-color, #ffffff) !important;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
-}
-
-.generated-letter.style-modern .letter-sender-name {
-    color: inherit;
-    font-weight: 600;
+.generated-letter.style-modern .letter-date,
+.generated-letter.style-modern .letter-date-container span {
+    color: rgba(255,255,255,0.95) !important;
 }
 
 .generated-letter.style-modern .letter-sender-contact {
-    color: rgba(255,255,255,0.9);
+    color: rgba(255,255,255,0.85);
+    font-size: 0.9em;
 }
 
 /* Header Contrast Classes */
@@ -1242,76 +1356,210 @@
     text-shadow: none;
 }
 
-/* Classic Style */
+/* ─────────────────────────────────────────────────────────────────────────────
+   CLASSIC STYLE - Seitenlinie, traditionelles Layout
+   ───────────────────────────────────────────────────────────────────────────── */
 .generated-letter.style-classic {
-    border-left: 3px solid var(--letter-accent, #6366f1);
+    border-left: 4px solid var(--letter-accent, #6366f1);
+    background: linear-gradient(to right, rgba(var(--letter-accent-rgb, 99, 102, 241), 0.02), transparent 30%);
 }
 
 .generated-letter.style-classic .letter-header {
     background: transparent;
     color: #1e293b;
-    padding-left: 1rem;
+    padding-left: 0;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 1.5rem;
+    margin-bottom: 1.5rem;
 }
 
-/* Minimal Style */
+.generated-letter.style-classic .letter-sender span:first-child {
+    color: var(--letter-accent, #6366f1);
+    font-weight: 600;
+    font-size: 1.1em;
+}
+
+.generated-letter.style-classic .letter-sender span {
+    color: #475569;
+}
+
+.generated-letter.style-classic .letter-subject {
+    border-bottom: 2px solid var(--letter-accent, #6366f1);
+    padding-bottom: 0.5rem;
+    display: inline-block;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   MINIMAL STYLE - Clean, schlicht, viel Weißraum
+   ───────────────────────────────────────────────────────────────────────────── */
+.generated-letter.style-minimal {
+    background: #ffffff;
+}
+
 .generated-letter.style-minimal .letter-header {
     background: transparent;
     color: #1e293b;
+    border-bottom: none;
+    padding-bottom: 2rem;
 }
 
-.generated-letter.style-minimal .letter-sender-name {
+.generated-letter.style-minimal .letter-sender span:first-child {
     font-weight: 500;
+    font-size: 1em;
+    color: #1e293b;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
 }
 
-/* Elegant Style */
+.generated-letter.style-minimal .letter-sender span {
+    color: #64748b;
+    font-size: 0.9em;
+}
+
+.generated-letter.style-minimal .letter-subject {
+    font-weight: 500;
+    color: #1e293b;
+}
+
+.generated-letter.style-minimal .letter-subject .subject-label {
+    color: #64748b;
+    font-weight: 400;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   ELEGANT STYLE - Goldakzente, Serif-Schrift für Name
+   ───────────────────────────────────────────────────────────────────────────── */
 .generated-letter.style-elegant {
-    border-top: 4px solid var(--letter-accent, #6366f1);
+    border-top: 5px solid var(--letter-accent, #d4af37);
+    background: linear-gradient(to bottom, rgba(212, 175, 55, 0.03), transparent 15%);
 }
 
 .generated-letter.style-elegant .letter-header {
     background: transparent;
     color: #1e293b;
-    padding-top: 1rem;
+    padding-top: 1.5rem;
+    text-align: left;
 }
 
-.generated-letter.style-elegant .letter-sender-name {
-    font-family: 'Playfair Display', 'Georgia', serif;
-    font-size: 1.25em;
+.generated-letter.style-elegant .letter-sender span:first-child {
+    font-family: 'Playfair Display', 'Cormorant Garamond', 'Georgia', serif !important;
+    font-size: 1.4em;
+    font-weight: 600;
+    color: #1e293b;
+    letter-spacing: 0.02em;
 }
 
-/* Creative Style */
+.generated-letter.style-elegant .letter-sender span {
+    color: #64748b;
+}
+
+.generated-letter.style-elegant .letter-subject {
+    font-style: italic;
+    color: #475569;
+}
+
+.generated-letter.style-elegant .letter-subject .subject-label {
+    font-style: normal;
+    color: var(--letter-accent, #d4af37);
+}
+
+.generated-letter.style-elegant .letter-footer .greeting-input {
+    font-style: italic;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   CREATIVE STYLE - Bunter Gradient-Header, abgerundete Ecken
+   ───────────────────────────────────────────────────────────────────────────── */
 .generated-letter.style-creative {
-    border-radius: 12px;
+    border-radius: 16px;
     overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.12);
 }
 
 .generated-letter.style-creative .letter-header {
     background: var(--header-style, linear-gradient(135deg, #ec4899 0%, #8b5cf6 50%, #3b82f6 100%));
     color: #ffffff;
-    padding: 2rem;
+    padding: 2rem 2.5rem;
     margin: calc(var(--letter-margin, 25mm) * -1);
     margin-bottom: 2rem;
-    border-radius: 12px 12px 0 0;
+    border-radius: 16px 16px 0 0;
+    position: relative;
 }
 
-.generated-letter.style-creative .letter-sender-name {
-    font-size: 1.3em;
+.generated-letter.style-creative .letter-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(to right, rgba(255,255,255,0.3), transparent);
+}
+
+.generated-letter.style-creative .letter-sender span:first-child {
+    font-size: 1.4em;
     font-weight: 700;
+    letter-spacing: -0.02em;
 }
 
-/* Corporate Style */
+.generated-letter.style-creative .letter-sender span {
+    color: rgba(255,255,255,0.9) !important;
+}
+
+.generated-letter.style-creative .letter-date,
+.generated-letter.style-creative .letter-date-container span {
+    color: rgba(255,255,255,0.85) !important;
+}
+
+.generated-letter.style-creative .letter-subject {
+    background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(139,92,246,0.1));
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    margin-left: -0.5rem;
+    margin-right: -0.5rem;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   CORPORATE STYLE - Business-Look, dunkler Header
+   ───────────────────────────────────────────────────────────────────────────── */
+.generated-letter.style-corporate {
+    border: 1px solid #e2e8f0;
+}
+
 .generated-letter.style-corporate .letter-header {
-    background: var(--letter-accent, #1e3a5f);
+    background: linear-gradient(180deg, var(--letter-accent, #1e3a5f) 0%, color-mix(in srgb, var(--letter-accent, #1e3a5f) 90%, black) 100%);
     color: #ffffff;
-    padding: 2rem;
+    padding: 2rem 2.5rem;
     margin: calc(var(--letter-margin, 25mm) * -1);
     margin-bottom: 2rem;
 }
 
-.generated-letter.style-corporate .letter-sender-name {
+.generated-letter.style-corporate .letter-sender span:first-child {
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.15em;
+    font-size: 1em;
+}
+
+.generated-letter.style-corporate .letter-sender span {
+    color: rgba(255,255,255,0.85) !important;
+    font-size: 0.9em;
+}
+
+.generated-letter.style-corporate .letter-date,
+.generated-letter.style-corporate .letter-date-container span {
+    color: rgba(255,255,255,0.8) !important;
+    font-size: 0.85em;
+}
+
+.generated-letter.style-corporate .letter-subject {
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.95em;
+}
+
+.generated-letter.style-corporate .letter-subject .subject-label {
+    color: var(--letter-accent, #1e3a5f);
 }
 
 .style-btn span:last-child {
@@ -3166,22 +3414,47 @@
     pointer-events: none;
 }
 
-/* Seitenumbruch-Indikator */
+/* ═══════════════════════════════════════════════════════════════════════════
+   SEITENUMBRUCH-INDIKATOR - Dezent & Informativ
+   ═══════════════════════════════════════════════════════════════════════════ */
 .page-break-indicator {
     display: none;
-    width: 100%;
-    text-align: center;
-    padding: 1rem 0;
-    margin: 2rem 0;
-    border-top: 2px dashed var(--cl-border);
-    border-bottom: 2px dashed var(--cl-border);
+    position: absolute;
+    left: -10px;
+    right: -10px;
+    height: 0;
+    border-top: 1px dashed rgba(99, 102, 241, 0.3);
     color: var(--cl-text-muted);
-    font-size: 0.8rem;
-    background: linear-gradient(to bottom, rgba(248,250,252,0.8), transparent, rgba(248,250,252,0.8));
+    font-size: 0.65rem;
+    text-align: center;
+    pointer-events: none;
+    z-index: 5;
 }
 
 .page-break-indicator.visible {
     display: block;
+}
+
+.page-break-indicator span {
+    position: relative;
+    top: -0.5rem;
+    display: inline-block;
+    padding: 0.15rem 0.6rem;
+    border-radius: 10px;
+    background: rgba(248, 250, 252, 0.95);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    color: #94a3b8;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    backdrop-filter: blur(4px);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+
+/* Hover-Effekt für mehr Info */
+.page-break-indicator:hover span {
+    background: rgba(99, 102, 241, 0.1);
+    color: var(--cl-primary);
+    border-color: var(--cl-primary);
 }
 
 /* Seiten-Container */

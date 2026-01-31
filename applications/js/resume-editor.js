@@ -22,6 +22,93 @@ document.querySelectorAll('.resume-tab').forEach(tab => {
     });
 });
 
+// ═══════════════════════════════════════════════════════════════════════════
+// AUTOMATISCHE VERSIONIERUNG BEI SEITENWECHSEL
+// ═══════════════════════════════════════════════════════════════════════════
+
+// Speichere Timestamp beim Laden der Seite
+const sessionStartTime = Date.now();
+let lastSavedHash = '';
+
+function getDataHash(data) {
+    // Einfacher Hash basierend auf JSON-String-Länge und wichtigen Feldern
+    const str = JSON.stringify(data);
+    return str.length + '_' + (data.firstName || '') + '_' + (data.title || '');
+}
+
+function hasDataChanged() {
+    try {
+        const currentData = collectFormData();
+        const currentHash = getDataHash(currentData);
+        return currentHash !== lastSavedHash;
+    } catch (e) {
+        return false;
+    }
+}
+
+function autoSaveVersion() {
+    try {
+        // Prüfe ob Daten vorhanden und geändert
+        const data = collectFormData();
+        if (!data.firstName && !data.lastName && !data.title) {
+            return; // Keine relevanten Daten vorhanden
+        }
+        
+        if (!hasDataChanged()) {
+            console.log('ℹ️ Keine Änderungen seit letzter Speicherung');
+            return;
+        }
+        
+        const design = JSON.parse(localStorage.getItem('resume_design_settings') || '{}');
+        const versions = JSON.parse(localStorage.getItem('resume_versions') || '[]');
+        
+        // Erstelle automatische Version
+        const autoVersionName = `Auto-Backup ${new Date().toLocaleDateString('de-DE')} ${new Date().toLocaleTimeString('de-DE', {hour: '2-digit', minute: '2-digit'})}`;
+        
+        versions.unshift({
+            id: Date.now().toString(36),
+            name: autoVersionName,
+            data,
+            design,
+            createdAt: new Date().toISOString(),
+            isAutoBackup: true
+        });
+        
+        // Behalte nur die letzten 20 Versionen
+        while (versions.length > 20) {
+            versions.pop();
+        }
+        
+        localStorage.setItem('resume_versions', JSON.stringify(versions));
+        lastSavedHash = getDataHash(data);
+        console.log('✅ Auto-Version gespeichert:', autoVersionName);
+    } catch (error) {
+        console.warn('⚠️ Fehler bei Auto-Version:', error);
+    }
+}
+
+// Beim Verlassen der Seite automatisch speichern
+window.addEventListener('beforeunload', (e) => {
+    autoSaveVersion();
+});
+
+// Auch bei visibilitychange (Tab-Wechsel)
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+        autoSaveVersion();
+    }
+});
+
+// Initialer Hash nach Laden
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        try {
+            const data = collectFormData();
+            lastSavedHash = getDataHash(data);
+        } catch (e) {}
+    }, 1000);
+});
+
 // Load existing resume and profile data
 async function loadResume() {
     try {
@@ -747,7 +834,11 @@ FELDER FÜR JEDE BERUFSERFAHRUNG:
 - location: Stadt/Land
 - startDate: Format MM/YYYY
 - endDate: Format MM/YYYY oder "heute"
-- description: ALLE Stichpunkte mit \n getrennt - NICHTS WEGLASSEN!
+- description: EXAKT wie im Original!
+  - Wenn Original FLIESSTEXT hat: Als Fließtext übernehmen (KEINE Stichpunkte hinzufügen!)
+  - Wenn Original STICHPUNKTE hat: Stichpunkte mit \n getrennt übernehmen
+  - NIEMALS Fließtext in Stichpunkte umwandeln!
+  - NIEMALS Aufzählungszeichen vor den ersten Satz setzen wenn es Fließtext ist!
 - technologies: Erwähnte Tools/Software als Array
 
 ═══════════════════════════════════════════════════════════════════════════════
@@ -756,8 +847,12 @@ FÜR SKILLS/KOMPETENZEN:
 
 - Extrahiere ALLE genannten Fähigkeiten
 - Wenn eine Bewertung angegeben ist (z.B. Balken, Punkte, Zahlen), übernimm diese als level (1-10)
+- Wenn KEINE Bewertung sichtbar ist, schätze einen realistischen Level basierend auf Kontext (5-8)
 - Gruppiere nach Kategorien wenn möglich (z.B. "Microsoft Tools", "Programmierung")
-- Soft Skills separat erfassen
+- SOFT SKILLS: Immer mit "level" angeben (1-10)! Schätze basierend auf Kontext.
+  - Wenn als Stärke genannt: level 8-9
+  - Wenn als Kompetenz erwähnt: level 6-7
+  - Standard: level 7
 
 ═══════════════════════════════════════════════════════════════════════════════
 OUTPUT FORMAT (NUR VALIDES JSON):
@@ -780,7 +875,7 @@ OUTPUT FORMAT (NUR VALIDES JSON):
             "location": "Stadt",
             "startDate": "MM/YYYY",
             "endDate": "MM/YYYY oder heute",
-            "description": "VOLLSTÄNDIGER Beschreibungstext INKLUSIVE ALLER Stichpunkte - NICHT KÜRZEN!\n• Erster vollständiger Stichpunkt\n• Zweiter vollständiger Stichpunkt\n• ALLE weiteren Stichpunkte mit Zeilenumbrüchen",
+            "description": "Text EXAKT wie im Original - wenn Fließtext dann Fließtext, wenn Stichpunkte dann Stichpunkte mit \\n getrennt - NIEMALS Format ändern!",
             "technologies": ["Tool1", "System2"]
         }
     ],
@@ -2821,16 +2916,36 @@ async function generateSummary() {
         ...(data.skills?.technicalSkills || []).flatMap(c => c.skills || []),
         ...(data.skills?.softSkills || []).map(s => s.skill || '')
     ].filter(Boolean).slice(0, 10);
+    
+    // Sammle Berufserfahrung für Kontext
+    const experience = data.sections?.find(s => s.type === 'experience')?.entries || [];
+    const yearsOfExperience = experience.length > 0 ? 
+        Math.max(...experience.map(e => {
+            const start = e.startDate ? parseInt(e.startDate.split('/')[1] || e.startDate.split('.')[2] || '2020') : 2020;
+            return new Date().getFullYear() - start;
+        })) : 0;
+    
     const prompt = `
-Schreibe ein Kurzprofil (2-3 Sätze) für einen Lebenslauf.
-Rolle: ${data.title}
-Skills: ${skills.join(', ')}
-Schreibe professionell, ATS-tauglich, auf Deutsch.
+Schreibe ein PRÄGNANTES Kurzprofil (2 Sätze, max 50 Wörter) für einen Lebenslauf.
+
+REGELN:
+- Erster Satz: Wer bin ich? (Rolle + Erfahrung + Kernkompetenz)
+- Zweiter Satz: Was macht mich besonders? (Unique Selling Point + Mehrwert)
+- KEINE Floskeln wie "motiviert", "teamfähig", "flexibel"
+- KONKRETE Zahlen wenn möglich (z.B. "8+ Jahre", "50+ Projekte")
+- Aktive, starke Verben
+
+DATEN:
+- Rolle: ${data.title || 'Fachkraft'}
+- Jahre Erfahrung: ${yearsOfExperience > 0 ? yearsOfExperience + '+' : 'mehrere'}
+- Top-Skills: ${skills.slice(0, 5).join(', ') || 'diverse Fachkenntnisse'}
+
+Gib NUR das Kurzprofil zurück, keine Erklärungen.
 `;
     const content = await callOpenAI([
-        { role: 'system', content: 'Du bist ein professioneller Bewerbungsberater. Antworte auf Deutsch.' },
+        { role: 'system', content: 'Du bist ein Executive Recruiter. Schreibe knackig, aussagekräftig, ohne Füllwörter.' },
         { role: 'user', content: prompt }
-    ], apiKey, { maxTokens: 200 });
+    ], apiKey, { maxTokens: 150 });
     const summary = content.trim();
     document.getElementById('summary').value = summary;
     renderAiResult('aiSuggestions', `<strong>Kurzprofil</strong><div>${summary}</div>`);
