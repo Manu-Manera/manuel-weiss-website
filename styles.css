@@ -1985,12 +1985,12 @@ a:hover {
         0 0 60px rgba(99, 102, 241, 0.25),
         0 0 100px rgba(139, 92, 246, 0.15),
         inset 0 1px 0 rgba(255, 255, 255, 0.2),
-        inset 0 -1px 0 rgba(0, 0, 0, 0.1);
-    border-color: rgba(139, 92, 246, 0.6);
-    /* Subtiler Glaseffekt: leicht aufgehellt, aber nicht weiß */
-    background: rgba(255, 255, 255, 0.18);
-    backdrop-filter: blur(25px) saturate(1.2);
-    -webkit-backdrop-filter: blur(25px) saturate(1.2);
+        inset 0 -1px 0 rgba(0, 0, 0, 0.1) !important;
+    border-color: rgba(139, 92, 246, 0.6) !important;
+    /* KEIN WEISSER HINTERGRUND - Subtiler Glaseffekt */
+    background: rgba(255, 255, 255, 0.15) !important;
+    backdrop-filter: blur(25px) saturate(1.2) !important;
+    -webkit-backdrop-filter: blur(25px) saturate(1.2) !important;
 }
 
 /* Schimmer-Animation beim Hover */
