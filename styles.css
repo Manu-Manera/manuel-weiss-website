@@ -1979,18 +1979,13 @@ a:hover {
 }
 
 .service-card:hover {
-    transform: translateY(-6px) scale(1.02);
+    /* NUR KIPPEN - KEINE Farbänderung */
+    transform: translateY(-8px) rotateX(2deg) rotateY(-1deg) !important;
     box-shadow: 
-        0 25px 50px rgba(0, 0, 0, 0.2),
-        0 0 60px rgba(99, 102, 241, 0.25),
-        0 0 100px rgba(139, 92, 246, 0.15),
-        inset 0 1px 0 rgba(255, 255, 255, 0.2),
-        inset 0 -1px 0 rgba(0, 0, 0, 0.1) !important;
-    border-color: rgba(139, 92, 246, 0.6) !important;
-    /* KEIN WEISSER HINTERGRUND - Subtiler Glaseffekt */
-    background: rgba(255, 255, 255, 0.15) !important;
-    backdrop-filter: blur(25px) saturate(1.2) !important;
-    -webkit-backdrop-filter: blur(25px) saturate(1.2) !important;
+        0 30px 60px rgba(0, 0, 0, 0.25),
+        0 0 40px rgba(99, 102, 241, 0.2) !important;
+    border-color: rgba(139, 92, 246, 0.5) !important;
+    /* KEINE Hintergrund-Änderung - bleibt transparent */
 }
 
 /* Schimmer-Animation beim Hover */
@@ -2004,27 +1999,9 @@ a:hover {
     background: linear-gradient(135deg, var(--primary), #8b5cf6);
 }
 
-.service-card:hover h3 {
-    /* Titel bleibt hell lesbar, mit subtiler Glow */
-    color: #ffffff;
-    text-shadow: 0 0 20px rgba(199, 210, 254, 0.5), 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.service-card:hover p {
-    /* Text bleibt hell lesbar auf Glaseffekt */
-    color: rgba(255, 255, 255, 0.95) !important;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-}
-
-.service-card:hover .service-features li {
-    /* Features bleiben hell lesbar */
-    color: rgba(255, 255, 255, 0.9) !important;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
-}
-
+/* KEINE Text-Farbänderungen beim Hover - alles bleibt wie es ist */
 .service-card:hover .btn-primary {
-    background: linear-gradient(135deg, var(--primary) 0%, #7c3aed 100%);
-    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
 }
 
 .service-cta {
@@ -2046,9 +2023,7 @@ a:hover {
 }
 
 .service-card:hover .service-cta {
-    /* Hover: Glaseffekt – Text bleibt hell mit Glow */
-    color: #c7d2fe;
-    text-shadow: 0 0 15px rgba(199, 210, 254, 0.6);
+    /* Nur leichte Bewegung, KEINE Farbänderung */
     transform: translateX(4px);
 }
 
