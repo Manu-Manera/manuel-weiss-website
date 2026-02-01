@@ -400,30 +400,34 @@
           {
                     "id": "fastApprovals",
                     "title": "Schnelle Freigaben",
-                    "description": "Wie schnell sind Freigaben?",
+                    "description": "Wie schnell sind Freigaben? Sind HR-Prozesse digitalisiert?",
                     "examples": [
-                              "Quick Approval",
-                              "Streamlined Process",
-                              "Fast Workflow"
+                              "Prozesse sind alle digitalisiert",
+                              "ESS (Employee Self Service) und MSS (Manager Self Service) sind umgesetzt",
+                              "Workflows funktionieren problemlos und schnell"
                     ],
                     "bestPractices": [
                               "BCG: Approval Processes",
                               "Deloitte: Workflow Optimization"
-                    ]
+                    ],
+                    "hasSubPage": true,
+                    "subPageUrl": "ki-assessment-detail-dataQuality-fastApprovals-processes.html"
           },
           {
                     "id": "selfServiceApproval",
-                    "title": "Selbstbedienung für Standardfälle",
-                    "description": "Gibt es Selbstbedienung?",
+                    "title": "Self Service Prozesse für Standardfälle",
+                    "description": "Gibt es Self-Service-Prozesse für Standardanfragen?",
                     "examples": [
-                              "Self-Service Requests",
-                              "Automated Approval",
-                              "Standard Access"
+                              "Automated Document Generation",
+                              "Standard Berechtigungen und Zugang zu Wissensdatenbanken",
+                              "Automatische Approvals mithilfe festgelegter Regeln"
                     ],
                     "bestPractices": [
                               "DAMA: Self-Service",
                               "Gartner: Automated Workflows"
-                    ]
+                    ],
+                    "hasSubPage": true,
+                    "subPageUrl": "ki-assessment-detail-dataQuality-selfService-processes.html"
           },
           {
                     "id": "approvalSLA",
@@ -474,23 +478,81 @@
                 }
             });
             
+            // Load values from sub-pages if available
+            loadSubPageValues();
+            
             renderSubSubCriteria();
             updateAggregatedScore();
         }
         
+        function loadSubPageValues() {
+            // Load fastApprovals from process assessment
+            const fastApprovalsData = JSON.parse(localStorage.getItem('fastApprovalsProcesses') || '{}');
+            if (fastApprovalsData.calculatedScore) {
+                assessmentValues['fastApprovals'] = fastApprovalsData.calculatedScore;
+                console.log('✅ Schnelle Freigaben Score aus Prozess-Assessment geladen:', fastApprovalsData.calculatedScore);
+            }
+            
+            // Load selfServiceApproval from tier assessment
+            const selfServiceData = JSON.parse(localStorage.getItem('selfServiceProcesses') || '{}');
+            if (selfServiceData.calculatedScore) {
+                assessmentValues['selfServiceApproval'] = selfServiceData.calculatedScore;
+                console.log('✅ Self Service Score aus Tier-Assessment geladen:', selfServiceData.calculatedScore);
+            }
+        }
+        
         function renderSubSubCriteria() {
             const container = document.getElementById('subSubCriteriaContainer');
+            
+            // Check if values are from sub-pages
+            const fastApprovalsData = JSON.parse(localStorage.getItem('fastApprovalsProcesses') || '{}');
+            const selfServiceData = JSON.parse(localStorage.getItem('selfServiceProcesses') || '{}');
+            
             container.innerHTML = subSubCriteria.map(subSubCriterion => {
                 const value = assessmentValues[subSubCriterion.id] || 1;
+                
+                // Check if this criterion has a calculated value from sub-page
+                let isCalculated = false;
+                let calculatedInfo = '';
+                if (subSubCriterion.id === 'fastApprovals' && fastApprovalsData.calculatedScore) {
+                    isCalculated = true;
+                    calculatedInfo = `<div class="auto-calculated-indicator"><i class="fas fa-calculator"></i> ${fastApprovalsData.percentage}% der Prozesse digitalisiert</div>`;
+                } else if (subSubCriterion.id === 'selfServiceApproval' && selfServiceData.calculatedScore) {
+                    isCalculated = true;
+                    calculatedInfo = `<div class="auto-calculated-indicator"><i class="fas fa-calculator"></i> ${selfServiceData.percentage}% Self-Service implementiert</div>`;
+                }
+                
+                const subPageButton = subSubCriterion.hasSubPage ? `
+                    <a href="${subSubCriterion.subPageUrl}" class="sub-page-link" style="
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 0.5rem;
+                        padding: 0.75rem 1.25rem;
+                        background: linear-gradient(135deg, ${isCalculated ? '#6366f1' : '#10b981'}, ${isCalculated ? '#4f46e5' : '#059669'});
+                        color: white;
+                        text-decoration: none;
+                        border-radius: 8px;
+                        font-weight: 600;
+                        font-size: 0.9rem;
+                        margin-top: 1rem;
+                        transition: all 0.3s ease;
+                        box-shadow: 0 4px 15px rgba(${isCalculated ? '99, 102, 241' : '16, 185, 129'}, 0.3);
+                    " onmouseover="this.style.transform='translateY(-2px)';" onmouseout="this.style.transform='none';">
+                        <i class="fas fa-cogs"></i>
+                        ${isCalculated ? 'Prozesse bearbeiten' : 'Prozesse im Detail bewerten'}
+                    </a>
+                ` : '';
+                
                 return `
-                <div class="sub-sub-criterion-card">
+                <div class="sub-sub-criterion-card" ${isCalculated ? 'style="border-left: 4px solid #10b981;"' : ''}>
                     <div class="sub-sub-criterion-header">
-                        <div class="sub-sub-criterion-icon">
-                            <i class="fas fa-check-circle"></i>
+                        <div class="sub-sub-criterion-icon" ${isCalculated ? 'style="background: linear-gradient(135deg, #10b981, #059669);"' : ''}>
+                            <i class="fas ${isCalculated ? 'fa-check-double' : 'fa-check-circle'}"></i>
                         </div>
                         <div class="sub-sub-criterion-title-section">
                             <h3 class="sub-sub-criterion-title">${subSubCriterion.title}</h3>
                             <p class="sub-sub-criterion-description">${subSubCriterion.description}</p>
+                            ${calculatedInfo}
                             <div style="margin-top: 0.5rem;">
                                 ${subSubCriterion.bestPractices.map(bp => `<span class="best-practices-badge">${bp}</span>`).join('')}
                             </div>
@@ -504,6 +566,7 @@
                         </ul>
                     </div>
                     ` : ''}
+                    ${subPageButton}
                     <div class="slider-section">
                         <div class="slider-wrapper">
                             <div class="slider-labels-top">
@@ -519,6 +582,7 @@
                                 class="sub-sub-criterion-slider" 
                                 id="slider-${subSubCriterion.id}"
                                 oninput="updateSubSubCriterionValue('${subSubCriterion.id}', this.value)"
+                                ${isCalculated ? 'style="opacity: 0.6;"' : ''}
                             >
                             <div class="sub-sub-criterion-value" id="value-${subSubCriterion.id}">${value}</div>
                             <div class="slider-scale">
@@ -528,6 +592,7 @@
                                 <span>4</span>
                                 <span>5</span>
                             </div>
+                            ${isCalculated ? '<div style="font-size: 0.75rem; color: #10b981; margin-top: 0.5rem; text-align: center;"><i class="fas fa-info-circle"></i> Automatisch berechnet aus Detailbewertung</div>' : ''}
                         </div>
                     </div>
                 </div>

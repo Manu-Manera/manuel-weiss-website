@@ -12,34 +12,51 @@
     
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/starry-background.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <style>
-        /* HR Coach Page Styles */
-        .hr-coach-page {
+        /* ═══════════════════════════════════════════════════════════════════════════
+           HR COACH - MODERNES DUNKLES DESIGN MIT GLASEFFEKTEN
+           ═══════════════════════════════════════════════════════════════════════════ */
+        
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%) !important;
             min-height: 100vh;
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: #e2e8f0;
+        }
+        
+        /* Navbar */
+        .navbar {
+            background: rgba(15, 23, 42, 0.8) !important;
+            backdrop-filter: blur(20px) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+        }
+        
+        .nav-name {
+            color: #fff !important;
+        }
+        
+        .nav-menu a {
+            color: rgba(255, 255, 255, 0.8) !important;
+        }
+        
+        .nav-menu a:hover {
+            color: #fff !important;
         }
         
         /* Hero Section */
         .hr-coach-hero {
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+            background: rgba(99, 102, 241, 0.15);
+            backdrop-filter: blur(20px);
             color: white;
             padding: 4rem 0;
             text-align: center;
             position: relative;
             overflow: hidden;
-        }
-        
-        .hr-coach-hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+            z-index: 2;
         }
         
         .hero-content {
@@ -51,7 +68,8 @@
             width: 100px;
             height: 100px;
             margin: 0 auto 2rem;
-            background: rgba(255, 255, 255, 0.2);
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(139, 92, 246, 0.3));
+            border: 1px solid rgba(165, 180, 252, 0.3);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -64,7 +82,7 @@
             font-size: 3rem;
             font-weight: 800;
             margin-bottom: 1rem;
-            background: linear-gradient(45deg, #fff, #e0e7ff);
+            background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -72,7 +90,7 @@
         
         .hero-subtitle {
             font-size: 1.25rem;
-            opacity: 0.9;
+            color: #c7d2fe;
             max-width: 600px;
             margin: 0 auto 2rem;
         }
@@ -81,11 +99,13 @@
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(99, 102, 241, 0.3);
+            border: 1px solid rgba(165, 180, 252, 0.3);
             padding: 0.75rem 1.5rem;
             border-radius: 50px;
             font-weight: 500;
             backdrop-filter: blur(10px);
+            color: #e2e8f0;
         }
         
         /* Wizard Container */
@@ -98,17 +118,19 @@
         }
         
         .wizard-card {
-            background: white;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
             border-radius: 24px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             overflow: hidden;
         }
         
         /* Progress Bar */
         .wizard-progress {
-            background: #f1f5f9;
+            background: rgba(15, 23, 42, 0.5);
             padding: 1.5rem 2rem;
-            border-bottom: 1px solid #e2e8f0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
         
         .progress-steps {
@@ -124,7 +146,7 @@
             left: 40px;
             right: 40px;
             height: 3px;
-            background: #e2e8f0;
+            background: rgba(255, 255, 255, 0.1);
         }
         
         .progress-line {
@@ -150,36 +172,39 @@
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: #e2e8f0;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 600;
-            color: #64748b;
+            color: #a5b4fc;
             transition: all 0.3s ease;
         }
         
         .step-item.active .step-circle {
             background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-color: #6366f1;
             color: white;
             box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
         }
         
         .step-item.completed .step-circle {
             background: #10b981;
+            border-color: #10b981;
             color: white;
         }
         
         .step-label {
             font-size: 0.75rem;
-            color: #64748b;
+            color: #a5b4fc;
             font-weight: 500;
             text-align: center;
             max-width: 80px;
         }
         
         .step-item.active .step-label {
-            color: #6366f1;
+            color: #fff;
             font-weight: 600;
         }
         
@@ -206,12 +231,12 @@
         .step-title {
             font-size: 1.5rem;
             font-weight: 700;
-            color: #1f2937;
+            color: #fff;
             margin-bottom: 0.5rem;
         }
         
         .step-description {
-            color: #6b7280;
+            color: #a5b4fc;
             margin-bottom: 2rem;
         }
         
@@ -224,8 +249,8 @@
         }
         
         .option-card {
-            background: #f8fafc;
-            border: 2px solid #e2e8f0;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
             border-radius: 16px;
             padding: 1.5rem;
             cursor: pointer;
@@ -234,14 +259,14 @@
         }
         
         .option-card:hover {
-            border-color: #6366f1;
-            background: #f1f5f9;
+            border-color: rgba(99, 102, 241, 0.5);
+            background: rgba(99, 102, 241, 0.1);
         }
         
         .option-card.selected {
             border-color: #6366f1;
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.2);
+            background: rgba(99, 102, 241, 0.2);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
         }
         
         .option-icon {
@@ -259,13 +284,13 @@
         
         .option-title {
             font-weight: 600;
-            color: #1f2937;
+            color: #fff;
             margin-bottom: 0.25rem;
         }
         
         .option-description {
             font-size: 0.875rem;
-            color: #6b7280;
+            color: #a5b4fc;
         }
         
         /* Checkbox Options */
@@ -280,20 +305,20 @@
             align-items: center;
             gap: 0.75rem;
             padding: 1rem;
-            background: #f8fafc;
-            border: 2px solid #e2e8f0;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
             cursor: pointer;
             transition: all 0.3s ease;
         }
         
         .checkbox-option:hover {
-            border-color: #6366f1;
+            border-color: rgba(99, 102, 241, 0.5);
         }
         
         .checkbox-option.checked {
             border-color: #6366f1;
-            background: rgba(99, 102, 241, 0.05);
+            background: rgba(99, 102, 241, 0.15);
         }
         
         .checkbox-option input {
@@ -303,13 +328,14 @@
         .checkbox-box {
             width: 24px;
             height: 24px;
-            border: 2px solid #d1d5db;
+            border: 2px solid rgba(255, 255, 255, 0.3);
             border-radius: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.2s ease;
             flex-shrink: 0;
+            color: transparent;
         }
         
         .checkbox-option.checked .checkbox-box {
@@ -318,17 +344,27 @@
             color: white;
         }
         
+        .checkbox-option span {
+            color: #e2e8f0;
+        }
+        
         /* Textarea */
         .wizard-textarea {
             width: 100%;
             min-height: 150px;
             padding: 1rem;
-            border: 2px solid #e2e8f0;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
             font-family: inherit;
             font-size: 1rem;
+            color: #e2e8f0;
             resize: vertical;
             transition: border-color 0.3s ease;
+        }
+        
+        .wizard-textarea::placeholder {
+            color: #64748b;
         }
         
         .wizard-textarea:focus {
@@ -347,8 +383,8 @@
             flex: 1;
             min-width: 150px;
             padding: 1.25rem;
-            background: #f8fafc;
-            border: 2px solid #e2e8f0;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
             cursor: pointer;
             text-align: center;
@@ -356,23 +392,27 @@
         }
         
         .timeline-option:hover {
-            border-color: #6366f1;
+            border-color: rgba(99, 102, 241, 0.5);
         }
         
         .timeline-option.selected {
             border-color: #6366f1;
-            background: rgba(99, 102, 241, 0.1);
+            background: rgba(99, 102, 241, 0.2);
         }
         
         .timeline-value {
             font-size: 1.5rem;
             font-weight: 700;
-            color: #6366f1;
+            color: #a5b4fc;
+        }
+        
+        .timeline-option.selected .timeline-value {
+            color: #fff;
         }
         
         .timeline-label {
             font-size: 0.875rem;
-            color: #6b7280;
+            color: #a5b4fc;
         }
         
         /* Wizard Navigation */
@@ -380,8 +420,8 @@
             display: flex;
             justify-content: space-between;
             padding: 1.5rem 2.5rem;
-            border-top: 1px solid #e2e8f0;
-            background: #f8fafc;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(15, 23, 42, 0.5);
         }
         
         .btn-wizard {
@@ -398,12 +438,14 @@
         }
         
         .btn-back {
-            background: #e2e8f0;
-            color: #64748b;
+            background: rgba(255, 255, 255, 0.1);
+            color: #a5b4fc;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
         .btn-back:hover {
-            background: #d1d5db;
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
         }
         
         .btn-next {
@@ -435,7 +477,7 @@
         }
         
         .summary-item {
-            background: #f8fafc;
+            background: rgba(99, 102, 241, 0.1);
             padding: 1rem;
             border-radius: 12px;
             border-left: 4px solid #6366f1;
@@ -443,7 +485,7 @@
         
         .summary-label {
             font-size: 0.75rem;
-            color: #6b7280;
+            color: #a5b4fc;
             text-transform: uppercase;
             font-weight: 600;
             margin-bottom: 0.25rem;
@@ -451,7 +493,7 @@
         
         .summary-value {
             font-weight: 600;
-            color: #1f2937;
+            color: #fff;
         }
         
         /* Generated Plan */
@@ -478,8 +520,12 @@
         .plan-title {
             font-size: 1.75rem;
             font-weight: 700;
-            color: #1f2937;
+            color: #fff;
             margin-bottom: 0.5rem;
+        }
+        
+        .plan-header p {
+            color: #a5b4fc;
         }
         
         /* Roadmap */
@@ -503,16 +549,18 @@
             position: relative;
             padding: 1.5rem;
             margin-bottom: 1.5rem;
-            background: white;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
             border-radius: 16px;
-            border: 1px solid #e2e8f0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
             margin-left: 1.5rem;
             transition: all 0.3s ease;
         }
         
         .roadmap-item:hover {
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.2);
             transform: translateX(5px);
+            background: rgba(255, 255, 255, 0.08);
         }
         
         .roadmap-item::before {
@@ -524,13 +572,13 @@
             height: 16px;
             background: #6366f1;
             border-radius: 50%;
-            border: 3px solid white;
+            border: 3px solid #1e1b4b;
             box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
         }
         
         .roadmap-phase {
             font-size: 0.75rem;
-            color: #6366f1;
+            color: #a5b4fc;
             font-weight: 600;
             text-transform: uppercase;
             margin-bottom: 0.5rem;
@@ -539,12 +587,12 @@
         .roadmap-title {
             font-size: 1.1rem;
             font-weight: 600;
-            color: #1f2937;
+            color: #fff;
             margin-bottom: 0.5rem;
         }
         
         .roadmap-description {
-            color: #6b7280;
+            color: #a5b4fc;
             font-size: 0.95rem;
             margin-bottom: 1rem;
         }
@@ -556,11 +604,11 @@
         }
         
         .roadmap-task {
-            background: #f1f5f9;
+            background: rgba(99, 102, 241, 0.2);
             padding: 0.5rem 1rem;
             border-radius: 20px;
             font-size: 0.85rem;
-            color: #475569;
+            color: #c7d2fe;
         }
         
         /* Plan Actions */
@@ -585,21 +633,24 @@
         }
         
         .btn-download {
-            background: #6366f1;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
             color: white;
         }
         
         .btn-download:hover {
-            background: #4f46e5;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
         }
         
         .btn-restart {
-            background: #e2e8f0;
-            color: #64748b;
+            background: rgba(255, 255, 255, 0.1);
+            color: #a5b4fc;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
         .btn-restart:hover {
-            background: #d1d5db;
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
         }
         
         /* Loading State */
@@ -610,7 +661,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(15, 23, 42, 0.95);
             z-index: 1000;
             justify-content: center;
             align-items: center;
@@ -625,7 +676,7 @@
         .loading-spinner {
             width: 60px;
             height: 60px;
-            border: 4px solid #e2e8f0;
+            border: 4px solid rgba(255, 255, 255, 0.1);
             border-top-color: #6366f1;
             border-radius: 50%;
             animation: spin 1s linear infinite;
@@ -637,7 +688,7 @@
         
         .loading-text {
             font-size: 1.1rem;
-            color: #6b7280;
+            color: #a5b4fc;
         }
         
         /* Responsive */
@@ -661,10 +712,14 @@
             .btn-wizard {
                 padding: 0.75rem 1.25rem;
             }
+            
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
-<body class="hr-coach-page">
+<body class="starry-theme">
     <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">
@@ -697,6 +752,17 @@
                 <div class="hero-badge">
                     <i class="fas fa-robot"></i>
                     <span>KI-gestützte Beratung</span>
+                </div>
+                
+                <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                    <a href="hr-coach-framework.html" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 1rem 2rem; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; text-decoration: none; border-radius: 12px; font-weight: 600; transition: all 0.3s ease;">
+                        <i class="fas fa-th-large"></i>
+                        HR Coach Framework
+                    </a>
+                    <a href="hr-selbsttest.html" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 1rem 2rem; background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #1e1b4b; text-decoration: none; border-radius: 12px; font-weight: 600; transition: all 0.3s ease;">
+                        <i class="fas fa-smile"></i>
+                        HR Selbsttest starten
+                    </a>
                 </div>
             </div>
         </div>
@@ -906,7 +972,7 @@
                     </div>
                     
                     <div style="margin-top: 2rem;">
-                        <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">Verfügbare Ressourcen</h3>
+                        <h3 style="font-size: 1.1rem; margin-bottom: 1rem; color: #fff;">Verfügbare Ressourcen</h3>
                         <div class="options-grid" style="grid-template-columns: repeat(3, 1fr);">
                             <div class="option-card" data-value="low" onclick="selectOption(this, 'resources')">
                                 <div class="option-title">Begrenzt</div>
@@ -952,7 +1018,7 @@
                     <div class="generated-plan" id="generatedPlan">
                         <div class="plan-header">
                             <h3 class="plan-title">Ihr HR-Coachingplan</h3>
-                            <p style="color: #6b7280;">Basierend auf Ihren Angaben haben wir folgenden Plan erstellt:</p>
+                            <p>Basierend auf Ihren Angaben haben wir folgenden Plan erstellt:</p>
                         </div>
                         
                         <div class="roadmap" id="roadmapContent">
@@ -996,6 +1062,7 @@
     <!-- Scripts -->
     <script src="js/aws-config.js"></script>
     <script src="js/global-api-manager.js"></script>
+    <script src="js/shooting-stars.js"></script>
     <script>
         // Wizard State
         let currentStep = 1;
@@ -1225,6 +1292,24 @@
                     { title: 'Toolauswahl & Architektur', description: 'Auswahl und Planung der HR-Systeme', tasks: ['RFP-Prozess', 'Vendor-Auswahl', 'Integrationskonzept'] },
                     { title: 'Implementierung', description: 'Technische Umsetzung und Migration', tasks: ['Datenmigration', 'Konfiguration', 'Testing'] },
                     { title: 'Adoption & Optimierung', description: 'Sicherstellung der Nutzerakzeptanz', tasks: ['Training', 'Change Management', 'Continuous Improvement'] }
+                ],
+                onboarding: [
+                    { title: 'Onboarding-Analyse', description: 'Bewertung des aktuellen Onboarding-Prozesses', tasks: ['Prozess-Mapping', 'Feedback-Analyse', 'Benchmark'] },
+                    { title: 'Journey Design', description: 'Entwicklung einer modernen Onboarding-Journey', tasks: ['Touchpoint-Design', 'Content-Erstellung', 'Automatisierung'] },
+                    { title: 'Tooling & Systeme', description: 'Implementierung von Onboarding-Tools', tasks: ['Tool-Auswahl', 'Integration', 'Testing'] },
+                    { title: 'Rollout & Optimierung', description: 'Einführung und kontinuierliche Verbesserung', tasks: ['Pilotierung', 'Feedback-Loop', 'Iteration'] }
+                ],
+                performance: [
+                    { title: 'Performance-Framework', description: 'Entwicklung eines modernen Performance-Systems', tasks: ['Kompetenzmodell', 'Zielvereinbarungen', 'OKRs'] },
+                    { title: 'Feedback-Kultur', description: 'Etablierung einer kontinuierlichen Feedback-Kultur', tasks: ['360°-Feedback', 'Check-ins', 'Peer-Feedback'] },
+                    { title: 'Tooling', description: 'Implementierung von Performance-Management-Tools', tasks: ['Tool-Auswahl', 'Konfiguration', 'Schulung'] },
+                    { title: 'Verankerung', description: 'Nachhaltige Integration in die Unternehmenskultur', tasks: ['Leadership-Training', 'Change-Begleitung', 'Review'] }
+                ],
+                development: [
+                    { title: 'Learning-Strategie', description: 'Entwicklung einer umfassenden Lernstrategie', tasks: ['Bedarfsanalyse', 'Kompetenz-Mapping', 'Lernpfade'] },
+                    { title: 'Content & Formate', description: 'Aufbau von Lerninhalten und -formaten', tasks: ['E-Learning', 'Microlearning', 'Blended Learning'] },
+                    { title: 'LMS & Plattformen', description: 'Implementierung von Lernplattformen', tasks: ['LMS-Auswahl', 'Content-Integration', 'Rollout'] },
+                    { title: 'Lernkultur', description: 'Etablierung einer lernenden Organisation', tasks: ['Mentoring', 'Communities', 'Knowledge Sharing'] }
                 ]
             };
             

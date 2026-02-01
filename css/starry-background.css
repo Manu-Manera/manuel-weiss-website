@@ -1,0 +1,257 @@
+/* 
+ * Starry Background with Twinkling Stars and Shooting Stars
+ * Include this CSS file in any page that needs the dark starry theme
+ */
+
+/* Dark gradient background */
+.starry-bg,
+body.starry-theme {
+    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%) !important;
+    min-height: 100vh;
+    position: relative;
+}
+
+/* Twinkling Stars Layer */
+.starry-bg::before,
+body.starry-theme::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        /* Bright stars */
+        radial-gradient(2px 2px at 20px 30px, rgba(255,255,255,0.9), transparent),
+        radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.7), transparent),
+        radial-gradient(1px 1px at 90px 40px, rgba(255,255,255,1), transparent),
+        radial-gradient(2px 2px at 160px 120px, rgba(255,255,255,0.8), transparent),
+        radial-gradient(1px 1px at 230px 80px, rgba(255,255,255,0.6), transparent),
+        radial-gradient(2px 2px at 300px 160px, rgba(255,255,255,0.9), transparent),
+        radial-gradient(1px 1px at 380px 50px, rgba(255,255,255,0.7), transparent),
+        radial-gradient(2px 2px at 420px 180px, rgba(255,255,255,0.8), transparent),
+        /* Medium stars */
+        radial-gradient(1.5px 1.5px at 100px 200px, rgba(255,255,255,0.6), transparent),
+        radial-gradient(1.5px 1.5px at 200px 250px, rgba(255,255,255,0.5), transparent),
+        radial-gradient(1px 1px at 350px 100px, rgba(255,255,255,0.7), transparent),
+        radial-gradient(1.5px 1.5px at 450px 220px, rgba(255,255,255,0.6), transparent),
+        /* Dim stars */
+        radial-gradient(1px 1px at 50px 150px, rgba(255,255,255,0.4), transparent),
+        radial-gradient(1px 1px at 150px 300px, rgba(255,255,255,0.3), transparent),
+        radial-gradient(1px 1px at 280px 50px, rgba(255,255,255,0.5), transparent),
+        radial-gradient(1px 1px at 480px 120px, rgba(255,255,255,0.4), transparent);
+    background-size: 500px 350px;
+    animation: twinkle 4s ease-in-out infinite alternate;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Additional star layer with different timing */
+.starry-bg::after,
+body.starry-theme::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        radial-gradient(1px 1px at 70px 90px, rgba(255,255,255,0.8), transparent),
+        radial-gradient(2px 2px at 180px 40px, rgba(255,255,255,0.6), transparent),
+        radial-gradient(1px 1px at 260px 180px, rgba(255,255,255,0.9), transparent),
+        radial-gradient(1.5px 1.5px at 340px 280px, rgba(255,255,255,0.5), transparent),
+        radial-gradient(2px 2px at 440px 60px, rgba(255,255,255,0.7), transparent),
+        radial-gradient(1px 1px at 120px 240px, rgba(255,255,255,0.6), transparent),
+        radial-gradient(1.5px 1.5px at 400px 160px, rgba(255,255,255,0.8), transparent);
+    background-size: 600px 400px;
+    animation: twinkle2 5s ease-in-out infinite alternate-reverse;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Twinkling animation - main stars */
+@keyframes twinkle {
+    0% { opacity: 0.5; }
+    25% { opacity: 0.8; }
+    50% { opacity: 1; }
+    75% { opacity: 0.7; }
+    100% { opacity: 0.6; }
+}
+
+/* Twinkling animation - secondary stars (offset timing) */
+@keyframes twinkle2 {
+    0% { opacity: 0.6; }
+    30% { opacity: 0.9; }
+    60% { opacity: 0.5; }
+    100% { opacity: 0.8; }
+}
+
+/* Shooting Stars Container */
+.shooting-stars {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 1;
+    overflow: hidden;
+}
+
+/* Individual Shooting Star - Rare and Beautiful */
+.shooting-star {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    background: #fff;
+    border-radius: 50%;
+    opacity: 0;
+    filter: blur(0px);
+}
+
+/* Shooting star glowing trail */
+.shooting-star::before {
+    content: '';
+    position: absolute;
+    width: 150px;
+    height: 2px;
+    background: linear-gradient(90deg, 
+        rgba(255,255,255,1) 0%, 
+        rgba(165,180,252,0.8) 20%, 
+        rgba(139,92,246,0.5) 50%, 
+        transparent 100%);
+    transform: translateX(-150px) translateY(0.5px);
+    border-radius: 2px;
+    filter: blur(0.5px);
+}
+
+/* Glowing head */
+.shooting-star::after {
+    content: '';
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(165,180,252,0.5) 50%, transparent 100%);
+    border-radius: 50%;
+    transform: translate(-1.5px, -1.5px);
+    filter: blur(1px);
+}
+
+/* Only 3 shooting stars with VERY long delays - rare appearance */
+.shooting-star:nth-child(1) {
+    top: 8%;
+    left: -5%;
+    animation: shooting-star-fly 2s ease-out 12s infinite;
+}
+
+.shooting-star:nth-child(2) {
+    top: 20%;
+    left: 10%;
+    animation: shooting-star-fly 2.2s ease-out 35s infinite;
+}
+
+.shooting-star:nth-child(3) {
+    top: 35%;
+    left: -8%;
+    animation: shooting-star-fly 1.8s ease-out 58s infinite;
+}
+
+/* Hide extra shooting stars */
+.shooting-star:nth-child(n+4) {
+    display: none;
+}
+
+/* Shooting star animation - smooth fly across */
+@keyframes shooting-star-fly {
+    0% {
+        opacity: 0;
+        transform: translateX(0) translateY(0) rotate(35deg) scale(0.5);
+    }
+    2% {
+        opacity: 1;
+        transform: translateX(20px) translateY(15px) rotate(35deg) scale(1);
+    }
+    20% {
+        opacity: 1;
+    }
+    60% {
+        opacity: 0.8;
+        transform: translateX(400px) translateY(300px) rotate(35deg) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translateX(600px) translateY(450px) rotate(35deg) scale(0.3);
+    }
+}
+
+/* Navbar styling for dark theme */
+.starry-theme .navbar,
+.starry-bg .navbar {
+    background: rgba(15, 23, 42, 0.8) !important;
+    backdrop-filter: blur(20px) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Content should be above stars */
+.starry-theme .container,
+.starry-theme main,
+.starry-theme section,
+.starry-theme .detail-container,
+.starry-theme .workflow-container,
+.starry-bg .container,
+.starry-bg main,
+.starry-bg section {
+    position: relative;
+    z-index: 2;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+    .starry-bg::before,
+    body.starry-theme::before {
+        background-size: 300px 200px;
+    }
+    
+    .starry-bg::after,
+    body.starry-theme::after {
+        background-size: 350px 250px;
+    }
+    
+    .shooting-star::before {
+        width: 60px;
+        transform: translateX(-60px) translateY(1px);
+    }
+    
+    @keyframes shooting-star {
+        0% {
+            opacity: 0;
+            transform: translateX(0) translateY(0) rotate(45deg);
+        }
+        5% {
+            opacity: 1;
+        }
+        30% {
+            opacity: 1;
+            transform: translateX(150px) translateY(150px) rotate(45deg);
+        }
+        100% {
+            opacity: 0;
+            transform: translateX(250px) translateY(250px) rotate(45deg);
+        }
+    }
+}
+
+/* Reduced motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+    .starry-bg::before,
+    .starry-bg::after,
+    body.starry-theme::before,
+    body.starry-theme::after {
+        animation: none;
+        opacity: 0.7;
+    }
+    
+    .shooting-star {
+        display: none;
+    }
+}

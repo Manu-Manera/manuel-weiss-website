@@ -1,0 +1,22 @@
+{
+  "version": "1.0",
+  "processes": [
+    { "id": "recruiting", "name": "Recruiting & Workforce Planning", "icon": "fa-user-plus", "color": "#6366f1", "description": "Stellenausschreibungen, Bewerbermanagement, Workforce Planning" },
+    { "id": "onboarding", "name": "On- & Offboarding", "icon": "fa-handshake", "color": "#8b5cf6", "description": "Einarbeitung neuer Mitarbeitender und Austrittsprozesse" },
+    { "id": "stammdaten", "name": "Stammdatenmanagement", "icon": "fa-database", "color": "#06b6d4", "description": "Organisations- und Mitarbeiterstammdaten" },
+    { "id": "zeiterfassung", "name": "Zeiterfassung", "icon": "fa-clock", "color": "#10b981", "description": "Arbeitszeiterfassung und Dienstplanung" },
+    { "id": "salaeradmin", "name": "Saläradministration & PK", "icon": "fa-money-bill-wave", "color": "#f59e0b", "description": "Lohnbuchhaltung und Pensionskasse" },
+    { "id": "reisen", "name": "Reisen & Spesen", "icon": "fa-plane", "color": "#ef4444", "description": "Reisekostenabrechnung und Spesenmanagement" },
+    { "id": "performance", "name": "Performance Management", "icon": "fa-chart-line", "color": "#ec4899", "description": "Mitarbeitergespräche und Leistungsbeurteilung" },
+    { "id": "verguetung", "name": "Vergütung", "icon": "fa-coins", "color": "#84cc16", "description": "Lohn- und Bonusplanung" },
+    { "id": "lernen", "name": "Lernen & Entwickeln", "icon": "fa-graduation-cap", "color": "#14b8a6", "description": "Weiterbildung und E-Learning" },
+    { "id": "nachfolge", "name": "Nachfolgeplanung", "icon": "fa-users-cog", "color": "#a855f7", "description": "Talentmanagement und Succession Planning" },
+    { "id": "zeugnis", "name": "Arbeits- & Zwischenzeugnis", "icon": "fa-file-alt", "color": "#f97316", "description": "Zeugniserstellung und -verwaltung" },
+    { "id": "kommunikation", "name": "Kommunikation", "icon": "fa-bullhorn", "color": "#0ea5e9", "description": "Interne HR-Kommunikation" },
+    { "id": "portal", "name": "HR Portal", "icon": "fa-globe", "color": "#22c55e", "description": "Mitarbeiter Self-Service Portal" },
+    { "id": "analytics", "name": "Reporting & Analytics", "icon": "fa-chart-bar", "color": "#eab308", "description": "HR-Kennzahlen und Auswertungen" },
+    { "id": "dokumente", "name": "Dokumentenmanagement", "icon": "fa-folder-open", "color": "#64748b", "description": "Digitale Personalakten" },
+    { "id": "wellbeing", "name": "Wellbeing / BGM", "icon": "fa-heart", "color": "#dc2626", "description": "Betriebliches Gesundheitsmanagement" },
+    { "id": "external", "name": "Ext. Workforce Management", "icon": "fa-user-tie", "color": "#7c3aed", "description": "Externe Mitarbeitende und Freelancer" }
+  ]
+}

@@ -415,18 +415,18 @@ a:hover {
 }
 
 .nav-container {
-    max-width: 900px;
+    max-width: 1100px; /* Breiter für bessere Lesbarkeit */
     margin: 0 auto;
-    padding: 0.5rem 1.5rem;
+    padding: 0.6rem 2rem; /* Mehr Padding */
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: var(--spacing-lg);
-    background: rgba(255, 255, 255, 0.75);
+    background: rgba(255, 255, 255, 0.85); /* Etwas weniger transparent */
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-radius: 999px;
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.08);
     border: none;
     pointer-events: auto;
 }
@@ -1887,11 +1887,12 @@ a:hover {
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
     display: flex;
     flex-direction: column;
-    height: 440px; /* Feste Höhe für alle Kacheln - erhöht für bessere Lesbarkeit */
+    min-height: 440px; /* Mindesthöhe, kann wachsen wenn mehr Inhalt */
+    height: auto; /* Automatische Höhe basierend auf Inhalt */
     position: relative;
     z-index: 200 !important; /* Über den Schneeflocken (z-index: 100) */
     cursor: pointer;
-    overflow: hidden;
+    overflow: visible; /* Inhalt nicht abschneiden */
 }
 
 /* Icon bei Hover für Kacheln mit Badge (NEU) - bleibt lila statt weiß */
@@ -1935,34 +1936,95 @@ a:hover {
     z-index: 2;
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   SERVICE CARD HOVER - FLÜSSIGGLAS-EFFEKT MIT SCHIMMER
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Schimmer-Animation für Glaseffekt */
+@keyframes liquidGlassShine {
+    0% {
+        transform: translateX(-100%) skewX(-15deg);
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(200%) skewX(-15deg);
+        opacity: 0;
+    }
+}
+
+/* Pseudo-Element für Schimmer vorbereiten */
+.service-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.15),
+        rgba(255, 255, 255, 0.25),
+        rgba(255, 255, 255, 0.15),
+        transparent
+    );
+    transform: translateX(-100%) skewX(-15deg);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 10;
+    border-radius: inherit;
+}
+
 .service-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-    border-color: var(--primary);
-    background: var(--white);
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 
+        0 25px 50px rgba(0, 0, 0, 0.2),
+        0 0 60px rgba(99, 102, 241, 0.25),
+        0 0 100px rgba(139, 92, 246, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+    border-color: rgba(139, 92, 246, 0.6);
+    /* Subtiler Glaseffekt: leicht aufgehellt, aber nicht weiß */
+    background: rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(25px) saturate(1.2);
+    -webkit-backdrop-filter: blur(25px) saturate(1.2);
+}
+
+/* Schimmer-Animation beim Hover */
+.service-card:hover::after {
+    animation: liquidGlassShine 0.8s ease-out forwards;
 }
 
 .service-card:hover .service-icon {
-    transform: scale(1.05);
-    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+    transform: scale(1.1);
+    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.5);
+    background: linear-gradient(135deg, var(--primary), #8b5cf6);
 }
 
 .service-card:hover h3 {
-    color: var(--primary);
+    /* Titel bleibt hell lesbar, mit subtiler Glow */
+    color: #ffffff;
+    text-shadow: 0 0 20px rgba(199, 210, 254, 0.5), 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .service-card:hover p {
-    /* Wenn die Karte weiss wird, Text in dunklem Lila für Lesbarkeit */
-    color: var(--primary-dark) !important;
+    /* Text bleibt hell lesbar auf Glaseffekt */
+    color: rgba(255, 255, 255, 0.95) !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .service-card:hover .service-features li {
-    color: var(--primary-dark) !important;
+    /* Features bleiben hell lesbar */
+    color: rgba(255, 255, 255, 0.9) !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
 }
 
 .service-card:hover .btn-primary {
-    background: linear-gradient(135deg, var(--primary-dark) 0%, #3730a3 100%);
-    box-shadow: 0 4px 16px rgba(99, 102, 241, 0.4);
+    background: linear-gradient(135deg, var(--primary) 0%, #7c3aed 100%);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
 }
 
 .service-cta {
@@ -1984,8 +2046,9 @@ a:hover {
 }
 
 .service-card:hover .service-cta {
-    /* Hover: Karte wird weiß, Text wird dunkellila für gute Lesbarkeit */
-    color: var(--primary-dark);
+    /* Hover: Glaseffekt – Text bleibt hell mit Glow */
+    color: #c7d2fe;
+    text-shadow: 0 0 15px rgba(199, 210, 254, 0.6);
     transform: translateX(4px);
 }
 
@@ -2049,18 +2112,25 @@ a:hover {
 
 .service-features li {
     padding: var(--spacing-xs) 0;
+    padding-left: 1.5rem; /* Mehr Platz für Häkchen */
     color: var(--gray-700);
     position: relative;
-    padding-left: var(--spacing-lg);
     transition: color 0.3s ease;
     font-weight: 500;
+    z-index: 1;
 }
 
 /* Services Section Features */
 .services .service-features li {
-    color: rgba(255, 255, 255, 0.85);
+    color: rgba(255, 255, 255, 0.95);
     position: relative;
     z-index: 1;
+    padding-left: 1.5rem; /* Platz für Häkchen */
+}
+
+.services .service-features li::before {
+    color: #34d399; /* Helleres Grün für bessere Sichtbarkeit */
+    z-index: 5;
 }
 
 /* Custom Inputs */
@@ -2199,10 +2269,13 @@ a:hover {
     content: '✓';
     position: absolute;
     left: 0;
+    top: 50%;
+    transform: translateY(-50%);
     color: var(--success);
     font-weight: 600;
     font-size: 1.1em;
     text-shadow: 0 1px 2px rgba(16, 185, 129, 0.2);
+    z-index: 5; /* Häkchen VOR dem Text */
 }
 
 /* About Section */
@@ -2612,11 +2685,16 @@ a:hover {
 
 /* Leichte „Schneeschicht“ auf Karten-Elementen */
 .stat-card,
-.service-card,
 .highlight-item,
 .activity-card {
     position: relative;
     overflow: hidden;
+}
+
+/* Service-Card: overflow visible für vollständige Inhalte */
+.service-card {
+    position: relative;
+    overflow: visible !important;
 }
 
 .stat-card::before,
@@ -3409,7 +3487,7 @@ a:hover {
     color: white;
     transform: scale(1.02);
     box-shadow: 0 20px 40px rgba(102, 126, 234, 0.2);
-    overflow: hidden;
+    overflow: visible !important; /* Inhalt nicht abschneiden */
 }
 
 .service-card.modern-highlight::before {
@@ -3424,18 +3502,20 @@ a:hover {
     pointer-events: none;
 }
 
-/* Modern-highlight Kacheln: Gleicher Hover-Effekt wie alte Kacheln */
+/* Modern-highlight Kacheln: Glaseffekt Hover */
 .service-card.modern-highlight:hover {
-    transform: translateY(-4px) !important; /* Gleicher Effekt wie alte Kacheln */
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1) !important;
-    border-color: var(--primary) !important;
-    background: var(--white) !important; /* Weißer Hintergrund wie alte Kacheln */
+    transform: translateY(-6px) scale(1.02) !important;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2), 0 0 50px rgba(99, 102, 241, 0.25), inset 0 0 80px rgba(255, 255, 255, 0.1) !important;
+    border-color: rgba(99, 102, 241, 0.6) !important;
+    background: rgba(255, 255, 255, 0.18) !important;
+    backdrop-filter: blur(25px) saturate(1.2) !important;
+    -webkit-backdrop-filter: blur(25px) saturate(1.2) !important;
 }
 
 .service-card.modern-highlight:hover h3 {
-    color: var(--primary) !important; /* Dunkellila wie alte Kacheln */
-    text-shadow: none !important; /* Kein Glow-Effekt */
-    animation: none !important; /* Keine Animation */
+    color: #c7d2fe !important;
+    text-shadow: 0 0 30px rgba(199, 210, 254, 0.4) !important;
+    animation: none !important;
 }
 
 @keyframes titleGlowPulse {
@@ -3537,27 +3617,27 @@ a:hover {
 }
 
 .service-card.modern-highlight:hover p {
-    /* Wenn die Karte weiss wird, Text in dunklem Lila für Lesbarkeit */
-    color: var(--primary-dark) !important;
+    /* Glaseffekt: Text bleibt hell lesbar */
+    color: rgba(255, 255, 255, 0.95) !important;
 }
 
 .service-card.modern-highlight:hover .service-features li {
-    /* Beim Hover: dunkellila wie alte Kacheln */
-    color: var(--primary-dark) !important;
-    text-shadow: none !important; /* Kein Glow-Effekt */
+    /* Glaseffekt: Features bleiben hell */
+    color: rgba(255, 255, 255, 0.9) !important;
+    text-shadow: none !important;
 }
 
 .service-card.modern-highlight:hover .service-icon {
-    transform: scale(1.05) !important; /* Gleicher Effekt wie alte Kacheln */
-    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3) !important;
+    transform: scale(1.1) !important;
+    box-shadow: 0 12px 30px rgba(99, 102, 241, 0.5) !important;
 }
 
 .service-card.modern-highlight:hover .btn-primary,
 .service-card.modern-highlight:hover .modern-btn {
-    background: linear-gradient(135deg, var(--primary-dark) 0%, #3730a3 100%) !important;
-    box-shadow: 0 4px 16px rgba(99, 102, 241, 0.4) !important;
+    background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%) !important;
+    box-shadow: 0 6px 25px rgba(99, 102, 241, 0.6) !important;
     color: var(--white) !important;
-    border-color: var(--primary-dark) !important;
+    border-color: rgba(139, 92, 246, 0.5) !important;
 }
 
 /* ============================================

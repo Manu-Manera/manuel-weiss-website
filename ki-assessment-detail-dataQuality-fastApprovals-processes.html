@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digitalisierte HR-Prozesse - Schnelle Freigaben Assessment - Manuel Weiss</title>
+    
+    <meta name="description" content="Interaktive Bewertung der digitalisierten HR-Prozesse für Premium KI-Readiness Assessment.">
+    <meta name="author" content="Manuel Weiss">
+    
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #667eea;
+            --primary-dark: #5a67d8;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: 100vh;
+        }
+        
+        .assessment-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .detail-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2.5rem 2rem;
+            border-radius: 20px;
+            margin-bottom: 2rem;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+        }
+        
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(-4px);
+        }
+        
+        .detail-header h1 {
+            font-size: 2.25rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+        
+        .detail-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .premium-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #1f2937;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-top: 1rem;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+        
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Ring Diagram Section */
+        .ring-section {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+        
+        .ring-section h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+        
+        .ring-section > p {
+            color: #6b7280;
+            margin-bottom: 1.5rem;
+        }
+        
+        .ring-container {
+            position: relative;
+            width: 100%;
+            max-width: 450px;
+            margin: 0 auto;
+            aspect-ratio: 1;
+        }
+        
+        .ring-svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+        
+        .ring-segment {
+            fill: none;
+            stroke-width: 35;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            stroke-linecap: round;
+        }
+        
+        .ring-segment:hover {
+            stroke-width: 42;
+            filter: drop-shadow(0 4px 12px rgba(0,0,0,0.2));
+        }
+        
+        .ring-segment.selected {
+            stroke-width: 42;
+        }
+        
+        .ring-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            background: white;
+            border-radius: 50%;
+            width: 55%;
+            height: 55%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .ring-center-percentage {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .ring-center-label {
+            font-size: 0.9rem;
+            color: #6b7280;
+            font-weight: 500;
+        }
+        
+        .ring-legend {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+        }
+        
+        .legend-item:hover {
+            background: #f8fafc;
+        }
+        
+        .legend-item.selected {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: var(--primary);
+        }
+        
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+        
+        .legend-text {
+            font-size: 0.8rem;
+            color: #374151;
+            font-weight: 500;
+        }
+        
+        /* Process Selection Section */
+        .process-section {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+        
+        .process-section h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+        
+        .process-section > p {
+            color: #6b7280;
+            margin-bottom: 1.5rem;
+        }
+        
+        .process-category {
+            margin-bottom: 1.5rem;
+        }
+        
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            border-radius: 10px;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .category-header:hover {
+            background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+        }
+        
+        .category-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1rem;
+        }
+        
+        .category-title {
+            flex: 1;
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .category-count {
+            font-size: 0.8rem;
+            padding: 0.25rem 0.75rem;
+            background: var(--primary);
+            color: white;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        
+        .process-list {
+            display: grid;
+            gap: 0.5rem;
+            padding-left: 0.5rem;
+        }
+        
+        .process-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            background: #fafafa;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+        }
+        
+        .process-item:hover {
+            background: #f0f0f0;
+        }
+        
+        .process-item.selected {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: var(--success);
+        }
+        
+        .process-checkbox {
+            width: 22px;
+            height: 22px;
+            border: 2px solid #d1d5db;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+        
+        .process-item.selected .process-checkbox {
+            background: var(--success);
+            border-color: var(--success);
+            color: white;
+        }
+        
+        .process-name {
+            flex: 1;
+            font-size: 0.9rem;
+            color: #374151;
+        }
+        
+        /* Comment Section */
+        .comment-section {
+            grid-column: 1 / -1;
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+        
+        .comment-section h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .comment-section > p {
+            color: #6b7280;
+            margin-bottom: 1rem;
+        }
+        
+        .comment-textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 1rem;
+            resize: vertical;
+            transition: all 0.3s ease;
+        }
+        
+        .comment-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+        
+        .comment-hint {
+            font-size: 0.8rem;
+            color: #9ca3af;
+            margin-top: 0.5rem;
+        }
+        
+        /* Save Section */
+        .save-section {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            color: white;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+        }
+        
+        .score-preview {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .score-item {
+            text-align: center;
+        }
+        
+        .score-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+        }
+        
+        .score-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .save-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 2.5rem;
+            background: white;
+            color: var(--primary);
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .save-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="manuel-weiss-portrait.jpg" alt="MW" class="nav-logo">
+                <span class="nav-name">Manuel Weiss</span>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="ki-strategieentwicklung.html" class="nav-link">KI-Strategieentwicklung</a>
+                <a href="index.html#contact" class="nav-link">Kontakt</a>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="assessment-container">
+        <div class="detail-header">
+            <a href="ki-assessment-detail-dataQuality-noLongProcesses.html" class="back-button">
+                <i class="fas fa-arrow-left"></i>
+                Zurück zu Schnelle Freigaben
+            </a>
+            <h1><i class="fas fa-cogs"></i> Digitalisierte HR-Prozesse</h1>
+            <p>Wählen Sie alle HR-Prozesse aus, die bereits digitalisiert sind</p>
+            <div class="premium-badge">
+                <i class="fas fa-crown"></i>
+                Premium Assessment
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <!-- Ring Diagram -->
+            <div class="ring-section">
+                <h2>HR-Prozess Digitalisierungsgrad</h2>
+                <p>Klicken Sie auf die Segmente oder wählen Sie Prozesse rechts aus</p>
+                
+                <div class="ring-container">
+                    <svg class="ring-svg" viewBox="0 0 200 200" id="ringChart">
+                        <!-- Segments will be generated by JavaScript -->
+                    </svg>
+                    <div class="ring-center">
+                        <div class="ring-center-percentage" id="totalPercentage">0%</div>
+                        <div class="ring-center-label">Digitalisiert</div>
+                    </div>
+                </div>
+                
+                <div class="ring-legend" id="ringLegend">
+                    <!-- Legend items will be generated by JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Process Selection -->
+            <div class="process-section">
+                <h2>HR-Bereiche</h2>
+                <p>Aktivieren Sie die digitalisierten Prozesse</p>
+                
+                <div id="processCategories">
+                    <!-- Process categories will be generated by JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Comment Section -->
+            <div class="comment-section">
+                <h2><i class="fas fa-comment-alt"></i> Anmerkungen zum Report</h2>
+                <p>Ihre Kommentare werden in den Premium-Report aufgenommen und helfen bei der individuellen Beratung.</p>
+                <textarea class="comment-textarea" id="assessmentComment" placeholder="Beschreiben Sie den aktuellen Stand der Digitalisierung, besondere Herausforderungen oder geplante Projekte..."></textarea>
+                <div class="comment-hint">Diese Informationen fließen in Ihren individuellen Premium-Report ein.</div>
+            </div>
+            
+            <!-- Save Section -->
+            <div class="save-section">
+                <div class="score-preview">
+                    <div class="score-item">
+                        <div class="score-value" id="selectedCount">0</div>
+                        <div class="score-label">Prozesse digitalisiert</div>
+                    </div>
+                    <div class="score-item">
+                        <div class="score-value" id="calculatedScore">1.0</div>
+                        <div class="score-label">Berechneter Score</div>
+                    </div>
+                </div>
+                <button class="save-button" onclick="saveAndReturn()">
+                    <i class="fas fa-save"></i>
+                    Bewertung speichern und übertragen
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // HR Process Categories based on the screenshot
+        const hrCategories = [
+            {
+                id: 'recruiting',
+                name: 'Recruiting & Onboarding',
+                color: '#6366f1',
+                icon: 'fa-user-plus',
+                processes: [
+                    'Bewerbermanagement',
+                    'Onboarding / Personaleintritt',
+                    'Anbindung Bewerbermanagement',
+                    'Digitaler Arbeitsvertrag'
+                ]
+            },
+            {
+                id: 'talent',
+                name: 'Talent & Performance',
+                color: '#8b5cf6',
+                icon: 'fa-star',
+                processes: [
+                    'Talentmanagement',
+                    'Performance Management',
+                    'Zielvereinbarungen',
+                    'Mitarbeitergespräche'
+                ]
+            },
+            {
+                id: 'development',
+                name: 'Aus- und Weiterbildung',
+                color: '#ec4899',
+                icon: 'fa-graduation-cap',
+                processes: [
+                    'Lernmanagement (LMS)',
+                    'Schulungsplanung',
+                    'Zertifikatsverwaltung',
+                    'E-Learning'
+                ]
+            },
+            {
+                id: 'compensation',
+                name: 'Vergütung & Benefits',
+                color: '#f59e0b',
+                icon: 'fa-coins',
+                processes: [
+                    'Gehaltsabrechnung',
+                    'Zulagen & Spesen',
+                    'Benefits Management',
+                    'Bonusabrechnung'
+                ]
+            },
+            {
+                id: 'admin',
+                name: 'HR Administration',
+                color: '#10b981',
+                icon: 'fa-folder-open',
+                processes: [
+                    'Digitaler Personaldossier',
+                    'Mutationen & Stammdaten',
+                    'Dokumentengenerierung',
+                    'Arbeitszeugnisse'
+                ]
+            },
+            {
+                id: 'time',
+                name: 'Zeit & Abwesenheit',
+                color: '#06b6d4',
+                icon: 'fa-clock',
+                processes: [
+                    'Zeitwirtschaft',
+                    'Anwesenheitsmanagement',
+                    'Urlaubsverwaltung',
+                    'Krankmeldungen'
+                ]
+            },
+            {
+                id: 'analytics',
+                name: 'People Analytics',
+                color: '#84cc16',
+                icon: 'fa-chart-line',
+                processes: [
+                    'HR Reporting',
+                    'HR Controlling',
+                    'Workforce Analytics',
+                    'Dashboards'
+                ]
+            },
+            {
+                id: 'offboarding',
+                name: 'Nachfolge & Offboarding',
+                color: '#ef4444',
+                icon: 'fa-user-minus',
+                processes: [
+                    'Nachfolgeplanung',
+                    'Karriereplanung',
+                    'Austrittsmanagement',
+                    'Offboarding Workflow'
+                ]
+            }
+        ];
+        
+        let selectedProcesses = {};
+        let comment = '';
+        
+        function initializeAssessment() {
+            // Load saved data
+            const saved = JSON.parse(localStorage.getItem('fastApprovalsProcesses') || '{}');
+            if (saved.selectedProcesses) {
+                selectedProcesses = saved.selectedProcesses;
+            }
+            if (saved.comment) {
+                comment = saved.comment;
+                document.getElementById('assessmentComment').value = comment;
+            }
+            
+            renderProcessCategories();
+            renderRingChart();
+            updateScores();
+        }
+        
+        function renderProcessCategories() {
+            const container = document.getElementById('processCategories');
+            container.innerHTML = hrCategories.map(category => {
+                const selectedInCategory = category.processes.filter(p => selectedProcesses[`${category.id}_${p}`]).length;
+                return `
+                    <div class="process-category">
+                        <div class="category-header" onclick="toggleCategory('${category.id}')">
+                            <div class="category-icon" style="background: ${category.color};">
+                                <i class="fas ${category.icon}"></i>
+                            </div>
+                            <div class="category-title">${category.name}</div>
+                            <div class="category-count">${selectedInCategory}/${category.processes.length}</div>
+                        </div>
+                        <div class="process-list" id="list-${category.id}">
+                            ${category.processes.map(process => {
+                                const key = `${category.id}_${process}`;
+                                const isSelected = selectedProcesses[key];
+                                return `
+                                    <div class="process-item ${isSelected ? 'selected' : ''}" onclick="toggleProcess('${category.id}', '${process}')">
+                                        <div class="process-checkbox">
+                                            ${isSelected ? '<i class="fas fa-check"></i>' : ''}
+                                        </div>
+                                        <div class="process-name">${process}</div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function toggleProcess(categoryId, process) {
+            const key = `${categoryId}_${process}`;
+            selectedProcesses[key] = !selectedProcesses[key];
+            renderProcessCategories();
+            renderRingChart();
+            updateScores();
+        }
+        
+        function renderRingChart() {
+            const svg = document.getElementById('ringChart');
+            const legend = document.getElementById('ringLegend');
+            
+            const cx = 100, cy = 100, r = 70;
+            const total = hrCategories.reduce((sum, cat) => sum + cat.processes.length, 0);
+            let currentAngle = 0;
+            
+            let svgContent = '';
+            let legendContent = '';
+            
+            hrCategories.forEach((category, index) => {
+                const selectedInCategory = category.processes.filter(p => selectedProcesses[`${category.id}_${p}`]).length;
+                const segmentSize = category.processes.length / total;
+                const segmentAngle = segmentSize * 360;
+                
+                // Calculate arc
+                const startAngle = currentAngle * Math.PI / 180;
+                const endAngle = (currentAngle + segmentAngle - 2) * Math.PI / 180;
+                
+                const x1 = cx + r * Math.cos(startAngle);
+                const y1 = cy + r * Math.sin(startAngle);
+                const x2 = cx + r * Math.cos(endAngle);
+                const y2 = cy + r * Math.sin(endAngle);
+                
+                const largeArc = segmentAngle > 180 ? 1 : 0;
+                
+                // Color based on selection
+                const opacity = selectedInCategory / category.processes.length;
+                const strokeColor = category.color;
+                
+                svgContent += `
+                    <path 
+                        class="ring-segment ${selectedInCategory === category.processes.length ? 'selected' : ''}"
+                        d="M ${x1} ${y1} A ${r} ${r} 0 ${largeArc} 1 ${x2} ${y2}"
+                        stroke="${strokeColor}"
+                        stroke-opacity="${0.3 + opacity * 0.7}"
+                        data-category="${category.id}"
+                    />
+                `;
+                
+                // Legend item
+                legendContent += `
+                    <div class="legend-item ${selectedInCategory === category.processes.length ? 'selected' : ''}" onclick="selectAllInCategory('${category.id}')">
+                        <div class="legend-color" style="background: ${category.color};"></div>
+                        <div class="legend-text">${category.name} (${selectedInCategory}/${category.processes.length})</div>
+                    </div>
+                `;
+                
+                currentAngle += segmentAngle;
+            });
+            
+            svg.innerHTML = svgContent;
+            legend.innerHTML = legendContent;
+        }
+        
+        function selectAllInCategory(categoryId) {
+            const category = hrCategories.find(c => c.id === categoryId);
+            if (!category) return;
+            
+            const allSelected = category.processes.every(p => selectedProcesses[`${categoryId}_${p}`]);
+            
+            category.processes.forEach(process => {
+                selectedProcesses[`${categoryId}_${process}`] = !allSelected;
+            });
+            
+            renderProcessCategories();
+            renderRingChart();
+            updateScores();
+        }
+        
+        function updateScores() {
+            const totalProcesses = hrCategories.reduce((sum, cat) => sum + cat.processes.length, 0);
+            const selectedCount = Object.values(selectedProcesses).filter(v => v).length;
+            const percentage = Math.round((selectedCount / totalProcesses) * 100);
+            
+            document.getElementById('totalPercentage').textContent = `${percentage}%`;
+            document.getElementById('selectedCount').textContent = selectedCount;
+            
+            // Calculate score (1-5 scale)
+            const score = (1 + (percentage / 100) * 4).toFixed(1);
+            document.getElementById('calculatedScore').textContent = score;
+        }
+        
+        function saveAndReturn() {
+            const totalProcesses = hrCategories.reduce((sum, cat) => sum + cat.processes.length, 0);
+            const selectedCount = Object.values(selectedProcesses).filter(v => v).length;
+            const percentage = selectedCount / totalProcesses;
+            const score = Math.round(1 + percentage * 4);
+            
+            // Save process data
+            const processData = {
+                selectedProcesses: selectedProcesses,
+                comment: document.getElementById('assessmentComment').value,
+                calculatedScore: score,
+                percentage: Math.round(percentage * 100),
+                timestamp: new Date().toISOString()
+            };
+            localStorage.setItem('fastApprovalsProcesses', JSON.stringify(processData));
+            
+            // Update parent assessment
+            let saved = JSON.parse(localStorage.getItem('kiDetailAssessments') || '{}');
+            if (!saved.dataQuality) saved.dataQuality = { criteria: {} };
+            if (!saved.dataQuality.criteria) saved.dataQuality.criteria = {};
+            if (!saved.dataQuality.criteria.dataAccessibility) saved.dataQuality.criteria.dataAccessibility = { subCriteria: {} };
+            if (!saved.dataQuality.criteria.dataAccessibility.subCriteria) saved.dataQuality.criteria.dataAccessibility.subCriteria = {};
+            if (!saved.dataQuality.criteria.dataAccessibility.subCriteria.noLongProcesses) {
+                saved.dataQuality.criteria.dataAccessibility.subCriteria.noLongProcesses = { subSubCriteria: {} };
+            }
+            
+            // Update the fastApprovals score
+            saved.dataQuality.criteria.dataAccessibility.subCriteria.noLongProcesses.subSubCriteria = 
+                saved.dataQuality.criteria.dataAccessibility.subCriteria.noLongProcesses.subSubCriteria || {};
+            saved.dataQuality.criteria.dataAccessibility.subCriteria.noLongProcesses.subSubCriteria.fastApprovals = score;
+            saved.dataQuality.criteria.dataAccessibility.subCriteria.noLongProcesses.processAssessment = processData;
+            
+            localStorage.setItem('kiDetailAssessments', JSON.stringify(saved));
+            
+            // Return to parent page
+            window.location.href = 'ki-assessment-detail-dataQuality-noLongProcesses.html';
+        }
+        
+        document.addEventListener('DOMContentLoaded', initializeAssessment);
+    </script>
+</body>
+</html>

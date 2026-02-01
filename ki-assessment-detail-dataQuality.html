@@ -12,23 +12,34 @@
     
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/starry-background.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <!-- Custom Styles for Detail Assessment -->
     <link rel="stylesheet" href="css/ki-assessment-detail.css">
     <style>
+        /* Dark Starry Theme Override */
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%) !important;
+            min-height: 100vh;
+        }
+        
         .detail-assessment-container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 2rem;
+            position: relative;
+            z-index: 2;
         }
         
         .detail-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: rgba(99, 102, 241, 0.2);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(99, 102, 241, 0.3);
             color: white;
             padding: 3rem 2rem;
-            border-radius: 16px;
+            border-radius: 24px;
             margin-bottom: 2rem;
             text-align: center;
         }
@@ -1048,9 +1059,9 @@
                 subCriteria: [
                     { 
                         id: 'selfServiceAccess', 
-                        title: 'Selbstbedienungszugriff für autorisierte Nutzer',
+                        title: 'Self-Service (ESS/MSS) für autorisierte Nutzer',
                         description: 'Können Nutzer selbstständig auf Daten zugreifen?',
-                        examples: ['Self-Service Portale', 'Benutzerfreundliche Interfaces', '24/7 Verfügbarkeit'],
+                        examples: ['Employee Self-Service (ESS)', 'Manager Self-Service (MSS)', '24/7 Verfügbarkeit'],
                         subSubCriteria: [
                             {
                                 id: 'selfServicePortals',
@@ -1122,7 +1133,7 @@
                         id: 'noLongProcesses', 
                         title: 'Keine langwierigen Genehmigungsprozesse',
                         description: 'Wie schnell ist der Datenzugriff genehmigt?',
-                        examples: ['Automatisierte Berechtigungen', 'Schnelle Freigaben', 'Selbstbedienung'],
+                        examples: ['Automatisierte Berechtigungen', 'Schnelle Freigaben', 'Self-Service (ESS/MSS)'],
                         subSubCriteria: [
                             {
                                 id: 'automatedPermissions',
@@ -1140,9 +1151,9 @@
                             },
                             {
                                 id: 'selfServiceApproval',
-                                title: 'Selbstbedienung für Standardfälle',
-                                description: 'Gibt es Selbstbedienung?',
-                                examples: ['Self-Service Requests', 'Automated Approval', 'Standard Access'],
+                                title: 'Self-Service (ESS/MSS) für Standardfälle',
+                                description: 'Gibt es Self-Service Prozesse?',
+                                examples: ['Employee Self-Service (ESS)', 'Manager Self-Service (MSS)', 'Automated Workflows'],
                                 bestPractices: ['DAMA: Self-Service', 'Gartner: Automated Workflows']
                             },
                             {

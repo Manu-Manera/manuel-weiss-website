@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recruiting & Employer Branding – HR Coach Framework | Manuel Weiss</title>
+    <meta name="description" content="Analyse Ihrer Talentgewinnung und Arbeitgebermarke.">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/starry-background.css">
+    <link rel="stylesheet" href="css/hr-coach-workflow.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        .hr-coach-workflow-header { background: rgba(6, 182, 212, 0.2); border-color: rgba(6, 182, 212, 0.3); }
+        .hr-coach-category-icon { background: linear-gradient(135deg, #06b6d4, #0ea5e9); }
+        .hr-coach-slider { accent-color: #06b6d4; }
+    </style>
+</head>
+<body class="starry-theme">
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand"><a href="index.html"><img src="manuel-weiss-portrait.jpg" alt="MW" class="nav-logo"><span class="nav-name">Manuel Weiss</span></a></div>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">Start</a>
+                <a href="hr-coach.html" class="nav-link">HR Coach</a>
+                <a href="hr-coach-framework.html" class="nav-link">HR Coach Framework</a>
+                <a href="index.html#contact" class="nav-link">Kontakt</a>
+            </div>
+        </div>
+    </nav>
+    <div class="workflow-wrap">
+        <a href="hr-coach-framework.html" class="hr-coach-back-link"><i class="fas fa-arrow-left"></i> Zurück zum HR Coach Framework</a>
+        <div class="hr-coach-workflow-header">
+            <h1><i class="fas fa-user-plus" style="margin-right:0.5rem;"></i>Recruiting & Employer Branding</h1>
+            <p>Bewerten Sie Ihre Talentgewinnung, Candidate Experience und Arbeitgebermarke in 8 Dimensionen.</p>
+        </div>
+        <div class="hr-coach-assessment-grid">
+            <div class="hr-coach-assessment-category">
+                <div class="hr-coach-category-header">
+                    <div class="hr-coach-category-icon"><i class="fas fa-bullseye"></i></div>
+                    <div><h4>Talent-Strategie</h4><p>Strategische Personalplanung</p></div>
+                </div>
+                <div class="hr-coach-slider-container">
+                    <input type="range" min="1" max="5" value="1" class="hr-coach-slider" id="c1" oninput="updateArea('c1', this.value)">
+                    <div class="hr-coach-slider-value" id="c1Value">1</div>
+                    <div class="hr-coach-slider-labels"><span>1</span><span>5</span></div>
+                </div>
+            </div>
+            <div class="hr-coach-assessment-category">
+                <div class="hr-coach-category-header">
+                    <div class="hr-coach-category-icon"><i class="fas fa-search"></i></div>
+                    <div><h4>Sourcing & Kanäle</h4><p>Recruiting-Kanal-Mix</p></div>
+                </div>
+                <div class="hr-coach-slider-container">
+                    <input type="range" min="1" max="5" value="1" class="hr-coach-slider" id="c2" oninput="updateArea('c2', this.value)">
+                    <div class="hr-coach-slider-value" id="c2Value">1</div>
+                    <div class="hr-coach-slider-labels"><span>1</span><span>5</span></div>
+                </div>
+            </div>
+            <div class="hr-coach-assessment-category">
+                <div class="hr-coach-category-header">
+                    <div class="hr-coach-category-icon"><i class="fas fa-smile"></i></div>
+                    <div><h4>Candidate Experience</h4><p>Bewerbungsprozess</p></div>
+                </div>
+                <div class="hr-coach-slider-container">
+                    <input type="range" min="1" max="5" value="1" class="hr-coach-slider" id="c3" oninput="updateArea('c3', this.value)">
+                    <div class="hr-coach-slider-value" id="c3Value">1</div>
+                    <div class="hr-coach-slider-labels"><span>1</span><span>5</span></div>
+                </div>
+            </div>
+            <div class="hr-coach-assessment-category">
+                <div class="hr-coach-category-header">
+                    <div class="hr-coach-category-icon"><i class="fas fa-filter"></i></div>
+                    <div><h4>Auswahlverfahren</h4><p>Strukturierte Interviews</p></div>
+                </div>
+                <div class="hr-coach-slider-container">
+                    <input type="range" min="1" max="5" value="1" class="hr-coach-slider" id="c4" oninput="updateArea('c4', this.value)">
+                    <div class="hr-coach-slider-value" id="c4Value">1</div>
+                    <div class="hr-coach-slider-labels"><span>1</span><span>5</span></div>
+                </div>
+            </div>
+            <div class="hr-coach-assessment-category">
+                <div class="hr-coach-category-header">
+                    <div class="hr-coach-category-icon"><i class="fas fa-star"></i></div>
+                    <div><h4>Employer Branding</h4><p>Karriereseite, Social</p></div>
+                </div>
+                <div class="hr-coach-slider-container">
+                    <input type="range" min="1" max="5" value="1" class="hr-coach-slider" id="c5" oninput="updateArea('c5', this.value)">
+                    <div class="hr-coach-slider-value" id="c5Value">1</div>
+                    <div class="hr-coach-slider-labels"><span>1</span><span>5</span></div>
+                </div>
+            </div>
+            <div class="hr-coach-assessment-category">
+                <div class="hr-coach-category-header">
+                    <div class="hr-coach-category-icon"><i class="fas fa-robot"></i></div>
+                    <div><h4>Recruiting-Technologie</h4><p>ATS, KI-Screening</p></div>
+                </div>
+                <div class="hr-coach-slider-container">
+                    <input type="range" min="1" max="5" value="1" class="hr-coach-slider" id="c6" oninput="updateArea('c6', this.value)">
+                    <div class="hr-coach-slider-value" id="c6Value">1</div>
+                    <div class="hr-coach-slider-labels"><span>1</span><span>5</span></div>
+                </div>
+            </div>
+            <div class="hr-coach-assessment-category">
+                <div class="hr-coach-category-header">
+                    <div class="hr-coach-category-icon"><i class="fas fa-users"></i></div>
+                    <div><h4>Diversity Recruiting</h4><p>Inklusive Prozesse</p></div>
+                </div>
+                <div class="hr-coach-slider-container">
+                    <input type="range" min="1" max="5" value="1" class="hr-coach-slider" id="c7" oninput="updateArea('c7', this.value)">
+                    <div class="hr-coach-slider-value" id="c7Value">1</div>
+                    <div class="hr-coach-slider-labels"><span>1</span><span>5</span></div>
+                </div>
+            </div>
+            <div class="hr-coach-assessment-category">
+                <div class="hr-coach-category-header">
+                    <div class="hr-coach-category-icon"><i class="fas fa-chart-line"></i></div>
+                    <div><h4>Qualitätsmetriken</h4><p>Time-to-Hire, Quality-of-Hire</p></div>
+                </div>
+                <div class="hr-coach-slider-container">
+                    <input type="range" min="1" max="5" value="1" class="hr-coach-slider" id="c8" oninput="updateArea('c8', this.value)">
+                    <div class="hr-coach-slider-value" id="c8Value">1</div>
+                    <div class="hr-coach-slider-labels"><span>1</span><span>5</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="hr-coach-score-box">
+            <h4>Ihre Bewertung Recruiting</h4>
+            <div>
+                <span class="hr-coach-score-circle" id="overallScore">1.0</span>
+                <span class="hr-coach-score-desc"><strong id="scoreLabel">Anfänger</strong><br><span id="scoreRec">Fokus auf Grundlagen</span></span>
+            </div>
+            <div class="hr-coach-btn-row">
+                <button type="button" class="hr-coach-btn-save" onclick="saveProgress()"><i class="fas fa-save"></i> Speichern</button>
+                <button type="button" class="hr-coach-btn-excel" onclick="exportExcel()"><i class="fas fa-file-excel"></i> Excel</button>
+                <button type="button" class="hr-coach-btn-pdf" onclick="exportPDF()"><i class="fas fa-file-pdf"></i> PDF</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        window.HR_COACH_AREA_ID = 'recruiting';
+        window.HR_COACH_AREA_TITLE = 'Recruiting & Employer Branding';
+        window.HR_COACH_KEYS = ['c1','c2','c3','c4','c5','c6','c7','c8'];
+        window.HR_COACH_TITLES = { c1: 'Talent-Strategie', c2: 'Sourcing & Kanäle', c3: 'Candidate Experience', c4: 'Auswahlverfahren', c5: 'Employer Branding', c6: 'Recruiting-Technologie', c7: 'Diversity Recruiting', c8: 'Qualitätsmetriken' };
+    </script>
+    <script src="js/hr-coach-workflow.js"></script>
+    <script src="js/shooting-stars.js"></script>
+</body>
+</html>

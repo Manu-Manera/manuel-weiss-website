@@ -388,14 +388,18 @@
                     "title": "Recruiting bis Offboarding abgedeckt",
                     "description": "Sind alle Phasen des Employee Lifecycle abgedeckt?",
                     "examples": [
-                              "Recruiting-Daten",
-                              "Onboarding-Daten",
-                              "Offboarding-Daten"
+                              "Recruiting & Talent Acquisition",
+                              "Onboarding & Integration",
+                              "Compensation & Benefits",
+                              "Zeit & Abwesenheit",
+                              "Offboarding"
                     ],
                     "bestPractices": [
                               "McKinsey: Employee Lifecycle",
                               "Deloitte: End-to-End HR Data"
-                    ]
+                    ],
+                    "hasSubPage": true,
+                    "subPageUrl": "ki-assessment-detail-dataQuality-allProcesses.html"
           },
           {
                     "id": "lifecycleEvents",
@@ -475,14 +479,48 @@
                 }
             });
             
+            // Load values from sub-pages
+            loadSubPageValues();
+            
             renderSubSubCriteria();
             updateAggregatedScore();
         }
         
+        function loadSubPageValues() {
+            // Load from allHRProcesses
+            const allProcessesData = JSON.parse(localStorage.getItem('allHRProcesses') || '{}');
+            if (allProcessesData.calculatedScore) {
+                assessmentValues['recruitingToOffboarding'] = allProcessesData.calculatedScore;
+                console.log('✅ Prozessabdeckung Score aus Unterseite geladen:', allProcessesData.calculatedScore);
+            }
+        }
+        
         function renderSubSubCriteria() {
             const container = document.getElementById('subSubCriteriaContainer');
+            
+            // Check if values are from sub-pages
+            const allProcessesData = JSON.parse(localStorage.getItem('allHRProcesses') || '{}');
+            
             container.innerHTML = subSubCriteria.map(subSubCriterion => {
                 const value = assessmentValues[subSubCriterion.id] || 1;
+                
+                // Check if this criterion has a sub-page with calculated value
+                let isCalculated = false;
+                let calculatedInfo = '';
+                if (subSubCriterion.id === 'recruitingToOffboarding' && allProcessesData.calculatedScore) {
+                    isCalculated = true;
+                    calculatedInfo = `<div class="auto-calculated-indicator" style="background: rgba(16, 185, 129, 0.2); color: #10b981; padding: 0.5rem 1rem; border-radius: 8px; margin-top: 0.5rem; font-size: 0.85rem;"><i class="fas fa-calculator"></i> ${allProcessesData.percentage}% der HR-Prozesse abgedeckt (${allProcessesData.totalSelected}/${allProcessesData.totalPossible})</div>`;
+                }
+                
+                // Sub-page button
+                const subPageButton = subSubCriterion.hasSubPage ? `
+                    <a href="${subSubCriterion.subPageUrl}" 
+                       style="display: inline-flex; align-items: center; gap: 0.5rem; margin-top: 1rem; padding: 0.75rem 1.25rem; background: ${isCalculated ? 'rgba(16, 185, 129, 0.2)' : 'linear-gradient(135deg, #6366f1, #8b5cf6)'}; color: ${isCalculated ? '#10b981' : 'white'}; border-radius: 10px; text-decoration: none; font-weight: 500; transition: all 0.3s ease;">
+                        <i class="fas ${isCalculated ? 'fa-check-circle' : 'fa-sitemap'}"></i>
+                        ${isCalculated ? 'Prozesse bearbeiten' : 'Prozesse im Detail bewerten'}
+                    </a>
+                ` : '';
+                
                 return `
                 <div class="sub-sub-criterion-card">
                     <div class="sub-sub-criterion-header">
@@ -495,6 +533,8 @@
                             <div style="margin-top: 0.5rem;">
                                 ${subSubCriterion.bestPractices.map(bp => `<span class="best-practices-badge">${bp}</span>`).join('')}
                             </div>
+                            ${calculatedInfo}
+                            ${subPageButton}
                         </div>
                     </div>
                     ${subSubCriterion.examples && subSubCriterion.examples.length > 0 ? `
@@ -505,7 +545,8 @@
                         </ul>
                     </div>
                     ` : ''}
-                    <div class="slider-section">
+                    <div class="slider-section" ${isCalculated ? 'style="opacity: 0.6; pointer-events: none;"' : ''}>
+                        ${isCalculated ? '<div style="text-align: center; font-size: 0.85rem; color: rgba(255,255,255,0.6); margin-bottom: 0.5rem;"><i class="fas fa-lock"></i> Automatisch berechnet aus Detailbewertung</div>' : ''}
                         <div class="slider-wrapper">
                             <div class="slider-labels-top">
                                 <span>1 - Mangelhaft</span>
@@ -520,6 +561,7 @@
                                 class="sub-sub-criterion-slider" 
                                 id="slider-${subSubCriterion.id}"
                                 oninput="updateSubSubCriterionValue('${subSubCriterion.id}', this.value)"
+                                ${isCalculated ? 'disabled' : ''}
                             >
                             <div class="sub-sub-criterion-value" id="value-${subSubCriterion.id}">${value}</div>
                             <div class="slider-scale">

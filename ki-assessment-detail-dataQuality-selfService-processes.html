@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Self Service Prozesse - Assessment - Manuel Weiss</title>
+    
+    <meta name="description" content="Interaktive Bewertung der Self-Service HR-Prozesse nach Tier-Modell für Premium KI-Readiness Assessment.">
+    <meta name="author" content="Manuel Weiss">
+    
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #667eea;
+            --primary-dark: #5a67d8;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --tier0: #10b981;
+            --tier1: #6366f1;
+            --tier2: #f59e0b;
+            --tier3: #ef4444;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: 100vh;
+        }
+        
+        .assessment-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .detail-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2.5rem 2rem;
+            border-radius: 20px;
+            margin-bottom: 2rem;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+        }
+        
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(-4px);
+        }
+        
+        .detail-header h1 {
+            font-size: 2.25rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+        
+        .detail-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .premium-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #1f2937;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-top: 1rem;
+        }
+        
+        /* Tier Model Layout */
+        .tier-model {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        @media (max-width: 1200px) {
+            .tier-model {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .tier-model {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .tier-column {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+        
+        .tier-header {
+            padding: 1.25rem;
+            color: white;
+            text-align: center;
+        }
+        
+        .tier-header.tier-0 { background: linear-gradient(135deg, #10b981, #059669); }
+        .tier-header.tier-1 { background: linear-gradient(135deg, #6366f1, #4f46e5); }
+        .tier-header.tier-2 { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .tier-header.tier-3 { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        
+        .tier-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+        
+        .tier-subtitle {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+        
+        .tier-fulfillment {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+        
+        .tier-content {
+            padding: 1rem;
+        }
+        
+        .tier-description {
+            font-size: 0.85rem;
+            color: #6b7280;
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+        
+        .process-group {
+            margin-bottom: 1rem;
+        }
+        
+        .process-group-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #374151;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.25rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        
+        .process-item {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.6rem 0.75rem;
+            margin-bottom: 0.4rem;
+            background: #fafafa;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+            font-size: 0.85rem;
+        }
+        
+        .process-item:hover {
+            background: #f0f0f0;
+        }
+        
+        .process-item.selected {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: var(--success);
+        }
+        
+        .process-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #d1d5db;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+            font-size: 0.7rem;
+        }
+        
+        .process-item.selected .process-checkbox {
+            background: var(--success);
+            border-color: var(--success);
+            color: white;
+        }
+        
+        .process-name {
+            flex: 1;
+            color: #374151;
+        }
+        
+        /* Stats Bar */
+        .stats-bar {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+        
+        .stat-label {
+            font-size: 0.85rem;
+            color: #6b7280;
+        }
+        
+        .stat-item.tier-0 .stat-value { color: var(--tier0); }
+        .stat-item.tier-1 .stat-value { color: var(--tier1); }
+        .stat-item.tier-2 .stat-value { color: var(--tier2); }
+        .stat-item.tier-3 .stat-value { color: var(--tier3); }
+        
+        /* Comment Section */
+        .comment-section {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+        
+        .comment-section h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .comment-section > p {
+            color: #6b7280;
+            margin-bottom: 1rem;
+        }
+        
+        .comment-textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 1rem;
+            resize: vertical;
+            transition: all 0.3s ease;
+        }
+        
+        .comment-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+        
+        /* Save Section */
+        .save-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            color: white;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+        }
+        
+        .score-preview {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .score-item {
+            text-align: center;
+        }
+        
+        .score-value {
+            font-size: 3rem;
+            font-weight: 800;
+        }
+        
+        .score-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .save-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 2.5rem;
+            background: white;
+            color: var(--primary);
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .save-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="manuel-weiss-portrait.jpg" alt="MW" class="nav-logo">
+                <span class="nav-name">Manuel Weiss</span>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="ki-strategieentwicklung.html" class="nav-link">KI-Strategieentwicklung</a>
+                <a href="index.html#contact" class="nav-link">Kontakt</a>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="assessment-container">
+        <div class="detail-header">
+            <a href="ki-assessment-detail-dataQuality-noLongProcesses.html" class="back-button">
+                <i class="fas fa-arrow-left"></i>
+                Zurück zu Self Service Prozesse
+            </a>
+            <h1><i class="fas fa-users-cog"></i> Self Service Prozesse nach Tier-Modell</h1>
+            <p>Bewerten Sie den Implementierungsgrad Ihrer HR-Service-Prozesse</p>
+            <div class="premium-badge">
+                <i class="fas fa-crown"></i>
+                Premium Assessment
+            </div>
+        </div>
+        
+        <!-- Stats Bar -->
+        <div class="stats-bar">
+            <div class="stat-item tier-0">
+                <div class="stat-value" id="tier0Count">0%</div>
+                <div class="stat-label">Tier 0 - Self Service</div>
+            </div>
+            <div class="stat-item tier-1">
+                <div class="stat-value" id="tier1Count">0%</div>
+                <div class="stat-label">Tier 1 - 1st Level Support</div>
+            </div>
+            <div class="stat-item tier-2">
+                <div class="stat-value" id="tier2Count">0%</div>
+                <div class="stat-label">Tier 2 - Fachspezialisten</div>
+            </div>
+            <div class="stat-item tier-3">
+                <div class="stat-value" id="tier3Count">0%</div>
+                <div class="stat-label">Tier 3 - Experten</div>
+            </div>
+        </div>
+        
+        <!-- Tier Model -->
+        <div class="tier-model">
+            <!-- Tier 0 - Self Service -->
+            <div class="tier-column">
+                <div class="tier-header tier-0">
+                    <div class="tier-title">Tier 0</div>
+                    <div class="tier-subtitle">SELF SERVICE</div>
+                    <div class="tier-fulfillment">Ziel: 60% Erfüllungsrate</div>
+                </div>
+                <div class="tier-content">
+                    <div class="tier-description">
+                        <strong>Mitarbeiter & Führungskraft</strong> erledigen selbstständig
+                    </div>
+                    <div id="tier0Processes"></div>
+                </div>
+            </div>
+            
+            <!-- Tier 1 - 1st Level Support -->
+            <div class="tier-column">
+                <div class="tier-header tier-1">
+                    <div class="tier-title">Tier 1</div>
+                    <div class="tier-subtitle">1st Level Support</div>
+                    <div class="tier-fulfillment">Ziel: 25% Erfüllungsrate</div>
+                </div>
+                <div class="tier-content">
+                    <div class="tier-description">
+                        <strong>Call Center, Chat, Mail, Tickets</strong> - Standardfälle bearbeiten
+                    </div>
+                    <div id="tier1Processes"></div>
+                </div>
+            </div>
+            
+            <!-- Tier 2 - Fachspezialisten -->
+            <div class="tier-column">
+                <div class="tier-header tier-2">
+                    <div class="tier-title">Tier 2</div>
+                    <div class="tier-subtitle">Fachspezialisten</div>
+                    <div class="tier-fulfillment">Ziel: 10% Erfüllungsrate</div>
+                </div>
+                <div class="tier-content">
+                    <div class="tier-description">
+                        <strong>HR Ansprechpartner</strong> für komplexere Fälle
+                    </div>
+                    <div id="tier2Processes"></div>
+                </div>
+            </div>
+            
+            <!-- Tier 3 - Experten -->
+            <div class="tier-column">
+                <div class="tier-header tier-3">
+                    <div class="tier-title">Tier 3</div>
+                    <div class="tier-subtitle">Experten</div>
+                    <div class="tier-fulfillment">Ziel: 5% Erfüllungsrate</div>
+                </div>
+                <div class="tier-content">
+                    <div class="tier-description">
+                        <strong>Spezialisten</strong> für Ausnahmefälle
+                    </div>
+                    <div id="tier3Processes"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Comment Section -->
+        <div class="comment-section">
+            <h2><i class="fas fa-comment-alt"></i> Anmerkungen zum Self-Service-Modell</h2>
+            <p>Ihre Kommentare werden in den Premium-Report aufgenommen.</p>
+            <textarea class="comment-textarea" id="assessmentComment" placeholder="Beschreiben Sie Ihre aktuelle Tier-Struktur, Herausforderungen oder geplante Optimierungen..."></textarea>
+        </div>
+        
+        <!-- Save Section -->
+        <div class="save-section">
+            <div class="score-preview">
+                <div class="score-item">
+                    <div class="score-value" id="totalPercentage">0%</div>
+                    <div class="score-label">Gesamt-Implementierung</div>
+                </div>
+                <div class="score-item">
+                    <div class="score-value" id="calculatedScore">1.0</div>
+                    <div class="score-label">Berechneter Score</div>
+                </div>
+            </div>
+            <button class="save-button" onclick="saveAndReturn()">
+                <i class="fas fa-save"></i>
+                Bewertung speichern und übertragen
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        // Tier Model Processes based on Screenshot 2
+        const tierProcesses = {
+            tier0: {
+                title: 'Self Service',
+                processes: [
+                    'Personalantrag',
+                    'Stammdaten erfassen',
+                    'Benefits beziehen',
+                    'Listen ziehen',
+                    'Funktionsbeschreibungen',
+                    'Probezeitgespräche',
+                    'Personalausweise',
+                    'Rückerstattung Kurse',
+                    'Mutationen melden',
+                    'Zeiterfassung korrigieren',
+                    'Diverse Meldungen',
+                    'Austritte anstossen',
+                    'Self Service-Reporting'
+                ]
+            },
+            tier1: {
+                title: '1st Level Support - Standard-Fälle',
+                processes: [
+                    'Eintritte, Austritte',
+                    'Arbeitsvertragsänderungen',
+                    'Übertritte zwischen Bereichen',
+                    'Abwicklung Temporäre MA',
+                    'Benefits und Bewilligungen',
+                    'Dienstjubiläen',
+                    'Payroll-Vorbereitung',
+                    'Organisationseinheiten pflegen',
+                    'Arbeitszeugnisse',
+                    'Inserate ausschreiben'
+                ]
+            },
+            tier2: {
+                title: '2nd Level Support - Fachspezialisten',
+                processes: [
+                    'Arbeitgeber-Kündigungen',
+                    'Unterlagen für Revisionen',
+                    'Versand Buchungsbelege',
+                    'Kontoabstimmungen',
+                    'Jahresendverarbeitungen',
+                    'Abrechnungen PK',
+                    'Arbeitsrechtsfälle'
+                ]
+            },
+            tier3: {
+                title: '3rd Level Support - Experten',
+                processes: [
+                    'Personalkostenpflege',
+                    'Lohnerhöhungsprozess',
+                    'Systempflege',
+                    'Stellenabbau',
+                    'Reorganisationen',
+                    'Andere Spezialfälle',
+                    'Andere Ausnahmefälle'
+                ]
+            }
+        };
+        
+        let selectedProcesses = {};
+        
+        function initializeAssessment() {
+            // Load saved data
+            const saved = JSON.parse(localStorage.getItem('selfServiceProcesses') || '{}');
+            if (saved.selectedProcesses) {
+                selectedProcesses = saved.selectedProcesses;
+            }
+            if (saved.comment) {
+                document.getElementById('assessmentComment').value = saved.comment;
+            }
+            
+            renderAllTiers();
+            updateStats();
+        }
+        
+        function renderTierProcesses(tierId, containerId) {
+            const container = document.getElementById(containerId);
+            const tier = tierProcesses[tierId];
+            
+            container.innerHTML = tier.processes.map(process => {
+                const key = `${tierId}_${process}`;
+                const isSelected = selectedProcesses[key];
+                return `
+                    <div class="process-item ${isSelected ? 'selected' : ''}" onclick="toggleProcess('${tierId}', '${process}')">
+                        <div class="process-checkbox">
+                            ${isSelected ? '<i class="fas fa-check"></i>' : ''}
+                        </div>
+                        <div class="process-name">${process}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function renderAllTiers() {
+            renderTierProcesses('tier0', 'tier0Processes');
+            renderTierProcesses('tier1', 'tier1Processes');
+            renderTierProcesses('tier2', 'tier2Processes');
+            renderTierProcesses('tier3', 'tier3Processes');
+        }
+        
+        function toggleProcess(tierId, process) {
+            const key = `${tierId}_${process}`;
+            selectedProcesses[key] = !selectedProcesses[key];
+            renderAllTiers();
+            updateStats();
+        }
+        
+        function updateStats() {
+            const tiers = ['tier0', 'tier1', 'tier2', 'tier3'];
+            let totalSelected = 0;
+            let totalProcesses = 0;
+            
+            tiers.forEach(tierId => {
+                const tier = tierProcesses[tierId];
+                const selected = tier.processes.filter(p => selectedProcesses[`${tierId}_${p}`]).length;
+                const total = tier.processes.length;
+                const percentage = Math.round((selected / total) * 100);
+                
+                document.getElementById(`${tierId}Count`).textContent = `${percentage}%`;
+                
+                totalSelected += selected;
+                totalProcesses += total;
+            });
+            
+            const totalPercentage = Math.round((totalSelected / totalProcesses) * 100);
+            document.getElementById('totalPercentage').textContent = `${totalPercentage}%`;
+            
+            // Calculate score (1-5 scale)
+            const score = (1 + (totalPercentage / 100) * 4).toFixed(1);
+            document.getElementById('calculatedScore').textContent = score;
+        }
+        
+        function saveAndReturn() {
+            const tiers = ['tier0', 'tier1', 'tier2', 'tier3'];
+            let totalSelected = 0;
+            let totalProcesses = 0;
+            
+            tiers.forEach(tierId => {
+                const tier = tierProcesses[tierId];
+                const selected = tier.processes.filter(p => selectedProcesses[`${tierId}_${p}`]).length;
+                totalSelected += selected;
+                totalProcesses += tier.processes.length;
+            });
+            
+            const percentage = totalSelected / totalProcesses;
+            const score = Math.round(1 + percentage * 4);
+            
+            // Save process data
+            const processData = {
+                selectedProcesses: selectedProcesses,
+                comment: document.getElementById('assessmentComment').value,
+                calculatedScore: score,
+                percentage: Math.round(percentage * 100),
+                timestamp: new Date().toISOString()
+            };
+            localStorage.setItem('selfServiceProcesses', JSON.stringify(processData));
+            
+            // Update parent assessment
+            let saved = JSON.parse(localStorage.getItem('kiDetailAssessments') || '{}');
+            if (!saved.dataQuality) saved.dataQuality = { criteria: {} };
+            if (!saved.dataQuality.criteria) saved.dataQuality.criteria = {};
+            if (!saved.dataQuality.criteria.dataAccessibility) saved.dataQuality.criteria.dataAccessibility = { subCriteria: {} };
+            if (!saved.dataQuality.criteria.dataAccessibility.subCriteria) saved.dataQuality.criteria.dataAccessibility.subCriteria = {};
+            if (!saved.dataQuality.criteria.dataAccessibility.subCriteria.noLongProcesses) {
+                saved.dataQuality.criteria.dataAccessibility.subCriteria.noLongProcesses = { subSubCriteria: {} };
+            }
+            
+            // Update the selfServiceApproval score
+            saved.dataQuality.criteria.dataAccessibility.subCriteria.noLongProcesses.subSubCriteria = 
+                saved.dataQuality.criteria.dataAccessibility.subCriteria.noLongProcesses.subSubCriteria || {};
+            saved.dataQuality.criteria.dataAccessibility.subCriteria.noLongProcesses.subSubCriteria.selfServiceApproval = score;
+            saved.dataQuality.criteria.dataAccessibility.subCriteria.noLongProcesses.selfServiceAssessment = processData;
+            
+            localStorage.setItem('kiDetailAssessments', JSON.stringify(saved));
+            
+            // Return to parent page
+            window.location.href = 'ki-assessment-detail-dataQuality-noLongProcesses.html';
+        }
+        
+        document.addEventListener('DOMContentLoaded', initializeAssessment);
+    </script>
+</body>
+</html>

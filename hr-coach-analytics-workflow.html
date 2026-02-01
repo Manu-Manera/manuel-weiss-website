@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics & Reporting – HR Coach Framework | Manuel Weiss</title>
+    <meta name="description" content="Detaillierte Analyse Ihrer HR-Analytics Reife. KPIs, Dashboards, Predictive Analytics.">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/starry-background.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body { background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%); min-height: 100vh; color: #e2e8f0; position: relative; z-index: 1; }
+        .navbar { background: rgba(15, 23, 42, 0.9) !important; backdrop-filter: blur(20px) !important; border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important; }
+        .nav-name, .nav-menu a { color: rgba(255, 255, 255, 0.9) !important; }
+        .nav-menu a:hover { color: #fff !important; }
+        .workflow-wrap { max-width: 1000px; margin: 0 auto; padding: 2rem; position: relative; z-index: 2; }
+        .back-link { display: inline-flex; align-items: center; gap: 0.5rem; color: #a5b4fc; text-decoration: none; margin-bottom: 1.5rem; font-weight: 500; }
+        .back-link:hover { color: #fff; }
+        .workflow-header { text-align: center; padding: 2.5rem 2rem; background: rgba(99, 102, 241, 0.2); backdrop-filter: blur(20px); border-radius: 20px; border: 1px solid rgba(99, 102, 241, 0.3); margin-bottom: 2rem; }
+        .workflow-header h1 { font-size: 2rem; font-weight: 800; color: #fff; margin-bottom: 0.5rem; }
+        .workflow-header p { color: #c7d2fe; font-size: 1rem; max-width: 600px; margin: 0 auto; }
+        .assessment-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; }
+        .assessment-category { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border-radius: 16px; padding: 1.5rem; border: 1px solid rgba(255, 255, 255, 0.1); transition: all 0.3s ease; }
+        .assessment-category:hover { border-color: rgba(99, 102, 241, 0.4); background: rgba(255, 255, 255, 0.08); }
+        .category-header { display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 1rem; }
+        .category-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; color: white; flex-shrink: 0; background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+        .category-header h4 { color: #fff; font-size: 1rem; font-weight: 600; margin: 0 0 0.25rem 0; }
+        .category-header p { color: #a5b4fc; font-size: 0.8rem; margin: 0; }
+        .slider-container { margin-top: 0.75rem; }
+        .slider { width: 100%; height: 8px; border-radius: 4px; background: rgba(255,255,255,0.1); -webkit-appearance: none; appearance: none; accent-color: #6366f1; }
+        .slider-value-display { text-align: center; font-size: 1.25rem; font-weight: 700; color: #a5b4fc; margin: 0.5rem 0; }
+        .slider-labels { display: flex; justify-content: space-between; font-size: 0.7rem; color: #a5b4fc; }
+        .score-box { margin-top: 2rem; padding: 1.5rem; background: rgba(16, 185, 129, 0.15); border-radius: 16px; border: 1px solid rgba(16, 185, 129, 0.3); text-align: center; }
+        .score-box h4 { color: #fff; margin-bottom: 1rem; }
+        .score-circle { width: 70px; height: 70px; border-radius: 50%; background: rgba(255,255,255,0.2); display: inline-flex; align-items: center; justify-content: center; font-size: 1.75rem; font-weight: 800; color: #fff; margin-right: 1rem; vertical-align: middle; }
+        .score-desc { color: #a5b4fc; font-size: 0.95rem; display: inline-block; text-align: left; }
+        .btn-row { display: flex; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap; justify-content: center; }
+        .btn-row button { padding: 0.75rem 1.5rem; border-radius: 10px; font-size: 0.95rem; font-weight: 600; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; }
+        .btn-save { background: rgba(255,255,255,0.15); color: #fff; border: 1px solid rgba(255,255,255,0.3); }
+        .btn-excel { background: #217346; color: white; }
+        .btn-pdf { background: #dc3545; color: white; }
+        .btn-row button:hover { transform: translateY(-2px); }
+    </style>
+</head>
+<body class="starry-theme">
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="index.html"><img src="manuel-weiss-portrait.jpg" alt="MW" class="nav-logo"><span class="nav-name">Manuel Weiss</span></a>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">Start</a>
+                <a href="hr-coach.html" class="nav-link">HR Coach</a>
+                <a href="hr-coach-framework.html" class="nav-link">HR Coach Framework</a>
+                <a href="index.html#contact" class="nav-link">Kontakt</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="workflow-wrap">
+        <a href="hr-coach-framework.html" class="back-link"><i class="fas fa-arrow-left"></i> Zurück zum HR Coach Framework</a>
+
+        <div class="workflow-header">
+            <h1><i class="fas fa-chart-line" style="margin-right:0.5rem;"></i>Analytics & Reporting</h1>
+            <p>Bewerten Sie Ihre HR-Analytics Reife in 8 Dimensionen. Die Analyse bildet die Grundlage für datengetriebene HR-Entscheidungen.</p>
+        </div>
+
+        <div class="assessment-grid">
+            <div class="assessment-category">
+                <div class="category-header">
+                    <div class="category-icon"><i class="fas fa-database"></i></div>
+                    <div>
+                        <h4>Datenbasis & Qualität</h4>
+                        <p>Struktur und Pflege der HR-Daten</p>
+                    </div>
+                </div>
+                <div class="slider-container">
+                    <input type="range" min="1" max="5" value="1" class="slider" id="dataFoundation" oninput="updateAnalytics('dataFoundation', this.value)">
+                    <div class="slider-value-display" id="dataFoundationValue">1</div>
+                    <div class="slider-labels"><span>1</span><span>5</span></div>
+                </div>
+            </div>
+            <div class="assessment-category">
+                <div class="category-header">
+                    <div class="category-icon"><i class="fas fa-tachometer-alt"></i></div>
+                    <div>
+                        <h4>KPI-Framework</h4>
+                        <p>System für HR-Kennzahlen</p>
+                    </div>
+                </div>
+                <div class="slider-container">
+                    <input type="range" min="1" max="5" value="1" class="slider" id="kpiFramework" oninput="updateAnalytics('kpiFramework', this.value)">
+                    <div class="slider-value-display" id="kpiFrameworkValue">1</div>
+                    <div class="slider-labels"><span>1</span><span>5</span></div>
+                </div>
+            </div>
+            <div class="assessment-category">
+                <div class="category-header">
+                    <div class="category-icon"><i class="fas fa-chart-bar"></i></div>
+                    <div>
+                        <h4>Reporting & Dashboards</h4>
+                        <p>Automatisierte Reports, Self-Service</p>
+                    </div>
+                </div>
+                <div class="slider-container">
+                    <input type="range" min="1" max="5" value="1" class="slider" id="reporting" oninput="updateAnalytics('reporting', this.value)">
+                    <div class="slider-value-display" id="reportingValue">1</div>
+                    <div class="slider-labels"><span>1</span><span>5</span></div>
+                </div>
+            </div>
+            <div class="assessment-category">
+                <div class="category-header">
+                    <div class="category-icon"><i class="fas fa-history"></i></div>
+                    <div>
+                        <h4>Deskriptive Analytik</h4>
+                        <p>Vergangene Ereignisse analysieren</p>
+                    </div>
+                </div>
+                <div class="slider-container">
+                    <input type="range" min="1" max="5" value="1" class="slider" id="descriptiveAnalytics" oninput="updateAnalytics('descriptiveAnalytics', this.value)">
+                    <div class="slider-value-display" id="descriptiveAnalyticsValue">1</div>
+                    <div class="slider-labels"><span>1</span><span>5</span></div>
+                </div>
+            </div>
+            <div class="assessment-category">
+                <div class="category-header">
+                    <div class="category-icon"><i class="fas fa-search"></i></div>
+                    <div>
+                        <h4>Diagnostische Analytik</h4>
+                        <p>Gründe hinter Trends verstehen</p>
+                    </div>
+                </div>
+                <div class="slider-container">
+                    <input type="range" min="1" max="5" value="1" class="slider" id="diagnosticAnalytics" oninput="updateAnalytics('diagnosticAnalytics', this.value)">
+                    <div class="slider-value-display" id="diagnosticAnalyticsValue">1</div>
+                    <div class="slider-labels"><span>1</span><span>5</span></div>
+                </div>
+            </div>
+            <div class="assessment-category">
+                <div class="category-header">
+                    <div class="category-icon"><i class="fas fa-crystal-ball"></i></div>
+                    <div>
+                        <h4>Prädiktive Analytik</h4>
+                        <p>Zukünftige HR-Entwicklungen</p>
+                    </div>
+                </div>
+                <div class="slider-container">
+                    <input type="range" min="1" max="5" value="1" class="slider" id="predictiveAnalytics" oninput="updateAnalytics('predictiveAnalytics', this.value)">
+                    <div class="slider-value-display" id="predictiveAnalyticsValue">1</div>
+                    <div class="slider-labels"><span>1</span><span>5</span></div>
+                </div>
+            </div>
+            <div class="assessment-category">
+                <div class="category-header">
+                    <div class="category-icon"><i class="fas fa-lightbulb"></i></div>
+                    <div>
+                        <h4>Präskriptive Analytik</h4>
+                        <p>Handlungsempfehlungen aus Daten</p>
+                    </div>
+                </div>
+                <div class="slider-container">
+                    <input type="range" min="1" max="5" value="1" class="slider" id="prescriptiveAnalytics" oninput="updateAnalytics('prescriptiveAnalytics', this.value)">
+                    <div class="slider-value-display" id="prescriptiveAnalyticsValue">1</div>
+                    <div class="slider-labels"><span>1</span><span>5</span></div>
+                </div>
+            </div>
+            <div class="assessment-category">
+                <div class="category-header">
+                    <div class="category-icon"><i class="fas fa-users"></i></div>
+                    <div>
+                        <h4>Analytik-Kompetenz</h4>
+                        <p>Fähigkeiten im HR-Team</p>
+                    </div>
+                </div>
+                <div class="slider-container">
+                    <input type="range" min="1" max="5" value="1" class="slider" id="analyticsCapability" oninput="updateAnalytics('analyticsCapability', this.value)">
+                    <div class="slider-value-display" id="analyticsCapabilityValue">1</div>
+                    <div class="slider-labels"><span>1</span><span>5</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="score-box">
+            <h4>Ihre Analytics-Reife Bewertung</h4>
+            <div>
+                <span class="score-circle" id="overallScore">1.0</span>
+                <span class="score-desc"><strong id="scoreLabel">Anfänger</strong><br><span id="scoreRec">Fokus auf Datenbasis und grundlegendes Reporting</span></span>
+            </div>
+            <div class="btn-row">
+                <button type="button" class="btn-save" onclick="saveProgress()"><i class="fas fa-save"></i> Speichern</button>
+                <button type="button" class="btn-excel" onclick="exportExcel()"><i class="fas fa-file-excel"></i> Excel</button>
+                <button type="button" class="btn-pdf" onclick="exportPDF()"><i class="fas fa-file-pdf"></i> PDF</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/shooting-stars.js"></script>
+    <script>
+        var analyticsKeys = ['dataFoundation', 'kpiFramework', 'reporting', 'descriptiveAnalytics', 'diagnosticAnalytics', 'predictiveAnalytics', 'prescriptiveAnalytics', 'analyticsCapability'];
+        var analyticsData = {};
+        analyticsKeys.forEach(function (k) { analyticsData[k] = 1; });
+
+        function updateAnalytics(key, value) {
+            var v = parseFloat(value);
+            analyticsData[key] = v;
+            var el = document.getElementById(key + 'Value');
+            if (el) el.textContent = v;
+            updateOverall();
+            saveToStorage();
+        }
+
+        function updateOverall() {
+            var sum = analyticsKeys.reduce(function (acc, k) { return acc + analyticsData[k]; }, 0);
+            var avg = (sum / analyticsKeys.length).toFixed(1);
+            var el = document.getElementById('overallScore');
+            if (el) el.textContent = avg;
+            var label = document.getElementById('scoreLabel');
+            var rec = document.getElementById('scoreRec');
+            if (avg <= 1.5) { if (label) label.textContent = 'Anfänger'; if (rec) rec.textContent = 'Fokus auf Datenbasis und grundlegendes Reporting'; }
+            else if (avg <= 2.5) { if (label) label.textContent = 'Entwicklung'; if (rec) rec.textContent = 'KPI-Framework und regelmäßige Reports aufbauen'; }
+            else if (avg <= 3.5) { if (label) label.textContent = 'Fortgeschritten'; if (rec) rec.textContent = 'Prädiktive und präskriptive Analytik ausbauen'; }
+            else if (avg <= 4.5) { if (label) label.textContent = 'Erfahren'; if (rec) rec.textContent = 'Data-Driven HR als strategischer Hebel'; }
+            else { if (label) label.textContent = 'Expert'; if (rec) rec.textContent = 'Best-in-Class HR Analytics'; }
+            var progressPct = Math.round((parseFloat(avg) - 1) / 4 * 100);
+            localStorage.setItem('hrCoach_analytics_progress', String(progressPct));
+        }
+
+        function saveToStorage() {
+            localStorage.setItem('hrCoach_analytics_data', JSON.stringify(analyticsData));
+        }
+
+        function saveProgress() {
+            saveToStorage();
+            updateOverall();
+            var btn = event && event.target ? event.target : document.querySelector('.btn-save');
+            if (btn) {
+                var orig = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-check"></i> Gespeichert!';
+                setTimeout(function () { btn.innerHTML = orig; }, 2000);
+            }
+        }
+
+        function loadProgress() {
+            try {
+                var saved = localStorage.getItem('hrCoach_analytics_data');
+                if (saved) {
+                    var data = JSON.parse(saved);
+                    analyticsKeys.forEach(function (k) {
+                        if (data[k] != null) {
+                            analyticsData[k] = data[k];
+                            var slider = document.getElementById(k);
+                            var valueEl = document.getElementById(k + 'Value');
+                            if (slider) slider.value = data[k];
+                            if (valueEl) valueEl.textContent = data[k];
+                        }
+                    });
+                }
+            } catch (e) {}
+            updateOverall();
+        }
+
+        function exportExcel() {
+            var csv = 'Dimension;Bewertung (1-5)\n';
+            var titles = {
+                dataFoundation: 'Datenbasis & Qualität',
+                kpiFramework: 'KPI-Framework',
+                reporting: 'Reporting & Dashboards',
+                descriptiveAnalytics: 'Deskriptive Analytik',
+                diagnosticAnalytics: 'Diagnostische Analytik',
+                predictiveAnalytics: 'Prädiktive Analytik',
+                prescriptiveAnalytics: 'Präskriptive Analytik',
+                analyticsCapability: 'Analytik-Kompetenz'
+            };
+            analyticsKeys.forEach(function (k) {
+                csv += (titles[k] || k) + ';' + analyticsData[k] + '\n';
+            });
+            csv += '\nGesamt;' + document.getElementById('overallScore').textContent + '\n';
+            var blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' });
+            var a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'HR-Coach-Analytics-Export.csv';
+            a.click();
+            URL.revokeObjectURL(a.href);
+        }
+
+        function exportPDF() {
+            var text = 'HR Coach Framework – Analytics & Reporting\n';
+            text += 'Erstellt: ' + new Date().toLocaleDateString('de-DE') + '\n\n';
+            var titles = { dataFoundation: 'Datenbasis & Qualität', kpiFramework: 'KPI-Framework', reporting: 'Reporting & Dashboards', descriptiveAnalytics: 'Deskriptive Analytik', diagnosticAnalytics: 'Diagnostische Analytik', predictiveAnalytics: 'Prädiktive Analytik', prescriptiveAnalytics: 'Präskriptive Analytik', analyticsCapability: 'Analytik-Kompetenz' };
+            analyticsKeys.forEach(function (k) { text += (titles[k] || k) + ': ' + analyticsData[k] + '/5\n'; });
+            text += '\nGesamtbewertung: ' + document.getElementById('overallScore').textContent + ' – ' + (document.getElementById('scoreLabel') && document.getElementById('scoreLabel').textContent) + '\n';
+            var blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+            var a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'HR-Coach-Analytics-Report.txt';
+            a.click();
+            URL.revokeObjectURL(a.href);
+        }
+
+        document.addEventListener('DOMContentLoaded', loadProgress);
+    </script>
+</body>
+</html>

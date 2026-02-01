@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performance Management – HR Coach Framework | Manuel Weiss</title>
+    <meta name="description" content="Analyse Ihrer Feedback-Kultur, OKRs und Leistungsbeurteilung.">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/starry-background.css">
+    <link rel="stylesheet" href="css/hr-coach-workflow.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        .hr-coach-workflow-header { background: rgba(139, 92, 246, 0.2); border-color: rgba(139, 92, 246, 0.3); }
+        .hr-coach-category-icon { background: linear-gradient(135deg, #8b5cf6, #a855f7); }
+        .hr-coach-slider { accent-color: #8b5cf6; }
+    </style>
+</head>
+<body class="starry-theme">
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand"><a href="index.html"><img src="manuel-weiss-portrait.jpg" alt="MW" class="nav-logo"><span class="nav-name">Manuel Weiss</span></a></div>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">Start</a>
+                <a href="hr-coach.html" class="nav-link">HR Coach</a>
+                <a href="hr-coach-framework.html" class="nav-link">HR Coach Framework</a>
+                <a href="index.html#contact" class="nav-link">Kontakt</a>
+            </div>
+        </div>
+    </nav>
+    <div class="workflow-wrap">
+        <a href="hr-coach-framework.html" class="hr-coach-back-link"><i class="fas fa-arrow-left"></i> Zurück zum HR Coach Framework</a>
+        <div class="hr-coach-workflow-header">
+            <h1><i class="fas fa-bullseye" style="margin-right:0.5rem;"></i>Performance Management</h1>
+            <p>Bewerten Sie Feedback-Kultur, OKRs, Zielvereinbarungen und Leistungsbeurteilung in 8 Dimensionen.</p>
+        </div>
+        <div class="hr-coach-assessment-grid">
+            <div class="hr-coach-assessment-category">
+                <div class="hr-coach-category-header">
+                    <div class="hr-coach-category-icon"><i class="fas fa-bullseye"></i></div>
+                    <div><h4>Zielvereinbarungen</h4><p>SMART-Ziele, OKRs</p></div>
+                </div>
+                <div class="hr-coach-slider-container">
+                    <input type="range" min="1" max="5" value="1" class="hr-coach-slider" id="c1" oninput="updateArea('c1', this.value)">
+                    <div class="hr-coach-slider-value" id="c1Value">1</div>
+                    <div class="hr-coach-slider-labels"><span>1</span><span>5</span></div>
+                </div>
+            </div>
+            <div class="hr-coach-assessment-category">
+                <div class="hr-coach-category-header">
+                    <div class="hr-coach-category-icon"><i class="fas fa-comments"></i></div>
+                    <div><h4>Feedback-Kultur</h4><p>Regelmäßiges Feedback</p></div>
+                </div>
+                <div class="hr-coach-slider-container">
+                    <input type="range" min="1" max="5" value="1" class="hr-coach-slider" id="c2" oninput="updateArea('c2', this.value)">
+                    <div class="hr-coach-slider-value" id="c2Value">1</div>
+                    <div class="hr-coach-slider-labels"><span>1</span><span>5</span></div>
+                </div>
+            </div>
+            <div class="hr-coach-assessment-category">
+                <div class="hr-coach-category-header">
+                    <div class="hr-coach-category-icon"><i class="fas fa-calendar-alt"></i></div>
+                    <div><h4>Jahresgespräche</h4><p>Strukturierte Gespräche</p></div>
+                </div>
+                <div class="hr-coach-slider-container">
+                    <input type="range" min="1" max="5" value="1" class="hr-coach-slider" id="c3" oninput="updateArea('c3', this.value)">
+                    <div class="hr-coach-slider-value" id="c3Value">1</div>
+                    <div class="hr-coach-slider-labels"><span>1</span><span>5</span></div>
+                </div>
+            </div>
+            <div class="hr-coach-assessment-category">
+                <div class="hr-coach-category-header">
+                    <div class="hr-coach-category-icon"><i class="fas fa-chart-line"></i></div>
+                    <div><h4>Leistungsbeurteilung</h4><p>Objektive Bewertung</p></div>
+                </div>
+                <div class="hr-coach-slider-container">
+                    <input type="range" min="1" max="5" value="1" class="hr-coach-slider" id="c4" oninput="updateArea('c4', this.value)">
+                    <div class="hr-coach-slider-value" id="c4Value">1</div>
+                    <div class="hr-coach-slider-labels"><span>1</span><span>5</span></div>
+                </div>
+            </div>
+            <div class="hr-coach-assessment-category">
+                <div class="hr-coach-category-header">
+                    <div class="hr-coach-category-icon"><i class="fas fa-trophy"></i></div>
+                    <div><h4>Anerkennung & Belohnung</h4><p>Leistungsabhängige Anerkennung</p></div>
+                </div>
+                <div class="hr-coach-slider-container">
+                    <input type="range" min="1" max="5" value="1" class="hr-coach-slider" id="c5" oninput="updateArea('c5', this.value)">
+                    <div class="hr-coach-slider-value" id="c5Value">1</div>
+                    <div class="hr-coach-slider-labels"><span>1</span><span>5</span></div>
+                </div>
+            </div>
+            <div class="hr-coach-assessment-category">
+                <div class="hr-coach-category-header">
+                    <div class="hr-coach-category-icon"><i class="fas fa-user-edit"></i></div>
+                    <div><h4>360°-Feedback</h4><p>Multi-Source-Feedback</p></div>
+                </div>
+                <div class="hr-coach-slider-container">
+                    <input type="range" min="1" max="5" value="1" class="hr-coach-slider" id="c6" oninput="updateArea('c6', this.value)">
+                    <div class="hr-coach-slider-value" id="c6Value">1</div>
+                    <div class="hr-coach-slider-labels"><span>1</span><span>5</span></div>
+                </div>
+            </div>
+            <div class="hr-coach-assessment-category">
+                <div class="hr-coach-category-header">
+                    <div class="hr-coach-category-icon"><i class="fas fa-tools"></i></div>
+                    <div><h4>Performance-Tools</h4><p>Software & Prozesse</p></div>
+                </div>
+                <div class="hr-coach-slider-container">
+                    <input type="range" min="1" max="5" value="1" class="hr-coach-slider" id="c7" oninput="updateArea('c7', this.value)">
+                    <div class="hr-coach-slider-value" id="c7Value">1</div>
+                    <div class="hr-coach-slider-labels"><span>1</span><span>5</span></div>
+                </div>
+            </div>
+            <div class="hr-coach-assessment-category">
+                <div class="hr-coach-category-header">
+                    <div class="hr-coach-category-icon"><i class="fas fa-sync"></i></div>
+                    <div><h4>Kontinuierliche Entwicklung</h4><p>Coaching & Entwicklung</p></div>
+                </div>
+                <div class="hr-coach-slider-container">
+                    <input type="range" min="1" max="5" value="1" class="hr-coach-slider" id="c8" oninput="updateArea('c8', this.value)">
+                    <div class="hr-coach-slider-value" id="c8Value">1</div>
+                    <div class="hr-coach-slider-labels"><span>1</span><span>5</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="hr-coach-score-box">
+            <h4>Ihre Bewertung Performance Management</h4>
+            <div>
+                <span class="hr-coach-score-circle" id="overallScore">1.0</span>
+                <span class="hr-coach-score-desc"><strong id="scoreLabel">Anfänger</strong><br><span id="scoreRec">Fokus auf Grundlagen</span></span>
+            </div>
+            <div class="hr-coach-btn-row">
+                <button type="button" class="hr-coach-btn-save" onclick="saveProgress()"><i class="fas fa-save"></i> Speichern</button>
+                <button type="button" class="hr-coach-btn-excel" onclick="exportExcel()"><i class="fas fa-file-excel"></i> Excel</button>
+                <button type="button" class="hr-coach-btn-pdf" onclick="exportPDF()"><i class="fas fa-file-pdf"></i> PDF</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        window.HR_COACH_AREA_ID = 'performance';
+        window.HR_COACH_AREA_TITLE = 'Performance Management';
+        window.HR_COACH_KEYS = ['c1','c2','c3','c4','c5','c6','c7','c8'];
+        window.HR_COACH_TITLES = { c1: 'Zielvereinbarungen', c2: 'Feedback-Kultur', c3: 'Jahresgespräche', c4: 'Leistungsbeurteilung', c5: 'Anerkennung & Belohnung', c6: '360°-Feedback', c7: 'Performance-Tools', c8: 'Kontinuierliche Entwicklung' };
+    </script>
+    <script src="js/hr-coach-workflow.js"></script>
+    <script src="js/shooting-stars.js"></script>
+</body>
+</html>

@@ -1,0 +1,2256 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Selbsttest - Umfassende HR-Analyse | Manuel Weiss</title>
+    
+    <!-- Meta Tags -->
+    <meta name="description" content="Umfassender HR Selbsttest zur Bewertung Ihrer HR-Organisation. Analysieren Sie Vision, Kultur, Organisation und Prozesse systematisch.">
+    <meta name="keywords" content="HR Selbsttest, HR Assessment, Employee Experience, HR Analyse, Digitalisierung">
+    <meta name="author" content="Manuel Weiss">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/starry-background.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        /* ═══════════════════════════════════════════════════════════════════════════
+           HR SELBSTTEST - UMFASSENDE HR-ANALYSE
+           ═══════════════════════════════════════════════════════════════════════════ */
+        
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%) !important;
+            min-height: 100vh;
+            color: #e2e8f0;
+        }
+        
+        .navbar {
+            background: rgba(15, 23, 42, 0.8) !important;
+            backdrop-filter: blur(20px) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+        }
+        
+        .nav-name { color: #fff !important; }
+        .nav-menu a { color: rgba(255, 255, 255, 0.8) !important; }
+        .nav-menu a:hover { color: #fff !important; }
+        
+        /* Hero Section */
+        .selftest-hero {
+            background: rgba(99, 102, 241, 0.15);
+            backdrop-filter: blur(20px);
+            color: white;
+            padding: 3rem 0;
+            text-align: center;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+            position: relative;
+            z-index: 2;
+        }
+        
+        .hero-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1.5rem;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            box-shadow: 0 8px 32px rgba(251, 191, 36, 0.3);
+        }
+        
+        .hero-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #fff 0%, #fde68a 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.1rem;
+            color: #c7d2fe;
+            max-width: 700px;
+            margin: 0 auto 1.5rem;
+        }
+        
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(251, 191, 36, 0.2);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            font-weight: 500;
+            color: #fde68a;
+        }
+        
+        /* Main Container */
+        .selftest-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 2;
+        }
+        
+        /* Progress Overview */
+        .progress-overview {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .progress-overview {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        .progress-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 1.25rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .progress-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-4px);
+        }
+        
+        .progress-card.active {
+            border-color: #fbbf24;
+            background: rgba(251, 191, 36, 0.1);
+        }
+        
+        .progress-card.completed {
+            border-color: #10b981;
+        }
+        
+        .progress-card-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .progress-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            color: white;
+        }
+        
+        .progress-card:nth-child(1) .progress-icon { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+        .progress-card:nth-child(2) .progress-icon { background: linear-gradient(135deg, #10b981, #059669); }
+        .progress-card:nth-child(3) .progress-icon { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .progress-card:nth-child(4) .progress-icon { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        
+        .progress-title {
+            font-weight: 600;
+            color: #fff;
+            font-size: 1rem;
+        }
+        
+        .progress-bar-container {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+        
+        .progress-card:nth-child(1) .progress-bar-fill { background: linear-gradient(90deg, #6366f1, #8b5cf6); }
+        .progress-card:nth-child(2) .progress-bar-fill { background: linear-gradient(90deg, #10b981, #059669); }
+        .progress-card:nth-child(3) .progress-bar-fill { background: linear-gradient(90deg, #f59e0b, #d97706); }
+        .progress-card:nth-child(4) .progress-bar-fill { background: linear-gradient(90deg, #ef4444, #dc2626); }
+        
+        .progress-text {
+            font-size: 0.75rem;
+            color: #a5b4fc;
+            margin-top: 0.5rem;
+        }
+        
+        /* Happy Company Yoga Teppich */
+        .yoga-teppich-section {
+            margin-bottom: 3rem;
+        }
+        
+        .yoga-teppich-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin: 0 auto;
+            aspect-ratio: 1;
+        }
+        
+        .yoga-teppich-svg {
+            width: 100%;
+            height: 100%;
+        }
+        
+        /* Assessment Section */
+        .assessment-section {
+            display: none;
+        }
+        
+        .assessment-section.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .section-description {
+            color: #a5b4fc;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        /* Question Cards */
+        .question-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .question-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .question-number {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: white;
+            flex-shrink: 0;
+        }
+        
+        .question-content h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+        
+        .question-content p {
+            color: #a5b4fc;
+            font-size: 0.9rem;
+        }
+        
+        /* Rating Scale */
+        .rating-scale {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .rating-option {
+            flex: 1;
+            min-width: 80px;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .rating-option:hover {
+            border-color: rgba(99, 102, 241, 0.5);
+            background: rgba(99, 102, 241, 0.1);
+        }
+        
+        .rating-option.selected {
+            border-color: #6366f1;
+            background: rgba(99, 102, 241, 0.2);
+        }
+        
+        .rating-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 0.25rem;
+        }
+        
+        .rating-label {
+            font-size: 0.75rem;
+            color: #a5b4fc;
+        }
+        
+        /* Slider Scale */
+        .slider-container {
+            margin: 1.5rem 0;
+        }
+        
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+            color: #a5b4fc;
+        }
+        
+        .slider-track {
+            position: relative;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+        }
+        
+        .slider-fill {
+            position: absolute;
+            height: 100%;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        
+        .slider-thumb {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            cursor: grab;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s ease;
+        }
+        
+        .slider-thumb:hover {
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+        
+        .slider-value {
+            text-align: center;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #fff;
+        }
+        
+        /* Tips Box */
+        .tips-box {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-top: 1.5rem;
+        }
+        
+        .tips-box-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+            color: #6ee7b7;
+            font-weight: 600;
+        }
+        
+        .tips-box ul {
+            margin: 0;
+            padding-left: 1.25rem;
+            color: #a7f3d0;
+        }
+        
+        .tips-box li {
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        /* Process Grid */
+        .process-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+        }
+        
+        .process-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .process-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-4px);
+        }
+        
+        .process-card.completed {
+            border-color: #10b981;
+        }
+        
+        .process-card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            color: white;
+            margin-bottom: 1rem;
+        }
+        
+        .process-card h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+        
+        .process-card p {
+            font-size: 0.85rem;
+            color: #a5b4fc;
+            margin-bottom: 1rem;
+        }
+        
+        .process-card-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+        }
+        
+        .process-card-status.pending { color: #fbbf24; }
+        .process-card-status.completed { color: #10b981; }
+        
+        /* Navigation Buttons */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .btn-nav {
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: none;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-back {
+            background: rgba(255, 255, 255, 0.1);
+            color: #a5b4fc;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .btn-back:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+        
+        .btn-next {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+        }
+        
+        .btn-next:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+        }
+        
+        .btn-results {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+        
+        .btn-results:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+        }
+        
+        /* Results Section */
+        .results-overview {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        @media (max-width: 1024px) {
+            .results-overview {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        .result-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+        
+        .result-score {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+        
+        .result-score.excellent { color: #10b981; }
+        .result-score.good { color: #6366f1; }
+        .result-score.moderate { color: #fbbf24; }
+        .result-score.needs-work { color: #ef4444; }
+        
+        .result-label {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 0.25rem;
+        }
+        
+        .result-description {
+            font-size: 0.85rem;
+            color: #a5b4fc;
+        }
+        
+        /* Recommendations */
+        .recommendations-section {
+            margin-top: 2rem;
+        }
+        
+        .recommendation-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid;
+            border-color: #6366f1;
+        }
+        
+        .recommendation-card.high-priority {
+            border-color: #ef4444;
+        }
+        
+        .recommendation-card.medium-priority {
+            border-color: #fbbf24;
+        }
+        
+        .recommendation-card.low-priority {
+            border-color: #10b981;
+        }
+        
+        .recommendation-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+        }
+        
+        .recommendation-title {
+            font-weight: 600;
+            color: #fff;
+        }
+        
+        .recommendation-priority {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        
+        .recommendation-priority.high { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
+        .recommendation-priority.medium { background: rgba(251, 191, 36, 0.2); color: #fde68a; }
+        .recommendation-priority.low { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; }
+        
+        .recommendation-text {
+            color: #a5b4fc;
+            font-size: 0.9rem;
+        }
+        
+        /* Deep Dive Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+            border-radius: 24px;
+            width: 100%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+        
+        .modal-header {
+            padding: 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+        }
+        
+        .modal-close {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: #a5b4fc;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+        
+        .modal-body {
+            padding: 2rem;
+        }
+        
+        .modal-footer {
+            padding: 1.5rem 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+        
+        /* Deep Dive Rating Groups */
+        .rating-group {
+            margin-bottom: 2rem;
+        }
+        
+        .rating-group-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .rating-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .rating-column {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1rem;
+        }
+        
+        .rating-column-label {
+            font-size: 0.8rem;
+            color: #a5b4fc;
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Wizard Textarea - Larger Input Fields */
+        .wizard-textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1rem;
+            font-family: inherit;
+            resize: vertical;
+            transition: all 0.3s ease;
+        }
+        
+        .wizard-textarea:focus {
+            outline: none;
+            border-color: #6366f1;
+            background: rgba(99, 102, 241, 0.1);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+        }
+        
+        .wizard-textarea::placeholder {
+            color: rgba(165, 180, 252, 0.6);
+        }
+        
+        /* Enhanced Modal Rating Scale */
+        .modal-body .rating-scale {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0.75rem;
+        }
+        
+        .modal-body .rating-option {
+            padding: 1.25rem 0.75rem;
+            min-width: auto;
+        }
+        
+        .modal-body .rating-value {
+            font-size: 1.75rem;
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .hero-title { font-size: 1.75rem; }
+            .yoga-teppich-container { max-width: 100%; }
+            .question-card { padding: 1.5rem; }
+            .rating-scale { gap: 0.25rem; }
+            .rating-option { min-width: 60px; padding: 0.75rem; }
+            .rating-value { font-size: 1.25rem; }
+            .nav-buttons { flex-direction: column; gap: 1rem; }
+            .btn-nav { width: 100%; justify-content: center; }
+            .results-overview { grid-template-columns: 1fr; }
+            .rating-row { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body class="starry-theme">
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="index.html">
+                    <img src="manuel-weiss-portrait.jpg" alt="MW" class="nav-logo">
+                    <span class="nav-name">Manuel Weiss</span>
+                </a>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html">Start</a>
+                <a href="hr-coach.html">HR Coach</a>
+                <a href="ai-digitalisierung.html">AI & Digitalisierung</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="selftest-hero">
+        <div class="container">
+            <div class="hero-icon">
+                <i class="fas fa-chart-pie"></i>
+            </div>
+            <h1 class="hero-title">HR Selbsttest</h1>
+            <p class="hero-subtitle">
+                Analysieren Sie Ihre HR-Organisation systematisch. 
+                Vision, Kultur, Organisation und Prozesse - umfassend bewertet mit konkreten Handlungsempfehlungen.
+            </p>
+            <div class="hero-badge">
+                <i class="fas fa-clipboard-check"></i>
+                <span>Wissenschaftlich fundierte HR-Analyse</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Container -->
+    <div class="selftest-container">
+        <!-- Progress Overview -->
+        <div class="progress-overview">
+            <div class="progress-card active" onclick="showSection('vision')">
+                <div class="progress-card-header">
+                    <div class="progress-icon"><i class="fas fa-eye"></i></div>
+                    <div class="progress-title">Vision</div>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" id="progress-vision" style="width: 0%"></div>
+                </div>
+                <div class="progress-text"><span id="progress-vision-text">0/4</span> Fragen beantwortet</div>
+            </div>
+            
+            <div class="progress-card" onclick="showSection('kultur')">
+                <div class="progress-card-header">
+                    <div class="progress-icon"><i class="fas fa-heart"></i></div>
+                    <div class="progress-title">Kultur</div>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" id="progress-kultur" style="width: 0%"></div>
+                </div>
+                <div class="progress-text"><span id="progress-kultur-text">0/9</span> Fragen beantwortet</div>
+            </div>
+            
+            <div class="progress-card" onclick="showSection('organisation')">
+                <div class="progress-card-header">
+                    <div class="progress-icon"><i class="fas fa-sitemap"></i></div>
+                    <div class="progress-title">Organisation</div>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" id="progress-organisation" style="width: 0%"></div>
+                </div>
+                <div class="progress-text"><span id="progress-organisation-text">0/7</span> Fragen beantwortet</div>
+            </div>
+            
+            <div class="progress-card" onclick="showSection('prozesse')">
+                <div class="progress-card-header">
+                    <div class="progress-icon"><i class="fas fa-cogs"></i></div>
+                    <div class="progress-title">Prozesse</div>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" id="progress-prozesse" style="width: 0%"></div>
+                </div>
+                <div class="progress-text"><span id="progress-prozesse-text">0/17</span> Bereiche bewertet</div>
+            </div>
+        </div>
+
+        <!-- HR Dimensionen Übersicht -->
+        <div class="yoga-teppich-section" id="yoga-teppich">
+            <div class="section-header">
+                <h2 class="section-title">HR-Dimensionen im Überblick</h2>
+                <p class="section-description">Klicken Sie auf einen Bereich, um mit der Bewertung zu beginnen</p>
+            </div>
+            
+            <div class="yoga-teppich-container">
+                <svg class="yoga-teppich-svg" viewBox="0 0 500 500">
+                    <!-- Outer Ring - HR Bereiche -->
+                    <circle cx="250" cy="250" r="240" fill="rgba(99, 102, 241, 0.1)" stroke="rgba(99, 102, 241, 0.3)" stroke-width="2"/>
+                    
+                    <!-- Middle Ring - Employee Experience -->
+                    <circle cx="250" cy="250" r="180" fill="rgba(139, 92, 246, 0.15)" stroke="rgba(139, 92, 246, 0.3)" stroke-width="2"/>
+                    
+                    <!-- Inner Ring - Persönliches Wachstum -->
+                    <circle cx="250" cy="250" r="120" fill="rgba(251, 191, 36, 0.2)" stroke="rgba(251, 191, 36, 0.4)" stroke-width="2"/>
+                    
+                    <!-- Center - Smiley -->
+                    <circle cx="250" cy="250" r="60" fill="rgba(251, 191, 36, 0.4)" stroke="#fbbf24" stroke-width="3"/>
+                    
+                    <!-- Smiley Face -->
+                    <circle cx="225" cy="240" r="8" fill="#1e1b4b"/>
+                    <circle cx="275" cy="240" r="8" fill="#1e1b4b"/>
+                    <path d="M 220 270 Q 250 300 280 270" stroke="#1e1b4b" stroke-width="4" fill="none" stroke-linecap="round"/>
+                    
+                    <!-- Labels - Outer Ring -->
+                    <text x="250" y="30" text-anchor="middle" fill="#a5b4fc" font-size="10" font-weight="600">Analytics & Reporting</text>
+                    <text x="400" y="80" text-anchor="middle" fill="#a5b4fc" font-size="10" font-weight="600">Strategie & Kultur</text>
+                    <text x="470" y="180" text-anchor="middle" fill="#a5b4fc" font-size="10" font-weight="600">Recruiting</text>
+                    <text x="470" y="320" text-anchor="middle" fill="#a5b4fc" font-size="10" font-weight="600">Onboarding</text>
+                    <text x="400" y="420" text-anchor="middle" fill="#a5b4fc" font-size="10" font-weight="600">HR Admin</text>
+                    <text x="250" y="480" text-anchor="middle" fill="#a5b4fc" font-size="10" font-weight="600">Performance Management</text>
+                    <text x="100" y="420" text-anchor="middle" fill="#a5b4fc" font-size="10" font-weight="600">Compensation</text>
+                    <text x="30" y="320" text-anchor="middle" fill="#a5b4fc" font-size="10" font-weight="600">Learning</text>
+                    <text x="30" y="180" text-anchor="middle" fill="#a5b4fc" font-size="10" font-weight="600">Leadership</text>
+                    <text x="100" y="80" text-anchor="middle" fill="#a5b4fc" font-size="10" font-weight="600">BGM</text>
+                    
+                    <!-- Labels - Middle Ring -->
+                    <text x="250" y="90" text-anchor="middle" fill="#c7d2fe" font-size="9">Employee Experience</text>
+                    <text x="330" y="140" text-anchor="middle" fill="#c7d2fe" font-size="8">Wellbeing</text>
+                    <text x="360" y="210" text-anchor="middle" fill="#c7d2fe" font-size="8">Identifikation</text>
+                    <text x="360" y="290" text-anchor="middle" fill="#c7d2fe" font-size="8">Veränderung</text>
+                    <text x="330" y="360" text-anchor="middle" fill="#c7d2fe" font-size="8">Zugehörigkeit</text>
+                    <text x="250" y="400" text-anchor="middle" fill="#c7d2fe" font-size="8">Unbesorgtheit</text>
+                    <text x="170" y="360" text-anchor="middle" fill="#c7d2fe" font-size="8">Partner</text>
+                    <text x="140" y="290" text-anchor="middle" fill="#c7d2fe" font-size="8">Purpose</text>
+                    <text x="140" y="210" text-anchor="middle" fill="#c7d2fe" font-size="8">Fairness</text>
+                    <text x="170" y="140" text-anchor="middle" fill="#c7d2fe" font-size="8">Wertschätzung</text>
+                    
+                    <!-- Center Label -->
+                    <text x="250" y="340" text-anchor="middle" fill="#fde68a" font-size="11" font-weight="600">Persönliches Wachstum</text>
+                    
+                    <!-- Clickable Areas -->
+                    <circle cx="250" cy="250" r="60" fill="transparent" style="cursor: pointer;" onclick="showSection('vision')"/>
+                </svg>
+            </div>
+        </div>
+
+        <!-- Vision Section -->
+        <div class="assessment-section active" id="section-vision">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fas fa-eye"></i> Vision</h2>
+                <p class="section-description">Das HR als treibende Kraft für die Unternehmensvision</p>
+            </div>
+            
+            <div class="question-card">
+                <div class="question-header">
+                    <div class="question-number">1</div>
+                    <div class="question-content">
+                        <h3>«Die HR-Vision ist mit der Unternehmensvision verknüpft.»</h3>
+                        <p>Wie gut ist Ihre HR-Vision in die Gesamtstrategie des Unternehmens eingebettet?</p>
+                    </div>
+                </div>
+                <div class="rating-scale" data-question="vision-1">
+                    <div class="rating-option" data-value="1" onclick="selectRating(this)">
+                        <div class="rating-value">1</div>
+                        <div class="rating-label">Trifft gar nicht zu</div>
+                    </div>
+                    <div class="rating-option" data-value="2" onclick="selectRating(this)">
+                        <div class="rating-value">2</div>
+                        <div class="rating-label">Trifft wenig zu</div>
+                    </div>
+                    <div class="rating-option" data-value="3" onclick="selectRating(this)">
+                        <div class="rating-value">3</div>
+                        <div class="rating-label">Teils/teils</div>
+                    </div>
+                    <div class="rating-option" data-value="4" onclick="selectRating(this)">
+                        <div class="rating-value">4</div>
+                        <div class="rating-label">Trifft zu</div>
+                    </div>
+                    <div class="rating-option" data-value="5" onclick="selectRating(this)">
+                        <div class="rating-value">5</div>
+                        <div class="rating-label">Trifft voll zu</div>
+                    </div>
+                </div>
+                <div class="tips-box">
+                    <div class="tips-box-header"><i class="fas fa-lightbulb"></i> Tipps zur Verbesserung</div>
+                    <ul>
+                        <li>Analysieren Sie die Unternehmensvision und leiten Sie HR-spezifische Ziele ab</li>
+                        <li>Erstellen Sie eine HR-Vision-Roadmap mit messbaren Meilensteinen</li>
+                        <li>Präsentieren Sie die HR-Vision regelmäßig in Management-Meetings</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="question-card">
+                <div class="question-header">
+                    <div class="question-number">2</div>
+                    <div class="question-content">
+                        <h3>«Die HR-Vision ist in unserem Berufsalltag verankert.»</h3>
+                        <p>Wie präsent ist die HR-Vision in der täglichen Arbeit Ihrer HR-Abteilung?</p>
+                    </div>
+                </div>
+                <div class="rating-scale" data-question="vision-2">
+                    <div class="rating-option" data-value="1" onclick="selectRating(this)">
+                        <div class="rating-value">1</div>
+                        <div class="rating-label">Trifft gar nicht zu</div>
+                    </div>
+                    <div class="rating-option" data-value="2" onclick="selectRating(this)">
+                        <div class="rating-value">2</div>
+                        <div class="rating-label">Trifft wenig zu</div>
+                    </div>
+                    <div class="rating-option" data-value="3" onclick="selectRating(this)">
+                        <div class="rating-value">3</div>
+                        <div class="rating-label">Teils/teils</div>
+                    </div>
+                    <div class="rating-option" data-value="4" onclick="selectRating(this)">
+                        <div class="rating-value">4</div>
+                        <div class="rating-label">Trifft zu</div>
+                    </div>
+                    <div class="rating-option" data-value="5" onclick="selectRating(this)">
+                        <div class="rating-value">5</div>
+                        <div class="rating-label">Trifft voll zu</div>
+                    </div>
+                </div>
+                <div class="tips-box">
+                    <div class="tips-box-header"><i class="fas fa-lightbulb"></i> Tipps zur Verbesserung</div>
+                    <ul>
+                        <li>Integrieren Sie die Vision in Team-Meetings und Entscheidungsprozesse</li>
+                        <li>Nutzen Sie visuelle Erinnerungen (Poster, Screensaver, Intranet)</li>
+                        <li>Verknüpfen Sie Projekterfolge mit der Vision</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="question-card">
+                <div class="question-header">
+                    <div class="question-number">3</div>
+                    <div class="question-content">
+                        <h3>«Wir haben einen konkreten Plan, wie wir die HR-Vision erreichen.»</h3>
+                        <p>Existiert eine dokumentierte HR-Strategie mit klaren Maßnahmen und Zeitrahmen?</p>
+                    </div>
+                </div>
+                <div class="rating-scale" data-question="vision-3">
+                    <div class="rating-option" data-value="1" onclick="selectRating(this)">
+                        <div class="rating-value">1</div>
+                        <div class="rating-label">Trifft gar nicht zu</div>
+                    </div>
+                    <div class="rating-option" data-value="2" onclick="selectRating(this)">
+                        <div class="rating-value">2</div>
+                        <div class="rating-label">Trifft wenig zu</div>
+                    </div>
+                    <div class="rating-option" data-value="3" onclick="selectRating(this)">
+                        <div class="rating-value">3</div>
+                        <div class="rating-label">Teils/teils</div>
+                    </div>
+                    <div class="rating-option" data-value="4" onclick="selectRating(this)">
+                        <div class="rating-value">4</div>
+                        <div class="rating-label">Trifft zu</div>
+                    </div>
+                    <div class="rating-option" data-value="5" onclick="selectRating(this)">
+                        <div class="rating-value">5</div>
+                        <div class="rating-label">Trifft voll zu</div>
+                    </div>
+                </div>
+                <div class="tips-box">
+                    <div class="tips-box-header"><i class="fas fa-lightbulb"></i> Tipps zur Verbesserung</div>
+                    <ul>
+                        <li>Erstellen Sie eine 3-Jahres-Roadmap mit Quartalsmeilensteinen</li>
+                        <li>Definieren Sie KPIs für jedes strategische Ziel</li>
+                        <li>Führen Sie regelmäßige Strategy-Review-Meetings durch</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="question-card">
+                <div class="question-header">
+                    <div class="question-number">4</div>
+                    <div class="question-content">
+                        <h3>«Alle Mitarbeitenden wissen wofür das HR steht.»</h3>
+                        <p>Wie bekannt ist die Rolle und der Mehrwert von HR im gesamten Unternehmen?</p>
+                    </div>
+                </div>
+                <div class="rating-scale" data-question="vision-4">
+                    <div class="rating-option" data-value="1" onclick="selectRating(this)">
+                        <div class="rating-value">1</div>
+                        <div class="rating-label">Trifft gar nicht zu</div>
+                    </div>
+                    <div class="rating-option" data-value="2" onclick="selectRating(this)">
+                        <div class="rating-value">2</div>
+                        <div class="rating-label">Trifft wenig zu</div>
+                    </div>
+                    <div class="rating-option" data-value="3" onclick="selectRating(this)">
+                        <div class="rating-value">3</div>
+                        <div class="rating-label">Teils/teils</div>
+                    </div>
+                    <div class="rating-option" data-value="4" onclick="selectRating(this)">
+                        <div class="rating-value">4</div>
+                        <div class="rating-label">Trifft zu</div>
+                    </div>
+                    <div class="rating-option" data-value="5" onclick="selectRating(this)">
+                        <div class="rating-value">5</div>
+                        <div class="rating-label">Trifft voll zu</div>
+                    </div>
+                </div>
+                <div class="tips-box">
+                    <div class="tips-box-header"><i class="fas fa-lightbulb"></i> Tipps zur Verbesserung</div>
+                    <ul>
+                        <li>Führen Sie eine HR-Awareness-Kampagne durch</li>
+                        <li>Kommunizieren Sie HR-Erfolge regelmäßig im Intranet</li>
+                        <li>Erstellen Sie einen HR-Newsletter für alle Mitarbeitenden</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="nav-buttons">
+                <div></div>
+                <button class="btn-nav btn-next" onclick="showSection('kultur')">
+                    Weiter zu Kultur <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Kultur Section -->
+        <div class="assessment-section" id="section-kultur">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fas fa-heart"></i> Kultur</h2>
+                <p class="section-description">Leadership, Communication und Change - die kulturellen Dimensionen Ihrer HR-Organisation</p>
+            </div>
+            
+            <!-- Leadership -->
+            <div class="question-card">
+                <div class="question-header">
+                    <div class="question-number">1</div>
+                    <div class="question-content">
+                        <h3>Leadership Style: Entscheidungsfindung</h3>
+                        <p>Wo steht Ihr Unternehmen auf dem Spektrum zwischen traditioneller und moderner Führung?</p>
+                    </div>
+                </div>
+                <div class="slider-container">
+                    <div class="slider-labels">
+                        <span>«Vorgesetzte treffen Entscheide»</span>
+                        <span>«Mitarbeitende treffen Entscheide selbst»</span>
+                    </div>
+                    <div class="slider-track" data-question="kultur-leadership-1">
+                        <div class="slider-fill" style="width: 50%"></div>
+                        <div class="slider-thumb" style="left: 50%"></div>
+                    </div>
+                    <div class="slider-value">Heute: 3 / Ziel: 4</div>
+                </div>
+                <div class="rating-row">
+                    <div class="rating-column">
+                        <div class="rating-column-label">Aktueller Stand (Heute)</div>
+                        <div class="rating-scale" data-question="kultur-leadership-1-ist">
+                            <div class="rating-option" data-value="1" onclick="selectRating(this)"><div class="rating-value">1</div></div>
+                            <div class="rating-option" data-value="2" onclick="selectRating(this)"><div class="rating-value">2</div></div>
+                            <div class="rating-option" data-value="3" onclick="selectRating(this)"><div class="rating-value">3</div></div>
+                            <div class="rating-option" data-value="4" onclick="selectRating(this)"><div class="rating-value">4</div></div>
+                            <div class="rating-option" data-value="5" onclick="selectRating(this)"><div class="rating-value">5</div></div>
+                        </div>
+                    </div>
+                    <div class="rating-column">
+                        <div class="rating-column-label">Ziel</div>
+                        <div class="rating-scale" data-question="kultur-leadership-1-soll">
+                            <div class="rating-option" data-value="1" onclick="selectRating(this)"><div class="rating-value">1</div></div>
+                            <div class="rating-option" data-value="2" onclick="selectRating(this)"><div class="rating-value">2</div></div>
+                            <div class="rating-option" data-value="3" onclick="selectRating(this)"><div class="rating-value">3</div></div>
+                            <div class="rating-option" data-value="4" onclick="selectRating(this)"><div class="rating-value">4</div></div>
+                            <div class="rating-option" data-value="5" onclick="selectRating(this)"><div class="rating-value">5</div></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tips-box">
+                    <div class="tips-box-header"><i class="fas fa-lightbulb"></i> Servant Leadership Best Practices</div>
+                    <ul>
+                        <li>Führen Sie ein Empowerment-Programm ein, das Mitarbeitenden mehr Entscheidungsbefugnis gibt</li>
+                        <li>Schulen Sie Führungskräfte in Coaching-Methoden</li>
+                        <li>Implementieren Sie dezentrale Entscheidungsstrukturen für Routinethemen</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="question-card">
+                <div class="question-header">
+                    <div class="question-number">2</div>
+                    <div class="question-content">
+                        <h3>Leadership Style: Teamführung</h3>
+                        <p>Wie werden Teams geführt und entwickelt?</p>
+                    </div>
+                </div>
+                <div class="slider-container">
+                    <div class="slider-labels">
+                        <span>«Vorgesetzte steuern das Team»</span>
+                        <span>«Vorgesetzte coachen das Team»</span>
+                    </div>
+                </div>
+                <div class="rating-row">
+                    <div class="rating-column">
+                        <div class="rating-column-label">Aktueller Stand (Heute)</div>
+                        <div class="rating-scale" data-question="kultur-leadership-2-ist">
+                            <div class="rating-option" data-value="1" onclick="selectRating(this)"><div class="rating-value">1</div></div>
+                            <div class="rating-option" data-value="2" onclick="selectRating(this)"><div class="rating-value">2</div></div>
+                            <div class="rating-option" data-value="3" onclick="selectRating(this)"><div class="rating-value">3</div></div>
+                            <div class="rating-option" data-value="4" onclick="selectRating(this)"><div class="rating-value">4</div></div>
+                            <div class="rating-option" data-value="5" onclick="selectRating(this)"><div class="rating-value">5</div></div>
+                        </div>
+                    </div>
+                    <div class="rating-column">
+                        <div class="rating-column-label">Ziel</div>
+                        <div class="rating-scale" data-question="kultur-leadership-2-soll">
+                            <div class="rating-option" data-value="1" onclick="selectRating(this)"><div class="rating-value">1</div></div>
+                            <div class="rating-option" data-value="2" onclick="selectRating(this)"><div class="rating-value">2</div></div>
+                            <div class="rating-option" data-value="3" onclick="selectRating(this)"><div class="rating-value">3</div></div>
+                            <div class="rating-option" data-value="4" onclick="selectRating(this)"><div class="rating-value">4</div></div>
+                            <div class="rating-option" data-value="5" onclick="selectRating(this)"><div class="rating-value">5</div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="question-card">
+                <div class="question-header">
+                    <div class="question-number">3</div>
+                    <div class="question-content">
+                        <h3>Leadership Style: Zielvereinbarung</h3>
+                        <p>Wie werden Ziele gesetzt und verfolgt?</p>
+                    </div>
+                </div>
+                <div class="slider-container">
+                    <div class="slider-labels">
+                        <span>«Wir arbeiten mit individuellen Zielen»</span>
+                        <span>«Wir arbeiten mit Teamzielen»</span>
+                    </div>
+                </div>
+                <div class="rating-row">
+                    <div class="rating-column">
+                        <div class="rating-column-label">Aktueller Stand (Heute)</div>
+                        <div class="rating-scale" data-question="kultur-leadership-3-ist">
+                            <div class="rating-option" data-value="1" onclick="selectRating(this)"><div class="rating-value">1</div></div>
+                            <div class="rating-option" data-value="2" onclick="selectRating(this)"><div class="rating-value">2</div></div>
+                            <div class="rating-option" data-value="3" onclick="selectRating(this)"><div class="rating-value">3</div></div>
+                            <div class="rating-option" data-value="4" onclick="selectRating(this)"><div class="rating-value">4</div></div>
+                            <div class="rating-option" data-value="5" onclick="selectRating(this)"><div class="rating-value">5</div></div>
+                        </div>
+                    </div>
+                    <div class="rating-column">
+                        <div class="rating-column-label">Ziel</div>
+                        <div class="rating-scale" data-question="kultur-leadership-3-soll">
+                            <div class="rating-option" data-value="1" onclick="selectRating(this)"><div class="rating-value">1</div></div>
+                            <div class="rating-option" data-value="2" onclick="selectRating(this)"><div class="rating-value">2</div></div>
+                            <div class="rating-option" data-value="3" onclick="selectRating(this)"><div class="rating-value">3</div></div>
+                            <div class="rating-option" data-value="4" onclick="selectRating(this)"><div class="rating-value">4</div></div>
+                            <div class="rating-option" data-value="5" onclick="selectRating(this)"><div class="rating-value">5</div></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tips-box">
+                    <div class="tips-box-header"><i class="fas fa-lightbulb"></i> OKR Best Practices</div>
+                    <ul>
+                        <li>Erwägen Sie die Einführung von OKRs (Objectives and Key Results)</li>
+                        <li>Kombinieren Sie Team- und individuelle Ziele für ausgewogene Anreize</li>
+                        <li>Führen Sie regelmäßige Team-Retrospektiven ein</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Communication -->
+            <div class="question-card">
+                <div class="question-header">
+                    <div class="question-number">4</div>
+                    <div class="question-content">
+                        <h3>Kommunikation: Transparenz</h3>
+                        <p>Wie offen wird in Ihrem Unternehmen kommuniziert?</p>
+                    </div>
+                </div>
+                <div class="slider-container">
+                    <div class="slider-labels">
+                        <span>«Vertraulichkeit ist wichtig»</span>
+                        <span>«Wir haben keine Geheimnisse»</span>
+                    </div>
+                </div>
+                <div class="rating-row">
+                    <div class="rating-column">
+                        <div class="rating-column-label">Aktueller Stand (Heute)</div>
+                        <div class="rating-scale" data-question="kultur-comm-1-ist">
+                            <div class="rating-option" data-value="1" onclick="selectRating(this)"><div class="rating-value">1</div></div>
+                            <div class="rating-option" data-value="2" onclick="selectRating(this)"><div class="rating-value">2</div></div>
+                            <div class="rating-option" data-value="3" onclick="selectRating(this)"><div class="rating-value">3</div></div>
+                            <div class="rating-option" data-value="4" onclick="selectRating(this)"><div class="rating-value">4</div></div>
+                            <div class="rating-option" data-value="5" onclick="selectRating(this)"><div class="rating-value">5</div></div>
+                        </div>
+                    </div>
+                    <div class="rating-column">
+                        <div class="rating-column-label">Ziel</div>
+                        <div class="rating-scale" data-question="kultur-comm-1-soll">
+                            <div class="rating-option" data-value="1" onclick="selectRating(this)"><div class="rating-value">1</div></div>
+                            <div class="rating-option" data-value="2" onclick="selectRating(this)"><div class="rating-value">2</div></div>
+                            <div class="rating-option" data-value="3" onclick="selectRating(this)"><div class="rating-value">3</div></div>
+                            <div class="rating-option" data-value="4" onclick="selectRating(this)"><div class="rating-value">4</div></div>
+                            <div class="rating-option" data-value="5" onclick="selectRating(this)"><div class="rating-value">5</div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="question-card">
+                <div class="question-header">
+                    <div class="question-number">5</div>
+                    <div class="question-content">
+                        <h3>Kommunikation: Feedback-Kultur</h3>
+                        <p>Wie wird Feedback im Unternehmen gelebt?</p>
+                    </div>
+                </div>
+                <div class="slider-container">
+                    <div class="slider-labels">
+                        <span>«Der Vorgesetzte bewertet die MA»</span>
+                        <span>«Feedback von mehreren Perspektiven (360°)»</span>
+                    </div>
+                </div>
+                <div class="rating-row">
+                    <div class="rating-column">
+                        <div class="rating-column-label">Aktueller Stand (Heute)</div>
+                        <div class="rating-scale" data-question="kultur-comm-2-ist">
+                            <div class="rating-option" data-value="1" onclick="selectRating(this)"><div class="rating-value">1</div></div>
+                            <div class="rating-option" data-value="2" onclick="selectRating(this)"><div class="rating-value">2</div></div>
+                            <div class="rating-option" data-value="3" onclick="selectRating(this)"><div class="rating-value">3</div></div>
+                            <div class="rating-option" data-value="4" onclick="selectRating(this)"><div class="rating-value">4</div></div>
+                            <div class="rating-option" data-value="5" onclick="selectRating(this)"><div class="rating-value">5</div></div>
+                        </div>
+                    </div>
+                    <div class="rating-column">
+                        <div class="rating-column-label">Ziel</div>
+                        <div class="rating-scale" data-question="kultur-comm-2-soll">
+                            <div class="rating-option" data-value="1" onclick="selectRating(this)"><div class="rating-value">1</div></div>
+                            <div class="rating-option" data-value="2" onclick="selectRating(this)"><div class="rating-value">2</div></div>
+                            <div class="rating-option" data-value="3" onclick="selectRating(this)"><div class="rating-value">3</div></div>
+                            <div class="rating-option" data-value="4" onclick="selectRating(this)"><div class="rating-value">4</div></div>
+                            <div class="rating-option" data-value="5" onclick="selectRating(this)"><div class="rating-value">5</div></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tips-box">
+                    <div class="tips-box-header"><i class="fas fa-lightbulb"></i> 360°-Feedback Best Practices</div>
+                    <ul>
+                        <li>Implementieren Sie anonyme Peer-Feedback-Tools</li>
+                        <li>Schulen Sie Mitarbeitende im Geben und Empfangen von Feedback</li>
+                        <li>Führen Sie regelmäßige Feedback-Gespräche außerhalb des MAG ein</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="question-card">
+                <div class="question-header">
+                    <div class="question-number">6</div>
+                    <div class="question-content">
+                        <h3>Kommunikation: Entscheidungsfluss</h3>
+                        <p>Wie fließen Informationen bei Entscheidungen?</p>
+                    </div>
+                </div>
+                <div class="slider-container">
+                    <div class="slider-labels">
+                        <span>«Geschäftsleitung entscheidet allein»</span>
+                        <span>«Infos von allen Hierarchiestufen fließen ein»</span>
+                    </div>
+                </div>
+                <div class="rating-row">
+                    <div class="rating-column">
+                        <div class="rating-column-label">Aktueller Stand (Heute)</div>
+                        <div class="rating-scale" data-question="kultur-comm-3-ist">
+                            <div class="rating-option" data-value="1" onclick="selectRating(this)"><div class="rating-value">1</div></div>
+                            <div class="rating-option" data-value="2" onclick="selectRating(this)"><div class="rating-value">2</div></div>
+                            <div class="rating-option" data-value="3" onclick="selectRating(this)"><div class="rating-value">3</div></div>
+                            <div class="rating-option" data-value="4" onclick="selectRating(this)"><div class="rating-value">4</div></div>
+                            <div class="rating-option" data-value="5" onclick="selectRating(this)"><div class="rating-value">5</div></div>
+                        </div>
+                    </div>
+                    <div class="rating-column">
+                        <div class="rating-column-label">Ziel</div>
+                        <div class="rating-scale" data-question="kultur-comm-3-soll">
+                            <div class="rating-option" data-value="1" onclick="selectRating(this)"><div class="rating-value">1</div></div>
+                            <div class="rating-option" data-value="2" onclick="selectRating(this)"><div class="rating-value">2</div></div>
+                            <div class="rating-option" data-value="3" onclick="selectRating(this)"><div class="rating-value">3</div></div>
+                            <div class="rating-option" data-value="4" onclick="selectRating(this)"><div class="rating-value">4</div></div>
+                            <div class="rating-option" data-value="5" onclick="selectRating(this)"><div class="rating-value">5</div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Change -->
+            <div class="question-card">
+                <div class="question-header">
+                    <div class="question-number">7</div>
+                    <div class="question-content">
+                        <h3>Change: Grundhaltung</h3>
+                        <p>Wie steht Ihr Unternehmen zu Veränderung und Neuem?</p>
+                    </div>
+                </div>
+                <div class="slider-container">
+                    <div class="slider-labels">
+                        <span>«Effizienz- und Qualitätssteigerung»</span>
+                        <span>«Wir stehen Neuem offen gegenüber»</span>
+                    </div>
+                </div>
+                <div class="rating-row">
+                    <div class="rating-column">
+                        <div class="rating-column-label">Aktueller Stand (Heute)</div>
+                        <div class="rating-scale" data-question="kultur-change-1-ist">
+                            <div class="rating-option" data-value="1" onclick="selectRating(this)"><div class="rating-value">1</div></div>
+                            <div class="rating-option" data-value="2" onclick="selectRating(this)"><div class="rating-value">2</div></div>
+                            <div class="rating-option" data-value="3" onclick="selectRating(this)"><div class="rating-value">3</div></div>
+                            <div class="rating-option" data-value="4" onclick="selectRating(this)"><div class="rating-value">4</div></div>
+                            <div class="rating-option" data-value="5" onclick="selectRating(this)"><div class="rating-value">5</div></div>
+                        </div>
+                    </div>
+                    <div class="rating-column">
+                        <div class="rating-column-label">Ziel</div>
+                        <div class="rating-scale" data-question="kultur-change-1-soll">
+                            <div class="rating-option" data-value="1" onclick="selectRating(this)"><div class="rating-value">1</div></div>
+                            <div class="rating-option" data-value="2" onclick="selectRating(this)"><div class="rating-value">2</div></div>
+                            <div class="rating-option" data-value="3" onclick="selectRating(this)"><div class="rating-value">3</div></div>
+                            <div class="rating-option" data-value="4" onclick="selectRating(this)"><div class="rating-value">4</div></div>
+                            <div class="rating-option" data-value="5" onclick="selectRating(this)"><div class="rating-value">5</div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="question-card">
+                <div class="question-header">
+                    <div class="question-number">8</div>
+                    <div class="question-content">
+                        <h3>Change: Fehlerkultur</h3>
+                        <p>Wie wird mit Fehlern umgegangen?</p>
+                    </div>
+                </div>
+                <div class="slider-container">
+                    <div class="slider-labels">
+                        <span>«Wir verbessern das Bewährte»</span>
+                        <span>«Wir schämen uns nicht für Fehler»</span>
+                    </div>
+                </div>
+                <div class="rating-row">
+                    <div class="rating-column">
+                        <div class="rating-column-label">Aktueller Stand (Heute)</div>
+                        <div class="rating-scale" data-question="kultur-change-2-ist">
+                            <div class="rating-option" data-value="1" onclick="selectRating(this)"><div class="rating-value">1</div></div>
+                            <div class="rating-option" data-value="2" onclick="selectRating(this)"><div class="rating-value">2</div></div>
+                            <div class="rating-option" data-value="3" onclick="selectRating(this)"><div class="rating-value">3</div></div>
+                            <div class="rating-option" data-value="4" onclick="selectRating(this)"><div class="rating-value">4</div></div>
+                            <div class="rating-option" data-value="5" onclick="selectRating(this)"><div class="rating-value">5</div></div>
+                        </div>
+                    </div>
+                    <div class="rating-column">
+                        <div class="rating-column-label">Ziel</div>
+                        <div class="rating-scale" data-question="kultur-change-2-soll">
+                            <div class="rating-option" data-value="1" onclick="selectRating(this)"><div class="rating-value">1</div></div>
+                            <div class="rating-option" data-value="2" onclick="selectRating(this)"><div class="rating-value">2</div></div>
+                            <div class="rating-option" data-value="3" onclick="selectRating(this)"><div class="rating-value">3</div></div>
+                            <div class="rating-option" data-value="4" onclick="selectRating(this)"><div class="rating-value">4</div></div>
+                            <div class="rating-option" data-value="5" onclick="selectRating(this)"><div class="rating-value">5</div></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tips-box">
+                    <div class="tips-box-header"><i class="fas fa-lightbulb"></i> Psychologische Sicherheit fördern</div>
+                    <ul>
+                        <li>Führen Sie "Fail Forward"-Sessions ein, in denen aus Fehlern gelernt wird</li>
+                        <li>Etablieren Sie eine "No Blame"-Kultur bei Post-Mortems</li>
+                        <li>Feiern Sie Experimente, auch wenn sie scheitern</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="question-card">
+                <div class="question-header">
+                    <div class="question-number">9</div>
+                    <div class="question-content">
+                        <h3>Change: Innovationsfreiraum</h3>
+                        <p>Wie viel Raum gibt es für eigene Ideen und Innovation?</p>
+                    </div>
+                </div>
+                <div class="slider-container">
+                    <div class="slider-labels">
+                        <span>«Geschäftsleitung gibt Projekte vor»</span>
+                        <span>«Freiraum für eigene Ideen»</span>
+                    </div>
+                </div>
+                <div class="rating-row">
+                    <div class="rating-column">
+                        <div class="rating-column-label">Aktueller Stand (Heute)</div>
+                        <div class="rating-scale" data-question="kultur-change-3-ist">
+                            <div class="rating-option" data-value="1" onclick="selectRating(this)"><div class="rating-value">1</div></div>
+                            <div class="rating-option" data-value="2" onclick="selectRating(this)"><div class="rating-value">2</div></div>
+                            <div class="rating-option" data-value="3" onclick="selectRating(this)"><div class="rating-value">3</div></div>
+                            <div class="rating-option" data-value="4" onclick="selectRating(this)"><div class="rating-value">4</div></div>
+                            <div class="rating-option" data-value="5" onclick="selectRating(this)"><div class="rating-value">5</div></div>
+                        </div>
+                    </div>
+                    <div class="rating-column">
+                        <div class="rating-column-label">Ziel</div>
+                        <div class="rating-scale" data-question="kultur-change-3-soll">
+                            <div class="rating-option" data-value="1" onclick="selectRating(this)"><div class="rating-value">1</div></div>
+                            <div class="rating-option" data-value="2" onclick="selectRating(this)"><div class="rating-value">2</div></div>
+                            <div class="rating-option" data-value="3" onclick="selectRating(this)"><div class="rating-value">3</div></div>
+                            <div class="rating-option" data-value="4" onclick="selectRating(this)"><div class="rating-value">4</div></div>
+                            <div class="rating-option" data-value="5" onclick="selectRating(this)"><div class="rating-value">5</div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="nav-buttons">
+                <button class="btn-nav btn-back" onclick="showSection('vision')">
+                    <i class="fas fa-arrow-left"></i> Zurück zu Vision
+                </button>
+                <button class="btn-nav btn-next" onclick="showSection('organisation')">
+                    Weiter zu Organisation <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Organisation Section -->
+        <div class="assessment-section" id="section-organisation">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fas fa-sitemap"></i> Organisation</h2>
+                <p class="section-description">Merkmale, Einbettung und Ressourcenverteilung Ihrer HR-Organisation</p>
+            </div>
+            
+            <div class="question-card">
+                <div class="question-header">
+                    <div class="question-number">1</div>
+                    <div class="question-content">
+                        <h3>Reaktivität vs. Proaktivität</h3>
+                        <p>Wie agiert Ihre HR-Abteilung - reaktiv auf Anfragen oder proaktiv mit Initiativen?</p>
+                    </div>
+                </div>
+                <div class="rating-row">
+                    <div class="rating-column">
+                        <div class="rating-column-label">Aktueller Stand: Reaktiv ← → Proaktiv</div>
+                        <div class="rating-scale" data-question="org-reactive-ist">
+                            <div class="rating-option" data-value="1" onclick="selectRating(this)"><div class="rating-value">1</div><div class="rating-label">Sehr reaktiv</div></div>
+                            <div class="rating-option" data-value="2" onclick="selectRating(this)"><div class="rating-value">2</div></div>
+                            <div class="rating-option" data-value="3" onclick="selectRating(this)"><div class="rating-value">3</div></div>
+                            <div class="rating-option" data-value="4" onclick="selectRating(this)"><div class="rating-value">4</div></div>
+                            <div class="rating-option" data-value="5" onclick="selectRating(this)"><div class="rating-value">5</div><div class="rating-label">Sehr proaktiv</div></div>
+                        </div>
+                    </div>
+                    <div class="rating-column">
+                        <div class="rating-column-label">Ziel</div>
+                        <div class="rating-scale" data-question="org-reactive-soll">
+                            <div class="rating-option" data-value="1" onclick="selectRating(this)"><div class="rating-value">1</div></div>
+                            <div class="rating-option" data-value="2" onclick="selectRating(this)"><div class="rating-value">2</div></div>
+                            <div class="rating-option" data-value="3" onclick="selectRating(this)"><div class="rating-value">3</div></div>
+                            <div class="rating-option" data-value="4" onclick="selectRating(this)"><div class="rating-value">4</div></div>
+                            <div class="rating-option" data-value="5" onclick="selectRating(this)"><div class="rating-value">5</div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="question-card">
+                <div class="question-header">
+                    <div class="question-number">2</div>
+                    <div class="question-content">
+                        <h3>Inhouse vs. Externalisiert</h3>
+                        <p>Wie viel HR-Arbeit wird intern erledigt vs. an externe Partner ausgelagert?</p>
+                    </div>
+                </div>
+                <div class="rating-row">
+                    <div class="rating-column">
+                        <div class="rating-column-label">Aktueller Stand: Inhouse ← → Extern</div>
+                        <div class="rating-scale" data-question="org-inhouse-ist">
+                            <div class="rating-option" data-value="1" onclick="selectRating(this)"><div class="rating-value">1</div><div class="rating-label">Alles intern</div></div>
+                            <div class="rating-option" data-value="2" onclick="selectRating(this)"><div class="rating-value">2</div></div>
+                            <div class="rating-option" data-value="3" onclick="selectRating(this)"><div class="rating-value">3</div></div>
+                            <div class="rating-option" data-value="4" onclick="selectRating(this)"><div class="rating-value">4</div></div>
+                            <div class="rating-option" data-value="5" onclick="selectRating(this)"><div class="rating-value">5</div><div class="rating-label">Viel extern</div></div>
+                        </div>
+                    </div>
+                    <div class="rating-column">
+                        <div class="rating-column-label">Ziel</div>
+                        <div class="rating-scale" data-question="org-inhouse-soll">
+                            <div class="rating-option" data-value="1" onclick="selectRating(this)"><div class="rating-value">1</div></div>
+                            <div class="rating-option" data-value="2" onclick="selectRating(this)"><div class="rating-value">2</div></div>
+                            <div class="rating-option" data-value="3" onclick="selectRating(this)"><div class="rating-value">3</div></div>
+                            <div class="rating-option" data-value="4" onclick="selectRating(this)"><div class="rating-value">4</div></div>
+                            <div class="rating-option" data-value="5" onclick="selectRating(this)"><div class="rating-value">5</div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="question-card">
+                <div class="question-header">
+                    <div class="question-number">3</div>
+                    <div class="question-content">
+                        <h3>Prozessorientiert vs. Kundenorientiert</h3>
+                        <p>Worauf liegt der Fokus - standardisierte Prozesse oder individuelle Kundenbetreuung?</p>
+                    </div>
+                </div>
+                <div class="rating-row">
+                    <div class="rating-column">
+                        <div class="rating-column-label">Aktueller Stand: Prozess ← → Kunde</div>
+                        <div class="rating-scale" data-question="org-process-ist">
+                            <div class="rating-option" data-value="1" onclick="selectRating(this)"><div class="rating-value">1</div><div class="rating-label">Prozessfokus</div></div>
+                            <div class="rating-option" data-value="2" onclick="selectRating(this)"><div class="rating-value">2</div></div>
+                            <div class="rating-option" data-value="3" onclick="selectRating(this)"><div class="rating-value">3</div></div>
+                            <div class="rating-option" data-value="4" onclick="selectRating(this)"><div class="rating-value">4</div></div>
+                            <div class="rating-option" data-value="5" onclick="selectRating(this)"><div class="rating-value">5</div><div class="rating-label">Kundenfokus</div></div>
+                        </div>
+                    </div>
+                    <div class="rating-column">
+                        <div class="rating-column-label">Ziel</div>
+                        <div class="rating-scale" data-question="org-process-soll">
+                            <div class="rating-option" data-value="1" onclick="selectRating(this)"><div class="rating-value">1</div></div>
+                            <div class="rating-option" data-value="2" onclick="selectRating(this)"><div class="rating-value">2</div></div>
+                            <div class="rating-option" data-value="3" onclick="selectRating(this)"><div class="rating-value">3</div></div>
+                            <div class="rating-option" data-value="4" onclick="selectRating(this)"><div class="rating-value">4</div></div>
+                            <div class="rating-option" data-value="5" onclick="selectRating(this)"><div class="rating-value">5</div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="question-card">
+                <div class="question-header">
+                    <div class="question-number">4</div>
+                    <div class="question-content">
+                        <h3>Generalist vs. Spezialist</h3>
+                        <p>Sind Ihre HR-Mitarbeitenden eher Generalisten oder Spezialisten?</p>
+                    </div>
+                </div>
+                <div class="rating-row">
+                    <div class="rating-column">
+                        <div class="rating-column-label">Aktueller Stand: Generalist ← → Spezialist</div>
+                        <div class="rating-scale" data-question="org-generalist-ist">
+                            <div class="rating-option" data-value="1" onclick="selectRating(this)"><div class="rating-value">1</div><div class="rating-label">Generalisten</div></div>
+                            <div class="rating-option" data-value="2" onclick="selectRating(this)"><div class="rating-value">2</div></div>
+                            <div class="rating-option" data-value="3" onclick="selectRating(this)"><div class="rating-value">3</div></div>
+                            <div class="rating-option" data-value="4" onclick="selectRating(this)"><div class="rating-value">4</div></div>
+                            <div class="rating-option" data-value="5" onclick="selectRating(this)"><div class="rating-value">5</div><div class="rating-label">Spezialisten</div></div>
+                        </div>
+                    </div>
+                    <div class="rating-column">
+                        <div class="rating-column-label">Ziel</div>
+                        <div class="rating-scale" data-question="org-generalist-soll">
+                            <div class="rating-option" data-value="1" onclick="selectRating(this)"><div class="rating-value">1</div></div>
+                            <div class="rating-option" data-value="2" onclick="selectRating(this)"><div class="rating-value">2</div></div>
+                            <div class="rating-option" data-value="3" onclick="selectRating(this)"><div class="rating-value">3</div></div>
+                            <div class="rating-option" data-value="4" onclick="selectRating(this)"><div class="rating-value">4</div></div>
+                            <div class="rating-option" data-value="5" onclick="selectRating(this)"><div class="rating-value">5</div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="question-card">
+                <div class="question-header">
+                    <div class="question-number">5</div>
+                    <div class="question-content">
+                        <h3>Ist HR in der Geschäftsleitung vertreten?</h3>
+                        <p>Hat HR einen Sitz am strategischen Tisch?</p>
+                    </div>
+                </div>
+                <div class="rating-scale" data-question="org-gl">
+                    <div class="rating-option" data-value="1" onclick="selectRating(this)">
+                        <div class="rating-value"><i class="fas fa-times"></i></div>
+                        <div class="rating-label">Nein, nicht vertreten</div>
+                    </div>
+                    <div class="rating-option" data-value="3" onclick="selectRating(this)">
+                        <div class="rating-value"><i class="fas fa-minus"></i></div>
+                        <div class="rating-label">Teilweise / Gast</div>
+                    </div>
+                    <div class="rating-option" data-value="5" onclick="selectRating(this)">
+                        <div class="rating-value"><i class="fas fa-check"></i></div>
+                        <div class="rating-label">Ja, volles Mitglied</div>
+                    </div>
+                </div>
+                <div class="tips-box">
+                    <div class="tips-box-header"><i class="fas fa-lightbulb"></i> CHRO in der GL</div>
+                    <ul>
+                        <li>HR auf C-Level erhöht die strategische Bedeutung von People-Themen</li>
+                        <li>Bereiten Sie regelmäßig strategische HR-Insights für die GL vor</li>
+                        <li>Zeigen Sie den Business Impact von HR-Initiativen mit Zahlen</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="question-card">
+                <div class="question-header">
+                    <div class="question-number">6</div>
+                    <div class="question-content">
+                        <h3>HR Effort-Verteilung (Aktuell)</h3>
+                        <p>Wie verteilt sich die HR-Arbeitszeit aktuell auf diese drei Bereiche? (Muss 100% ergeben)</p>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1rem;">
+                    <div class="rating-column">
+                        <div class="rating-column-label">Administration</div>
+                        <input type="number" id="effort-admin-ist" value="70" min="0" max="100" style="width: 100%; padding: 1rem; background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.1); border-radius: 12px; color: white; font-size: 1.5rem; text-align: center;" onchange="updateEffortTotal('ist')">
+                        <div style="text-align: center; color: #a5b4fc; font-size: 0.8rem;">%</div>
+                    </div>
+                    <div class="rating-column">
+                        <div class="rating-column-label">Talent / People Management</div>
+                        <input type="number" id="effort-talent-ist" value="20" min="0" max="100" style="width: 100%; padding: 1rem; background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.1); border-radius: 12px; color: white; font-size: 1.5rem; text-align: center;" onchange="updateEffortTotal('ist')">
+                        <div style="text-align: center; color: #a5b4fc; font-size: 0.8rem;">%</div>
+                    </div>
+                    <div class="rating-column">
+                        <div class="rating-column-label">Strategie</div>
+                        <input type="number" id="effort-strategy-ist" value="10" min="0" max="100" style="width: 100%; padding: 1rem; background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.1); border-radius: 12px; color: white; font-size: 1.5rem; text-align: center;" onchange="updateEffortTotal('ist')">
+                        <div style="text-align: center; color: #a5b4fc; font-size: 0.8rem;">%</div>
+                    </div>
+                </div>
+                <div id="effort-total-ist" style="text-align: center; color: #10b981; font-weight: 600;">Total: 100%</div>
+            </div>
+            
+            <div class="question-card">
+                <div class="question-header">
+                    <div class="question-number">7</div>
+                    <div class="question-content">
+                        <h3>HR Effort-Verteilung (Ziel)</h3>
+                        <p>Wie sollte sich die HR-Arbeitszeit idealerweise verteilen?</p>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1rem;">
+                    <div class="rating-column">
+                        <div class="rating-column-label">Administration</div>
+                        <input type="number" id="effort-admin-soll" value="20" min="0" max="100" style="width: 100%; padding: 1rem; background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.1); border-radius: 12px; color: white; font-size: 1.5rem; text-align: center;" onchange="updateEffortTotal('soll')">
+                        <div style="text-align: center; color: #a5b4fc; font-size: 0.8rem;">%</div>
+                    </div>
+                    <div class="rating-column">
+                        <div class="rating-column-label">Talent / People Management</div>
+                        <input type="number" id="effort-talent-soll" value="60" min="0" max="100" style="width: 100%; padding: 1rem; background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.1); border-radius: 12px; color: white; font-size: 1.5rem; text-align: center;" onchange="updateEffortTotal('soll')">
+                        <div style="text-align: center; color: #a5b4fc; font-size: 0.8rem;">%</div>
+                    </div>
+                    <div class="rating-column">
+                        <div class="rating-column-label">Strategie</div>
+                        <input type="number" id="effort-strategy-soll" value="20" min="0" max="100" style="width: 100%; padding: 1rem; background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.1); border-radius: 12px; color: white; font-size: 1.5rem; text-align: center;" onchange="updateEffortTotal('soll')">
+                        <div style="text-align: center; color: #a5b4fc; font-size: 0.8rem;">%</div>
+                    </div>
+                </div>
+                <div id="effort-total-soll" style="text-align: center; color: #10b981; font-weight: 600;">Total: 100%</div>
+                
+                <div class="tips-box">
+                    <div class="tips-box-header"><i class="fas fa-lightbulb"></i> Best Practice Verteilung</div>
+                    <ul>
+                        <li><strong>Moderne HR-Organisationen:</strong> 20% Admin, 60% Talent/People, 20% Strategie</li>
+                        <li>Durch Automatisierung und Self-Service kann Administration auf unter 25% reduziert werden</li>
+                        <li>Dies schafft Freiraum für strategische HR-Arbeit und Mitarbeiterentwicklung</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="nav-buttons">
+                <button class="btn-nav btn-back" onclick="showSection('kultur')">
+                    <i class="fas fa-arrow-left"></i> Zurück zu Kultur
+                </button>
+                <button class="btn-nav btn-next" onclick="showSection('prozesse')">
+                    Weiter zu Prozesse <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Prozesse Section -->
+        <div class="assessment-section" id="section-prozesse">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fas fa-cogs"></i> Prozesse</h2>
+                <p class="section-description">Bewerten Sie jeden HR-Prozess nach Digitalisierungslevel, Prozessqualität und Wichtigkeit</p>
+            </div>
+            
+            <div class="process-grid" id="processGrid">
+                <!-- Will be populated by JavaScript -->
+            </div>
+            
+            <div class="nav-buttons">
+                <button class="btn-nav btn-back" onclick="showSection('organisation')">
+                    <i class="fas fa-arrow-left"></i> Zurück zu Organisation
+                </button>
+                <button class="btn-nav btn-results" onclick="showSection('results')">
+                    <i class="fas fa-chart-pie"></i> Ergebnisse anzeigen
+                </button>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div class="assessment-section" id="section-results">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fas fa-chart-pie"></i> Ihre Ergebnisse</h2>
+                <p class="section-description">Übersicht über Ihren HR Health Check</p>
+            </div>
+            
+            <div class="results-overview" id="resultsOverview">
+                <!-- Will be populated by JavaScript -->
+            </div>
+            
+            <div class="recommendations-section" id="recommendationsSection">
+                <h3 style="font-size: 1.5rem; font-weight: 700; color: #fff; margin-bottom: 1.5rem;">
+                    <i class="fas fa-lightbulb" style="color: #fbbf24;"></i> Handlungsempfehlungen
+                </h3>
+                <div id="recommendationsList">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+            
+            <div class="nav-buttons">
+                <button class="btn-nav btn-back" onclick="showSection('prozesse')">
+                    <i class="fas fa-arrow-left"></i> Zurück bearbeiten
+                </button>
+                <button class="btn-nav btn-next" onclick="downloadResults()">
+                    <i class="fas fa-download"></i> Ergebnisse herunterladen
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Process Deep Dive Modal -->
+    <div class="modal-overlay" id="processModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Prozess bewerten</h2>
+                <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Will be populated by JavaScript -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn-nav btn-back" onclick="closeModal()">Abbrechen</button>
+                <button class="btn-nav btn-next" onclick="saveProcessRating()">Speichern</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/shooting-stars.js"></script>
+    <script>
+        // HR Selbsttest Data
+        const hrProcesses = [
+            { id: 'recruiting', name: 'Recruiting & Workforce Planning', icon: 'fa-user-plus', color: '#6366f1', description: 'Stellenausschreibungen, Bewerbermanagement, Workforce Planning' },
+            { id: 'onboarding', name: 'On- & Offboarding', icon: 'fa-handshake', color: '#8b5cf6', description: 'Einarbeitung neuer Mitarbeitender und Austrittsprozesse' },
+            { id: 'stammdaten', name: 'Stammdatenmanagement', icon: 'fa-database', color: '#06b6d4', description: 'Organisations- und Mitarbeiterstammdaten' },
+            { id: 'zeiterfassung', name: 'Zeiterfassung', icon: 'fa-clock', color: '#10b981', description: 'Arbeitszeiterfassung und Dienstplanung' },
+            { id: 'salaeradmin', name: 'Saläradministration & PK', icon: 'fa-money-bill-wave', color: '#f59e0b', description: 'Lohnbuchhaltung und Pensionskasse' },
+            { id: 'reisen', name: 'Reisen & Spesen', icon: 'fa-plane', color: '#ef4444', description: 'Reisekostenabrechnung und Spesenmanagement' },
+            { id: 'performance', name: 'Performance Management', icon: 'fa-chart-line', color: '#ec4899', description: 'Mitarbeitergespräche und Leistungsbeurteilung' },
+            { id: 'verguetung', name: 'Vergütung', icon: 'fa-coins', color: '#84cc16', description: 'Lohn- und Bonusplanung' },
+            { id: 'lernen', name: 'Lernen & Entwickeln', icon: 'fa-graduation-cap', color: '#14b8a6', description: 'Weiterbildung und E-Learning' },
+            { id: 'nachfolge', name: 'Nachfolgeplanung', icon: 'fa-users-cog', color: '#a855f7', description: 'Talentmanagement und Succession Planning' },
+            { id: 'zeugnis', name: 'Arbeits- & Zwischenzeugnis', icon: 'fa-file-alt', color: '#f97316', description: 'Zeugniserstellung und -verwaltung' },
+            { id: 'kommunikation', name: 'Kommunikation', icon: 'fa-bullhorn', color: '#0ea5e9', description: 'Interne HR-Kommunikation' },
+            { id: 'portal', name: 'HR Portal', icon: 'fa-globe', color: '#22c55e', description: 'Mitarbeiter Self-Service Portal' },
+            { id: 'analytics', name: 'Reporting & Analytics', icon: 'fa-chart-bar', color: '#eab308', description: 'HR-Kennzahlen und Auswertungen' },
+            { id: 'dokumente', name: 'Dokumentenmanagement', icon: 'fa-folder-open', color: '#64748b', description: 'Digitale Personalakten' },
+            { id: 'wellbeing', name: 'Wellbeing / BGM', icon: 'fa-heart', color: '#dc2626', description: 'Betriebliches Gesundheitsmanagement' },
+            { id: 'external', name: 'Ext. Workforce Management', icon: 'fa-user-tie', color: '#7c3aed', description: 'Externe Mitarbeitende und Freelancer' }
+        ];
+
+        let assessmentData = {
+            vision: {},
+            kultur: {},
+            organisation: {},
+            prozesse: {}
+        };
+
+        // Load saved data
+        function loadSavedData() {
+            const saved = localStorage.getItem('hrSelbsttest');
+            if (saved) {
+                assessmentData = JSON.parse(saved);
+                updateAllProgress();
+            }
+        }
+
+        // Save data
+        function saveData() {
+            localStorage.setItem('hrSelbsttest', JSON.stringify(assessmentData));
+            updateAllProgress();
+        }
+
+        // Select rating
+        function selectRating(element) {
+            const scale = element.closest('.rating-scale');
+            const question = scale.dataset.question;
+            const value = parseInt(element.dataset.value);
+            
+            scale.querySelectorAll('.rating-option').forEach(opt => opt.classList.remove('selected'));
+            element.classList.add('selected');
+            
+            // Determine category
+            let category = 'vision';
+            if (question.startsWith('kultur')) category = 'kultur';
+            else if (question.startsWith('org')) category = 'organisation';
+            else if (question.startsWith('process')) category = 'prozesse';
+            
+            assessmentData[category][question] = value;
+            saveData();
+        }
+
+        // Update effort total
+        function updateEffortTotal(type) {
+            const admin = parseInt(document.getElementById(`effort-admin-${type}`).value) || 0;
+            const talent = parseInt(document.getElementById(`effort-talent-${type}`).value) || 0;
+            const strategy = parseInt(document.getElementById(`effort-strategy-${type}`).value) || 0;
+            const total = admin + talent + strategy;
+            
+            const totalElement = document.getElementById(`effort-total-${type}`);
+            totalElement.textContent = `Total: ${total}%`;
+            totalElement.style.color = total === 100 ? '#10b981' : '#ef4444';
+            
+            assessmentData.organisation[`effort-${type}`] = { admin, talent, strategy };
+            saveData();
+        }
+
+        // Show section
+        function showSection(sectionId) {
+            document.querySelectorAll('.assessment-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.progress-card').forEach(c => c.classList.remove('active'));
+            
+            const section = document.getElementById(`section-${sectionId}`);
+            if (section) {
+                section.classList.add('active');
+                
+                // Update progress card
+                const progressCard = document.querySelector(`.progress-card[onclick*="${sectionId}"]`);
+                if (progressCard) progressCard.classList.add('active');
+            }
+            
+            // Special handling for results
+            if (sectionId === 'results') {
+                generateResults();
+            }
+            
+            // Scroll to top
+            window.scrollTo({ top: 200, behavior: 'smooth' });
+        }
+
+        // Initialize process grid
+        function initProcessGrid() {
+            const grid = document.getElementById('processGrid');
+            grid.innerHTML = hrProcesses.map(process => `
+                <div class="process-card ${assessmentData.prozesse[process.id] ? 'completed' : ''}" onclick="openProcessModal('${process.id}')">
+                    <div class="process-card-icon" style="background: ${process.color};">
+                        <i class="fas ${process.icon}"></i>
+                    </div>
+                    <h4>${process.name}</h4>
+                    <p>${process.description}</p>
+                    <div class="process-card-status ${assessmentData.prozesse[process.id] ? 'completed' : 'pending'}">
+                        <i class="fas ${assessmentData.prozesse[process.id] ? 'fa-check-circle' : 'fa-clock'}"></i>
+                        <span>${assessmentData.prozesse[process.id] ? 'Bewertet' : 'Ausstehend'}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Open process modal
+        function openProcessModal(processId) {
+            const process = hrProcesses.find(p => p.id === processId);
+            const data = assessmentData.prozesse[processId] || {};
+            
+            document.getElementById('modalTitle').textContent = process.name;
+            document.getElementById('modalBody').innerHTML = `
+                <input type="hidden" id="currentProcessId" value="${processId}">
+                
+                <div class="rating-group">
+                    <div class="rating-group-title">
+                        <i class="fas fa-digital-tachograph" style="color: #6366f1;"></i>
+                        Digitalisierungslevel
+                    </div>
+                    <div class="rating-row">
+                        <div class="rating-column">
+                            <div class="rating-column-label">IST-Zustand (1 = sehr niedrig, 5 = voll digitalisiert)</div>
+                            <div class="rating-scale" data-question="modal-digi-ist">
+                                ${[1,2,3,4,5].map(v => `
+                                    <div class="rating-option ${data.digiIst === v ? 'selected' : ''}" data-value="${v}" onclick="selectModalRating(this)">
+                                        <div class="rating-value">${v}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                        <div class="rating-column">
+                            <div class="rating-column-label">SOLL-Zustand</div>
+                            <div class="rating-scale" data-question="modal-digi-soll">
+                                ${[1,2,3,4,5].map(v => `
+                                    <div class="rating-option ${data.digiSoll === v ? 'selected' : ''}" data-value="${v}" onclick="selectModalRating(this)">
+                                        <div class="rating-value">${v}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="rating-group">
+                    <div class="rating-group-title">
+                        <i class="fas fa-star" style="color: #fbbf24;"></i>
+                        Prozessqualität
+                    </div>
+                    <div class="rating-row">
+                        <div class="rating-column">
+                            <div class="rating-column-label">IST-Zustand (1 = sehr schlecht, 5 = ausgezeichnet)</div>
+                            <div class="rating-scale" data-question="modal-qual-ist">
+                                ${[1,2,3,4,5].map(v => `
+                                    <div class="rating-option ${data.qualIst === v ? 'selected' : ''}" data-value="${v}" onclick="selectModalRating(this)">
+                                        <div class="rating-value">${v}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                        <div class="rating-column">
+                            <div class="rating-column-label">SOLL-Zustand</div>
+                            <div class="rating-scale" data-question="modal-qual-soll">
+                                ${[1,2,3,4,5].map(v => `
+                                    <div class="rating-option ${data.qualSoll === v ? 'selected' : ''}" data-value="${v}" onclick="selectModalRating(this)">
+                                        <div class="rating-value">${v}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="rating-group">
+                    <div class="rating-group-title">
+                        <i class="fas fa-exclamation-triangle" style="color: #ef4444;"></i>
+                        Wichtigkeit für Ihr Unternehmen
+                    </div>
+                    <div class="rating-scale" data-question="modal-wichtigkeit" style="max-width: 400px;">
+                        ${[1,2,3,4,5].map(v => `
+                            <div class="rating-option ${data.wichtigkeit === v ? 'selected' : ''}" data-value="${v}" onclick="selectModalRating(this)">
+                                <div class="rating-value">${v}</div>
+                                <div class="rating-label">${v === 1 ? 'Gering' : v === 3 ? 'Mittel' : v === 5 ? 'Sehr hoch' : ''}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                
+                <div class="rating-group">
+                    <div class="rating-group-title">
+                        <i class="fas fa-tools" style="color: #10b981;"></i>
+                        Aktuell verwendete Tools
+                    </div>
+                    <textarea class="wizard-textarea" id="modalTools" placeholder="z.B. SAP, Workday, Excel...">${data.tools || ''}</textarea>
+                </div>
+                
+                <div class="rating-group">
+                    <div class="rating-group-title">
+                        <i class="fas fa-comment-alt" style="color: #06b6d4;"></i>
+                        Anmerkungen / Pain-Points
+                    </div>
+                    <textarea class="wizard-textarea" id="modalNotes" placeholder="Beschreiben Sie Herausforderungen und Verbesserungsideen...">${data.notes || ''}</textarea>
+                </div>
+            `;
+            
+            document.getElementById('processModal').classList.add('active');
+        }
+
+        // Select modal rating
+        function selectModalRating(element) {
+            const scale = element.closest('.rating-scale');
+            scale.querySelectorAll('.rating-option').forEach(opt => opt.classList.remove('selected'));
+            element.classList.add('selected');
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('processModal').classList.remove('active');
+        }
+
+        // Save process rating
+        function saveProcessRating() {
+            const processId = document.getElementById('currentProcessId').value;
+            
+            const getSelectedValue = (question) => {
+                const selected = document.querySelector(`[data-question="${question}"] .rating-option.selected`);
+                return selected ? parseInt(selected.dataset.value) : null;
+            };
+            
+            assessmentData.prozesse[processId] = {
+                digiIst: getSelectedValue('modal-digi-ist'),
+                digiSoll: getSelectedValue('modal-digi-soll'),
+                qualIst: getSelectedValue('modal-qual-ist'),
+                qualSoll: getSelectedValue('modal-qual-soll'),
+                wichtigkeit: getSelectedValue('modal-wichtigkeit'),
+                tools: document.getElementById('modalTools').value,
+                notes: document.getElementById('modalNotes').value
+            };
+            
+            saveData();
+            closeModal();
+            initProcessGrid();
+        }
+
+        // Update all progress bars
+        function updateAllProgress() {
+            // Vision progress
+            const visionQuestions = ['vision-1', 'vision-2', 'vision-3', 'vision-4'];
+            const visionAnswered = visionQuestions.filter(q => assessmentData.vision[q]).length;
+            document.getElementById('progress-vision').style.width = `${(visionAnswered / 4) * 100}%`;
+            document.getElementById('progress-vision-text').textContent = `${visionAnswered}/4`;
+            
+            // Kultur progress (9 question pairs = 18 total, but counting as 9)
+            const kulturKeys = Object.keys(assessmentData.kultur).length;
+            const kulturProgress = Math.min((kulturKeys / 18) * 100, 100);
+            document.getElementById('progress-kultur').style.width = `${kulturProgress}%`;
+            document.getElementById('progress-kultur-text').textContent = `${Math.floor(kulturKeys/2)}/9`;
+            
+            // Organisation progress
+            const orgKeys = Object.keys(assessmentData.organisation).length;
+            const orgProgress = Math.min((orgKeys / 10) * 100, 100);
+            document.getElementById('progress-organisation').style.width = `${orgProgress}%`;
+            document.getElementById('progress-organisation-text').textContent = `${orgKeys}/7`;
+            
+            // Prozesse progress
+            const processesCompleted = Object.keys(assessmentData.prozesse).length;
+            document.getElementById('progress-prozesse').style.width = `${(processesCompleted / 17) * 100}%`;
+            document.getElementById('progress-prozesse-text').textContent = `${processesCompleted}/17`;
+        }
+
+        // Generate results
+        function generateResults() {
+            const resultsOverview = document.getElementById('resultsOverview');
+            
+            // Calculate scores
+            const visionScore = calculateCategoryScore('vision', 4);
+            const kulturScore = calculateCategoryScore('kultur', 18);
+            const orgScore = calculateCategoryScore('organisation', 10);
+            const processScore = calculateProcessScore();
+            
+            resultsOverview.innerHTML = `
+                <div class="result-card">
+                    <div class="result-score ${getScoreClass(visionScore)}">${visionScore}%</div>
+                    <div class="result-label">Vision</div>
+                    <div class="result-description">HR-Vision Verankerung</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-score ${getScoreClass(kulturScore)}">${kulturScore}%</div>
+                    <div class="result-label">Kultur</div>
+                    <div class="result-description">Leadership & Change</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-score ${getScoreClass(orgScore)}">${orgScore}%</div>
+                    <div class="result-label">Organisation</div>
+                    <div class="result-description">HR-Struktur</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-score ${getScoreClass(processScore)}">${processScore}%</div>
+                    <div class="result-label">Prozesse</div>
+                    <div class="result-description">Digitalisierungsgrad</div>
+                </div>
+            `;
+            
+            // Generate recommendations
+            generateRecommendations();
+        }
+
+        function calculateCategoryScore(category, maxQuestions) {
+            const values = Object.values(assessmentData[category]).filter(v => typeof v === 'number');
+            if (values.length === 0) return 0;
+            const avg = values.reduce((a, b) => a + b, 0) / values.length;
+            return Math.round((avg / 5) * 100);
+        }
+
+        function calculateProcessScore() {
+            const processes = Object.values(assessmentData.prozesse);
+            if (processes.length === 0) return 0;
+            
+            let totalScore = 0;
+            processes.forEach(p => {
+                if (p.digiIst) totalScore += p.digiIst;
+                if (p.qualIst) totalScore += p.qualIst;
+            });
+            
+            return Math.round((totalScore / (processes.length * 10)) * 100);
+        }
+
+        function getScoreClass(score) {
+            if (score >= 80) return 'excellent';
+            if (score >= 60) return 'good';
+            if (score >= 40) return 'moderate';
+            return 'needs-work';
+        }
+
+        function generateRecommendations() {
+            const list = document.getElementById('recommendationsList');
+            const recommendations = [];
+            
+            // Process-based recommendations
+            Object.entries(assessmentData.prozesse).forEach(([id, data]) => {
+                const process = hrProcesses.find(p => p.id === id);
+                if (!process) return;
+                
+                const digiGap = (data.digiSoll || 0) - (data.digiIst || 0);
+                const qualGap = (data.qualSoll || 0) - (data.qualIst || 0);
+                const totalGap = digiGap + qualGap;
+                const priority = totalGap * (data.wichtigkeit || 1);
+                
+                if (totalGap > 0) {
+                    recommendations.push({
+                        title: process.name,
+                        text: `Gap von ${totalGap} Punkten identifiziert. ${digiGap > 0 ? `Digitalisierung um ${digiGap} Stufen verbessern.` : ''} ${qualGap > 0 ? `Prozessqualität um ${qualGap} Stufen verbessern.` : ''}`,
+                        priority: priority > 6 ? 'high' : priority > 3 ? 'medium' : 'low',
+                        score: priority
+                    });
+                }
+            });
+            
+            // Sort by priority score
+            recommendations.sort((a, b) => b.score - a.score);
+            
+            list.innerHTML = recommendations.length > 0 ? recommendations.slice(0, 10).map(rec => `
+                <div class="recommendation-card ${rec.priority}-priority">
+                    <div class="recommendation-header">
+                        <div class="recommendation-title">${rec.title}</div>
+                        <span class="recommendation-priority ${rec.priority}">${rec.priority === 'high' ? 'Hohe Priorität' : rec.priority === 'medium' ? 'Mittlere Priorität' : 'Niedrige Priorität'}</span>
+                    </div>
+                    <div class="recommendation-text">${rec.text}</div>
+                </div>
+            `).join('') : '<p style="color: #a5b4fc; text-align: center;">Bitte bewerten Sie mehr Prozesse, um Handlungsempfehlungen zu erhalten.</p>';
+        }
+
+        // Download results
+        function downloadResults() {
+            const data = JSON.stringify(assessmentData, null, 2);
+            const blob = new Blob([`HR Selbsttest Ergebnisse\n========================\n\n${data}`], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'hr-selbsttest-ergebnisse.txt';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSavedData();
+            initProcessGrid();
+            
+            // Restore selected ratings
+            Object.entries(assessmentData.vision).forEach(([question, value]) => {
+                const scale = document.querySelector(`[data-question="${question}"]`);
+                if (scale) {
+                    const option = scale.querySelector(`[data-value="${value}"]`);
+                    if (option) option.classList.add('selected');
+                }
+            });
+            
+            Object.entries(assessmentData.kultur).forEach(([question, value]) => {
+                const scale = document.querySelector(`[data-question="${question}"]`);
+                if (scale) {
+                    const option = scale.querySelector(`[data-value="${value}"]`);
+                    if (option) option.classList.add('selected');
+                }
+            });
+            
+            Object.entries(assessmentData.organisation).forEach(([question, value]) => {
+                if (typeof value === 'number') {
+                    const scale = document.querySelector(`[data-question="${question}"]`);
+                    if (scale) {
+                        const option = scale.querySelector(`[data-value="${value}"]`);
+                        if (option) option.classList.add('selected');
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

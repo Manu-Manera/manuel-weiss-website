@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR-Prozessabdeckung - Vollständige HR-Prozesse Assessment - Manuel Weiss</title>
+    
+    <meta name="description" content="Interaktive Bewertung der HR-Prozessabdeckung für Premium KI-Readiness Assessment. Alle HR-Prozesse kategorisiert nach Best Practice.">
+    <meta name="author" content="Manuel Weiss">
+    
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        /* Dark Modern Theme */
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, rgba(255,255,255,0.8), transparent),
+                radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.6), transparent),
+                radial-gradient(1px 1px at 90px 40px, rgba(255,255,255,0.9), transparent),
+                radial-gradient(2px 2px at 160px 120px, rgba(255,255,255,0.7), transparent);
+            background-size: 500px 300px;
+            animation: twinkle 8s ease-in-out infinite alternate;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        @keyframes twinkle {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+        
+        .navbar {
+            background: rgba(15, 23, 42, 0.8) !important;
+            backdrop-filter: blur(20px) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+        }
+        
+        .detail-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .detail-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 3rem 2rem;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .detail-header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #fff, #a5b4fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .detail-header p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.1rem;
+        }
+        
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #a5b4fc;
+            text-decoration: none;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .back-button:hover {
+            color: white;
+            transform: translateX(-5px);
+        }
+        
+        .premium-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        /* Process Grid Layout */
+        .process-layout {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        @media (max-width: 1024px) {
+            .process-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Category Navigation */
+        .category-nav {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: sticky;
+            top: 100px;
+            max-height: calc(100vh - 150px);
+            overflow-y: auto;
+        }
+        
+        .category-nav h3 {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .category-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 0.5rem;
+            border: 1px solid transparent;
+        }
+        
+        .category-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .category-item.active {
+            background: rgba(99, 102, 241, 0.2);
+            border-color: rgba(99, 102, 241, 0.5);
+        }
+        
+        .category-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+        
+        .category-info {
+            flex: 1;
+        }
+        
+        .category-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: white;
+        }
+        
+        .category-count {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .category-progress {
+            width: 40px;
+            text-align: right;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        
+        /* Process Cards */
+        .process-content {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .category-section {
+            margin-bottom: 2rem;
+        }
+        
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .category-header-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        
+        .category-header h3 {
+            flex: 1;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .select-all-btn {
+            background: rgba(99, 102, 241, 0.2);
+            border: 1px solid rgba(99, 102, 241, 0.4);
+            color: #a5b4fc;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+        
+        .select-all-btn:hover {
+            background: rgba(99, 102, 241, 0.3);
+        }
+        
+        .process-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 0.75rem;
+        }
+        
+        .process-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+        
+        .process-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .process-item.selected {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: rgba(16, 185, 129, 0.5);
+        }
+        
+        .process-checkbox {
+            width: 20px;
+            height: 20px;
+            border-radius: 6px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+        
+        .process-item.selected .process-checkbox {
+            background: #10b981;
+            border-color: #10b981;
+        }
+        
+        .process-checkbox i {
+            font-size: 0.7rem;
+            color: white;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        
+        .process-item.selected .process-checkbox i {
+            opacity: 1;
+        }
+        
+        .process-name {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        /* Stats Bar */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 1.25rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .stat-label {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 0.25rem;
+        }
+        
+        /* Comment Section */
+        .comment-section {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .comment-section h2 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .comment-section p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        
+        .comment-textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 1rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            font-size: 0.95rem;
+            resize: vertical;
+        }
+        
+        .comment-textarea::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+        
+        .comment-textarea:focus {
+            outline: none;
+            border-color: #6366f1;
+        }
+        
+        /* Save Section */
+        .save-section {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .score-display {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+        
+        .score-item {
+            text-align: center;
+        }
+        
+        .score-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #10b981;
+        }
+        
+        .score-label {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .save-btn {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            border: none;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .detail-container {
+                padding: 1rem;
+            }
+            
+            .detail-header {
+                padding: 1.5rem;
+            }
+            
+            .detail-header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .process-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .category-nav {
+                position: static;
+                max-height: none;
+            }
+            
+            .save-section {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-content">
+            <a class="nav-brand" href="index.html">
+                <span class="nav-initials">MW</span>
+                <span class="nav-name">Manuel Weiss</span>
+            </a>
+        </div>
+    </nav>
+
+    <div class="detail-container">
+        <div class="detail-header">
+            <a href="ki-assessment-detail-dataQuality-dataCoverage.html" class="back-button">
+                <i class="fas fa-arrow-left"></i>
+                Zurück zu Vollständige Abdeckung
+            </a>
+            <span class="premium-badge"><i class="fas fa-crown"></i> Premium Assessment</span>
+            <h1><i class="fas fa-sitemap"></i> HR-Prozessabdeckung</h1>
+            <p>Wählen Sie alle HR-Prozesse aus, die in Ihrem Unternehmen digital abgebildet sind</p>
+        </div>
+        
+        <!-- Stats Bar -->
+        <div class="stats-bar">
+            <div class="stat-card">
+                <div class="stat-value" id="totalProcesses">0</div>
+                <div class="stat-label">Prozesse ausgewählt</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalCategories">0/8</div>
+                <div class="stat-label">Kategorien abgedeckt</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="coveragePercent">0%</div>
+                <div class="stat-label">Abdeckungsgrad</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="calculatedScore">1.0</div>
+                <div class="stat-label">Score (1-5)</div>
+            </div>
+        </div>
+        
+        <div class="process-layout">
+            <!-- Category Navigation -->
+            <div class="category-nav">
+                <h3><i class="fas fa-layer-group"></i> HR-Bereiche</h3>
+                <div id="categoryNav"></div>
+            </div>
+            
+            <!-- Process Content -->
+            <div class="process-content" id="processContent">
+                <!-- Dynamically generated -->
+            </div>
+        </div>
+        
+        <!-- Comment Section -->
+        <div class="comment-section">
+            <h2><i class="fas fa-comment-alt"></i> Anmerkungen zur Prozessabdeckung</h2>
+            <p>Ihre Kommentare werden in den Premium-Report aufgenommen.</p>
+            <textarea class="comment-textarea" id="assessmentComment" placeholder="Beschreiben Sie Ihre aktuelle Prozesslandschaft, geplante Digitalisierungen oder besondere Herausforderungen..."></textarea>
+        </div>
+        
+        <!-- Save Section -->
+        <div class="save-section">
+            <div class="score-display">
+                <div class="score-item">
+                    <div class="score-value" id="selectedCount">0</div>
+                    <div class="score-label">Prozesse digital</div>
+                </div>
+                <div class="score-item">
+                    <div class="score-value" id="finalScore">1.0</div>
+                    <div class="score-label">Berechneter Score</div>
+                </div>
+            </div>
+            <button class="save-btn" onclick="saveAndReturn()">
+                <i class="fas fa-save"></i> Bewertung speichern und übertragen
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // HR Process Categories based on Best Practice from PDFs
+        const hrCategories = {
+            recruiting: {
+                name: 'Recruiting & Talent Acquisition',
+                icon: 'fa-user-plus',
+                color: '#6366f1',
+                processes: [
+                    'Stellenausschreibung',
+                    'Bewerbermanagement',
+                    'Interview-Prozesse',
+                    'Vertragsangebot erstellen',
+                    'Mitarbeiterempfehlungen',
+                    'Talent Pool Management',
+                    'Candidate Screening',
+                    'Background Checks'
+                ]
+            },
+            onboarding: {
+                name: 'Onboarding & Integration',
+                icon: 'fa-handshake',
+                color: '#8b5cf6',
+                processes: [
+                    'Pre-Boarding',
+                    'Vertragserstellung (bei Eintritt)',
+                    'IT-Geräte & Rollen Bestellung',
+                    'Geräte- & Badgeausgabe',
+                    'Erster Arbeitstag (Welcome Day)',
+                    'Probezeitgespräch',
+                    'Einarbeitungsplan',
+                    'Betreibungs- & Strafregisterauszug'
+                ]
+            },
+            masterData: {
+                name: 'Stammdatenverwaltung',
+                icon: 'fa-database',
+                color: '#ec4899',
+                processes: [
+                    'Stammdaten-Abfrage',
+                    'Adressänderung',
+                    'Bankdatenänderung',
+                    'Zivilstandsänderung',
+                    'Nebenbeschäftigungen & Mandate',
+                    'Notfallkontakt aktualisieren',
+                    'Qualifikationen pflegen',
+                    'Organisationsmanagement'
+                ]
+            },
+            compensation: {
+                name: 'Compensation & Benefits',
+                icon: 'fa-coins',
+                color: '#f59e0b',
+                processes: [
+                    'Salär-Anpassung',
+                    'Spontanprämien',
+                    'Auszahlung Überstunden',
+                    'Beförderung',
+                    'Dienstalterjubiläum',
+                    'Lohnrunde durchführen',
+                    'Bonusberechnung',
+                    'Benefits-Verwaltung'
+                ]
+            },
+            timeAbsence: {
+                name: 'Zeit & Abwesenheit',
+                icon: 'fa-clock',
+                color: '#10b981',
+                processes: [
+                    'Ferienkauf',
+                    'Unbezahlter Urlaub',
+                    'Krankheitsmeldung',
+                    'Unfallmeldung',
+                    'Mutterschaftsurlaub',
+                    'Vaterschaftsurlaub',
+                    'EO-Meldung',
+                    'Familienzuwachs'
+                ]
+            },
+            career: {
+                name: 'Karriereentwicklung',
+                icon: 'fa-chart-line',
+                color: '#14b8a6',
+                processes: [
+                    'Funktionsanpassung',
+                    'Abteilungswechsel',
+                    'Verlängerung befristetes Arbeitsverhältnis',
+                    'Performance Review',
+                    'Zielvereinbarung',
+                    'Entwicklungsgespräch',
+                    'Nachfolgeplanung',
+                    'Talent Review'
+                ]
+            },
+            documents: {
+                name: 'Dokumentenmanagement',
+                icon: 'fa-file-alt',
+                color: '#0ea5e9',
+                processes: [
+                    'Arbeitsbestätigung',
+                    'Zwischenzeugnis',
+                    'Lohnausweise verteilen',
+                    'Lohnabrechnungen verteilen',
+                    'Aufenthaltsbewilligung',
+                    'Personalakte digital',
+                    'Vertragsänderungen',
+                    'Bescheinigungen erstellen'
+                ]
+            },
+            offboarding: {
+                name: 'Offboarding',
+                icon: 'fa-door-open',
+                color: '#ef4444',
+                processes: [
+                    'Austritt nach Kündigung Arbeitgeber',
+                    'Austritt nach Kündigung Arbeitnehmer',
+                    'Austritt nach befristetem Arbeitsverhältnis',
+                    'Pensionierung',
+                    'Freistellung',
+                    'Todesfall',
+                    'Austrittsgespräch',
+                    'Schlusszeugnis'
+                ]
+            }
+        };
+        
+        let selectedProcesses = {};
+        let comment = '';
+        
+        function initializeAssessment() {
+            // Load saved data
+            const saved = JSON.parse(localStorage.getItem('allHRProcesses') || '{}');
+            if (saved.selectedProcesses) {
+                selectedProcesses = saved.selectedProcesses;
+            }
+            if (saved.comment) {
+                document.getElementById('assessmentComment').value = saved.comment;
+            }
+            
+            // Initialize selectedProcesses structure
+            Object.keys(hrCategories).forEach(catId => {
+                if (!selectedProcesses[catId]) {
+                    selectedProcesses[catId] = [];
+                }
+            });
+            
+            renderCategoryNav();
+            renderProcessContent();
+            updateStats();
+        }
+        
+        function renderCategoryNav() {
+            const nav = document.getElementById('categoryNav');
+            nav.innerHTML = Object.entries(hrCategories).map(([catId, cat]) => {
+                const selected = selectedProcesses[catId]?.length || 0;
+                const total = cat.processes.length;
+                const percent = Math.round((selected / total) * 100);
+                
+                return `
+                    <div class="category-item" onclick="scrollToCategory('${catId}')" data-category="${catId}">
+                        <div class="category-icon" style="background: ${cat.color}20; color: ${cat.color}">
+                            <i class="fas ${cat.icon}"></i>
+                        </div>
+                        <div class="category-info">
+                            <div class="category-name">${cat.name}</div>
+                            <div class="category-count">${selected}/${total} Prozesse</div>
+                        </div>
+                        <div class="category-progress" style="color: ${percent > 50 ? '#10b981' : 'rgba(255,255,255,0.6)'}">${percent}%</div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function renderProcessContent() {
+            const content = document.getElementById('processContent');
+            content.innerHTML = Object.entries(hrCategories).map(([catId, cat]) => {
+                const selected = selectedProcesses[catId] || [];
+                
+                return `
+                    <div class="category-section" id="category-${catId}">
+                        <div class="category-header">
+                            <div class="category-header-icon" style="background: ${cat.color}20; color: ${cat.color}">
+                                <i class="fas ${cat.icon}"></i>
+                            </div>
+                            <h3>${cat.name}</h3>
+                            <button class="select-all-btn" onclick="selectAllInCategory('${catId}')">
+                                ${selected.length === cat.processes.length ? 'Alle abwählen' : 'Alle auswählen'}
+                            </button>
+                        </div>
+                        <div class="process-grid">
+                            ${cat.processes.map(process => {
+                                const isSelected = selected.includes(process);
+                                return `
+                                    <div class="process-item ${isSelected ? 'selected' : ''}" 
+                                         onclick="toggleProcess('${catId}', '${process}')">
+                                        <div class="process-checkbox">
+                                            <i class="fas fa-check"></i>
+                                        </div>
+                                        <span class="process-name">${process}</span>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function toggleProcess(categoryId, process) {
+            if (!selectedProcesses[categoryId]) {
+                selectedProcesses[categoryId] = [];
+            }
+            
+            const index = selectedProcesses[categoryId].indexOf(process);
+            if (index > -1) {
+                selectedProcesses[categoryId].splice(index, 1);
+            } else {
+                selectedProcesses[categoryId].push(process);
+            }
+            
+            renderCategoryNav();
+            renderProcessContent();
+            updateStats();
+        }
+        
+        function selectAllInCategory(categoryId) {
+            const cat = hrCategories[categoryId];
+            if (!selectedProcesses[categoryId]) {
+                selectedProcesses[categoryId] = [];
+            }
+            
+            if (selectedProcesses[categoryId].length === cat.processes.length) {
+                // Deselect all
+                selectedProcesses[categoryId] = [];
+            } else {
+                // Select all
+                selectedProcesses[categoryId] = [...cat.processes];
+            }
+            
+            renderCategoryNav();
+            renderProcessContent();
+            updateStats();
+        }
+        
+        function scrollToCategory(categoryId) {
+            const element = document.getElementById(`category-${categoryId}`);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+            
+            // Update active state
+            document.querySelectorAll('.category-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.dataset.category === categoryId) {
+                    item.classList.add('active');
+                }
+            });
+        }
+        
+        function updateStats() {
+            // Count total selected processes
+            let totalSelected = 0;
+            let categoriesWithProcesses = 0;
+            let totalPossible = 0;
+            
+            Object.entries(hrCategories).forEach(([catId, cat]) => {
+                const selected = selectedProcesses[catId]?.length || 0;
+                totalSelected += selected;
+                totalPossible += cat.processes.length;
+                if (selected > 0) {
+                    categoriesWithProcesses++;
+                }
+            });
+            
+            const percentage = Math.round((totalSelected / totalPossible) * 100);
+            
+            // Calculate score (1-5)
+            let score;
+            if (percentage >= 90) score = 5;
+            else if (percentage >= 70) score = 4;
+            else if (percentage >= 50) score = 3;
+            else if (percentage >= 25) score = 2;
+            else score = 1;
+            
+            // Update display
+            document.getElementById('totalProcesses').textContent = totalSelected;
+            document.getElementById('totalCategories').textContent = `${categoriesWithProcesses}/8`;
+            document.getElementById('coveragePercent').textContent = `${percentage}%`;
+            document.getElementById('calculatedScore').textContent = score.toFixed(1);
+            document.getElementById('selectedCount').textContent = totalSelected;
+            document.getElementById('finalScore').textContent = score.toFixed(1);
+        }
+        
+        function saveAndReturn() {
+            const comment = document.getElementById('assessmentComment').value;
+            
+            // Count totals
+            let totalSelected = 0;
+            let totalPossible = 0;
+            
+            Object.entries(hrCategories).forEach(([catId, cat]) => {
+                totalSelected += selectedProcesses[catId]?.length || 0;
+                totalPossible += cat.processes.length;
+            });
+            
+            const percentage = Math.round((totalSelected / totalPossible) * 100);
+            let score;
+            if (percentage >= 90) score = 5;
+            else if (percentage >= 70) score = 4;
+            else if (percentage >= 50) score = 3;
+            else if (percentage >= 25) score = 2;
+            else score = 1;
+            
+            // Save process data
+            const processData = {
+                selectedProcesses,
+                comment,
+                calculatedScore: score,
+                percentage,
+                totalSelected,
+                totalPossible,
+                timestamp: new Date().toISOString()
+            };
+            localStorage.setItem('allHRProcesses', JSON.stringify(processData));
+            
+            // Update parent assessment
+            const saved = JSON.parse(localStorage.getItem('kiDetailAssessments') || '{}');
+            if (!saved.dataQuality) {
+                saved.dataQuality = { criteria: {} };
+            }
+            if (!saved.dataQuality.criteria.dataCompleteness) {
+                saved.dataQuality.criteria.dataCompleteness = { subCriteria: {} };
+            }
+            if (!saved.dataQuality.criteria.dataCompleteness.subCriteria.dataCoverage) {
+                saved.dataQuality.criteria.dataCompleteness.subCriteria.dataCoverage = {};
+            }
+            
+            saved.dataQuality.criteria.dataCompleteness.subCriteria.dataCoverage.subSubCriteria = 
+                saved.dataQuality.criteria.dataCompleteness.subCriteria.dataCoverage.subSubCriteria || {};
+            saved.dataQuality.criteria.dataCompleteness.subCriteria.dataCoverage.subSubCriteria.recruitingToOffboarding = score;
+            saved.dataQuality.criteria.dataCompleteness.subCriteria.dataCoverage.processAssessment = processData;
+            
+            localStorage.setItem('kiDetailAssessments', JSON.stringify(saved));
+            
+            // Navigate back
+            window.location.href = 'ki-assessment-detail-dataQuality-dataCoverage.html';
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', initializeAssessment);
+    </script>
+
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="js/aws-config.js"></script>
+    <script src="js/real-aws-auth.js"></script>
+    <script src="js/global-auth-system.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

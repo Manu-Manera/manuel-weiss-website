@@ -5,36 +5,57 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Change Management Workflow - Manuel Weiss</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/starry-background.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <!-- Custom Styles for Change Management Workflow -->
     <style>
+        /* Dark Theme Override */
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%) !important;
+            min-height: 100vh;
+            color: #e2e8f0;
+        }
+        
+        .navbar {
+            background: rgba(15, 23, 42, 0.8) !important;
+            backdrop-filter: blur(20px) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+        }
+        
+        .nav-name { color: #fff !important; }
+        .nav-menu a { color: rgba(255, 255, 255, 0.8) !important; }
+        .nav-menu a:hover { color: #fff !important; }
+        
         .change-mgmt-container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 2rem;
             position: relative;
+            z-index: 2;
         }
         
-        /* Workflow Sidebar */
+        /* Workflow Sidebar - Dark Theme */
         .workflow-sidebar {
             position: fixed;
             right: 2rem;
             top: 50%;
             transform: translateY(-50%);
             width: 280px;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(30, 27, 75, 0.9);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border-radius: 24px;
             padding: 1.5rem;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1),
-                        inset 0 1px 0 rgba(255, 255, 255, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(245, 158, 11, 0.3);
             z-index: 100;
             transition: all 0.3s ease;
         }
+        
+        .progress-summary h4 { color: #fff; }
+        .progress-text { color: #fde68a; }
         
         .workflow-sidebar.collapsed {
             width: 60px;
@@ -79,14 +100,14 @@
         }
         
         .current-state-indicator {
-            background: rgba(255, 251, 235, 0.6);
+            background: rgba(245, 158, 11, 0.15);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
-            border: 2px solid rgba(245, 158, 11, 0.3);
+            border: 2px solid rgba(245, 158, 11, 0.4);
             border-radius: 16px;
             padding: 1rem;
             margin-bottom: 1rem;
-            box-shadow: 0 4px 16px rgba(245, 158, 11, 0.1);
+            box-shadow: 0 4px 16px rgba(245, 158, 11, 0.2);
         }
         
         .maturity-score {
@@ -124,7 +145,7 @@
             background: #10b981;
         }
         
-        /* Assessment System Styles */
+        /* Assessment System Styles - Dark Theme */
         .assessment-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -133,16 +154,18 @@
         }
         
         .assessment-category {
-            background: rgba(248, 250, 252, 0.6);
+            background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border-radius: 20px;
             padding: 1.5rem;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05),
-                        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
         }
+        
+        .assessment-category h4 { color: #fff; }
+        .assessment-category p { color: #fde68a; }
         
         .assessment-category.clickable-category {
             cursor: pointer;
@@ -150,11 +173,9 @@
         
         .assessment-category.clickable-category:hover {
             transform: translateY(-4px) scale(1.02);
-            box-shadow: 0 12px 32px rgba(245, 158, 11, 0.15),
-                        0 4px 16px rgba(0, 0, 0, 0.1),
-                        inset 0 1px 0 rgba(255, 255, 255, 0.4);
-            border-color: rgba(245, 158, 11, 0.4);
-            background: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 12px 32px rgba(245, 158, 11, 0.3);
+            border-color: rgba(245, 158, 11, 0.5);
+            background: rgba(245, 158, 11, 0.15);
         }
         
         .category-header {
@@ -202,7 +223,7 @@
             display: flex;
             justify-content: space-between;
             font-size: 0.75rem;
-            color: #6b7280;
+            color: #fde68a;
             margin-top: 0.5rem;
         }
         
@@ -211,7 +232,11 @@
             font-size: 1.25rem;
             font-weight: 700;
             margin: 0.5rem 0;
-            color: #d97706;
+            color: #fbbf24;
+        }
+        
+        .slider {
+            background: rgba(255, 255, 255, 0.1) !important;
         }
         
         .smart-badge {
@@ -253,9 +278,11 @@
             text-align: center;
             margin-bottom: 2rem;
             padding: 2rem 2rem;
-            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            background: rgba(245, 158, 11, 0.2);
+            backdrop-filter: blur(20px);
             color: white;
-            border-radius: 12px;
+            border-radius: 24px;
+            border: 1px solid rgba(245, 158, 11, 0.3);
         .workflow-header h1 {
             font-size: 2rem;
             font-weight: 800;
@@ -269,26 +296,34 @@
             margin-bottom: 3rem;
             flex-wrap: wrap;
         .progress-step {
+            display: flex;
             align-items: center;
+            gap: 0.5rem;
             margin: 0.5rem;
             padding: 0.75rem 1.5rem;
-            background: #f3f4f6;
+            background: rgba(255, 255, 255, 0.05);
             border-radius: 25px;
             font-weight: 500;
-            color: #6b7280;
+            color: #fde68a;
             transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
         .progress-step.active {
-            background: #f59e0b;
+            background: rgba(245, 158, 11, 0.3);
+            border-color: #f59e0b;
+            color: #fff;
+        }
         .progress-step.completed {
-            background: #d97706;
+            background: rgba(16, 185, 129, 0.3);
+            border-color: #10b981;
+            color: #fff;
         .workflow-step {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border-radius: 24px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1),
-                        inset 0 1px 0 rgba(255, 255, 255, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             padding: 2rem;
             margin-bottom: 2rem;
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -302,7 +337,7 @@
             margin-right: 1rem;
         .step-title {
             font-size: 1.5rem;
-            color: #1f2937;
+            color: #fff;
         .step-description {
             line-height: 1.6;
         .form-group {
@@ -310,20 +345,25 @@
             display: block;
             font-weight: 600;
             margin-bottom: 0.5rem;
-            color: #374151;
+            color: #e2e8f0;
+        }
         .form-group input,
         .form-group select,
         .form-group textarea {
             width: 100%;
             padding: 0.75rem;
-            border: 2px solid #e5e7eb;
+            border: 2px solid rgba(255, 255, 255, 0.1);
             border-radius: 8px;
             transition: border-color 0.3s ease;
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+        }
         .form-group input:focus,
         .form-group select:focus,
         .form-group textarea:focus {
             outline: none;
             border-color: #f59e0b;
+            background: rgba(245, 158, 11, 0.1);
         .checkbox-group {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -332,8 +372,14 @@
         .checkbox-item {
             padding: 1rem;
             cursor: pointer;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .checkbox-item label { color: #e2e8f0; }
         .checkbox-item:hover {
-            background: #fffbeb;
+            background: rgba(245, 158, 11, 0.1);
+            border-color: rgba(245, 158, 11, 0.3);
         .checkbox-item input[type="checkbox"] {
             margin-right: 0.75rem;
             width: auto;
@@ -352,11 +398,14 @@
         .btn-success:hover {
             background: #047857;
         .methodology-section {
-            border: 2px solid #f59e0b;
+            border: 2px solid rgba(245, 158, 11, 0.4);
+            background: rgba(245, 158, 11, 0.1);
+            border-radius: 16px;
             padding: 1.5rem;
             margin: 1.5rem 0;
+        }
         .methodology-section h4 {
-            color: #d97706;
+            color: #fde68a;
             margin-bottom: 1rem;
             font-size: 1.2rem;
         .methodology-section .methodology {
@@ -366,10 +415,17 @@
             width: 20px;
         .methodology-section .methodology strong {
         .practical-implementation {
-            background: #f0f9ff;
-            border: 2px solid #3b82f6;
+            background: rgba(16, 185, 129, 0.1);
+            border: 2px solid rgba(16, 185, 129, 0.4);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
         .practical-implementation h5 {
-            color: #1d4ed8;
+            color: #6ee7b7;
+        }
+        .practical-implementation li {
+            color: #a7f3d0;
         .export-section {
             margin-top: 2rem;
         .export-buttons {

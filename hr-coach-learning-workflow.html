@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning & Succession – HR Coach Framework | Manuel Weiss</title>
+    <meta name="description" content="Analyse Ihrer Karrierepfade, Nachfolgeplanung und Talententwicklung.">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/starry-background.css">
+    <link rel="stylesheet" href="css/hr-coach-workflow.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        .hr-coach-workflow-header { background: rgba(20, 184, 166, 0.2); border-color: rgba(20, 184, 166, 0.3); }
+        .hr-coach-category-icon { background: linear-gradient(135deg, #14b8a6, #22d3d8); }
+        .hr-coach-slider { accent-color: #14b8a6; }
+    </style>
+</head>
+<body class="starry-theme">
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand"><a href="index.html"><img src="manuel-weiss-portrait.jpg" alt="MW" class="nav-logo"><span class="nav-name">Manuel Weiss</span></a></div>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">Start</a>
+                <a href="hr-coach.html" class="nav-link">HR Coach</a>
+                <a href="hr-coach-framework.html" class="nav-link">HR Coach Framework</a>
+                <a href="index.html#contact" class="nav-link">Kontakt</a>
+            </div>
+        </div>
+    </nav>
+    <div class="workflow-wrap">
+        <a href="hr-coach-framework.html" class="hr-coach-back-link"><i class="fas fa-arrow-left"></i> Zurück zum HR Coach Framework</a>
+        <div class="hr-coach-workflow-header">
+            <h1><i class="fas fa-graduation-cap" style="margin-right:0.5rem;"></i>Learning & Succession</h1>
+            <p>Bewerten Sie Karrierepfade, Nachfolgeplanung, Weiterbildung und Talententwicklung in 8 Dimensionen.</p>
+        </div>
+        <div class="hr-coach-assessment-grid">
+            <div class="hr-coach-assessment-category">
+                <div class="hr-coach-category-header">
+                    <div class="hr-coach-category-icon"><i class="fas fa-road"></i></div>
+                    <div><h4>Karrierepfade</h4><p>Strukturierte Laufbahnen</p></div>
+                </div>
+                <div class="hr-coach-slider-container">
+                    <input type="range" min="1" max="5" value="1" class="hr-coach-slider" id="c1" oninput="updateArea('c1', this.value)">
+                    <div class="hr-coach-slider-value" id="c1Value">1</div>
+                    <div class="hr-coach-slider-labels"><span>1</span><span>5</span></div>
+                </div>
+            </div>
+            <div class="hr-coach-assessment-category">
+                <div class="hr-coach-category-header">
+                    <div class="hr-coach-category-icon"><i class="fas fa-user-tie"></i></div>
+                    <div><h4>Nachfolgeplanung</h4><p>Succession Planning</p></div>
+                </div>
+                <div class="hr-coach-slider-container">
+                    <input type="range" min="1" max="5" value="1" class="hr-coach-slider" id="c2" oninput="updateArea('c2', this.value)">
+                    <div class="hr-coach-slider-value" id="c2Value">1</div>
+                    <div class="hr-coach-slider-labels"><span>1</span><span>5</span></div>
+                </div>
+            </div>
+            <div class="hr-coach-assessment-category">
+                <div class="hr-coach-category-header">
+                    <div class="hr-coach-category-icon"><i class="fas fa-book-reader"></i></div>
+                    <div><h4>Weiterbildungsangebot</h4><p>L&D-Programme</p></div>
+                </div>
+                <div class="hr-coach-slider-container">
+                    <input type="range" min="1" max="5" value="1" class="hr-coach-slider" id="c3" oninput="updateArea('c3', this.value)">
+                    <div class="hr-coach-slider-value" id="c3Value">1</div>
+                    <div class="hr-coach-slider-labels"><span>1</span><span>5</span></div>
+                </div>
+            </div>
+            <div class="hr-coach-assessment-category">
+                <div class="hr-coach-category-header">
+                    <div class="hr-coach-category-icon"><i class="fas fa-laptop-code"></i></div>
+                    <div><h4>LMS & E-Learning</h4><p>Lernplattformen</p></div>
+                </div>
+                <div class="hr-coach-slider-container">
+                    <input type="range" min="1" max="5" value="1" class="hr-coach-slider" id="c4" oninput="updateArea('c4', this.value)">
+                    <div class="hr-coach-slider-value" id="c4Value">1</div>
+                    <div class="hr-coach-slider-labels"><span>1</span><span>5</span></div>
+                </div>
+            </div>
+            <div class="hr-coach-assessment-category">
+                <div class="hr-coach-category-header">
+                    <div class="hr-coach-category-icon"><i class="fas fa-star"></i></div>
+                    <div><h4>Talent-Identifikation</h4><p>High Potentials</p></div>
+                </div>
+                <div class="hr-coach-slider-container">
+                    <input type="range" min="1" max="5" value="1" class="hr-coach-slider" id="c5" oninput="updateArea('c5', this.value)">
+                    <div class="hr-coach-slider-value" id="c5Value">1</div>
+                    <div class="hr-coach-slider-labels"><span>1</span><span>5</span></div>
+                </div>
+            </div>
+            <div class="hr-coach-assessment-category">
+                <div class="hr-coach-category-header">
+                    <div class="hr-coach-category-icon"><i class="fas fa-user-graduate"></i></div>
+                    <div><h4>Mentoring & Coaching</h4><p>Individuelle Entwicklung</p></div>
+                </div>
+                <div class="hr-coach-slider-container">
+                    <input type="range" min="1" max="5" value="1" class="hr-coach-slider" id="c6" oninput="updateArea('c6', this.value)">
+                    <div class="hr-coach-slider-value" id="c6Value">1</div>
+                    <div class="hr-coach-slider-labels"><span>1</span><span>5</span></div>
+                </div>
+            </div>
+            <div class="hr-coach-assessment-category">
+                <div class="hr-coach-category-header">
+                    <div class="hr-coach-category-icon"><i class="fas fa-chart-line"></i></div>
+                    <div><h4>Skill-Gap-Analyse</h4><p>Kompetenzbedarf</p></div>
+                </div>
+                <div class="hr-coach-slider-container">
+                    <input type="range" min="1" max="5" value="1" class="hr-coach-slider" id="c7" oninput="updateArea('c7', this.value)">
+                    <div class="hr-coach-slider-value" id="c7Value">1</div>
+                    <div class="hr-coach-slider-labels"><span>1</span><span>5</span></div>
+                </div>
+            </div>
+            <div class="hr-coach-assessment-category">
+                <div class="hr-coach-category-header">
+                    <div class="hr-coach-category-icon"><i class="fas fa-briefcase"></i></div>
+                    <div><h4>Job-Rotation & Stretch</h4><p>Entwicklungsmöglichkeiten</p></div>
+                </div>
+                <div class="hr-coach-slider-container">
+                    <input type="range" min="1" max="5" value="1" class="hr-coach-slider" id="c8" oninput="updateArea('c8', this.value)">
+                    <div class="hr-coach-slider-value" id="c8Value">1</div>
+                    <div class="hr-coach-slider-labels"><span>1</span><span>5</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="hr-coach-score-box">
+            <h4>Ihre Bewertung Learning & Succession</h4>
+            <div>
+                <span class="hr-coach-score-circle" id="overallScore">1.0</span>
+                <span class="hr-coach-score-desc"><strong id="scoreLabel">Anfänger</strong><br><span id="scoreRec">Fokus auf Grundlagen</span></span>
+            </div>
+            <div class="hr-coach-btn-row">
+                <button type="button" class="hr-coach-btn-save" onclick="saveProgress()"><i class="fas fa-save"></i> Speichern</button>
+                <button type="button" class="hr-coach-btn-excel" onclick="exportExcel()"><i class="fas fa-file-excel"></i> Excel</button>
+                <button type="button" class="hr-coach-btn-pdf" onclick="exportPDF()"><i class="fas fa-file-pdf"></i> PDF</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        window.HR_COACH_AREA_ID = 'learning';
+        window.HR_COACH_AREA_TITLE = 'Learning & Succession';
+        window.HR_COACH_KEYS = ['c1','c2','c3','c4','c5','c6','c7','c8'];
+        window.HR_COACH_TITLES = { c1: 'Karrierepfade', c2: 'Nachfolgeplanung', c3: 'Weiterbildungsangebot', c4: 'LMS & E-Learning', c5: 'Talent-Identifikation', c6: 'Mentoring & Coaching', c7: 'Skill-Gap-Analyse', c8: 'Job-Rotation & Stretch' };
+    </script>
+    <script src="js/hr-coach-workflow.js"></script>
+    <script src="js/shooting-stars.js"></script>
+</body>
+</html>

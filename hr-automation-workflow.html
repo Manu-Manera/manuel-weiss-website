@@ -11,12 +11,13 @@
     <meta name="author" content="Manuel Weiss">
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/starry-background.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- Custom Styles for HR Automation Workflow -->
     <style>
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
             min-height: 100vh;
         }
         
@@ -74,6 +75,7 @@
             margin: 2rem 0;
             gap: 1rem;
             flex-wrap: wrap;
+        }
         .progress-step {
             gap: 0.5rem;
             padding: 0.75rem 1.5rem;
@@ -180,6 +182,8 @@
             font-weight: 600;
             color: #374151;
             margin-bottom: 0.5rem;
+            display: block;
+        }
         .form-group input,
         .form-group textarea,
         .form-group select {
@@ -534,6 +538,120 @@
             color: #6b7280;
         }
         
+        /* View Switcher & Prozess-Optimierung */
+        .view-switcher {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .view-switcher .btn-view {
+            padding: 0.6rem 1.2rem;
+            border-radius: 20px;
+            font-weight: 600;
+            border: 2px solid rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.15);
+            color: white;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+        .view-switcher .btn-view:hover {
+            background: rgba(255,255,255,0.25);
+        }
+        .view-switcher .btn-view.active {
+            background: rgba(255,255,255,0.95);
+            color: #10b981;
+            border-color: #10b981;
+        }
+        .view-process-optimization { display: none; }
+        .view-process-optimization.visible { display: block; }
+        .view-strategy.visible { display: block; }
+        .view-strategy.hidden { display: none; }
+        .process-dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .process-card {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 1.25rem;
+            border: 1px solid rgba(16,185,129,0.2);
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+        }
+        .process-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(16,185,129,0.2);
+        }
+        .process-card .process-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            margin-bottom: 0.75rem;
+            font-size: 1.1rem;
+        }
+        .process-card .process-name { font-weight: 700; color: #1f2937; margin-bottom: 0.25rem; }
+        .process-card .process-desc { font-size: 0.85rem; color: #6b7280; margin-bottom: 0.5rem; }
+        .process-card .process-status {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 8px;
+            display: inline-block;
+        }
+        .process-card .process-status.pending { background: #fef3c7; color: #92400e; }
+        .process-card .process-status.in_progress { background: #dbeafe; color: #1e40af; }
+        .process-card .process-status.completed { background: #d1fae5; color: #065f46; }
+        .process-detail-panel {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 1.5rem;
+            border: 1px solid rgba(16,185,129,0.2);
+            display: none;
+        }
+        .process-detail-panel.visible { display: block; }
+        .process-detail-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        .process-detail-header h2 { margin: 0; font-size: 1.35rem; color: #1f2937; }
+        .process-tabs {
+            display: flex;
+            gap: 0.25rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .process-tabs .tab-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            background: transparent;
+            color: #6b7280;
+            cursor: pointer;
+            font-weight: 500;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
+        }
+        .process-tabs .tab-btn:hover { color: #10b981; }
+        .process-tabs .tab-btn.active { color: #10b981; border-bottom-color: #10b981; }
+        .process-tab-pane { display: none; }
+        .process-tab-pane.active { display: block; }
+        .process-notes-editor { width: 100%; min-height: 180px; padding: 0.75rem; border-radius: 12px; border: 1px solid #e5e7eb; font-family: inherit; }
+        .process-sketch-container { border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; background: #fff; }
+        .process-sketch-canvas { display: block; width: 100%; cursor: crosshair; }
+        .process-dictation-area { width: 100%; min-height: 120px; padding: 0.75rem; border-radius: 12px; border: 1px solid #e5e7eb; }
+        .process-bpmn-placeholder { padding: 1.5rem; background: #f8fafc; border-radius: 12px; border: 1px dashed #cbd5e1; color: #64748b; text-align: center; }
+        
         @media (max-width: 768px) {
             .workflow-container {
                 padding: 1rem;
@@ -564,62 +682,84 @@
         /* AWS User System Styles - Integrated in Navigation */
         .user-system {
             margin-left: 20px;
+        }
         .user-info {
             gap: 12px;
             background: linear-gradient(135deg, #ffffff, #f8fafc);
             padding: 8px 16px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             border: 1px solid rgba(99, 102, 241, 0.2);
+        }
         .user-info:hover {
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
         .user-avatar {
             width: 32px;
             height: 32px;
             overflow: hidden;
             border: 2px solid #6366f1;
             box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+        }
         .user-avatar-img {
             height: 100%;
             object-fit: cover;
+        }
         .user-details {
             flex-direction: column;
             gap: 2px;
+        }
         .user-name {
             color: #1e293b;
             line-height: 1.2;
+        }
         .user-email {
             font-size: 0.7rem;
             color: #64748b;
+        }
         .user-logout {
             width: 28px;
             height: 28px;
             box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+        }
         .user-logout:hover {
             transform: scale(1.1);
             box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+        }
         .user-login {
+        }
         .btn-login {
             background: linear-gradient(135deg, #6366f1, #8b5cf6);
             border-radius: 20px;
             gap: 6px;
             box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
         .btn-login:hover {
             box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+        }
         .btn-login i {
+        }
         /* Responsive Design for User System */
+        @media (max-width: 768px) {
             .user-system {
                 margin-left: 10px;
+            }
             .user-info {
                 padding: 6px 12px;
                 gap: 8px;
+            }
             .user-avatar {
                 width: 28px;
                 height: 28px;
+            }
             .user-name {
                 font-size: 0.7rem;
+            }
             .user-email {
                 font-size: 0.6rem;
+            }
             .btn-login {
+            }
+        }
     </style>
     <link rel="stylesheet" href="css/unified-auth-system.css">
 
@@ -665,7 +805,7 @@
         }
     </style>
 </head>
-<body data-page-id="hr-automation-workflow">
+<body class="starry-theme" data-page-id="hr-automation-workflow">
     <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">
@@ -687,6 +827,7 @@
                         <div class="user-details">
                             <span class="user-name" id="userName">Benutzer</span>
                             <span class="user-email" id="userEmail">benutzer@example.com</span>
+                        </div>
                         <button class="user-logout" id="userLogout" onclick="logoutUser()">
                             <i class="fas fa-sign-out-alt"></i>
                         </button>
@@ -696,7 +837,8 @@
                         <button class="btn-login" onclick="loginUser()">
                             <i class="fas fa-sign-in-alt"></i>
                             <span>Anmelden</span>
-                </div>
+                        </button>
+                    </div>
                 
         </div>
     </nav>
@@ -717,29 +859,44 @@
         <div class="workflow-header">
             <h1>HR-Prozessautomatisierung</h1>
             <p>Entwickeln Sie eine umfassende Automatisierungsstrategie für Ihr HR mit bewährten Harvard & MIT Methoden</p>
+        </div>
+        <!-- View Switcher -->
+        <div class="view-switcher">
+            <button type="button" class="btn-view active" id="btnViewStrategy" onclick="hrAutomationShowView('strategy')">Strategie-Workflow</button>
+            <button type="button" class="btn-view" id="btnViewProcess" onclick="hrAutomationShowView('process')">Prozess-Optimierung</button>
+        </div>
+        <!-- Strategie-Workflow (7 Schritte) -->
+        <div class="view-strategy visible" id="viewStrategy">
         <!-- Progress Indicator -->
         <div class="workflow-progress">
             <div class="progress-step active" data-step="1">
                 <i class="fas fa-eye"></i>
                 <span>Vision</span>
+            </div>
             <div class="progress-step" data-step="2">
                 <i class="fas fa-chart-line"></i>
                 <span>Use Cases</span>
+            </div>
             <div class="progress-step" data-step="3">
                 <i class="fas fa-microchip"></i>
                 <span>Technologie</span>
+            </div>
             <div class="progress-step" data-step="4">
                 <i class="fas fa-sitemap"></i>
                 <span>Organisation</span>
+            </div>
             <div class="progress-step" data-step="5">
                 <i class="fas fa-balance-scale"></i>
                 <span>Ethik</span>
+            </div>
             <div class="progress-step" data-step="6">
                 <i class="fas fa-expand-arrows-alt"></i>
                 <span>Skalierung</span>
+            </div>
             <div class="progress-step" data-step="7">
                 <i class="fas fa-sync-alt"></i>
                 <span>Lernen</span>
+            </div>
         <!-- Step 1: Vision & strategische Verankerung -->
         <div class="workflow-step active" data-step="1">
             <div class="step-header">
@@ -747,6 +904,8 @@
                 <div class="step-title">
                     <h2>Vision & strategische Verankerung</h2>
                     <p>Harvard: Prozessautomatisierung muss messbar zur HR-Exzellenz beitragen</p>
+                </div>
+            </div>
             <div class="step-content">
                 <div class="form-group">
                     <label>Unternehmensname</label>
@@ -996,6 +1155,9 @@
                     <i class="fas fa-file-excel"></i> Als Excel
                 <button class="btn btn-word" onclick="exportWorkflowToWord(getWorkflowData(), 'HR-Automatisierung')">
                     <i class="fas fa-file-word"></i> Als Word
+                </button>
+            </div>
+        </div>
         <div class="chatbot-section">
             <h3><i class="fas fa-robot"></i> Unternehmens-Chatbot erstellen</h3>
             <div class="chatbot-info">
@@ -1017,6 +1179,8 @@
                     <i class="fas fa-robot"></i> Chatbot-Workflow starten
                 <button class="btn btn-secondary" onclick="viewChatbotDemo()">
                     <i class="fas fa-eye"></i> Demo ansehen
+                </button>
+            </div>
                 <div class="summary-card">
                     <h4>Unternehmensinformationen</h4>
                     <div class="summary-item">
@@ -1042,18 +1206,61 @@
             </button>
             <div class="step-indicator">
                 <span id="currentStep">1</span> von <span id="totalSteps">7</span>
+            </div>
             <button class="btn btn-primary" id="nextBtn" onclick="nextStep()">
                 Weiter
                 <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+        </div>
+        <!-- Prozess-Optimierung: Dashboard + Detail -->
+        <div class="view-process-optimization" id="viewProcessOptimization">
+            <div class="process-dashboard" id="processDashboard"></div>
+            <div class="process-detail-panel" id="processDetailPanel">
+                <div class="process-detail-header">
+                    <h2 id="processDetailTitle">Prozess auswählen</h2>
+                    <button type="button" class="btn btn-secondary" id="btnProcessDetailBack" onclick="hrAutomationShowProcessList()">
+                        <i class="fas fa-arrow-left"></i> Zurück
+                    </button>
+                </div>
+                <div class="process-tabs">
+                    <button type="button" class="tab-btn active" data-tab="notes" onclick="hrAutomationSwitchTab('notes')">Notizen</button>
+                    <button type="button" class="tab-btn" data-tab="sketch" onclick="hrAutomationSwitchTab('sketch')">Skizze</button>
+                    <button type="button" class="tab-btn" data-tab="dictation" onclick="hrAutomationSwitchTab('dictation')">Diktat</button>
+                    <button type="button" class="tab-btn" data-tab="bpmn" onclick="hrAutomationSwitchTab('bpmn')">BPMN</button>
+                </div>
+                <div id="processTabNotes" class="process-tab-pane active">
+                    <textarea class="process-notes-editor" id="processNotesEditor" placeholder="Notizen zu diesem Prozess…"></textarea>
+                    <button type="button" class="btn btn-primary" style="margin-top:0.5rem;" onclick="hrAutomationSaveNotes()"><i class="fas fa-save"></i> Speichern</button>
+                </div>
+                <div id="processTabSketch" class="process-tab-pane">
+                    <div class="process-sketch-container">
+                        <canvas id="processSketchCanvas" class="process-sketch-canvas" width="800" height="400"></canvas>
+                    </div>
+                    <button type="button" class="btn btn-secondary" style="margin-top:0.5rem;" onclick="hrAutomationSketchClear()"><i class="fas fa-eraser"></i> Löschen</button>
+                    <button type="button" class="btn btn-primary" style="margin-top:0.5rem;" onclick="hrAutomationSketchSave()"><i class="fas fa-save"></i> Skizze speichern</button>
+                </div>
+                <div id="processTabDictation" class="process-tab-pane">
+                    <textarea class="process-dictation-area" id="processDictationText" placeholder="Prozess beschreiben (getippt oder diktiert) – wird für BPMN-Generierung verwendet."></textarea>
+                    <button type="button" class="btn btn-primary" style="margin-top:0.5rem;" onclick="hrAutomationSaveDictation()"><i class="fas fa-save"></i> Speichern</button>
+                    <button type="button" class="btn btn-secondary" style="margin-top:0.5rem;" onclick="hrAutomationGenerateBpmn()"><i class="fas fa-project-diagram"></i> BPMN aus Text generieren</button>
+                </div>
+                <div id="processTabBpmn" class="process-tab-pane">
+                    <div class="process-bpmn-placeholder" id="processBpmnPlaceholder">BPMN-Modell wird aus dem Diktat-Text generiert. Zuerst unter „Diktat“ Text eingeben und „BPMN aus Text generieren“ klicken.</div>
+                    <div id="processBpmnDiagram" style="display:none;"></div>
+                </div>
+            </div>
+        </div>
     </div>
 <!-- Auth Modals -->
 <div id="authModalsContainer"></div>
 <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
 <script src="js/aws-auth.js"></script>
 <script src="js/workflow-export.js"></script>
+<script src="js/hr-process-improvement-state.js"></script>
     <script>
         let currentStep = 1;
-        const totalSteps = 8;
+        const totalSteps = 7;
     // Load auth modals
     async function loadAuthModals() {
         try {
@@ -1062,12 +1269,15 @@
             document.getElementById('authModalsContainer').innerHTML = html;
         } catch (error) {
             console.error('Error loading auth modals:', error);
+        }
     }
     // AWS User System Functions
     function loginUser() {
         const modal = document.getElementById('loginModal');
         if (modal) {
             modal.style.display = 'flex';
+        }
+    }
     function logoutUser() {
         if (window.awsAuth) {
             window.awsAuth.signOut().then(() => {
@@ -1075,11 +1285,14 @@
             }).catch(error => {
                 console.error('Fehler beim Abmelden:', error);
             });
+        }
+    }
     // Initialize auth system
     document.addEventListener('DOMContentLoaded', async function() {
         await loadAuthModals();
-        // Check user status
+        if (window.awsAuth) {
             window.awsAuth.checkUserStatus();
+        }
     });
     function updateProgress() {
             // Update progress indicators
@@ -1090,25 +1303,42 @@
                 } else if (index + 1 === currentStep) {
                     step.classList.add('active');
                 }
+            });
             // Update step visibility
             document.querySelectorAll('.workflow-step').forEach((step, index) => {
                 step.classList.remove('active');
                 if (index + 1 === currentStep) {
+                    step.classList.add('active');
+                }
+            });
             // Update navigation
-            document.getElementById('prevBtn').disabled = currentStep === 1;
-            document.getElementById('nextBtn').textContent = currentStep === totalSteps ? 'Zusammenfassung' : 'Weiter';
-            document.getElementById('currentStep').textContent = currentStep;
-            document.getElementById('totalSteps').textContent = totalSteps;
-        function nextStep() {
+            var prevBtn = document.getElementById('prevBtn');
+            var nextBtn = document.getElementById('nextBtn');
+            if (prevBtn) prevBtn.disabled = currentStep === 1;
+            if (nextBtn) {
+                nextBtn.textContent = currentStep === totalSteps ? 'Zusammenfassung' : 'Weiter';
+            }
+            var cur = document.getElementById('currentStep');
+            var tot = document.getElementById('totalSteps');
+            if (cur) cur.textContent = currentStep;
+            if (tot) tot.textContent = totalSteps;
+    }
+    function nextStep() {
             if (currentStep < totalSteps) {
                 currentStep++;
                 updateProgress();
                 if (currentStep === totalSteps) {
                     generateSummary();
-        function previousStep() {
+                }
+            }
+    }
+    function previousStep() {
             if (currentStep > 1) {
                 currentStep--;
-        function generateSummary() {
+                updateProgress();
+            }
+    }
+    function generateSummary() {
             // Generate summary from form data
             const companyName = document.getElementById('companyName').value || '-';
             const industry = document.getElementById('industry').value || '-';
@@ -1121,9 +1351,11 @@
                 .map(cb => cb.nextElementSibling.textContent)
                 .join(', ');
             document.getElementById('summaryGoals').textContent = selectedGoals || '-';
-            // Collect selected areas
-            const selectedAreas = Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
-            document.getElementById('summaryAreas').textContent = selectedAreas || '-';
+            // Collect selected areas (step 2 area checkboxes)
+            const areaCbs = document.querySelectorAll('#area1, #area2, #area3, #area4, #area5, #area6');
+            const selectedAreas = Array.from(areaCbs).filter(cb => cb && cb.checked).map(cb => cb.nextElementSibling ? cb.nextElementSibling.textContent : '').join(', ');
+            var summaryAreas = document.getElementById('summaryAreas');
+            if (summaryAreas) summaryAreas.textContent = selectedAreas || '-';
             // Generate next steps
             const nextSteps = [
                 '1. HR Automation CoE einrichten',
@@ -1133,24 +1365,31 @@
                 '5. Transparenz und Vertrauen aufbauen',
                 '6. KPI-System implementieren und monitoren'
             ];
-            document.getElementById('summaryNextSteps').innerHTML = nextSteps.map(step => `<div>• ${step}</div>`).join('');
-        function getWorkflowData() {
+            var summaryNext = document.getElementById('summaryNextSteps');
+            if (summaryNext) summaryNext.innerHTML = nextSteps.map(step => `<div>• ${step}</div>`).join('');
+    }
+    function getWorkflowData() {
+            var areaIds = ['area1','area2','area3','area4','area5','area6'];
+            var areas = areaIds.map(function(id) {
+                var el = document.getElementById(id);
+                return el && el.checked && el.nextElementSibling ? el.nextElementSibling.textContent : null;
+            }).filter(Boolean);
             return {
                 company: document.getElementById('companyName').value || '',
                 industry: document.getElementById('industry').value || '',
                 employeeCount: document.getElementById('employeeCount').value || '',
-                goals: Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
-                    .map(cb => cb.nextElementSibling.textContent),
-                areas: Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
-                timeSavings: document.getElementById('timeSavings')?.value || 0,
-                productivityGain: document.getElementById('productivityGain')?.value || 0,
-                employeeSatisfaction: document.getElementById('employeeSatisfaction')?.value || 0,
-                collaborationEfficiency: document.getElementById('collaborationEfficiency')?.value || 0,
+                goals: Array.from(document.querySelectorAll('#goal1,#goal2,#goal3,#goal4,#goal5,#goal6')).filter(function(cb){ return cb && cb.checked; }).map(function(cb){ return cb.nextElementSibling ? cb.nextElementSibling.textContent : ''; }),
+                areas: areas,
+                timeSavings: document.getElementById('timeSavings') ? document.getElementById('timeSavings').value : 0,
+                productivityGain: document.getElementById('productivityGain') ? document.getElementById('productivityGain').value : 0,
+                employeeSatisfaction: document.getElementById('employeeSatisfaction') ? document.getElementById('employeeSatisfaction').value : 0,
+                collaborationEfficiency: document.getElementById('collaborationEfficiency') ? document.getElementById('collaborationEfficiency').value : 0,
                 customInputs: Array.from(document.querySelectorAll('.custom-input-item input'))
-                    .map(input => input.value)
-                    .filter(value => value.trim() !== '')
+                    .map(function(input){ return input.value; })
+                    .filter(function(value){ return value.trim() !== ''; })
             };
-        function addCustomInput() {
+    }
+    function addCustomInput() {
             const customInputs = document.querySelector('.custom-inputs');
             const inputCount = customInputs.querySelectorAll('.custom-input-item').length;
             const newInputId = `customInput${inputCount + 1}`;
@@ -1164,25 +1403,199 @@
             // Insert before the "Add" button
             const addButton = customInputs.querySelector('button');
             customInputs.insertBefore(newInputItem, addButton);
+    }
     function removeCustomInput(button) {
         button.parentElement.remove();
+    }
     function startChatbotWorkflow() {
         console.log('🤖 Starting Chatbot Workflow...');
         window.location.href = 'chatbot-workflow.html';
     function viewChatbotDemo() {
         console.log('👁️ Viewing Chatbot Demo...');
         alert('🤖 Chatbot-Demo wird geladen...\n\nDer Chatbot kann:\n• OpenAI GPT-4 Integration\n• REST API Endpunkte\n• System-Integration (HR, CRM, ERP)\n• Sicherheit & Compliance\n• Download & Deployment\n\nKlicken Sie auf "Chatbot-Workflow starten" für die vollständige Konfiguration!');
+    }
         // Initialize
-        updateProgress();
+        if (typeof updateProgress === 'function') updateProgress();
         // Add event listeners for checkboxes
-        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+        document.querySelectorAll('input[type="checkbox"]').forEach(function(checkbox) {
             checkbox.addEventListener('change', function() {
-                const item = this.closest('.checkbox-item');
-                if (this.checked) {
-                    item.classList.add('checked');
-                } else {
-                    item.classList.remove('checked');
+                var item = this.closest('.checkbox-item');
+                if (item) {
+                    if (this.checked) {
+                        item.classList.add('checked');
+                    } else {
+                        item.classList.remove('checked');
+                    }
+                }
+            });
         });
+        // --- Prozess-Optimierung ---
+        var hrAutomationRegistry = [];
+        var hrAutomationCurrentProcessId = null;
+        var hrAutomationSketchCtx = null;
+        var hrAutomationSketchDrawing = false;
+        function hrAutomationShowView(view) {
+            var strategy = document.getElementById('viewStrategy');
+            var process = document.getElementById('viewProcessOptimization');
+            var btnS = document.getElementById('btnViewStrategy');
+            var btnP = document.getElementById('btnViewProcess');
+            if (view === 'strategy') {
+                if (strategy) strategy.classList.add('visible'), strategy.classList.remove('hidden');
+                if (process) process.classList.remove('visible');
+                if (btnS) btnS.classList.add('active'); if (btnP) btnP.classList.remove('active');
+            } else {
+                if (strategy) strategy.classList.add('hidden'), strategy.classList.remove('visible');
+                if (process) process.classList.add('visible');
+                if (btnS) btnS.classList.remove('active'); if (btnP) btnP.classList.add('active');
+                hrAutomationLoadRegistryAndRender();
+            }
+        }
+        function hrAutomationLoadRegistryAndRender() {
+            fetch('data/hr-process-registry.json')
+                .then(function(r){ return r.json(); })
+                .then(function(data){
+                    hrAutomationRegistry = data.processes || [];
+                    hrAutomationRenderProcessDashboard();
+                })
+                .catch(function(){ hrAutomationRegistry = []; hrAutomationRenderProcessDashboard(); });
+        }
+        function hrAutomationRenderProcessDashboard() {
+            var el = document.getElementById('processDashboard');
+            if (!el) return;
+            var list = typeof HRProcessImprovementState !== 'undefined'
+                ? HRProcessImprovementState.getAllProcessesWithState(hrAutomationRegistry)
+                : hrAutomationRegistry.map(function(p){ return Object.assign({}, p, { status: 'pending', hasNotes: false, hasSketch: false, hasDictation: false, hasBpmn: false }); });
+            el.innerHTML = list.map(function(p){
+                var statusClass = (p.status === 'completed' ? 'completed' : (p.status === 'in_progress' ? 'in_progress' : 'pending'));
+                var statusLabel = (p.status === 'completed' ? 'Abgeschlossen' : (p.status === 'in_progress' ? 'In Bearbeitung' : 'Zu verbessern'));
+                var badges = [];
+                if (p.hasNotes) badges.push('Notizen');
+                if (p.hasSketch) badges.push('Skizze');
+                if (p.hasDictation) badges.push('Diktat');
+                if (p.hasBpmn) badges.push('BPMN');
+                return '<div class="process-card" data-process-id="' + p.id + '" onclick="hrAutomationOpenProcess(\'' + p.id + '\')">' +
+                    '<div class="process-icon" style="background:' + (p.color || '#10b981') + '"><i class="fas ' + (p.icon || 'fa-cog') + '"></i></div>' +
+                    '<div class="process-name">' + (p.name || p.id) + '</div>' +
+                    '<div class="process-desc">' + (p.description || '') + '</div>' +
+                    '<span class="process-status ' + statusClass + '">' + statusLabel + '</span>' +
+                    (badges.length ? ' <small style="color:#6b7280">(' + badges.join(', ') + ')</small>' : '') +
+                    '</div>';
+            }).join('');
+        }
+        function hrAutomationShowProcessList() {
+            document.getElementById('processDetailPanel').classList.remove('visible');
+            document.getElementById('processDashboard').style.display = 'grid';
+            hrAutomationCurrentProcessId = null;
+        }
+        function hrAutomationOpenProcess(id) {
+            hrAutomationCurrentProcessId = id;
+            document.getElementById('processDashboard').style.display = 'none';
+            var panel = document.getElementById('processDetailPanel');
+            panel.classList.add('visible');
+            var p = hrAutomationRegistry.find(function(x){ return x.id === id; }) || { id: id, name: id, description: '' };
+            document.getElementById('processDetailTitle').textContent = p.name || id;
+            hrAutomationSwitchTab('notes');
+            document.querySelectorAll('.process-tabs .tab-btn').forEach(function(btn){ btn.classList.toggle('active', btn.getAttribute('data-tab') === 'notes'); });
+            document.querySelectorAll('.process-tab-pane').forEach(function(pane){ pane.classList.toggle('active', pane.id === 'processTabNotes'); });
+            if (typeof HRProcessImprovementState !== 'undefined') {
+                document.getElementById('processNotesEditor').value = HRProcessImprovementState.getNotes(id) || '';
+                var sketchUrl = HRProcessImprovementState.getSketch(id);
+                hrAutomationSketchLoad(sketchUrl);
+                document.getElementById('processDictationText').value = HRProcessImprovementState.getDictation(id) || '';
+                var bpmn = HRProcessImprovementState.getBpmn(id);
+                if (bpmn && bpmn.xml) {
+                    document.getElementById('processBpmnPlaceholder').style.display = 'none';
+                    document.getElementById('processBpmnDiagram').style.display = 'block';
+                    document.getElementById('processBpmnDiagram').innerHTML = '<pre style="white-space:pre-wrap;font-size:0.85rem;">' + (bpmn.xml.substring(0, 2000) + (bpmn.xml.length > 2000 ? '…' : '')) + '</pre>';
+                } else {
+                    document.getElementById('processBpmnPlaceholder').style.display = 'block';
+                    document.getElementById('processBpmnDiagram').style.display = 'none';
+                }
+            } else {
+                document.getElementById('processNotesEditor').value = '';
+                document.getElementById('processDictationText').value = '';
+                hrAutomationSketchLoad('');
+            }
+        }
+        function hrAutomationSwitchTab(tab) {
+            document.querySelectorAll('.process-tabs .tab-btn').forEach(function(btn){ btn.classList.toggle('active', btn.getAttribute('data-tab') === tab); });
+            document.querySelectorAll('.process-tab-pane').forEach(function(pane){
+                var paneId = 'processTab' + tab.charAt(0).toUpperCase() + tab.slice(1);
+                pane.classList.toggle('active', pane.id === paneId);
+            });
+            if (tab === 'sketch') hrAutomationSketchInit();
+        }
+        function hrAutomationSaveNotes() {
+            if (!hrAutomationCurrentProcessId) return;
+            var text = document.getElementById('processNotesEditor').value || '';
+            if (typeof HRProcessImprovementState !== 'undefined') {
+                HRProcessImprovementState.saveNotes(hrAutomationCurrentProcessId, text);
+                HRProcessImprovementState.setProcessStatus(hrAutomationCurrentProcessId, 'in_progress');
+            }
+        }
+        function hrAutomationSketchInit() {
+            var canvas = document.getElementById('processSketchCanvas');
+            if (!canvas) return;
+            hrAutomationSketchCtx = canvas.getContext('2d');
+            canvas.onmousedown = function(e){ hrAutomationSketchDrawing = true; var r = canvas.getBoundingClientRect(); hrAutomationSketchCtx.beginPath(); hrAutomationSketchCtx.moveTo(e.clientX - r.left, e.clientY - r.top); };
+            canvas.onmousemove = function(e){ if (!hrAutomationSketchDrawing) return; var r = canvas.getBoundingClientRect(); hrAutomationSketchCtx.lineTo(e.clientX - r.left, e.clientY - r.top); hrAutomationSketchCtx.stroke(); };
+            canvas.onmouseup = canvas.onmouseleave = function(){ hrAutomationSketchDrawing = false; };
+            hrAutomationSketchCtx.strokeStyle = '#1f2937'; hrAutomationSketchCtx.lineWidth = 2;
+        }
+        function hrAutomationSketchLoad(dataUrl) {
+            var canvas = document.getElementById('processSketchCanvas');
+            if (!canvas || !dataUrl) return;
+            var ctx = canvas.getContext('2d');
+            var img = new Image();
+            img.onload = function(){ ctx.drawImage(img, 0, 0); };
+            img.src = dataUrl;
+        }
+        function hrAutomationSketchClear() {
+            var canvas = document.getElementById('processSketchCanvas');
+            if (canvas) canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+        }
+        function hrAutomationSketchSave() {
+            if (!hrAutomationCurrentProcessId) return;
+            var canvas = document.getElementById('processSketchCanvas');
+            var dataUrl = canvas ? canvas.toDataURL('image/png') : '';
+            if (typeof HRProcessImprovementState !== 'undefined') {
+                HRProcessImprovementState.saveSketch(hrAutomationCurrentProcessId, dataUrl);
+                HRProcessImprovementState.setProcessStatus(hrAutomationCurrentProcessId, 'in_progress');
+            }
+        }
+        function hrAutomationSaveDictation() {
+            if (!hrAutomationCurrentProcessId) return;
+            var text = document.getElementById('processDictationText').value || '';
+            if (typeof HRProcessImprovementState !== 'undefined') {
+                HRProcessImprovementState.saveDictation(hrAutomationCurrentProcessId, text);
+                HRProcessImprovementState.setProcessStatus(hrAutomationCurrentProcessId, 'in_progress');
+            }
+        }
+        function hrAutomationGenerateBpmn() {
+            if (!hrAutomationCurrentProcessId) return;
+            var text = document.getElementById('processDictationText').value || '';
+            if (!text.trim()) { alert('Bitte zuerst Prozessbeschreibung unter Diktat eingeben.'); return; }
+            var placeholder = document.getElementById('processBpmnPlaceholder');
+            var diagram = document.getElementById('processBpmnDiagram');
+            placeholder.textContent = 'BPMN wird generiert…';
+            var fallbackXml = '<?xml version="1.0"?><bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"><bpmn:process id="Proc_' + hrAutomationCurrentProcessId + '"><bpmn:startEvent id="Start_1"/><bpmn:task id="Task_1" name="' + text.substring(0, 50).replace(/</g,'').replace(/>/g,'') + '"/><bpmn:endEvent id="End_1"/></bpmn:process></bpmn:definitions>';
+            function applyBpmn(simpleXml) {
+                if (typeof HRProcessImprovementState !== 'undefined') {
+                    HRProcessImprovementState.saveBpmn(hrAutomationCurrentProcessId, simpleXml, new Date().toISOString());
+                }
+                if (placeholder) placeholder.style.display = 'none';
+                if (diagram) { diagram.style.display = 'block'; diagram.innerHTML = '<pre style="white-space:pre-wrap;font-size:0.85rem;">' + simpleXml.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</pre>'; }
+            }
+            var apiUrl = (typeof window !== 'undefined' && window.location && window.location.origin ? window.location.origin : '') + '/.netlify/functions/text-to-bpmn';
+            fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: text, processId: hrAutomationCurrentProcessId })
+            }).then(function(r){ return r.json(); }).then(function(data){
+                if (data && data.success && data.bpmnXml) applyBpmn(data.bpmnXml);
+                else applyBpmn(fallbackXml);
+            }).catch(function(){ applyBpmn(fallbackXml); });
+        }
     </script>
 
     <!-- AWS Configuration -->
@@ -1211,5 +1624,6 @@
     <script src="/js/real-user-auth-system.js?v=20250116"></script>
     <script src="/js/user-progress-tracker.js"></script>
     <script src="/js/personality-auth-integration.js"></script>
+    <script src="js/shooting-stars.js"></script>
 </body>
 </html>

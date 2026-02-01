@@ -12,120 +12,218 @@
     
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/starry-background.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
-    <!-- Custom Styles for KI Strategy -->
     <style>
-        .ki-strategy-hero {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        /* Modern Dark Theme with Star Background */
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
+            min-height: 100vh;
+            position: relative;
             color: white;
-            padding: 3rem 0 4rem 0;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, rgba(255,255,255,0.8), transparent),
+                radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.6), transparent),
+                radial-gradient(1px 1px at 90px 40px, rgba(255,255,255,0.9), transparent),
+                radial-gradient(2px 2px at 160px 120px, rgba(255,255,255,0.7), transparent),
+                radial-gradient(1px 1px at 230px 80px, rgba(255,255,255,0.5), transparent),
+                radial-gradient(2px 2px at 300px 160px, rgba(255,255,255,0.8), transparent),
+                radial-gradient(1px 1px at 380px 50px, rgba(255,255,255,0.6), transparent),
+                radial-gradient(2px 2px at 420px 180px, rgba(255,255,255,0.7), transparent);
+            background-size: 500px 300px;
+            animation: twinkle 8s ease-in-out infinite alternate;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        @keyframes twinkle {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+        
+        .navbar {
+            background: rgba(15, 23, 42, 0.8) !important;
+            backdrop-filter: blur(20px) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+            position: relative;
+            z-index: 100;
+        }
+        
+        .container {
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Hero Section */
+        .ki-strategy-hero {
+            padding: 6rem 0 4rem 0;
             text-align: center;
-            margin-top: 0;
+            position: relative;
+            z-index: 1;
         }
         
         .ki-strategy-hero h1 {
-            font-size: 2.5rem;
+            font-size: 3rem;
             font-weight: 800;
-            margin-bottom: 1rem;
-            background: linear-gradient(45deg, #fff, #e0e7ff);
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #fff, #a5b4fc);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
         
         .ki-strategy-hero p {
-            font-size: 1.1rem;
-            opacity: 0.9;
-            max-width: 600px;
-            margin: 0 auto 1.5rem;
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.8);
+            max-width: 700px;
+            margin: 0 auto 2rem;
+            line-height: 1.7;
         }
         
         .methodology-badge {
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            background: rgba(255, 255, 255, 0.2);
-            padding: 0.5rem 1rem;
+            background: rgba(99, 102, 241, 0.3);
+            padding: 0.75rem 1.5rem;
             border-radius: 50px;
             font-size: 0.9rem;
-            font-weight: 500;
+            font-weight: 600;
             backdrop-filter: blur(10px);
+            border: 1px solid rgba(99, 102, 241, 0.4);
+            margin-bottom: 2rem;
+            color: white;
         }
         
+        .btn-workflow {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 30px rgba(99, 102, 241, 0.4);
+        }
+        
+        .btn-workflow:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(99, 102, 241, 0.5);
+            color: white;
+        }
+        
+        /* Strategy Overview */
         .strategy-overview {
             padding: 4rem 0;
-            background: #f8fafc;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .section-header h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 1rem;
+        }
+        
+        .section-header p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.1rem;
         }
         
         .strategy-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
+            gap: 1.5rem;
+            margin-top: 2rem;
         }
         
         .strategy-card {
-            background: white;
-            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
             padding: 2rem;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            transition: all 0.3s ease;
-            border: 1px solid #e5e7eb;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            transition: all 0.4s ease;
+            border: 1px solid rgba(255, 255, 255, 0.15);
         }
         
         .strategy-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            border-color: rgba(99, 102, 241, 0.5);
+            background: rgba(255, 255, 255, 0.12);
         }
         
         .strategy-card h3 {
-            color: #1f2937;
-            font-size: 1.5rem;
+            color: white;
+            font-size: 1.3rem;
             font-weight: 700;
             margin-bottom: 1rem;
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 1rem;
         }
         
         .strategy-card .icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
+            width: 50px;
+            height: 50px;
+            border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             color: white;
+            flex-shrink: 0;
         }
         
-        .strategy-card .icon.vision { background: linear-gradient(135deg, #667eea, #764ba2); }
-        .strategy-card .icon.value { background: linear-gradient(135deg, #f093fb, #f5576c); }
-        .strategy-card .icon.data { background: linear-gradient(135deg, #4facfe, #00f2fe); }
-        .strategy-card .icon.organization { background: linear-gradient(135deg, #43e97b, #38f9d7); }
-        .strategy-card .icon.ethics { background: linear-gradient(135deg, #fa709a, #fee140); }
-        .strategy-card .icon.scaling { background: linear-gradient(135deg, #a8edea, #fed6e3); }
-        .strategy-card .icon.learning { background: linear-gradient(135deg, #ffecd2, #fcb69f); }
+        .strategy-card .icon.vision { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+        .strategy-card .icon.value { background: linear-gradient(135deg, #ec4899, #f43f5e); }
+        .strategy-card .icon.data { background: linear-gradient(135deg, #06b6d4, #0ea5e9); }
+        .strategy-card .icon.organization { background: linear-gradient(135deg, #10b981, #14b8a6); }
+        .strategy-card .icon.ethics { background: linear-gradient(135deg, #f59e0b, #eab308); }
+        .strategy-card .icon.scaling { background: linear-gradient(135deg, #8b5cf6, #a855f7); }
+        .strategy-card .icon.learning { background: linear-gradient(135deg, #f97316, #fb923c); }
         
         .strategy-card p {
-            color: #6b7280;
-            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.7;
             margin-bottom: 1.5rem;
         }
         
         .strategy-features {
             list-style: none;
             padding: 0;
+            margin: 0;
         }
         
         .strategy-features li {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.75rem;
             padding: 0.5rem 0;
-            color: #374151;
+            color: rgba(255, 255, 255, 0.9);
             font-weight: 500;
         }
         
@@ -134,91 +232,166 @@
             font-size: 0.875rem;
         }
         
-        .workflow-cta {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+        /* Methodology Section */
+        .methodology-section {
             padding: 4rem 0;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .methodology-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .methodology-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 2.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .methodology-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        }
+        
+        .methodology-card h3 {
+            color: white;
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .methodology-card .university-badge {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            padding: 0.35rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .methodology-card p {
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.7;
+            margin-bottom: 1rem;
+        }
+        
+        .methodology-card p strong {
+            color: #a5b4fc;
+        }
+        
+        /* Workflow CTA */
+        .workflow-cta {
+            padding: 5rem 0;
             text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .workflow-cta-box {
+            background: rgba(99, 102, 241, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 32px;
+            padding: 4rem;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            max-width: 800px;
+            margin: 0 auto;
         }
         
         .workflow-cta h2 {
             font-size: 2.5rem;
             font-weight: 800;
+            color: white;
             margin-bottom: 1rem;
         }
         
         .workflow-cta p {
-            font-size: 1.25rem;
-            opacity: 0.9;
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.8);
             margin-bottom: 2rem;
             max-width: 600px;
             margin-left: auto;
             margin-right: auto;
         }
         
-        .btn-workflow {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.75rem;
-            background: white;
-            color: #667eea;
-            padding: 1rem 2rem;
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 1.1rem;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        /* Footer */
+        .footer {
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(20px);
+            padding: 3rem 0 1.5rem;
+            position: relative;
+            z-index: 1;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
         
-        .btn-workflow:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-            color: #5a67d8;
-        }
-        
-        .methodology-section {
-            padding: 4rem 0;
-            background: white;
-        }
-        
-        .methodology-grid {
+        .footer-content {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 3rem;
-            align-items: center;
-            margin-top: 3rem;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
         }
         
-        .methodology-card {
-            background: #f8fafc;
-            border-radius: 16px;
-            padding: 2rem;
-            border-left: 4px solid #667eea;
-        }
-        
-        .methodology-card h3 {
-            color: #1f2937;
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-        
-        .methodology-card .university-badge {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+        .footer-section h3, .footer-section h4 {
             color: white;
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
+            margin-bottom: 1rem;
         }
         
+        .footer-section p, .footer-section a, .footer-section li {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .footer-section ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .footer-section a:hover {
+            color: #a5b4fc;
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        /* Responsive */
         @media (max-width: 768px) {
+            body::before {
+                background-size: 300px 200px;
+            }
+            
+            .ki-strategy-hero {
+                padding: 4rem 1rem 3rem;
+            }
+            
             .ki-strategy-hero h1 {
                 font-size: 2rem;
+            }
+            
+            .ki-strategy-hero p {
+                font-size: 1rem;
             }
             
             .strategy-grid {
@@ -228,9 +401,21 @@
             .methodology-grid {
                 grid-template-columns: 1fr;
             }
+            
+            .workflow-cta-box {
+                padding: 2rem;
+            }
+            
+            .workflow-cta h2 {
+                font-size: 1.75rem;
+            }
+            
+            .section-header h2 {
+                font-size: 1.75rem;
+            }
         }
-    
-        /* AWS User System Styles - Integrated in Navigation */
+        
+        /* User System Styles */
         .user-system {
             display: flex;
             align-items: center;
@@ -241,17 +426,11 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            background: linear-gradient(135deg, #ffffff, #f8fafc);
+            background: rgba(255, 255, 255, 0.1);
             padding: 8px 16px;
             border-radius: 25px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(99, 102, 241, 0.2);
-            transition: all 0.3s ease;
-        }
-
-        .user-info:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .user-avatar {
@@ -260,7 +439,6 @@
             border-radius: 50%;
             overflow: hidden;
             border: 2px solid #6366f1;
-            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
         }
 
         .user-avatar-img {
@@ -278,14 +456,12 @@
         .user-name {
             font-size: 0.8rem;
             font-weight: 700;
-            color: #1e293b;
-            line-height: 1.2;
+            color: white;
         }
 
         .user-email {
             font-size: 0.7rem;
-            color: #64748b;
-            line-height: 1.2;
+            color: rgba(255, 255, 255, 0.7);
         }
 
         .user-logout {
@@ -300,20 +476,9 @@
             justify-content: center;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
         }
 
-        .user-logout:hover {
-            transform: scale(1.1);
-            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
-        }
-
-        .user-login {
-            display: flex;
-            align-items: center;
-        }
-
-        .btn-login {
+        .user-login .btn-login {
             background: linear-gradient(135deg, #6366f1, #8b5cf6);
             color: white;
             border: none;
@@ -322,54 +487,19 @@
             font-size: 0.8rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
             display: flex;
             align-items: center;
             gap: 6px;
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+            transition: all 0.3s ease;
         }
 
-        .btn-login:hover {
+        .user-login .btn-login:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
         }
-
-        .btn-login i {
-            font-size: 0.7rem;
-        }
-
-        /* Responsive Design for User System */
-        @media (max-width: 768px) {
-            .user-system {
-                margin-left: 10px;
-            }
-
-            .user-info {
-                padding: 6px 12px;
-                gap: 8px;
-            }
-
-            .user-avatar {
-                width: 28px;
-                height: 28px;
-            }
-
-            .user-name {
-                font-size: 0.7rem;
-            }
-
-            .user-email {
-                font-size: 0.6rem;
-            }
-
-            .btn-login {
-                padding: 6px 12px;
-                font-size: 0.7rem;
-            }
-        }
     </style>
 </head>
-<body>
+<body class="starry-theme">
     <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">
@@ -384,7 +514,7 @@
                 <a href="index.html#about" class="nav-link">Über mich</a>
                 <a href="index.html#contact" class="nav-link">Kontakt</a>
             
-                <!-- AWS User System - Nur auf Service-Unterseiten -->
+                <!-- User System -->
                 <div class="user-system" id="userSystem">
                     <div class="user-info" id="userInfo" style="display: none;">
                         <div class="user-avatar">
@@ -406,7 +536,6 @@
                         </button>
                     </div>
                 </div>
-                
             </div>
             
             <div class="nav-toggle" id="navToggle">
@@ -426,7 +555,7 @@
             </div>
             <h1>KI-Strategieentwicklung für HR</h1>
             <p>Entwickeln Sie eine umfassende KI-Strategie für Ihr HR mit bewährten Methoden von Harvard und MIT. Strategische Verankerung, Wertschöpfung und ethische Implementierung.</p>
-            <a href="#workflow" class="btn-workflow">
+            <a href="ki-strategie-workflow.html" class="btn-workflow">
                 <i class="fas fa-brain"></i>
                 KI-Strategie entwickeln
             </a>
@@ -592,12 +721,14 @@
     <!-- Workflow CTA -->
     <section class="workflow-cta" id="workflow">
         <div class="container">
-            <h2>Starten Sie Ihre KI-Strategieentwicklung</h2>
-            <p>Durchlaufen Sie unseren strukturierten Workflow und entwickeln Sie eine maßgeschneiderte KI-Strategie für Ihr HR.</p>
-            <a href="ki-strategie-workflow.html" class="btn-workflow">
-                <i class="fas fa-brain"></i>
-                KI-Strategie entwickeln
-            </a>
+            <div class="workflow-cta-box">
+                <h2>Starten Sie Ihre KI-Strategieentwicklung</h2>
+                <p>Durchlaufen Sie unseren strukturierten Workflow und entwickeln Sie eine maßgeschneiderte KI-Strategie für Ihr HR.</p>
+                <a href="ki-strategie-workflow.html" class="btn-workflow">
+                    <i class="fas fa-brain"></i>
+                    KI-Strategie entwickeln
+                </a>
+            </div>
         </div>
     </section>
 
@@ -613,29 +744,29 @@
                     <h4>Services</h4>
                     <ul>
                         <li><a href="ki-strategieentwicklung.html">KI-Strategieentwicklung</a></li>
-                        <li><a href="index.html#services">HR Transformation</a></li>
-                        <li><a href="index.html#services">Prozessoptimierung</a></li>
+                        <li><a href="hr-prozessautomatisierung.html">HR-Prozessautomatisierung</a></li>
+                        <li><a href="digital-workplace.html">Digital Workplace</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">
                     <h4>Kontakt</h4>
-                    <p>manuel.weiss@example.com</p>
-                    <p>+41 79 123 45 67</p>
+                    <p>info@manuel-weiss.ch</p>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2024 Manuel Weiss. Alle Rechte vorbehalten.</p>
+                <p>&copy; 2026 Manuel Weiss. Alle Rechte vorbehalten.</p>
             </div>
         </div>
     </footer>
 
-    
-<!-- Auth Modals -->
-<div id="authModalsContainer"></div>
+    <!-- Auth Modals -->
+    <div id="authModalsContainer"></div>
 
-
-<script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
-<script src="js/aws-auth.js"></script>
-<script src="script.js"></script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1490.0.min.js"></script>
+    <script src="js/aws-config.js"></script>
+    <script src="js/real-aws-auth.js"></script>
+    <script src="js/global-auth-system.js"></script>
+    <script src="js/shooting-stars.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
